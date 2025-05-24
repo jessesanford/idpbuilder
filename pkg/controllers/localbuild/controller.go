@@ -433,7 +433,10 @@ func (r *LocalbuildReconciler) reconcileCustomPkg(
 	o := &unstructured.Unstructured{}
 	_, gvk, fErr := scheme.Codecs.UniversalDeserializer().Decode(b, nil, o)
 	if fErr != nil {
-		return fErr
+		// Instead of returning the error, log it as a debug message and return nil
+		log.FromContext(ctx).V(1).Info("File is not a valid Kubernetes manifest, skipping",
+			"file", filePath, "error", fErr)
+		return nil
 	}
 
 	if isSupportedArgoCDTypes(gvk) {
