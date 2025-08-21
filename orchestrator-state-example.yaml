@@ -1,0 +1,169 @@
+# Orchestrator State File Example
+# This file tracks the complete state of your software factory execution
+
+# Current position in state machine
+current_phase: 1
+current_wave: 2
+current_state: "EFFORT_SELECTION"
+
+# Overall statistics
+statistics:
+  total_efforts: 87
+  completed_efforts: 12
+  in_progress_efforts: 2
+  pending_efforts: 73
+  total_phases: 5
+  total_waves: 23
+
+# Completed efforts
+efforts_completed:
+  - phase: 1
+    wave: 1
+    effort: 1
+    name: "api-types-core"
+    status: "COMPLETE"
+    lines: 650
+    branch: "phase1/wave1/effort1-api-types-core"
+    completed_date: "2025-01-20T14:30:00Z"
+    review_status: "ACCEPTED"
+    splits: []
+    
+  - phase: 1
+    wave: 1
+    effort: 2
+    name: "database-models"
+    status: "COMPLETE"
+    lines: 1200
+    branch: "phase1/wave1/effort2-database-models"
+    completed_date: "2025-01-20T16:45:00Z"
+    review_status: "ACCEPTED"
+    splits:
+      - branch: "phase1/wave1/effort2-database-models-part1"
+        lines: 700
+        status: "COMPLETE"
+      - branch: "phase1/wave1/effort2-database-models-part2"
+        lines: 500
+        status: "COMPLETE"
+
+# Currently active efforts
+efforts_in_progress:
+  - phase: 1
+    wave: 2
+    effort: 1
+    name: "controller-base"
+    status: "IMPLEMENTATION"
+    assigned_agent: "sw-engineer"
+    working_dir: "/workspaces/efforts/phase1/wave2/effort1-controller-base"
+    branch: "phase1/wave2/effort1-controller-base"
+    started_date: "2025-01-21T09:00:00Z"
+    current_size: 450
+    
+  - phase: 1
+    wave: 2
+    effort: 2
+    name: "webhook-framework"
+    status: "CODE_REVIEW"
+    assigned_agent: "code-reviewer"
+    working_dir: "/workspaces/efforts/phase1/wave2/effort2-webhook-framework"
+    branch: "phase1/wave2/effort2-webhook-framework"
+    started_date: "2025-01-21T09:00:00Z"
+    current_size: 780
+    review_iteration: 1
+
+# Queued efforts for current wave
+efforts_pending:
+  - phase: 1
+    wave: 2
+    effort: 3
+    name: "validation-rules"
+    
+  - phase: 1
+    wave: 2
+    effort: 4
+    name: "metrics-collector"
+
+# Phase assessments by architect
+phase_assessments:
+  - phase: 1
+    assessment: "NOT_YET_ASSESSED"
+    date: null
+    confidence: null
+    notes: null
+
+# Wave reviews by architect
+wave_reviews:
+  - wave: "1.1"
+    decision: "PROCEED"
+    date: "2025-01-20T18:00:00Z"
+    issues: []
+    notes: "Clean implementation, good test coverage"
+    
+  - wave: "1.2"
+    decision: "PENDING"
+    date: null
+    issues: []
+    notes: null
+
+# Architectural addendums (corrections from reviews)
+addendums: []
+
+# Integration branches created
+integration_branches:
+  - name: "phase1/wave1-integration"
+    created_date: "2025-01-20T18:30:00Z"
+    efforts_merged: 6
+    status: "COMPLETE"
+
+# Blocking issues that need resolution
+blocking_issues: []
+
+# Configuration for this project
+configuration:
+  max_lines_warning: 700
+  max_lines_error: 800
+  test_coverage_target: 85
+  parallel_efforts_allowed: 3
+  review_required: true
+  architect_review_required: true
+
+# Notes and context
+notes:
+  - date: "2025-01-20T10:00:00Z"
+    note: "Project initialized with 5 phases, 23 waves, 87 efforts"
+  - date: "2025-01-20T18:00:00Z"
+    note: "Wave 1.1 completed successfully, all efforts under size limit"
+  - date: "2025-01-21T09:00:00Z"
+    note: "Started Wave 1.2 with 2 parallel efforts"
+
+# State machine history (last 10 transitions)
+state_history:
+  - timestamp: "2025-01-21T09:15:00Z"
+    from_state: "SPAWN_SW_ENG"
+    to_state: "IMPLEMENTATION"
+    details: "Started effort 1.2.1"
+    
+  - timestamp: "2025-01-21T09:10:00Z"
+    from_state: "CREATE_WORKING_COPY"
+    to_state: "SPAWN_SW_ENG"
+    details: "Working copy created for effort 1.2.1"
+    
+  - timestamp: "2025-01-21T09:05:00Z"
+    from_state: "EFFORT_SELECTION"
+    to_state: "CREATE_WORKING_COPY"
+    details: "Selected effort 1.2.1 for implementation"
+
+# Metrics for tracking performance
+metrics:
+  average_effort_size: 650
+  efforts_requiring_split: 2
+  split_success_rate: 100
+  first_pass_review_rate: 85
+  average_effort_duration_hours: 4.5
+  phase_1_progress_percent: 24
+
+# Last save timestamp
+last_updated: "2025-01-21T09:30:00Z"
+save_count: 47
+
+# Version for compatibility checking
+schema_version: "1.0.0"
