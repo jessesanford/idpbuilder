@@ -39,104 +39,135 @@ This template provides a complete system for:
 └──────────────┘   └──────────────┘   └──────────────┘
 ```
 
-## 📁 Directory Structure
+## 📁 Complete Directory Structure & File Reference
 
 ```
 software-factory-template/
 │
 ├── README.md                           # This file
+├── PROJECT-IMPLEMENTATION-PLAN-TEMPLATE.md  # Template for your project plan
+├── orchestrator-state-example.yaml    # Example state file
+├── CRITICAL-FILES-ADDED.md           # Documentation of what was added
 │
-├── .claude/                            # Claude Code configuration
-│   ├── CLAUDE.md                       # Global rules for all agents
-│   ├── agents/                         # Agent configurations
-│   │   ├── orchestrator-task-master.md
-│   │   ├── architect-reviewer.md
-│   │   ├── code-reviewer.md
-│   │   └── sw-engineer-example-go.md  # Example - customize for your stack
+├── .claude/                           # Claude Code configuration
+│   ├── CLAUDE.md                      # 🔴 CRITICAL: Global rules, compaction recovery, TODO management
+│   ├── agents/                        # Agent configurations
+│   │   ├── orchestrator-task-master.md  # Orchestrator agent config
+│   │   ├── architect-reviewer.md     # Architect agent config
+│   │   ├── code-reviewer.md          # Code reviewer agent config
+│   │   └── sw-engineer-example-go.md # Example SW engineer (customize for your stack)
 │   └── commands/
-│       └── continue-orchestrating.md  # Main orchestration command
+│       └── continue-orchestrating.md # Main command to start/resume orchestration
 │
-├── core/                               # Core system files
-│   ├── SOFTWARE-FACTORY-STATE-MACHINE.md  # ⚡ THE HEART OF THE SYSTEM
-│   └── ORCHESTRATOR-MASTER-OPERATIONS-GUIDE.md
+├── core/                              # Core system files
+│   ├── SOFTWARE-FACTORY-STATE-MACHINE.md  # ⚡ THE HEART - Defines all states and transitions
+│   └── ORCHESTRATOR-MASTER-OPERATIONS-GUIDE.md  # Complete operational blueprint
 │
-├── protocols/                          # Execution protocols
-│   ├── EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
-│   └── SW-ENGINEER-STARTUP-REQUIREMENTS.md
+├── protocols/                         # Critical execution protocols
+│   ├── IMPERATIVE-LINE-COUNT-RULE.md # 🚨 Size limit enforcement (referenced 6x in CLAUDE.md)
+│   ├── EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md  # How to handle >800 line efforts
+│   ├── SW-ENGINEER-STARTUP-REQUIREMENTS.md  # SW Engineer initialization
+│   ├── ORCHESTRATOR-EFFORT-PLANNING-PROTOCOL.md  # How orchestrator manages planning
+│   ├── ORCHESTRATOR-TASKMASTER-EXECUTION-PLAN.md  # Complete execution guide
+│   ├── CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md  # How to create effort plans
+│   ├── WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md  # Wave review requirements
+│   ├── TEST-DRIVEN-VALIDATION-REQUIREMENTS.md  # Testing coverage requirements
+│   └── WORK-LOG-TEMPLATE.md          # Template for effort work logs
 │
-├── agent-instructions/                 # Agent-specific instructions
-│   └── [Additional instruction files as needed]
+├── efforts/                           # Working directories for implementations
+│   └── README.md                      # Explains effort isolation and structure
 │
-├── efforts/                            # Working directories for implementations
-│   └── README.md                       # Explains effort isolation
+├── todos/                             # TODO state persistence
+│   └── README.md                      # How TODO files work for context recovery
 │
-├── todos/                              # TODO state persistence
-│   └── README.md                       # Explains TODO management
+├── tools/                             # Utilities
+│   └── line-counter.sh                # Configurable size measurement tool
 │
-├── tools/                              # Utilities
-│   └── line-counter.sh                 # Size measurement tool
-│
-└── possibly-needed-but-not-sure/       # Additional protocols
-    └── [Various protocol files]
+└── possibly-needed-but-not-sure/      # Optional/advanced protocols
+    ├── README.md                      # Guide to all optional files
+    ├── FILES-NOT-INCLUDED.md         # What wasn't included and why
+    │
+    ├── CODE-REVIEWER-QUICK-REFERENCE.md  # Quick decision trees
+    ├── ORCHESTRATOR-QUICK-REFERENCE.md   # Quick state transitions
+    ├── ORCHESTRATOR-WORKFLOW-SUMMARY.md  # Visual workflow summary
+    │
+    ├── ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md  # Detailed architect instructions
+    ├── PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md  # Phase assessment protocol
+    ├── PHASE-COMPLETION-FUNCTIONAL-TESTING.md  # End-of-phase testing
+    │
+    ├── CODE-REVIEWER-COMPREHENSIVE-GUIDE-EXAMPLE.md  # Complete review process
+    ├── ORCHESTRATOR-CODE-REVIEW-INTEGRATION.md  # Review integration details
+    ├── CODE-REVIEW-ENFORCEMENT-SUMMARY.md  # Enforcement points
+    ├── CODE-REVIEW-EXAMPLES.md       # Real review examples
+    │
+    ├── TODO-STATE-MANAGEMENT-PROTOCOL.md  # Advanced TODO management
+    ├── ORCHESTRATOR-NEVER-WRITES-CODE-RULE.md  # Standalone rule
+    │
+    ├── SPLIT-EXAMPLE-E3.1.1-SYNC-ENGINE.md  # Real 2400-line split example
+    └── SPLIT-REVIEW-LOOP-DIAGRAM.md  # Visual split process
 ```
 
-## 🚀 Quick Start
+## 📚 Critical Files - Who Uses Them and When
 
-### 1. Setup Your Project
+### 🔴 Always Active Files (Required for System to Function)
 
-```bash
-# Copy this template to your project
-cp -r /workspaces/software-factory-template /workspaces/your-project
+#### Core System Files
+| File | Used By | When | Purpose |
+|------|---------|------|---------|
+| **SOFTWARE-FACTORY-STATE-MACHINE.md** | Orchestrator | FIRST at startup, continuously | Defines entire workflow, states, transitions |
+| **ORCHESTRATOR-MASTER-OPERATIONS-GUIDE.md** | Orchestrator, Human | Setup and operations | Complete blueprint for running system |
+| **CLAUDE.md** | ALL agents | Every startup | Global rules, recovery procedures, TODO management |
 
-# Navigate to your project
-cd /workspaces/your-project
+#### Protocol Files
+| File | Used By | When | Purpose |
+|------|---------|------|---------|
+| **IMPERATIVE-LINE-COUNT-RULE.md** | ALL agents | Every effort | Absolute size limit enforcement |
+| **EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md** | Orchestrator, Code Reviewer | When effort >800 lines | Sequential split execution |
+| **SW-ENGINEER-STARTUP-REQUIREMENTS.md** | SW Engineer | Every task startup | Environment verification, startup protocol |
+| **ORCHESTRATOR-EFFORT-PLANNING-PROTOCOL.md** | Orchestrator | Before each effort | How to coordinate planning |
+| **ORCHESTRATOR-TASKMASTER-EXECUTION-PLAN.md** | Orchestrator | Always | Complete execution guide |
+| **CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md** | Code Reviewer | When creating plans | How to create implementation plans |
+| **WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md** | Orchestrator, Architect | End of each wave | Mandatory wave review process |
+| **TEST-DRIVEN-VALIDATION-REQUIREMENTS.md** | SW Engineer, Code Reviewer | Every implementation/review | Testing coverage requirements |
+| **WORK-LOG-TEMPLATE.md** | SW Engineer | Every effort | Progress tracking template |
 
-# Customize configurations
-# - Edit .claude/agents/* for your tech stack
-# - Update tools/line-counter.sh patterns for your language
-# - Create your PROJECT-IMPLEMENTATION-PLAN.md
-# - Define your phases and waves
-```
+#### Agent Configurations
+| File | Used By | When | Purpose |
+|------|---------|------|---------|
+| **orchestrator-task-master.md** | Claude Code | When spawning orchestrator | Defines orchestrator behavior |
+| **code-reviewer.md** | Claude Code | When spawning reviewer | Defines reviewer behavior |
+| **architect-reviewer.md** | Claude Code | When spawning architect | Defines architect behavior |
+| **sw-engineer-example-go.md** | Claude Code | When spawning engineer | Example config (customize) |
 
-### 2. Configure Size Limits
+#### Command Files
+| File | Used By | When | Purpose |
+|------|---------|------|---------|
+| **continue-orchestrating.md** | Human | To start/resume | Main orchestration command |
 
-Edit `tools/line-counter.sh`:
-```bash
-# Configuration - CUSTOMIZE FOR YOUR PROJECT
-MAX_LINES_WARNING=700
-MAX_LINES_ERROR=800
-```
+### 🟡 Optional Files (In possibly-needed-but-not-sure/)
 
-### 3. Create Your Implementation Plan
+#### Quick References (Helpful for Learning)
+| File | Best For | When to Activate | Purpose |
+|------|----------|-----------------|---------|
+| **CODE-REVIEWER-QUICK-REFERENCE.md** | New reviewers | Learning phase | Quick decision trees and checks |
+| **ORCHESTRATOR-QUICK-REFERENCE.md** | New orchestrators | Learning phase | State transitions and commands |
+| **ORCHESTRATOR-WORKFLOW-SUMMARY.md** | Everyone | Understanding flow | Visual workflow with examples |
 
-Create `orchestrator/PROJECT-IMPLEMENTATION-PLAN.md`:
-```markdown
-# Project Implementation Plan
+#### Advanced Protocols (For Complex Projects)
+| File | Best For | When to Activate | Purpose |
+|------|----------|-----------------|---------|
+| **ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md** | Multi-phase projects | When strict architecture needed | Detailed review instructions |
+| **PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md** | Phase boundaries | Multiple phases | Phase readiness assessment |
+| **PHASE-COMPLETION-FUNCTIONAL-TESTING.md** | Quality-critical | End of phases | Comprehensive testing |
+| **TODO-STATE-MANAGEMENT-PROTOCOL.md** | Long-running projects | Complex state management | Advanced TODO persistence |
 
-## Phase 1: Foundation
-### Wave 1: Core Types
-- E1.1.1: Basic data models
-- E1.1.2: API interfaces
-...
-```
-
-### 4. Initialize State
-
-Create `orchestrator/orchestrator-state.yaml`:
-```yaml
-current_phase: 1
-current_wave: 1
-current_state: "INIT"
-efforts_completed: []
-efforts_in_progress: []
-efforts_pending: [...]
-```
-
-### 5. Start Orchestration
-
-```
-/continue-orchestrating
-```
+#### Examples and References (For Understanding)
+| File | Best For | When to Use | Purpose |
+|------|----------|-------------|---------|
+| **CODE-REVIEW-EXAMPLES.md** | Learning | Understanding reviews | Real review examples |
+| **SPLIT-EXAMPLE-E3.1.1-SYNC-ENGINE.md** | Learning splits | First split needed | Real 2400→3 parts example |
+| **SPLIT-REVIEW-LOOP-DIAGRAM.md** | Visual learners | Understanding splits | Diagram of split process |
+| **CODE-REVIEW-ENFORCEMENT-SUMMARY.md** | Compliance | Setting up gates | All enforcement points |
 
 ## 🔄 State Machine Flow
 
@@ -154,27 +185,54 @@ The system follows a strict state machine defined in `SOFTWARE-FACTORY-STATE-MAC
 - `IMPLEMENTATION` → `MEASURE_SIZE` → `CODE_REVIEW`
 - `WAVE_COMPLETE` → `ARCHITECT_REVIEW` → `NEXT_WAVE`
 
-## 👥 Agent Roles
+## 👥 Agent Roles and Their Files
 
 ### Orchestrator (orchestrator-task-master)
+**Reads on Startup:**
+- SOFTWARE-FACTORY-STATE-MACHINE.md
+- ORCHESTRATOR-TASKMASTER-EXECUTION-PLAN.md
+- orchestrator-state.yaml
+- ORCHESTRATOR-EFFORT-PLANNING-PROTOCOL.md
+
+**Responsibilities:**
 - Coordinates all activities
 - Manages state transitions
 - Spawns other agents
 - **NEVER writes code**
 
 ### Code Reviewer (code-reviewer)
+**Reads on Startup:**
+- CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md
+- IMPERATIVE-LINE-COUNT-RULE.md
+- TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
+- EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
+
+**Responsibilities:**
 - Creates implementation plans
 - Reviews code for quality
 - Designs split strategies
 - Ensures compliance
 
 ### SW Engineer (sw-engineer)
+**Reads on Startup:**
+- SW-ENGINEER-STARTUP-REQUIREMENTS.md
+- IMPERATIVE-LINE-COUNT-RULE.md
+- TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
+- IMPLEMENTATION-PLAN.md (in working directory)
+
+**Responsibilities:**
 - Implements code per plan
 - Measures size continuously
 - Fixes review issues
 - Works in isolated environments
 
 ### Architect (architect-reviewer)
+**Reads on Startup:**
+- WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md
+- orchestrator-state.yaml
+- PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md (if in possibly-needed)
+
+**Responsibilities:**
 - Reviews architectural consistency
 - Assesses phase progress
 - Approves wave completions
@@ -232,6 +290,59 @@ todos/sw-eng-IMPLEMENTATION-20250121-145500.todo
 3. Load into TodoWrite tool
 4. Resume from saved state
 
+## 🚀 Quick Start
+
+### 1. Setup Your Project
+```bash
+# Copy this template to your project
+cp -r /workspaces/software-factory-template /workspaces/your-project
+
+# Navigate to your project
+cd /workspaces/your-project
+
+# Customize configurations
+# - Edit .claude/agents/* for your tech stack
+# - Update tools/line-counter.sh patterns for your language
+# - Create your PROJECT-IMPLEMENTATION-PLAN.md
+# - Define your phases and waves
+```
+
+### 2. Configure Size Limits
+Edit `tools/line-counter.sh`:
+```bash
+# Configuration - CUSTOMIZE FOR YOUR PROJECT
+MAX_LINES_WARNING=700
+MAX_LINES_ERROR=800
+```
+
+### 3. Create Your Implementation Plan
+Create `orchestrator/PROJECT-IMPLEMENTATION-PLAN.md`:
+```markdown
+# Project Implementation Plan
+
+## Phase 1: Foundation
+### Wave 1: Core Types
+- E1.1.1: Basic data models
+- E1.1.2: API interfaces
+...
+```
+
+### 4. Initialize State
+Create `orchestrator/orchestrator-state.yaml`:
+```yaml
+current_phase: 1
+current_wave: 1
+current_state: "INIT"
+efforts_completed: []
+efforts_in_progress: []
+efforts_pending: [...]
+```
+
+### 5. Start Orchestration
+```
+/continue-orchestrating
+```
+
 ## 🛠️ Customization Guide
 
 ### For Different Languages
@@ -273,19 +384,33 @@ Focus Areas:
 - Include performance benchmarks
 - Add data lineage tracking
 
-## 📚 Key Documents
+## 🎯 Which Files to Activate When
 
-### Must Read First
-1. **SOFTWARE-FACTORY-STATE-MACHINE.md** - The core workflow
-2. **ORCHESTRATOR-MASTER-OPERATIONS-GUIDE.md** - How to operate
-3. **.claude/CLAUDE.md** - Agent rules and recovery
+### Minimum Viable Setup (Simple Project)
+Use only the files in:
+- `/core/`
+- `/protocols/`
+- `/.claude/`
 
-### Protocol Documents
-- **EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md** - Handling large efforts
-- **SW-ENGINEER-STARTUP-REQUIREMENTS.md** - Agent initialization
+### Medium Complexity (Multiple Phases)
+Additionally activate from possibly-needed:
+- ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md
+- PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md
+- Quick reference guides
 
-### Command Reference
-- **/continue-orchestrating** - Start/resume orchestration
+### High Complexity (Enterprise)
+Activate everything from possibly-needed:
+- All architect protocols
+- TODO-STATE-MANAGEMENT-PROTOCOL.md
+- Comprehensive review guides
+- Testing protocols
+
+### Learning the System
+Start with:
+- Quick reference guides
+- Workflow summary
+- Split examples
+- Review examples
 
 ## ⚠️ Critical Rules
 
@@ -307,13 +432,13 @@ Focus Areas:
 
 ### Common Issues
 
-| Problem | Solution |
-|---------|----------|
-| "State file not found" | Create from implementation plan |
-| "Effort over limit" | Implement split protocol |
-| "Context lost" | Use TODO recovery process |
-| "Wrong directory" | Never fix with cd, report error |
-| "Review failed" | Fix and re-review, don't skip |
+| Problem | Solution | Relevant Files |
+|---------|----------|----------------|
+| "State file not found" | Create from implementation plan | orchestrator-state-example.yaml |
+| "Effort over limit" | Implement split protocol | EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md |
+| "Context lost" | Use TODO recovery process | CLAUDE.md sections 7-9 |
+| "Wrong directory" | Never fix with cd, report error | SW-ENGINEER-STARTUP-REQUIREMENTS.md |
+| "Review failed" | Fix and re-review, don't skip | CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md |
 
 ### Recovery Procedures
 See `.claude/CLAUDE.md` sections:
