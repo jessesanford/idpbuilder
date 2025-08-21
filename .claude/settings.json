@@ -1,0 +1,25 @@
+{
+  "model": "opus",
+  "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '=== AUTO-COMPACTION TRIGGERED ===' && echo 'COMPACTION_TIME:'$(date '+%Y-%m-%d %H:%M:%S %Z') > /tmp/compaction_marker.txt && echo 'WORKING_DIR:'$(pwd) >> /tmp/compaction_marker.txt && echo 'GIT_BRANCH:'$(git branch --show-current 2>/dev/null || echo 'none') >> /tmp/compaction_marker.txt && echo 'ACTIVE_FILES:'$(ls *.md 2>/dev/null | head -3 | tr '\\n' ',' || echo 'none') >> /tmp/compaction_marker.txt && TODO_DIR='./todos' && if [ -d \"$TODO_DIR\" ] && [ \"$(ls -A $TODO_DIR 2>/dev/null)\" ]; then LATEST_TODO=$(ls -t $TODO_DIR/*.todo 2>/dev/null | head -1) && if [ -f \"$LATEST_TODO\" ]; then echo 'TODO_STATE_SAVED:/tmp/todos-precompact.txt' >> /tmp/compaction_marker.txt && cp \"$LATEST_TODO\" /tmp/todos-precompact.txt && echo \"Copied latest TODO: $(basename $LATEST_TODO)\"; fi; else echo 'NO_TODOS_FOUND' >> /tmp/compaction_marker.txt && echo 'No TODO files to preserve'; fi && echo 'Marker created at /tmp/compaction_marker.txt'"
+          }
+        ]
+      },
+      {
+        "matcher": "manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '=== MANUAL-COMPACTION TRIGGERED ===' && echo 'COMPACTION_TIME:'$(date '+%Y-%m-%d %H:%M:%S %Z') > /tmp/compaction_marker.txt && echo 'WORKING_DIR:'$(pwd) >> /tmp/compaction_marker.txt && echo 'GIT_BRANCH:'$(git branch --show-current 2>/dev/null || echo 'none') >> /tmp/compaction_marker.txt && echo 'ACTIVE_FILES:'$(ls *.md 2>/dev/null | head -3 | tr '\\n' ',' || echo 'none') >> /tmp/compaction_marker.txt && TODO_DIR='./todos' && if [ -d \"$TODO_DIR\" ] && [ \"$(ls -A $TODO_DIR 2>/dev/null)\" ]; then LATEST_TODO=$(ls -t $TODO_DIR/*.todo 2>/dev/null | head -1) && if [ -f \"$LATEST_TODO\" ]; then echo 'TODO_STATE_SAVED:/tmp/todos-precompact.txt' >> /tmp/compaction_marker.txt && cp \"$LATEST_TODO\" /tmp/todos-precompact.txt && echo \"Copied latest TODO: $(basename $LATEST_TODO)\"; fi; else echo 'NO_TODOS_FOUND' >> /tmp/compaction_marker.txt && echo 'No TODO files to preserve'; fi && echo 'Marker created at /tmp/compaction_marker.txt'"
+          }
+        ]
+      }
+    ]
+  }
+}

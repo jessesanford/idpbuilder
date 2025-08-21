@@ -21,21 +21,26 @@ This command resumes or initiates the software factory orchestration process, co
 ### Required Directory Structure
 ```
 /workspaces/[project]/
-├── orchestrator/
-│   ├── SOFTWARE-FACTORY-STATE-MACHINE.md
-│   ├── orchestrator-state.yaml
-│   └── [phase and protocol files]
+├── core/
+│   └── SOFTWARE-FACTORY-STATE-MACHINE.md
+├── protocols/
+│   └── [protocol files]
+├── phase-plans/
+│   └── [phase-specific implementation plans]
+├── orchestrator-state.yaml
+├── PROJECT-IMPLEMENTATION-PLAN.md
 ├── efforts/
 ├── tools/
 └── todos/
 ```
 
 ### Required Files
-- SOFTWARE-FACTORY-STATE-MACHINE.md
+- core/SOFTWARE-FACTORY-STATE-MACHINE.md
+- orchestrator-state.yaml
 - PROJECT-IMPLEMENTATION-PLAN.md
-- Phase-specific implementation plans
-- Agent instruction files
-- Protocol documents
+- phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md files
+- protocols/[various protocol files]
+- .claude/agents/[agent configurations]
 
 ## Orchestrator Workflow
 
@@ -46,7 +51,7 @@ Task @agent-orchestrator-task-master:
 STARTUP REQUIREMENTS:
 1. Print timestamp and acknowledgment
 2. Verify environment
-3. Read SOFTWARE-FACTORY-STATE-MACHINE.md
+3. Read core/SOFTWARE-FACTORY-STATE-MACHINE.md
 
 INITIAL TASK:
 1. CHECK: Does orchestrator-state.yaml exist?

@@ -1,5 +1,9 @@
 # 🔴🔴🔴 COMPACTION DETECTION - CHECK THIS FIRST 🔴🔴🔴
 
+## ⚠️ REQUIRES: .claude/settings.json with PreCompact hooks
+## Without settings.json, this recovery system WILL NOT WORK!
+## See CRITICAL-SETTINGS-JSON.md for setup instructions
+
 ## MANDATORY: Check for Auto-Compaction at Start of EVERY Response
 
 ```bash
@@ -71,7 +75,7 @@ Before tasking ANY agent, you MUST:
    - Documentation: All efforts have work logs
    - Testing: Coverage requirements met
    - Integration: All phases merge cleanly
-2. If unsure about rules, re-read: /workspaces/[project]/orchestrator/continue-orchestrating.md
+2. If unsure about rules, re-read: /workspaces/[project]/.claude/commands/continue-orchestrating.md
 3. Include startup requirements in EVERY agent task
 
 ## FOR ALL AGENTS (INCLUDING YOURSELF):
@@ -109,29 +113,29 @@ If you detect context loss (no memory of previous tasks), IMMEDIATELY read your 
 ### ALWAYS READ ON STARTUP:
 ```bash
 # Core identity and rules
-READ: /workspaces/[project]/orchestrator/continue-orchestrating.md
-READ: /workspaces/[project]/orchestrator/orchestrator-state.yaml
-READ: /workspaces/[project]/orchestrator/SOFTWARE-FACTORY-STATE-MACHINE.md
+READ: /workspaces/[project]/.claude/commands/continue-orchestrating.md
+READ: /workspaces/[project]/orchestrator-state.yaml
+READ: /workspaces/[project]/core/SOFTWARE-FACTORY-STATE-MACHINE.md
 ```
 
 ### MODE: Starting Fresh (no state exists)
 ```bash
-READ: /workspaces/[project]/orchestrator/PROJECT-IMPLEMENTATION-PLAN.md
-READ: /workspaces/[project]/orchestrator/ORCHESTRATOR-TASKMASTER-EXECUTION-PLAN.md
+READ: /workspaces/[project]/PROJECT-IMPLEMENTATION-PLAN.md
+READ: /workspaces/[project]/protocols/ORCHESTRATOR-TASKMASTER-EXECUTION-PLAN.md
 ```
 
 ### MODE: Resuming Work (state exists)
 ```bash
-READ: /workspaces/[project]/orchestrator/CURRENT-TODO-STATE.md  # If exists
-READ: /workspaces/[project]/orchestrator/orchestrator-state.yaml
+READ: /workspaces/[project]/CURRENT-TODO-STATE.md  # If exists
+READ: /workspaces/[project]/orchestrator-state.yaml
 CHECK: efforts_in_progress section for blocking issues
 CHECK: integration_branches section for pending integrations
 ```
 
 ### MODE: Planning a Wave
 ```bash
-READ: /workspaces/[project]/orchestrator/PHASE{CURRENT_PHASE}-SPECIFIC-IMPL-PLAN.md
-READ: /workspaces/[project]/orchestrator/ORCHESTRATOR-EFFORT-PLANNING-PROTOCOL.md
+READ: /workspaces/[project]/phase-plans/PHASE{CURRENT_PHASE}-SPECIFIC-IMPL-PLAN.md
+READ: /workspaces/[project]/protocols/ORCHESTRATOR-EFFORT-PLANNING-PROTOCOL.md
 ```
 
 ### MODE: After Wave Complete (Integration Required)
@@ -140,7 +144,7 @@ READ: /workspaces/[project]/orchestrator/ORCHESTRATOR-EFFORT-PLANNING-PROTOCOL.m
 TODO_FILE="/workspaces/[project]/todos/orchestrator-WAVE_COMPLETE-$(date '+%Y%m%d-%H%M%S').todo"
 ACTION: Save all integration tasks to TODO_FILE
 
-READ: /workspaces/[project]/orchestrator/WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md
+READ: /workspaces/[project]/protocols/WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md
 CHECK: All splits are compliant using line-counter.sh
 ACTION: Create wave integration branch BEFORE proceeding
 ACTION: Spawn architect for review BEFORE next wave
@@ -148,15 +152,15 @@ ACTION: Spawn architect for review BEFORE next wave
 
 ### MODE: Responding to Architect CHANGES_REQUIRED
 ```bash
-READ: /workspaces/[project]/orchestrator/orchestrator-state.yaml # efforts_in_progress
-READ: /workspaces/[project]/orchestrator/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
+READ: /workspaces/[project]/orchestrator-state.yaml # efforts_in_progress
+READ: /workspaces/[project]/protocols/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
 ACTION: Spawn SW Engineer to fix issues
 ACTION: Re-run architect review after fixes
 ```
 
 ### MODE: Managing Splits
 ```bash
-READ: /workspaces/[project]/orchestrator/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
+READ: /workspaces/[project]/protocols/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
 RULE: Splits are ALWAYS sequential, NEVER parallel
 RULE: Each split gets full review
 RULE: Recursive split if still over limit
@@ -168,9 +172,9 @@ RULE: Recursive split if still over limit
 ```bash
 # Core identity
 READ: /workspaces/[project]/.claude/agents/sw-engineer.md
-READ: /workspaces/[project]/orchestrator/SW-ENGINEER-STARTUP-REQUIREMENTS.md
-READ: /workspaces/[project]/orchestrator/SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md
-READ: /workspaces/[project]/orchestrator/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
+READ: /workspaces/[project]/protocols/SW-ENGINEER-STARTUP-REQUIREMENTS.md
+READ: /workspaces/[project]/protocols/SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md
+READ: /workspaces/[project]/protocols/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
 
 # Current effort context
 READ: ${WORKING_DIR}/IMPLEMENTATION-PLAN.md
@@ -179,8 +183,8 @@ READ: ${WORKING_DIR}/work-log.md
 
 ### MODE: Initial Implementation
 ```bash
-READ: /workspaces/[project]/orchestrator/SIZE-LIMIT-RULE.md  # CRITICAL
-READ: /workspaces/[project]/orchestrator/PHASE{X}-SPECIFIC-IMPL-PLAN.md
+READ: /workspaces/[project]/protocols/IMPERATIVE-LINE-COUNT-RULE.md  # CRITICAL
+READ: /workspaces/[project]/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
 READ: ${WORKING_DIR}/IMPLEMENTATION-PLAN.md  # Created by Code Reviewer
 ACTION: Update work-log.md as you progress
 MEASURE: /workspaces/[project]/tools/line-counter.sh -c {branch} every 200 lines
@@ -208,23 +212,23 @@ MEASURE: Must stay under configured limit
 ```bash
 # Core identity
 READ: /workspaces/[project]/.claude/agents/code-reviewer.md
-READ: /workspaces/[project]/orchestrator/CODE-REVIEWER-COMPREHENSIVE-GUIDE.md
-READ: /workspaces/[project]/orchestrator/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
+READ: /workspaces/[project]/protocols/CODE-REVIEWER-COMPREHENSIVE-GUIDE.md
+READ: /workspaces/[project]/protocols/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
 ```
 
 ### MODE: Creating Implementation Plan
 ```bash
-READ: /workspaces/[project]/orchestrator/CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md
-READ: /workspaces/[project]/orchestrator/PHASE{X}-SPECIFIC-IMPL-PLAN.md
-READ: /workspaces/[project]/orchestrator/WORK-LOG-TEMPLATE.md
+READ: /workspaces/[project]/protocols/CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md
+READ: /workspaces/[project]/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
+READ: /workspaces/[project]/protocols/WORK-LOG-TEMPLATE.md
 ACTION: Create IMPLEMENTATION-PLAN.md
 ACTION: Create work-log.md from template
 ```
 
 ### MODE: Reviewing Code
 ```bash
-READ: /workspaces/[project]/orchestrator/SIZE-LIMIT-RULE.md  # CRITICAL
-READ: /workspaces/[project]/orchestrator/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
+READ: /workspaces/[project]/protocols/IMPERATIVE-LINE-COUNT-RULE.md  # CRITICAL
+READ: /workspaces/[project]/protocols/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
 READ: ${WORKING_DIR}/IMPLEMENTATION-PLAN.md
 READ: ${WORKING_DIR}/work-log.md
 MEASURE: /workspaces/[project]/tools/line-counter.sh -c {branch}
@@ -234,8 +238,8 @@ CHECK: Test coverage per requirements
 
 ### MODE: Planning Split (over limit detected)
 ```bash
-READ: /workspaces/[project]/orchestrator/SIZE-LIMIT-RULE.md
-READ: /workspaces/[project]/orchestrator/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
+READ: /workspaces/[project]/protocols/IMPERATIVE-LINE-COUNT-RULE.md
+READ: /workspaces/[project]/protocols/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
 MEASURE: /workspaces/[project]/tools/line-counter.sh -c {branch} -d  # Detailed breakdown
 ACTION: Create SPLIT-SUMMARY.md with strategy
 ACTION: Design logical groupings under limit
@@ -247,14 +251,14 @@ ACTION: Design logical groupings under limit
 ```bash
 # Core identity
 READ: /workspaces/[project]/.claude/agents/architect-reviewer.md
-READ: /workspaces/[project]/orchestrator/orchestrator-state.yaml
+READ: /workspaces/[project]/orchestrator-state.yaml
 ```
 
 ### MODE: Wave Review
 ```bash
-READ: /workspaces/[project]/orchestrator/WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md
-READ: /workspaces/[project]/orchestrator/ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md
-READ: /workspaces/[project]/orchestrator/orchestrator-state.yaml
+READ: /workspaces/[project]/protocols/WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md
+READ: /workspaces/[project]/protocols/ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md
+READ: /workspaces/[project]/orchestrator-state.yaml
 CHECK: efforts_completed for the wave
 CHECK: All splits are compliant
 ASSESS: Architecture patterns, integration readiness
@@ -263,8 +267,8 @@ OUTPUT: PROCEED / CHANGES_REQUIRED / STOP
 
 ### MODE: Phase Review
 ```bash
-READ: /workspaces/[project]/orchestrator/PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md
-READ: /workspaces/[project]/orchestrator/PROJECT-IMPLEMENTATION-PLAN.md
+READ: /workspaces/[project]/protocols/PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md
+READ: /workspaces/[project]/PROJECT-IMPLEMENTATION-PLAN.md
 CHECK: Previous phase integration complete
 ASSESS: Feature completeness, stability
 OUTPUT: ON_TRACK / NEEDS_CORRECTION / OFF_TRACK
@@ -288,13 +292,13 @@ IF_MISMATCH: STOP IMMEDIATELY - never try to fix
 READ: /workspaces/[project]/.claude/CLAUDE.md
 
 # Read CRITICAL size limit rule (ALL AGENTS MUST READ)
-READ: /workspaces/[project]/orchestrator/SIZE-LIMIT-RULE.md
+READ: /workspaces/[project]/protocols/IMPERATIVE-LINE-COUNT-RULE.md
 ```
 
 ### Before Any Measurement:
 ```bash
 # MANDATORY: Read the size limit rule first if you haven't
-READ: /workspaces/[project]/orchestrator/SIZE-LIMIT-RULE.md
+READ: /workspaces/[project]/protocols/IMPERATIVE-LINE-COUNT-RULE.md
 ALWAYS USE: /workspaces/[project]/tools/line-counter.sh
 NEVER: Count lines manually
 NEVER: Include generated code
@@ -308,7 +312,7 @@ CHECK: What state are we in?
   - WAVE_COMPLETE → Integration required before next wave
   - CHANGES_REQUIRED → Fixes required before proceeding
   - MEASURE_SIZE → Split if over limit
-READ: /workspaces/[project]/orchestrator/SOFTWARE-FACTORY-STATE-MACHINE.md
+READ: /workspaces/[project]/core/SOFTWARE-FACTORY-STATE-MACHINE.md
 ```
 
 ## 6️⃣ CRITICAL GATES (ENFORCEMENT POINTS)
@@ -344,11 +348,11 @@ WHEN effort exceeds limit, MUST:
 
 If you lose context and don't remember previous work:
 ```bash
-1. READ: /workspaces/[project]/orchestrator/orchestrator-state.yaml
+1. READ: /workspaces/[project]/orchestrator-state.yaml
 2. CHECK: current_phase, current_wave
 3. CHECK: efforts_in_progress for active work
 4. CHECK: efforts_completed to understand progress
-5. READ: /workspaces/[project]/orchestrator/CURRENT-TODO-STATE.md
+5. READ: /workspaces/[project]/CURRENT-TODO-STATE.md
 6. RESUME: From the appropriate state in the state machine
 ```
 
@@ -444,6 +448,12 @@ done
 
 # Clean files older than 24 hours
 find /workspaces/[project]/todos -name "*.todo" -mtime +1 -exec rm {} \;
+```
+
+### Mode Transition Protocol:
+```bash
+# For detailed TODO state management procedures
+READ: /workspaces/[project]/protocols/TODO-STATE-MANAGEMENT-PROTOCOL.md
 ```
 
 ## 9️⃣ PRE-COMPACTION TODO SAVING (CRITICAL FOR MEMORY MANAGEMENT)
