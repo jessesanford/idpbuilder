@@ -1,5 +1,11 @@
 # TODO STATE MANAGEMENT PROTOCOL
 
+## ⚠️ PREREQUISITE: Requires .claude/settings.json
+**This protocol DEPENDS on the PreCompact hooks in `.claude/settings.json`**
+- Without settings.json, compaction recovery WILL NOT WORK
+- See `CRITICAL-SETTINGS-JSON.md` for configuration details
+- The PreCompact hooks automatically preserve TODO state during memory compaction
+
 ## CRITICAL: Prevent Lost TODOs During Mode Transitions
 
 ### Purpose
