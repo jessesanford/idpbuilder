@@ -16,8 +16,8 @@ PURPOSE: Create implementation plan for Effort E{X}.{Y}.{Z}
 ### 1. Context Gathering
 ```bash
 # Read these files IN ORDER:
-1. /workspaces/[project]/orchestrator/PHASE{X}-SPECIFIC-IMPL-PLAN.md
-2. /workspaces/[project]/orchestrator/orchestrator-state.yaml
+1. /workspaces/[project]/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
+2. /workspaces/[project]/orchestrator-state.yaml
 3. Any existing addendums or corrections for this phase
 ```
 

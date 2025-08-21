@@ -47,8 +47,8 @@ MANDATORY STARTUP:
 2. State: "ARCHITECT REVIEW FOR WAVE COMPLETION"
 
 REVIEW SCOPE:
-1. READ: /workspaces/[project]/orchestrator/orchestrator-state.yaml
-2. READ: /workspaces/[project]/orchestrator/PHASE${PHASE}-SPECIFIC-IMPL-PLAN.md
+1. READ: /workspaces/[project]/orchestrator-state.yaml
+2. READ: /workspaces/[project]/phase-plans/PHASE${PHASE}-SPECIFIC-IMPL-PLAN.md
 
 CURRENT PHASE PROGRESS:
 Phase ${PHASE} - ${PHASE_NAME}

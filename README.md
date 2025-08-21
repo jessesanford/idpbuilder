@@ -44,12 +44,20 @@ This template provides a complete system for:
 ```
 software-factory-template/
 │
-├── README.md                           # This file
-├── PROJECT-IMPLEMENTATION-PLAN-TEMPLATE.md  # Template for your project plan
+├── README.md                           # This file (main documentation)
+├── setup.sh                           # Interactive setup script
 ├── orchestrator-state-example.yaml    # Example state file
-├── CRITICAL-FILES-ADDED.md           # Documentation of what was added
+├── PROJECT-IMPLEMENTATION-PLAN-TEMPLATE.md  # Template for high-level plan
+├── HOW-TO-PLAN.md                     # Planning methodology guide
+├── PLANNING-AGENT-ASSIGNMENTS.md      # Which agent does what in planning
+├── TEMPLATE-CREATION-SUMMARY.md       # How this template was created
+├── CRITICAL-FILES-ADDED.md           # Documentation of critical files
+├── CRITICAL-SETTINGS-JSON.md         # 🔴 Why settings.json is essential
+├── FINAL-FILE-ORGANIZATION.md        # File organization details
+├── CLAUDE-MD-FILE-VERIFICATION.md    # Verification of all references
 │
 ├── .claude/                           # Claude Code configuration
+│   ├── settings.json                  # 🔴 CRITICAL: Compaction hooks for TODO preservation
 │   ├── CLAUDE.md                      # 🔴 CRITICAL: Global rules, compaction recovery, TODO management
 │   ├── agents/                        # Agent configurations
 │   │   ├── orchestrator-task-master.md  # Orchestrator agent config
@@ -63,14 +71,18 @@ software-factory-template/
 │   ├── SOFTWARE-FACTORY-STATE-MACHINE.md  # ⚡ THE HEART - Defines all states and transitions
 │   └── ORCHESTRATOR-MASTER-OPERATIONS-GUIDE.md  # Complete operational blueprint
 │
-├── protocols/                         # Critical execution protocols
+├── protocols/                         # Critical execution protocols (14 files)
 │   ├── IMPERATIVE-LINE-COUNT-RULE.md # 🚨 Size limit enforcement (referenced 6x in CLAUDE.md)
 │   ├── EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md  # How to handle >800 line efforts
 │   ├── SW-ENGINEER-STARTUP-REQUIREMENTS.md  # SW Engineer initialization
+│   ├── SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md  # Detailed SW Engineer instructions
 │   ├── ORCHESTRATOR-EFFORT-PLANNING-PROTOCOL.md  # How orchestrator manages planning
 │   ├── ORCHESTRATOR-TASKMASTER-EXECUTION-PLAN.md  # Complete execution guide
 │   ├── CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md  # How to create effort plans
+│   ├── CODE-REVIEWER-COMPREHENSIVE-GUIDE.md  # Complete review process
 │   ├── WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md  # Wave review requirements
+│   ├── ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md  # Detailed architect instructions
+│   ├── PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md  # Phase assessment protocol
 │   ├── TEST-DRIVEN-VALIDATION-REQUIREMENTS.md  # Testing coverage requirements
 │   ├── WORK-LOG-TEMPLATE.md          # Template for effort work logs
 │   └── TODO-STATE-MANAGEMENT-PROTOCOL.md  # TODO persistence (referenced in CLAUDE.md)
@@ -91,23 +103,19 @@ software-factory-template/
 │   ├── PHASE2-TEMPLATE.md            # Example: Infrastructure phase
 │   └── PHASE3-TEMPLATE.md            # Example: Implementation phase
 │
-└── possibly-needed-but-not-sure/      # Optional/advanced protocols
+└── possibly-needed-but-not-sure/      # Optional/advanced protocols (13 files)
     ├── README.md                      # Guide to all optional files
+    ├── WHEN-TO-USE-THESE-FILES.md    # Decision guide for activation
     ├── FILES-NOT-INCLUDED.md         # What wasn't included and why
     │
     ├── CODE-REVIEWER-QUICK-REFERENCE.md  # Quick decision trees
     ├── ORCHESTRATOR-QUICK-REFERENCE.md   # Quick state transitions
     ├── ORCHESTRATOR-WORKFLOW-SUMMARY.md  # Visual workflow summary
-    │
-    ├── ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md  # Detailed architect instructions
-    ├── PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md  # Phase assessment protocol
-    ├── PHASE-COMPLETION-FUNCTIONAL-TESTING.md  # End-of-phase testing
-    │
-    ├── CODE-REVIEWER-COMPREHENSIVE-GUIDE-EXAMPLE.md  # Complete review process
-    ├── ORCHESTRATOR-CODE-REVIEW-INTEGRATION.md  # Review integration details
-    ├── CODE-REVIEW-ENFORCEMENT-SUMMARY.md  # Enforcement points
     ├── CODE-REVIEW-EXAMPLES.md       # Real review examples
     │
+    ├── PHASE-COMPLETION-FUNCTIONAL-TESTING.md  # End-of-phase testing
+    ├── ORCHESTRATOR-CODE-REVIEW-INTEGRATION.md  # Review integration details
+    ├── CODE-REVIEW-ENFORCEMENT-SUMMARY.md  # Enforcement points
     ├── ORCHESTRATOR-NEVER-WRITES-CODE-RULE.md  # Standalone rule
     │
     ├── SPLIT-EXAMPLE-E3.1.1-SYNC-ENGINE.md  # Real 2400-line split example
@@ -358,7 +366,7 @@ Create `orchestrator/PROJECT-IMPLEMENTATION-PLAN.md`:
 #### Step 3b: Detailed Phase Plans
 For each phase, create a detailed plan using templates:
 ```bash
-cp phase-plans/PHASEX-GENERIC-TEMPLATE.md orchestrator/PHASE1-SPECIFIC-IMPL-PLAN.md
+cp phase-plans/PHASEX-GENERIC-TEMPLATE.md phase-plans/PHASE1-SPECIFIC-IMPL-PLAN.md
 # Edit with:
 # - Exact source branches to reuse
 # - Actual TDD test cases
@@ -367,7 +375,7 @@ cp phase-plans/PHASEX-GENERIC-TEMPLATE.md orchestrator/PHASE1-SPECIFIC-IMPL-PLAN
 ```
 
 ### 4. Initialize State
-Create `orchestrator/orchestrator-state.yaml`:
+Create `orchestrator-state.yaml`:
 ```yaml
 current_phase: 1
 current_wave: 1
@@ -450,6 +458,17 @@ Start with:
 - Workflow summary
 - Split examples
 - Review examples
+
+## ⚠️ Critical Configuration
+
+### 🔴 ESSENTIAL: settings.json
+
+The `.claude/settings.json` file is **CRITICAL** for the system to function. It enables:
+- **Compaction Recovery**: Preserves state when memory limits are reached
+- **TODO Persistence**: Saves TODO lists before context compression
+- **State Management**: Maintains working context across sessions
+
+**WITHOUT settings.json, YOU WILL LOSE WORK!** See `CRITICAL-SETTINGS-JSON.md` for details.
 
 ## ⚠️ Critical Rules
 

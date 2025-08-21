@@ -95,6 +95,17 @@ find "$TARGET_DIR" -type f -name "*.md" -o -name "*.yaml" -o -name "*.sh" | whil
     sed -i "s|\[project\]|$PROJECT_NAME|g" "$file"
 done
 
+# Configure critical settings.json file
+echo "Configuring critical settings.json for compaction recovery..."
+SETTINGS_FILE="$TARGET_DIR/.claude/settings.json"
+if [ -f "$SETTINGS_FILE" ]; then
+    # Update TODO directory path in settings.json
+    sed -i "s|TODO_DIR='./todos'|TODO_DIR='$TARGET_DIR/todos'|g" "$SETTINGS_FILE"
+    echo "✅ settings.json configured for TODO preservation"
+else
+    echo "⚠️ WARNING: settings.json not found - compaction recovery will not work!"
+fi
+
 # Configure line counter
 echo "Configuring line counter for $PRIMARY_LANG..."
 LINE_COUNTER="$TARGET_DIR/tools/line-counter.sh"
@@ -280,6 +291,16 @@ $TARGET_DIR/tools/line-counter.sh -c branch-name
 \`\`\`bash
 cat orchestrator/orchestrator-state.yaml
 \`\`\`
+
+## Critical Configuration
+
+### 🔴 settings.json is ESSENTIAL
+The `.claude/settings.json` file enables:
+- Compaction recovery
+- TODO state preservation  
+- Context maintenance
+
+**Without it, you WILL lose work during compaction!**
 
 ## Important Rules
 

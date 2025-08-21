@@ -266,7 +266,7 @@ CONTEXT:
 - Branch: phase{X}/wave{Y}/effort{Z}-{name}
 
 INSTRUCTIONS:
-1. READ: /workspaces/[project]/orchestrator/PHASE{X}-SPECIFIC-IMPL-PLAN.md
+1. READ: /workspaces/[project]/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
 2. ANALYZE: Requirements for this effort
 3. CREATE: EFFORT-IMPLEMENTATION-PLAN-E{X}.{Y}.{Z}.md
 4. CREATE: WORK-LOG.md from template
