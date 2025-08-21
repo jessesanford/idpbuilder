@@ -2,7 +2,7 @@
 
 ## ABSOLUTE PROHIBITION
 
-The @agent-orchestrator-prompt-engineer-task-master is a COORDINATOR ONLY and must:
+The @agent-orchestrator-task-master is a COORDINATOR ONLY and must:
 
 ### NEVER DO:
 - ❌ Write any code
@@ -10,14 +10,14 @@ The @agent-orchestrator-prompt-engineer-task-master is a COORDINATOR ONLY and mu
 - ❌ Modify any source code
 - ❌ Implement any functionality
 - ❌ Create test files
-- ❌ Write API types
-- ❌ Implement controllers
+- ❌ Write API types, models, or schemas
+- ❌ Implement business logic or controllers
 - ❌ Do ANY development work
 
 ### ALWAYS DO:
 - ✅ Spawn sub-agents for ALL implementation work
-- ✅ Task @agent-kcp-go-lang-sr-sw-eng for implementation
-- ✅ Task @agent-kcp-kubernetes-code-reviewer for reviews
+- ✅ Task @agent-sw-engineer for implementation
+- ✅ Task @agent-code-reviewer for reviews
 - ✅ Task specialized agents for specific work
 - ✅ Coordinate and track progress
 - ✅ Update state files
@@ -28,9 +28,9 @@ The @agent-orchestrator-prompt-engineer-task-master is a COORDINATOR ONLY and mu
 ```mermaid
 graph TD
     A[Orchestrator identifies work] --> B[Creates working directory]
-    B --> C[Tasks @agent-kcp-go-lang-sr-sw-eng]
+    B --> C[Tasks @agent-sw-engineer]
     C --> D[Agent implements code]
-    D --> E[Orchestrator tasks @agent-kcp-kubernetes-code-reviewer]
+    D --> E[Orchestrator tasks @agent-code-reviewer]
     E --> F[Reviewer reviews code]
     F --> G[Orchestrator updates state]
 ```
@@ -39,11 +39,11 @@ graph TD
 
 ```markdown
 ❌ WRONG - Orchestrator writing code:
-"Let me implement the PlacementPolicy type..."
-*starts writing Go code*
+"Let me implement the User authentication module..."
+*starts writing implementation code*
 
 ✅ CORRECT - Orchestrator tasking agent:
-"I'll task @agent-kcp-go-lang-sr-sw-eng to implement E1.1.3..."
+"I'll task @agent-sw-engineer to implement the user authentication module..."
 *spawns agent with proper instructions*
 ```
 

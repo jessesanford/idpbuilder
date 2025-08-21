@@ -64,22 +64,27 @@ software-factory-template/
 │   │   ├── architect-reviewer.md     # Architect agent config
 │   │   ├── code-reviewer.md          # Code reviewer agent config
 │   │   └── sw-engineer-example-go.md # Example SW engineer (customize for your stack)
-│   └── commands/
-│       └── continue-orchestrating.md # Main command to start/resume orchestration
+│   └── commands/                      # Reusable command workflows
+│       ├── continue-orchestrating.md # Main command to start/resume orchestration
+│       ├── code-review.md            # Standard code review workflow
+│       └── create-wave-impl-plan.md  # Wave planning workflow
 │
 ├── core/                              # Core system files
 │   ├── SOFTWARE-FACTORY-STATE-MACHINE.md  # ⚡ THE HEART - Defines all states and transitions
 │   └── ORCHESTRATOR-MASTER-OPERATIONS-GUIDE.md  # Complete operational blueprint
 │
-├── protocols/                         # Critical execution protocols (14 files)
+├── protocols/                         # Critical execution protocols (17 files)
 │   ├── IMPERATIVE-LINE-COUNT-RULE.md # 🚨 Size limit enforcement (referenced 6x in CLAUDE.md)
+│   ├── ORCHESTRATOR-NEVER-WRITES-CODE-RULE.md # 🔴 Fundamental separation of concerns
 │   ├── EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md  # How to handle >800 line efforts
 │   ├── SW-ENGINEER-STARTUP-REQUIREMENTS.md  # SW Engineer initialization
 │   ├── SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md  # Detailed SW Engineer instructions
 │   ├── ORCHESTRATOR-EFFORT-PLANNING-PROTOCOL.md  # How orchestrator manages planning
 │   ├── ORCHESTRATOR-TASKMASTER-EXECUTION-PLAN.md  # Complete execution guide
+│   ├── ORCHESTRATOR-CODE-REVIEW-INTEGRATION.md  # How orchestrator handles reviews
 │   ├── CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md  # How to create effort plans
 │   ├── CODE-REVIEWER-COMPREHENSIVE-GUIDE.md  # Complete review process
+│   ├── CODE-REVIEW-ENFORCEMENT-SUMMARY.md  # Review enforcement rules
 │   ├── WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md  # Wave review requirements
 │   ├── ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md  # Detailed architect instructions
 │   ├── PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md  # Phase assessment protocol
@@ -103,23 +108,29 @@ software-factory-template/
 │   ├── PHASE2-TEMPLATE.md            # Example: Infrastructure phase
 │   └── PHASE3-TEMPLATE.md            # Example: Implementation phase
 │
-└── possibly-needed-but-not-sure/      # Optional/advanced protocols (13 files)
+├── agent-instructions/                # Templates for spawning agents with tasks
+│   ├── README.md                      # How to use instruction templates
+│   ├── sw-engineer-implementation.md # Template for implementation tasks
+│   ├── code-reviewer-planning.md     # Template for creating effort plans
+│   ├── code-reviewer-review.md       # Template for reviewing code
+│   └── architect-wave-review.md      # Template for wave architecture review
+│
+├── quick-reference/                   # Quick guides for agents
+│   ├── ORCHESTRATOR-QUICK-REFERENCE.md  # Quick state transitions
+│   ├── ORCHESTRATOR-WORKFLOW-SUMMARY.md # Visual workflow summary
+│   └── CODE-REVIEWER-QUICK-REFERENCE.md # Quick decision trees
+│
+├── examples/                          # Real-world examples
+│   ├── SPLIT-EXAMPLE-AUTHENTICATION-MODULE.md # Generic split example
+│   ├── SPLIT-REVIEW-LOOP-DIAGRAM.md  # Visual split process
+│   └── CODE-REVIEW-EXAMPLES.md       # Real review examples
+│
+└── possibly-needed-but-not-sure/      # Optional/advanced protocols
     ├── README.md                      # Guide to all optional files
     ├── WHEN-TO-USE-THESE-FILES.md    # Decision guide for activation
     ├── FILES-NOT-INCLUDED.md         # What wasn't included and why
-    │
-    ├── CODE-REVIEWER-QUICK-REFERENCE.md  # Quick decision trees
-    ├── ORCHESTRATOR-QUICK-REFERENCE.md   # Quick state transitions
-    ├── ORCHESTRATOR-WORKFLOW-SUMMARY.md  # Visual workflow summary
-    ├── CODE-REVIEW-EXAMPLES.md       # Real review examples
-    │
     ├── PHASE-COMPLETION-FUNCTIONAL-TESTING.md  # End-of-phase testing
-    ├── ORCHESTRATOR-CODE-REVIEW-INTEGRATION.md  # Review integration details
-    ├── CODE-REVIEW-ENFORCEMENT-SUMMARY.md  # Enforcement points
-    ├── ORCHESTRATOR-NEVER-WRITES-CODE-RULE.md  # Standalone rule
-    │
-    ├── SPLIT-EXAMPLE-E3.1.1-SYNC-ENGINE.md  # Real 2400-line split example
-    └── SPLIT-REVIEW-LOOP-DIAGRAM.md  # Visual split process
+    └── SPLIT-EXAMPLE-E3.1.1-SYNC-ENGINE.md  # TMC-specific split example
 ```
 
 ## 📚 Critical Files - Who Uses Them and When
@@ -137,19 +148,22 @@ software-factory-template/
 | File | Used By | When | Purpose |
 |------|---------|------|---------|
 | **IMPERATIVE-LINE-COUNT-RULE.md** | ALL agents | Every effort | Absolute size limit enforcement |
+| **ORCHESTRATOR-NEVER-WRITES-CODE-RULE.md** | Orchestrator | Always | Fundamental separation of concerns |
 | **EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md** | Orchestrator, Code Reviewer | When effort >800 lines | Sequential split execution |
 | **SW-ENGINEER-STARTUP-REQUIREMENTS.md** | SW Engineer | Every task startup | Environment verification, startup protocol |
+| **SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md** | SW Engineer | Every startup | Git commands, validation, build procedures |
 | **ORCHESTRATOR-EFFORT-PLANNING-PROTOCOL.md** | Orchestrator | Before each effort | How to coordinate planning |
 | **ORCHESTRATOR-TASKMASTER-EXECUTION-PLAN.md** | Orchestrator | Always | Complete execution guide |
+| **ORCHESTRATOR-CODE-REVIEW-INTEGRATION.md** | Orchestrator | During reviews | How to handle review outcomes |
 | **CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md** | Code Reviewer | When creating plans | How to create implementation plans |
+| **CODE-REVIEWER-COMPREHENSIVE-GUIDE.md** | Code Reviewer | Every review | Complete review process and standards |
+| **CODE-REVIEW-ENFORCEMENT-SUMMARY.md** | Code Reviewer | Every review | Review enforcement rules |
 | **WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md** | Orchestrator, Architect | End of each wave | Mandatory wave review process |
+| **ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md** | Architect | Wave reviews | Detailed wave review instructions |
+| **PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md** | Architect | Phase boundaries | Phase assessment protocol |
 | **TEST-DRIVEN-VALIDATION-REQUIREMENTS.md** | SW Engineer, Code Reviewer | Every implementation/review | Testing coverage requirements |
 | **WORK-LOG-TEMPLATE.md** | SW Engineer | Every effort | Progress tracking template |
 | **TODO-STATE-MANAGEMENT-PROTOCOL.md** | ALL agents | State transitions | TODO file management procedures |
-| **SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md** | SW Engineer | Every startup | Git commands, validation, build procedures |
-| **CODE-REVIEWER-COMPREHENSIVE-GUIDE.md** | Code Reviewer | Every review | Complete review process and standards |
-| **ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md** | Architect | Wave reviews | Detailed wave review instructions |
-| **PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md** | Architect | Phase boundaries | Phase assessment protocol |
 
 #### Agent Configurations
 | File | Used By | When | Purpose |
