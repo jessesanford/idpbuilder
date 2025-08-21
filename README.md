@@ -72,7 +72,8 @@ software-factory-template/
 │   ├── CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md  # How to create effort plans
 │   ├── WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md  # Wave review requirements
 │   ├── TEST-DRIVEN-VALIDATION-REQUIREMENTS.md  # Testing coverage requirements
-│   └── WORK-LOG-TEMPLATE.md          # Template for effort work logs
+│   ├── WORK-LOG-TEMPLATE.md          # Template for effort work logs
+│   └── TODO-STATE-MANAGEMENT-PROTOCOL.md  # TODO persistence (referenced in CLAUDE.md)
 │
 ├── efforts/                           # Working directories for implementations
 │   └── README.md                      # Explains effort isolation and structure
@@ -82,6 +83,13 @@ software-factory-template/
 │
 ├── tools/                             # Utilities
 │   └── line-counter.sh                # Configurable size measurement tool
+│
+├── phase-plans/                       # Templates for phase-specific planning
+│   ├── README.md                      # How to create phase plans
+│   ├── PHASEX-GENERIC-TEMPLATE.md    # Generic template for any phase
+│   ├── PHASE1-TEMPLATE.md            # Example: API/Contract phase
+│   ├── PHASE2-TEMPLATE.md            # Example: Infrastructure phase
+│   └── PHASE3-TEMPLATE.md            # Example: Implementation phase
 │
 └── possibly-needed-but-not-sure/      # Optional/advanced protocols
     ├── README.md                      # Guide to all optional files
@@ -100,7 +108,6 @@ software-factory-template/
     ├── CODE-REVIEW-ENFORCEMENT-SUMMARY.md  # Enforcement points
     ├── CODE-REVIEW-EXAMPLES.md       # Real review examples
     │
-    ├── TODO-STATE-MANAGEMENT-PROTOCOL.md  # Advanced TODO management
     ├── ORCHESTRATOR-NEVER-WRITES-CODE-RULE.md  # Standalone rule
     │
     ├── SPLIT-EXAMPLE-E3.1.1-SYNC-ENGINE.md  # Real 2400-line split example
@@ -130,6 +137,11 @@ software-factory-template/
 | **WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md** | Orchestrator, Architect | End of each wave | Mandatory wave review process |
 | **TEST-DRIVEN-VALIDATION-REQUIREMENTS.md** | SW Engineer, Code Reviewer | Every implementation/review | Testing coverage requirements |
 | **WORK-LOG-TEMPLATE.md** | SW Engineer | Every effort | Progress tracking template |
+| **TODO-STATE-MANAGEMENT-PROTOCOL.md** | ALL agents | State transitions | TODO file management procedures |
+| **SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md** | SW Engineer | Every startup | Git commands, validation, build procedures |
+| **CODE-REVIEWER-COMPREHENSIVE-GUIDE.md** | Code Reviewer | Every review | Complete review process and standards |
+| **ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md** | Architect | Wave reviews | Detailed wave review instructions |
+| **PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md** | Architect | Phase boundaries | Phase assessment protocol |
 
 #### Agent Configurations
 | File | Used By | When | Purpose |
@@ -156,10 +168,7 @@ software-factory-template/
 #### Advanced Protocols (For Complex Projects)
 | File | Best For | When to Activate | Purpose |
 |------|----------|-----------------|---------|
-| **ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md** | Multi-phase projects | When strict architecture needed | Detailed review instructions |
-| **PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md** | Phase boundaries | Multiple phases | Phase readiness assessment |
-| **PHASE-COMPLETION-FUNCTIONAL-TESTING.md** | Quality-critical | End of phases | Comprehensive testing |
-| **TODO-STATE-MANAGEMENT-PROTOCOL.md** | Long-running projects | Complex state management | Advanced TODO persistence |
+| **PHASE-COMPLETION-FUNCTIONAL-TESTING.md** | Quality-critical projects | End of phases | Comprehensive testing |
 
 #### Examples and References (For Understanding)
 | File | Best For | When to Use | Purpose |
@@ -290,6 +299,23 @@ todos/sw-eng-IMPLEMENTATION-20250121-145500.todo
 3. Load into TodoWrite tool
 4. Resume from saved state
 
+## 📋 Planning Your Project
+
+### Planning Process Overview
+
+Before starting orchestration, follow the structured planning process:
+
+1. **Study Planning Guide**: Read `HOW-TO-PLAN.md` for the complete methodology
+2. **Create High-Level Plan**: Structure your project into phases, waves, and efforts
+3. **Detail Each Phase**: Use templates in `phase-plans/` for specific implementation plans
+4. **Validate Plans**: Ensure every effort has explicit instructions, tests, and success criteria
+
+### Key Planning Documents
+
+- **HOW-TO-PLAN.md**: Step-by-step planning methodology with agent targeting
+- **phase-plans/**: Templates and examples for detailed phase planning
+- **PROJECT-IMPLEMENTATION-PLAN-TEMPLATE.md**: High-level orchestration template
+
 ## 🚀 Quick Start
 
 ### 1. Setup Your Project
@@ -315,7 +341,9 @@ MAX_LINES_WARNING=700
 MAX_LINES_ERROR=800
 ```
 
-### 3. Create Your Implementation Plan
+### 3. Create Your Implementation Plans
+
+#### Step 3a: High-Level Plan
 Create `orchestrator/PROJECT-IMPLEMENTATION-PLAN.md`:
 ```markdown
 # Project Implementation Plan
@@ -325,6 +353,17 @@ Create `orchestrator/PROJECT-IMPLEMENTATION-PLAN.md`:
 - E1.1.1: Basic data models
 - E1.1.2: API interfaces
 ...
+```
+
+#### Step 3b: Detailed Phase Plans
+For each phase, create a detailed plan using templates:
+```bash
+cp phase-plans/PHASEX-GENERIC-TEMPLATE.md orchestrator/PHASE1-SPECIFIC-IMPL-PLAN.md
+# Edit with:
+# - Exact source branches to reuse
+# - Actual TDD test cases
+# - Detailed pseudo-code
+# - Specific validation commands
 ```
 
 ### 4. Initialize State

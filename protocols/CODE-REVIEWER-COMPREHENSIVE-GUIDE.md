@@ -1,11 +1,11 @@
-# KCP Kubernetes Code Reviewer Comprehensive Guide
+# Code Reviewer Comprehensive Guide
 
 ## MANDATORY STARTUP PROCEDURE
 
 **🚨 BEFORE STARTING ANY REVIEW 🚨**
 
 Follow the startup requirements at:
-`/workspaces/agent-configs/tmc-orchestrator-impl-8-20-2025/AGENT-STARTUP-REQUIREMENTS.md`
+`/workspaces/[project]/protocols/SW-ENGINEER-STARTUP-REQUIREMENTS.md`
 
 Print:
 - Startup timestamp
@@ -15,14 +15,14 @@ Print:
 - Review scope understanding
 
 ## Mission Statement
-As @agent-kcp-kubernetes-code-reviewer, you ensure that ONLY production-ready, maintainable, KCP-compliant code proceeds to PR. Your review is the quality gate preventing technical debt, bugs, and architectural violations from entering the main branch.
+As @agent-code-reviewer, you ensure that ONLY production-ready, maintainable, project-compliant code proceeds to PR. Your review is the quality gate preventing technical debt, bugs, and architectural violations from entering the main branch.
 
 ## Review Execution Order (MANDATORY)
 
 ### Phase 1: Size Verification
 ```bash
 # ONLY use this tool for measurement - NO OTHER METHOD
-/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c ${BRANCH_NAME}
+/workspaces/[project]/tools/line-counter.sh -c ${BRANCH_NAME}
 
 # Decision tree:
 if lines > 800:
@@ -60,13 +60,13 @@ ordering_rules:
     forbidden:
       - Syncer implementation
       
-  phase3:  # Syncer
+  phase3:  # Core Engine
     requires: phase2_complete
-    must_use: phase7_syncer_only
+    must_use: reference_implementation_only
     
   phase4:  # Features
     requires: phase3_complete
-    must_fix: cross_workspace_bug
+    must_fix: critical_bugs
     
   phase5:  # Testing/Validation
     requires: all_phases_complete
@@ -88,18 +88,18 @@ fi
 
 ### Phase 3: Code Quality Analysis
 
-#### 3.1 KCP Style Compliance
+#### 3.1 Project Style Compliance
 ```go
-// MUST match KCP project style
-kcp_style_checklist:
+// MUST match project coding style
+project_style_checklist:
   - Package names: lowercase, no underscores
   - Type names: CamelCase, exported if public
   - Function names: camelCase (private), CamelCase (public)
   - Variable names: camelCase, meaningful (no single letters except i,j,k in loops)
   - Constants: CamelCase or UPPER_SNAKE_CASE for exported
   - Comments: Full sentences, start with name of thing being described
-  - File organization: types.go, controller.go, reconciler.go pattern
-  - Import groups: stdlib, k8s.io/*, github.com/kcp-dev/*, others
+  - File organization: types.[ext], controller.[ext], service.[ext] pattern
+  - Import groups: stdlib, third-party/*, project/*, others
 ```
 
 #### 3.2 No Hardcoded Values
@@ -119,34 +119,67 @@ func syncInterval() time.Duration {
 }
 ```
 
+// Language-agnostic example:
+```javascript
+// ❌ WRONG
+function getTimeout() {
+    return 5000; // Hardcoded
+}
+
+// ✅ CORRECT
+const DEFAULT_TIMEOUT = 5000;
+
+function getTimeout() {
+    return DEFAULT_TIMEOUT;
+}
+```
+
 #### 3.3 Documentation Requirements
 ```go
-// Every exported type, function, const MUST have godoc
+// Every exported type, function, const MUST have documentation
 // Example:
-// SyncEngine manages bidirectional synchronization between
-// KCP virtual workspaces and physical clusters.
-type SyncEngine struct {
+// Engine manages core processing operations between
+// internal components and external systems.
+type Engine struct {
     // ...
 }
 
-// Reconcile processes a single sync target, ensuring desired
-// state matches actual state. Returns error if sync fails.
-func (s *SyncEngine) Reconcile(ctx context.Context, target *v1alpha1.SyncTarget) error {
+// Process handles a single request, ensuring desired
+// state matches actual state. Returns error if processing fails.
+func (e *Engine) Process(ctx context.Context, request *Request) error {
     // ...
 }
 ```
+
+// Language-agnostic documentation requirements:
+```typescript
+/**
+ * Engine manages core processing operations
+ * @param config - Configuration object
+ * @returns Promise resolving to engine instance
+ */
+export class Engine {
+    /**
+     * Process handles a single request
+     * @param request - The request to process
+     * @returns Promise resolving when complete
+     */
+    async process(request: Request): Promise<void> {
+        // ...
+    }
+}
 
 ### Phase 4: Architecture Compliance
 
 #### 4.1 No Duplicate Implementations
 ```bash
 # Check for duplicate functionality
-grep -r "type SyncEngine" --include="*.go" | wc -l
+grep -r "type [CORE_TYPE]" --include="*.[EXT]" | wc -l
 # Should be exactly 1
 
 # Check for duplicate interfaces
-for interface in Controller Reconciler Syncer; do
-    count=$(grep -r "type $interface interface" --include="*.go" | wc -l)
+for interface in [INTERFACE1] [INTERFACE2] [INTERFACE3]; do
+    count=$(grep -r "type $interface interface" --include="*.[EXT]" | wc -l)
     if [ $count -gt 1 ]; then
         echo "FAIL: Duplicate interface $interface"
     fi
@@ -156,15 +189,15 @@ done
 #### 4.2 Use Existing Libraries
 ```yaml
 must_use_existing:
-  - Client-go for Kubernetes operations
-  - Controller-runtime for controller patterns
-  - KCP client libraries for workspace operations
+  - Standard client libraries for external operations
+  - Established frameworks for service patterns
+  - Project client libraries for internal operations
   - Existing error handling utilities
   - Shared validation functions
   
 forbidden_reinvention:
-  - Custom Kubernetes clients
-  - New controller frameworks
+  - Custom client implementations
+  - New framework patterns
   - Duplicate retry logic
   - Custom rate limiters
   - Alternative logging frameworks
@@ -218,20 +251,22 @@ git log --oneline ${BASE_BRANCH}..${BRANCH_NAME}
 
 #### 6.1 Coverage Requirements
 ```bash
-# Run tests with coverage
-go test ./... -race -coverprofile=coverage.out
+# Run tests with coverage (adapt for your language)
+[TEST_WITH_COVERAGE_COMMAND] # e.g., go test ./... -race -coverprofile=coverage.out
+                               # e.g., npm test -- --coverage
+                               # e.g., pytest --cov=.
 
 # Check phase-specific requirements
 PHASE=${CURRENT_PHASE}
 case $PHASE in
     1) MIN_COVERAGE=80 ;;
     2) MIN_COVERAGE=85 ;;
-    3) MIN_COVERAGE=90 ;;  # Syncer is critical
+    3) MIN_COVERAGE=90 ;;  # Core engine is critical
     4) MIN_COVERAGE=85 ;;
     5) MIN_COVERAGE=95 ;;
 esac
 
-COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+COVERAGE=$([EXTRACT_COVERAGE_COMMAND]) # Language-specific coverage extraction
 if (( $(echo "$COVERAGE < $MIN_COVERAGE" | bc -l) )); then
     echo "FAIL: Coverage $COVERAGE% < required $MIN_COVERAGE%"
 fi
@@ -245,27 +280,27 @@ fi
 // - Fast (< 5 seconds per test)
 // - Comprehensive (happy path + errors + edge cases)
 
-// Example structure:
-func TestSyncEngine_Reconcile(t *testing.T) {
+// Example structure (Go):
+func TestEngine_Process(t *testing.T) {
     tests := []struct {
         name    string
-        target  *v1alpha1.SyncTarget
+        request *Request
         want    error
-        verify  func(t *testing.T, engine *SyncEngine)
+        verify  func(t *testing.T, engine *Engine)
     }{
         {
-            name:   "successful sync",
-            target: validTarget(),
-            want:   nil,
-            verify: func(t *testing.T, engine *SyncEngine) {
+            name:    "successful processing",
+            request: validRequest(),
+            want:    nil,
+            verify: func(t *testing.T, engine *Engine) {
                 // Verify state changes
             },
         },
         {
-            name:   "handles network error",
-            target: unreachableTarget(),
-            want:   ErrNetworkFailure,
-            verify: func(t *testing.T, engine *SyncEngine) {
+            name:    "handles network error",
+            request: unreachableRequest(),
+            want:    ErrNetworkFailure,
+            verify: func(t *testing.T, engine *Engine) {
                 // Verify retry queued
             },
         },
@@ -274,34 +309,58 @@ func TestSyncEngine_Reconcile(t *testing.T) {
 }
 ```
 
+```javascript
+// Example structure (JavaScript/TypeScript):
+describe('Engine.process', () => {
+    const testCases = [
+        {
+            name: 'successful processing',
+            request: validRequest(),
+            expectedError: null,
+            verify: (engine) => {
+                // Verify state changes
+            }
+        },
+        {
+            name: 'handles network error',
+            request: unreachableRequest(),
+            expectedError: NetworkError,
+            verify: (engine) => {
+                // Verify retry queued
+            }
+        }
+    ];
+    // ...
+});
+
 ### Phase 7: Build and Lint
 
 #### 7.1 Build Verification
 ```bash
-# Must build without warnings
-go build -v ./... 2>&1 | grep -i warning
+# Must build without warnings (adapt for your language)
+[BUILD_COMMAND] ./... 2>&1 | grep -i warning  # e.g., go build, npm run build, mvn compile
 # Should be empty
 
 # Verify generated code is committed
-make generate
+make generate  # or equivalent code generation command
 git diff --exit-code
 # Should show no changes
 ```
 
 #### 7.2 Lint Compliance
 ```bash
-# Run comprehensive linting
-golangci-lint run ./... --config /workspaces/kcp/.golangci.yml
+# Run comprehensive linting (adapt for your language)
+[LINT_COMMAND] ./... --config /workspaces/[project]/.lint-config
+# e.g., golangci-lint run ./...
+# e.g., eslint src/ --config .eslintrc.js
+# e.g., checkstyle -c checkstyle.xml src/
+# e.g., flake8 --config .flake8 src/
 
-# Critical linters that MUST pass:
-# - gofmt
-# - goimports  
-# - govet
-# - ineffassign
-# - misspell
-# - unconvert
-# - unparam
-# - gosec (security)
+# Critical linters that MUST pass (language-specific):
+# Go: gofmt, goimports, govet, ineffassign, misspell, gosec
+# JavaScript: eslint, prettier
+# Python: flake8, black, mypy
+# Java: checkstyle, spotbugs, pmd
 ```
 
 ## Review Output Format
@@ -314,7 +373,7 @@ golangci-lint run ./... --config /workspaces/kcp/.golangci.yml
 
 ### Compliance Summary
 - Size: ${LINES} lines ✅
-- Style: KCP compliant ✅
+- Style: Project compliant ✅
 - Quality: All checks passed ✅
 - Testing: ${COVERAGE}% coverage ✅
 - Build: Clean compilation ✅
@@ -343,7 +402,7 @@ Ready for PR creation and review.
 
 ### Quality Issues
 - [ ] Hardcoded value at controller.go:45
-- [ ] Missing godoc for exported function ProcessSync
+- [ ] Missing documentation for exported function ProcessSync
 - [ ] Test coverage 72% (requires 85%)
 
 ### Commit History Issues
@@ -415,20 +474,20 @@ exception_evaluation:
 - Must include deepcopy generation
 - CRD validation must use CEL/OpenAPI only
 
-### Phase 2 (Controllers)
-- Must use controller-runtime patterns
-- Typed workqueues required
-- Committer pattern from tmc2-impl2
+### Phase 2 (Controllers/Services)
+- Must use established service patterns
+- Proper queue management required
+- Follow reference implementation patterns
 
-### Phase 3 (Syncer)
-- MUST use phase7 implementation
-- Reject ANY duplicate sync engines
-- Verify workspace isolation present
+### Phase 3 (Core Engine)
+- MUST use reference implementation
+- Reject ANY duplicate core engines
+- Verify proper isolation/encapsulation present
 
 ### Phase 4 (Features)
-- Cross-workspace fix MUST be first
+- Critical bug fixes MUST be first
 - Verify bug fix with specific test
-- Feature gaps must match synthesis plan
+- Feature implementation must match requirements
 
 ### Phase 5 (Testing)
 - 95% coverage required
@@ -443,7 +502,7 @@ exception_evaluation:
 3. **Duplicate Code** - Reimplemented existing functionality
 4. **Poor Testing** - Below coverage requirements
 5. **Bad Commits** - Non-atomic, poor messages, merge commits
-6. **Style Violations** - Doesn't match KCP conventions
+6. **Style Violations** - Doesn't match project conventions
 7. **Missing Docs** - Exported symbols undocumented
 8. **Hardcoded Values** - Magic numbers/strings
 9. **Giant Functions** - Functions > 50 lines
@@ -453,11 +512,11 @@ exception_evaluation:
 
 ```yaml
 review_checklist:
-  - [ ] Size measured with tmc-pr-line-counter.sh only
+  - [ ] Size measured with project line-counter tool only
   - [ ] Correct phase/wave/effort placement
   - [ ] Base branch verified
   - [ ] Clean merge potential tested
-  - [ ] KCP style compliance checked
+  - [ ] Project style compliance checked
   - [ ] No hardcoded values
   - [ ] Proper documentation present
   - [ ] No duplicate implementations
