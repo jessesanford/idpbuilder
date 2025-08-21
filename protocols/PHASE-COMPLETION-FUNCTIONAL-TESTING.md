@@ -1,60 +1,69 @@
 # Phase Completion Functional Testing Protocol
 
 ## Overview
-After completing each phase, the orchestrator MUST create a functional test environment that allows the user to see and interact with the TMC features built in that phase.
+After completing each phase, the orchestrator MUST create a functional test environment that allows the user to see and interact with the features built in that phase.
+
+## Purpose
+- **Validate Phase Completeness**: Ensure all phase objectives are met
+- **Integration Testing**: Verify components work together
+- **User Acceptance**: Demonstrate working features to stakeholders
+- **Regression Prevention**: Ensure nothing broke from previous phases
 
 ## Requirements for Each Phase
 
-### Phase 1 Completion - API Types and CRDs
-**What to Test**: API definitions, CRD installation, validation
+### Phase 1 Completion - Core APIs/Contracts
+**What to Test**: API definitions, data models, contracts
 ```bash
 # Test Harness: phase1-functional-test.sh
-- Install CRDs in test cluster
-- Create sample TMC resources
-- Validate API schemas work
-- Show kubectl get/describe commands
+- Validate all API endpoints respond correctly
+- Test data model CRUD operations
+- Verify contract schemas and validation
+- Demonstrate API documentation works
+- Show sample requests/responses
 ```
 
-### Phase 2 Completion - Controllers
-**What to Test**: Controller reconciliation, resource management
+### Phase 2 Completion - Business Logic/Services
+**What to Test**: Service layer, business rules, workflows
 ```bash
 # Test Harness: phase2-functional-test.sh
-- Deploy controllers
-- Create TMC resources that trigger controllers
-- Watch reconciliation loops
-- Show controller logs and events
+- Deploy core services
+- Execute business workflows
+- Validate business rule enforcement
+- Show service logs and metrics
+- Test error handling and recovery
 ```
 
-### Phase 3 Completion - Syncer
-**What to Test**: Bidirectional synchronization
+### Phase 3 Completion - Integration Layer
+**What to Test**: External integrations, data flow
 ```bash
 # Test Harness: phase3-functional-test.sh
-- Setup virtual and physical clusters
-- Deploy syncer
-- Create resources to sync
-- Demonstrate bidirectional sync
-- Show sync status and health
+- Setup integration endpoints
+- Test data synchronization
+- Validate external API connections
+- Demonstrate data consistency
+- Show integration health status
 ```
 
-### Phase 4 Completion - Features
-**What to Test**: All TMC features including cross-workspace
+### Phase 4 Completion - User Features
+**What to Test**: All user-facing features
 ```bash
 # Test Harness: phase4-functional-test.sh
-- Full TMC deployment
-- Cross-workspace placement
-- Tunneling functionality
-- DNS resolution
-- Quota management
+- Full application deployment
+- User authentication/authorization
+- Complete user workflows
+- Performance under load
+- Feature completeness check
 ```
 
 ### Phase 5 Completion - Final Integration
-**What to Test**: Complete TMC system
+**What to Test**: Complete system with all components
 ```bash
 # Test Harness: phase5-functional-test.sh
-- Full multi-cluster demo
+- Full end-to-end demo
 - All features integrated
 - Performance metrics
-- Observability dashboards
+- Monitoring/observability
+- Production readiness check
 ```
 
 ## Test Harness Creation Process
@@ -67,28 +76,25 @@ TEST_DIR="/workspaces/tests/phase${PHASE_NUM}-functional"
 mkdir -p "$TEST_DIR"
 cd "$TEST_DIR"
 
-# Clone with full checkout for testing
-git clone https://github.com/jessesanford/kcp.git .
+# Clone/copy with full checkout for testing
 git checkout phase${PHASE_NUM}-integration
 
-# Build binaries
-make build-all
+# Build/prepare test environment
+[BUILD_COMMAND]  # e.g., make build, npm build, cargo build
 ```
 
-### 2. Task @agent-kcp-kubernetes-code-reviewer to Design Test Harness
+### 2. Task Code Reviewer to Design Test Harness
 
 ```markdown
-Task for @agent-kcp-kubernetes-code-reviewer:
+Task for @agent-code-reviewer:
 
-Design a functional test harness for Phase ${PHASE_NUM} TMC features.
-
-Reference: /workspaces/agent-configs/example-functional-test-scripts/tmc-multi-cluster-demo.sh
+Design a functional test harness for Phase ${PHASE_NUM} features.
 
 Requirements:
 1. Interactive script that guides user through features
-2. Sets up test environment (kind clusters if needed)
-3. Deploys phase-specific TMC components
-4. Creates sample resources
+2. Sets up test environment (containers/services if needed)
+3. Deploys phase-specific components
+4. Creates sample data/resources
 5. Demonstrates functionality with pauses for user observation
 6. Includes cleanup
 
@@ -96,7 +102,7 @@ Output to: /workspaces/tests/phase${PHASE_NUM}-functional/test-harness.sh
 
 The test should:
 - Be runnable on local machine
-- Show real TMC features working
+- Show real features working
 - Allow user to interact and explore
 - Provide clear output and explanations
 - Clean up after completion
@@ -106,7 +112,7 @@ The test should:
 
 ```bash
 #!/bin/bash
-# Phase ${PHASE_NUM} TMC Functional Test Harness
+# Phase ${PHASE_NUM} Functional Test Harness
 # Generated: $(date)
 
 set -e
@@ -117,8 +123,8 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== Phase ${PHASE_NUM} TMC Functional Test ===${NC}"
-echo "This test will demonstrate the TMC features completed in Phase ${PHASE_NUM}"
+echo -e "${BLUE}=== Phase ${PHASE_NUM} Functional Test ===${NC}"
+echo "This test will demonstrate the features completed in Phase ${PHASE_NUM}"
 echo ""
 
 # Function to pause and wait for user
@@ -132,15 +138,16 @@ pause() {
 setup_environment() {
     echo -e "${BLUE}Setting up test environment...${NC}"
     
-    # Create kind clusters if needed
+    # Create test infrastructure if needed
+    # Examples: Docker containers, test databases, mock services
     if [ ${PHASE_NUM} -ge 3 ]; then
-        kind create cluster --name kcp-control
-        kind create cluster --name physical-1
+        # Setup integration test environment
+        docker-compose up -d test-env
     fi
     
-    # Build and prepare binaries
-    echo "Building TMC components..."
-    make build-all
+    # Build and prepare application
+    echo "Building application components..."
+    [BUILD_COMMAND]  # make build, npm build, etc.
 }
 
 # Deploy phase-specific components
@@ -149,31 +156,32 @@ deploy_components() {
     
     case ${PHASE_NUM} in
         1)
-            echo "Installing CRDs..."
-            kubectl apply -f config/crds/
-            pause "CRDs installed. Let's verify they're registered."
-            kubectl get crds | grep tmc
+            echo "Setting up APIs/Contracts..."
+            # Deploy API definitions, schemas, contracts
+            ./deploy-apis.sh
+            pause "APIs deployed. Let's verify they're accessible."
             ;;
         2)
-            echo "Deploying controllers..."
-            kubectl apply -f config/controllers/
-            pause "Controllers deployed. Let's check their status."
-            kubectl get pods -n tmc-system
+            echo "Deploying business logic..."
+            # Deploy services, workers, processors
+            ./deploy-services.sh
+            pause "Services deployed. Let's check their status."
             ;;
         3)
-            echo "Deploying syncer..."
-            ./bin/syncer --config test-config.yaml &
-            SYNCER_PID=$!
-            pause "Syncer started. Let's verify it's running."
+            echo "Setting up integrations..."
+            # Deploy integration components
+            ./deploy-integrations.sh
+            pause "Integrations configured. Let's verify connections."
             ;;
         4)
-            echo "Deploying all TMC features..."
-            kubectl apply -f config/features/
-            pause "Features deployed. Let's test cross-workspace."
+            echo "Deploying user features..."
+            # Deploy UI, user-facing components
+            ./deploy-features.sh
+            pause "Features deployed. Let's test user workflows."
             ;;
         5)
-            echo "Full TMC system deployment..."
-            ./scripts/deploy-all.sh
+            echo "Full system deployment..."
+            ./deploy-all.sh
             pause "Complete system deployed."
             ;;
     esac
@@ -197,14 +205,18 @@ demonstrate_features() {
 cleanup() {
     echo -e "${BLUE}Cleaning up...${NC}"
     
+    # Stop test infrastructure
     if [ ${PHASE_NUM} -ge 3 ]; then
-        kind delete cluster --name kcp-control
-        kind delete cluster --name physical-1
+        docker-compose down
     fi
     
-    if [ ! -z "$SYNCER_PID" ]; then
-        kill $SYNCER_PID 2>/dev/null || true
+    # Kill any background processes
+    if [ ! -z "$BG_PID" ]; then
+        kill $BG_PID 2>/dev/null || true
     fi
+    
+    # Clean test data
+    rm -rf test-data/
 }
 
 # Main execution
@@ -220,7 +232,7 @@ main() {
     demonstrate_features
     
     echo -e "${GREEN}Test completed successfully!${NC}"
-    echo "The Phase ${PHASE_NUM} TMC features are working correctly."
+    echo "The Phase ${PHASE_NUM} features are working correctly."
 }
 
 # Run the test
@@ -264,21 +276,21 @@ def complete_phase(phase_num):
 
 ### What You'll See
 1. **Clear Progress**: "Phase 1 Complete! Ready for testing."
-2. **Test Location**: Working directory with built binaries
+2. **Test Location**: Working directory with built application
 3. **Interactive Script**: Step-by-step demonstration
-4. **Real Functionality**: Actual TMC features running
+4. **Real Functionality**: Actual features running
 5. **User Control**: Pause points to explore and verify
 
 ### Example User Flow
 ```
-Orchestrator: Phase 1 complete! All APIs and CRDs implemented.
+Orchestrator: Phase 1 complete! All APIs implemented.
 Orchestrator: Test harness created at /workspaces/tests/phase1-functional/
 User: cd /workspaces/tests/phase1-functional/
 User: ./test-harness.sh
-Script: "Installing TMC CRDs... Press Enter to continue"
-User: [explores with kubectl]
-Script: "Creating sample TMC resources..."
-User: [verifies resources work]
+Script: "Setting up API endpoints... Press Enter to continue"
+User: [explores with API client]
+Script: "Creating sample data..."
+User: [verifies APIs work]
 Script: "Phase 1 testing complete!"
 User: [returns to orchestrator to continue]
 ```
@@ -301,4 +313,4 @@ Save for each phase:
 - `screenshots/` - If UI components exist
 - `metrics.json` - Performance/health metrics
 
-This ensures you can see and verify TMC functionality at every phase before proceeding.
+This ensures you can see and verify functionality at every phase before proceeding.

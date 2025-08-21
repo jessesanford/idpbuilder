@@ -73,7 +73,7 @@ software-factory-template/
 │   ├── SOFTWARE-FACTORY-STATE-MACHINE.md  # ⚡ THE HEART - Defines all states and transitions
 │   └── ORCHESTRATOR-MASTER-OPERATIONS-GUIDE.md  # Complete operational blueprint
 │
-├── protocols/                         # Critical execution protocols (17 files)
+├── protocols/                         # Critical execution protocols (18 files)
 │   ├── IMPERATIVE-LINE-COUNT-RULE.md # 🚨 Size limit enforcement (referenced 6x in CLAUDE.md)
 │   ├── ORCHESTRATOR-NEVER-WRITES-CODE-RULE.md # 🔴 Fundamental separation of concerns
 │   ├── EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md  # How to handle >800 line efforts
@@ -88,6 +88,7 @@ software-factory-template/
 │   ├── WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md  # Wave review requirements
 │   ├── ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md  # Detailed architect instructions
 │   ├── PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md  # Phase assessment protocol
+│   ├── PHASE-COMPLETION-FUNCTIONAL-TESTING.md  # Phase functional testing requirements
 │   ├── TEST-DRIVEN-VALIDATION-REQUIREMENTS.md  # Testing coverage requirements
 │   ├── WORK-LOG-TEMPLATE.md          # Template for effort work logs
 │   └── TODO-STATE-MANAGEMENT-PROTOCOL.md  # TODO persistence (referenced in CLAUDE.md)
@@ -129,7 +130,6 @@ software-factory-template/
     ├── README.md                      # Guide to all optional files
     ├── WHEN-TO-USE-THESE-FILES.md    # Decision guide for activation
     ├── FILES-NOT-INCLUDED.md         # What wasn't included and why
-    ├── PHASE-COMPLETION-FUNCTIONAL-TESTING.md  # End-of-phase testing
     └── SPLIT-EXAMPLE-E3.1.1-SYNC-ENGINE.md  # TMC-specific split example
 ```
 
@@ -161,6 +161,7 @@ software-factory-template/
 | **WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md** | Orchestrator, Architect | End of each wave | Mandatory wave review process |
 | **ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md** | Architect | Wave reviews | Detailed wave review instructions |
 | **PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md** | Architect | Phase boundaries | Phase assessment protocol |
+| **PHASE-COMPLETION-FUNCTIONAL-TESTING.md** | Orchestrator, Code Reviewer | End of each phase | Functional testing before phase transition |
 | **TEST-DRIVEN-VALIDATION-REQUIREMENTS.md** | SW Engineer, Code Reviewer | Every implementation/review | Testing coverage requirements |
 | **WORK-LOG-TEMPLATE.md** | SW Engineer | Every effort | Progress tracking template |
 | **TODO-STATE-MANAGEMENT-PROTOCOL.md** | ALL agents | State transitions | TODO file management procedures |
