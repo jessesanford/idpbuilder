@@ -289,7 +289,7 @@ CONTEXT:
 
 REQUIRED READING:
 1. PROJECT-IMPLEMENTATION-PLAN.md
-2. phase-plans/PHASEX-SPECIFIC-IMPL-PLAN-TEMPLATE.md
+2. phase-plans/PHASE-IMPL-PLAN-TEMPLATE.md
 3. PLANNING-AGENT-ASSIGNMENTS.md (your maintainer role)
 4. Previous phase plans if exist
 

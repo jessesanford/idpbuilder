@@ -37,7 +37,7 @@ Act as the **Senior Project Maintainer** to create a detailed phase implementati
    - Previous phase plans if they exist
 
 2. **Template to Follow**:
-   - `phase-plans/PHASEX-SPECIFIC-IMPL-PLAN-TEMPLATE.md`
+   - `phase-plans/PHASE-IMPL-PLAN-TEMPLATE.md`
 
 3. **Planning Guidelines**:
    - `PLANNING-AGENT-ASSIGNMENTS.md` - Your role as maintainer
@@ -188,7 +188,7 @@ The SW Engineers are counting on your expertise to:
 ### Output Format
 
 Follow the template exactly:
-- Use the structure from `PHASEX-SPECIFIC-IMPL-PLAN-TEMPLATE.md`
+- Use the structure from `PHASE-IMPL-PLAN-TEMPLATE.md`
 - Be specific about versions and imports
 - Keep code snippets under 30 lines
 - Clearly mark what's mandatory to reuse

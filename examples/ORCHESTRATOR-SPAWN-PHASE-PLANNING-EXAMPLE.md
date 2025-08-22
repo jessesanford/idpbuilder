@@ -44,7 +44,7 @@ You have deep knowledge of this codebase and must make critical technical decisi
 
 1. Read PROJECT-IMPLEMENTATION-PLAN.md for overall structure
 2. Read PHASE1-SPECIFIC-IMPL-PLAN.md to understand what was built
-3. Read phase-plans/PHASEX-SPECIFIC-IMPL-PLAN-TEMPLATE.md for format
+3. Read phase-plans/PHASE-IMPL-PLAN-TEMPLATE.md for format
 4. Read orchestrator-state.yaml for current progress
 
 ## Phase 2 Overview

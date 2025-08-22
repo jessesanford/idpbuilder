@@ -104,7 +104,7 @@ software-factory-template/
 │
 ├── phase-plans/                       # Templates for phase-specific planning
 │   ├── README.md                      # How to create phase plans
-│   ├── PHASEX-GENERIC-TEMPLATE.md    # Generic template for any phase
+│   ├── PHASE-IMPL-PLAN-TEMPLATE.md   # THE template for phase planning
 │   ├── PHASE1-TEMPLATE.md            # Example: API/Contract phase
 │   ├── PHASE2-TEMPLATE.md            # Example: Infrastructure phase
 │   └── PHASE3-TEMPLATE.md            # Example: Implementation phase
