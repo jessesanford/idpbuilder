@@ -190,7 +190,11 @@ graph TD
     NEXT_WAVE --> |Yes| WAVE_START
     NEXT_WAVE --> |No| PHASE_COMPLETE[Phase Complete]
     
-    PHASE_COMPLETE --> NEXT_PHASE{More Phases?}
+    PHASE_COMPLETE --> FUNCTIONAL_TEST[Create Functional Tests]
+    FUNCTIONAL_TEST --> |Pass| NEXT_PHASE{More Phases?}
+    FUNCTIONAL_TEST --> |Fail| FIX_ISSUES[Fix & Retry]
+    FIX_ISSUES --> FUNCTIONAL_TEST
+    
     NEXT_PHASE --> |Yes| PHASE_GATE
     NEXT_PHASE --> |No| SUCCESS[SUCCESS]
 ```
@@ -358,7 +362,49 @@ When effort exceeds limit:
 4. **Mix Workspaces**: Keep efforts isolated
 5. **Orchestrator Writes Code**: Coordination only
 
-## Part 8: Troubleshooting Guide
+## Part 8: Phase Completion Functional Testing
+
+### Critical Gate Before Phase Transition
+
+Per **PHASE-COMPLETION-FUNCTIONAL-TESTING.md**, EVERY phase must pass functional tests before transitioning to the next phase.
+
+### Testing Workflow
+
+1. **When Phase Complete**:
+   ```bash
+   # All waves done, create test environment
+   TEST_DIR="/workspaces/tests/phase${PHASE_NUM}-functional"
+   mkdir -p "$TEST_DIR"
+   cd "$TEST_DIR"
+   git checkout phase${PHASE_NUM}-integration
+   ```
+
+2. **Task Code Reviewer to Create Test Harness**:
+   ```markdown
+   Task @agent-code-reviewer to design functional test harness
+   Reference: protocols/PHASE-COMPLETION-FUNCTIONAL-TESTING.md
+   Create interactive test script showing all phase features work
+   ```
+
+3. **Run Tests**:
+   - Execute test harness
+   - Verify all features work
+   - Document results
+   - Tests MUST PASS to proceed
+
+4. **If Tests Fail**:
+   - Task SW Engineer to fix issues
+   - Re-run tests
+   - Cannot proceed until PASSED
+
+### Why This Matters
+
+- **Quality Gate**: Ensures phase truly complete
+- **User Validation**: Stakeholders can verify features
+- **Regression Prevention**: Catch integration issues early
+- **Clear Demonstration**: Shows working functionality
+
+## Part 9: Troubleshooting Guide
 
 ### Common Issues and Solutions
 
@@ -412,8 +458,12 @@ metrics:
 ### Phase Completion
 
 - [ ] All waves complete
-- [ ] Phase assessment scheduled
-- [ ] Integration testing planned
+- [ ] Create functional test harness per PHASE-COMPLETION-FUNCTIONAL-TESTING.md
+- [ ] Task Code Reviewer to design interactive test script
+- [ ] Run functional tests and verify all features work
+- [ ] Tests must PASS before proceeding to next phase
+- [ ] Phase assessment scheduled after tests pass
+- [ ] Integration branch created
 - [ ] Documentation updated
 
 ## Summary

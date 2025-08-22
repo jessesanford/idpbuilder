@@ -3,16 +3,23 @@
 ## CRITICAL: Feature Completeness Review Before Each Phase
 
 ### Overview
-BEFORE starting each new phase, the orchestrator MUST spawn @agent-kcp-architect-reviewer to assess whether the implementation is on track to deliver feature-complete KCP+TMC functionality. This is a GO/NO-GO gate that can STOP the entire implementation if we're drifting from the original goals.
+BEFORE starting each new phase, the orchestrator MUST spawn @agent-architect-reviewer to assess whether the implementation is on track to deliver feature-complete functionality. This is a GO/NO-GO gate that can STOP the entire implementation if we're drifting from the original goals.
+
+### Prerequisites
+The previous phase must have:
+1. ✅ Passed functional tests per PHASE-COMPLETION-FUNCTIONAL-TESTING.md
+2. ✅ Created integration branch successfully
+3. ✅ Received architect approval
 
 ## Purpose of Phase Start Review
 
 This review ensures:
-1. We're building toward feature-complete TMC, not just individual components
-2. Previous phases delivered expected functionality
+1. We're building toward feature-complete functionality, not just individual components
+2. Previous phases delivered expected functionality and passed tests
 3. Integration points are materializing as planned
 4. No critical features have been missed or descoped
 5. The final result will meet original requirements
+6. Previous phase functional tests have been executed and passed
 
 ## When Phase Start Review is Required
 
@@ -21,21 +28,25 @@ This review ensures:
 phase_start_gates:
   phase2_start:
     after: phase1_complete
-    review: "Are APIs sufficient for full TMC?"
+    prerequisite: "Phase 1 functional tests PASSED"
+    review: "Are APIs sufficient for full functionality?"
     critical: "Do we have all types needed?"
   
   phase3_start:
     after: phase2_complete
-    review: "Do controllers provide complete orchestration?"
-    critical: "Any missing controller logic?"
+    prerequisite: "Phase 2 functional tests PASSED"
+    review: "Does business logic provide complete functionality?"
+    critical: "Any missing service logic?"
   
   phase4_start:
     after: phase3_complete
-    review: "Is syncer comprehensive enough?"
-    critical: "Will it handle all workload types?"
+    prerequisite: "Phase 3 functional tests PASSED"
+    review: "Are integrations comprehensive enough?"
+    critical: "Will it handle all integration points?"
   
   phase5_start:
     after: phase4_complete
+    prerequisite: "Phase 4 functional tests PASSED"
     review: "Are all features implemented?"
     critical: "Any gaps preventing production use?"
 ```
@@ -50,11 +61,21 @@ def start_new_phase(phase_number):
     MUST review progress before starting any phase
     """
     if phase_number > 1:  # No review before Phase 1
+        # First verify functional tests passed
+        previous_phase = phase_number - 1
+        test_results = check_functional_test_results(previous_phase)
+        
+        if test_results != "PASSED":
+            print(f"⛔ CANNOT START PHASE {phase_number} - Phase {previous_phase} tests not passed")
+            print("Run functional tests per PHASE-COMPLETION-FUNCTIONAL-TESTING.md")
+            sys.exit(1)
+        
+        print(f"✅ Phase {previous_phase} functional tests PASSED")
         print(f"🔍 Phase {phase_number} Start Gate - Architect Review Required")
         architect_decision = trigger_phase_start_review(phase_number)
         
         if architect_decision == "STOP":
-            print("⛔ CANNOT START PHASE - Off track from TMC goals")
+            print("⛔ CANNOT START PHASE - Off track from goals")
             handle_off_track_situation()
             sys.exit(1)
         elif architect_decision == "PROCEED_WITH_CORRECTIONS":
@@ -65,51 +86,60 @@ def start_new_phase(phase_number):
 ### Step 2: Spawn Architect for Progress Assessment
 
 ```markdown
-Task for @agent-kcp-architect-reviewer:
+Task for @agent-architect-reviewer:
 
-PURPOSE: Assess progress toward feature-complete KCP+TMC before Phase ${NEXT_PHASE}
+PURPOSE: Assess progress toward feature-complete functionality before Phase ${NEXT_PHASE}
+
+PREREQUISITE VERIFICATION:
+Phase ${PREVIOUS_PHASE} functional tests status: ${TEST_STATUS}
+- If not PASSED, cannot proceed to Phase ${NEXT_PHASE}
 
 CRITICAL ASSESSMENT REQUIRED:
-You must determine if we're ON TRACK or OFF TRACK for delivering feature-complete TMC.
+You must determine if we're ON TRACK or OFF TRACK for delivering feature-complete functionality.
 
 MANDATORY STARTUP:
 1. Print: "PHASE START ARCHITECTURAL ASSESSMENT"
-2. State: "Evaluating progress toward feature-complete KCP+TMC"
+2. State: "Evaluating progress toward feature-complete functionality"
+3. Verify: "Phase ${PREVIOUS_PHASE} functional tests: ${TEST_STATUS}"
 
 READ THESE DOCUMENTS:
-1. /workspaces/agent-configs/TMC-FEATURE-GAP-ANALYSIS-SYNTHESIS-PLAN-8-20-2025.md (original goals)
-2. /workspaces/agent-configs/tmc-orchestrator-impl-8-20-2025/TMC-ORCHESTRATOR-IMPLEMENTATION-PLAN-8-20-2025.md
-3. /workspaces/agent-configs/tmc-orchestrator-impl-8-20-2025/orchestrator-state.yaml
+1. PROJECT-IMPLEMENTATION-PLAN.md (original goals)
+2. orchestrator-state.yaml (current progress)
+3. /workspaces/tests/phase${PREVIOUS_PHASE}-functional/test-results.log (if exists)
 4. ALL previous architect reviews
 
 PHASES COMPLETED SO FAR:
 ${LIST_COMPLETED_PHASES_WITH_SUMMARY}
 
 THINK DEEPLY ABOUT:
-1. Original TMC feature requirements:
-   - Transparent multi-cluster workload management
-   - Cross-cluster placement
-   - Workload scheduling
-   - Resource synchronization
-   - Status aggregation
-   - Multi-tenancy preservation
+1. Functional test results from previous phase:
+   - Did all features pass testing?
+   - Were there any test failures that need addressing?
+   - Is the integration stable enough to build upon?
 
-2. What has been delivered:
-   - Which features are complete?
+2. Original feature requirements:
+   - Core functionality goals
+   - Performance requirements
+   - Integration requirements
+   - User experience requirements
+
+3. What has been delivered:
+   - Which features are complete and tested?
    - Which are partially done?
    - Which haven't been started?
 
-3. Trajectory analysis:
+4. Trajectory analysis:
    - At current pace, will we achieve feature completeness?
    - Are we building the RIGHT things?
    - Any critical features being missed?
 
-4. Integration reality:
+5. Integration reality:
    - Will the pieces actually work together?
    - Any architectural decisions preventing feature completion?
+   - Did functional tests prove integration works?
 
 PROVIDE ASSESSMENT:
-- ON_TRACK: Proceeding will achieve feature-complete TMC
+- ON_TRACK: Proceeding will achieve feature-complete functionality
 - NEEDS_CORRECTION: Adjustments required but recoverable
 - OFF_TRACK: STOP IMMEDIATELY - Cannot achieve goals on current path
 

@@ -84,10 +84,15 @@ stateDiagram-v2
     CHECK_PHASE_COMPLETE --> PHASE_COMPLETE: All Waves Done
     
     MORE_WAVES --> WAVE_START
-    PHASE_COMPLETE --> NEXT_PHASE
+    PHASE_COMPLETE --> PHASE_FUNCTIONAL_TEST: Create Test Harness
+    PHASE_FUNCTIONAL_TEST --> TEST_PASSED: Tests Pass
+    PHASE_FUNCTIONAL_TEST --> TEST_FAILED: Tests Fail
+    TEST_FAILED --> FIX_PHASE_ISSUES: Fix & Retry
+    FIX_PHASE_ISSUES --> PHASE_FUNCTIONAL_TEST
+    TEST_PASSED --> NEXT_PHASE
     NEXT_PHASE --> PHASE_START_GATE
     
-    PHASE_COMPLETE --> ALL_PHASES_COMPLETE: Final Phase Done
+    TEST_PASSED --> ALL_PHASES_COMPLETE: Final Phase Done
     ALL_PHASES_COMPLETE --> [*]: SUCCESS
 ```
 
@@ -113,7 +118,8 @@ stateDiagram-v2
 
 **Gates**: 
 - Phase Start: Feature completeness assessment
-- Phase End: Integration branch creation
+- Phase End: Functional testing per PHASE-COMPLETION-FUNCTIONAL-TESTING.md
+- Phase Transition: Integration branch creation + test pass
 
 ### 2. Wave Loop (Per Phase)
 ```
@@ -181,6 +187,10 @@ stateDiagram-v2
 | CODE_REVIEW | Issues found | NEEDS_FIXES | 👁️ | Document issues |
 | WAVE_COMPLETE | All efforts done | SPAWN_ARCHITECT_WAVE_REVIEW | 🎯 | Request architecture review |
 | WAVE_REVIEW | Critical issues | WAVE_STOP | 🏗️ | Stop implementation |
+| PHASE_COMPLETE | All waves done | PHASE_FUNCTIONAL_TEST | 🎯 | Create test harness per protocol |
+| PHASE_FUNCTIONAL_TEST | Tests created | TEST_PASSED/TEST_FAILED | 👁️ | Run functional tests |
+| TEST_FAILED | Issues found | FIX_PHASE_ISSUES | 💻 | Fix failing tests |
+| TEST_PASSED | Tests successful | NEXT_PHASE | 🎯 | Proceed to next phase |
 
 ## Parallelization Rules
 
@@ -253,6 +263,8 @@ class OrchestratorStateMachine:
             "CHECK_WAVE_COMPLETE": self.check_wave,
             "WAVE_COMPLETE": self.wave_review,
             "CHECK_PHASE_COMPLETE": self.check_phase,
+            "PHASE_FUNCTIONAL_TEST": self.create_functional_tests,
+            "TEST_FAILED": self.handle_test_failure,
         }
         return transitions[current_state]()
 ```
@@ -300,6 +312,7 @@ def spawn_agent(agent_type, task):
 ```yaml
 phase_complete:
   - all_waves: COMPLETE
+  - functional_tests: PASSED  # Per PHASE-COMPLETION-FUNCTIONAL-TESTING.md
   - integration_branch: CREATED
   - architect_review: PASSED
   - tests: PASSING

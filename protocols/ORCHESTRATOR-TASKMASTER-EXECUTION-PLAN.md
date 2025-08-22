@@ -150,6 +150,15 @@ SCOPE: All efforts in wave
 DECISION: PROCEED/CHANGES_REQUIRED/STOP
 ```
 
+### For Phase Functional Testing
+```markdown
+Task @agent-code-reviewer:
+PURPOSE: Create functional test harness for Phase {X}
+REFERENCE: protocols/PHASE-COMPLETION-FUNCTIONAL-TESTING.md
+DELIVERABLES: Interactive test script demonstrating all phase features
+OUTPUT: /workspaces/tests/phase{X}-functional/test-harness.sh
+```
+
 ## State File Management
 
 ### Update Triggers
@@ -232,9 +241,12 @@ must_split = (
 
 ### Per Phase
 - All waves complete
+- Functional tests created per PHASE-COMPLETION-FUNCTIONAL-TESTING.md
+- Tests MUST PASS before next phase
 - Feature coverage verified
 - Performance validated
 - Documentation complete
+- Integration branch created
 
 ## Common Patterns
 
