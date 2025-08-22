@@ -5,33 +5,18 @@ import "fmt"
 
 // BuildRequest represents a container build request
 type BuildRequest struct {
-	// DockerfilePath is the path to the Dockerfile relative to ContextDir
-	DockerfilePath string `json:"dockerfilePath"`
-
-	// ContextDir is the build context directory (absolute path)
-	ContextDir string `json:"contextDir"`
-
-	// ImageName is the target image name (without registry)
-	ImageName string `json:"imageName"`
-
-	// ImageTag is the target image tag
-	ImageTag string `json:"imageTag"`
+	DockerfilePath string `json:"dockerfilePath"` // Path to Dockerfile relative to ContextDir
+	ContextDir     string `json:"contextDir"`     // Build context directory (absolute path)
+	ImageName      string `json:"imageName"`      // Target image name (without registry)
+	ImageTag       string `json:"imageTag"`       // Target image tag
 }
 
 // BuildResponse represents the result of a build operation
 type BuildResponse struct {
-	// ImageID is the built image ID
-	ImageID string `json:"imageID"`
-
-	// FullTag is the complete image reference
-	// Format: gitea.cnoe.localtest.me/giteaadmin/{imageName}:{imageTag}
-	FullTag string `json:"fullTag"`
-
-	// Success indicates if the build completed successfully
-	Success bool `json:"success"`
-
-	// Error contains error details if Success is false
-	Error string `json:"error,omitempty"`
+	ImageID string `json:"imageID"`           // Built image ID
+	FullTag string `json:"fullTag"`           // Complete image reference
+	Success bool   `json:"success"`           // Build completion status
+	Error   string `json:"error,omitempty"`   // Error details if Success is false
 }
 
 // Validate performs basic validation on BuildRequest
@@ -46,7 +31,7 @@ func (br *BuildRequest) Validate() error {
 		return fmt.Errorf("ImageName is required")
 	}
 	if br.ImageTag == "" {
-		br.ImageTag = "latest" // Default tag
+		br.ImageTag = "latest"
 	}
 	return nil
 }

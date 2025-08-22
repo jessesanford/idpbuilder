@@ -8,49 +8,11 @@ func TestBuildRequestValidation(t *testing.T) {
 		request BuildRequest
 		wantErr bool
 	}{
-		{
-			name: "valid request",
-			request: BuildRequest{
-				DockerfilePath: "Dockerfile",
-				ContextDir:     "/tmp/build",
-				ImageName:      "myapp",
-				ImageTag:       "v1.0",
-			},
-			wantErr: false,
-		},
-		{
-			name: "missing dockerfile path",
-			request: BuildRequest{
-				ContextDir: "/tmp/build",
-				ImageName:  "myapp",
-			},
-			wantErr: true,
-		},
-		{
-			name: "missing context dir",
-			request: BuildRequest{
-				DockerfilePath: "Dockerfile",
-				ImageName:      "myapp",
-			},
-			wantErr: true,
-		},
-		{
-			name: "missing image name",
-			request: BuildRequest{
-				DockerfilePath: "Dockerfile",
-				ContextDir:     "/tmp/build",
-			},
-			wantErr: true,
-		},
-		{
-			name: "default tag applied",
-			request: BuildRequest{
-				DockerfilePath: "Dockerfile",
-				ContextDir:     "/tmp/build",
-				ImageName:      "myapp",
-			},
-			wantErr: false,
-		},
+		{"valid request", BuildRequest{"Dockerfile", "/tmp/build", "myapp", "v1.0"}, false},
+		{"missing dockerfile path", BuildRequest{"", "/tmp/build", "myapp", ""}, true},
+		{"missing context dir", BuildRequest{"Dockerfile", "", "myapp", ""}, true},
+		{"missing image name", BuildRequest{"Dockerfile", "/tmp/build", "", ""}, true},
+		{"default tag applied", BuildRequest{"Dockerfile", "/tmp/build", "myapp", ""}, false},
 	}
 
 	for _, tc := range testCases {
@@ -62,7 +24,6 @@ func TestBuildRequestValidation(t *testing.T) {
 			if !tc.wantErr && err != nil {
 				t.Errorf("unexpected error: %v", err)
 			}
-			// Check default tag was applied
 			if tc.name == "default tag applied" && tc.request.ImageTag != "latest" {
 				t.Errorf("expected default tag 'latest', got %s", tc.request.ImageTag)
 			}
