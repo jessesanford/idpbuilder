@@ -32,15 +32,16 @@ The planning process involves multiple specialized agents, each responsible for 
 ---
 
 ### Stage 2: Detailed Phase-Specific Plans
-**Responsible Agent**: @agent-code-reviewer (Project Maintainer role)  
+**Responsible Agent**: @agent-code-reviewer (Senior Project Maintainer role)  
 **Alternative**: @agent-architect-reviewer (for complex architectural phases)
 
 **Creates**:
 - Detailed requirements for each effort
+- Library selections with specific versions
+- Critical implementation snippets (10-30 lines max)
+- Interface contracts for reuse
 - TDD test specifications
-- Pseudo-code implementation guides
-- Source branch identification
-- Commit cherry-picking instructions
+- Integration points between phases
 - Validation commands
 
 **Documents Produced**:
@@ -49,10 +50,20 @@ The planning process involves multiple specialized agents, each responsible for 
 - `PHASE3-SPECIFIC-IMPL-PLAN.md`
 - etc.
 
+**⚠️ CRITICAL RULES FOR CODE REVIEWER AS MAINTAINER**:
+1. **DO NOT WRITE ALL THE CODE** - Only provide 10-30 line snippets for complex critical sections
+2. **MUST ENFORCE REUSE** - Identify and mandate reuse of interfaces/components from earlier phases
+3. **MUST SPECIFY LIBRARIES** - Choose exact versions and provide justification
+4. **MUST PREVENT DUPLICATION** - Explicitly forbid reimplementing existing functionality
+5. **PROVIDE GUIDANCE, NOT IMPLEMENTATION** - Give patterns and approaches, not full code
+
 **Key Responsibilities**:
-- Code reuse identification
+- Library selection and version pinning
+- Complex algorithm snippets (critical parts only)
+- Code reuse enforcement across phases
+- Interface contract definition
 - Test coverage requirements
-- Implementation approach
+- Implementation patterns and approaches
 - Size estimation and split planning
 
 ---
@@ -125,13 +136,47 @@ graph TD
 - Reviewing phase completeness
 - Validating cross-cutting concerns
 
-### Use @agent-code-reviewer When:
-- Creating detailed implementation specifications
-- Identifying code reuse opportunities
+### Use @agent-code-reviewer (as Senior Maintainer) When:
+- Creating detailed phase implementation plans
+- Selecting critical libraries and frameworks
+- Providing complex algorithm snippets (10-30 lines only)
+- Enforcing code reuse from previous phases
+- Defining interface contracts
 - Writing test requirements
-- Defining coding standards
 - Planning effort splits
 - Reviewing implementation quality
+
+#### Maintainer Mode Instructions:
+```markdown
+When acting as Senior Maintainer for phase planning:
+
+✅ DO:
+- Choose specific library versions with justification
+- Provide 10-30 line snippets for CRITICAL complex sections only
+- Mandate reuse of existing interfaces/components
+- Define clear interface contracts
+- Specify exact import paths for reused components
+- List forbidden duplications explicitly
+- Provide patterns and architectural guidance
+
+❌ DO NOT:
+- Write complete implementations
+- Provide more than 30 lines of code per critical section
+- Allow duplication of existing functionality
+- Leave library choices vague ("use a logging library")
+- Create new patterns when existing ones work
+- Write the full code - SW Engineers implement
+
+Example of GOOD maintainer guidance:
+"MUST use pkg/auth/validator.go:TokenValidator interface from Phase 1
+ For OAuth complexity, here's the critical token refresh logic:
+ [15 lines of complex OAuth token refresh]
+ SW Engineer implements the rest following this pattern"
+
+Example of BAD maintainer guidance:
+"Implement OAuth authentication"
+[200 lines of complete OAuth implementation]
+```
 
 ### Use @agent-orchestrator-task-master When:
 - Coordinating multiple agents

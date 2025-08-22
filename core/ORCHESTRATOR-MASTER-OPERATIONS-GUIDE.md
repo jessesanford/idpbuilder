@@ -107,11 +107,21 @@ This document provides a complete operational blueprint for setting up and runni
 
 ### Phase Plans (Referenced Throughout)
 
-| File | Content | When Used |
-|------|---------|-----------|
-| **PHASE{1-N}-SPECIFIC-IMPL-PLAN.md** | Detailed effort requirements | When starting efforts in that phase |
-| **PHASE{X}-IMPLEMENTATION-ADDENDUM-WAVE{Y}-*.md** | Architectural corrections | If created after wave review |
-| **PHASE{X}-COURSE-CORRECTION-*.md** | Feature gap corrections | If created after phase assessment |
+| File | Content | When Used | Created By |
+|------|---------|-----------|------------|
+| **PHASE{1-N}-SPECIFIC-IMPL-PLAN.md** | Detailed effort requirements, library choices, reuse mandates | When starting efforts in that phase | Code Reviewer as Senior Maintainer |
+| **PHASE{X}-IMPLEMENTATION-ADDENDUM-WAVE{Y}-*.md** | Architectural corrections | If created after wave review | Architect Reviewer |
+| **PHASE{X}-COURSE-CORRECTION-*.md** | Feature gap corrections | If created after phase assessment | Architect Reviewer |
+
+#### Phase Planning Workflow
+1. **Before Phase Start**: Orchestrator spawns Code Reviewer as Senior Maintainer
+2. **Code Reviewer Creates**: PHASE[X]-SPECIFIC-IMPL-PLAN.md with:
+   - Specific library versions
+   - Reuse enforcement from previous phases
+   - Critical code snippets (10-30 lines max)
+   - Interface contracts
+3. **Orchestrator Uses Plan**: To break down into waves and efforts
+4. **SW Engineers Follow**: The detailed guidance without reimplementing
 
 ### Agent Instruction Files
 
@@ -256,7 +266,45 @@ addendums:
 
 ## Part 5: Agent Interaction Protocols
 
-### 1. Spawning Code Reviewer for Planning
+### 0. Spawning Code Reviewer for Phase Planning (Senior Maintainer Mode)
+
+**CRITICAL**: Before starting any phase, create detailed implementation plans.
+
+```markdown
+Task @agent-code-reviewer:
+
+Act as SENIOR PROJECT MAINTAINER to create Phase [X] detailed implementation plan.
+
+⚠️ CRITICAL RULES:
+1. DO NOT write complete implementations (max 30 lines per complex section)
+2. MUST enforce reuse from previous phases
+3. MUST select specific library versions
+4. MUST prevent duplication
+
+CONTEXT:
+- Project: [PROJECT_NAME]
+- Phase: [X] - [PHASE_NAME]
+- Previous Phase Status: [COMPLETE/NA]
+- Base Branch: [phase(X-1)-integration or main]
+
+REQUIRED READING:
+1. PROJECT-IMPLEMENTATION-PLAN.md
+2. phase-plans/PHASEX-SPECIFIC-IMPL-PLAN-TEMPLATE.md
+3. PLANNING-AGENT-ASSIGNMENTS.md (your maintainer role)
+4. Previous phase plans if exist
+
+DELIVERABLE: PHASE[X]-SPECIFIC-IMPL-PLAN.md with:
+- Library selections with versions
+- Reuse enforcement from previous phases
+- Critical code snippets (10-30 lines only)
+- Interface contracts
+- Wave/effort breakdown
+- Forbidden duplications list
+
+Reference: agent-instructions/code-reviewer-phase-planning.md
+```
+
+### 1. Spawning Code Reviewer for Effort Planning
 
 ```markdown
 Task @agent-code-reviewer:
