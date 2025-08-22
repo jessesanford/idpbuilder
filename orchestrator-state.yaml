@@ -4,8 +4,8 @@
 
 current_phase: 1
 current_wave: 1
-current_state: "INIT"
-last_updated: "2025-08-22T07:35:36Z"
+current_state: "EFFORT_SELECTION"
+last_updated: "2025-08-22T07:37:00Z"
 
 # Configuration
 config:
@@ -145,3 +145,11 @@ state_history:
     from_state: "NULL"
     to_state: "INIT"
     trigger: "Initial orchestration start"
+  - timestamp: "2025-08-22T07:36:45Z"
+    from_state: "INIT"
+    to_state: "WAVE_START"
+    trigger: "Phase 1 start (no architect assessment needed)"
+  - timestamp: "2025-08-22T07:37:00Z"
+    from_state: "WAVE_START"
+    to_state: "EFFORT_SELECTION"
+    trigger: "Begin Wave 1 effort selection"
