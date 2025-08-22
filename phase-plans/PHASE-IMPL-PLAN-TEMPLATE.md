@@ -2,16 +2,16 @@
 
 ## Phase Overview
 **Duration:** [X] days  
-**Critical Path:** [YES/NO] - [Dependency explanation]  
+**Critical Path:** [YES/NO] - [Explanation why this phase is/isn't critical]  
 **Base Branch:** `[previous-phase-integration or main]`  
 **Target Integration Branch:** `phase[X]-integration`  
 **Prerequisites:** [List required completions from previous phases]
 
 ---
 
-## Critical Libraries & Dependencies
+## Critical Libraries & Dependencies (MAINTAINER SPECIFIED)
 
-### Required Libraries (Maintainer Decision)
+### Required Libraries
 ```yaml
 # MAINTAINER MUST SPECIFY exact versions and reasons
 core_libraries:
@@ -35,11 +35,16 @@ reused_from_previous:
     - "pkg/contracts/base.go: ServiceContract"
   phase2:
     - "pkg/services/registry.go: RegistryInterface"
+    
+forbidden_duplications:
+  - "DO NOT create new logging system - use pkg/logger"
+  - "DO NOT implement separate error types - use pkg/errors"
+  - "DO NOT build parallel configuration - use pkg/config"
 ```
 
 ---
 
-## Wave [X].[Y]: [Wave Name]
+## Wave [X].[Y]: [Wave Name/Description]
 
 ### Overview
 **Focus:** [Primary goal of this wave]  
@@ -51,6 +56,31 @@ reused_from_previous:
 **Duration:** [X] hours  
 **Estimated Lines:** [XXX] lines  
 **Agent Assignment:** [Single/Parallel]
+
+#### Source Material
+```markdown
+# Option 1: Reusing existing code
+- Primary: `origin/feature/[branch-with-implementation]`
+- Secondary: `origin/feature/[fallback-branch]`
+- Commits: [List specific commits if known]
+
+# Option 2: Porting from external source
+- Source: `[external-repo]/[path]`
+- Reference: [Documentation/Design doc URL]
+
+# Option 3: New development
+- Design Doc: [Link to design document]
+- Reference Implementation: [If any]
+```
+
+#### Specific Commits to Cherry-Pick
+```bash
+# List exact commits or indicate new development
+git cherry-pick [commit-hash]  # Description of what this commit does
+
+# Or for new development:
+# NEW DEVELOPMENT - No existing commits to cherry-pick
+```
 
 #### Requirements
 1. **MUST** implement:
@@ -64,6 +94,10 @@ reused_from_previous:
 3. **MUST NOT**:
    - [Anti-pattern to avoid]
    - [Thing not to implement here]
+
+4. **SHOULD** (nice to have):
+   - [Optional feature 1]
+   - [Optional feature 2]
 
 #### Implementation Guidance
 
@@ -99,7 +133,7 @@ pkg/
 // DO NOT DEVIATE from this implementation
 
 func criticalComplexFunction() error {
-    // [10-20 lines of complex logic that MUST be implemented exactly]
+    // [10-30 lines of complex logic that MUST be implemented exactly]
     // This ensures [specific requirement/compatibility]
     
     return nil
@@ -120,19 +154,12 @@ type SharedInterface interface {
 }
 ```
 
-#### Test Requirements (TDD Approach)
-
-##### Test Coverage Targets
-- Unit Tests: [XX]% minimum
-- Integration Tests: Required for [specific integrations]
-- Performance Tests: [If applicable]
-
-##### Test Scenarios (Maintainer Specified)
+#### Test Requirements (TDD)
 ```[language]
-// test/[module]/[component]_test.go
+// test/[component]/[name]_test.[ext]
 
-func TestCriticalScenario(t *testing.T) {
-    // MAINTAINER: This test MUST pass
+// Test Suite 1: Basic Functionality
+func Test[ComponentName](t *testing.T) {
     testCases := []struct {
         name     string
         input    interface{}
@@ -140,46 +167,138 @@ func TestCriticalScenario(t *testing.T) {
         wantErr  bool
     }{
         {
-            name:     "Must handle [edge case]",
+            name:     "should successfully [do something]",
             input:    [specific input],
             expected: [specific output],
             wantErr:  false,
         },
-        // SW ENGINEER: Add more test cases
+        {
+            name:     "should handle [error condition]",
+            input:    [error input],
+            expected: nil,
+            wantErr:  true,
+        },
+        {
+            name:     "should handle [edge case]",
+            input:    [edge case input],
+            expected: [expected output],
+            wantErr:  false,
+        },
     }
+    
+    for _, tc := range testCases {
+        t.Run(tc.name, func(t *testing.T) {
+            // Test implementation
+        })
+    }
+}
+
+// Test Suite 2: Integration
+func TestIntegration[ComponentName](t *testing.T) {
+    // Test integration with Phase [N] components
+}
+
+// Test Suite 3: Performance (if applicable)
+func Benchmark[ComponentName](b *testing.B) {
+    // Benchmark critical paths
 }
 ```
 
-#### Integration Points
-
-##### With Previous Phases
-```yaml
-uses_from_phase1:
-  - Component: "APIRegistry"
-    Import: "pkg/api/registry"
-    Usage: "Register new endpoints"
+#### Pseudo-Code Implementation
+```
+FUNCTION implement_[effort_name]():
+    // Step 1: Setup/Initialization
+    IMPORT reused_components FROM Phase[N]
+    VALIDATE interfaces_match
     
-uses_from_phase2:
-  - Component: "ServiceBus"
-    Import: "pkg/services/bus"
-    Usage: "Event propagation"
+    // Step 2: Core Implementation
+    IF reusing_existing_code:
+        CHERRY_PICK specified_commits
+        RESOLVE_CONFLICTS with_strategy
+        ADAPT_CODE to_current_structure
+    ELSE:
+        IMPLEMENT core_logic:
+            USE maintainer_provided_snippets FOR complex_parts
+            FOLLOW design_patterns FROM Phase[N]
+            [DETAILED PSEUDO CODE]
+    
+    // Step 3: Integration
+    WIRE_UP with_existing_components
+    ADD error_handling USING Phase[N]_patterns
+    ADD logging USING existing_logger
+    ADD metrics
+    
+    // Step 4: Validation
+    RUN tests
+    CHECK coverage >= [X]%
+    VERIFY performance
+    MEASURE line_count < 800
 ```
 
-##### With Current Wave
+#### Size Estimation and Split Strategy
 ```yaml
-provides_to_efforts:
-  - Interface: "DataProcessor"
-    Used_By: ["E[X].[Y].[Z+1]", "E[X].[Y].[Z+2]"]
-    Contract: "Must be thread-safe"
+estimated_lines: [X]
+split_threshold: 800
+
+if_exceeds_threshold:
+  suggested_splits:
+    - Part 1: [Logical component 1] (~X lines)
+    - Part 2: [Logical component 2] (~X lines)
+    - Part 3: [Tests and documentation] (~X lines)
+  
+  split_criteria:
+    - Each split must build independently
+    - Maintain logical cohesion
+    - Tests stay with implementation
+```
+
+#### Validation Commands
+```bash
+# Build validation
+[build command] || exit 1
+
+# Test execution
+[test command] || exit 1
+
+# Coverage check
+[coverage command]
+# Requirement: >[X]% coverage for this phase
+
+# Lint/Format check
+[lint command] || exit 1
+
+# Line count verification
+./tools/line-counter.sh -c $(git branch --show-current)
+# MUST be < 800 lines (unless exception granted)
+
+# Performance validation (if applicable)
+[benchmark command]
+# Must meet: [specific performance criteria]
+
+# Integration test (if applicable)
+[integration test command]
 ```
 
 #### Success Criteria
 - [ ] All interfaces from Phase [N] properly extended
 - [ ] No code duplication with previous phases
-- [ ] Tests achieve [XX]% coverage
-- [ ] Integration with [component] verified
-- [ ] Performance benchmarks met
-- [ ] Line count under 800 (measured by line-counter.sh)
+- [ ] All tests pass (>[X]% coverage)
+- [ ] Build succeeds without warnings
+- [ ] Line count within limit (<800 or exception documented)
+- [ ] Lint checks pass
+- [ ] Performance benchmarks meet targets (if applicable)
+- [ ] Documentation updated
+- [ ] Integration tests pass (if applicable)
+- [ ] Code review completed and approved
+
+#### Rollback Plan
+```bash
+# If effort fails validation
+git checkout [base-branch]
+git branch -D [effort-branch]
+# Document failure reason in orchestrator-state.yaml
+# Retry with fixes or escalate to architect
+```
 
 ---
 
@@ -191,24 +310,10 @@ provides_to_efforts:
 
 ## Phase-Wide Constraints
 
-### MANDATORY Code Reuse
-```yaml
-# Maintainer enforces these MUST be reused
-must_reuse:
-  - "pkg/common/logger": "Use existing logging from Phase 1"
-  - "pkg/errors/handler": "Use centralized error handling from Phase 2"
-  - "pkg/config/loader": "Use configuration system from Phase 1"
-  
-forbidden_duplications:
-  - "DO NOT create new logging system"
-  - "DO NOT implement separate error types"
-  - "DO NOT build parallel configuration"
-```
-
 ### Architecture Decisions (Maintainer Specified)
 ```markdown
 1. **Database Access Pattern**
-   - MUST use repository pattern established in Phase 2
+   - MUST use repository pattern established in Phase [N]
    - MUST use the shared connection pool
    - NO direct SQL outside repositories
 
@@ -219,7 +324,7 @@ forbidden_duplications:
 3. **Concurrency Limits**
    - Max goroutines: [X]
    - Channel buffer sizes: [Y]
-   - Based on Phase 1 performance tests
+   - Based on Phase [N] performance tests
 ```
 
 ### Cross-Wave Dependencies
@@ -230,6 +335,31 @@ graph LR
     W1.3 --> W2.1[Wave 2.1: Controllers]
     W2.1 --> W2.2[Wave 2.2: Integration]
 ```
+
+---
+
+## Branch Strategy
+
+### Working Branches
+```bash
+# Wave integration after all efforts complete
+git checkout -b phase[X]/wave[Y]-integration
+git merge --no-ff phase[X]/wave[Y]/effort1-[name]
+git merge --no-ff phase[X]/wave[Y]/effort2-[name]
+# ... merge all efforts
+
+# Phase integration after all waves complete
+git checkout -b phase[X]-integration
+git merge --no-ff phase[X]/wave1-integration
+git merge --no-ff phase[X]/wave2-integration
+# ... merge all waves
+```
+
+### Merge Requirements
+- All efforts in wave must be complete
+- All tests passing
+- Architecture review approved
+- Line counts verified
 
 ---
 
@@ -329,3 +459,5 @@ func complexCriticalAlgorithm(input DataType) (OutputType, error) {
 - [ ] Performance benchmarks achieved
 - [ ] No code duplication with previous phases
 - [ ] Documentation updated
+- [ ] Phase integration branch created
+- [ ] Architecture review passed

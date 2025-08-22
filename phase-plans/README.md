@@ -2,283 +2,254 @@
 
 ## Overview
 
-This directory contains templates for creating detailed phase-specific implementation plans. These plans bridge the gap between high-level project planning and actual code implementation by providing explicit, actionable instructions for developer agents.
+This directory contains THE template for creating detailed phase-specific implementation plans. These plans bridge the gap between high-level project planning and actual code implementation by providing explicit, actionable instructions for developer agents.
 
-## Available Templates
+## THE Template
 
-### 1. PHASEX-GENERIC-TEMPLATE.md
-**Use this for:** Creating any new phase plan  
-**Contains:** Complete structure with all sections, ready to customize
+### PHASE-IMPL-PLAN-TEMPLATE.md
+**This is the ONLY template to use for phase planning**  
+**Purpose:** Creates comprehensive phase plans with library decisions, reuse enforcement, and critical code snippets  
+**Created by:** Code Reviewer acting as Senior Maintainer  
+**Contains:** Complete structure with maintainer guidance sections
 
-### 2. PHASE1-TEMPLATE.md  
-**Use this for:** Foundation phases (APIs, contracts, schemas)  
-**Example of:** How to structure API-first development
+## Example Phase Plans
 
-### 3. PHASE2-TEMPLATE.md
-**Use this for:** Infrastructure phases (controllers, frameworks, libraries)  
-**Example of:** Building reusable components
+### PHASE1-TEMPLATE.md  
+**Example of:** Foundation phase (APIs, contracts, schemas)  
+**Shows:** How to structure API-first development
 
-### 4. PHASE3-TEMPLATE.md
-**Use this for:** Implementation phases (business logic, features)  
-**Example of:** Complex implementation with potential splits
+### PHASE2-TEMPLATE.md
+**Example of:** Infrastructure phase (controllers, frameworks, libraries)  
+**Shows:** Building reusable components
+
+### PHASE3-TEMPLATE.md
+**Example of:** Implementation phase (business logic, features)  
+**Shows:** Complex implementation with potential splits
 
 ## How to Create a Phase Plan
 
-### Step 1: Copy the Generic Template
-```bash
-cp PHASEX-GENERIC-TEMPLATE.md PHASE1-SPECIFIC-IMPL-PLAN.md
+### Step 1: Orchestrator Tasks Code Reviewer as Senior Maintainer
+```markdown
+Task @agent-code-reviewer:
+Act as SENIOR PROJECT MAINTAINER to create Phase [X] detailed implementation plan.
+Use phase-plans/PHASE-IMPL-PLAN-TEMPLATE.md as your template.
 ```
 
-### Step 2: Fill in Phase Overview
-- Set duration based on effort estimates
-- Identify if it's on the critical path
-- Specify base branch (usually previous phase's integration branch)
-- Name the target integration branch
+### Step 2: Code Reviewer Creates Phase Plan
+The Code Reviewer (as Senior Maintainer) will:
 
-### Step 3: Define Waves
-Waves are logical groupings of related efforts (like sprints):
-- **Wave 1**: Usually foundational items (APIs, interfaces)
-- **Wave 2**: Core implementations
-- **Wave 3**: Additional features or integration
+1. **Make Library Decisions**
+   ```yaml
+   core_libraries:
+     - name: "github.com/gorilla/mux"
+       version: "v1.8.0"
+       reason: "Mature router with middleware support"
+   ```
 
-### Step 4: Detail Each Effort
-For each effort, provide:
-
-#### A. Source Material
-```markdown
-# If reusing code:
-- Primary: `origin/feature/existing-implementation`
-- Commits: abc123, def456
-
-# If new development:
-- Design Doc: link/to/design
-- Reference: similar implementation
-```
-
-#### B. Requirements
-Be extremely specific:
-```markdown
-1. **MUST** implement:
-   - Exact feature with specific behavior
-   - Error handling for X, Y, Z cases
+2. **Enforce Reuse from Previous Phases**
+   ```yaml
+   reused_from_previous:
+     phase1:
+       - "pkg/api/types.go: All API types"
+       - "pkg/auth: Complete auth system"
    
-2. **MUST NOT**:
-   - Use deprecated APIs
-   - Exceed 800 lines
-```
+   forbidden_duplications:
+     - "DO NOT create new auth system"
+     - "DO NOT reimplement validators"
+   ```
 
-#### C. TDD Tests
-Write actual test code, not descriptions:
-```go
-func TestFeature(t *testing.T) {
-    // Actual test implementation
-    // Not just "test the feature"
-}
-```
+3. **Provide Critical Code Snippets (10-30 lines ONLY)**
+   ```go
+   // MAINTAINER NOTE: Complex OAuth refresh logic
+   func refreshToken(token *Token) (*Token, error) {
+       // [15-20 lines of critical logic]
+       // SW Engineer implements surrounding code
+   }
+   ```
 
-#### D. Pseudo-Code
-Detailed enough to guide implementation:
-```
-FUNCTION implement_feature():
-    // Step-by-step logic
-    IF condition:
-        DO specific_action
-    ELSE:
-        DO alternative_action
-```
+4. **Define Interface Contracts**
+   ```go
+   // MUST implement this interface from Phase 1
+   type DataProcessor interface {
+       Process(data []byte) error  // From Phase 1
+       Transform() error           // New in this phase
+   }
+   ```
 
-#### E. Validation Commands
-Exact commands to verify success:
-```bash
-go build ./...
-go test ./... -cover
-/tools/line-counter.sh -c branch-name
-```
+### Step 3: Structure the Phase Plan
 
-### Step 5: Create Dependency Graph
-Use mermaid syntax to visualize dependencies:
-```mermaid
-graph TD
-    E1.1.1[API Types] --> E1.2.1[Implementation]
-    E1.1.2[Interfaces] --> E1.2.1
-```
+#### Phase Overview Section
+- Duration and critical path
+- Base branch (previous phase integration)
+- Prerequisites from earlier phases
+- Target integration branch
 
-### Step 6: Document Integration Strategy
-Specify exact merge order and validation:
-```bash
-git merge --no-ff effort1-branch
-make test || exit 1
-git merge --no-ff effort2-branch
-make test || exit 1
-```
+#### Library & Dependencies Section (MAINTAINER CRITICAL)
+- Exact library versions with justification
+- What to reuse from previous phases
+- Forbidden duplications list
+- Shared dependencies across phases
 
-## Key Principles
+#### Wave Sections
+For each wave:
+- Overview and dependencies
+- Whether efforts can parallelize
+- Individual effort details
 
-### 1. Be Explicit, Not Abstract
-❌ Bad: "Implement the controller"  
-✅ Good: "Implement controller with workqueue, reconciliation loop, and leader election"
+#### Effort Details
+For each effort:
+- Branch naming
+- Duration and line estimates
+- Source material (if reusing)
+- Requirements (MUST/MUST NOT)
+- Implementation guidance
+- Test requirements
+- Validation commands
 
-❌ Bad: "Test the feature"  
-✅ Good: [Actual test code with assertions]
+### Step 4: Key Principles for Maintainer
 
-### 2. Prioritize Code Reuse
-Always check for existing implementations:
-```markdown
-Source Material:
-- Primary: origin/feature/existing-impl (preferred)
-- Fallback: Write new only if necessary
-```
+#### DO Provide:
+1. **Specific Library Versions**
+   - Not "use a logging library"
+   - But "use github.com/sirupsen/logrus v1.9.0"
 
-### 3. Plan for Size Limits
-Each effort should estimate lines and have a split strategy:
-```yaml
-estimated_lines: 650
-if_exceeds_800:
-  split_into:
-    - Part 1: Core logic (400 lines)
-    - Part 2: Tests (250 lines)
-```
+2. **Critical Algorithm Snippets**
+   ```go
+   // ONLY the complex 20 lines of distributed locking
+   // Not the entire service implementation
+   ```
 
-### 4. Include Recovery Plans
-Every effort needs a rollback strategy:
-```bash
-# If validation fails
-git checkout base-branch
-git branch -D failed-effort
-# Document in orchestrator-state.yaml
-```
+3. **Reuse Enforcement**
+   ```markdown
+   MUST reuse from Phase 1:
+   - pkg/models: ALL database models
+   - pkg/validators: ALL validation logic
+   ```
+
+4. **Clear Patterns**
+   ```markdown
+   Pattern: Repository pattern from Phase 2
+   Location: pkg/repository/base.go
+   Extension: Add caching layer only
+   ```
+
+#### DO NOT Provide:
+1. **Complete Implementations** - SW Engineers write the code
+2. **More than 30 lines per snippet** - Only critical complex parts
+3. **Vague Guidance** - Be specific about versions and paths
+4. **New Patterns when old work** - Enforce consistency
 
 ## Template Sections Explained
 
-### Source Material Section
-Identifies what existing code to reuse:
-- List specific branches
-- Note specific commits if known
-- Reference external sources
-- Indicate if new development
+### Critical Libraries & Dependencies
+**Owner:** Code Reviewer as Maintainer  
+**Purpose:** Technical decisions that ensure consistency  
+**Contains:** Library versions, reuse mandates, forbidden duplications
 
-### Requirements Section
-Define success criteria:
-- **MUST**: Non-negotiable requirements
-- **SHOULD**: Nice-to-have features
-- **MUST NOT**: Things to avoid
+### Wave and Effort Structure
+**Purpose:** Break down work into manageable chunks  
+**Contains:** Dependencies, parallelization options, effort details
 
-### Test Requirements Section
-TDD approach with actual test code:
-- Unit tests for each component
-- Integration tests for interactions
-- Performance benchmarks if needed
-- Edge cases and error conditions
+### Implementation Guidance
+**Purpose:** Guide without over-implementing  
+**Contains:** Patterns to follow, critical snippets, interface contracts
 
-### Pseudo-Code Section
-Detailed implementation logic:
-- Not actual code but clear algorithm
-- Shows decision points
-- Indicates where to reuse vs. write new
-- Highlights integration points
+### Test Requirements
+**Purpose:** Ensure quality and coverage  
+**Contains:** TDD test structure, coverage targets
 
-### Validation Commands Section
-Exact commands to verify success:
-- Build commands
-- Test commands with coverage
-- Lint/format checks
-- Line count verification
-- Performance benchmarks
+### Validation Commands
+**Purpose:** Verify success  
+**Contains:** Build, test, lint, line count commands
 
-### Success Criteria Section
-Checklist for effort completion:
-- All tests passing
-- Coverage targets met
-- Line count within limits
-- Documentation updated
-- Review completed
+## Integration with Orchestrator Workflow
+
+1. **Before Phase Start:**
+   - Orchestrator spawns Code Reviewer as Senior Maintainer
+   - Code Reviewer creates PHASE[X]-SPECIFIC-IMPL-PLAN.md
+
+2. **During Phase Execution:**
+   - Orchestrator uses plan to create effort directories
+   - Tasks SW Engineers with specific efforts
+   - Engineers follow maintainer guidance
+
+3. **Reuse Enforcement:**
+   - SW Engineers MUST use specified libraries
+   - MUST reuse interfaces from previous phases
+   - MUST NOT duplicate existing functionality
 
 ## Common Patterns
 
 ### API Development Pattern
 ```
-Wave 1: Types and Interfaces
-Wave 2: Implementation
-Wave 3: Tests and Documentation
+Wave 1: Types and Interfaces (reuse enforced)
+Wave 2: Implementation (using Phase 1 types)
+Wave 3: Integration (using Phase 2 services)
 ```
 
 ### Feature Development Pattern
 ```
-Wave 1: Core Logic
-Wave 2: Integration
-Wave 3: Optimization
+Wave 1: Core Logic (with maintainer snippets)
+Wave 2: Integration (reusing Phase N components)
+Wave 3: Optimization (following established patterns)
 ```
-
-### Infrastructure Pattern
-```
-Wave 1: Framework
-Wave 2: Components
-Wave 3: Tooling
-```
-
-## Tips for Writing Good Phase Plans
-
-1. **Check existing code first** - Don't reinvent the wheel
-2. **Write real tests** - Not test descriptions
-3. **Be specific about branches** - Include commit hashes when known
-4. **Plan for splits upfront** - Know which efforts might exceed limits
-5. **Include performance gates** - Define measurable targets
-6. **Document dependencies clearly** - Both in text and graphs
-7. **Provide exact commands** - No ambiguity in validation
 
 ## Validation Checklist
 
 Before considering a phase plan complete:
 
-- [ ] Every effort has source material identified
-- [ ] All requirements are specific and measurable
-- [ ] Test code is written (not just described)
-- [ ] Pseudo-code is detailed enough to follow
-- [ ] Validation commands are exact
-- [ ] Dependencies are graphed and tabled
-- [ ] Integration strategy is explicit
-- [ ] Line count estimates included
+- [ ] All library versions specified exactly
+- [ ] Reuse from previous phases explicitly mandated
+- [ ] Forbidden duplications listed
+- [ ] Critical code snippets provided (10-30 lines max)
+- [ ] Interface contracts defined
+- [ ] Every effort has clear requirements
+- [ ] Test requirements specified
+- [ ] Validation commands included
+- [ ] Line count estimates provided
 - [ ] Split strategies planned where needed
-- [ ] Success criteria defined
 
-## Example: Converting High-Level to Detailed
+## Example: Good vs Bad Maintainer Guidance
 
-### High-Level (from orchestrator plan):
-"Implement authentication system"
-
-### Detailed (in phase plan):
+### ❌ BAD (Too Vague):
 ```markdown
-### E2.1.1: JWT Authentication
-**Branch**: `/phase2/wave1/effort1-jwt-auth`
-**Duration**: 4 hours
-
-#### Source Material:
-- Primary: `origin/feature/auth-jwt` (commits: abc123, def456)
-
-#### Requirements:
-1. **MUST** implement:
-   - JWT token generation with RS256
-   - Token validation middleware
-   - Refresh token rotation
-   - Blacklist for revoked tokens
-
-#### Test Requirements:
-[Actual test code with 10+ test cases]
-
-#### Pseudo-Code:
-[Detailed step-by-step implementation logic]
-
-#### Validation:
-[Exact commands to verify functionality]
+E2.1.1: Implement Authentication
+Use some JWT library.
+Implement OAuth flow.
 ```
 
-## Integration with Orchestrator
+### ✅ GOOD (Specific Guidance):
+```markdown
+E2.1.1: JWT Authentication with OAuth2
 
-The orchestrator uses these plans to:
-1. Task agents with specific efforts
-2. Verify completion criteria
-3. Manage dependencies
-4. Track progress
-5. Handle splits if needed
+Libraries:
+- github.com/golang-jwt/jwt/v5 v5.0.0 (JWT handling)
+- golang.org/x/oauth2 v0.13.0 (OAuth2 client)
 
-Each plan becomes the contract between orchestrator and developer agents.
+MUST reuse from Phase 1:
+- pkg/models/user.go: User model
+- pkg/crypto/keys.go: RSA key management
+
+Critical Implementation (OAuth token exchange):
+```go
+// MAINTAINER: Complex token exchange with retry
+func exchangeToken(code string) (*Token, error) {
+    // [20 lines of critical retry/backoff logic]
+    // SW Engineer implements the rest
+}
+```
+
+Forbidden:
+- DO NOT create new User type
+- DO NOT implement new key management
+```
+
+## Tips for Success
+
+1. **Maintainer decides, Engineers implement** - Clear separation
+2. **Reuse is mandatory** - Not optional
+3. **Snippets are for complexity** - Not whole implementations
+4. **Versions are exact** - No ambiguity
+5. **Patterns are consistent** - Across all phases
+
+Each phase plan becomes the technical contract that ensures consistency, reuse, and quality across the entire project.
