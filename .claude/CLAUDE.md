@@ -16,8 +16,8 @@ if [ -f /tmp/compaction_marker.txt ]; then
   # Check for saved TODO notification (but don't read from temp file)
   if grep -q "TODO_STATE_SAVED:" /tmp/compaction_marker.txt; then
     echo "📋 TODO STATE WAS PRESERVED - Check todos directory for latest state"
-    echo "Latest TODO files in /workspaces/[project]/todos/:"
-    ls -t /workspaces/[project]/todos/*.todo 2>/dev/null | head -3 | while read f; do echo "  - $(basename $f)"; done
+    echo "Latest TODO files in /home/vscode/workspaces/idpbuilder/todos/:"
+    ls -t /home/vscode/workspaces/idpbuilder/todos/*.todo 2>/dev/null | head -3 | while read f; do echo "  - $(basename $f)"; done
     echo "You should load and merge TODOs from the appropriate file for your agent"
   fi
   
@@ -46,7 +46,7 @@ fi
 
 # 🚨🚨🚨 ABSOLUTE REQUIREMENT - SIZE MEASUREMENT 🚨🚨🚨
 
-You MUST ALWAYS AND ONLY use `/workspaces/[project]/tools/line-counter.sh` to measure branch line
+You MUST ALWAYS AND ONLY use `/home/vscode/workspaces/idpbuilder/tools/line-counter.sh` to measure branch line
 counts for implementation.
 
 NEVER count lines any other way. NEVER include generated code.
@@ -75,7 +75,7 @@ Before tasking ANY agent, you MUST:
    - Documentation: All efforts have work logs
    - Testing: Coverage requirements met
    - Integration: All phases merge cleanly
-2. If unsure about rules, re-read: /workspaces/[project]/.claude/commands/continue-orchestrating.md
+2. If unsure about rules, re-read: /home/vscode/workspaces/idpbuilder/.claude/commands/continue-orchestrating.md
 3. Include startup requirements in EVERY agent task
 
 ## FOR ALL AGENTS (INCLUDING YOURSELF):
@@ -113,38 +113,38 @@ If you detect context loss (no memory of previous tasks), IMMEDIATELY read your 
 ### ALWAYS READ ON STARTUP:
 ```bash
 # Core identity and rules
-READ: /workspaces/[project]/.claude/commands/continue-orchestrating.md
-READ: /workspaces/[project]/orchestrator-state.yaml
-READ: /workspaces/[project]/core/SOFTWARE-FACTORY-STATE-MACHINE.md
+READ: /home/vscode/workspaces/idpbuilder/.claude/commands/continue-orchestrating.md
+READ: /home/vscode/workspaces/idpbuilder/orchestrator-state.yaml
+READ: /home/vscode/workspaces/idpbuilder/core/SOFTWARE-FACTORY-STATE-MACHINE.md
 ```
 
 ### MODE: Starting Fresh (no state exists)
 ```bash
-READ: /workspaces/[project]/PROJECT-IMPLEMENTATION-PLAN.md
-READ: /workspaces/[project]/protocols/ORCHESTRATOR-TASKMASTER-EXECUTION-PLAN.md
+READ: /home/vscode/workspaces/idpbuilder/PROJECT-IMPLEMENTATION-PLAN.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/ORCHESTRATOR-TASKMASTER-EXECUTION-PLAN.md
 ```
 
 ### MODE: Resuming Work (state exists)
 ```bash
-READ: /workspaces/[project]/CURRENT-TODO-STATE.md  # If exists
-READ: /workspaces/[project]/orchestrator-state.yaml
+READ: /home/vscode/workspaces/idpbuilder/CURRENT-TODO-STATE.md  # If exists
+READ: /home/vscode/workspaces/idpbuilder/orchestrator-state.yaml
 CHECK: efforts_in_progress section for blocking issues
 CHECK: integration_branches section for pending integrations
 ```
 
 ### MODE: Planning a Wave
 ```bash
-READ: /workspaces/[project]/phase-plans/PHASE{CURRENT_PHASE}-SPECIFIC-IMPL-PLAN.md
-READ: /workspaces/[project]/protocols/ORCHESTRATOR-EFFORT-PLANNING-PROTOCOL.md
+READ: /home/vscode/workspaces/idpbuilder/phase-plans/PHASE{CURRENT_PHASE}-SPECIFIC-IMPL-PLAN.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/ORCHESTRATOR-EFFORT-PLANNING-PROTOCOL.md
 ```
 
 ### MODE: After Wave Complete (Integration Required)
 ```bash
 # FIRST: Save TODOs before leaving WAVE_COMPLETE mode
-TODO_FILE="/workspaces/[project]/todos/orchestrator-WAVE_COMPLETE-$(date '+%Y%m%d-%H%M%S').todo"
+TODO_FILE="/home/vscode/workspaces/idpbuilder/todos/orchestrator-WAVE_COMPLETE-$(date '+%Y%m%d-%H%M%S').todo"
 ACTION: Save all integration tasks to TODO_FILE
 
-READ: /workspaces/[project]/protocols/WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md
 CHECK: All splits are compliant using line-counter.sh
 ACTION: Create wave integration branch BEFORE proceeding
 ACTION: Spawn architect for review BEFORE next wave
@@ -152,15 +152,15 @@ ACTION: Spawn architect for review BEFORE next wave
 
 ### MODE: Responding to Architect CHANGES_REQUIRED
 ```bash
-READ: /workspaces/[project]/orchestrator-state.yaml # efforts_in_progress
-READ: /workspaces/[project]/protocols/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
+READ: /home/vscode/workspaces/idpbuilder/orchestrator-state.yaml # efforts_in_progress
+READ: /home/vscode/workspaces/idpbuilder/protocols/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
 ACTION: Spawn SW Engineer to fix issues
 ACTION: Re-run architect review after fixes
 ```
 
 ### MODE: Managing Splits
 ```bash
-READ: /workspaces/[project]/protocols/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
 RULE: Splits are ALWAYS sequential, NEVER parallel
 RULE: Each split gets full review
 RULE: Recursive split if still over limit
@@ -171,10 +171,10 @@ RULE: Recursive split if still over limit
 ### ALWAYS READ ON STARTUP:
 ```bash
 # Core identity
-READ: /workspaces/[project]/.claude/agents/sw-engineer.md
-READ: /workspaces/[project]/protocols/SW-ENGINEER-STARTUP-REQUIREMENTS.md
-READ: /workspaces/[project]/protocols/SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md
-READ: /workspaces/[project]/protocols/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
+READ: /home/vscode/workspaces/idpbuilder/.claude/agents/sw-engineer.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/SW-ENGINEER-STARTUP-REQUIREMENTS.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
 
 # Current effort context
 READ: ${WORKING_DIR}/IMPLEMENTATION-PLAN.md
@@ -183,11 +183,11 @@ READ: ${WORKING_DIR}/work-log.md
 
 ### MODE: Initial Implementation
 ```bash
-READ: /workspaces/[project]/protocols/IMPERATIVE-LINE-COUNT-RULE.md  # CRITICAL
-READ: /workspaces/[project]/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/IMPERATIVE-LINE-COUNT-RULE.md  # CRITICAL
+READ: /home/vscode/workspaces/idpbuilder/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
 READ: ${WORKING_DIR}/IMPLEMENTATION-PLAN.md  # Created by Code Reviewer
 ACTION: Update work-log.md as you progress
-MEASURE: /workspaces/[project]/tools/line-counter.sh -c {branch} every 200 lines
+MEASURE: /home/vscode/workspaces/idpbuilder/tools/line-counter.sh -c {branch} every 200 lines
 ```
 
 ### MODE: Fixing After Review
@@ -211,36 +211,36 @@ MEASURE: Must stay under configured limit
 ### ALWAYS READ ON STARTUP:
 ```bash
 # Core identity
-READ: /workspaces/[project]/.claude/agents/code-reviewer.md
-READ: /workspaces/[project]/protocols/CODE-REVIEWER-COMPREHENSIVE-GUIDE.md
-READ: /workspaces/[project]/protocols/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
+READ: /home/vscode/workspaces/idpbuilder/.claude/agents/code-reviewer.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/CODE-REVIEWER-COMPREHENSIVE-GUIDE.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
 ```
 
 ### MODE: Creating Implementation Plan
 ```bash
-READ: /workspaces/[project]/protocols/CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md
-READ: /workspaces/[project]/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
-READ: /workspaces/[project]/protocols/WORK-LOG-TEMPLATE.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/CODE-REVIEWER-EFFORT-PLANNING-INSTRUCTIONS.md
+READ: /home/vscode/workspaces/idpbuilder/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/WORK-LOG-TEMPLATE.md
 ACTION: Create IMPLEMENTATION-PLAN.md
 ACTION: Create work-log.md from template
 ```
 
 ### MODE: Reviewing Code
 ```bash
-READ: /workspaces/[project]/protocols/IMPERATIVE-LINE-COUNT-RULE.md  # CRITICAL
-READ: /workspaces/[project]/protocols/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/IMPERATIVE-LINE-COUNT-RULE.md  # CRITICAL
+READ: /home/vscode/workspaces/idpbuilder/protocols/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
 READ: ${WORKING_DIR}/IMPLEMENTATION-PLAN.md
 READ: ${WORKING_DIR}/work-log.md
-MEASURE: /workspaces/[project]/tools/line-counter.sh -c {branch}
+MEASURE: /home/vscode/workspaces/idpbuilder/tools/line-counter.sh -c {branch}
 CHECK: Code quality and patterns
 CHECK: Test coverage per requirements
 ```
 
 ### MODE: Planning Split (over limit detected)
 ```bash
-READ: /workspaces/[project]/protocols/IMPERATIVE-LINE-COUNT-RULE.md
-READ: /workspaces/[project]/protocols/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
-MEASURE: /workspaces/[project]/tools/line-counter.sh -c {branch} -d  # Detailed breakdown
+READ: /home/vscode/workspaces/idpbuilder/protocols/IMPERATIVE-LINE-COUNT-RULE.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/EFFORT-SPLIT-CONTINUOUS-EXECUTION-PROTOCOL.md
+MEASURE: /home/vscode/workspaces/idpbuilder/tools/line-counter.sh -c {branch} -d  # Detailed breakdown
 ACTION: Create SPLIT-SUMMARY.md with strategy
 ACTION: Design logical groupings under limit
 ```
@@ -250,15 +250,15 @@ ACTION: Design logical groupings under limit
 ### ALWAYS READ ON STARTUP:
 ```bash
 # Core identity
-READ: /workspaces/[project]/.claude/agents/architect-reviewer.md
-READ: /workspaces/[project]/orchestrator-state.yaml
+READ: /home/vscode/workspaces/idpbuilder/.claude/agents/architect-reviewer.md
+READ: /home/vscode/workspaces/idpbuilder/orchestrator-state.yaml
 ```
 
 ### MODE: Wave Review
 ```bash
-READ: /workspaces/[project]/protocols/WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md
-READ: /workspaces/[project]/protocols/ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md
-READ: /workspaces/[project]/orchestrator-state.yaml
+READ: /home/vscode/workspaces/idpbuilder/protocols/WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md
+READ: /home/vscode/workspaces/idpbuilder/orchestrator-state.yaml
 CHECK: efforts_completed for the wave
 CHECK: All splits are compliant
 ASSESS: Architecture patterns, integration readiness
@@ -267,8 +267,8 @@ OUTPUT: PROCEED / CHANGES_REQUIRED / STOP
 
 ### MODE: Phase Review
 ```bash
-READ: /workspaces/[project]/protocols/PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md
-READ: /workspaces/[project]/PROJECT-IMPLEMENTATION-PLAN.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/PHASE-START-ARCHITECT-REVIEW-PROTOCOL.md
+READ: /home/vscode/workspaces/idpbuilder/PROJECT-IMPLEMENTATION-PLAN.md
 CHECK: Previous phase integration complete
 ASSESS: Feature completeness, stability
 OUTPUT: ON_TRACK / NEEDS_CORRECTION / OFF_TRACK
@@ -289,17 +289,17 @@ MATCH: Do these match what's expected in my instructions?
 IF_MISMATCH: STOP IMMEDIATELY - never try to fix
 
 # Read global rules
-READ: /workspaces/[project]/.claude/CLAUDE.md
+READ: /home/vscode/workspaces/idpbuilder/.claude/CLAUDE.md
 
 # Read CRITICAL size limit rule (ALL AGENTS MUST READ)
-READ: /workspaces/[project]/protocols/IMPERATIVE-LINE-COUNT-RULE.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/IMPERATIVE-LINE-COUNT-RULE.md
 ```
 
 ### Before Any Measurement:
 ```bash
 # MANDATORY: Read the size limit rule first if you haven't
-READ: /workspaces/[project]/protocols/IMPERATIVE-LINE-COUNT-RULE.md
-ALWAYS USE: /workspaces/[project]/tools/line-counter.sh
+READ: /home/vscode/workspaces/idpbuilder/protocols/IMPERATIVE-LINE-COUNT-RULE.md
+ALWAYS USE: /home/vscode/workspaces/idpbuilder/tools/line-counter.sh
 NEVER: Count lines manually
 NEVER: Include generated code
 ```
@@ -312,7 +312,7 @@ CHECK: What state are we in?
   - WAVE_COMPLETE → Integration required before next wave
   - CHANGES_REQUIRED → Fixes required before proceeding
   - MEASURE_SIZE → Split if over limit
-READ: /workspaces/[project]/core/SOFTWARE-FACTORY-STATE-MACHINE.md
+READ: /home/vscode/workspaces/idpbuilder/core/SOFTWARE-FACTORY-STATE-MACHINE.md
 ```
 
 ## 6️⃣ CRITICAL GATES (ENFORCEMENT POINTS)
@@ -348,11 +348,11 @@ WHEN effort exceeds limit, MUST:
 
 If you lose context and don't remember previous work:
 ```bash
-1. READ: /workspaces/[project]/orchestrator-state.yaml
+1. READ: /home/vscode/workspaces/idpbuilder/orchestrator-state.yaml
 2. CHECK: current_phase, current_wave
 3. CHECK: efforts_in_progress for active work
 4. CHECK: efforts_completed to understand progress
-5. READ: /workspaces/[project]/CURRENT-TODO-STATE.md
+5. READ: /home/vscode/workspaces/idpbuilder/CURRENT-TODO-STATE.md
 6. RESUME: From the appropriate state in the state machine
 ```
 
@@ -410,14 +410,14 @@ Think of it as a "hat" you wear or "role" you play at that moment in the workflo
 # MANDATORY: Save current TODOs
 CURRENT_STATE="WAVE_COMPLETE"  # Your current state from state machine
 NEXT_STATE="INTEGRATION_REVIEW"  # Where you're going
-TODO_FILE="/workspaces/[project]/todos/${AGENT_NAME}-${CURRENT_STATE}-$(date '+%Y%m%d-%H%M%S').todo"
+TODO_FILE="/home/vscode/workspaces/idpbuilder/todos/${AGENT_NAME}-${CURRENT_STATE}-$(date '+%Y%m%d-%H%M%S').todo"
 
 # Write all pending/in_progress/completed TODOs to file
 echo "# Transitioning from $CURRENT_STATE to $NEXT_STATE" > $TODO_FILE
 # Include all tasks that must not be lost
 
 # MANDATORY: Commit and push immediately
-cd /workspaces/[project]
+cd /home/vscode/workspaces/idpbuilder
 git add todos/*.todo
 git commit -m "todo: ${AGENT_NAME} state transition from $CURRENT_STATE to $NEXT_STATE"
 git push
@@ -427,7 +427,7 @@ git push
 ```bash
 # MANDATORY: Load and merge TODOs
 NEW_STATE="INTEGRATION_REVIEW"  # The state you just entered
-TODO_DIR="/workspaces/[project]/todos"
+TODO_DIR="/home/vscode/workspaces/idpbuilder/todos"
 
 # Check for any TODO files for your agent
 # Load, merge, de-duplicate with current tasks
@@ -443,17 +443,17 @@ TODO_DIR="/workspaces/[project]/todos"
 ```bash
 # Clean up old TODO files periodically (keep last 5 per agent)
 for agent in orchestrator sw-eng code-reviewer architect; do
-  ls -t /workspaces/[project]/todos/${agent}-*.todo 2>/dev/null | tail -n +6 | xargs -r rm
+  ls -t /home/vscode/workspaces/idpbuilder/todos/${agent}-*.todo 2>/dev/null | tail -n +6 | xargs -r rm
 done
 
 # Clean files older than 24 hours
-find /workspaces/[project]/todos -name "*.todo" -mtime +1 -exec rm {} \;
+find /home/vscode/workspaces/idpbuilder/todos -name "*.todo" -mtime +1 -exec rm {} \;
 ```
 
 ### Mode Transition Protocol:
 ```bash
 # For detailed TODO state management procedures
-READ: /workspaces/[project]/protocols/TODO-STATE-MANAGEMENT-PROTOCOL.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/TODO-STATE-MANAGEMENT-PROTOCOL.md
 ```
 
 ## 9️⃣ PRE-COMPACTION TODO SAVING (CRITICAL FOR MEMORY MANAGEMENT)
@@ -462,7 +462,7 @@ READ: /workspaces/[project]/protocols/TODO-STATE-MANAGEMENT-PROTOCOL.md
 
 When Claude Code triggers compaction (manual or automatic), the PreCompact hooks will:
 1. Create `/tmp/compaction_marker.txt` with context information
-2. Check `/workspaces/[project]/todos/` directory
+2. Check `/home/vscode/workspaces/idpbuilder/todos/` directory
 3. Find the most recent `*.todo` file (by modification time)
 4. If found: Copy it to `/tmp/todos-precompact.txt` and add `TODO_STATE_SAVED` to marker
 5. If not: Add `NO_TODOS_FOUND` to marker
@@ -480,12 +480,12 @@ When to save a new TODO state file:
 6. Whenever TODOs significantly change
 
 File naming: `{agent-name}-{STATE}-{YYYYMMDD-HHMMSS}.todo`
-Location: `/workspaces/[project]/todos/`
+Location: `/home/vscode/workspaces/idpbuilder/todos/`
 
 ⚠️⚠️⚠️ MANDATORY: COMMIT AND PUSH TODO FILES ⚠️⚠️⚠️
 After saving ANY TODO state file, you MUST:
 ```bash
-cd /workspaces/[project]
+cd /home/vscode/workspaces/idpbuilder
 git add todos/*.todo
 git commit -m "todo: save {agent-name} state at {STATE} - {brief description}"
 git push

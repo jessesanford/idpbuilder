@@ -9,7 +9,7 @@ Standardized workflow for code review agents to follow when reviewing implementa
 ```bash
 # Verify you're in the correct directory
 pwd
-# Should show: [project]/phase[X]/wave[Y]/effort[Z]
+# Should show: idpbuilder/phase[X]/wave[Y]/effort[Z]
 
 # Verify correct branch
 git branch --show-current
@@ -19,7 +19,7 @@ git branch --show-current
 ### 2. Measure Line Count (CRITICAL FIRST STEP)
 ```bash
 # Run line counter
-[project]/tools/line-counter.sh -c $(git branch --show-current)
+idpbuilder/tools/line-counter.sh -c $(git branch --show-current)
 
 # Decision tree:
 # - If >800 lines: STOP - Create split plan
@@ -161,7 +161,7 @@ echo "🔄 Code review CHANGES_REQUIRED - $(date)" >> work-log.md
 #### If NEEDS_SPLIT (>800 lines):
 ```bash
 # Get detailed breakdown
-[project]/tools/line-counter.sh -c $(git branch --show-current) -d
+idpbuilder/tools/line-counter.sh -c $(git branch --show-current) -d
 
 # Create split plan
 cat > SPLIT-IMPLEMENTATION-PLAN.md << 'EOF'

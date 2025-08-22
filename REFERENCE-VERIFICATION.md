@@ -5,7 +5,7 @@
 The correct file structure for the Software Factory Template is:
 
 ```
-/workspaces/[project]/
+/home/vscode/workspaces/idpbuilder/
 ├── orchestrator-state.yaml              # Root level (NOT in orchestrator/)
 ├── PROJECT-IMPLEMENTATION-PLAN.md       # Root level (NOT in orchestrator/)
 ├── core/
@@ -101,20 +101,20 @@ The correct file structure for the Software Factory Template is:
 
 ## Common Path Patterns
 
-When using the template, replace `[project]` with your actual project name:
+When using the template, replace `idpbuilder` with your actual project name:
 
 ### Correct Paths:
-- `/workspaces/[project]/orchestrator-state.yaml`
-- `/workspaces/[project]/PROJECT-IMPLEMENTATION-PLAN.md`
-- `/workspaces/[project]/core/SOFTWARE-FACTORY-STATE-MACHINE.md`
-- `/workspaces/[project]/protocols/[protocol-name].md`
-- `/workspaces/[project]/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md`
-- `/workspaces/[project]/.claude/commands/continue-orchestrating.md`
+- `/home/vscode/workspaces/idpbuilder/orchestrator-state.yaml`
+- `/home/vscode/workspaces/idpbuilder/PROJECT-IMPLEMENTATION-PLAN.md`
+- `/home/vscode/workspaces/idpbuilder/core/SOFTWARE-FACTORY-STATE-MACHINE.md`
+- `/home/vscode/workspaces/idpbuilder/protocols/[protocol-name].md`
+- `/home/vscode/workspaces/idpbuilder/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md`
+- `/home/vscode/workspaces/idpbuilder/.claude/commands/continue-orchestrating.md`
 
 ### Incorrect Paths (DO NOT USE):
-- ❌ `/workspaces/[project]/orchestrator/orchestrator-state.yaml`
-- ❌ `/workspaces/[project]/orchestrator/SOFTWARE-FACTORY-STATE-MACHINE.md`
-- ❌ `/workspaces/[project]/orchestrator/PHASE{X}-SPECIFIC-IMPL-PLAN.md`
+- ❌ `/home/vscode/workspaces/idpbuilder/orchestrator/orchestrator-state.yaml`
+- ❌ `/home/vscode/workspaces/idpbuilder/orchestrator/SOFTWARE-FACTORY-STATE-MACHINE.md`
+- ❌ `/home/vscode/workspaces/idpbuilder/orchestrator/PHASE{X}-SPECIFIC-IMPL-PLAN.md`
 
 ## Validation Complete
 

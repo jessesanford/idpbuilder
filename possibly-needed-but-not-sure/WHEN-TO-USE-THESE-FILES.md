@@ -102,7 +102,7 @@ cp possibly-needed-but-not-sure/FILENAME.md .claude/agents/
 2. **Update agent configurations** to reference the file:
 ```markdown
 # In relevant agent .md file
-READ: /workspaces/[project]/protocols/FILENAME.md
+READ: /home/vscode/workspaces/idpbuilder/protocols/FILENAME.md
 ```
 
 3. **Test with a small effort** before full rollout

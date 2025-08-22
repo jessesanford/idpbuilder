@@ -344,7 +344,7 @@ Before starting orchestration, follow the structured planning process:
 ### 1. Setup Your Project
 ```bash
 # Copy this template to your project
-cp -r /workspaces/software-factory-template /workspaces/your-project
+cp -r /home/vscode/workspaces/idpbuilder /workspaces/your-project
 
 # Navigate to your project
 cd /workspaces/your-project

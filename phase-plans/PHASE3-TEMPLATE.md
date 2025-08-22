@@ -186,7 +186,7 @@ go test ./pkg/sync/... -trace=trace.out
 go tool trace trace.out
 
 # Line count check (may need split)
-/workspaces/[project]/tools/line-counter.sh -c $(git branch --show-current)
+/home/vscode/workspaces/idpbuilder/tools/line-counter.sh -c $(git branch --show-current)
 ```
 
 ---

@@ -80,7 +80,7 @@ Focus on:
 - Being explicit enough that @agent-sw-engineer knows EXACTLY what to do
 - Including validation commands after each step
 
-Put each plan in: /[project]/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
+Put each plan in: /idpbuilder/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
 ```
 
 #### Expected Output Structure:
@@ -268,7 +268,7 @@ Only @agent-code-reviewer can grant exceptions when:
 ## Example Project Structure After Planning
 
 ```
-/workspaces/[project]/
+/home/vscode/workspaces/idpbuilder/
 ├── orchestrator/
 │   ├── PROJECT-IMPLEMENTATION-PLAN.md          # High-level plan
 │   ├── orchestrator-state.yaml                 # Execution state

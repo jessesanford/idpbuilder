@@ -12,9 +12,9 @@ echo "SW ENGINEER STARTUP: $(date '+%Y-%m-%d %H:%M:%S %Z')"
 ### 2. List Instruction Files Being Used
 ```
 Reading instruction files:
-- /workspaces/[project]/orchestrator/SW-ENGINEER-STARTUP-REQUIREMENTS.md
-- /workspaces/[project]/orchestrator/SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md
-- /workspaces/[project]/orchestrator/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
+- /home/vscode/workspaces/idpbuilder/orchestrator/SW-ENGINEER-STARTUP-REQUIREMENTS.md
+- /home/vscode/workspaces/idpbuilder/orchestrator/SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md
+- /home/vscode/workspaces/idpbuilder/orchestrator/TEST-DRIVEN-VALIDATION-REQUIREMENTS.md
 - ${WORKING_DIR}/IMPLEMENTATION-PLAN.md
 - ${WORKING_DIR}/work-log.md
 ```
@@ -79,11 +79,11 @@ Cannot proceed without implementation plan
 
 ```bash
 # Verify line counter is accessible
-ls /workspaces/[project]/tools/line-counter.sh
+ls /home/vscode/workspaces/idpbuilder/tools/line-counter.sh
 # Should exist and be executable
 
 # Initial measurement
-/workspaces/[project]/tools/line-counter.sh -c $(git branch --show-current)
+/home/vscode/workspaces/idpbuilder/tools/line-counter.sh -c $(git branch --show-current)
 # Record starting size
 ```
 

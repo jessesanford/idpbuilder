@@ -309,7 +309,7 @@ Reference: agent-instructions/code-reviewer-phase-planning.md
 ```markdown
 Task @agent-code-reviewer:
 
-MANDATORY STARTUP: Follow /workspaces/[project]/orchestrator/STARTUP-REQUIREMENTS.md
+MANDATORY STARTUP: Follow /home/vscode/workspaces/idpbuilder/orchestrator/STARTUP-REQUIREMENTS.md
 
 PURPOSE: Create implementation plan for Effort E{X}.{Y}.{Z}
 
@@ -318,7 +318,7 @@ CONTEXT:
 - Branch: phase{X}/wave{Y}/effort{Z}-{name}
 
 INSTRUCTIONS:
-1. READ: /workspaces/[project]/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
+1. READ: /home/vscode/workspaces/idpbuilder/phase-plans/PHASE{X}-SPECIFIC-IMPL-PLAN.md
 2. ANALYZE: Requirements for this effort
 3. CREATE: EFFORT-IMPLEMENTATION-PLAN-E{X}.{Y}.{Z}.md
 4. CREATE: WORK-LOG.md from template
@@ -333,7 +333,7 @@ DELIVERABLES:
 ```markdown
 Task @agent-sw-engineer:
 
-MANDATORY STARTUP: Follow /workspaces/[project]/orchestrator/SW-ENGINEER-STARTUP-REQUIREMENTS.md
+MANDATORY STARTUP: Follow /home/vscode/workspaces/idpbuilder/orchestrator/SW-ENGINEER-STARTUP-REQUIREMENTS.md
 
 PURPOSE: Implement Effort E{X}.{Y}.{Z}
 
@@ -343,7 +343,7 @@ CONTEXT:
 
 INSTRUCTIONS:
 1. READ: EFFORT-IMPLEMENTATION-PLAN-E{X}.{Y}.{Z}.md
-2. READ: /workspaces/[project]/orchestrator/SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md
+2. READ: /home/vscode/workspaces/idpbuilder/orchestrator/SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md
 3. IMPLEMENT: Follow the plan exactly
 4. MEASURE: Run line counter after each logical change
 5. UPDATE: WORK-LOG.md as you progress

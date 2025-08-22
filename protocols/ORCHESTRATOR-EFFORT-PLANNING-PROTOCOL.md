@@ -141,15 +141,15 @@ After plan is created, orchestrator tasks SW Engineer:
 ```markdown
 Task @agent-sw-engineer:
 
-MANDATORY STARTUP: Follow /workspaces/[project]/orchestrator/SW-ENGINEER-STARTUP-REQUIREMENTS.md
+MANDATORY STARTUP: Follow /home/vscode/workspaces/idpbuilder/orchestrator/SW-ENGINEER-STARTUP-REQUIREMENTS.md
 
 Working directory: /workspaces/efforts/phase{X}/wave{Y}/effort{Z}-{name}
 Branch: phase{X}/wave{Y}/effort{Z}-{name}
 
 MANDATORY: Read these files IN ORDER:
 1. EFFORT-IMPLEMENTATION-PLAN-{Date}-{Time}.md - Your specific implementation plan (created by Code Reviewer)
-2. /workspaces/[project]/orchestrator/SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md
-3. /workspaces/[project]/orchestrator/SW-ENGINEER-STARTUP-REQUIREMENTS.md
+2. /home/vscode/workspaces/idpbuilder/orchestrator/SW-ENGINEER-EXPLICIT-INSTRUCTIONS.md
+3. /home/vscode/workspaces/idpbuilder/orchestrator/SW-ENGINEER-STARTUP-REQUIREMENTS.md
 
 Your EFFORT-IMPLEMENTATION-PLAN contains:
 - Context analysis of completed work

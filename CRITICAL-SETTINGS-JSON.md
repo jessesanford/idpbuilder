@@ -30,7 +30,7 @@ This allows agents to recover their state after compaction.
 
 ### File Location
 ```
-/workspaces/[project]/.claude/settings.json
+/home/vscode/workspaces/idpbuilder/.claude/settings.json
 ```
 
 ### File Contents
@@ -87,7 +87,7 @@ When using the setup script:
 
 1. **Copy the settings.json file**:
 ```bash
-cp /workspaces/software-factory-template/.claude/settings.json /workspaces/[project]/.claude/
+cp /home/vscode/workspaces/idpbuilder/.claude/settings.json /home/vscode/workspaces/idpbuilder/.claude/
 ```
 
 2. **Customize the TODO directory path** (if needed):
@@ -95,7 +95,7 @@ cp /workspaces/software-factory-template/.claude/settings.json /workspaces/[proj
 # Edit settings.json and change:
 TODO_DIR='./todos'
 # To your project's TODO directory:
-TODO_DIR='/workspaces/[project]/todos'
+TODO_DIR='/home/vscode/workspaces/idpbuilder/todos'
 ```
 
 3. **Verify it's working**:

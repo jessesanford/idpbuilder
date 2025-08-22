@@ -39,7 +39,7 @@
 
 #### Requirements:
 1. **MUST** create base API group structure:
-   - `apis/[project]/v1alpha1/`
+   - `apis/idpbuilder/v1alpha1/`
    - `apis/[module]/v1alpha1/`
 
 2. **MUST** implement core types:
@@ -98,8 +98,8 @@ func TestAPIValidation(t *testing.T) {
 FUNCTION implement_api_types():
     // Step 1: Create directory structure
     CREATE_DIRS([
-        "apis/[project]/v1alpha1",
-        "apis/[project]/v1beta1",
+        "apis/idpbuilder/v1alpha1",
+        "apis/idpbuilder/v1beta1",
     ])
     
     // Step 2: Generate or copy base types
@@ -135,7 +135,7 @@ go test ./apis/... -v
 golangci-lint run ./apis/...
 
 # Line count check
-/workspaces/[project]/tools/line-counter.sh -c $(git branch --show-current)
+/home/vscode/workspaces/idpbuilder/tools/line-counter.sh -c $(git branch --show-current)
 # MUST be < 800 lines
 ```
 

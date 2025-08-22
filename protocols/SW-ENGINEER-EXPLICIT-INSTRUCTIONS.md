@@ -5,7 +5,7 @@
 **🚨 CRITICAL: BEFORE DOING ANY WORK 🚨**
 
 Every SW Engineering agent MUST follow the startup requirements at:
-`/workspaces/[project]/protocols/SW-ENGINEER-STARTUP-REQUIREMENTS.md`
+`/home/vscode/workspaces/idpbuilder/protocols/SW-ENGINEER-STARTUP-REQUIREMENTS.md`
 
 This includes:
 1. Print startup timestamp

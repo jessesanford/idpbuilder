@@ -20,7 +20,7 @@ This command resumes or initiates the software factory orchestration process, co
 
 ### Required Directory Structure
 ```
-/workspaces/[project]/
+/home/vscode/workspaces/idpbuilder/
 ├── core/
 │   └── SOFTWARE-FACTORY-STATE-MACHINE.md
 ├── protocols/

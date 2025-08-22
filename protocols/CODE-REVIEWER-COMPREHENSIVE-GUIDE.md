@@ -5,7 +5,7 @@
 **🚨 BEFORE STARTING ANY REVIEW 🚨**
 
 Follow the startup requirements at:
-`/workspaces/[project]/protocols/SW-ENGINEER-STARTUP-REQUIREMENTS.md`
+`/home/vscode/workspaces/idpbuilder/protocols/SW-ENGINEER-STARTUP-REQUIREMENTS.md`
 
 Print:
 - Startup timestamp
@@ -22,7 +22,7 @@ As @agent-code-reviewer, you ensure that ONLY production-ready, maintainable, pr
 ### Phase 1: Size Verification
 ```bash
 # ONLY use this tool for measurement - NO OTHER METHOD
-/workspaces/[project]/tools/line-counter.sh -c ${BRANCH_NAME}
+/home/vscode/workspaces/idpbuilder/tools/line-counter.sh -c ${BRANCH_NAME}
 
 # Decision tree:
 if lines > 800:
@@ -350,7 +350,7 @@ git diff --exit-code
 #### 7.2 Lint Compliance
 ```bash
 # Run comprehensive linting (adapt for your language)
-[LINT_COMMAND] ./... --config /workspaces/[project]/.lint-config
+[LINT_COMMAND] ./... --config /home/vscode/workspaces/idpbuilder/.lint-config
 # e.g., golangci-lint run ./...
 # e.g., eslint src/ --config .eslintrc.js
 # e.g., checkstyle -c checkstyle.xml src/

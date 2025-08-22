@@ -70,7 +70,7 @@ This directory stores TODO state files for agents to persist their task lists ac
 ### Git Integration
 ```bash
 # Always commit TODO files after creating
-cd /workspaces/[project]
+cd /home/vscode/workspaces/idpbuilder
 git add todos/*.todo
 git commit -m "todo: save {agent} state at {STATE}"
 git push

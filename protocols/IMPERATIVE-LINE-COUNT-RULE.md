@@ -19,7 +19,7 @@ IF effort_size > MAX_LIMIT:
 
 ### ONLY Valid Method
 ```bash
-/workspaces/[project]/tools/line-counter.sh -c {branch}
+/home/vscode/workspaces/idpbuilder/tools/line-counter.sh -c {branch}
 ```
 
 ### INVALID Methods ❌
