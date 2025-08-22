@@ -4,7 +4,7 @@ package builder
 import (
 	"context"
 	
-	"github.com/vscode/workspaces/idpbuilder/pkg/build/api"
+	"github.com/cnoe-io/idpbuilder/pkg/build/api"
 )
 
 // Builder defines the interface for container build operations
