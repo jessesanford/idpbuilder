@@ -45,8 +45,47 @@
 - [x] All tests passing
 
 ## Review Phase
-- **Status**: Not Started
+- **Status**: Completed - NEEDS_SPLIT
+- **Reviewer**: @agent-code-reviewer
+- **Date**: 2025-08-24 21:08:00 UTC
+
+### Review Findings
+- **Actual Size**: 974 lines (Go files only, excluding work-log and plan)
+- **Limit**: 800 lines
+- **Overage**: 174 lines (21.75% over limit)
+- **Decision**: NEEDS_SPLIT
+
+## Split Planning Phase
+- **Status**: Completed
+- **Planner**: @agent-code-reviewer-1756072217 (sole planner per R199)
+- **Date**: 2025-08-24 21:50:00 UTC
+
+### Split Strategy
+- **Total Splits**: 2
+- **Split 001**: OCI Package (622 lines)
+  - pkg/oci/types.go (121 lines)
+  - pkg/oci/manifest.go (124 lines)
+  - pkg/oci/constants.go (56 lines)
+  - pkg/oci/types_test.go (130 lines)
+  - pkg/oci/manifest_test.go (191 lines)
+- **Split 002**: Stack Package + Documentation (352 lines)
+  - pkg/stack/types.go (107 lines)
+  - pkg/stack/constants.go (42 lines)
+  - pkg/stack/types_test.go (164 lines)
+  - pkg/doc.go (39 lines)
+
+### Split Planning Outputs (ALL CREATED)
+- ✅ SPLIT-INVENTORY.md - Complete split breakdown with deduplication matrix
+- ✅ SPLIT-PLAN-001.md - OCI package split instructions
+- ✅ SPLIT-PLAN-002.md - Stack package split instructions  
+- ✅ SPLIT-INSTRUCTIONS.md - Implementation guide for SW Engineer
+
+### Dependency Order
+1. Split 001 MUST be merged first (OCI types - foundational)
+2. Split 002 depends on Split 001 (imports oci.OCIReference)
 
 ## Notes
-- Total estimated: 500 lines
+- Total estimated: 500 lines (initial plan)
+- Actual implementation: 974 lines (exceeded limit)
 - Measurement tool: /workspaces/kcp-shared-tools/tmc-pr-line-counter.sh
+- Split planning complete and ready for execution
