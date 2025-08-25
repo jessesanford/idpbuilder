@@ -1,173 +1,86 @@
 # SPLIT-PLAN-001.md
-## Split 001 of 2: OCI Package Implementation
-**Planner**: Code Reviewer @agent-code-reviewer-1756072217 (same for ALL splits)
+## Split 001 of 2: OCI Foundation Types
+**Planner**: Code Reviewer code-reviewer-1756082519 (same for ALL splits)
 **Parent Effort**: oci-types
-**Branch Name**: phase1/wave1/oci-types-split-001
-**Size**: 622 lines (well under 800 limit)
 
-## Boundaries
-- **Previous Split**: None (first split)
-- **This Split Coverage**: Complete OCI package (pkg/oci/*)
-- **Next Split**: Stack package and documentation
+<!-- ORCHESTRATOR METADATA PLACEHOLDER - DO NOT REMOVE -->
+<!-- The orchestrator will add infrastructure metadata below: -->
+<!-- WORKING_DIRECTORY, BRANCH, REMOTE, BASE_BRANCH, etc. -->
+<!-- SW Engineers MUST read this metadata to navigate to the correct directory -->
+<!-- END PLACEHOLDER -->
+
+## Boundaries (CRITICAL: All splits MUST reference SAME effort!)
+- **Previous Split**: None (first split of THIS effort)
+  - Path: N/A (this is Split 001)
+  - Branch: N/A
+- **This Split**: Split 001 of phase1/wave1/oci-types
+  - Path: efforts/phase1/wave1/oci-types/split-001/
+  - Branch: phase1/wave1/oci-types-split-001
+- **Next Split**: Split 002 of phase1/wave1/oci-types
+  - Path: efforts/phase1/wave1/oci-types/split-002/
+  - Branch: phase1/wave1/oci-types-split-002
+- **File Boundaries**:
+  - This Split Start: Line 1 / File: pkg/doc.go
+  - This Split End: Line 191 / File: pkg/oci/manifest_test.go
+  - Next Split Start: Line 1 / File: pkg/stack/constants.go
 
 ## Files in This Split (EXCLUSIVE - no overlap with other splits)
+- pkg/doc.go (39 lines) - Package documentation
+- pkg/oci/constants.go (56 lines) - OCI constants and defaults
+- pkg/oci/types.go (121 lines) - Core OCI type definitions
+- pkg/oci/types_test.go (130 lines) - OCI types unit tests
+- pkg/oci/manifest.go (124 lines) - OCI manifest handling
+- pkg/oci/manifest_test.go (191 lines) - Manifest unit tests
 
-### Production Code (301 lines)
-1. **pkg/oci/types.go** (121 lines)
-   - Core OCI type definitions
-   - OCIImage struct with Name, Tag, Digest, Registry, Repository
-   - OCIRepository interface for List, Get, Push, Pull operations
-   - OCIReference type for image references
-   - OCILayer struct for layer information
-   - Validation methods for image references
+**Total Lines**: 661 lines (COMPLIANT)
 
-2. **pkg/oci/manifest.go** (124 lines)
-   - OCIManifest struct following OCI specification
-   - OCIDescriptor type with MediaType, Digest, Size, URLs, Annotations
-   - OCIManifestList for multi-platform support
-   - OCIConfig for image configuration
-   - Helper methods for manifest validation
-
-3. **pkg/oci/constants.go** (56 lines)
-   - Media type constants (application/vnd.oci.*)
-   - Annotation keys from OCI specification
-   - Default registry values
-   - Platform defaults
-
-### Test Code (321 lines)
-4. **pkg/oci/types_test.go** (130 lines)
-   - Unit tests for type creation
-   - Validation tests for OCI references
-   - Edge cases and error conditions
-
-5. **pkg/oci/manifest_test.go** (191 lines)
-   - Manifest marshaling/unmarshaling tests
-   - Descriptor validation tests
-   - Multi-platform manifest tests
-
-## Directory Structure
-```
-efforts/phase1/wave1/oci-types-split-001/
-├── pkg/
-│   └── oci/
-│       ├── types.go         (121 lines)
-│       ├── manifest.go      (124 lines)
-│       ├── constants.go     (56 lines)
-│       ├── types_test.go    (130 lines)
-│       └── manifest_test.go (191 lines)
-├── go.mod
-├── go.sum
-└── Makefile
-```
-
-## Functionality Scope
-This split implements the complete OCI (Open Container Initiative) type system:
-- Image representation and metadata
-- Manifest structures for single and multi-platform images
-- Layer and descriptor types
-- Standard OCI constants and media types
-- Full validation logic for OCI references
-- Comprehensive test coverage (>80%)
+## Functionality
+- Package documentation defining overall purpose
+- Core OCI type definitions (OCIReference, OCIImage, OCIManifest, OCIDescriptor)
+- OCI constants for media types and registry defaults
+- Manifest parsing and validation logic
+- Comprehensive unit tests for all OCI types and manifest operations
 
 ## Dependencies
-- **External**: None (standard library only)
-- **Internal**: None (foundational split)
-- **Required by**: Split 002 (stack package references OCIReference)
+- None (foundational split - no dependencies on stack package)
+- External: Standard library, testing framework
+- This split is self-contained and compilable
 
 ## Implementation Instructions
+1. Create split working directory:
+   ```bash
+   mkdir -p efforts/phase1/wave1/oci-types/split-001
+   cd efforts/phase1/wave1/oci-types/split-001
+   ```
 
-### 1. Create New Branch
-```bash
-cd /home/vscode/workspaces/idpbuilder-oci-mgmt
-git checkout main
-git pull origin main
-git checkout -b phase1/wave1/oci-types-split-001
-```
+2. Create branch for this split:
+   ```bash
+   git checkout -b phase1/wave1/oci-types-split-001
+   ```
 
-### 2. Create Sparse Checkout (ONLY these files)
-```bash
-# Create effort directory structure
-mkdir -p efforts/phase1/wave1/oci-types-split-001/pkg/oci
+3. Copy ONLY the files assigned to this split:
+   ```bash
+   mkdir -p pkg/oci
+   cp ../pkg/doc.go pkg/
+   cp ../pkg/oci/constants.go pkg/oci/
+   cp ../pkg/oci/types.go pkg/oci/
+   cp ../pkg/oci/types_test.go pkg/oci/
+   cp ../pkg/oci/manifest.go pkg/oci/
+   cp ../pkg/oci/manifest_test.go pkg/oci/
+   ```
 
-# Copy ONLY the OCI package files
-cp efforts/phase1/wave1/oci-types/pkg/oci/types.go \
-   efforts/phase1/wave1/oci-types-split-001/pkg/oci/
+4. Implement complete functionality for OCI types
+5. Ensure compilation: `go build ./pkg/oci/...`
+6. Run unit tests: `go test ./pkg/oci/...`
+7. Measure with line counter tool to verify compliance
 
-cp efforts/phase1/wave1/oci-types/pkg/oci/manifest.go \
-   efforts/phase1/wave1/oci-types-split-001/pkg/oci/
+## Testing Requirements
+- All OCI type methods must have tests
+- Manifest parsing edge cases must be covered
+- Test coverage target: >80%
+- Tests must pass independently without stack package
 
-cp efforts/phase1/wave1/oci-types/pkg/oci/constants.go \
-   efforts/phase1/wave1/oci-types-split-001/pkg/oci/
-
-cp efforts/phase1/wave1/oci-types/pkg/oci/types_test.go \
-   efforts/phase1/wave1/oci-types-split-001/pkg/oci/
-
-cp efforts/phase1/wave1/oci-types/pkg/oci/manifest_test.go \
-   efforts/phase1/wave1/oci-types-split-001/pkg/oci/
-
-# Copy supporting files
-cp efforts/phase1/wave1/oci-types/go.mod \
-   efforts/phase1/wave1/oci-types-split-001/
-
-cp efforts/phase1/wave1/oci-types/go.sum \
-   efforts/phase1/wave1/oci-types-split-001/
-
-cp efforts/phase1/wave1/oci-types/Makefile \
-   efforts/phase1/wave1/oci-types-split-001/
-```
-
-### 3. Verify Compilation
-```bash
-cd efforts/phase1/wave1/oci-types-split-001
-go build ./pkg/oci/...
-go test ./pkg/oci/... -v
-```
-
-### 4. Measure Size
-```bash
-/home/vscode/workspaces/idpbuilder-oci-mgmt/tools/line-counter.sh
-# Must show ≤622 lines (excluding work-log.md and plan files)
-```
-
-### 5. Run Tests
-```bash
-go test ./pkg/oci/... -cover
-# Must achieve >80% coverage
-```
-
-## Quality Requirements
-- ✅ All code must compile without errors
-- ✅ All tests must pass
-- ✅ Test coverage must exceed 80%
-- ✅ Total size must not exceed 622 lines
-- ✅ All exported types must have godoc comments
-- ✅ No implementation logic (types and constants only)
-
-## Commit Message
-```
-feat(oci): implement OCI types package (split 001/002)
-
-- Add core OCI type definitions (OCIImage, OCIRepository, OCIReference)
-- Add manifest types (OCIManifest, OCIDescriptor, OCIManifestList)
-- Add OCI specification constants and media types
-- Add comprehensive unit tests (>80% coverage)
-- Size: 622 lines (under 800 limit)
-
-Part of oci-types effort split due to size constraints
-```
-
-## Review Checklist
-- [ ] Only OCI package files included (no stack files)
-- [ ] All 5 files present and correct
-- [ ] Compilation successful
-- [ ] Tests passing with >80% coverage
-- [ ] Size verified with line-counter.sh
-- [ ] No dependencies on Split 002
-- [ ] Ready for independent merge
-
-## Next Steps
-After this split is merged:
-1. Orchestrator creates Split 002 branch
-2. SW Engineer implements stack package
-3. Split 002 can reference types from this split
-4. Both splits integrate to complete original effort
+## Split Branch Strategy
+- Branch: `phase1/wave1/oci-types-split-001`
+- Must merge to: `phase1/wave1/oci-types` after review
+- No dependencies on Split 002 (stack types)

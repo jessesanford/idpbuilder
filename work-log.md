@@ -84,8 +84,40 @@
 1. Split 001 MUST be merged first (OCI types - foundational)
 2. Split 002 depends on Split 001 (imports oci.OCIReference)
 
+## Split Planning Phase (Revision 2)
+- **Status**: Completed
+- **Planner**: @agent-code-reviewer-1756082519 (sole planner per R199)
+- **Date**: 2025-08-25 00:40:00 UTC
+
+### Revised Split Strategy
+- **Total Splits**: 2 (optimized for logical cohesion)
+- **Split 001**: OCI Foundation Types (661 lines)
+  - pkg/doc.go (39 lines) - Package documentation
+  - pkg/oci/constants.go (56 lines)
+  - pkg/oci/types.go (121 lines)
+  - pkg/oci/types_test.go (130 lines)
+  - pkg/oci/manifest.go (124 lines)
+  - pkg/oci/manifest_test.go (191 lines)
+- **Split 002**: Stack Configuration Types (313 lines)
+  - pkg/stack/constants.go (42 lines)
+  - pkg/stack/types.go (107 lines)
+  - pkg/stack/types_test.go (164 lines)
+
+### Key Planning Decisions
+1. **Logical Grouping**: Split by package boundaries for clean separation
+2. **Dependency Management**: Stack depends on OCI, so OCI goes first
+3. **Size Compliance**: Split 001 at 661 lines, Split 002 at 313 lines (both well under 800)
+4. **Package Documentation**: Included in Split 001 as foundational context
+
+### Critical Implementation Notes
+- Split 001 is self-contained and compilable independently
+- Split 002 requires Split 001 to be completed first (imports oci package)
+- Each split creates its own branch: phase1/wave1/oci-types-split-XXX
+- Splits must be implemented and reviewed sequentially
+
 ## Notes
 - Total estimated: 500 lines (initial plan)
 - Actual implementation: 974 lines (exceeded limit)
-- Measurement tool: /workspaces/kcp-shared-tools/tmc-pr-line-counter.sh
+- Measurement tool: /home/vscode/workspaces/idpbuilder-oci-mgmt/tools/line-counter.sh
 - Split planning complete and ready for execution
+- Revised split plan optimizes for logical cohesion and dependency management
