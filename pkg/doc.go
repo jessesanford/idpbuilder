@@ -27,7 +27,7 @@
 //				Type:    stack.ComponentTypeApplication,
 //				Version: "2.1.0",
 //				Status:  stack.ComponentStatusPending,
-//				OCIReference: &oci.OCIReference{
+//				OCIReference: &stack.OCIReference{
 //					Registry:   "docker.io",
 //					Repository: "myorg/webapp",
 //					Tag:        "v2.1.0",

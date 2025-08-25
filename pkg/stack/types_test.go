@@ -193,7 +193,7 @@ func TestStackComponent_IsValid(t *testing.T) {
 				Name:    "test-component",
 				Type:    ComponentTypeApplication,
 				Version: "1.0.0",
-				OCIReference: &oci.OCIReference{
+				OCIReference: &OCIReference{
 					Registry:   "",
 					Repository: "library/nginx",
 					Tag:        "latest",
@@ -208,7 +208,7 @@ func TestStackComponent_IsValid(t *testing.T) {
 				Name:    "test-component",
 				Type:    ComponentTypeApplication,
 				Version: "1.0.0",
-				OCIReference: &oci.OCIReference{
+				OCIReference: &OCIReference{
 					Registry:   "docker.io",
 					Repository: "",
 					Tag:        "latest",
@@ -223,7 +223,7 @@ func TestStackComponent_IsValid(t *testing.T) {
 				Name:    "test-component",
 				Type:    ComponentTypeApplication,
 				Version: "1.0.0",
-				OCIReference: &oci.OCIReference{
+				OCIReference: &OCIReference{
 					Registry:   "docker.io",
 					Repository: "library/nginx",
 				},
@@ -380,13 +380,13 @@ func TestStackConfiguration_GetDependenciesFor(t *testing.T) {
 func TestValidateOCIReference(t *testing.T) {
 	tests := []struct {
 		name    string
-		ref     *oci.OCIReference
+		ref     *OCIReference
 		wantErr bool
 		errMsg  string
 	}{
 		{
 			name: "valid reference with tag",
-			ref: &oci.OCIReference{
+			ref: &OCIReference{
 				Registry:   "docker.io",
 				Repository: "library/nginx",
 				Tag:        "latest",
@@ -395,7 +395,7 @@ func TestValidateOCIReference(t *testing.T) {
 		},
 		{
 			name: "valid reference with digest",
-			ref: &oci.OCIReference{
+			ref: &OCIReference{
 				Registry:   "ghcr.io",
 				Repository: "myorg/myapp",
 				Digest:     "sha256:abc123",
@@ -404,7 +404,7 @@ func TestValidateOCIReference(t *testing.T) {
 		},
 		{
 			name: "empty registry",
-			ref: &oci.OCIReference{
+			ref: &OCIReference{
 				Registry:   "",
 				Repository: "library/nginx",
 				Tag:        "latest",
@@ -414,7 +414,7 @@ func TestValidateOCIReference(t *testing.T) {
 		},
 		{
 			name: "empty repository",
-			ref: &oci.OCIReference{
+			ref: &OCIReference{
 				Registry:   "docker.io",
 				Repository: "",
 				Tag:        "latest",
@@ -424,7 +424,7 @@ func TestValidateOCIReference(t *testing.T) {
 		},
 		{
 			name: "no tag or digest",
-			ref: &oci.OCIReference{
+			ref: &OCIReference{
 				Registry:   "docker.io",
 				Repository: "library/nginx",
 			},
