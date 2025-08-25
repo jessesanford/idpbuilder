@@ -2,7 +2,6 @@ package oci
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 )
 
@@ -197,43 +196,91 @@ func ParseOCIReference(ref string) (*OCIReference, error) {
 		return nil, fmt.Errorf("empty reference")
 	}
 	
-	// Regular expression to parse OCI references
-	// Format: [registry/]namespace/repository[:tag][@digest]
-	re := regexp.MustCompile(`^(?:([^/]+)/)?(?:([^/]+)/)?([^/:@]+)(?::([^@]+))?(?:@(.+))?$`)
-	matches := re.FindStringSubmatch(ref)
+	// Split by @ first to separate digest
+	var digestPart string
+	if strings.Contains(ref, "@") {
+		parts := strings.SplitN(ref, "@", 2)
+		ref = parts[0]
+		digestPart = parts[1]
+	}
 	
-	if matches == nil {
-		return nil, fmt.Errorf("invalid reference format: %s", ref)
+	// Split by : to separate tag  
+	var tagPart string
+	if strings.Contains(ref, ":") && !strings.Contains(ref, "://") {
+		// Find the last colon (could be port or tag)
+		lastColon := strings.LastIndex(ref, ":")
+		beforeColon := ref[:lastColon]
+		afterColon := ref[lastColon+1:]
+		
+		// Check if this looks like a port (registry:port) or tag
+		// If there's no slash before the last colon, it could be registry:port
+		// If there's a slash, it's more likely namespace/repo:tag
+		lastSlash := strings.LastIndex(beforeColon, "/")
+		
+		if lastSlash == -1 {
+			// No slash before colon, could be registry:port or just repo:tag
+			// Check if afterColon looks like a port number (all digits) vs tag
+			isPort := true
+			for _, char := range afterColon {
+				if char < '0' || char > '9' {
+					isPort = false
+					break
+				}
+			}
+			if !isPort {
+				// It's a tag
+				tagPart = afterColon
+				ref = beforeColon
+			}
+		} else {
+			// There's a slash before the colon, so this is likely repo:tag
+			tagPart = afterColon
+			ref = beforeColon
+		}
 	}
 	
 	result := &OCIReference{}
 	
-	// Determine if first part is registry or namespace
-	if matches[1] != "" {
-		// Check if it contains a domain/port pattern
-		if strings.Contains(matches[1], ".") || strings.Contains(matches[1], ":") {
-			result.Registry = matches[1]
-			result.Namespace = matches[2]
-			result.Repository = matches[3]
-		} else {
-			result.Registry = DefaultRegistry
-			result.Namespace = matches[1]
-			result.Repository = matches[2]
-		}
-	} else {
+	// Split the remaining ref by /
+	parts := strings.Split(ref, "/")
+	
+	switch len(parts) {
+	case 1:
+		// Just repository name: nginx
 		result.Registry = DefaultRegistry
 		result.Namespace = DefaultNamespace
-		result.Repository = matches[3]
+		result.Repository = parts[0]
+	case 2:
+		// namespace/repository: myorg/myapp OR registry/repository
+		if strings.Contains(parts[0], ".") || strings.Contains(parts[0], ":") {
+			// registry/repository: docker.io/nginx
+			result.Registry = parts[0]
+			result.Namespace = DefaultNamespace
+			result.Repository = parts[1]
+		} else {
+			// namespace/repository: myorg/myapp
+			result.Registry = DefaultRegistry
+			result.Namespace = parts[0]
+			result.Repository = parts[1]
+		}
+	case 3:
+		// registry/namespace/repository: registry.example.com/myorg/myapp
+		result.Registry = parts[0]
+		result.Namespace = parts[1]
+		result.Repository = parts[2]
+	default:
+		// More than 3 parts, assume last is repository, second-to-last is namespace
+		if len(parts) >= 3 {
+			result.Registry = strings.Join(parts[:len(parts)-2], "/")
+			result.Namespace = parts[len(parts)-2]
+			result.Repository = parts[len(parts)-1]
+		} else {
+			return nil, fmt.Errorf("invalid reference format: %s", ref)
+		}
 	}
 	
-	// Fix empty repository case
-	if result.Repository == "" {
-		result.Repository = result.Namespace
-		result.Namespace = DefaultNamespace
-	}
-	
-	result.Tag = matches[4]
-	result.Digest = matches[5]
+	result.Tag = tagPart
+	result.Digest = digestPart
 	
 	// Set default tag if no tag or digest specified
 	if result.Tag == "" && result.Digest == "" {
