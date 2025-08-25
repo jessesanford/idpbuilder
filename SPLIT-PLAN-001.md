@@ -1,116 +1,140 @@
 # SPLIT-PLAN-001.md
-## Split 001 of 2: OCI Types and Documentation
-**Planner**: Code Reviewer @agent-code-reviewer (same for ALL splits)
+## Split 001 of 2: Authentication Types and Documentation
+**Planner**: Code Reviewer code-reviewer-1756082516 (same for ALL splits)
 **Parent Effort**: registry-auth-types
-**Target Size**: 661 lines (well under 800 limit)
 
-## Boundaries
-- **Previous Split**: None (first split)
-- **This Split Focus**: OCI types, manifest handling, and package documentation
-- **Next Split**: Stack types (Split 002)
+<!-- ORCHESTRATOR METADATA PLACEHOLDER - DO NOT REMOVE -->
+<!-- The orchestrator will add infrastructure metadata below: -->
+<!-- WORKING_DIRECTORY, BRANCH, REMOTE, BASE_BRANCH, etc. -->
+<!-- SW Engineers MUST read this metadata to navigate to the correct directory -->
+<!-- END PLACEHOLDER -->
+
+## Boundaries (CRITICAL: All splits MUST reference SAME effort!)
+- **Previous Split**: None (first split of THIS effort)
+  - Path: N/A (this is Split 001)
+  - Branch: N/A
+- **This Split**: Split 001 of phase1/wave1/registry-auth-types
+  - Path: efforts/phase1/wave1/registry-auth-types/split-001/
+  - Branch: phase1/wave1/registry-auth-types-split-001
+- **Next Split**: Split 002 of phase1/wave1/registry-auth-types
+  - Path: efforts/phase1/wave1/registry-auth-types/split-002/
+  - Branch: phase1/wave1/registry-auth-types-split-002
+- **File Boundaries**:
+  - This Split Start: pkg/auth/types.go (first file)
+  - This Split End: pkg/doc.go (last file)
+  - Next Split Start: pkg/certs/types.go (first cert file)
 
 ## Files in This Split (EXCLUSIVE - no overlap with other splits)
-```
-pkg/doc.go                    (39 lines)  - Package documentation
-pkg/oci/types.go              (121 lines) - OCI type definitions
-pkg/oci/manifest.go           (124 lines) - Manifest handling logic
-pkg/oci/constants.go          (56 lines)  - OCI-related constants
-pkg/oci/types_test.go         (130 lines) - Unit tests for types
-pkg/oci/manifest_test.go      (191 lines) - Unit tests for manifest
-```
-**Total**: 661 lines
+- `pkg/auth/types.go` (224 lines) - Core authentication types and interfaces
+- `pkg/auth/credentials.go` (232 lines) - Credential structures and management
+- `pkg/auth/constants.go` (104 lines) - Auth-related constants and error messages
+- `pkg/doc.go` (89 lines) - Package documentation for the entire registry-auth-types package
 
-## Functionality Scope
-### Core Components:
-1. **OCI Type Definitions** (pkg/oci/types.go)
-   - Image configuration types
-   - Registry reference types
-   - Platform specifications
-   - Descriptor structures
+**Total Lines**: 649 lines (COMPLIANT - under 800 line limit)
 
-2. **Manifest Handling** (pkg/oci/manifest.go)
-   - Manifest parsing and validation
-   - Manifest list operations
-   - Content descriptor management
-   - Media type handling
+## Functionality
+### Authentication Types (`pkg/auth/types.go`)
+- `RegistryAuth` interface with GetCredentials(), Validate(), Type() methods
+- `AuthConfig` struct for registry authentication configuration
+- `AuthType` enum (Basic, Bearer, OAuth2)
+- `DockerConfig` struct for docker config.json compatibility
+- `AuthStore` interface for credential storage
+- `RegistryAuthOptions` for configuration
 
-3. **Constants** (pkg/oci/constants.go)
-   - Media type constants
-   - Architecture constants
-   - OS platform constants
-   - Annotation keys
+### Credential Management (`pkg/auth/credentials.go`)
+- `Credentials` struct with Username, Password, Token fields
+- `CredentialHelper` interface for external helpers
+- `CredentialStore` type with Get/Set/Delete methods
+- `TokenResponse` for OAuth token flows
+- Validation and expiration handling methods
 
-4. **Package Documentation** (pkg/doc.go)
-   - Overall package overview
-   - Usage examples
-   - Architecture notes
+### Constants (`pkg/auth/constants.go`)
+- Authentication type constants
+- HTTP header names (Authorization, WWW-Authenticate)
+- Default token expiry times
+- Registry URL patterns
+- Error messages for auth failures
 
-5. **Test Coverage**
-   - Complete unit tests for all OCI types
-   - Manifest operation tests
-   - Edge case coverage
+### Documentation (`pkg/doc.go`)
+- Package overview and purpose
+- Usage examples for authentication flows
+- Security best practices
+- Integration guidelines
 
 ## Dependencies
-- **External**: Standard library only (encoding/json, crypto/sha256, etc.)
-- **Internal**: None - this is a foundational package
-- **Test Dependencies**: Standard testing package
-
-## Implementation Instructions for SW Engineer
-
-### Step 1: Create Branch
-```bash
-git checkout -b phase1/wave1/registry-auth-types-split-001
+```go
+// Standard library only for Phase 1
+import (
+    "encoding/base64"
+    "encoding/json"
+    "errors"
+    "fmt"
+    "strings"
+    "time"
+)
 ```
 
-### Step 2: Sparse Checkout (if starting fresh)
-```bash
-# Enable sparse checkout
-git sparse-checkout init --cone
-git sparse-checkout set pkg/doc.go pkg/oci/
-```
+## Implementation Instructions
+1. **Create sparse checkout** with ONLY these files:
+   ```bash
+   git sparse-checkout set pkg/auth pkg/doc.go
+   ```
 
-### Step 3: Verify Files
-Ensure ONLY these files are included:
-- pkg/doc.go
-- pkg/oci/types.go
-- pkg/oci/manifest.go
-- pkg/oci/constants.go
-- pkg/oci/types_test.go
-- pkg/oci/manifest_test.go
+2. **Verify isolation**:
+   - Ensure no references to pkg/certs files
+   - All auth functionality must be self-contained
+   - Doc.go should have general overview but focus on auth
 
-### Step 4: Run Tests
-```bash
-go test ./pkg/oci/...
-```
+3. **Implementation order**:
+   - Start with constants.go (defines foundation)
+   - Implement types.go (interfaces and structs)
+   - Implement credentials.go (uses types)
+   - Update doc.go with auth-specific examples
 
-### Step 5: Measure Size
-```bash
-/workspaces/idpbuilder-oci-mgmt/tools/line-counter.sh
-# Should show ~661 lines
-```
+4. **Quality checks**:
+   - All types must compile independently
+   - No circular dependencies
+   - Clear godoc comments on all exported types
+   - Validate with: `go build ./pkg/auth`
 
-### Step 6: Commit
-```bash
-git add pkg/doc.go pkg/oci/
-git commit -m "feat: implement OCI types and manifest handling (split 001)"
-git push origin phase1/wave1/registry-auth-types-split-001
-```
+5. **Size verification**:
+   ```bash
+   ${PROJECT_ROOT}/tools/line-counter.sh
+   # Must show <800 lines for this split
+   ```
 
-## Quality Checklist
-- [ ] All OCI types properly defined with json tags
-- [ ] Manifest operations handle all media types
-- [ ] Constants cover standard OCI specifications
-- [ ] Tests achieve >80% coverage
-- [ ] Documentation includes usage examples
-- [ ] No circular dependencies
-- [ ] Clean separation from Stack package
+## Test Requirements
+- **Unit Tests**: Create corresponding test files
+  - `pkg/auth/types_test.go` - Interface compliance tests
+  - `pkg/auth/credentials_test.go` - Credential operations
+  - `pkg/auth/constants_test.go` - Constant usage validation
+- **Coverage Target**: 80% minimum
+- **Test Scenarios**:
+  - Valid/invalid credentials
+  - Token expiration
+  - Auth type detection
+  - Credential store operations
 
-## Merge Strategy
-- This split will be merged to `phase1/wave1/registry-auth-types` branch
-- Can be merged independently of Split 002
-- No coordination required with other splits
+## Split Branch Strategy
+- **Branch Name**: `phase1/wave1/registry-auth-types-split-001`
+- **Base Branch**: `phase1/wave1/registry-auth-types`
+- **Merge Target**: Back to `phase1/wave1/registry-auth-types` after review
+- **Commit Message**: "split-001: Implement authentication types and credentials"
 
-## Risk Mitigation
-- **Compilation**: Package is self-contained and will compile independently
-- **Testing**: Includes all test files for complete validation
-- **Size**: At 661 lines, well under the 800-line limit with room for minor additions
+## Success Criteria
+- All auth types compile without errors
+- No dependencies on certificate types (split 002)
+- Clear separation of concerns
+- Secure credential handling patterns
+- Complete godoc documentation
+- Total implementation <800 lines
+- Tests provide 80% coverage
+
+## Review Checklist
+- [ ] Files match exactly those listed (no extras)
+- [ ] No references to pkg/certs
+- [ ] All interfaces properly defined
+- [ ] Security patterns followed (no credential logging)
+- [ ] Line count verified with designated tool
+- [ ] Tests cover main functionality
+- [ ] Documentation complete

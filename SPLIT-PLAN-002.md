@@ -1,119 +1,145 @@
 # SPLIT-PLAN-002.md
-## Split 002 of 2: Stack Types
-**Planner**: Code Reviewer @agent-code-reviewer (same for ALL splits)
+## Split 002 of 2: Certificate Types and TLS Configuration
+**Planner**: Code Reviewer code-reviewer-1756082516 (same for ALL splits)
 **Parent Effort**: registry-auth-types
-**Target Size**: 313 lines (well under 800 limit)
 
-## Boundaries
-- **Previous Split**: Split 001 (OCI types)
-- **This Split Focus**: Stack type definitions and validation
-- **Next Split**: None (final split)
+<!-- ORCHESTRATOR METADATA PLACEHOLDER - DO NOT REMOVE -->
+<!-- The orchestrator will add infrastructure metadata below: -->
+<!-- WORKING_DIRECTORY, BRANCH, REMOTE, BASE_BRANCH, etc. -->
+<!-- SW Engineers MUST read this metadata to navigate to the correct directory -->
+<!-- END PLACEHOLDER -->
+
+## Boundaries (CRITICAL: All splits MUST reference SAME effort!)
+- **Previous Split**: Split 001 of phase1/wave1/registry-auth-types
+  - Path: efforts/phase1/wave1/registry-auth-types/split-001/
+  - Branch: phase1/wave1/registry-auth-types-split-001
+  - Summary: Implemented all authentication types, credentials, and package documentation
+- **This Split**: Split 002 of phase1/wave1/registry-auth-types
+  - Path: efforts/phase1/wave1/registry-auth-types/split-002/
+  - Branch: phase1/wave1/registry-auth-types-split-002
+- **Next Split**: None (final split of this effort)
+  - Path: N/A
+  - Branch: N/A
+- **File Boundaries**:
+  - Previous Split End: pkg/doc.go
+  - This Split Start: pkg/certs/types.go
+  - This Split End: pkg/certs/constants.go (last file)
 
 ## Files in This Split (EXCLUSIVE - no overlap with other splits)
-```
-pkg/stack/types.go       (107 lines) - Stack type definitions
-pkg/stack/constants.go   (42 lines)  - Stack-related constants
-pkg/stack/types_test.go  (164 lines) - Unit tests for stack types
-```
-**Total**: 313 lines
+- `pkg/certs/types.go` (175 lines) - Certificate types and TLS configuration
+- `pkg/certs/constants.go` (135 lines) - Certificate-related constants
 
-## Functionality Scope
-### Core Components:
-1. **Stack Type Definitions** (pkg/stack/types.go)
-   - Stack configuration structures
-   - Component definitions
-   - Dependency specifications
-   - Validation interfaces
+**Total Lines**: 310 lines (COMPLIANT - well under 800 line limit)
 
-2. **Constants** (pkg/stack/constants.go)
-   - Stack component types
-   - Status constants
-   - Default values
-   - Error messages
+## Functionality
+### Certificate Types (`pkg/certs/types.go`)
+- `CertificateBundle` struct:
+  - CACert, ClientCert, ClientKey fields
+  - Validity period tracking
+  - Certificate chain validation
+- `TLSConfig` struct:
+  - InsecureSkipVerify option
+  - RootCAs and ClientCAs configuration
+  - Certificate array management
+- `Certificate` type wrapper for x509.Certificate
+- `CertificateValidator` interface for validation
+- Methods for certificate validation and verification
 
-3. **Test Coverage** (pkg/stack/types_test.go)
-   - Complete unit tests for stack types
-   - Validation logic tests
-   - Edge case coverage
-   - Example usage patterns
+### Certificate Constants (`pkg/certs/constants.go`)
+- Certificate type identifiers
+- Default certificate paths
+- Validation error messages
+- TLS version constants (TLS 1.2, 1.3)
+- Certificate file extensions (.crt, .pem, .key)
+- Common certificate field names
 
 ## Dependencies
-- **External**: Standard library only (encoding/json, fmt, etc.)
-- **Internal**: None - completely independent of Split 001
-- **Test Dependencies**: Standard testing package
-
-## Implementation Instructions for SW Engineer
-
-### Step 1: Create Branch
-```bash
-git checkout -b phase1/wave1/registry-auth-types-split-002
+```go
+// Standard library only for Phase 1
+import (
+    "crypto/tls"
+    "crypto/x509"
+    "encoding/pem"
+    "errors"
+    "fmt"
+    "io"
+    "time"
+)
 ```
 
-### Step 2: Sparse Checkout (if starting fresh)
-```bash
-# Enable sparse checkout
-git sparse-checkout init --cone
-git sparse-checkout set pkg/stack/
-```
+## Implementation Instructions
+1. **Create sparse checkout** with ONLY these files:
+   ```bash
+   git sparse-checkout set pkg/certs
+   ```
 
-### Step 3: Verify Files
-Ensure ONLY these files are included:
-- pkg/stack/types.go
-- pkg/stack/constants.go
-- pkg/stack/types_test.go
+2. **Verify isolation**:
+   - No dependencies on pkg/auth files (split 001)
+   - Certificate functionality must be self-contained
+   - Can reference standard crypto libraries only
 
-### Step 4: Run Tests
-```bash
-go test ./pkg/stack/...
-```
+3. **Implementation order**:
+   - Start with constants.go (defines foundation)
+   - Implement types.go (uses constants)
+   - Ensure all certificate operations are secure
 
-### Step 5: Measure Size
-```bash
-/workspaces/idpbuilder-oci-mgmt/tools/line-counter.sh
-# Should show ~313 lines
-```
+4. **Quality checks**:
+   - All types must compile independently
+   - Proper error handling for invalid certificates
+   - Clear godoc comments on all exported types
+   - Validate with: `go build ./pkg/certs`
 
-### Step 6: Commit
-```bash
-git add pkg/stack/
-git commit -m "feat: implement Stack types and validation (split 002)"
-git push origin phase1/wave1/registry-auth-types-split-002
-```
+5. **Size verification**:
+   ```bash
+   ${PROJECT_ROOT}/tools/line-counter.sh
+   # Must show <800 lines for this split (expect ~310)
+   ```
 
-## Quality Checklist
-- [ ] Stack types properly defined with json/yaml tags
-- [ ] Validation methods comprehensive
-- [ ] Constants cover all stack scenarios
-- [ ] Tests achieve >80% coverage
-- [ ] No dependencies on OCI package
-- [ ] Clean, self-contained implementation
+## Test Requirements
+- **Unit Tests**: Create corresponding test files
+  - `pkg/certs/types_test.go` - Certificate validation tests
+  - `pkg/certs/constants_test.go` - Constant usage validation
+- **Coverage Target**: 80% minimum
+- **Test Scenarios**:
+  - Valid/invalid certificates
+  - Certificate expiration checks
+  - TLS configuration validation
+  - Certificate chain verification
+  - PEM encoding/decoding
 
-## Implementation Notes
-### Key Type Structures:
-- **Stack**: Main container for stack configuration
-- **Component**: Individual stack components
-- **Dependency**: Inter-component dependencies
-- **Status**: Stack and component status tracking
+## Integration Considerations
+- This split provides certificate types used by authentication
+- After both splits merge, the full registry-auth-types package is complete
+- The types defined here will be consumed by registry client implementations
+- Must maintain backward compatibility with Docker registry auth
 
-### Validation Requirements:
-- Component name uniqueness
-- Dependency cycle detection
-- Required field validation
-- Version compatibility checks
+## Split Branch Strategy
+- **Branch Name**: `phase1/wave1/registry-auth-types-split-002`
+- **Base Branch**: `phase1/wave1/registry-auth-types`
+- **Merge Target**: Back to `phase1/wave1/registry-auth-types` after review
+- **Commit Message**: "split-002: Implement certificate types and TLS configuration"
 
-## Merge Strategy
-- This split will be merged to `phase1/wave1/registry-auth-types` branch
-- Can be merged independently of Split 001
-- No conflicts expected with other splits
+## Success Criteria
+- All certificate types compile without errors
+- No dependencies on authentication types (split 001)
+- Secure certificate handling patterns
+- Support for common certificate formats
+- Complete godoc documentation
+- Total implementation <800 lines (actual: ~310)
+- Tests provide 80% coverage
 
-## Parallel Development
-- **Independence**: This split can be developed in parallel with Split 001
-- **No Coordination**: No shared files or dependencies
-- **Testing**: Can be tested independently
-- **Integration**: Will combine cleanly with Split 001
+## Review Checklist
+- [ ] Files match exactly those listed (no extras)
+- [ ] No references to pkg/auth
+- [ ] All certificate types properly defined
+- [ ] Security patterns followed (secure TLS defaults)
+- [ ] Line count verified with designated tool
+- [ ] Tests cover certificate validation
+- [ ] Documentation complete
 
-## Risk Assessment
-- **Low Complexity**: Simple type definitions with clear boundaries
-- **Size Safety**: At 313 lines, less than 40% of limit
-- **Independence**: No risk of conflicts with other splits
-- **Testing**: Comprehensive test coverage included
+## Notes for SW Engineer
+- This is a smaller split (310 lines) but critical for TLS security
+- Focus on making the certificate validation robust
+- Consider future extensibility for custom certificate validators
+- Ensure constants cover common registry certificate scenarios
+- Default to secure TLS configurations (minimum TLS 1.2)
