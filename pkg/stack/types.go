@@ -2,9 +2,26 @@ package stack
 
 import (
 	"fmt"
-
-	"github.com/cnoe-io/idpbuilder/pkg/oci"
 )
+
+// OCIReference represents a complete OCI image reference
+// This is a local interface that matches the oci.OCIReference from split-001
+type OCIReference struct {
+	// Registry is the registry hostname (e.g., "docker.io", "ghcr.io")
+	Registry string `json:"registry"`
+
+	// Namespace is the namespace or organization (e.g., "library", "myorg")
+	Namespace string `json:"namespace,omitempty"`
+
+	// Repository is the repository name (e.g., "nginx", "myapp")
+	Repository string `json:"repository"`
+
+	// Tag is the image tag (e.g., "latest", "v1.2.3")
+	Tag string `json:"tag,omitempty"`
+
+	// Digest is the content hash (e.g., "sha256:abc123...")
+	Digest string `json:"digest,omitempty"`
+}
 
 // StackConfiguration represents a multi-component application stack configuration
 type StackConfiguration struct {
@@ -39,7 +56,7 @@ type StackComponent struct {
 	Version string `json:"version" yaml:"version"`
 
 	// OCIReference points to the OCI image or artifact for this component
-	OCIReference *oci.OCIReference `json:"ociReference,omitempty" yaml:"ociReference,omitempty"`
+	OCIReference *OCIReference `json:"ociReference,omitempty" yaml:"ociReference,omitempty"`
 
 	// Configuration contains component-specific configuration as key-value pairs
 	Configuration map[string]interface{} `json:"configuration,omitempty" yaml:"configuration,omitempty"`
@@ -159,7 +176,7 @@ func (s *StackConfiguration) GetDependenciesFor(componentName string) []StackDep
 }
 
 // validateOCIReference performs basic validation on an OCI reference
-func validateOCIReference(ref *oci.OCIReference) error {
+func validateOCIReference(ref *OCIReference) error {
 	if ref.Registry == "" {
 		return fmt.Errorf("registry cannot be empty")
 	}

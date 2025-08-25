@@ -2,8 +2,6 @@ package stack
 
 import (
 	"testing"
-
-	"github.com/cnoe-io/idpbuilder/pkg/oci"
 )
 
 func TestStackConfiguration_IsValid(t *testing.T) {
@@ -151,7 +149,7 @@ func TestStackComponent_IsValid(t *testing.T) {
 				Type:    ComponentTypeApplication,
 				Version: "1.0.0",
 				Status:  ComponentStatusPending,
-				OCIReference: &oci.OCIReference{
+				OCIReference: &OCIReference{
 					Registry:   "docker.io",
 					Repository: "library/nginx",
 					Tag:        "latest",
