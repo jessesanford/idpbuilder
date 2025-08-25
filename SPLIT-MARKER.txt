@@ -1,6 +1,7 @@
 Integration of Wave 1 Splits
 =============================
 Merged Splits:
-- oci-types: split-001, split-002
-- registry-auth-types: split-001 (in progress)
+- oci-types: split-001, split-002 ✓
+- registry-auth-types: split-001 ✓, split-002 ✓
+- error-reporting-types: (pending)
 Integration branch: phase1/wave1/integration
