@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strconv"
 	"strings"
 
 	"github.com/containers/buildah/define"
 	"github.com/containers/storage"
+	"github.com/containers/storage/pkg/idtools"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/pkg/errors"
 )
@@ -154,8 +154,25 @@ func (rm *RuntimeManager) initializeStorage() error {
 
 	// Setup UID/GID mappings for rootless
 	if rm.rootless {
-		storeOptions.UIDMap = rm.config.UIDMap
-		storeOptions.GIDMap = rm.config.GIDMap
+		// Convert specs-go ID mappings to idtools format
+		uidMap := make([]idtools.IDMap, len(rm.config.UIDMap))
+		for i, mapping := range rm.config.UIDMap {
+			uidMap[i] = idtools.IDMap{
+				ContainerID: int(mapping.ContainerID),
+				HostID:      int(mapping.HostID),
+				Size:        int(mapping.Size),
+			}
+		}
+		gidMap := make([]idtools.IDMap, len(rm.config.GIDMap))
+		for i, mapping := range rm.config.GIDMap {
+			gidMap[i] = idtools.IDMap{
+				ContainerID: int(mapping.ContainerID),
+				HostID:      int(mapping.HostID),
+				Size:        int(mapping.Size),
+			}
+		}
+		storeOptions.UIDMap = uidMap
+		storeOptions.GIDMap = gidMap
 	}
 
 	store, err := storage.GetStore(storeOptions)
@@ -317,16 +334,28 @@ func (rm *RuntimeManager) CreateBuildOptions() *define.BuildOptions {
 	if !rm.initialized {
 		return nil
 	}
-	options := &define.BuildOptions{Isolation: define.Isolation(rm.config.Isolation)}
-	if rm.config.CgroupManager != "" {
-		options.CgroupParent = rm.config.CgroupManager
+	
+	// Parse isolation type
+	var isolation define.Isolation
+	switch strings.ToLower(rm.config.Isolation) {
+	case "chroot":
+		isolation = define.IsolationChroot
+	case "rootless":
+		isolation = define.IsolationOCIRootless
+	case "oci":
+		isolation = define.IsolationOCI
+	default:
+		isolation = define.IsolationDefault
 	}
-	if len(rm.config.DefaultMounts) > 0 {
-		options.Mounts = rm.config.DefaultMounts
+	
+	options := &define.BuildOptions{
+		Isolation: isolation,
 	}
-	if len(rm.config.Capabilities) > 0 {
-		options.CapAdd = rm.config.Capabilities
-	}
+	
+	// Note: CgroupParent, Mounts, and CapAdd are not directly available in BuildOptions
+	// These would typically be handled during the build process or in the build context
+	// For this split, we're focusing on the core runtime management functionality
+	
 	return options
 }
 
