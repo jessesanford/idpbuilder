@@ -21,7 +21,6 @@ func (rc *registryClient) Push(ctx context.Context, image string, auth api.AuthC
 
 	authHandler := newAuthHandler(auth)
 	authHandler.setHTTPClient(rc.httpClient)
-
 	// Get image data from local store (simplified for scope)
 	manifest, layers, err := rc.getLocalImageData(ref)
 	if err != nil {
@@ -59,7 +58,6 @@ func (rc *registryClient) Pull(ctx context.Context, image string, auth api.AuthC
 
 	authHandler := newAuthHandler(auth)
 	authHandler.setHTTPClient(rc.httpClient)
-
 	// Download manifest
 	manifest, err := rc.downloadManifest(ctx, ref, authHandler)
 	if err != nil {
@@ -94,7 +92,6 @@ func (rc *registryClient) Pull(ctx context.Context, image string, auth api.AuthC
 
 func (rc *registryClient) uploadLayer(ctx context.Context, ref *imageReference, layer *api.LayerInfo, auth *authHandler) error {
 	baseURL := rc.getRegistryURL(ref)
-	
 	headURL := fmt.Sprintf("%s/v2/%s/blobs/%s", baseURL, ref.Name, layer.Digest)
 	if headReq, _ := http.NewRequestWithContext(ctx, "HEAD", headURL, nil); headReq != nil {
 		auth.authenticate(headReq, nil)

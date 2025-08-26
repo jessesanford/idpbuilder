@@ -143,13 +143,11 @@ type imageReference struct {
 
 func parseImageReference(image string) (*imageReference, error) {
 	ref := &imageReference{}
-	
 	if strings.Contains(image, "@") {
 		parts := strings.SplitN(image, "@", 2)
 		image = parts[0]
 		ref.Digest = parts[1]
 	}
-	
 	if strings.Contains(image, ":") && ref.Digest == "" {
 		parts := strings.SplitN(image, ":", 2)
 		image = parts[0]
@@ -157,9 +155,7 @@ func parseImageReference(image string) (*imageReference, error) {
 	} else if ref.Digest == "" {
 		ref.Tag = "latest"
 	}
-	
 	parts := strings.Split(image, "/")
-	
 	switch len(parts) {
 	case 1:
 		ref.Repository = parts[0]
@@ -183,7 +179,6 @@ func parseImageReference(image string) (*imageReference, error) {
 		ref.Repository = strings.Join(parts[2:], "/")
 		ref.Name = strings.Join(parts[1:], "/")
 	}
-	
 	return ref, nil
 }
 

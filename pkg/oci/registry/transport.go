@@ -38,7 +38,6 @@ func (rt *retryTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 		// Clone the request for retry attempts
 		reqClone := rt.cloneRequest(req)
-		
 		resp, err := rt.base.RoundTrip(reqClone)
 		
 		// If successful or client error (4xx), don't retry
@@ -62,14 +61,12 @@ func (rt *retryTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	if lastResp != nil {
 		return lastResp, fmt.Errorf("max retries exceeded with server error: %w", lastErr)
 	}
-	
 	return nil, fmt.Errorf("max retries exceeded: %w", lastErr)
 }
 
 // cloneRequest creates a shallow clone of the HTTP request for retry attempts
 func (rt *retryTransport) cloneRequest(req *http.Request) *http.Request {
 	clone := req.Clone(req.Context())
-	
 	// Reset body if it's seekable
 	if req.Body != nil && req.GetBody != nil {
 		body, err := req.GetBody()
@@ -77,6 +74,5 @@ func (rt *retryTransport) cloneRequest(req *http.Request) *http.Request {
 			clone.Body = body
 		}
 	}
-	
 	return clone
 }

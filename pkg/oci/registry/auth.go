@@ -123,11 +123,8 @@ func (ah *authHandler) handleBearerChallenge(req *http.Request, challenge *authC
 	if err != nil {
 		return fmt.Errorf("failed to obtain bearer token: %w", err)
 	}
-
-	// Cache the token
+	// Cache the token and set authorization header
 	ah.tokens[tokenKey] = token
-
-	// Set authorization header
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token.Token))
 	return nil
 }
