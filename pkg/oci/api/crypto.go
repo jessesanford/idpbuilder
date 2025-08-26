@@ -115,6 +115,21 @@ type SecurityManager interface {
 	
 	// EnforcePolicy applies security policy rules to an image or operation.
 	EnforcePolicy(ctx context.Context, image string, policy *Policy) (*PolicyResult, error)
+	
+	// RotateKeys performs key rotation for all signers and updates verifiers.
+	RotateKeys(ctx context.Context) error
+	
+	// GetTrustChain retrieves the certificate chain for a given key ID.
+	GetTrustChain(keyID string) ([]*Certificate, error)
+	
+	// AddTrustedKey adds a key to the trust store for verification.
+	AddTrustedKey(keyID string, certificate *Certificate) error
+	
+	// RemoveTrustedKey removes a key from the trust store.
+	RemoveTrustedKey(keyID string) error
+	
+	// ValidateTrustChain validates that a certificate chain is properly formed and trusted.
+	ValidateTrustChain(chain []*Certificate) error
 }
 
 // Signature represents a digital signature with metadata.

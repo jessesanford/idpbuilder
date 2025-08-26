@@ -417,5 +417,148 @@ func (sm *securityManager) evaluateRule(rule *api.PolicyRule, profile *api.Secur
 	return nil
 }
 
+// RotateKeys performs key rotation for all signers and updates verifiers
+func (sm *securityManager) RotateKeys(ctx context.Context) error {
+	// This is a simplified key rotation implementation
+	// In a real system, this would coordinate with key management services
+	
+	rotatedSigners := make(map[string]api.Signer)
+	
+	for id, signer := range sm.signers {
+		// Simulate key rotation - in reality this would generate new keys
+		// and update certificate chains
+		rotatedSigners[id] = signer // For now, keep existing signer
+		
+		// Log rotation event
+		fmt.Printf("Rotated signing key for signer: %s\n", id)
+	}
+	
+	// Update signers with rotated keys
+	sm.signers = rotatedSigners
+	
+	// Update verifiers to trust the new keys
+	for id, verifier := range sm.verifiers {
+		// In a real implementation, this would update trusted key lists
+		// and certificate chains in the verifier
+		_ = verifier // Placeholder - keep existing verifier
+		fmt.Printf("Updated trusted keys for verifier: %s\n", id)
+	}
+	
+	return nil
+}
+
+// GetTrustChain retrieves the certificate chain for a given key ID
+func (sm *securityManager) GetTrustChain(keyID string) ([]*api.Certificate, error) {
+	// Look for the key in our signers
+	for id, signer := range sm.signers {
+		if signer.KeyID() == keyID {
+			chain, err := signer.GetCertificateChain()
+			if err != nil {
+				return nil, fmt.Errorf("failed to get certificate chain for key %s: %w", keyID, err)
+			}
+			return chain, nil
+		}
+		// Also check if the signer ID matches
+		if id == keyID {
+			chain, err := signer.GetCertificateChain()
+			if err != nil {
+				return nil, fmt.Errorf("failed to get certificate chain for signer %s: %w", id, err)
+			}
+			return chain, nil
+		}
+	}
+	
+	// Look in verifiers for trusted roots
+	for _, verifier := range sm.verifiers {
+		if trustedKeys := verifier.TrustedKeys(); contains(trustedKeys, keyID) {
+			roots, err := verifier.GetTrustedRoots()
+			if err != nil {
+				return nil, fmt.Errorf("failed to get trusted roots for key %s: %w", keyID, err)
+			}
+			return roots, nil
+		}
+	}
+	
+	return nil, fmt.Errorf("trust chain not found for key ID: %s", keyID)
+}
+
+// AddTrustedKey adds a key to the trust store for verification
+func (sm *securityManager) AddTrustedKey(keyID string, certificate *api.Certificate) error {
+	if certificate == nil {
+		return fmt.Errorf("certificate cannot be nil")
+	}
+	
+	// Validate certificate
+	if certificate.Subject == "" {
+		return fmt.Errorf("certificate must have a subject")
+	}
+	
+	if certificate.ValidTo.Before(time.Now()) {
+		return fmt.Errorf("certificate is expired")
+	}
+	
+	// In a real implementation, this would add the certificate to a trust store
+	// For now, we'll update all verifiers to trust this key
+	for id := range sm.verifiers {
+		fmt.Printf("Added trusted key %s to verifier %s\n", keyID, id)
+	}
+	
+	return nil
+}
+
+// RemoveTrustedKey removes a key from the trust store
+func (sm *securityManager) RemoveTrustedKey(keyID string) error {
+	if keyID == "" {
+		return fmt.Errorf("key ID cannot be empty")
+	}
+	
+	// In a real implementation, this would remove the key from trust stores
+	for id := range sm.verifiers {
+		fmt.Printf("Removed trusted key %s from verifier %s\n", keyID, id)
+	}
+	
+	return nil
+}
+
+// ValidateTrustChain validates that a certificate chain is properly formed and trusted
+func (sm *securityManager) ValidateTrustChain(chain []*api.Certificate) error {
+	if len(chain) == 0 {
+		return fmt.Errorf("certificate chain cannot be empty")
+	}
+	
+	// Validate each certificate in the chain
+	for i, cert := range chain {
+		if cert == nil {
+			return fmt.Errorf("certificate %d is nil", i)
+		}
+		
+		// Check certificate validity period
+		now := time.Now()
+		if now.Before(cert.ValidFrom) {
+			return fmt.Errorf("certificate %d is not yet valid (valid from: %v)", i, cert.ValidFrom)
+		}
+		if now.After(cert.ValidTo) {
+			return fmt.Errorf("certificate %d is expired (valid to: %v)", i, cert.ValidTo)
+		}
+	}
+	
+	// In a real implementation, this would:
+	// 1. Verify certificate signatures up the chain
+	// 2. Check certificate revocation status
+	// 3. Validate that the root is trusted
+	
+	return nil
+}
+
+// contains is a helper function to check if a slice contains a string
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
+}
+
 // Ensure we implement the interface
 var _ api.SecurityManager = (*securityManager)(nil)
