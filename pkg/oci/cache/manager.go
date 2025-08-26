@@ -6,9 +6,6 @@ import (
 	"time"
 )
 
-
-
-
 // CacheKeyParams defines parameters for cache key calculation
 type CacheKeyParams struct {
 	Instruction     string            `json:"instruction"`
@@ -46,18 +43,8 @@ type Config struct {
 	HighWaterMark  float64       `yaml:"high_water_mark"`
 }
 
-// DefaultConfig returns a default cache configuration
 func DefaultConfig() *Config {
-	return &Config{
-		BasePath:      "/tmp/oci-cache",
-		MaxSize:       10 * 1024 * 1024 * 1024, // 10GB
-		MaxLayers:     10000,
-		MaxAge:        7 * 24 * time.Hour, // 7 days
-		EnableMetrics: true,
-		SyncInterval:  30 * time.Second,
-		LowWaterMark:  0.9,  // Start eviction at 90% full
-		HighWaterMark: 0.7,  // Stop eviction at 70% full
-	}
+	return &Config{"/tmp/oci-cache", 10*1024*1024*1024, 10000, 7*24*time.Hour, true, 30*time.Second, 0.9, 0.7}
 }
 
 // NewManager creates a new cache manager instance
