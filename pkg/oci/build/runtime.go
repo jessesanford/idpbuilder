@@ -17,35 +17,35 @@ import (
 	"github.com/pkg/errors"
 )
 
-// BuildConfig represents the configuration for OCI builds
-// This should match the definition from split-001
-type BuildConfig struct {
+// RuntimeBuildConfig represents the configuration for OCI builds
+// This should match the definition from split-001 but renamed to avoid conflict
+type RuntimeBuildConfig struct {
 	// Storage configuration
-	StorageDriver   string            `json:"storageDriver" yaml:"storageDriver"`
-	StorageRoot     string            `json:"storageRoot" yaml:"storageRoot"`
-	RunRoot         string            `json:"runRoot" yaml:"runRoot"`
-	StorageOptions  map[string]string `json:"storageOptions" yaml:"storageOptions"`
-	
+	StorageDriver  string            `json:"storageDriver" yaml:"storageDriver"`
+	StorageRoot    string            `json:"storageRoot" yaml:"storageRoot"`
+	RunRoot        string            `json:"runRoot" yaml:"runRoot"`
+	StorageOptions map[string]string `json:"storageOptions" yaml:"storageOptions"`
+
 	// Build configuration
-	Isolation       string            `json:"isolation" yaml:"isolation"`
-	CgroupManager   string            `json:"cgroupManager" yaml:"cgroupManager"`
-	DefaultMounts   []string          `json:"defaultMounts" yaml:"defaultMounts"`
-	
+	Isolation     string   `json:"isolation" yaml:"isolation"`
+	CgroupManager string   `json:"cgroupManager" yaml:"cgroupManager"`
+	DefaultMounts []string `json:"defaultMounts" yaml:"defaultMounts"`
+
 	// Security configuration
-	UIDMap          []specs.LinuxIDMapping `json:"uidMap" yaml:"uidMap"`
-	GIDMap          []specs.LinuxIDMapping `json:"gidMap" yaml:"gidMap"`
-	Capabilities    []string          `json:"capabilities" yaml:"capabilities"`
-	
+	UIDMap       []specs.LinuxIDMapping `json:"uidMap" yaml:"uidMap"`
+	GIDMap       []specs.LinuxIDMapping `json:"gidMap" yaml:"gidMap"`
+	Capabilities []string               `json:"capabilities" yaml:"capabilities"`
+
 	// Runtime paths
-	RuntimePath     string            `json:"runtimePath" yaml:"runtimePath"`
-	ConmonPath      string            `json:"conmonPath" yaml:"conmonPath"`
-	CNIConfigDir    string            `json:"cniConfigDir" yaml:"cniConfigDir"`
-	CNIPluginDir    string            `json:"cniPluginDir" yaml:"cniPluginDir"`
+	RuntimePath  string `json:"runtimePath" yaml:"runtimePath"`
+	ConmonPath   string `json:"conmonPath" yaml:"conmonPath"`
+	CNIConfigDir string `json:"cniConfigDir" yaml:"cniConfigDir"`
+	CNIPluginDir string `json:"cniPluginDir" yaml:"cniPluginDir"`
 }
 
 // RuntimeManager manages the container runtime environment for Buildah operations
 type RuntimeManager struct {
-	config      *BuildConfig
+	config      *RuntimeBuildConfig
 	store       storage.Store
 	initialized bool
 	rootless    bool
@@ -53,7 +53,7 @@ type RuntimeManager struct {
 }
 
 // NewRuntimeManager creates a new RuntimeManager with the provided configuration
-func NewRuntimeManager(config *BuildConfig) (*RuntimeManager, error) {
+func NewRuntimeManager(config *RuntimeBuildConfig) (*RuntimeManager, error) {
 	if config == nil {
 		return nil, errors.New("configuration cannot be nil")
 	}
@@ -141,9 +141,9 @@ func (rm *RuntimeManager) setupDirectories() error {
 // initializeStorage initializes the container storage
 func (rm *RuntimeManager) initializeStorage() error {
 	storeOptions := storage.StoreOptions{
-		RunRoot:         rm.config.RunRoot,
-		GraphRoot:       rm.config.StorageRoot,
-		GraphDriverName: rm.config.StorageDriver,
+		RunRoot:            rm.config.RunRoot,
+		GraphRoot:          rm.config.StorageRoot,
+		GraphDriverName:    rm.config.StorageDriver,
 		GraphDriverOptions: []string{},
 	}
 
@@ -325,7 +325,7 @@ func (rm *RuntimeManager) IsRootless() bool {
 }
 
 // GetConfig returns the runtime configuration
-func (rm *RuntimeManager) GetConfig() *BuildConfig {
+func (rm *RuntimeManager) GetConfig() *RuntimeBuildConfig {
 	return rm.config
 }
 
@@ -334,7 +334,7 @@ func (rm *RuntimeManager) CreateBuildOptions() *define.BuildOptions {
 	if !rm.initialized {
 		return nil
 	}
-	
+
 	// Parse isolation type
 	var isolation define.Isolation
 	switch strings.ToLower(rm.config.Isolation) {
@@ -347,15 +347,15 @@ func (rm *RuntimeManager) CreateBuildOptions() *define.BuildOptions {
 	default:
 		isolation = define.IsolationDefault
 	}
-	
+
 	options := &define.BuildOptions{
 		Isolation: isolation,
 	}
-	
+
 	// Note: CgroupParent, Mounts, and CapAdd are not directly available in BuildOptions
 	// These would typically be handled during the build process or in the build context
 	// For this split, we're focusing on the core runtime management functionality
-	
+
 	return options
 }
 
