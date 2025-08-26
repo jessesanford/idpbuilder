@@ -4,13 +4,11 @@ import (
 	"context"
 	"fmt"
 	"time"
-
-	"github.com/cnoe-io/idpbuilder/pkg/oci/api"
 )
 
 // ScannerPlugin defines the interface for vulnerability scanners.
 type ScannerPlugin interface {
-	Scan(ctx context.Context, image string) (*api.VulnerabilityReport, error)
+	Scan(ctx context.Context, image string) (*VulnerabilityReport, error)
 }
 
 // sbomGenerator generates Software Bill of Materials.
@@ -22,14 +20,14 @@ func newSBOMGenerator() *sbomGenerator {
 }
 
 // Generate creates an SBOM for the specified image.
-func (s *sbomGenerator) Generate(ctx context.Context, image string) (*api.SBOM, error) {
+func (s *sbomGenerator) Generate(ctx context.Context, image string) (*SBOM, error) {
 	// This is a simplified implementation
-	return &api.SBOM{
+	return &SBOM{
 		Version:    "1.0",
 		DataFormat: "application/vnd.cyclonedx+json",
 		Subject:    image,
 		Timestamp:  time.Now(),
-		Components: []api.SBOMComponent{
+		Components: []SBOMComponent{
 			{
 				Name:     "base-image",
 				Version:  "latest",
@@ -43,10 +41,10 @@ func (s *sbomGenerator) Generate(ctx context.Context, image string) (*api.SBOM, 
 	}, nil
 }
 
-// securityManager implements api.SecurityManager interface
+// securityManager implements SecurityManager interface
 type securityManager struct {
-	signers   map[string]api.Signer
-	verifiers map[string]api.Verifier
+	signers   map[string]Signer
+	verifiers map[string]Verifier
 	sbomGen   *sbomGenerator
 	scanners  []ScannerPlugin
 	config    *SecurityConfig
@@ -66,10 +64,10 @@ type SecurityConfig struct {
 type Option func(*securityManager)
 
 // NewSecurityManager creates a new security manager instance
-func NewSecurityManager(opts ...Option) api.SecurityManager {
+func NewSecurityManager(opts ...Option) SecurityManager {
 	sm := &securityManager{
-		signers:   make(map[string]api.Signer),
-		verifiers: make(map[string]api.Verifier),
+		signers:   make(map[string]Signer),
+		verifiers: make(map[string]Verifier),
 		sbomGen:   newSBOMGenerator(),
 		scanners:  []ScannerPlugin{},
 		config: &SecurityConfig{
@@ -88,7 +86,7 @@ func NewSecurityManager(opts ...Option) api.SecurityManager {
 }
 
 // WithSigner adds a signer to the security manager
-func WithSigner(id string, signer api.Signer) Option {
+func WithSigner(id string, signer Signer) Option {
 	return func(sm *securityManager) {
 		sm.signers[id] = signer
 		if sm.config.DefaultSignerID == "" {
@@ -98,7 +96,7 @@ func WithSigner(id string, signer api.Signer) Option {
 }
 
 // WithVerifier adds a verifier to the security manager
-func WithVerifier(id string, verifier api.Verifier) Option {
+func WithVerifier(id string, verifier Verifier) Option {
 	return func(sm *securityManager) {
 		sm.verifiers[id] = verifier
 		if sm.config.DefaultVerifierID == "" {
@@ -122,7 +120,7 @@ func WithConfig(config *SecurityConfig) Option {
 }
 
 // SignImage signs an image using the provided signer
-func (sm *securityManager) SignImage(ctx context.Context, image string, signer api.Signer) (*api.Signature, error) {
+func (sm *securityManager) SignImage(ctx context.Context, image string, signer Signer) (*Signature, error) {
 	if signer == nil {
 		if sm.config.DefaultSignerID == "" {
 			return nil, fmt.Errorf("no signer provided and no default signer configured")
@@ -145,17 +143,17 @@ func (sm *securityManager) SignImage(ctx context.Context, image string, signer a
 
 	// Get certificate chain if available
 	certChain, _ := signer.GetCertificateChain()
-	var bundle *api.SignatureBundle
+	var bundle *SignatureBundle
 	if len(certChain) > 0 {
-		bundle = &api.SignatureBundle{
+		bundle = &SignatureBundle{
 			MediaType:    "application/vnd.dev.cosign.simplesigning.v1+json",
 			Payload:      payload,
-			Signatures:   []api.SignatureData{{Signature: signatureBytes}},
+			Signatures:   []SignatureData{{Signature: signatureBytes}},
 			Certificates: certChain,
 		}
 	}
 
-	signature := &api.Signature{
+	signature := &Signature{
 		Algorithm: signer.Algorithm(),
 		KeyID:     signer.KeyID(),
 		Signature: string(signatureBytes),
@@ -168,7 +166,7 @@ func (sm *securityManager) SignImage(ctx context.Context, image string, signer a
 }
 
 // VerifySignature verifies an image signature using the provided verifier
-func (sm *securityManager) VerifySignature(ctx context.Context, image string, verifier api.Verifier) error {
+func (sm *securityManager) VerifySignature(ctx context.Context, image string, verifier Verifier) error {
 	if verifier == nil {
 		if sm.config.DefaultVerifierID == "" {
 			return fmt.Errorf("no verifier provided and no default verifier configured")
@@ -192,7 +190,7 @@ func (sm *securityManager) VerifySignature(ctx context.Context, image string, ve
 }
 
 // GenerateSBOM creates a Software Bill of Materials for the specified image
-func (sm *securityManager) GenerateSBOM(ctx context.Context, image string) (*api.SBOM, error) {
+func (sm *securityManager) GenerateSBOM(ctx context.Context, image string) (*SBOM, error) {
 	if !sm.config.EnableSBOM {
 		return nil, fmt.Errorf("SBOM generation is disabled")
 	}
@@ -204,18 +202,18 @@ func (sm *securityManager) GenerateSBOM(ctx context.Context, image string) (*api
 }
 
 // ScanVulnerabilities performs security vulnerability scanning on the image
-func (sm *securityManager) ScanVulnerabilities(ctx context.Context, image string) (*api.VulnerabilityReport, error) {
+func (sm *securityManager) ScanVulnerabilities(ctx context.Context, image string) (*VulnerabilityReport, error) {
 	if !sm.config.EnableVulnScanning {
 		return nil, fmt.Errorf("vulnerability scanning is disabled")
 	}
 
 	if len(sm.scanners) == 0 {
-		return &api.VulnerabilityReport{
+		return &VulnerabilityReport{
 			Timestamp: time.Now(),
 			Image:     image,
-			Scanner:   &api.ScannerInfo{Name: "none", Version: "0.0.0"},
-			Summary:   &api.VulnerabilitySummary{Total: 0},
-			Vulnerabilities: []*api.Vulnerability{},
+			Scanner:   &ScannerInfo{Name: "none", Version: "0.0.0"},
+			Summary:   &VulnerabilitySummary{Total: 0},
+			Vulnerabilities: []*Vulnerability{},
 		}, nil
 	}
 
@@ -228,7 +226,7 @@ func (sm *securityManager) ScanVulnerabilities(ctx context.Context, image string
 }
 
 // AttachAttestation attaches a security attestation to the image
-func (sm *securityManager) AttachAttestation(ctx context.Context, image string, attestation *api.Attestation) error {
+func (sm *securityManager) AttachAttestation(ctx context.Context, image string, attestation *Attestation) error {
 	if attestation == nil {
 		return fmt.Errorf("attestation cannot be nil")
 	}
@@ -247,7 +245,7 @@ func (sm *securityManager) AttachAttestation(ctx context.Context, image string, 
 }
 
 // VerifyAttestation verifies that an attached attestation is valid and trusted
-func (sm *securityManager) VerifyAttestation(ctx context.Context, image string, policy *api.Policy) error {
+func (sm *securityManager) VerifyAttestation(ctx context.Context, image string, policy *Policy) error {
 	if policy == nil {
 		return fmt.Errorf("policy cannot be nil")
 	}
@@ -260,12 +258,12 @@ func (sm *securityManager) VerifyAttestation(ctx context.Context, image string, 
 }
 
 // GetImageSecurityProfile returns comprehensive security information for an image
-func (sm *securityManager) GetImageSecurityProfile(ctx context.Context, image string) (*api.SecurityProfile, error) {
-	profile := &api.SecurityProfile{
+func (sm *securityManager) GetImageSecurityProfile(ctx context.Context, image string) (*SecurityProfile, error) {
+	profile := &SecurityProfile{
 		Image:     image,
 		Timestamp: time.Now(),
-		Signatures: []*api.Signature{},
-		Attestations: []*api.Attestation{},
+		Signatures: []*Signature{},
+		Attestations: []*Attestation{},
 	}
 
 	// Generate SBOM if enabled
@@ -291,7 +289,7 @@ func (sm *securityManager) GetImageSecurityProfile(ctx context.Context, image st
 }
 
 // ValidatePolicy checks if a security policy is well-formed and applicable
-func (sm *securityManager) ValidatePolicy(policy *api.Policy) error {
+func (sm *securityManager) ValidatePolicy(policy *Policy) error {
 	if policy == nil {
 		return fmt.Errorf("policy cannot be nil")
 	}
@@ -325,15 +323,15 @@ func (sm *securityManager) ValidatePolicy(policy *api.Policy) error {
 }
 
 // EnforcePolicy applies security policy rules to an image or operation
-func (sm *securityManager) EnforcePolicy(ctx context.Context, image string, policy *api.Policy) (*api.PolicyResult, error) {
+func (sm *securityManager) EnforcePolicy(ctx context.Context, image string, policy *Policy) (*PolicyResult, error) {
 	if err := sm.ValidatePolicy(policy); err != nil {
 		return nil, fmt.Errorf("invalid policy: %w", err)
 	}
 
-	result := &api.PolicyResult{
+	result := &PolicyResult{
 		Policy:     policy.Name,
 		Allowed:    true,
-		Violations: []*api.PolicyViolation{},
+		Violations: []*PolicyViolation{},
 		Warnings:   []string{},
 	}
 
@@ -358,7 +356,7 @@ func (sm *securityManager) EnforcePolicy(ctx context.Context, image string, poli
 }
 
 // calculateSecurityScore computes a security score based on available security data
-func (sm *securityManager) calculateSecurityScore(profile *api.SecurityProfile) int {
+func (sm *securityManager) calculateSecurityScore(profile *SecurityProfile) int {
 	score := 100 // Start with perfect score
 
 	// Deduct points for vulnerabilities
@@ -389,11 +387,11 @@ func (sm *securityManager) calculateSecurityScore(profile *api.SecurityProfile) 
 }
 
 // evaluateRule evaluates a single policy rule against a security profile
-func (sm *securityManager) evaluateRule(rule *api.PolicyRule, profile *api.SecurityProfile, image string) *api.PolicyViolation {
+func (sm *securityManager) evaluateRule(rule *PolicyRule, profile *SecurityProfile, image string) *PolicyViolation {
 	switch rule.Type {
 	case "signature_required":
 		if len(profile.Signatures) == 0 {
-			return &api.PolicyViolation{
+			return &PolicyViolation{
 				Rule:     rule.Name,
 				Severity: rule.Severity,
 				Message:  "Image must be signed",
@@ -404,7 +402,7 @@ func (sm *securityManager) evaluateRule(rule *api.PolicyRule, profile *api.Secur
 		if profile.VulnerabilityReport != nil {
 			summary := profile.VulnerabilityReport.Summary
 			if summary.Critical > 0 && rule.Severity == "critical" {
-				return &api.PolicyViolation{
+				return &PolicyViolation{
 					Rule:     rule.Name,
 					Severity: rule.Severity,
 					Message:  fmt.Sprintf("Image has %d critical vulnerabilities", summary.Critical),
@@ -422,7 +420,7 @@ func (sm *securityManager) RotateKeys(ctx context.Context) error {
 	// This is a simplified key rotation implementation
 	// In a real system, this would coordinate with key management services
 	
-	rotatedSigners := make(map[string]api.Signer)
+	rotatedSigners := make(map[string]Signer)
 	
 	for id, signer := range sm.signers {
 		// Simulate key rotation - in reality this would generate new keys
@@ -448,7 +446,7 @@ func (sm *securityManager) RotateKeys(ctx context.Context) error {
 }
 
 // GetTrustChain retrieves the certificate chain for a given key ID
-func (sm *securityManager) GetTrustChain(keyID string) ([]*api.Certificate, error) {
+func (sm *securityManager) GetTrustChain(keyID string) ([]*Certificate, error) {
 	// Look for the key in our signers
 	for id, signer := range sm.signers {
 		if signer.KeyID() == keyID {
@@ -483,7 +481,7 @@ func (sm *securityManager) GetTrustChain(keyID string) ([]*api.Certificate, erro
 }
 
 // AddTrustedKey adds a key to the trust store for verification
-func (sm *securityManager) AddTrustedKey(keyID string, certificate *api.Certificate) error {
+func (sm *securityManager) AddTrustedKey(keyID string, certificate *Certificate) error {
 	if certificate == nil {
 		return fmt.Errorf("certificate cannot be nil")
 	}
@@ -521,7 +519,7 @@ func (sm *securityManager) RemoveTrustedKey(keyID string) error {
 }
 
 // ValidateTrustChain validates that a certificate chain is properly formed and trusted
-func (sm *securityManager) ValidateTrustChain(chain []*api.Certificate) error {
+func (sm *securityManager) ValidateTrustChain(chain []*Certificate) error {
 	if len(chain) == 0 {
 		return fmt.Errorf("certificate chain cannot be empty")
 	}
@@ -561,4 +559,4 @@ func contains(slice []string, item string) bool {
 }
 
 // Ensure we implement the interface
-var _ api.SecurityManager = (*securityManager)(nil)
+var _ SecurityManager = (*securityManager)(nil)
