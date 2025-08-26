@@ -15,17 +15,22 @@ import (
 	"github.com/containers/storage/pkg/idtools"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/pkg/errors"
+
 )
 
-// RuntimeBuildConfig represents the configuration for OCI builds
-// This should match the definition from split-001 but renamed to avoid conflict
-type RuntimeBuildConfig struct {
-	// Storage configuration
-	StorageDriver  string            `json:"storageDriver" yaml:"storageDriver"`
-	StorageRoot    string            `json:"storageRoot" yaml:"storageRoot"`
-	RunRoot        string            `json:"runRoot" yaml:"runRoot"`
-	StorageOptions map[string]string `json:"storageOptions" yaml:"storageOptions"`
+// StoreConfig contains configuration options for initializing the storage backend
+// This mirrors the definition from split-001 to avoid type duplication
+type StoreConfig struct {
+	RootDir       string            // Root directory for storage
+	RunRoot       string            // Runtime directory for storage
+	GraphDriver   string            // Storage driver (vfs, overlay, btrfs, zfs)
+	GraphOptions  []string          // Driver-specific options  
+	StorageOpts   map[string]string // Additional storage options
+	Rootless      bool              // Whether running in rootless mode
+}
 
+// RuntimeConfig represents runtime-specific configuration (non-storage settings)
+type RuntimeConfig struct {
 	// Build configuration
 	Isolation     string   `json:"isolation" yaml:"isolation"`
 	CgroupManager string   `json:"cgroupManager" yaml:"cgroupManager"`
@@ -45,22 +50,27 @@ type RuntimeBuildConfig struct {
 
 // RuntimeManager manages the container runtime environment for Buildah operations
 type RuntimeManager struct {
-	config      *RuntimeBuildConfig
-	store       storage.Store
-	initialized bool
-	rootless    bool
-	userNS      bool
+	runtimeConfig *RuntimeConfig
+	storeConfig   *StoreConfig
+	store         storage.Store
+	initialized   bool
+	rootless      bool
+	userNS        bool
 }
 
-// NewRuntimeManager creates a new RuntimeManager with the provided configuration
-func NewRuntimeManager(config *RuntimeBuildConfig) (*RuntimeManager, error) {
-	if config == nil {
-		return nil, errors.New("configuration cannot be nil")
+// NewRuntimeManager creates a new RuntimeManager with the provided configurations
+func NewRuntimeManager(runtimeConfig *RuntimeConfig, storeConfig *StoreConfig) (*RuntimeManager, error) {
+	if runtimeConfig == nil {
+		return nil, errors.New("runtime configuration cannot be nil")
+	}
+	if storeConfig == nil {
+		return nil, errors.New("store configuration cannot be nil")
 	}
 
 	rm := &RuntimeManager{
-		config:   config,
-		rootless: os.Geteuid() != 0,
+		runtimeConfig: runtimeConfig,
+		storeConfig:   storeConfig,
+		rootless:      os.Geteuid() != 0,
 	}
 
 	if err := rm.validateConfiguration(); err != nil {
@@ -72,18 +82,19 @@ func NewRuntimeManager(config *RuntimeBuildConfig) (*RuntimeManager, error) {
 
 // validateConfiguration validates the runtime configuration
 func (rm *RuntimeManager) validateConfiguration() error {
-	if rm.config.StorageDriver == "" {
+	// Validate storage configuration
+	if rm.storeConfig.GraphDriver == "" {
 		return errors.New("storage driver is required")
 	}
-	if rm.config.StorageRoot == "" {
+	if rm.storeConfig.RootDir == "" {
 		return errors.New("storage root is required")
 	}
-	if rm.config.RunRoot == "" {
+	if rm.storeConfig.RunRoot == "" {
 		return errors.New("run root is required")
 	}
 
 	// Validate runtime paths if specified
-	for path, name := range map[string]string{rm.config.RuntimePath: "runtime", rm.config.ConmonPath: "conmon"} {
+	for path, name := range map[string]string{rm.runtimeConfig.RuntimePath: "runtime", rm.runtimeConfig.ConmonPath: "conmon"} {
 		if path != "" {
 			if _, err := os.Stat(path); os.IsNotExist(err) {
 				return errors.Errorf("%s path does not exist: %s", name, path)
@@ -127,7 +138,7 @@ func (rm *RuntimeManager) Initialize(ctx context.Context) error {
 
 // setupDirectories creates and validates required directories
 func (rm *RuntimeManager) setupDirectories() error {
-	dirs := []string{rm.config.StorageRoot, rm.config.RunRoot, rm.config.CNIConfigDir, rm.config.CNIPluginDir}
+	dirs := []string{rm.storeConfig.RootDir, rm.storeConfig.RunRoot, rm.runtimeConfig.CNIConfigDir, rm.runtimeConfig.CNIPluginDir}
 	for _, dir := range dirs {
 		if dir != "" {
 			if err := os.MkdirAll(dir, 0755); err != nil {
@@ -141,30 +152,30 @@ func (rm *RuntimeManager) setupDirectories() error {
 // initializeStorage initializes the container storage
 func (rm *RuntimeManager) initializeStorage() error {
 	storeOptions := storage.StoreOptions{
-		RunRoot:            rm.config.RunRoot,
-		GraphRoot:          rm.config.StorageRoot,
-		GraphDriverName:    rm.config.StorageDriver,
-		GraphDriverOptions: []string{},
+		RunRoot:            rm.storeConfig.RunRoot,
+		GraphRoot:          rm.storeConfig.RootDir,
+		GraphDriverName:    rm.storeConfig.GraphDriver,
+		GraphDriverOptions: rm.storeConfig.GraphOptions,
 	}
 
 	// Apply storage options
-	for key, value := range rm.config.StorageOptions {
+	for key, value := range rm.storeConfig.StorageOpts {
 		storeOptions.GraphDriverOptions = append(storeOptions.GraphDriverOptions, fmt.Sprintf("%s=%s", key, value))
 	}
 
 	// Setup UID/GID mappings for rootless
 	if rm.rootless {
 		// Convert specs-go ID mappings to idtools format
-		uidMap := make([]idtools.IDMap, len(rm.config.UIDMap))
-		for i, mapping := range rm.config.UIDMap {
+		uidMap := make([]idtools.IDMap, len(rm.runtimeConfig.UIDMap))
+		for i, mapping := range rm.runtimeConfig.UIDMap {
 			uidMap[i] = idtools.IDMap{
 				ContainerID: int(mapping.ContainerID),
 				HostID:      int(mapping.HostID),
 				Size:        int(mapping.Size),
 			}
 		}
-		gidMap := make([]idtools.IDMap, len(rm.config.GIDMap))
-		for i, mapping := range rm.config.GIDMap {
+		gidMap := make([]idtools.IDMap, len(rm.runtimeConfig.GIDMap))
+		for i, mapping := range rm.runtimeConfig.GIDMap {
 			gidMap[i] = idtools.IDMap{
 				ContainerID: int(mapping.ContainerID),
 				HostID:      int(mapping.HostID),
@@ -192,7 +203,7 @@ func (rm *RuntimeManager) setupRootlessEnvironment() error {
 	}
 
 	// Setup UID/GID mappings if not provided
-	if len(rm.config.UIDMap) == 0 || len(rm.config.GIDMap) == 0 {
+	if len(rm.runtimeConfig.UIDMap) == 0 || len(rm.runtimeConfig.GIDMap) == 0 {
 		if err := rm.setupDefaultIDMappings(); err != nil {
 			return errors.Wrap(err, "failed to setup default ID mappings")
 		}
@@ -235,24 +246,24 @@ func (rm *RuntimeManager) setupDefaultIDMappings() error {
 	}
 
 	// Setup UID mappings
-	rm.config.UIDMap = []specs.LinuxIDMapping{
+	rm.runtimeConfig.UIDMap = []specs.LinuxIDMapping{
 		{
 			ContainerID: 0,
 			HostID:      uint32(uid),
 			Size:        1,
 		},
 	}
-	rm.config.UIDMap = append(rm.config.UIDMap, subuidMappings...)
+	rm.runtimeConfig.UIDMap = append(rm.runtimeConfig.UIDMap, subuidMappings...)
 
 	// Setup GID mappings
-	rm.config.GIDMap = []specs.LinuxIDMapping{
+	rm.runtimeConfig.GIDMap = []specs.LinuxIDMapping{
 		{
 			ContainerID: 0,
 			HostID:      uint32(gid),
 			Size:        1,
 		},
 	}
-	rm.config.GIDMap = append(rm.config.GIDMap, subgidMappings...)
+	rm.runtimeConfig.GIDMap = append(rm.runtimeConfig.GIDMap, subgidMappings...)
 
 	return nil
 }
@@ -287,7 +298,7 @@ func readSubIDFile(filename string, id int) ([]specs.LinuxIDMapping, error) {
 
 // validateIDMappings validates the configured UID/GID mappings
 func (rm *RuntimeManager) validateIDMappings() error {
-	for _, mappings := range [][]specs.LinuxIDMapping{rm.config.UIDMap, rm.config.GIDMap} {
+	for _, mappings := range [][]specs.LinuxIDMapping{rm.runtimeConfig.UIDMap, rm.runtimeConfig.GIDMap} {
 		for _, mapping := range mappings {
 			if mapping.Size == 0 {
 				return errors.New("ID mapping size cannot be zero")
@@ -299,11 +310,11 @@ func (rm *RuntimeManager) validateIDMappings() error {
 
 // setupSecurityCapabilities configures security capabilities for the runtime
 func (rm *RuntimeManager) setupSecurityCapabilities() error {
-	if len(rm.config.Capabilities) == 0 {
+	if len(rm.runtimeConfig.Capabilities) == 0 {
 		if rm.rootless {
-			rm.config.Capabilities = []string{"CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FOWNER", "CAP_FSETID", "CAP_KILL", "CAP_NET_BIND_SERVICE", "CAP_SETFCAP", "CAP_SETGID", "CAP_SETPCAP", "CAP_SETUID", "CAP_SYS_CHROOT"}
+			rm.runtimeConfig.Capabilities = []string{"CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FOWNER", "CAP_FSETID", "CAP_KILL", "CAP_NET_BIND_SERVICE", "CAP_SETFCAP", "CAP_SETGID", "CAP_SETPCAP", "CAP_SETUID", "CAP_SYS_CHROOT"}
 		} else {
-			rm.config.Capabilities = []string{"CAP_AUDIT_WRITE", "CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FOWNER", "CAP_FSETID", "CAP_KILL", "CAP_MKNOD", "CAP_NET_BIND_SERVICE", "CAP_NET_RAW", "CAP_SETFCAP", "CAP_SETGID", "CAP_SETPCAP", "CAP_SETUID", "CAP_SYS_CHROOT"}
+			rm.runtimeConfig.Capabilities = []string{"CAP_AUDIT_WRITE", "CAP_CHOWN", "CAP_DAC_OVERRIDE", "CAP_FOWNER", "CAP_FSETID", "CAP_KILL", "CAP_MKNOD", "CAP_NET_BIND_SERVICE", "CAP_NET_RAW", "CAP_SETFCAP", "CAP_SETGID", "CAP_SETPCAP", "CAP_SETUID", "CAP_SYS_CHROOT"}
 		}
 	}
 	return nil
@@ -324,9 +335,14 @@ func (rm *RuntimeManager) IsRootless() bool {
 	return rm.rootless
 }
 
-// GetConfig returns the runtime configuration
-func (rm *RuntimeManager) GetConfig() *RuntimeBuildConfig {
-	return rm.config
+// GetRuntimeConfig returns the runtime configuration
+func (rm *RuntimeManager) GetRuntimeConfig() *RuntimeConfig {
+	return rm.runtimeConfig
+}
+
+// GetStoreConfig returns the store configuration
+func (rm *RuntimeManager) GetStoreConfig() *StoreConfig {
+	return rm.storeConfig
 }
 
 // CreateBuildOptions creates Buildah build options from the runtime configuration
@@ -337,7 +353,7 @@ func (rm *RuntimeManager) CreateBuildOptions() *define.BuildOptions {
 
 	// Parse isolation type
 	var isolation define.Isolation
-	switch strings.ToLower(rm.config.Isolation) {
+	switch strings.ToLower(rm.runtimeConfig.Isolation) {
 	case "chroot":
 		isolation = define.IsolationChroot
 	case "rootless":
@@ -423,7 +439,7 @@ func (rm *RuntimeManager) testStorageOperations() error {
 
 // validateRuntimePaths validates configured runtime paths
 func (rm *RuntimeManager) validateRuntimePaths() error {
-	for path, name := range map[string]string{rm.config.RuntimePath: "runtime", rm.config.ConmonPath: "conmon"} {
+	for path, name := range map[string]string{rm.runtimeConfig.RuntimePath: "runtime", rm.runtimeConfig.ConmonPath: "conmon"} {
 		if path != "" {
 			if err := rm.validateExecutable(path); err != nil {
 				return errors.Wrapf(err, "invalid %s path: %s", name, path)
