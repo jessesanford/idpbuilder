@@ -35,7 +35,7 @@ See SPLIT-PLAN-002.md for details.
 - **Dependencies**: Buildah, containers/storage, runtime-spec, pkg/errors
 
 ### [2025-08-26 01:26] Comprehensive Test Suite
-- **Implemented**: `pkg/oci/build/config_test.go` (520 lines)
+- **Implemented**: `pkg/oci/build/runtime_test.go` (originally named config_test.go, renamed for clarity) (520 lines)
 - **Test coverage includes**:
   - BuildConfig struct validation
   - RuntimeManager initialization and lifecycle
@@ -88,7 +88,7 @@ See SPLIT-PLAN-002.md for details.
 
 **Discrepancy Analysis:**
 - Runtime.go: 401 planned vs 449 actual (+48 lines, +12% over)
-- config_test.go: 329 planned vs 483 actual (+154 lines, +47% over)
+- runtime_test.go (formerly config_test.go): 329 planned vs 483 actual (+154 lines, +47% over)
 - **Root cause**: More comprehensive error handling, validation, and test coverage than planned
 
 **Technical Status:**
@@ -114,4 +114,13 @@ See SPLIT-PLAN-002.md for details.
   - Separated concerns between runtime and storage configuration
   - Code still compiles successfully with build tags
 - **Integration ready**: Types no longer conflict with split-001, enabling clean integration
+
+### [2025-08-26 03:02] File Organization Fix
+- **Fixed naming issue**: Renamed `config_test.go` to `runtime_test.go`
+- **Rationale**: The file contains tests for `RuntimeBuildConfig` and `RuntimeManager` from `runtime.go`, not `config.go`
+- **Impact**: 
+  - Clarifies test organization and purpose
+  - Avoids confusion - the correct `config_test.go` (testing config.go) already exists in split-001
+  - Improves code maintainability and clarity
+- **Committed and pushed**: File rename committed with explanatory message
 
