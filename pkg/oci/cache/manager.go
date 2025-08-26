@@ -9,38 +9,8 @@ import (
 	"github.com/opencontainers/go-digest"
 )
 
-// Layer represents an OCI layer with metadata
-// This will be replaced with import from effort1-contracts when available
-type Layer struct {
-	Digest      digest.Digest `json:"digest"`
-	Size        int64         `json:"size"`
-	MediaType   string        `json:"media_type"`
-	Data        []byte        `json:"-"`
-	CreatedAt   time.Time     `json:"created_at"`
-	Annotations map[string]string `json:"annotations,omitempty"`
-}
 
-// CacheManager defines the interface for layer cache management
-// This will be replaced with import from effort1-contracts when available
-type CacheManager interface {
-	HasLayer(digest string) bool
-	GetLayer(digest string) (*Layer, error)
-	StoreLayer(layer *Layer) error
-	CalculateCacheKey(instruction string, context []byte) string
-	PruneCache(before time.Time) error
-	GetStats() CacheStats
-	Close() error
-}
 
-// CacheStats provides cache performance metrics
-type CacheStats struct {
-	HitCount      int64   `json:"hit_count"`
-	MissCount     int64   `json:"miss_count"`
-	HitRatio      float64 `json:"hit_ratio"`
-	EvictionCount int64   `json:"eviction_count"`
-	TotalSize     int64   `json:"total_size"`
-	LayerCount    int     `json:"layer_count"`
-}
 
 // CacheKeyParams defines parameters for cache key calculation
 type CacheKeyParams struct {
@@ -64,7 +34,7 @@ type managerImpl struct {
 	calculator *keyCalculator
 	strategies []EvictionStrategy
 	config     *Config
-	stats      CacheStats
+	stats      api.CacheStats
 	closed     bool
 }
 
@@ -95,7 +65,7 @@ func DefaultConfig() *Config {
 }
 
 // NewManager creates a new cache manager instance
-func NewManager(config *Config) (CacheManager, error) {
+func NewManager(config *Config) (api.CacheManager, error) {
 	if config == nil {
 		config = DefaultConfig()
 	}
@@ -125,7 +95,7 @@ func NewManager(config *Config) (CacheManager, error) {
 		calculator: calculator,
 		strategies: strategies,
 		config:     config,
-		stats:      CacheStats{},
+		stats:      api.CacheStats{},
 		closed:     false,
 	}
 
@@ -153,14 +123,14 @@ func (m *managerImpl) HasLayer(digest string) bool {
 	// Recalculate hit ratio
 	total := m.stats.HitCount + m.stats.MissCount
 	if total > 0 {
-		m.stats.HitRatio = float64(m.stats.HitCount) / float64(total)
+		m.stats.HitRate = float64(m.stats.HitCount) / float64(total)
 	}
 
 	return has
 }
 
 // GetLayer retrieves a layer from the cache
-func (m *managerImpl) GetLayer(digest string) (*Layer, error) {
+func (m *managerImpl) GetLayer(digest string) (*api.Layer, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -181,14 +151,14 @@ func (m *managerImpl) GetLayer(digest string) (*Layer, error) {
 	// Recalculate hit ratio
 	total := m.stats.HitCount + m.stats.MissCount
 	if total > 0 {
-		m.stats.HitRatio = float64(m.stats.HitCount) / float64(total)
+		m.stats.HitRate = float64(m.stats.HitCount) / float64(total)
 	}
 
 	return layer, nil
 }
 
 // StoreLayer stores a layer in the cache
-func (m *managerImpl) StoreLayer(layer *Layer) error {
+func (m *managerImpl) StoreLayer(layer *api.Layer) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -210,7 +180,7 @@ func (m *managerImpl) StoreLayer(layer *Layer) error {
 
 	// Update statistics
 	m.stats.TotalSize += layer.Size
-	m.stats.LayerCount++
+	m.stats.TotalLayers++
 
 	return nil
 }
@@ -241,25 +211,24 @@ func (m *managerImpl) PruneCache(before time.Time) error {
 
 	// Update statistics
 	m.stats.TotalSize -= removedSize
-	m.stats.LayerCount -= removedCount
-	m.stats.EvictionCount += int64(removedCount)
+	m.stats.TotalLayers -= int64(removedCount)
+	m.stats.PruneCount += int64(removedCount)
 
 	return nil
 }
 
 // GetStats returns current cache statistics
-func (m *managerImpl) GetStats() CacheStats {
+func (m *managerImpl) GetStats() *api.CacheStats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
 	// Create a copy to avoid race conditions
-	return CacheStats{
+	return &api.CacheStats{
 		HitCount:      m.stats.HitCount,
 		MissCount:     m.stats.MissCount,
-		HitRatio:      m.stats.HitRatio,
-		EvictionCount: m.stats.EvictionCount,
+		HitRate:       m.stats.HitRate,
 		TotalSize:     m.stats.TotalSize,
-		LayerCount:    m.stats.LayerCount,
+		TotalLayers:   m.stats.TotalLayers,
 	}
 }
 
@@ -291,7 +260,7 @@ func (m *managerImpl) shouldEvict() bool {
 	}
 
 	// Check layer count-based eviction
-	if m.config.MaxLayers > 0 && m.stats.LayerCount >= int(float64(m.config.MaxLayers)*m.config.LowWaterMark) {
+	if m.config.MaxLayers > 0 && m.stats.TotalLayers >= int64(float64(m.config.MaxLayers)*m.config.LowWaterMark) {
 		return true
 	}
 
@@ -327,7 +296,7 @@ func (m *managerImpl) evictLayers() error {
 			return fmt.Errorf("failed to remove layer %s: %w", layer.Layer.Digest.String(), err)
 		}
 		removedSize += layer.Layer.Size
-		m.stats.EvictionCount++
+		m.stats.PruneCount++
 		
 		// Stop evicting if we've reached the high water mark
 		newSize := m.stats.TotalSize - removedSize
@@ -338,7 +307,7 @@ func (m *managerImpl) evictLayers() error {
 
 	// Update statistics
 	m.stats.TotalSize -= removedSize
-	m.stats.LayerCount -= len(layersToEvict)
+	m.stats.TotalLayers -= int64(len(layersToEvict))
 
 	return nil
 }
