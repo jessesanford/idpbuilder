@@ -9,7 +9,6 @@ import (
 	"github.com/containers/buildah"
 	"github.com/containers/storage"
 	"github.com/containers/storage/pkg/reexec"
-	"github.com/opencontainers/go-digest"
 	"github.com/sirupsen/logrus"
 )
 
@@ -61,10 +60,6 @@ func NewStoreManager(config *StoreConfig) *StoreManager {
 		graphDriver: config.GraphDriver,
 		rootless:    config.Rootless,
 		storageOptions: storage.StoreOptions{
-			RootlessStorageConfig: storage.RootlessStorageConfig{
-				RootlessUID: os.Getuid(),
-				RootlessGID: os.Getgid(),
-			},
 			RunRoot:         config.RunRoot,
 			GraphRoot:       config.RootDir,
 			GraphDriverName: config.GraphDriver,
@@ -89,10 +84,8 @@ func (sm *StoreManager) Initialize(ctx context.Context) error {
 		return fmt.Errorf("failed to create storage directories: %w", err)
 	}
 
-	// Configure storage options based on rootless mode
-	if err := sm.configureStorage(); err != nil {
-		return fmt.Errorf("failed to configure storage: %w", err)
-	}
+	// Configure storage options
+	sm.configureStorage()
 
 	// Open the storage store
 	store, err := storage.GetStore(sm.storageOptions)
@@ -103,8 +96,8 @@ func (sm *StoreManager) Initialize(ctx context.Context) error {
 	sm.store = store
 	sm.initialized = true
 
-	logrus.Infof("Storage backend initialized: driver=%s, rootDir=%s, runRoot=%s, rootless=%v", 
-		sm.graphDriver, sm.rootDir, sm.runRoot, sm.rootless)
+	logrus.Infof("Storage backend initialized: driver=%s, rootless=%v", 
+		sm.graphDriver, sm.rootless)
 
 	return nil
 }
@@ -123,93 +116,19 @@ func (sm *StoreManager) createDirectories() error {
 }
 
 // configureStorage sets up driver-specific storage options
-func (sm *StoreManager) configureStorage() error {
+func (sm *StoreManager) configureStorage() {
 	switch sm.graphDriver {
 	case "overlay":
-		return sm.configureOverlayDriver()
+		if sm.rootless {
+			sm.storageOptions.GraphOptions = []string{
+				"overlay.mount_program=/usr/bin/fuse-overlayfs",
+			}
+		}
 	case "vfs":
-		return sm.configureVFSDriver()
-	case "btrfs":
-		return sm.configureBtrfsDriver()
-	case "zfs":
-		return sm.configureZFSDriver()
+		sm.storageOptions.GraphOptions = []string{}
 	default:
-		logrus.Warnf("Unknown storage driver %s, using default configuration", sm.graphDriver)
+		logrus.Warnf("Unknown storage driver %s, using default", sm.graphDriver)
 	}
-	
-	return nil
-}
-
-// configureOverlayDriver sets up overlay driver specific options
-func (sm *StoreManager) configureOverlayDriver() error {
-	// Check if overlay is supported
-	if !sm.isOverlaySupported() {
-		logrus.Warn("Overlay driver may not be supported, falling back to vfs")
-		sm.graphDriver = "vfs"
-		sm.storageOptions.GraphDriverName = "vfs"
-		return nil
-	}
-
-	// Set overlay-specific options
-	overlayOptions := []string{
-		"overlay.mountopt=nodev,metacopy=on",
-	}
-	
-	if sm.rootless {
-		overlayOptions = append(overlayOptions, 
-			"overlay.mount_program=/usr/bin/fuse-overlayfs",
-			"overlay.skip_mount_home=true",
-		)
-	}
-	
-	sm.storageOptions.GraphOptions = overlayOptions
-	return nil
-}
-
-// configureVFSDriver sets up VFS driver (simple directory-based storage)
-func (sm *StoreManager) configureVFSDriver() error {
-	// VFS driver needs no special configuration
-	sm.storageOptions.GraphOptions = []string{}
-	return nil
-}
-
-// configureBtrfsDriver sets up Btrfs driver options
-func (sm *StoreManager) configureBtrfsDriver() error {
-	// Check if we're on a btrfs filesystem
-	if !sm.isBtrfsSupported() {
-		return fmt.Errorf("btrfs driver selected but filesystem is not btrfs")
-	}
-	
-	sm.storageOptions.GraphOptions = []string{
-		"btrfs.min_space=1G",
-	}
-	return nil
-}
-
-// configureZFSDriver sets up ZFS driver options  
-func (sm *StoreManager) configureZFSDriver() error {
-	// Basic ZFS configuration
-	sm.storageOptions.GraphOptions = []string{
-		"zfs.fsname=zroot/containers",
-	}
-	return nil
-}
-
-// isOverlaySupported checks if overlay filesystem is supported
-func (sm *StoreManager) isOverlaySupported() bool {
-	// Check if overlay module is loaded
-	if _, err := os.Stat("/proc/filesystems"); err != nil {
-		return false
-	}
-	
-	// Simple check - in production this would be more thorough
-	return true
-}
-
-// isBtrfsSupported checks if the storage root is on a btrfs filesystem
-func (sm *StoreManager) isBtrfsSupported() bool {
-	// Simple check - would need more sophisticated detection in production
-	return false
 }
 
 // GetStore returns the underlying storage.Store
@@ -246,15 +165,6 @@ func (sm *StoreManager) ListImages() ([]storage.Image, error) {
 	return sm.store.Images()
 }
 
-// ListContainers returns a list of containers in the store
-func (sm *StoreManager) ListContainers() ([]storage.Container, error) {
-	if !sm.initialized {
-		return nil, fmt.Errorf("store manager not initialized")
-	}
-	
-	return sm.store.Containers()
-}
-
 // ImageExists checks if an image exists in the store
 func (sm *StoreManager) ImageExists(nameOrID string) (bool, error) {
 	if !sm.initialized {
@@ -270,47 +180,6 @@ func (sm *StoreManager) ImageExists(nameOrID string) (bool, error) {
 	}
 	
 	return true, nil
-}
-
-// DeleteImage removes an image from the store
-func (sm *StoreManager) DeleteImage(nameOrID string, force bool) error {
-	if !sm.initialized {
-		return fmt.Errorf("store manager not initialized")
-	}
-	
-	image, err := sm.store.Image(nameOrID)
-	if err != nil {
-		return fmt.Errorf("failed to find image %s: %w", nameOrID, err)
-	}
-	
-	_, err = sm.store.DeleteImage(image.ID, force)
-	if err != nil {
-		return fmt.Errorf("failed to delete image %s: %w", nameOrID, err)
-	}
-	
-	return nil
-}
-
-// GetImageByDigest retrieves an image by its digest
-func (sm *StoreManager) GetImageByDigest(digest digest.Digest) (*storage.Image, error) {
-	if !sm.initialized {
-		return nil, fmt.Errorf("store manager not initialized")
-	}
-	
-	images, err := sm.store.Images()
-	if err != nil {
-		return nil, fmt.Errorf("failed to list images: %w", err)
-	}
-	
-	for _, img := range images {
-		for _, imgDigest := range img.Digests {
-			if imgDigest == digest {
-				return &img, nil
-			}
-		}
-	}
-	
-	return nil, storage.ErrImageUnknown
 }
 
 // Shutdown gracefully shuts down the store manager
@@ -329,29 +198,6 @@ func (sm *StoreManager) Shutdown() error {
 	
 	sm.initialized = false
 	logrus.Info("Storage backend shut down successfully")
-	
-	return nil
-}
-
-// GarbageCollect performs cleanup of unused storage
-func (sm *StoreManager) GarbageCollect(ctx context.Context) error {
-	if !sm.initialized {
-		return fmt.Errorf("store manager not initialized")
-	}
-	
-	// Get all containers and images
-	containers, err := sm.store.Containers()
-	if err != nil {
-		return fmt.Errorf("failed to list containers: %w", err)
-	}
-	
-	images, err := sm.store.Images()
-	if err != nil {
-		return fmt.Errorf("failed to list images: %w", err)
-	}
-	
-	logrus.Infof("Garbage collection completed. Found %d containers and %d images", 
-		len(containers), len(images))
 	
 	return nil
 }
