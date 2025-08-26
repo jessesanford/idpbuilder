@@ -1,39 +1,29 @@
 package optimizer
 
 import (
-	"testing"
-
 	"github.com/jessesanford/idpbuilder/pkg/oci/api"
+	"testing"
 )
 
 func TestNewGraphBuilder(t *testing.T) {
 	gb := NewGraphBuilder()
-	if gb == nil {
-		t.Fatal("expected graph builder instance")
-	}
-	if gb.nodes == nil {
-		t.Error("expected initialized nodes map")
+	if gb == nil || gb.nodes == nil {
+		t.Error("expected graph builder with initialized nodes")
 	}
 }
 
-func TestBuildEmptyStages(t *testing.T) {
+func TestBuildEmpty(t *testing.T) {
 	gb := NewGraphBuilder()
-	
-	_, err := gb.Build([]*api.Stage{})
-	if err == nil {
+	if _, err := gb.Build([]*api.Stage{}); err == nil {
 		t.Error("expected error for empty stages")
 	}
 }
 
-func TestBuildSingleStage(t *testing.T) {
+func TestBuildSingle(t *testing.T) {
 	gb := NewGraphBuilder()
 	stages := []*api.Stage{{Name: "test", BaseImage: "alpine"}}
-	
 	graph, err := gb.Build(stages)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
-	if len(graph.Nodes) != 1 {
-		t.Errorf("expected 1 node, got %d", len(graph.Nodes))
+	if err != nil || len(graph.Nodes) != 1 {
+		t.Error("expected single node graph")
 	}
 }
