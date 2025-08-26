@@ -6,20 +6,16 @@ import (
 	"time"
 )
 
-// retryTransport wraps an HTTP transport with retry logic for resilient operations
-// Particularly useful for registry operations that may have transient failures
 type retryTransport struct {
 	base       http.RoundTripper
 	maxRetries int
 	backoff    time.Duration
 }
 
-// newRetryTransport creates a new retry transport wrapper
 func newRetryTransport(base http.RoundTripper, maxRetries int, backoff time.Duration) *retryTransport {
 	if base == nil {
 		base = http.DefaultTransport
 	}
-	
 	return &retryTransport{
 		base:       base,
 		maxRetries: maxRetries,
