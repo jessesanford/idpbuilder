@@ -3,13 +3,10 @@ package cache
 import (
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
-
-	"github.com/opencontainers/go-digest"
 )
 
 // layerMetadata extends Layer with cache-specific metadata

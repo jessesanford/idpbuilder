@@ -1,12 +1,9 @@
 package cache
 
 import (
-	"context"
 	"fmt"
 	"sync"
 	"time"
-
-	"github.com/opencontainers/go-digest"
 )
 
 
@@ -21,7 +18,6 @@ type CacheKeyParams struct {
 	Timestamp       time.Time         `json:"timestamp,omitempty"`
 }
 
-// BuildArg represents a build argument key-value pair
 type BuildArg struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
@@ -34,7 +30,7 @@ type managerImpl struct {
 	calculator *keyCalculator
 	strategies []EvictionStrategy
 	config     *Config
-	stats      api.CacheStats
+	stats      CacheStats
 	closed     bool
 }
 
@@ -65,7 +61,7 @@ func DefaultConfig() *Config {
 }
 
 // NewManager creates a new cache manager instance
-func NewManager(config *Config) (api.CacheManager, error) {
+func NewManager(config *Config) (CacheManager, error) {
 	if config == nil {
 		config = DefaultConfig()
 	}
@@ -95,7 +91,7 @@ func NewManager(config *Config) (api.CacheManager, error) {
 		calculator: calculator,
 		strategies: strategies,
 		config:     config,
-		stats:      api.CacheStats{},
+		stats:      CacheStats{},
 		closed:     false,
 	}
 
@@ -130,7 +126,7 @@ func (m *managerImpl) HasLayer(digest string) bool {
 }
 
 // GetLayer retrieves a layer from the cache
-func (m *managerImpl) GetLayer(digest string) (*api.Layer, error) {
+func (m *managerImpl) GetLayer(digest string) (*Layer, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
@@ -158,7 +154,7 @@ func (m *managerImpl) GetLayer(digest string) (*api.Layer, error) {
 }
 
 // StoreLayer stores a layer in the cache
-func (m *managerImpl) StoreLayer(layer *api.Layer) error {
+func (m *managerImpl) StoreLayer(layer *Layer) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -218,12 +214,12 @@ func (m *managerImpl) PruneCache(before time.Time) error {
 }
 
 // GetStats returns current cache statistics
-func (m *managerImpl) GetStats() *api.CacheStats {
+func (m *managerImpl) GetStats() *CacheStats {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
 	// Create a copy to avoid race conditions
-	return &api.CacheStats{
+	return &CacheStats{
 		HitCount:      m.stats.HitCount,
 		MissCount:     m.stats.MissCount,
 		HitRate:       m.stats.HitRate,
