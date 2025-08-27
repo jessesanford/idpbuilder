@@ -401,3 +401,76 @@ func (v *VerificationManager) GetModeHistory() []ModeTransition {
 	copy(history, v.modeHistory)
 	return history
 }
+
+// SetMode sets the verification mode (alias for SwitchVerificationMode for interface compatibility)
+func (v *VerificationManager) SetMode(mode v2.VerificationMode) error {
+	return v.SwitchVerificationMode(mode)
+}
+
+// GetPool returns the current certificate pool based on verification mode
+func (v *VerificationManager) GetPool() *x509.CertPool {
+	v.mu.RLock()
+	defer v.mu.RUnlock()
+
+	switch v.currentMode {
+	case v2.VerificationModeStrict:
+		return v.strictPool.Clone()
+	case v2.VerificationModeCustomCA:
+		return v.customCAPool.Clone()
+	case v2.VerificationModeSkip:
+		return v.skipPool.Clone()
+	default:
+		return v.strictPool.Clone()
+	}
+}
+
+// ValidateWithFallback validates a certificate and automatically tries fallback on failure
+func (v *VerificationManager) ValidateWithFallback(cert *x509.Certificate) error {
+	if cert == nil {
+		return fmt.Errorf("certificate cannot be nil")
+	}
+
+	// Get current state without locking (to avoid deadlock)
+	v.mu.RLock()
+	currentMode := v.currentMode
+	fallbackMode := v.fallbackMode
+	v.mu.RUnlock()
+
+	// Try validation with current mode
+	err := v.ValidateWithMode(cert, currentMode)
+	if err == nil {
+		return nil
+	}
+
+	// If validation fails, check if we have a fallback
+	if currentMode == fallbackMode {
+		return fmt.Errorf("validation failed with no fallback available: %w", err)
+	}
+
+	// Try fallback mode without switching the current mode permanently
+	fallbackErr := v.ValidateWithMode(cert, fallbackMode)
+	if fallbackErr != nil {
+		return fmt.Errorf("validation failed in both current (%s) and fallback (%s) modes: current=%w, fallback=%w", 
+			currentMode, fallbackMode, err, fallbackErr)
+	}
+
+	// Record successful fallback validation (but don't switch modes)
+	v.mu.Lock()
+	defer v.mu.Unlock()
+	
+	transition := ModeTransition{
+		FromMode:  currentMode,
+		ToMode:    fallbackMode,
+		Timestamp: time.Now(),
+		Reason:    fmt.Sprintf("temporary fallback for validation: %v", err),
+		Success:   true,
+	}
+	v.modeHistory = append(v.modeHistory, transition)
+
+	// Trim history if too large
+	if len(v.modeHistory) > 100 {
+		v.modeHistory = v.modeHistory[len(v.modeHistory)-100:]
+	}
+
+	return nil
+}

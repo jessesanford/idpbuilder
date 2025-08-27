@@ -337,3 +337,170 @@ func generateExpiredCertificate() (*x509.Certificate, error) {
 
 	return cert, nil
 }
+
+// TestVerificationManagerOperations tests verification manager functionality
+func TestVerificationManagerOperations(t *testing.T) {
+	service, err := NewCertificateService()
+	require.NoError(t, err)
+	require.NotNil(t, service.verificationMgr)
+
+	t.Run("mode switching", func(t *testing.T) {
+		// Test SetMode alias
+		err := service.verificationMgr.SetMode(v2.VerificationModeCustomCA)
+		assert.NoError(t, err)
+		assert.Equal(t, v2.VerificationModeCustomCA, service.verificationMgr.GetCurrentMode())
+
+		// Test mode history
+		history := service.verificationMgr.GetModeHistory()
+		assert.Greater(t, len(history), 0)
+	})
+
+	t.Run("pool retrieval", func(t *testing.T) {
+		// Test GetPool for different modes
+		service.verificationMgr.SetMode(v2.VerificationModeStrict)
+		strictPool := service.verificationMgr.GetPool()
+		assert.NotNil(t, strictPool)
+
+		service.verificationMgr.SetMode(v2.VerificationModeSkip)
+		skipPool := service.verificationMgr.GetPool()
+		assert.NotNil(t, skipPool)
+	})
+
+	t.Run("validate with fallback", func(t *testing.T) {
+		cert, err := generateTestCertificate()
+		require.NoError(t, err)
+
+		// Set up custom CA mode as fallback from strict
+		service.verificationMgr.SetMode(v2.VerificationModeStrict)
+		
+		// This should try fallback since test cert won't validate against system pool
+		err = service.verificationMgr.ValidateWithFallback(cert)
+		// Error expected since test cert isn't in system or custom pools
+		assert.Error(t, err)
+
+		// Test nil certificate
+		err = service.verificationMgr.ValidateWithFallback(nil)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "cannot be nil")
+	})
+}
+
+// TestGiteaIntegrationScenarios tests Gitea-specific functionality
+func TestGiteaIntegrationScenarios(t *testing.T) {
+	service, err := NewCertificateService()
+	require.NoError(t, err)
+
+	t.Run("gitea discovery initialization", func(t *testing.T) {
+		assert.NotNil(t, service.giteaDiscovery)
+	})
+
+	// Note: Gitea integration tests are handled in split-002
+	// This split focuses on verification manager functionality
+}
+
+// TestIntegrationScenarios tests complex integration scenarios
+func TestIntegrationScenarios(t *testing.T) {
+	service, err := NewCertificateService()
+	require.NoError(t, err)
+
+	ctx := context.Background()
+
+	t.Run("full workflow with mode switching and validation", func(t *testing.T) {
+		// Generate test certificate
+		cert, err := generateTestCertificate()
+		require.NoError(t, err)
+
+		// Start in strict mode
+		err = service.SetVerificationMode(ctx, v2.VerificationModeStrict)
+		assert.NoError(t, err)
+
+		// Validate certificate (should fail for chain validation)
+		result, err := service.ValidateCertificate(ctx, cert)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		assert.False(t, result.Valid) // Expected to be invalid
+
+		// Switch to skip mode
+		err = service.SetVerificationMode(ctx, v2.VerificationModeSkip)
+		assert.NoError(t, err)
+
+		// Validate again (should pass basic checks)
+		result, err = service.ValidateCertificate(ctx, cert)
+		assert.NoError(t, err)
+		assert.NotNil(t, result)
+		// In skip mode, validation should pass basic structure checks
+	})
+
+	t.Run("certificate pool management with mode changes", func(t *testing.T) {
+		cert, err := generateTestCertificate()
+		require.NoError(t, err)
+
+		// Add certificate
+		err = service.AddCertificate(ctx, cert)
+		assert.NoError(t, err)
+
+		// Change modes and verify pool consistency
+		modes := []v2.VerificationMode{
+			v2.VerificationModeStrict,
+			v2.VerificationModeCustomCA,
+			v2.VerificationModeSkip,
+		}
+
+		for _, mode := range modes {
+			err = service.SetVerificationMode(ctx, mode)
+			assert.NoError(t, err)
+
+			pool := service.GetCertPool()
+			assert.NotNil(t, pool)
+		}
+	})
+}
+
+// TestErrorConditions tests various error scenarios
+func TestErrorConditions(t *testing.T) {
+	service, err := NewCertificateService()
+	require.NoError(t, err)
+
+	ctx := context.Background()
+
+	t.Run("invalid certificate operations", func(t *testing.T) {
+		// Try to remove non-existent certificate
+		err := service.RemoveCertificate(ctx, "non-existent")
+		assert.Error(t, err)
+
+		// Try to add nil certificate through verification manager
+		err = service.verificationMgr.ValidateWithFallback(nil)
+		assert.Error(t, err)
+	})
+
+	t.Run("verification manager error conditions", func(t *testing.T) {
+		// Test with corrupt certificate data
+		cert := &x509.Certificate{
+			Raw: []byte{}, // Empty raw data
+		}
+		
+		err := service.verificationMgr.ValidateWithMode(cert, v2.VerificationModeSkip)
+		assert.Error(t, err)
+	})
+}
+
+// BenchmarkConcurrentOperations benchmarks concurrent certificate operations
+func BenchmarkConcurrentOperations(b *testing.B) {
+	service, err := NewCertificateService()
+	require.NoError(b, err)
+
+	ctx := context.Background()
+	cert, err := generateTestCertificate()
+	require.NoError(b, err)
+
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			// Mix of operations
+			service.ValidateCertificate(ctx, cert)
+			service.SetVerificationMode(ctx, v2.VerificationModeCustomCA)
+			service.GetCertPool()
+			service.SetVerificationMode(ctx, v2.VerificationModeStrict)
+		}
+	})
+}
