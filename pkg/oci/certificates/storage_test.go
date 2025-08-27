@@ -191,7 +191,7 @@ func TestCertificateConfig_EnvironmentVariables(t *testing.T) {
 		t.Fatalf("Failed to load config from environment: %v", err)
 	}
 	
-	if !filepath.IsAbs(config.StoragePath) || !filepath.Clean(config.StoragePath) == config.StoragePath {
+	if !filepath.IsAbs(config.StoragePath) || filepath.Clean(config.StoragePath) != config.StoragePath {
 		t.Errorf("Expected absolute path, got %s", config.StoragePath)
 	}
 	
@@ -246,10 +246,7 @@ func createTestCertificate(t *testing.T) *Certificate {
 	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: certDER})
 	
 	// Encode private key as PEM
-	privateKeyDER, err := x509.MarshalPKCS1PrivateKey(privateKey)
-	if err != nil {
-		t.Fatalf("Failed to marshal private key: %v", err)
-	}
+	privateKeyDER := x509.MarshalPKCS1PrivateKey(privateKey)
 	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: privateKeyDER})
 	
 	return &Certificate{

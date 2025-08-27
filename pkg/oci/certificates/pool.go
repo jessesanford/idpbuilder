@@ -236,7 +236,7 @@ func (cpm *CertPoolManager) RemoveCertificate(ctx context.Context, id string) er
 	defer cpm.mu.Unlock()
 	
 	// Load the certificate to get its X509 representation
-	cert, err := cpm.store.Load(ctx, id)
+	_, err := cpm.store.Load(ctx, id)
 	if err != nil {
 		return fmt.Errorf("failed to load certificate for removal: %w", err)
 	}

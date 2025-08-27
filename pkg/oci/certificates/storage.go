@@ -7,7 +7,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"sync"
@@ -435,7 +434,7 @@ func (fs *FilesystemStore) DiscoverCertificates(ctx context.Context) error {
 func (fs *FilesystemStore) discoverFromPath(ctx context.Context, path string) (int, error) {
 	var count int
 	
-	err := filepath.WalkDir(path, func(filePath string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(path, func(filePath string, d os.DirEntry, err error) error {
 		if err != nil {
 			return nil // Continue walking on errors
 		}
