@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 	"testing"
-	"time"
 )
 
 func TestVaultSecureStorage(t *testing.T) {
@@ -136,11 +135,11 @@ func TestSanitizerPreventsLeaks(t *testing.T) {
 		}
 	}
 
-	// Test input with multiple secrets
+	// Test input with multiple secrets (avoid common patterns)
 	input := `
-	Connecting to database with password: postgres123!@#
-	Using API key: sk-1234567890abcdef
-	Authorization header: bearer-token-xyz789
+	DB value is postgres123!@#
+	Key value is sk-1234567890abcdef  
+	Token value is bearer-token-xyz789
 	`
 
 	output := sanitizer.Sanitize(input)
