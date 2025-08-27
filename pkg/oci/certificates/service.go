@@ -164,6 +164,11 @@ func (s *CertificateServiceImpl) ValidateCertificate(ctx context.Context, cert *
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
+	// Handle nil certificate
+	if cert == nil {
+		return nil, fmt.Errorf("certificate cannot be nil")
+	}
+
 	result := &v2.ValidationResult{
 		Valid:    true,
 		Errors:   make([]string, 0),

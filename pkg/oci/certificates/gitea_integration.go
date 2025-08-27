@@ -7,7 +7,7 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
+	"encoding/pem"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -351,13 +351,19 @@ func (g *GiteaDiscovery) parseCertificateData(data []byte) ([]*x509.Certificate,
 	// Try parsing as PEM first
 	rest := data
 	for len(rest) > 0 {
-		var block *x509.Certificate
-		block, rest = x509.ParseCertificate(rest)
-		if block != nil {
-			certs = append(certs, block)
-		} else {
+		block, remaining := pem.Decode(rest)
+		if block == nil {
 			break
 		}
+
+		if block.Type == "CERTIFICATE" {
+			cert, err := x509.ParseCertificate(block.Bytes)
+			if err == nil {
+				certs = append(certs, cert)
+			}
+		}
+
+		rest = remaining
 	}
 
 	// If no PEM certificates found, try DER format
