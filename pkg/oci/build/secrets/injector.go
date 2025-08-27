@@ -22,216 +22,143 @@ func NewInjector(vault SecretVault, sanitizer *Sanitizer) *Injector {
 	}
 }
 
-// InjectBuildArgs safely injects secrets into build arguments
 func (i *Injector) InjectBuildArgs(ctx context.Context, args map[string]string, secretIDs []string) (map[string]string, error) {
 	if args == nil {
 		args = make(map[string]string)
 	}
-	
 	result := make(map[string]string)
-	
-	// Copy existing non-secret args
 	for k, v := range args {
 		result[k] = v
 	}
 	
-	// Process each secret ID for injection
 	for _, id := range secretIDs {
 		select {
 		case <-ctx.Done():
-			return nil, fmt.Errorf("context cancelled while injecting secret %s: %w", id, ctx.Err())
+			return nil, fmt.Errorf("context cancelled: %w", ctx.Err())
 		default:
 		}
 		
-		// Retrieve secret from vault
 		secret, err := i.vault.Retrieve(id)
 		if err != nil {
-			return nil, fmt.Errorf("failed to retrieve secret %s for build arg injection: %w", id, err)
+			return nil, fmt.Errorf("retrieve secret %s: %w", id, err)
 		}
-		
-		// Verify it's a build arg type secret
 		if secret.Type != SecretTypeBuildArg {
-			return nil, fmt.Errorf("secret %s is type %s, not build-arg", id, secret.Type)
+			return nil, fmt.Errorf("secret %s not build-arg type", id)
 		}
-		
 		if secret.Target == "" {
-			return nil, fmt.Errorf("secret %s has no target build arg name", id)
+			return nil, fmt.Errorf("secret %s missing target", id)
 		}
 		
-		// Register with sanitizer to prevent leakage in logs
-		if err := i.sanitizer.RegisterSecret(id, secret.Value); err != nil {
-			log.Printf("Warning: failed to register secret %s with sanitizer: %v", id, err)
-		}
-		
-		// Add to build args
+		i.sanitizer.RegisterSecret(id, secret.Value)
 		result[secret.Target] = string(secret.Value)
-		
-		// Audit log (without exposing the value)
-		log.Printf("Injected build arg: %s (from secret: %s)", secret.Target, id)
-		
-		// Clear secret value from memory
+		log.Printf("Injected build arg: %s", secret.Target)
 		clearBytes(secret.Value)
 	}
-	
 	return result, nil
 }
 
-// PrepareSecretMount creates a temporary secure mount for secret files
 func (i *Injector) PrepareSecretMount(ctx context.Context, secretID string) (string, func(), error) {
-	// Retrieve secret from vault
 	secret, err := i.vault.Retrieve(secretID)
 	if err != nil {
-		return "", nil, fmt.Errorf("failed to retrieve secret %s for mount: %w", secretID, err)
+		return "", nil, fmt.Errorf("retrieve secret %s: %w", secretID, err)
 	}
-	
-	// Verify it's a mount type secret
 	if secret.Type != SecretTypeMount {
 		clearBytes(secret.Value)
-		return "", nil, fmt.Errorf("secret %s is type %s, not mount", secretID, secret.Type)
+		return "", nil, fmt.Errorf("secret %s not mount type", secretID)
 	}
 	
-	// Create secure temporary directory
 	tmpDir, err := os.MkdirTemp("", "oci-secret-mount-*")
 	if err != nil {
 		clearBytes(secret.Value)
-		return "", nil, fmt.Errorf("failed to create temporary directory for secret mount: %w", err)
+		return "", nil, fmt.Errorf("create temp dir: %w", err)
 	}
 	
-	// Set restrictive permissions on temp directory (owner only)
 	if err := os.Chmod(tmpDir, 0700); err != nil {
 		os.RemoveAll(tmpDir)
 		clearBytes(secret.Value)
-		return "", nil, fmt.Errorf("failed to secure temporary directory: %w", err)
+		return "", nil, fmt.Errorf("secure temp dir: %w", err)
 	}
 	
-	// Create target file path
-	var tmpFile string
+	tmpFile := filepath.Join(tmpDir, "secret")
 	if secret.Target != "" {
 		tmpFile = filepath.Join(tmpDir, filepath.Base(secret.Target))
-	} else {
-		tmpFile = filepath.Join(tmpDir, "secret")
 	}
 	
-	// Set default permissions if not specified
 	mode := secret.Mode
 	if mode == 0 {
-		mode = 0600 // Owner read/write only by default
+		mode = 0600
 	}
 	
-	// Write secret to temporary file
 	if err := os.WriteFile(tmpFile, secret.Value, mode); err != nil {
 		os.RemoveAll(tmpDir)
 		clearBytes(secret.Value)
-		return "", nil, fmt.Errorf("failed to write secret to temporary file: %w", err)
+		return "", nil, fmt.Errorf("write secret file: %w", err)
 	}
 	
-	// Set ownership if specified (requires appropriate privileges)
 	if secret.UID > 0 || secret.GID > 0 {
-		if err := os.Chown(tmpFile, secret.UID, secret.GID); err != nil {
-			log.Printf("Warning: failed to set ownership for secret mount %s: %v", secretID, err)
-			// Don't fail the operation for ownership issues
-		}
+		os.Chown(tmpFile, secret.UID, secret.GID)
 	}
 	
-	// Register with sanitizer to prevent content leakage
-	if err := i.sanitizer.RegisterSecret(secretID, secret.Value); err != nil {
-		log.Printf("Warning: failed to register secret %s with sanitizer: %v", secretID, err)
-	}
-	
-	// Clear secret from memory now that it's written to file
+	i.sanitizer.RegisterSecret(secretID, secret.Value)
 	clearBytes(secret.Value)
 	
-	// Create secure cleanup function
 	cleanup := func() {
-		// Read file back to securely overwrite it
 		if data, err := os.ReadFile(tmpFile); err == nil {
-			// Overwrite with zeros
 			clearBytes(data)
 			os.WriteFile(tmpFile, data, mode)
 		}
-		
-		// Remove temporary directory and contents
-		if err := os.RemoveAll(tmpDir); err != nil {
-			log.Printf("Warning: failed to clean up secret mount directory %s: %v", tmpDir, err)
-		}
-		
-		// Unregister from sanitizer
+		os.RemoveAll(tmpDir)
 		i.sanitizer.UnregisterSecret(secretID)
-		
 		log.Printf("Cleaned up secret mount: %s", secretID)
 	}
 	
-	// Audit log
-	log.Printf("Created secret mount: %s -> %s (permissions: %o)", secretID, tmpFile, mode)
-	
+	log.Printf("Created secret mount: %s -> %s", secretID, tmpFile)
 	return tmpFile, cleanup, nil
 }
 
-// InjectEnvironmentSecrets prepares environment variables with secrets
 func (i *Injector) InjectEnvironmentSecrets(ctx context.Context, env []string, secretIDs []string) ([]string, error) {
 	if env == nil {
 		env = []string{}
 	}
-	
 	result := make([]string, len(env))
 	copy(result, env)
 	
-	// Process each secret ID for environment injection
 	for _, id := range secretIDs {
 		select {
 		case <-ctx.Done():
-			return nil, fmt.Errorf("context cancelled while injecting env secret %s: %w", id, ctx.Err())
+			return nil, fmt.Errorf("context cancelled: %w", ctx.Err())
 		default:
 		}
 		
-		// Retrieve secret from vault
 		secret, err := i.vault.Retrieve(id)
 		if err != nil {
-			return nil, fmt.Errorf("failed to retrieve secret %s for env injection: %w", id, err)
+			return nil, fmt.Errorf("retrieve secret %s: %w", id, err)
 		}
-		
-		// Verify it's an environment type secret
 		if secret.Type != SecretTypeEnv {
 			clearBytes(secret.Value)
-			return nil, fmt.Errorf("secret %s is type %s, not env", id, secret.Type)
+			return nil, fmt.Errorf("secret %s not env type", id)
 		}
-		
 		if secret.Target == "" {
 			clearBytes(secret.Value)
-			return nil, fmt.Errorf("secret %s has no target environment variable name", id)
+			return nil, fmt.Errorf("secret %s missing target", id)
 		}
 		
-		// Register with sanitizer
-		if err := i.sanitizer.RegisterSecret(id, secret.Value); err != nil {
-			log.Printf("Warning: failed to register secret %s with sanitizer: %v", id, err)
-		}
-		
-		// Add environment variable
-		envVar := fmt.Sprintf("%s=%s", secret.Target, string(secret.Value))
-		result = append(result, envVar)
-		
-		// Audit log
-		log.Printf("Injected environment variable: %s (from secret: %s)", secret.Target, id)
-		
-		// Clear secret value from memory
+		i.sanitizer.RegisterSecret(id, secret.Value)
+		result = append(result, fmt.Sprintf("%s=%s", secret.Target, string(secret.Value)))
+		log.Printf("Injected env var: %s", secret.Target)
 		clearBytes(secret.Value)
 	}
-	
 	return result, nil
 }
 
-// ValidateSecretType verifies that a secret is of the expected type
 func (i *Injector) ValidateSecretType(secretID string, expectedType SecretType) error {
 	secret, err := i.vault.Retrieve(secretID)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve secret %s for validation: %w", secretID, err)
+		return fmt.Errorf("retrieve secret %s: %w", secretID, err)
 	}
-	
 	defer clearBytes(secret.Value)
-	
 	if secret.Type != expectedType {
-		return fmt.Errorf("secret %s is type %s, expected %s", secretID, secret.Type, expectedType)
+		return fmt.Errorf("secret %s type mismatch", secretID)
 	}
-	
 	return nil
 }
