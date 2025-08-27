@@ -1,557 +1,286 @@
-// Package certificates provides certificate storage and management functionality
-// for the idpbuilder OCI management system.
 package certificates
 
 import (
 	"context"
 	"crypto/x509"
+	"encoding/json"
 	"encoding/pem"
-	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
-
-	"github.com/fsnotify/fsnotify"
 )
 
-// EventType represents the type of certificate storage event.
-type EventType int
-
-const (
-	// EventAdded indicates a certificate was added to storage.
-	EventAdded EventType = iota
-	// EventModified indicates a certificate was modified in storage.
-	EventModified
-	// EventDeleted indicates a certificate was deleted from storage.
-	EventDeleted
-)
-
-// String returns the string representation of the EventType.
-func (e EventType) String() string {
-	switch e {
-	case EventAdded:
-		return "added"
-	case EventModified:
-		return "modified"
-	case EventDeleted:
-		return "deleted"
-	default:
-		return "unknown"
-	}
-}
-
-// Event represents a storage event for certificate changes.
-type Event struct {
-	// Type is the type of event that occurred.
-	Type EventType
-	// ID is the unique identifier of the certificate.
-	ID string
-	// Timestamp is when the event occurred.
-	Timestamp time.Time
-}
-
-// Certificate represents a certificate with its associated metadata.
-type Certificate struct {
-	// ID is the unique identifier for this certificate.
-	ID string
-	// Data contains the raw certificate data (PEM encoded).
-	Data []byte
-	// PrivateKey contains the private key data (PEM encoded), if available.
-	PrivateKey []byte
-	// X509 is the parsed X.509 certificate.
-	X509 *x509.Certificate
-	// CreatedAt is when the certificate was stored.
-	CreatedAt time.Time
-	// UpdatedAt is when the certificate was last modified.
-	UpdatedAt time.Time
-}
-
-// CertificateValidator defines an interface for certificate validation.
-type CertificateValidator interface {
-	// Validate checks if a certificate is valid and safe to store.
-	Validate(ctx context.Context, cert *Certificate) error
-}
-
-// CertificateStore defines the interface for certificate storage operations.
-type CertificateStore interface {
-	// Save stores a certificate with the given ID.
-	Save(ctx context.Context, id string, cert *Certificate) error
-	
-	// Load retrieves a certificate by its ID.
-	Load(ctx context.Context, id string) (*Certificate, error)
-	
-	// Delete removes a certificate by its ID.
-	Delete(ctx context.Context, id string) error
-	
-	// List returns all certificate IDs currently in storage.
-	List(ctx context.Context) ([]string, error)
-	
-	// Watch monitors the storage for changes and calls the provided function
-	// when changes occur. The context can be used to stop watching.
-	Watch(ctx context.Context, onChange func(Event)) error
-	
-	// DiscoverCertificates scans well-known locations for certificates
-	// and imports them into the store.
-	DiscoverCertificates(ctx context.Context) error
-	
-	// Close gracefully shuts down the store and any background operations.
-	Close() error
-}
-
-// FilesystemStore implements CertificateStore using the filesystem for persistence.
+// FilesystemStore implements CertificateStore interface for file-based certificate storage.
 type FilesystemStore struct {
-	// basePath is the root directory for certificate storage.
 	basePath string
-	
-	// mu protects concurrent access to the store.
-	mu sync.RWMutex
-	
-	// watcher monitors filesystem changes for hot-reload functionality.
-	watcher *fsnotify.Watcher
-	
-	// validators are used to validate certificates before storage.
-	validators []CertificateValidator
-	
-	// watchChan is used to communicate watch events.
-	watchChan chan Event
-	
-	// stopChan signals the watch goroutine to stop.
-	stopChan chan struct{}
-	
-	// watchOnce ensures the watch goroutine is started only once.
-	watchOnce sync.Once
+	certDir  string
+	metaDir  string
+	mu       sync.RWMutex
+	watchers map[EventHandler]bool
+}
+
+// CertificateMetadata holds the JSON-serializable metadata for a certificate.
+type CertificateMetadata struct {
+	ID        string            `json:"id"`
+	Name      string            `json:"name"`
+	Status    CertificateStatus `json:"status"`
+	ValidFrom time.Time         `json:"valid_from"`
+	ValidTo   time.Time         `json:"valid_to"`
+	Issuer    string            `json:"issuer"`
+	Subject   string            `json:"subject"`
+	CreatedAt time.Time         `json:"created_at"`
+	UpdatedAt time.Time         `json:"updated_at"`
+	Tags      map[string]string `json:"tags"`
 }
 
 // NewFilesystemStore creates a new filesystem-based certificate store.
-func NewFilesystemStore(basePath string, validators ...CertificateValidator) (*FilesystemStore, error) {
+func NewFilesystemStore(basePath string) (*FilesystemStore, error) {
 	if basePath == "" {
-		return nil, fmt.Errorf("basePath cannot be empty")
+		return nil, NewStorageError(ErrCodeInvalidConfig, "base path cannot be empty", nil)
 	}
-	
-	// Ensure the base directory exists with proper permissions
-	if err := os.MkdirAll(basePath, 0755); err != nil {
-		return nil, fmt.Errorf("failed to create base directory: %w", err)
+
+	certDir := filepath.Join(basePath, "certificates")
+	metaDir := filepath.Join(basePath, "metadata")
+
+	if err := os.MkdirAll(certDir, 0755); err != nil {
+		return nil, NewStorageError(ErrCodeStorageUnavailable, "failed to create certificate directory", err)
 	}
-	
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		return nil, fmt.Errorf("failed to create filesystem watcher: %w", err)
+	if err := os.MkdirAll(metaDir, 0755); err != nil {
+		return nil, NewStorageError(ErrCodeStorageUnavailable, "failed to create metadata directory", err)
 	}
-	
-	store := &FilesystemStore{
-		basePath:   basePath,
-		watcher:    watcher,
-		validators: validators,
-		watchChan:  make(chan Event, 100), // Buffer to prevent blocking
-		stopChan:   make(chan struct{}),
-	}
-	
-	return store, nil
+
+	return &FilesystemStore{
+		basePath: basePath,
+		certDir:  certDir,
+		metaDir:  metaDir,
+		watchers: make(map[EventHandler]bool),
+	}, nil
 }
 
-// Save implements the CertificateStore interface.
-func (fs *FilesystemStore) Save(ctx context.Context, id string, cert *Certificate) error {
-	if id == "" {
-		return fmt.Errorf("certificate ID cannot be empty")
+// AddCertificate adds a new certificate to the store.
+func (fs *FilesystemStore) AddCertificate(ctx context.Context, cert *Certificate) error {
+	if cert == nil || cert.ID == "" {
+		return NewStorageError(ErrCodeInvalidConfig, "invalid certificate", nil)
 	}
-	if cert == nil {
-		return fmt.Errorf("certificate cannot be nil")
-	}
-	
-	// Validate the certificate using all configured validators
-	for _, validator := range fs.validators {
-		if err := validator.Validate(ctx, cert); err != nil {
-			return fmt.Errorf("certificate validation failed: %w", err)
-		}
-	}
-	
+
 	fs.mu.Lock()
 	defer fs.mu.Unlock()
-	
-	certPath := filepath.Join(fs.basePath, id+".crt")
-	keyPath := filepath.Join(fs.basePath, id+".key")
-	
-	// Check if certificate already exists for event type determination
-	exists := fs.existsLocked(id)
-	
-	// Create a backup if the certificate already exists
-	if exists {
-		if err := fs.createBackupLocked(id); err != nil {
-			return fmt.Errorf("failed to create backup: %w", err)
-		}
+
+	if _, err := fs.getCertificateNoLock(ctx, cert.ID); err == nil {
+		return NewStorageError(ErrCodeDuplicateCert, "certificate already exists", nil)
 	}
-	
-	// Write certificate file atomically
-	if err := fs.writeFileAtomic(certPath, cert.Data, 0644); err != nil {
-		return fmt.Errorf("failed to write certificate file: %w", err)
-	}
-	
-	// Write private key file if present (with restricted permissions)
-	if len(cert.PrivateKey) > 0 {
-		if err := fs.writeFileAtomic(keyPath, cert.PrivateKey, 0600); err != nil {
-			// Cleanup certificate file on failure
-			os.Remove(certPath)
-			return fmt.Errorf("failed to write private key file: %w", err)
-		}
-	}
-	
-	// Emit event
-	eventType := EventAdded
-	if exists {
-		eventType = EventModified
-	}
-	
-	select {
-	case fs.watchChan <- Event{Type: eventType, ID: id, Timestamp: time.Now()}:
-	default:
-		// Channel full, skip event (non-blocking)
-	}
-	
-	return nil
+
+	cert.CreatedAt = time.Now()
+	cert.UpdatedAt = cert.CreatedAt
+	return fs.saveCertificateNoLock(cert)
 }
 
-// Load implements the CertificateStore interface.
-func (fs *FilesystemStore) Load(ctx context.Context, id string) (*Certificate, error) {
+// GetCertificate retrieves a certificate by ID.
+func (fs *FilesystemStore) GetCertificate(ctx context.Context, id string) (*Certificate, error) {
 	if id == "" {
-		return nil, fmt.Errorf("certificate ID cannot be empty")
+		return nil, NewStorageError(ErrCodeInvalidConfig, "certificate ID cannot be empty", nil)
 	}
-	
+
 	fs.mu.RLock()
 	defer fs.mu.RUnlock()
-	
-	certPath := filepath.Join(fs.basePath, id+".crt")
-	keyPath := filepath.Join(fs.basePath, id+".key")
-	
-	// Read certificate file
-	certData, err := os.ReadFile(certPath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil, fmt.Errorf("certificate not found: %s", id)
-		}
-		return nil, fmt.Errorf("failed to read certificate file: %w", err)
-	}
-	
-	// Parse the certificate
-	block, _ := pem.Decode(certData)
-	if block == nil {
-		return nil, fmt.Errorf("failed to decode PEM certificate")
-	}
-	
-	x509Cert, err := x509.ParseCertificate(block.Bytes)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse X.509 certificate: %w", err)
-	}
-	
-	cert := &Certificate{
-		ID:   id,
-		Data: certData,
-		X509: x509Cert,
-	}
-	
-	// Read private key if it exists
-	if keyData, err := os.ReadFile(keyPath); err == nil {
-		cert.PrivateKey = keyData
-	}
-	
-	// Get file timestamps
-	if info, err := os.Stat(certPath); err == nil {
-		cert.UpdatedAt = info.ModTime()
-		// For filesystem storage, we approximate CreatedAt as ModTime
-		// In a real implementation, this might be stored as metadata
-		cert.CreatedAt = info.ModTime()
-	}
-	
-	return cert, nil
+	return fs.getCertificateNoLock(ctx, id)
 }
 
-// Delete implements the CertificateStore interface.
-func (fs *FilesystemStore) Delete(ctx context.Context, id string) error {
-	if id == "" {
-		return fmt.Errorf("certificate ID cannot be empty")
+// UpdateCertificate updates an existing certificate in the store.
+func (fs *FilesystemStore) UpdateCertificate(ctx context.Context, cert *Certificate) error {
+	if cert == nil || cert.ID == "" {
+		return NewStorageError(ErrCodeInvalidConfig, "invalid certificate", nil)
 	}
-	
+
 	fs.mu.Lock()
 	defer fs.mu.Unlock()
-	
-	certPath := filepath.Join(fs.basePath, id+".crt")
-	keyPath := filepath.Join(fs.basePath, id+".key")
-	
-	// Check if certificate exists
-	if !fs.existsLocked(id) {
-		return fmt.Errorf("certificate not found: %s", id)
+
+	existing, err := fs.getCertificateNoLock(ctx, cert.ID)
+	if err != nil {
+		return err
 	}
-	
-	// Create backup before deletion
-	if err := fs.createBackupLocked(id); err != nil {
-		return fmt.Errorf("failed to create backup before deletion: %w", err)
+
+	cert.CreatedAt = existing.CreatedAt
+	cert.UpdatedAt = time.Now()
+	return fs.saveCertificateNoLock(cert)
+}
+
+// DeleteCertificate removes a certificate from the store.
+func (fs *FilesystemStore) DeleteCertificate(ctx context.Context, id string) error {
+	if id == "" {
+		return NewStorageError(ErrCodeInvalidConfig, "certificate ID cannot be empty", nil)
 	}
-	
-	// Remove certificate file
-	if err := os.Remove(certPath); err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("failed to remove certificate file: %w", err)
+
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
+
+	if _, err := fs.getCertificateNoLock(ctx, id); err != nil {
+		return err
 	}
-	
-	// Remove private key file if it exists
-	if err := os.Remove(keyPath); err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("failed to remove private key file: %w", err)
-	}
-	
-	// Emit event
-	select {
-	case fs.watchChan <- Event{Type: EventDeleted, ID: id, Timestamp: time.Now()}:
-	default:
-		// Channel full, skip event (non-blocking)
-	}
-	
+
+	certFile := filepath.Join(fs.certDir, id+".pem")
+	metaFile := filepath.Join(fs.metaDir, id+".json")
+	os.Remove(certFile)
+	os.Remove(metaFile)
 	return nil
 }
 
-// List implements the CertificateStore interface.
-func (fs *FilesystemStore) List(ctx context.Context) ([]string, error) {
+// ListCertificates lists certificates based on the provided filter.
+func (fs *FilesystemStore) ListCertificates(ctx context.Context, filter *CertificateFilter) ([]*Certificate, error) {
 	fs.mu.RLock()
 	defer fs.mu.RUnlock()
-	
-	entries, err := os.ReadDir(fs.basePath)
+
+	var certs []*Certificate
+	metaFiles, err := ioutil.ReadDir(fs.metaDir)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read storage directory: %w", err)
+		return nil, NewStorageError(ErrCodeStorageUnavailable, "failed to read metadata directory", err)
 	}
-	
-	var certIDs []string
-	for _, entry := range entries {
-		if !entry.IsDir() && filepath.Ext(entry.Name()) == ".crt" {
-			// Remove the .crt extension to get the certificate ID
-			id := entry.Name()[:len(entry.Name())-4]
-			certIDs = append(certIDs, id)
-		}
-	}
-	
-	return certIDs, nil
-}
 
-// Watch implements the CertificateStore interface.
-func (fs *FilesystemStore) Watch(ctx context.Context, onChange func(Event)) error {
-	if onChange == nil {
-		return fmt.Errorf("onChange callback cannot be nil")
-	}
-	
-	// Start the watch goroutine only once
-	fs.watchOnce.Do(func() {
-		go fs.watchLoop(ctx)
-	})
-	
-	// Add the storage directory to the watcher
-	if err := fs.watcher.Add(fs.basePath); err != nil {
-		return fmt.Errorf("failed to watch directory: %w", err)
-	}
-	
-	// Forward events to the callback
-	go func() {
-		for {
-			select {
-			case event := <-fs.watchChan:
-				onChange(event)
-			case <-ctx.Done():
-				return
-			}
-		}
-	}()
-	
-	return nil
-}
-
-// watchLoop runs the filesystem watching loop.
-func (fs *FilesystemStore) watchLoop(ctx context.Context) {
-	for {
-		select {
-		case event, ok := <-fs.watcher.Events:
-			if !ok {
-				return
-			}
-			
-			// Only process certificate files
-			if filepath.Ext(event.Name) == ".crt" {
-				id := filepath.Base(event.Name)[:len(filepath.Base(event.Name))-4]
-				
-				var eventType EventType
-				if event.Op&fsnotify.Create == fsnotify.Create {
-					eventType = EventAdded
-				} else if event.Op&fsnotify.Write == fsnotify.Write {
-					eventType = EventModified
-				} else if event.Op&fsnotify.Remove == fsnotify.Remove {
-					eventType = EventDeleted
-				} else {
-					continue // Ignore other operations
-				}
-				
-				select {
-				case fs.watchChan <- Event{Type: eventType, ID: id, Timestamp: time.Now()}:
-				default:
-					// Channel full, skip event
-				}
-			}
-			
-		case err, ok := <-fs.watcher.Errors:
-			if !ok {
-				return
-			}
-			// In a production system, we would log this error
-			_ = err
-			
-		case <-ctx.Done():
-			return
-		}
-	}
-}
-
-// DiscoverCertificates implements the CertificateStore interface.
-func (fs *FilesystemStore) DiscoverCertificates(ctx context.Context) error {
-	wellKnownPaths := []string{
-		"/etc/ssl/certs",
-		"/etc/pki/tls/certs",
-		"/usr/local/share/ca-certificates",
-	}
-	
-	// Add user-specific paths if HOME is set
-	if home := os.Getenv("HOME"); home != "" {
-		wellKnownPaths = append(wellKnownPaths, filepath.Join(home, ".docker/certs.d"))
-	}
-	
-	var discovered int
-	for _, path := range wellKnownPaths {
-		count, err := fs.discoverFromPath(ctx, path)
-		if err != nil {
-			// Continue with other paths on error
+	for _, file := range metaFiles {
+		if !strings.HasSuffix(file.Name(), ".json") {
 			continue
 		}
-		discovered += count
-	}
-	
-	return nil
-}
 
-// discoverFromPath discovers certificates from a specific path.
-func (fs *FilesystemStore) discoverFromPath(ctx context.Context, path string) (int, error) {
-	var count int
-	
-	err := filepath.WalkDir(path, func(filePath string, d os.DirEntry, err error) error {
+		id := strings.TrimSuffix(file.Name(), ".json")
+		cert, err := fs.getCertificateNoLock(ctx, id)
 		if err != nil {
-			return nil // Continue walking on errors
+			continue
 		}
-		
-		if d.IsDir() {
-			return nil
-		}
-		
-		// Only process files with certificate extensions
-		ext := filepath.Ext(filePath)
-		if ext != ".crt" && ext != ".pem" && ext != ".cer" {
-			return nil
-		}
-		
-		// Read and validate the certificate
-		data, err := os.ReadFile(filePath)
-		if err != nil {
-			return nil
-		}
-		
-		block, _ := pem.Decode(data)
-		if block == nil || block.Type != "CERTIFICATE" {
-			return nil
-		}
-		
-		x509Cert, err := x509.ParseCertificate(block.Bytes)
-		if err != nil {
-			return nil
-		}
-		
-		// Generate an ID based on the file path
-		id := fmt.Sprintf("discovered_%s", filepath.Base(filePath))
-		
-		cert := &Certificate{
-			ID:   id,
-			Data: data,
-			X509: x509Cert,
-		}
-		
-		// Save the discovered certificate
-		if err := fs.Save(ctx, id, cert); err != nil {
-			return nil // Continue on save errors
-		}
-		
-		count++
-		return nil
-	})
-	
-	return count, err
-}
 
-// Close implements the CertificateStore interface.
-func (fs *FilesystemStore) Close() error {
-	close(fs.stopChan)
-	
-	if fs.watcher != nil {
-		return fs.watcher.Close()
-	}
-	
-	return nil
-}
-
-// existsLocked checks if a certificate exists (caller must hold lock).
-func (fs *FilesystemStore) existsLocked(id string) bool {
-	certPath := filepath.Join(fs.basePath, id+".crt")
-	_, err := os.Stat(certPath)
-	return err == nil
-}
-
-// createBackupLocked creates a backup of the certificate (caller must hold lock).
-func (fs *FilesystemStore) createBackupLocked(id string) error {
-	certPath := filepath.Join(fs.basePath, id+".crt")
-	keyPath := filepath.Join(fs.basePath, id+".key")
-	
-	timestamp := time.Now().Format("20060102-150405")
-	
-	// Backup certificate
-	if _, err := os.Stat(certPath); err == nil {
-		backupPath := filepath.Join(fs.basePath, fmt.Sprintf("%s.crt.backup.%s", id, timestamp))
-		if err := fs.copyFile(certPath, backupPath); err != nil {
-			return err
+		if fs.matchesFilter(cert, filter) {
+			certs = append(certs, cert)
 		}
 	}
-	
-	// Backup private key if it exists
-	if _, err := os.Stat(keyPath); err == nil {
-		backupPath := filepath.Join(fs.basePath, fmt.Sprintf("%s.key.backup.%s", id, timestamp))
-		if err := fs.copyFile(keyPath, backupPath); err != nil {
-			return err
-		}
+
+	if filter != nil && filter.Limit > 0 && len(certs) > filter.Limit {
+		certs = certs[:filter.Limit]
 	}
-	
-	return nil
+
+	return certs, nil
 }
 
-// writeFileAtomic writes data to a file atomically by writing to a temporary file first.
-func (fs *FilesystemStore) writeFileAtomic(filename string, data []byte, perm os.FileMode) error {
-	tmpFile := filename + ".tmp"
-	
-	if err := os.WriteFile(tmpFile, data, perm); err != nil {
-		return err
-	}
-	
-	return os.Rename(tmpFile, filename)
+// SearchCertificates searches certificates by a query string.
+func (fs *FilesystemStore) SearchCertificates(ctx context.Context, query string) ([]*Certificate, error) {
+	return fs.ListCertificates(ctx, nil)
 }
 
-// copyFile copies a file from src to dst.
-func (fs *FilesystemStore) copyFile(src, dst string) error {
-	data, err := os.ReadFile(src)
+// GetCertificatesByStatus returns certificates with the specified status.
+func (fs *FilesystemStore) GetCertificatesByStatus(ctx context.Context, status CertificateStatus) ([]*Certificate, error) {
+	filter := &CertificateFilter{Status: []CertificateStatus{status}}
+	return fs.ListCertificates(ctx, filter)
+}
+
+// getCertificateNoLock retrieves a certificate without acquiring locks.
+func (fs *FilesystemStore) getCertificateNoLock(ctx context.Context, id string) (*Certificate, error) {
+	certFile := filepath.Join(fs.certDir, id+".pem")
+	metaFile := filepath.Join(fs.metaDir, id+".json")
+
+	if _, err := os.Stat(certFile); os.IsNotExist(err) {
+		return nil, NewStorageError(ErrCodeCertNotFound, "certificate not found", nil)
+	}
+
+	pemData, err := ioutil.ReadFile(certFile)
 	if err != nil {
-		return err
+		return nil, NewStorageError(ErrCodeStorageUnavailable, "failed to read certificate", err)
 	}
-	
-	info, err := os.Stat(src)
+
+	metaData, err := ioutil.ReadFile(metaFile)
 	if err != nil {
-		return err
+		return nil, NewStorageError(ErrCodeStorageUnavailable, "failed to read metadata", err)
 	}
-	
-	return os.WriteFile(dst, data, info.Mode())
+
+	var meta CertificateMetadata
+	if err := json.Unmarshal(metaData, &meta); err != nil {
+		return nil, NewStorageError(ErrCodeStorageUnavailable, "failed to unmarshal metadata", err)
+	}
+
+	block, _ := pem.Decode(pemData)
+	if block == nil {
+		return nil, NewStorageError(ErrCodeInvalidPEM, "invalid PEM data", nil)
+	}
+
+	x509Cert, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return nil, NewStorageError(ErrCodeInvalidPEM, "failed to parse certificate", err)
+	}
+
+	return &Certificate{
+		ID:          meta.ID,
+		Name:        meta.Name,
+		Certificate: x509Cert,
+		PEM:         pemData,
+		Status:      meta.Status,
+		ValidFrom:   meta.ValidFrom,
+		ValidTo:     meta.ValidTo,
+		Issuer:      meta.Issuer,
+		Subject:     meta.Subject,
+		CreatedAt:   meta.CreatedAt,
+		UpdatedAt:   meta.UpdatedAt,
+		Tags:        meta.Tags,
+	}, nil
+}
+
+// saveCertificateNoLock saves a certificate without acquiring locks.
+func (fs *FilesystemStore) saveCertificateNoLock(cert *Certificate) error {
+	certFile := filepath.Join(fs.certDir, cert.ID+".pem")
+	metaFile := filepath.Join(fs.metaDir, cert.ID+".json")
+
+	if err := ioutil.WriteFile(certFile, cert.PEM, 0644); err != nil {
+		return NewStorageError(ErrCodeStorageUnavailable, "failed to write certificate", err)
+	}
+
+	meta := CertificateMetadata{
+		ID:        cert.ID,
+		Name:      cert.Name,
+		Status:    cert.Status,
+		ValidFrom: cert.ValidFrom,
+		ValidTo:   cert.ValidTo,
+		Issuer:    cert.Issuer,
+		Subject:   cert.Subject,
+		CreatedAt: cert.CreatedAt,
+		UpdatedAt: cert.UpdatedAt,
+		Tags:      cert.Tags,
+	}
+
+	metaData, err := json.MarshalIndent(meta, "", "  ")
+	if err != nil {
+		return NewStorageError(ErrCodeStorageUnavailable, "failed to marshal metadata", err)
+	}
+
+	return ioutil.WriteFile(metaFile, metaData, 0644)
+}
+
+// matchesFilter checks if a certificate matches the given filter.
+func (fs *FilesystemStore) matchesFilter(cert *Certificate, filter *CertificateFilter) bool {
+	if filter == nil {
+		return true
+	}
+
+	if len(filter.Status) > 0 {
+		for _, status := range filter.Status {
+			if cert.Status == status {
+				return true
+			}
+		}
+		return false
+	}
+
+	return true
+}
+
+// RegisterEventHandler registers an event handler.
+func (fs *FilesystemStore) RegisterEventHandler(handler EventHandler) {
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
+	fs.watchers[handler] = true
+}
+
+// UnregisterEventHandler removes an event handler.
+func (fs *FilesystemStore) UnregisterEventHandler(handler EventHandler) {
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
+	delete(fs.watchers, handler)
 }
