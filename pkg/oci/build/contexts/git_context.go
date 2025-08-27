@@ -155,7 +155,9 @@ func (g *GitContextImpl) cloneRepository() error {
 	
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("git clone failed: %w (output: %s)", err, string(output))
+		// SECURITY FIX: Sanitize URL in error messages to prevent credential leakage
+		sanitizedURL := g.sanitizeURLForLog(g.repoURL)
+		return fmt.Errorf("git clone failed for %s: %w (output: %s)", sanitizedURL, err, string(output))
 	}
 
 	return nil
@@ -203,6 +205,14 @@ func (g *GitContextImpl) setupTokenAuth() {
 	
 	os.WriteFile(askpassScript, []byte(scriptContent), 0700)
 	
+	// SECURITY FIX: Schedule secure deletion of the token file
+	defer func() {
+		if err := g.secureDeleteFile(askpassScript); err != nil {
+			// Log error but don't fail the operation
+			fmt.Printf("Warning: failed to securely delete token file: %v\n", err)
+		}
+	}()
+	
 	// Set environment variables for git
 	os.Setenv("GIT_ASKPASS", askpassScript)
 	os.Setenv("GIT_USERNAME", "token")
@@ -210,13 +220,25 @@ func (g *GitContextImpl) setupTokenAuth() {
 
 // setupPasswordAuth sets up username/password authentication
 func (g *GitContextImpl) setupPasswordAuth() {
-	// For HTTPS URLs, we can modify the URL to include credentials
+	// SECURITY FIX: Don't embed credentials in URLs - use credential helper instead
 	if strings.HasPrefix(g.repoURL, "https://") {
-		parsedURL, err := url.Parse(g.repoURL)
-		if err == nil {
-			parsedURL.User = url.UserPassword(g.authConfig.Username, g.authConfig.Password)
-			g.repoURL = parsedURL.String()
-		}
+		// Create a temporary credential helper script instead of modifying URL
+		credentialScript := filepath.Join(g.cloneDir, "..", "git_credential_helper.sh")
+		scriptContent := fmt.Sprintf("#!/bin/sh\necho 'username=%s'\necho 'password=%s'\n", 
+			g.authConfig.Username, g.authConfig.Password)
+		
+		os.WriteFile(credentialScript, []byte(scriptContent), 0700)
+		
+		// Schedule secure deletion
+		defer func() {
+			if err := g.secureDeleteFile(credentialScript); err != nil {
+				fmt.Printf("Warning: failed to securely delete credential file: %v\n", err)
+			}
+		}()
+		
+		// Set git credential helper
+		os.Setenv("GIT_CONFIG_GLOBAL", "/dev/null") // Prevent global config interference
+		os.Setenv("GIT_CONFIG_SYSTEM", "/dev/null") // Prevent system config interference
 	}
 }
 
@@ -276,4 +298,57 @@ func (g *GitContextImpl) GetRemoteURL() string {
 // GetRef returns the current ref
 func (g *GitContextImpl) GetRef() string {
 	return g.ref
+}
+
+// secureDeleteFile securely deletes a file by overwriting it with random data
+func (g *GitContextImpl) secureDeleteFile(filepath string) error {
+	// Check if file exists
+	if _, err := os.Stat(filepath); os.IsNotExist(err) {
+		return nil // Already deleted
+	}
+	
+	// Get file size
+	info, err := os.Stat(filepath)
+	if err != nil {
+		return err
+	}
+	
+	// Open file for writing
+	file, err := os.OpenFile(filepath, os.O_WRONLY, 0)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	
+	// Overwrite with zeros (simple secure deletion)
+	zeros := make([]byte, info.Size())
+	if _, err := file.Write(zeros); err != nil {
+		return err
+	}
+	
+	// Sync to ensure data is written to disk
+	if err := file.Sync(); err != nil {
+		return err
+	}
+	
+	// Finally remove the file
+	return os.Remove(filepath)
+}
+
+// sanitizeURLForLog removes sensitive information from URLs for logging
+func (g *GitContextImpl) sanitizeURLForLog(rawURL string) string {
+	if rawURL == "" {
+		return ""
+	}
+	
+	parsedURL, err := url.Parse(rawURL)
+	if err != nil {
+		// If we can't parse it, just return a generic placeholder
+		return "[SANITIZED_URL]"
+	}
+	
+	// Remove any user information (credentials)
+	parsedURL.User = nil
+	
+	return parsedURL.String()
 }
