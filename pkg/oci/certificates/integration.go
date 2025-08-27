@@ -175,20 +175,28 @@ func (bi *BuildIntegration) LoadCertificatesForBuild(ctx context.Context) error 
 
 // ConfigureBuildahWithCertificates configures buildah with custom certificates
 func (bi *BuildIntegration) ConfigureBuildahWithCertificates(buildahConfig map[string]string) error {
-	if bi.caBundle == nil {
+	// For insecure registry mode, skip TLS verification
+	if bi.buildConfig.InsecureRegistry {
+		buildahConfig["tls-verify"] = "false"
+		return nil
+	}
+
+	// For secure configurations, we need certificates unless skip is explicitly set
+	if bi.buildConfig.SkipTLSVerify {
+		buildahConfig["tls-verify"] = "false"
+		return nil
+	}
+
+	// For secure TLS with custom CA, bundle must be loaded
+	if bi.caBundle == nil && bi.buildConfig.CustomCAPath != "" {
 		return fmt.Errorf("CA bundle not loaded, call LoadCertificatesForBuild first")
 	}
 
 	// Configure buildah with custom CA
-	buildahConfig["tls-verify"] = fmt.Sprintf("%t", !bi.buildConfig.SkipTLSVerify)
+	buildahConfig["tls-verify"] = "true"
 	
-	if len(bi.caBundle.CAs) > 0 {
+	if bi.caBundle != nil && len(bi.caBundle.CAs) > 0 {
 		buildahConfig["cert-dir"] = bi.buildConfig.CustomCAPath
-		buildahConfig["tls-verify"] = "true"
-	}
-
-	if bi.buildConfig.InsecureRegistry {
-		buildahConfig["tls-verify"] = "false"
 	}
 
 	return nil
