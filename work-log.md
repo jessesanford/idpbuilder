@@ -16,7 +16,7 @@
 - Completed via 3 splits: 1330 lines total
 - Certificate bundle loading from multiple sources
 
-### E3.1.3 - Certificate Validator  
+### E3.1.3 - Certificate Validator
 - Completed via 3 splits: 969 lines total
 - Certificate validation and Gitea integration
 
