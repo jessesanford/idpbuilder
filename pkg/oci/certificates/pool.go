@@ -14,31 +14,31 @@ import (
 type CertPoolManager struct {
 	// store is the underlying certificate storage.
 	store CertificateStore
-	
+
 	// systemPool contains certificates from the system's trusted certificate store.
 	systemPool *x509.CertPool
-	
+
 	// customPool contains user-provided certificates.
 	customPool *x509.CertPool
-	
+
 	// mu protects concurrent access to the pools.
 	mu sync.RWMutex
-	
+
 	// updateChan receives certificate update events.
 	updateChan chan Event
-	
+
 	// stopChan signals the manager to stop processing updates.
 	stopChan chan struct{}
-	
+
 	// validators are used to validate certificates before adding to pools.
 	validators []CertificateValidator
-	
+
 	// config contains configuration for the pool manager.
 	config *PoolConfig
-	
+
 	// isWatching indicates if the manager is actively watching for changes.
 	isWatching bool
-	
+
 	// watchMu protects the isWatching flag.
 	watchMu sync.Mutex
 }
@@ -47,16 +47,16 @@ type CertPoolManager struct {
 type PoolConfig struct {
 	// AutoReload enables automatic reloading of certificate pools when changes are detected.
 	AutoReload bool
-	
+
 	// ReloadInterval is the minimum interval between pool reloads.
 	ReloadInterval time.Duration
-	
+
 	// ValidateCertificates determines whether certificates should be validated before adding to pools.
 	ValidateCertificates bool
-	
+
 	// IncludeSystemCerts determines whether system certificates should be included in the pool.
 	IncludeSystemCerts bool
-	
+
 	// MaxPoolSize is the maximum number of certificates allowed in a pool (0 = unlimited).
 	MaxPoolSize int
 }
@@ -77,11 +77,11 @@ func NewCertPoolManager(store CertificateStore, config *PoolConfig, validators .
 	if store == nil {
 		return nil, fmt.Errorf("certificate store cannot be nil")
 	}
-	
+
 	if config == nil {
 		config = DefaultPoolConfig()
 	}
-	
+
 	manager := &CertPoolManager{
 		store:      store,
 		updateChan: make(chan Event, 100),
@@ -89,12 +89,12 @@ func NewCertPoolManager(store CertificateStore, config *PoolConfig, validators .
 		validators: validators,
 		config:     config,
 	}
-	
+
 	// Initialize pools
 	if err := manager.initializePools(); err != nil {
 		return nil, fmt.Errorf("failed to initialize certificate pools: %w", err)
 	}
-	
+
 	return manager, nil
 }
 
@@ -102,7 +102,7 @@ func NewCertPoolManager(store CertificateStore, config *PoolConfig, validators .
 func (cpm *CertPoolManager) initializePools() error {
 	cpm.mu.Lock()
 	defer cpm.mu.Unlock()
-	
+
 	// Initialize system pool
 	if cpm.config.IncludeSystemCerts {
 		systemPool, err := x509.SystemCertPool()
@@ -114,10 +114,10 @@ func (cpm *CertPoolManager) initializePools() error {
 	} else {
 		cpm.systemPool = x509.NewCertPool()
 	}
-	
+
 	// Initialize custom pool
 	cpm.customPool = x509.NewCertPool()
-	
+
 	return nil
 }
 
@@ -125,26 +125,26 @@ func (cpm *CertPoolManager) initializePools() error {
 func (cpm *CertPoolManager) Start(ctx context.Context) error {
 	cpm.watchMu.Lock()
 	defer cpm.watchMu.Unlock()
-	
+
 	if cpm.isWatching {
 		return fmt.Errorf("pool manager is already watching")
 	}
-	
+
 	// Load initial certificates
 	if err := cpm.loadAllCertificates(ctx); err != nil {
 		return fmt.Errorf("failed to load initial certificates: %w", err)
 	}
-	
+
 	// Start watching for changes if auto-reload is enabled
 	if cpm.config.AutoReload {
 		if err := cpm.store.Watch(ctx, cpm.handleEvent); err != nil {
 			return fmt.Errorf("failed to start watching certificate store: %w", err)
 		}
-		
+
 		// Start the update processing goroutine
 		go cpm.processUpdates(ctx)
 	}
-	
+
 	cpm.isWatching = true
 	return nil
 }
@@ -153,14 +153,14 @@ func (cpm *CertPoolManager) Start(ctx context.Context) error {
 func (cpm *CertPoolManager) Stop() error {
 	cpm.watchMu.Lock()
 	defer cpm.watchMu.Unlock()
-	
+
 	if !cpm.isWatching {
 		return nil
 	}
-	
+
 	close(cpm.stopChan)
 	cpm.isWatching = false
-	
+
 	return nil
 }
 
@@ -168,7 +168,7 @@ func (cpm *CertPoolManager) Stop() error {
 func (cpm *CertPoolManager) GetSystemPool() *x509.CertPool {
 	cpm.mu.RLock()
 	defer cpm.mu.RUnlock()
-	
+
 	return cpm.systemPool
 }
 
@@ -176,7 +176,7 @@ func (cpm *CertPoolManager) GetSystemPool() *x509.CertPool {
 func (cpm *CertPoolManager) GetCustomPool() *x509.CertPool {
 	cpm.mu.RLock()
 	defer cpm.mu.RUnlock()
-	
+
 	return cpm.customPool
 }
 
@@ -184,16 +184,16 @@ func (cpm *CertPoolManager) GetCustomPool() *x509.CertPool {
 func (cpm *CertPoolManager) GetCombinedPool() *x509.CertPool {
 	cpm.mu.RLock()
 	defer cpm.mu.RUnlock()
-	
+
 	combined := x509.NewCertPool()
-	
+
 	// Add system certificates if available
 	if cpm.systemPool != nil {
 		// Note: x509.CertPool doesn't provide a way to iterate over certificates,
 		// so we maintain our own tracking. In a real implementation, you might
 		// need to track certificates separately.
 	}
-	
+
 	return combined
 }
 
@@ -202,7 +202,7 @@ func (cpm *CertPoolManager) AddCertificate(ctx context.Context, cert *Certificat
 	if cert == nil {
 		return fmt.Errorf("certificate cannot be nil")
 	}
-	
+
 	// Validate certificate if validation is enabled
 	if cpm.config.ValidateCertificates {
 		for _, validator := range cpm.validators {
@@ -211,18 +211,18 @@ func (cpm *CertPoolManager) AddCertificate(ctx context.Context, cert *Certificat
 			}
 		}
 	}
-	
+
 	cpm.mu.Lock()
 	defer cpm.mu.Unlock()
-	
+
 	// Check pool size limit
 	if cpm.config.MaxPoolSize > 0 && cpm.getPoolSizeLocked() >= cpm.config.MaxPoolSize {
 		return fmt.Errorf("certificate pool has reached maximum size: %d", cpm.config.MaxPoolSize)
 	}
-	
+
 	// Add certificate to custom pool
 	cpm.customPool.AddCert(cert.X509)
-	
+
 	return nil
 }
 
@@ -231,20 +231,20 @@ func (cpm *CertPoolManager) RemoveCertificate(ctx context.Context, id string) er
 	if id == "" {
 		return fmt.Errorf("certificate ID cannot be empty")
 	}
-	
+
 	cpm.mu.Lock()
 	defer cpm.mu.Unlock()
-	
+
 	// Load the certificate to get its X509 representation
 	_, err := cpm.store.Load(ctx, id)
 	if err != nil {
 		return fmt.Errorf("failed to load certificate for removal: %w", err)
 	}
-	
+
 	// Note: x509.CertPool doesn't provide a direct way to remove certificates.
 	// In a production implementation, you would need to rebuild the pool
 	// without the specific certificate, or use a custom pool implementation.
-	
+
 	// For now, we rebuild the custom pool without this certificate
 	return cpm.rebuildCustomPool(ctx, id)
 }
@@ -257,7 +257,7 @@ func (cpm *CertPoolManager) RotateCertificate(ctx context.Context, id string, ne
 	if newCert == nil {
 		return fmt.Errorf("new certificate cannot be nil")
 	}
-	
+
 	// Validate new certificate if validation is enabled
 	if cpm.config.ValidateCertificates {
 		for _, validator := range cpm.validators {
@@ -266,15 +266,15 @@ func (cpm *CertPoolManager) RotateCertificate(ctx context.Context, id string, ne
 			}
 		}
 	}
-	
+
 	cpm.mu.Lock()
 	defer cpm.mu.Unlock()
-	
+
 	// Store the new certificate
 	if err := cpm.store.Save(ctx, id, newCert); err != nil {
 		return fmt.Errorf("failed to store rotated certificate: %w", err)
 	}
-	
+
 	// Update the custom pool
 	// Since x509.CertPool doesn't support direct replacement, we rebuild the pool
 	return cpm.rebuildCustomPoolLocked(ctx, "")
@@ -284,10 +284,10 @@ func (cpm *CertPoolManager) RotateCertificate(ctx context.Context, id string, ne
 func (cpm *CertPoolManager) RefreshPools(ctx context.Context) error {
 	cpm.mu.Lock()
 	defer cpm.mu.Unlock()
-	
+
 	// Clear and rebuild custom pool
 	cpm.customPool = x509.NewCertPool()
-	
+
 	return cpm.loadAllCertificatesLocked(ctx)
 }
 
@@ -304,25 +304,25 @@ func (cpm *CertPoolManager) handleEvent(event Event) {
 func (cpm *CertPoolManager) processUpdates(ctx context.Context) {
 	ticker := time.NewTicker(cpm.config.ReloadInterval)
 	defer ticker.Stop()
-	
+
 	pendingUpdates := make(map[string]Event)
-	
+
 	for {
 		select {
 		case event := <-cpm.updateChan:
 			// Batch updates to avoid excessive reloading
 			pendingUpdates[event.ID] = event
-			
+
 		case <-ticker.C:
 			if len(pendingUpdates) > 0 {
 				cpm.processPendingUpdates(ctx, pendingUpdates)
 				// Clear pending updates
 				pendingUpdates = make(map[string]Event)
 			}
-			
+
 		case <-cpm.stopChan:
 			return
-			
+
 		case <-ctx.Done():
 			return
 		}
@@ -333,7 +333,7 @@ func (cpm *CertPoolManager) processUpdates(ctx context.Context) {
 func (cpm *CertPoolManager) processPendingUpdates(ctx context.Context, updates map[string]Event) {
 	cpm.mu.Lock()
 	defer cpm.mu.Unlock()
-	
+
 	for id, event := range updates {
 		switch event.Type {
 		case EventAdded, EventModified:
@@ -341,7 +341,7 @@ func (cpm *CertPoolManager) processPendingUpdates(ctx context.Context, updates m
 			if err != nil {
 				continue // Skip failed loads
 			}
-			
+
 			// Validate if required
 			if cpm.config.ValidateCertificates {
 				valid := true
@@ -355,10 +355,10 @@ func (cpm *CertPoolManager) processPendingUpdates(ctx context.Context, updates m
 					continue
 				}
 			}
-			
+
 			// Add to custom pool (rebuild to handle modifications)
 			cpm.rebuildCustomPoolLocked(ctx, "")
-			
+
 		case EventDeleted:
 			// Rebuild pool without the deleted certificate
 			cpm.rebuildCustomPoolLocked(ctx, id)
@@ -370,7 +370,7 @@ func (cpm *CertPoolManager) processPendingUpdates(ctx context.Context, updates m
 func (cpm *CertPoolManager) loadAllCertificates(ctx context.Context) error {
 	cpm.mu.Lock()
 	defer cpm.mu.Unlock()
-	
+
 	return cpm.loadAllCertificatesLocked(ctx)
 }
 
@@ -381,14 +381,14 @@ func (cpm *CertPoolManager) loadAllCertificatesLocked(ctx context.Context) error
 	if err != nil {
 		return fmt.Errorf("failed to list certificates: %w", err)
 	}
-	
+
 	// Load and add each certificate
 	for _, id := range certIDs {
 		cert, err := cpm.store.Load(ctx, id)
 		if err != nil {
 			continue // Skip failed loads
 		}
-		
+
 		// Validate if required
 		if cpm.config.ValidateCertificates {
 			valid := true
@@ -402,11 +402,11 @@ func (cpm *CertPoolManager) loadAllCertificatesLocked(ctx context.Context) error
 				continue
 			}
 		}
-		
+
 		// Add to custom pool
 		cpm.customPool.AddCert(cert.X509)
 	}
-	
+
 	return nil
 }
 
@@ -414,7 +414,7 @@ func (cpm *CertPoolManager) loadAllCertificatesLocked(ctx context.Context) error
 func (cpm *CertPoolManager) rebuildCustomPool(ctx context.Context, excludeID string) error {
 	cpm.mu.Lock()
 	defer cpm.mu.Unlock()
-	
+
 	return cpm.rebuildCustomPoolLocked(ctx, excludeID)
 }
 
@@ -422,24 +422,24 @@ func (cpm *CertPoolManager) rebuildCustomPool(ctx context.Context, excludeID str
 func (cpm *CertPoolManager) rebuildCustomPoolLocked(ctx context.Context, excludeID string) error {
 	// Create new pool
 	newPool := x509.NewCertPool()
-	
+
 	// List all certificates
 	certIDs, err := cpm.store.List(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to list certificates for pool rebuild: %w", err)
 	}
-	
+
 	// Add certificates to new pool (excluding the specified ID)
 	for _, id := range certIDs {
 		if id == excludeID {
 			continue
 		}
-		
+
 		cert, err := cpm.store.Load(ctx, id)
 		if err != nil {
 			continue // Skip failed loads
 		}
-		
+
 		// Validate if required
 		if cpm.config.ValidateCertificates {
 			valid := true
@@ -453,13 +453,13 @@ func (cpm *CertPoolManager) rebuildCustomPoolLocked(ctx context.Context, exclude
 				continue
 			}
 		}
-		
+
 		newPool.AddCert(cert.X509)
 	}
-	
+
 	// Replace the old pool
 	cpm.customPool = newPool
-	
+
 	return nil
 }
 
@@ -475,7 +475,7 @@ func (cpm *CertPoolManager) getPoolSizeLocked() int {
 func (cpm *CertPoolManager) GetPoolStats() *PoolStats {
 	cpm.mu.RLock()
 	defer cpm.mu.RUnlock()
-	
+
 	return &PoolStats{
 		SystemPoolSize:    0, // x509.CertPool doesn't provide size info
 		CustomPoolSize:    0, // x509.CertPool doesn't provide size info
@@ -489,16 +489,16 @@ func (cpm *CertPoolManager) GetPoolStats() *PoolStats {
 type PoolStats struct {
 	// SystemPoolSize is the number of certificates in the system pool.
 	SystemPoolSize int
-	
+
 	// CustomPoolSize is the number of certificates in the custom pool.
 	CustomPoolSize int
-	
+
 	// IsWatching indicates if the pool manager is actively watching for changes.
 	IsWatching bool
-	
+
 	// LastRefresh is when the pools were last refreshed.
 	LastRefresh time.Time
-	
+
 	// ValidationEnabled indicates if certificate validation is enabled.
 	ValidationEnabled bool
 }
@@ -507,19 +507,19 @@ type PoolStats struct {
 func (cpm *CertPoolManager) ValidatePoolIntegrity(ctx context.Context) error {
 	cpm.mu.RLock()
 	defer cpm.mu.RUnlock()
-	
+
 	// Basic integrity checks
 	if cpm.systemPool == nil {
 		return fmt.Errorf("system certificate pool is nil")
 	}
-	
+
 	if cpm.customPool == nil {
 		return fmt.Errorf("custom certificate pool is nil")
 	}
-	
+
 	// Could add more sophisticated integrity checks here
 	// such as verifying that all stored certificates are still valid,
 	// checking for expired certificates, etc.
-	
+
 	return nil
 }

@@ -15,7 +15,7 @@ import (
 
 // MultiFormatLoader handles loading certificates from multiple formats
 type MultiFormatLoader struct {
-	parsers map[v2.CertFormat]FormatParser
+	parsers  map[v2.CertFormat]FormatParser
 	detector FormatDetector
 	parser   *CertificateParser
 }
@@ -37,7 +37,7 @@ func NewMultiFormatLoader() *MultiFormatLoader {
 		strictMode:    false,
 		maxChainDepth: 10,
 	}
-	
+
 	return &MultiFormatLoader{
 		parsers: map[v2.CertFormat]FormatParser{
 			v2.CertFormatPEM:    &PEMParser{parser: parser},
@@ -127,7 +127,7 @@ func (l *MultiFormatLoader) LoadPEM(ctx context.Context, data []byte) (*v2.CertB
 	return bundle, nil
 }
 
-// LoadDER loads certificates from DER format  
+// LoadDER loads certificates from DER format
 func (l *MultiFormatLoader) LoadDER(ctx context.Context, data []byte) (*v2.CertBundle, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
@@ -168,14 +168,14 @@ func (l *MultiFormatLoader) LoadPKCS12(ctx context.Context, data []byte, passwor
 	}
 
 	parser := l.parsers[v2.CertFormatPKCS12]
-	
+
 	// Check if parser supports password-based loading
 	if p12Parser, ok := parser.(*PKCS12Parser); ok {
 		bundle, err := p12Parser.ParseWithPassword(data, password)
 		if err != nil {
 			return nil, err
 		}
-		
+
 		bundle.LoadedAt = time.Now()
 		bundle.Format = v2.CertFormatPKCS12
 		return bundle, nil

@@ -72,12 +72,12 @@ type CertBundle struct {
 
 // CertificateConfig holds certificate service configuration
 type CertificateConfig struct {
-	BundlePath           string
-	VerificationMode     VerificationMode
-	AutoDiscoverGitea    bool
-	SkipVerifyFallback   bool
-	RefreshInterval      time.Duration
-	CustomCAPath         string
+	BundlePath         string
+	VerificationMode   VerificationMode
+	AutoDiscoverGitea  bool
+	SkipVerifyFallback bool
+	RefreshInterval    time.Duration
+	CustomCAPath       string
 }
 
 // CertificateError represents certificate-specific errors

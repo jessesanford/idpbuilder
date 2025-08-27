@@ -15,18 +15,18 @@ import (
 // VerificationManager handles verification mode management and mode-specific validation
 type VerificationManager struct {
 	// Current configuration
-	currentMode  v2.VerificationMode  // Active verification mode
-	fallbackMode v2.VerificationMode  // Fallback mode on verification failure
+	currentMode  v2.VerificationMode // Active verification mode
+	fallbackMode v2.VerificationMode // Fallback mode on verification failure
 
 	// Certificate pools
-	strictPool   *x509.CertPool       // System-only certificate pool
-	customCAPool *x509.CertPool       // System + custom CA pool
-	skipPool     *x509.CertPool       // Minimal pool for skip mode
+	strictPool   *x509.CertPool // System-only certificate pool
+	customCAPool *x509.CertPool // System + custom CA pool
+	skipPool     *x509.CertPool // Minimal pool for skip mode
 
 	// Mode transition tracking
-	modeHistory     []ModeTransition  // History of mode changes
-	lastModeSwitch  time.Time         // Timestamp of last mode switch
-	switchCount     int               // Number of mode switches
+	modeHistory    []ModeTransition // History of mode changes
+	lastModeSwitch time.Time        // Timestamp of last mode switch
+	switchCount    int              // Number of mode switches
 
 	// Thread safety
 	mu sync.RWMutex
@@ -34,11 +34,11 @@ type VerificationManager struct {
 
 // ModeTransition represents a verification mode change event
 type ModeTransition struct {
-	FromMode    v2.VerificationMode `json:"from_mode"`
-	ToMode      v2.VerificationMode `json:"to_mode"`
-	Timestamp   time.Time           `json:"timestamp"`
-	Reason      string              `json:"reason"`
-	Success     bool                `json:"success"`
+	FromMode  v2.VerificationMode `json:"from_mode"`
+	ToMode    v2.VerificationMode `json:"to_mode"`
+	Timestamp time.Time           `json:"timestamp"`
+	Reason    string              `json:"reason"`
+	Success   bool                `json:"success"`
 }
 
 // ValidationStrategy defines the validation approach for each mode
@@ -186,7 +186,7 @@ func (v *VerificationManager) ValidateWithMode(cert *x509.Certificate, mode v2.V
 	}
 
 	strategy := v.getValidationStrategy(mode)
-	
+
 	// Check certificate expiry
 	if strategy.CheckExpiry {
 		now := time.Now()

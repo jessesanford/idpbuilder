@@ -54,7 +54,7 @@ func (p *CertificateParser) ParseCertificateChain(certs []*x509.Certificate) ([]
 
 	// Sort certificates in chain order (leaf to root)
 	sortedChain := p.SortByHierarchy(certs)
-	
+
 	// Validate the chain structure if in strict mode
 	if p.strictMode {
 		if err := p.ValidateChain(sortedChain); err != nil {
@@ -82,29 +82,29 @@ func (p *CertificateParser) BuildChain(leaf *x509.Certificate, intermediates []*
 	current := leaf
 	for len(chain) < p.maxChainDepth {
 		var issuer *x509.Certificate
-		
+
 		// Look for the issuer among intermediates
 		for _, intermediate := range intermediates {
 			if used[string(intermediate.Signature)] {
 				continue // Already used this certificate
 			}
-			
+
 			// Check if this intermediate issued the current certificate
 			if p.isIssuer(current, intermediate) {
 				issuer = intermediate
 				break
 			}
 		}
-		
+
 		if issuer == nil {
 			// No more issuers found, chain might be incomplete
 			break
 		}
-		
+
 		chain = append(chain, issuer)
 		used[string(issuer.Signature)] = true
 		current = issuer
-		
+
 		// Stop if we found a self-signed certificate (root CA)
 		if p.isSelfSigned(current) {
 			break
@@ -124,7 +124,7 @@ func (p *CertificateParser) ValidateCertificate(cert *x509.Certificate) error {
 	}
 
 	now := time.Now()
-	
+
 	// Check if certificate is expired
 	if cert.NotAfter.Before(now) {
 		if p.strictMode {
@@ -135,7 +135,7 @@ func (p *CertificateParser) ValidateCertificate(cert *x509.Certificate) error {
 			}
 		}
 	}
-	
+
 	// Check if certificate is not yet valid
 	if cert.NotBefore.After(now) {
 		if p.strictMode {
@@ -146,7 +146,7 @@ func (p *CertificateParser) ValidateCertificate(cert *x509.Certificate) error {
 			}
 		}
 	}
-	
+
 	// Validate certificate structure
 	if cert.Subject.String() == "" {
 		return &v2.CertificateError{
@@ -155,7 +155,7 @@ func (p *CertificateParser) ValidateCertificate(cert *x509.Certificate) error {
 			Cert:    cert,
 		}
 	}
-	
+
 	// Validate key usage for non-CA certificates
 	if !cert.IsCA {
 		if cert.KeyUsage == 0 {
@@ -166,7 +166,7 @@ func (p *CertificateParser) ValidateCertificate(cert *x509.Certificate) error {
 			}
 		}
 	}
-	
+
 	// Validate CA certificates have proper constraints
 	if cert.IsCA {
 		if cert.KeyUsage&x509.KeyUsageCertSign == 0 {
@@ -185,7 +185,7 @@ func (p *CertificateParser) ValidateCertificate(cert *x509.Certificate) error {
 func (p *CertificateParser) ExtractCAs(certs []*x509.Certificate) ([]*x509.Certificate, []*x509.Certificate) {
 	var cas []*x509.Certificate
 	var endEntity []*x509.Certificate
-	
+
 	for _, cert := range certs {
 		if cert.IsCA {
 			cas = append(cas, cert)
@@ -193,7 +193,7 @@ func (p *CertificateParser) ExtractCAs(certs []*x509.Certificate) ([]*x509.Certi
 			endEntity = append(endEntity, cert)
 		}
 	}
-	
+
 	return cas, endEntity
 }
 
@@ -202,16 +202,16 @@ func (p *CertificateParser) SortByHierarchy(certs []*x509.Certificate) []*x509.C
 	if len(certs) <= 1 {
 		return certs
 	}
-	
+
 	// Create a copy to avoid modifying the original slice
 	sorted := make([]*x509.Certificate, len(certs))
 	copy(sorted, certs)
-	
+
 	// Sort by chain hierarchy
 	sort.Slice(sorted, func(i, j int) bool {
 		certI := sorted[i]
 		certJ := sorted[j]
-		
+
 		// If one is the issuer of the other, put issuer later
 		if p.isIssuer(certI, certJ) {
 			return true // certI is issued by certJ, so certI comes first
@@ -219,11 +219,11 @@ func (p *CertificateParser) SortByHierarchy(certs []*x509.Certificate) []*x509.C
 		if p.isIssuer(certJ, certI) {
 			return false // certJ is issued by certI, so certJ comes first
 		}
-		
+
 		// If both are CAs or both are end-entity, sort by NotBefore (newer first)
 		return certI.NotBefore.After(certJ.NotBefore)
 	})
-	
+
 	return sorted
 }
 
@@ -235,7 +235,7 @@ func (p *CertificateParser) ValidateChain(chain []*x509.Certificate) error {
 			Message: "certificate chain is empty",
 		}
 	}
-	
+
 	// Validate each certificate in the chain
 	for i, cert := range chain {
 		if err := p.ValidateCertificate(cert); err != nil {
@@ -247,12 +247,12 @@ func (p *CertificateParser) ValidateChain(chain []*x509.Certificate) error {
 			}
 		}
 	}
-	
+
 	// Validate chain links (each certificate is issued by the next)
 	for i := 0; i < len(chain)-1; i++ {
 		current := chain[i]
 		next := chain[i+1]
-		
+
 		if !p.isIssuer(current, next) {
 			return &v2.CertificateError{
 				Code:    "BROKEN_CHAIN",
@@ -261,7 +261,7 @@ func (p *CertificateParser) ValidateChain(chain []*x509.Certificate) error {
 			}
 		}
 	}
-	
+
 	// Check if the root is self-signed
 	root := chain[len(chain)-1]
 	if !p.isSelfSigned(root) && p.strictMode {
@@ -271,7 +271,7 @@ func (p *CertificateParser) ValidateChain(chain []*x509.Certificate) error {
 			Cert:    root,
 		}
 	}
-	
+
 	return nil
 }
 
@@ -286,10 +286,10 @@ func (p *CertificateParser) ConvertToBundle(certs []*x509.Certificate, format v2
 			Source:       source,
 		}
 	}
-	
+
 	// Separate CAs from end-entity certificates
 	cas, endEntity := p.ExtractCAs(certs)
-	
+
 	return &v2.CertBundle{
 		Certificates: endEntity,
 		CAs:          cas,
@@ -305,7 +305,7 @@ func (p *CertificateParser) isIssuer(subject, issuer *x509.Certificate) bool {
 	if !subject.Issuer.Equal(issuer.Subject) {
 		return false
 	}
-	
+
 	// Verify signature
 	err := subject.CheckSignatureFrom(issuer)
 	return err == nil
@@ -317,7 +317,7 @@ func (p *CertificateParser) isSelfSigned(cert *x509.Certificate) bool {
 	if !cert.Subject.Equal(cert.Issuer) {
 		return false
 	}
-	
+
 	// Verify self-signature
 	err := cert.CheckSignatureFrom(cert)
 	return err == nil
@@ -328,7 +328,7 @@ func (p *CertificateParser) GetCertificateInfo(cert *x509.Certificate) map[strin
 	if cert == nil {
 		return map[string]interface{}{"error": "certificate is nil"}
 	}
-	
+
 	info := map[string]interface{}{
 		"subject":            cert.Subject.String(),
 		"issuer":             cert.Issuer.String(),
@@ -343,7 +343,7 @@ func (p *CertificateParser) GetCertificateInfo(cert *x509.Certificate) map[strin
 		"email_addresses":    cert.EmailAddresses,
 		"is_self_signed":     p.isSelfSigned(cert),
 	}
-	
+
 	// Add expiry status
 	now := time.Now()
 	if cert.NotAfter.Before(now) {
@@ -353,14 +353,14 @@ func (p *CertificateParser) GetCertificateInfo(cert *x509.Certificate) map[strin
 	} else {
 		info["status"] = "valid"
 	}
-	
+
 	return info
 }
 
 // keyUsageToString converts key usage flags to strings
 func (p *CertificateParser) keyUsageToString(usage x509.KeyUsage) []string {
 	var usages []string
-	
+
 	if usage&x509.KeyUsageDigitalSignature != 0 {
 		usages = append(usages, "digital_signature")
 	}
@@ -388,14 +388,14 @@ func (p *CertificateParser) keyUsageToString(usage x509.KeyUsage) []string {
 	if usage&x509.KeyUsageDecipherOnly != 0 {
 		usages = append(usages, "decipher_only")
 	}
-	
+
 	return usages
 }
 
 // extKeyUsageToString converts extended key usage to strings
 func (p *CertificateParser) extKeyUsageToString(usage []x509.ExtKeyUsage) []string {
 	var usages []string
-	
+
 	for _, u := range usage {
 		switch u {
 		case x509.ExtKeyUsageServerAuth:
@@ -412,6 +412,6 @@ func (p *CertificateParser) extKeyUsageToString(usage []x509.ExtKeyUsage) []stri
 			usages = append(usages, "ocsp_signing")
 		}
 	}
-	
+
 	return usages
 }

@@ -22,14 +22,14 @@ import (
 // from various sources including configuration files and API endpoints.
 type GiteaDiscovery struct {
 	// Configuration
-	configPaths    []string                         // Paths to search for Gitea config
-	registryURL    string                           // Registry URL for certificate discovery
-	timeout        time.Duration                    // HTTP timeout for discovery requests
+	configPaths []string      // Paths to search for Gitea config
+	registryURL string        // Registry URL for certificate discovery
+	timeout     time.Duration // HTTP timeout for discovery requests
 
 	// Caching
-	discoveryCache map[string]*x509.Certificate     // Cache discovered certificates
-	lastDiscovery  time.Time                        // Last discovery timestamp
-	cacheTTL       time.Duration                    // Cache time-to-live
+	discoveryCache map[string]*x509.Certificate // Cache discovered certificates
+	lastDiscovery  time.Time                    // Last discovery timestamp
+	cacheTTL       time.Duration                // Cache time-to-live
 
 	// Thread safety
 	mu sync.RWMutex
@@ -68,7 +68,7 @@ func (g *GiteaDiscovery) DiscoverGiteaCertificates(ctx context.Context, giteaURL
 	defer g.mu.Unlock()
 
 	var allCerts []*x509.Certificate
-	
+
 	// Check cache first
 	if time.Since(g.lastDiscovery) < g.cacheTTL {
 		var cachedCerts []*x509.Certificate

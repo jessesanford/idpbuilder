@@ -34,14 +34,14 @@ func TestServiceCreation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			service, err := NewCertificateService()
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				assert.Nil(t, service)
 			} else {
 				assert.NoError(t, err)
 				assert.NotNil(t, service)
-				
+
 				// Verify default settings
 				assert.Equal(t, v2.VerificationModeStrict, service.verificationMode)
 				assert.NotNil(t, service.certPool)
@@ -62,9 +62,9 @@ func TestVerificationModes(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name     string
-		mode     v2.VerificationMode
-		wantErr  bool
+		name    string
+		mode    v2.VerificationMode
+		wantErr bool
 	}{
 		{
 			name:    "switch to strict mode",
@@ -91,7 +91,7 @@ func TestVerificationModes(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := service.SetVerificationMode(ctx, tt.mode)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -136,7 +136,7 @@ func TestThreadSafety(t *testing.T) {
 		v2.VerificationModeCustomCA,
 		v2.VerificationModeSkip,
 	}
-	
+
 	for i := 0; i < numGoroutines; i++ {
 		go func(id int) {
 			defer wg.Done()
@@ -213,7 +213,7 @@ func TestCertificateValidation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result, err := service.ValidateCertificate(ctx, tt.cert)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				assert.Nil(t, result)
@@ -221,7 +221,7 @@ func TestCertificateValidation(t *testing.T) {
 				assert.NoError(t, err)
 				assert.NotNil(t, result)
 				assert.Equal(t, tt.wantValid, result.Valid)
-				
+
 				if tt.cert != nil {
 					assert.NotNil(t, result.Certificate)
 					assert.Equal(t, tt.cert.Subject.String(), result.Certificate.Subject)
@@ -318,7 +318,7 @@ func generateExpiredCertificate() (*x509.Certificate, error) {
 			Country:      []string{"US"},
 		},
 		NotBefore:             time.Now().Add(-365 * 24 * time.Hour), // 1 year ago
-		NotAfter:              time.Now().Add(-24 * time.Hour),        // 1 day ago
+		NotAfter:              time.Now().Add(-24 * time.Hour),       // 1 day ago
 		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
 		BasicConstraintsValid: true,
 	}

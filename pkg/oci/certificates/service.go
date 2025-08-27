@@ -25,13 +25,13 @@ type CertificateServiceImpl struct {
 	mu sync.RWMutex
 
 	// Certificate pools
-	certPool     *x509.CertPool  // Current certificate pool
-	systemPool   *x509.CertPool  // System certificate pool
-	customPool   *x509.CertPool  // Custom certificate pool
+	certPool   *x509.CertPool // Current certificate pool
+	systemPool *x509.CertPool // System certificate pool
+	customPool *x509.CertPool // Custom certificate pool
 
 	// Configuration
-	verificationMode v2.VerificationMode  // Current verification mode
-	bundlePaths      []string             // Certificate bundle paths
+	verificationMode v2.VerificationMode // Current verification mode
+	bundlePaths      []string            // Certificate bundle paths
 
 	// Components
 	giteaDiscovery  *GiteaDiscovery      // Gitea certificate discovery

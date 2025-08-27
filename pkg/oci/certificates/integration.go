@@ -194,7 +194,7 @@ func (bi *BuildIntegration) ConfigureBuildahWithCertificates(buildahConfig map[s
 
 	// Configure buildah with custom CA
 	buildahConfig["tls-verify"] = "true"
-	
+
 	if bi.caBundle != nil && len(bi.caBundle.CAs) > 0 {
 		buildahConfig["cert-dir"] = bi.buildConfig.CustomCAPath
 	}
@@ -272,9 +272,9 @@ type certificateTransport struct {
 func (ct *certificateTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	// Clone request to avoid modifying original
 	req = req.Clone(req.Context())
-	
+
 	// Add certificate-related headers if needed
 	req.Header.Set("X-Certificate-Validation", "enabled")
-	
+
 	return ct.base.RoundTrip(req)
 }

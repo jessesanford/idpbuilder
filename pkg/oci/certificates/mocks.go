@@ -17,24 +17,24 @@ import (
 // MockCertificateService implements CertificateService for testing
 type MockCertificateService struct {
 	mu sync.RWMutex
-	
+
 	// Configurable functions
-	LoadBundleFunc     func(ctx context.Context, path string, format CertFormat) (*CertBundle, error)
-	ValidateFunc       func(cert *x509.Certificate) error
-	GetTLSConfigFunc   func() (*tls.Config, error)
-	AddCAFunc          func(cert *x509.Certificate) error
-	RemoveCAFunc       func(cert *x509.Certificate) error
-	ListCertificatesFunc func() ([]*x509.Certificate, error)
+	LoadBundleFunc        func(ctx context.Context, path string, format CertFormat) (*CertBundle, error)
+	ValidateFunc          func(cert *x509.Certificate) error
+	GetTLSConfigFunc      func() (*tls.Config, error)
+	AddCAFunc             func(cert *x509.Certificate) error
+	RemoveCAFunc          func(cert *x509.Certificate) error
+	ListCertificatesFunc  func() ([]*x509.Certificate, error)
 	RotateCertificateFunc func(old, new *x509.Certificate) error
-	LoadGiteaFunc      func(ctx context.Context, url string) (*CertBundle, error)
-	
+	LoadGiteaFunc         func(ctx context.Context, url string) (*CertBundle, error)
+
 	// State
 	verificationMode VerificationMode
 	certificates     []*x509.Certificate
 	caPool           *x509.CertPool
 	callCount        map[string]int
 	errorOnNthCall   map[string]int
-	
+
 	// Test helpers
 	bundleCache map[string]*CertBundle
 }
@@ -55,23 +55,23 @@ func NewMockCertificateService() *MockCertificateService {
 func (m *MockCertificateService) LoadCertificateBundle(ctx context.Context, path string, format CertFormat) (*CertBundle, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	m.callCount["LoadCertificateBundle"]++
 	if errCall, exists := m.errorOnNthCall["LoadCertificateBundle"]; exists {
 		if m.callCount["LoadCertificateBundle"] == errCall {
 			return nil, fmt.Errorf("mock error on call %d", errCall)
 		}
 	}
-	
+
 	if m.LoadBundleFunc != nil {
 		return m.LoadBundleFunc(ctx, path, format)
 	}
-	
+
 	// Return cached bundle if available
 	if bundle, exists := m.bundleCache[path]; exists {
 		return bundle, nil
 	}
-	
+
 	// Generate test bundle
 	bundle := &CertBundle{
 		Certificates: []*x509.Certificate{GenerateTestCertificate()},
@@ -80,7 +80,7 @@ func (m *MockCertificateService) LoadCertificateBundle(ctx context.Context, path
 		LoadedAt:     time.Now(),
 		Source:       path,
 	}
-	
+
 	m.bundleCache[path] = bundle
 	return bundle, nil
 }
@@ -97,27 +97,27 @@ func (m *MockCertificateService) SetVerificationMode(mode VerificationMode) erro
 func (m *MockCertificateService) ValidateCertificate(cert *x509.Certificate) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if cert == nil {
 		return fmt.Errorf("certificate is nil")
 	}
-	
+
 	m.callCount["ValidateCertificate"]++
 	if errCall, exists := m.errorOnNthCall["ValidateCertificate"]; exists {
 		if m.callCount["ValidateCertificate"] == errCall {
 			return fmt.Errorf("mock validation error on call %d", errCall)
 		}
 	}
-	
+
 	if m.ValidateFunc != nil {
 		return m.ValidateFunc(cert)
 	}
-	
+
 	// Mock validation logic
 	if cert.NotAfter.Before(time.Now()) {
 		return fmt.Errorf("certificate expired")
 	}
-	
+
 	return nil
 }
 
@@ -125,11 +125,11 @@ func (m *MockCertificateService) ValidateCertificate(cert *x509.Certificate) err
 func (m *MockCertificateService) LoadGiteaCertificate(ctx context.Context, giteaURL string) (*CertBundle, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.LoadGiteaFunc != nil {
 		return m.LoadGiteaFunc(ctx, giteaURL)
 	}
-	
+
 	// Return mock Gitea certificate bundle
 	return &CertBundle{
 		Certificates: []*x509.Certificate{GenerateTestCertificate()},
@@ -144,19 +144,19 @@ func (m *MockCertificateService) LoadGiteaCertificate(ctx context.Context, gitea
 func (m *MockCertificateService) GetTLSConfig() (*tls.Config, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	
+
 	if m.GetTLSConfigFunc != nil {
 		return m.GetTLSConfigFunc()
 	}
-	
+
 	config := &tls.Config{
 		RootCAs: m.caPool,
 	}
-	
+
 	if m.verificationMode == VerificationModeSkip {
 		config.InsecureSkipVerify = true
 	}
-	
+
 	return config, nil
 }
 
@@ -164,11 +164,11 @@ func (m *MockCertificateService) GetTLSConfig() (*tls.Config, error) {
 func (m *MockCertificateService) AddCACertificate(cert *x509.Certificate) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.AddCAFunc != nil {
 		return m.AddCAFunc(cert)
 	}
-	
+
 	m.caPool.AddCert(cert)
 	return nil
 }
@@ -177,11 +177,11 @@ func (m *MockCertificateService) AddCACertificate(cert *x509.Certificate) error 
 func (m *MockCertificateService) RemoveCACertificate(cert *x509.Certificate) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.RemoveCAFunc != nil {
 		return m.RemoveCAFunc(cert)
 	}
-	
+
 	// Note: x509.CertPool doesn't support removal, so this is a no-op in mock
 	return nil
 }
@@ -190,11 +190,11 @@ func (m *MockCertificateService) RemoveCACertificate(cert *x509.Certificate) err
 func (m *MockCertificateService) ListCertificates() ([]*x509.Certificate, error) {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	
+
 	if m.ListCertificatesFunc != nil {
 		return m.ListCertificatesFunc()
 	}
-	
+
 	return m.certificates, nil
 }
 
@@ -202,11 +202,11 @@ func (m *MockCertificateService) ListCertificates() ([]*x509.Certificate, error)
 func (m *MockCertificateService) RotateCertificate(old, new *x509.Certificate) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.RotateCertificateFunc != nil {
 		return m.RotateCertificateFunc(old, new)
 	}
-	
+
 	// Mock rotation: replace old with new
 	for i, cert := range m.certificates {
 		if cert.Equal(old) {
@@ -214,7 +214,7 @@ func (m *MockCertificateService) RotateCertificate(old, new *x509.Certificate) e
 			return nil
 		}
 	}
-	
+
 	return fmt.Errorf("certificate not found for rotation")
 }
 
@@ -251,12 +251,12 @@ func (m *MockCertificateService) Reset() {
 // MockRegistryClient implements RegistryClient for testing
 type MockRegistryClient struct {
 	mu sync.RWMutex
-	
-	pushFunc     func(ctx context.Context, ref string, content []byte) error
-	pullFunc     func(ctx context.Context, ref string) ([]byte, error)
-	loginFunc    func(ctx context.Context, registry, username, password string) error
-	transport    http.RoundTripper
-	
+
+	pushFunc  func(ctx context.Context, ref string, content []byte) error
+	pullFunc  func(ctx context.Context, ref string) ([]byte, error)
+	loginFunc func(ctx context.Context, registry, username, password string) error
+	transport http.RoundTripper
+
 	// Test state
 	pushedRefs    []string
 	pulledRefs    []string
@@ -277,11 +277,11 @@ func NewMockRegistryClient() *MockRegistryClient {
 func (m *MockRegistryClient) Push(ctx context.Context, ref string, content []byte) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.pushFunc != nil {
 		return m.pushFunc(ctx, ref, content)
 	}
-	
+
 	m.pushedRefs = append(m.pushedRefs, ref)
 	m.certValidated = true // Simulate certificate validation
 	return nil
@@ -291,11 +291,11 @@ func (m *MockRegistryClient) Push(ctx context.Context, ref string, content []byt
 func (m *MockRegistryClient) Pull(ctx context.Context, ref string) ([]byte, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.pullFunc != nil {
 		return m.pullFunc(ctx, ref)
 	}
-	
+
 	m.pulledRefs = append(m.pulledRefs, ref)
 	return []byte("mock-content"), nil
 }
@@ -304,11 +304,11 @@ func (m *MockRegistryClient) Pull(ctx context.Context, ref string) ([]byte, erro
 func (m *MockRegistryClient) Login(ctx context.Context, registry, username, password string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if m.loginFunc != nil {
 		return m.loginFunc(ctx, registry, username, password)
 	}
-	
+
 	m.loginCalls = append(m.loginCalls, registry)
 	return nil
 }
@@ -364,11 +364,11 @@ func GenerateTestCA() *x509.Certificate {
 		BasicConstraintsValid: true,
 		IsCA:                  true,
 	}
-	
+
 	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
 	certDER, _ := x509.CreateCertificate(rand.Reader, template, template, &priv.PublicKey, priv)
 	cert, _ := x509.ParseCertificate(certDER)
-	
+
 	return cert
 }
 
@@ -379,20 +379,20 @@ func GenerateTestCertificate() *x509.Certificate {
 			Organization: []string{"Test Org"},
 			CommonName:   "test.example.com",
 		},
-		NotBefore:    time.Now(),
-		NotAfter:     time.Now().AddDate(1, 0, 0),
-		KeyUsage:     x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
-		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-		DNSNames:     []string{"test.example.com"},
+		NotBefore:   time.Now(),
+		NotAfter:    time.Now().AddDate(1, 0, 0),
+		KeyUsage:    x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		DNSNames:    []string{"test.example.com"},
 	}
-	
+
 	ca := GenerateTestCA()
 	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
 	caPriv, _ := rsa.GenerateKey(rand.Reader, 2048)
-	
+
 	certDER, _ := x509.CreateCertificate(rand.Reader, template, ca, &priv.PublicKey, caPriv)
 	cert, _ := x509.ParseCertificate(certDER)
-	
+
 	return cert
 }
 
@@ -403,20 +403,20 @@ func GenerateExpiredCertificate() *x509.Certificate {
 			Organization: []string{"Test Org"},
 			CommonName:   "expired.example.com",
 		},
-		NotBefore: time.Now().AddDate(-2, 0, 0),
-		NotAfter:  time.Now().AddDate(-1, 0, 0), // Expired
-		KeyUsage:  x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
+		NotBefore:   time.Now().AddDate(-2, 0, 0),
+		NotAfter:    time.Now().AddDate(-1, 0, 0), // Expired
+		KeyUsage:    x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
 		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		DNSNames:    []string{"expired.example.com"},
 	}
-	
+
 	ca := GenerateTestCA()
 	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
 	caPriv, _ := rsa.GenerateKey(rand.Reader, 2048)
-	
+
 	certDER, _ := x509.CreateCertificate(rand.Reader, template, ca, &priv.PublicKey, caPriv)
 	cert, _ := x509.ParseCertificate(certDER)
-	
+
 	return cert
 }
 
@@ -433,10 +433,10 @@ func GenerateSelfSignedCertificate() *x509.Certificate {
 		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		DNSNames:    []string{"selfsigned.example.com"},
 	}
-	
+
 	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
 	certDER, _ := x509.CreateCertificate(rand.Reader, template, template, &priv.PublicKey, priv)
 	cert, _ := x509.ParseCertificate(certDER)
-	
+
 	return cert
 }
