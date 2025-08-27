@@ -182,49 +182,23 @@ func (u *URLContextImpl) isArchiveContent(contentType string, content []byte) bo
 
 // extractArchiveContent extracts archive content to the temp directory
 func (u *URLContextImpl) extractArchiveContent(content []byte, tempDir string) error {
-	// Write archive to temp file
-	archivePath := filepath.Join(tempDir, "archive")
-	if err := os.WriteFile(archivePath, content, 0644); err != nil {
-		return fmt.Errorf("failed to write archive: %w", err)
+	// For Split 001, we'll treat archive content as a single file
+	// Full archive extraction will be handled by ArchiveContextImpl in Split 002
+	
+	// Write archive to temp directory as-is
+	fileName := u.getFileName()
+	if fileName == "content" {
+		fileName = "archive"
 	}
-	defer os.Remove(archivePath)
-
-	// Create archive context and extract
-	archiveCtx := &ArchiveContextImpl{
-		archivePath: archivePath,
-		config:      u.config,
-	}
-
-	extractedPath, err := archiveCtx.Extract()
-	if err != nil {
-		return fmt.Errorf("failed to extract archive: %w", err)
+	
+	filePath := filepath.Join(tempDir, fileName)
+	if err := os.WriteFile(filePath, content, 0644); err != nil {
+		return fmt.Errorf("failed to write archive file: %w", err)
 	}
 
-	// Move extracted content to our temp directory
-	return u.moveExtractedContent(extractedPath, tempDir)
+	return nil
 }
 
-// moveExtractedContent moves extracted archive content to the final location
-func (u *URLContextImpl) moveExtractedContent(srcPath, dstPath string) error {
-	// List contents of extracted directory
-	entries, err := os.ReadDir(srcPath)
-	if err != nil {
-		return fmt.Errorf("failed to read extracted directory: %w", err)
-	}
-
-	// Move all entries to destination
-	for _, entry := range entries {
-		srcFile := filepath.Join(srcPath, entry.Name())
-		dstFile := filepath.Join(dstPath, entry.Name())
-		
-		if err := os.Rename(srcFile, dstFile); err != nil {
-			return fmt.Errorf("failed to move %s: %w", entry.Name(), err)
-		}
-	}
-
-	// Remove the now-empty source directory
-	return os.Remove(srcPath)
-}
 
 // createTempDir creates a temporary directory for this context
 func (u *URLContextImpl) createTempDir() (string, error) {

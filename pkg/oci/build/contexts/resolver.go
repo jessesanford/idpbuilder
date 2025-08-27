@@ -45,9 +45,9 @@ func (r *ContextResolver) ResolveContext(source string) (Context, error) {
 	case URLContext:
 		return r.createURLContext(source)
 	case GitContext:
-		return r.createGitContext(source)
+		return nil, fmt.Errorf("git context support requires additional components (split 002)")
 	case ArchiveContext:
-		return r.createArchiveContext(source)
+		return nil, fmt.Errorf("archive context support requires additional components (split 002)")
 	default:
 		return nil, fmt.Errorf("unknown context type for source: %s", source)
 	}
@@ -130,31 +130,6 @@ func (r *ContextResolver) createURLContext(source string) (Context, error) {
 	return ctx, nil
 }
 
-// createGitContext creates a git repository context
-func (r *ContextResolver) createGitContext(source string) (Context, error) {
-	ctx := &GitContextImpl{
-		repoURL: source,
-		config:  r.config,
-	}
-
-	// Register cleanup function
-	r.addCleanupFn(ctx.Cleanup)
-	
-	return ctx, nil
-}
-
-// createArchiveContext creates an archive extraction context
-func (r *ContextResolver) createArchiveContext(source string) (Context, error) {
-	ctx := &ArchiveContextImpl{
-		archivePath: source,
-		config:      r.config,
-	}
-
-	// Register cleanup function
-	r.addCleanupFn(ctx.Cleanup)
-	
-	return ctx, nil
-}
 
 // addCleanupFn registers a cleanup function to be called later
 func (r *ContextResolver) addCleanupFn(fn func() error) {
