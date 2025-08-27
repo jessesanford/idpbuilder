@@ -210,7 +210,20 @@ func validateGitURL(gitURL string) error {
 		return fmt.Errorf("URL cannot be empty")
 	}
 
-	// Parse URL
+	// Check for SSH shorthand format first (git@host:path)
+	// This format doesn't parse correctly with url.Parse
+	if strings.Contains(gitURL, "@") && strings.Contains(gitURL, ":") && !strings.HasPrefix(gitURL, "http") {
+		// SSH shorthand format like git@github.com:user/repo.git
+		parts := strings.Split(gitURL, "@")
+		if len(parts) == 2 {
+			hostPath := parts[1]
+			if strings.Contains(hostPath, ":") {
+				return nil // Valid SSH shorthand format
+			}
+		}
+	}
+
+	// Parse URL for standard schemes
 	u, err := url.Parse(gitURL)
 	if err != nil {
 		return fmt.Errorf("invalid URL format: %w", err)
@@ -221,10 +234,6 @@ func validateGitURL(gitURL string) error {
 	case "https", "http", "ssh", "git":
 		return nil
 	case "":
-		// Check for SSH format like git@github.com:user/repo.git
-		if strings.Contains(gitURL, "@") && strings.Contains(gitURL, ":") {
-			return nil
-		}
 		return fmt.Errorf("missing scheme, supported schemes: https, http, ssh, git")
 	default:
 		return fmt.Errorf("unsupported scheme %s, supported schemes: https, http, ssh, git", u.Scheme)

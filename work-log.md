@@ -55,3 +55,33 @@ All required functionality implemented and tested. Ready for review.
 - Comprehensive test coverage
 - Size measured and verified
 - Ready for integration with split-001 interfaces
+
+## 2025-08-27 12:04 - Bug Fix (SSH Shorthand URLs)
+
+**Issue Found:** Tests were failing for SSH shorthand format URLs like `git@github.com:user/repo.git` because Go's `url.Parse()` doesn't handle this format correctly.
+
+**Fix Applied:** Enhanced `validateGitURL()` function in `remote.go` to detect and validate SSH shorthand format before attempting standard URL parsing.
+
+**Changes:**
+- Modified `validateGitURL()` function to check for SSH shorthand pattern first
+- Added special handling for `user@host:path` format validation  
+- All tests now pass (4/4 test functions, 9/9 test cases)
+- Line count remains at 276 lines (within acceptable range for split)
+
+**Verification:**
+```bash
+$ go test ./pkg/oci/buildah/contexts/ -v
+=== RUN   TestNewRemoteContext
+--- PASS: TestNewRemoteContext (0.00s)
+=== RUN   TestValidateGitURL  
+--- PASS: TestValidateGitURL (0.00s)
+=== RUN   TestRemoteContext_PrepareContextWithoutGit
+--- PASS: TestRemoteContext_PrepareContextWithoutGit (0.00s) 
+=== RUN   TestRemoteContext_Cleanup
+--- PASS: TestRemoteContext_Cleanup (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/oci/buildah/contexts	0.001s
+```
+
+### Status: COMPLETED with Bug Fix
+All functionality implemented, tested, and working correctly. Ready for review and integration.
