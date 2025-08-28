@@ -5,13 +5,11 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/cnoe-io/idpbuilder/pkg/kind"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -308,9 +306,6 @@ func (e *KindExtractor) storeCertificate(cert *x509.Certificate, data []byte) er
 
 // getKubeConfig gets the kubeconfig for the specified Kind cluster
 func getKubeConfig(clusterName string) (*rest.Config, error) {
-	// First try to use the Kind cluster's kubeconfig
-	kubeConfigPath := filepath.Join(os.TempDir(), fmt.Sprintf("kind-config-%s", clusterName))
-	
 	// Export kubeconfig for the Kind cluster (this would be handled by kind package)
 	// For now, try to load from default locations
 	

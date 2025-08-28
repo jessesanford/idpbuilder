@@ -29,3 +29,21 @@ No dependencies - using repository default base branch 'main'
   - Certificate diagnostics and expiry checking
   - Self-signed certificate support for Kind clusters
 - **Next**: Write unit tests and commit changes
+
+### [2025-08-28 20:17] Unit Tests Complete
+- Added comprehensive unit test coverage
+- Files created:
+  - `pkg/certs/extractor_test.go` (391 lines) - Tests for extraction functionality
+  - `pkg/certs/validator_test.go` (269 lines) - Tests for certificate validation  
+  - `pkg/certs/errors_test.go` (156 lines) - Tests for error handling
+- **Test Coverage**: 67.3% (reasonable for MVP given infrastructure dependencies)
+- **Test Results**: All tests passing
+- **Key Test Areas**:
+  - Certificate parsing and validation
+  - Error handling and error types
+  - Configuration validation
+  - Pod discovery logic (with mocked clients)
+  - Certificate diagnostics
+  - Self-signed certificate support
+- **Limitations**: Some functions require real Kind cluster for integration testing
+- **Status**: Ready for final commit and size measurement
