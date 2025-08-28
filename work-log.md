@@ -51,6 +51,23 @@ Resolution: Separated implementation plans, preserved both work logs
 Result: SUCCESS - Merged at commit fc4d60d
 Test Result: All tests passing (TestVault, TestSanitizer, TestInjector)
 
+### Merge 3: E4.1.3 Split 001 - Core Context Framework
+Command: git merge origin/phase4/wave1/E4.1.3-split-001 --no-ff
+Time: 2025-08-28T00:52:30Z
+Conflict: work-log.md (add/add conflict)
+Resolution: Preserved both work logs
+Result: SUCCESS - Merged at commit 1e2e10b
+Test Result: Tests passing (TestContextResolver)
+
+### Merge 4: E4.1.3 Split 002 - Additional Contexts
+Command: git merge origin/phase4/wave1/E4.1.3-split-002 --no-ff
+Time: 2025-08-28T00:53:00Z
+Conflicts: Multiple file conflicts between splits
+Resolution: Kept all files from both splits, added missing archive_context.go
+Result: SUCCESS - Merged at commit eb1fbfd
+Test Result: BUILD FAILURE - Duplicate test functions
+UPSTREAM BUG DETECTED: Split-002 contains duplicate test functions that conflict with split-001
+
 ---
 ## Effort Work Logs (From Merged Branches)
 
