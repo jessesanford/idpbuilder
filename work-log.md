@@ -43,6 +43,14 @@ Resolution: Preserved both integration log and effort work log
 Result: SUCCESS - Merged at commit d8ba9c7
 Test Result: All tests passing (TestDockerfileParser, TestStageManager)
 
+### Merge 2: E4.1.2 Secrets Handling
+Command: git merge origin/idpbuidler-oci-mgmt/phase4/wave1/E4.1.2-secrets-handling --no-ff
+Time: 2025-08-28T00:51:00Z
+Conflicts: work-log.md, IMPLEMENTATION-PLAN.md (add/add conflicts)
+Resolution: Separated implementation plans, preserved both work logs
+Result: SUCCESS - Merged at commit fc4d60d
+Test Result: All tests passing (TestVault, TestSanitizer, TestInjector)
+
 ---
 ## Effort Work Logs (From Merged Branches)
 
