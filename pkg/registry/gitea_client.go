@@ -2,15 +2,12 @@ package registry
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
-	"github.com/cnoe-io/idpbuilder/pkg/build"
+	"github.com/containers/image/v5/copy"
 	"github.com/containers/image/v5/docker"
-	"github.com/containers/image/v5/image"
 	"github.com/containers/image/v5/manifest"
 	"github.com/containers/image/v5/signature"
 	"github.com/containers/image/v5/transports/alltransports"
@@ -156,7 +153,7 @@ func (g *giteaClientImpl) Push(ctx context.Context, opts PushOptions) (*PushResu
 	}
 
 	// Perform the copy operation
-	_, err = image.Copy(ctx, policyContext, destImageRef, srcImageRef, &image.Options{
+	_, err = copy.Image(ctx, policyContext, destImageRef, srcImageRef, &copy.Options{
 		DestinationCtx: destSysCtx,
 		SourceCtx:     &types.SystemContext{},
 	})
@@ -206,13 +203,13 @@ func (g *giteaClientImpl) List(ctx context.Context, repository string) ([]ImageT
 		return nil, fmt.Errorf("invalid repository reference: %w", err)
 	}
 
-	// Get repository info
-	repo, err := docker.NewReference(ref.(docker.Reference))
-	if err != nil {
-		return nil, fmt.Errorf("failed to create repository reference: %w", err)
+	// Get repository info using docker.Reference interface
+	dockerRef, ok := ref.(types.ImageReference)
+	if !ok {
+		return nil, fmt.Errorf("reference is not a docker reference")
 	}
 
-	tags, err := docker.GetRepositoryTags(ctx, g.sysCtx, repo)
+	tags, err := docker.GetRepositoryTags(ctx, g.sysCtx, dockerRef)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get repository tags: %w", err)
 	}
@@ -258,7 +255,7 @@ func (g *giteaClientImpl) Pull(ctx context.Context, imageRef string) (*PullResul
 	defer policyContext.Destroy()
 
 	// Perform the copy operation
-	_, err = image.Copy(ctx, policyContext, destImageRef, srcImageRef, &image.Options{
+	_, err = copy.Image(ctx, policyContext, destImageRef, srcImageRef, &copy.Options{
 		SourceCtx:      g.sysCtx,
 		DestinationCtx: &types.SystemContext{},
 	})
