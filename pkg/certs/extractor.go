@@ -6,316 +6,296 @@ import (
 	"encoding/pem"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/go-logr/logr"
-	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/kubernetes/scheme"
-	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/tools/remotecommand"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"github.com/go-logr/logr"
 )
 
-var extractorLog = log.Log.WithName("cert-extractor")
-
-// KindExtractor implements KindCertExtractor for extracting certificates from Kind clusters
+// KindExtractor implements the KindCertExtractor interface for extracting certificates from Kind clusters
 type KindExtractor struct {
-	config     *ExtractorConfig
-	kubeClient kubernetes.Interface
-	restConfig *rest.Config
-	logger     logr.Logger
+	// client is the Kubernetes client for interacting with the cluster
+	client kubernetes.Interface
+	
+	// config holds the extractor configuration
+	config *ExtractorConfig
+	
+	// logger provides structured logging
+	logger logr.Logger
 }
 
-// NewKindExtractor creates a new KindExtractor with the provided configuration
+// NewKindExtractor creates a new KindExtractor with the specified configuration
 func NewKindExtractor(config *ExtractorConfig) (*KindExtractor, error) {
 	if config == nil {
 		config = DefaultExtractorConfig()
 	}
-
-	// Get kubeconfig for the Kind cluster
-	kubeConfig, err := getKubeConfig(config.ClusterName)
+	
+	// Create Kubernetes client using current context
+	kubeConfig, err := clientcmd.BuildConfigFromFlags("", "")
 	if err != nil {
-		return nil, NewCertificateError("kubeconfig_setup", err, 
-			"failed to get kubeconfig for cluster", []string{
-				"Verify cluster exists: kind get clusters",
-				"Export kubeconfig: kind export kubeconfig --name " + config.ClusterName,
-			})
+		return nil, WrapError(err, "KUBECONFIG_LOAD_FAILED", "Failed to load kubeconfig")
 	}
-
-	// Create Kubernetes client
-	kubeClient, err := kubernetes.NewForConfig(kubeConfig)
+	
+	client, err := kubernetes.NewForConfig(kubeConfig)
 	if err != nil {
-		return nil, NewCertificateError("client_creation", err,
-			"failed to create Kubernetes client", []string{
-				"Check cluster connectivity",
-				"Verify kubeconfig is valid",
-			})
+		return nil, WrapError(err, "CLIENT_CREATE_FAILED", "Failed to create Kubernetes client")
 	}
-
+	
+	// Verify cluster connectivity
+	ctx, cancel := context.WithTimeout(context.Background(), config.Timeout)
+	defer cancel()
+	
+	_, err = client.CoreV1().Nodes().List(ctx, metav1.ListOptions{Limit: 1})
+	if err != nil {
+		return nil, ErrClusterConnection.WithContext("cluster", config.ClusterName).Wrap(err)
+	}
+	
+	logger := log.FromContext(context.Background()).WithName("cert-extractor")
+	
 	return &KindExtractor{
-		config:     config,
-		kubeClient: kubeClient,
-		restConfig: kubeConfig,
-		logger:     extractorLog,
+		client: client,
+		config: config,
+		logger: logger,
 	}, nil
 }
 
 // ExtractGiteaCert extracts the Gitea certificate from the Kind cluster
-func (e *KindExtractor) ExtractGiteaCert(ctx context.Context) (*x509.Certificate, error) {
-	e.logger.Info("Starting Gitea certificate extraction", 
-		"cluster", e.config.ClusterName, "namespace", e.config.GiteaNamespace)
-
+func (k *KindExtractor) ExtractGiteaCert(ctx context.Context) (*x509.Certificate, error) {
+	startTime := time.Now()
+	diagnostics := &CertDiagnostics{
+		ClusterConnected: true,
+		Warnings:        make([]string, 0),
+	}
+	
+	k.logger.Info("Starting Gitea certificate extraction", "cluster", k.config.ClusterName)
+	
 	// Find Gitea pod
-	pod, err := e.findGiteaPod(ctx)
+	podName, err := k.findGiteaPod(ctx)
 	if err != nil {
 		return nil, err
 	}
-
-	e.logger.Info("Found Gitea pod", "pod", pod.Name, "namespace", pod.Namespace)
-
+	diagnostics.PodsFound = 1
+	
+	k.logger.Info("Found Gitea pod", "pod", podName, "namespace", k.config.Namespace)
+	
 	// Extract certificate from pod
-	certData, err := e.extractCertFromPod(ctx, pod)
+	certData, err := k.extractCertFromPod(ctx, podName)
 	if err != nil {
 		return nil, err
 	}
-
+	diagnostics.CertificateFound = true
+	
 	// Parse certificate
-	cert, err := e.parseCertificate(certData)
+	cert, err := k.parseCertificate(certData)
 	if err != nil {
 		return nil, err
 	}
-
-	// Validate certificate
-	if err := e.ValidateCertificate(cert); err != nil {
-		e.logger.V(1).Info("Certificate validation failed", "error", err)
-		return cert, err // Return cert even if validation fails for diagnostic purposes
+	diagnostics.CertificateParsed = true
+	
+	// Store certificate locally
+	err = k.storeCertificate(cert, certData)
+	if err != nil {
+		return nil, err
 	}
-
-	// Store certificate
-	if err := e.storeCertificate(cert, certData); err != nil {
-		e.logger.Error(err, "Failed to store certificate, but extraction succeeded")
-		// Don't return error here - extraction succeeded even if storage failed
-	}
-
-	e.logger.Info("Successfully extracted Gitea certificate", 
-		"subject", cert.Subject.String(), "expires", cert.NotAfter)
-
+	
+	diagnostics.ExtractionDuration = time.Since(startTime)
+	
+	k.logger.Info("Certificate extraction completed successfully", 
+		"duration", diagnostics.ExtractionDuration,
+		"subject", cert.Subject.String(),
+		"expires", cert.NotAfter)
+	
 	return cert, nil
 }
 
-// GetClusterName returns the configured cluster name
-func (e *KindExtractor) GetClusterName() (string, error) {
-	if e.config.ClusterName == "" {
-		return "", NewCertificateError("configuration", fmt.Errorf("cluster name not configured"),
-			"no cluster name specified", []string{"Set cluster name in configuration"})
-	}
-	return e.config.ClusterName, nil
+// GetClusterName returns the name of the configured Kind cluster
+func (k *KindExtractor) GetClusterName() string {
+	return k.config.ClusterName
 }
 
-// ValidateCertificate validates the extracted certificate
-func (e *KindExtractor) ValidateCertificate(cert *x509.Certificate) error {
-	if cert == nil {
-		return NewCertificateError("validation", fmt.Errorf("certificate is nil"),
-			"no certificate provided for validation", []string{"Ensure certificate was extracted properly"})
-	}
-
-	now := time.Now()
+// findGiteaPod locates the Gitea pod in the cluster using the configured selector
+func (k *KindExtractor) findGiteaPod(ctx context.Context) (string, error) {
+	k.logger.Info("Searching for Gitea pod", "namespace", k.config.Namespace, "selector", k.config.PodSelector)
 	
-	// Check if certificate is expired
-	if now.After(cert.NotAfter) {
-		return NewCertificateError("validation", ErrCertificateExpired.Cause,
-			fmt.Sprintf("certificate expired on %v", cert.NotAfter), ErrCertificateExpired.Suggestions)
-	}
-
-	// Check if certificate is not yet valid
-	if now.Before(cert.NotBefore) {
-		return NewCertificateError("validation", fmt.Errorf("certificate not yet valid"),
-			fmt.Sprintf("certificate valid from %v", cert.NotBefore), []string{
-				"Check system clock synchronization",
-				"Wait until certificate becomes valid",
-			})
-	}
-
-	// Warn if certificate expires soon (within 30 days)
-	if now.Add(30 * 24 * time.Hour).After(cert.NotAfter) {
-		e.logger.Info("Certificate expires soon", "expires", cert.NotAfter, 
-			"days_remaining", int(cert.NotAfter.Sub(now).Hours()/24))
-	}
-
-	return nil
-}
-
-// findGiteaPod locates the Gitea pod in the cluster
-func (e *KindExtractor) findGiteaPod(ctx context.Context) (*corev1.Pod, error) {
-	pods, err := e.kubeClient.CoreV1().Pods(e.config.GiteaNamespace).List(ctx, metav1.ListOptions{
-		LabelSelector: e.config.GiteaPodLabelSelector,
+	// Parse label selector
+	labelSelector := k.config.PodSelector
+	
+	// List pods with the specified selector
+	pods, err := k.client.CoreV1().Pods(k.config.Namespace).List(ctx, metav1.ListOptions{
+		LabelSelector: labelSelector,
 	})
 	if err != nil {
-		return nil, NewCertificateError("pod_listing", err,
-			"failed to list pods in namespace", []string{
-				"Check if namespace exists: kubectl get namespace " + e.config.GiteaNamespace,
-				"Verify cluster connectivity",
-			})
+		return "", ErrClusterConnection.WithContext("namespace", k.config.Namespace).
+			WithContext("selector", labelSelector).Wrap(err)
 	}
-
-	if len(pods.Items) == 0 {
-		return nil, ErrGiteaPodNotFound
-	}
-
-	// Find a running pod
+	
+	// Filter running pods
+	var runningPods []v1.Pod
 	for _, pod := range pods.Items {
-		if pod.Status.Phase == corev1.PodRunning {
-			return &pod, nil
+		if pod.Status.Phase == v1.PodRunning {
+			runningPods = append(runningPods, pod)
 		}
 	}
-
-	return nil, NewCertificateError("pod_discovery", fmt.Errorf("no running gitea pods found"),
-		"found pods but none are in running state", []string{
-			"Check pod status: kubectl get pods -n " + e.config.GiteaNamespace,
-			"Wait for pods to start or troubleshoot startup issues",
-		})
-}
-
-// extractCertFromPod extracts the certificate file from the Gitea pod
-func (e *KindExtractor) extractCertFromPod(ctx context.Context, pod *corev1.Pod) ([]byte, error) {
-	// Create exec command
-	req := e.kubeClient.CoreV1().RESTClient().Post().
-		Resource("pods").
-		Name(pod.Name).
-		Namespace(pod.Namespace).
-		SubResource("exec")
-
-	req.VersionedParams(&corev1.PodExecOptions{
-		Command: []string{"cat", e.config.CertPath},
-		Stdout:  true,
-		Stderr:  true,
-	}, scheme.ParameterCodec)
-
-	executor, err := remotecommand.NewSPDYExecutor(e.restConfig, "POST", req.URL())
-	if err != nil {
-		return nil, NewCertificateError("exec_setup", err,
-			"failed to create command executor", []string{
-				"Check cluster connectivity",
-				"Verify pod is accessible",
-			})
+	
+	// Check pod count
+	if len(runningPods) == 0 {
+		return "", ErrGiteaPodNotFound.WithContext("namespace", k.config.Namespace).
+			WithContext("selector", labelSelector).
+			WithContext("total_pods", len(pods.Items)).
+			WithContext("running_pods", len(runningPods))
 	}
-
-	// Capture output
-	var stdout, stderr strings.Builder
-	err = executor.Stream(remotecommand.StreamOptions{
-		Stdout: &stdout,
-		Stderr: &stderr,
-	})
-
-	if err != nil {
-		stderrStr := stderr.String()
-		if strings.Contains(stderrStr, "No such file") || strings.Contains(stderrStr, "not found") {
-			return nil, ErrCertificateNotFound
+	
+	if len(runningPods) > 1 {
+		podNames := make([]string, len(runningPods))
+		for i, pod := range runningPods {
+			podNames[i] = pod.Name
 		}
-		return nil, NewCertificateError("certificate_read", err,
-			fmt.Sprintf("failed to read certificate from pod, stderr: %s", stderrStr), []string{
-				"Verify certificate path: " + e.config.CertPath,
-				"Check pod has certificate configured",
-			})
+		return "", ErrMultipleGiteaPods.WithContext("namespace", k.config.Namespace).
+			WithContext("selector", labelSelector).
+			WithContext("pod_names", strings.Join(podNames, ", "))
 	}
-
-	certData := stdout.String()
-	if certData == "" {
-		return nil, NewCertificateError("certificate_read", fmt.Errorf("empty certificate data"),
-			"certificate file exists but is empty", []string{
-				"Check Gitea configuration",
-				"Verify HTTPS is enabled in Gitea",
-			})
-	}
-
-	return []byte(certData), nil
+	
+	return runningPods[0].Name, nil
 }
 
-// parseCertificate parses the PEM-encoded certificate data
-func (e *KindExtractor) parseCertificate(data []byte) (*x509.Certificate, error) {
-	block, _ := pem.Decode(data)
+// extractCertFromPod executes a command in the pod to retrieve the certificate
+func (k *KindExtractor) extractCertFromPod(ctx context.Context, podName string) ([]byte, error) {
+	k.logger.Info("Extracting certificate from pod", "pod", podName, "path", k.config.CertPath)
+	
+	// Build kubectl command to read the certificate file
+	cmd := exec.CommandContext(ctx, "kubectl", "exec", 
+		"-n", k.config.Namespace,
+		podName,
+		"--",
+		"cat", k.config.CertPath)
+	
+	// Execute command
+	output, err := cmd.Output()
+	if err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			stderr := string(exitErr.Stderr)
+			if strings.Contains(stderr, "No such file") || strings.Contains(stderr, "not found") {
+				return nil, ErrCertificateNotFound.WithContext("pod", podName).
+					WithContext("path", k.config.CertPath).
+					WithContext("stderr", stderr)
+			}
+		}
+		return nil, ErrCertificateRead.WithContext("pod", podName).
+			WithContext("path", k.config.CertPath).Wrap(err)
+	}
+	
+	if len(output) == 0 {
+		return nil, ErrCertificateNotFound.WithContext("pod", podName).
+			WithContext("path", k.config.CertPath).
+			WithContext("reason", "empty file")
+	}
+	
+	k.logger.Info("Successfully read certificate data", "pod", podName, "size", len(output))
+	
+	return output, nil
+}
+
+// parseCertificate parses PEM-encoded certificate data into an x509.Certificate
+func (k *KindExtractor) parseCertificate(certData []byte) (*x509.Certificate, error) {
+	k.logger.Info("Parsing certificate data", "size", len(certData))
+	
+	// Decode PEM block
+	block, _ := pem.Decode(certData)
 	if block == nil {
-		return nil, NewCertificateError("certificate_parsing", fmt.Errorf("no PEM data found"),
-			"certificate data is not in PEM format", []string{
-				"Verify certificate file format",
-				"Check for certificate corruption",
-			})
+		return nil, ErrCertificateParse.WithContext("reason", "no PEM block found").
+			WithContext("data_preview", string(certData[:min(100, len(certData))]))
 	}
-
+	
 	if block.Type != "CERTIFICATE" {
-		return nil, NewCertificateError("certificate_parsing", 
-			fmt.Errorf("invalid PEM block type: %s", block.Type),
-			"PEM block is not a certificate", []string{
-				"Verify you're reading the certificate file, not a key file",
-				"Check certificate generation process",
-			})
+		return nil, ErrCertificateParse.WithContext("reason", "not a certificate block").
+			WithContext("block_type", block.Type)
 	}
-
+	
+	// Parse X.509 certificate
 	cert, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
-		return nil, NewCertificateError("certificate_parsing", err,
-			"failed to parse certificate data", []string{
-				"Verify certificate is valid X.509 format",
-				"Check for certificate corruption",
-			})
+		return nil, ErrCertificateParse.WithContext("reason", "invalid certificate data").Wrap(err)
 	}
-
+	
+	k.logger.Info("Successfully parsed certificate", 
+		"subject", cert.Subject.String(),
+		"issuer", cert.Issuer.String(),
+		"not_before", cert.NotBefore,
+		"not_after", cert.NotAfter)
+	
 	return cert, nil
 }
 
-// storeCertificate stores the certificate to the configured location
-func (e *KindExtractor) storeCertificate(cert *x509.Certificate, data []byte) error {
-	storagePath := e.config.StoragePath
-	
-	// Expand home directory
-	if strings.HasPrefix(storagePath, "~") {
-		home, err := os.UserHomeDir()
+// storeCertificate saves the certificate to the local filesystem
+func (k *KindExtractor) storeCertificate(cert *x509.Certificate, certData []byte) error {
+	// Expand tilde in output directory
+	outputDir := k.config.OutputDir
+	if strings.HasPrefix(outputDir, "~/") {
+		homeDir, err := os.UserHomeDir()
 		if err != nil {
-			return NewCertificateError("path_resolution", err,
-				"failed to get user home directory", []string{
-					"Specify absolute path instead of ~",
-					"Check user environment",
-				})
+			return ErrCertificateStore.WithContext("reason", "cannot determine home directory").Wrap(err)
 		}
-		storagePath = filepath.Join(home, storagePath[1:])
+		outputDir = filepath.Join(homeDir, outputDir[2:])
 	}
-
-	// Create directory if it doesn't exist
-	dir := filepath.Dir(storagePath)
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return NewCertificateError("directory_creation", err,
-			"failed to create certificate storage directory", []string{
-				"Check write permissions for parent directory",
-				"Verify disk space availability",
-			})
+	
+	k.logger.Info("Storing certificate", "output_dir", outputDir)
+	
+	// Ensure output directory exists
+	err := os.MkdirAll(outputDir, 0755)
+	if err != nil {
+		return ErrCertificateStore.WithContext("directory", outputDir).
+			WithContext("reason", "failed to create directory").Wrap(err)
 	}
-
-	// Write certificate file
-	if err := os.WriteFile(storagePath, data, 0644); err != nil {
-		return ErrStoragePermission
+	
+	// Generate filename based on certificate subject
+	filename := k.generateCertFilename(cert)
+	certPath := filepath.Join(outputDir, filename)
+	
+	// Write certificate to file
+	err = os.WriteFile(certPath, certData, 0644)
+	if err != nil {
+		return ErrCertificateStore.WithContext("file", certPath).
+			WithContext("reason", "failed to write file").Wrap(err)
 	}
-
-	e.logger.Info("Certificate stored successfully", "path", storagePath)
+	
+	k.logger.Info("Certificate stored successfully", "path", certPath)
+	
 	return nil
 }
 
-// getKubeConfig gets the kubeconfig for the specified Kind cluster
-func getKubeConfig(clusterName string) (*rest.Config, error) {
-	// Export kubeconfig for the Kind cluster (this would be handled by kind package)
-	// For now, try to load from default locations
-	
-	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
-	configOverrides := &clientcmd.ConfigOverrides{}
-	
-	if clusterName != "" {
-		configOverrides.CurrentContext = fmt.Sprintf("kind-%s", clusterName)
+// generateCertFilename generates a filename for the certificate based on its properties
+func (k *KindExtractor) generateCertFilename(cert *x509.Certificate) string {
+	// Use common name or first DNS name as base
+	name := cert.Subject.CommonName
+	if name == "" && len(cert.DNSNames) > 0 {
+		name = cert.DNSNames[0]
+	}
+	if name == "" {
+		name = "gitea"
 	}
 	
-	config := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
-	return config.ClientConfig()
+	// Sanitize filename
+	name = strings.ReplaceAll(name, "*", "wildcard")
+	name = strings.ReplaceAll(name, ".", "_")
+	name = strings.ReplaceAll(name, ":", "_")
+	
+	// Add timestamp to avoid conflicts
+	timestamp := time.Now().Format("20060102-150405")
+	
+	return fmt.Sprintf("%s-%s.crt", name, timestamp)
+}
+
+// min returns the minimum of two integers
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
