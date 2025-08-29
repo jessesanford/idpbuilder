@@ -50,10 +50,67 @@ type ExtractorConfig struct {
 	Timeout time.Duration
 }
 
+// DefaultExtractorConfig returns a configuration with sensible defaults
+func DefaultExtractorConfig() *ExtractorConfig {
+	return &ExtractorConfig{
+		ClusterName: "idpbuilder",
+		Namespace:   "idpbuilder",
+		PodSelector: "app.kubernetes.io/name=gitea",
+		CertPath:    "/etc/gitea/certs/tls.crt",
+		OutputDir:   "~/.idpbuilder/certs",
+		Timeout:     30 * time.Second,
+	}
+}
+
+// CertDiagnostics contains diagnostic information about certificate extraction
+type CertDiagnostics struct {
+	// ClusterName is the name of the Kind cluster
+	ClusterName string
+	
+	// ClusterConnected indicates if the cluster connection was successful
+	ClusterConnected bool
+	
+	// PodName is the name of the pod where the certificate was extracted
+	PodName string
+	
+	// PodsFound is the number of pods found
+	PodsFound int
+	
+	// CertificateFound indicates if the certificate file was found
+	CertificateFound bool
+	
+	// CertificateParsed indicates if the certificate was successfully parsed
+	CertificateParsed bool
+	
+	// ExtractedAt is when the certificate was extracted
+	ExtractedAt time.Time
+	
+	// ExtractionDuration is how long the extraction took
+	ExtractionDuration time.Duration
+	
+	// ValidationResult contains the validation results
+	ValidationResult *ValidationResult
+	
+	// ExpiryResult contains expiry information
+	ExpiryResult *ExpiryResult
+	
+	// SavedTo is the path where the certificate was saved
+	SavedTo string
+	
+	// Errors contains any errors encountered during extraction
+	Errors []string
+	
+	// Warnings contains any warnings during extraction
+	Warnings []string
+}
+
 // ValidationResult contains the results of certificate validation
 type ValidationResult struct {
 	// Valid indicates if the certificate passed all validation checks
 	Valid bool
+	
+	// Issues contains any validation issues found
+	Issues []string
 	
 	// Errors contains any validation errors found
 	Errors []string
