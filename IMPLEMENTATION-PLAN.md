@@ -1,74 +1,69 @@
-# Effort 2.1.2: Gitea Registry Client
+# Effort 2.1.1: Buildah Build Wrapper
 
 ## Overview
 **Size Target**: ~250 lines
-**Purpose**: Implement OCI registry operations for Gitea with full certificate support from Phase 1.
+**Purpose**: Implement container image building using Buildah Go libraries with certificate integration from Phase 1.
 
 ## Key Interfaces
 
 ```go
-// pkg/registry/gitea_client.go
-package registry
+// pkg/build/builder.go
+package build
 
 import (
     "context"
-    "github.com/cnoe-io/idpbuilder/pkg/certs"
+    "github.com/cnoe-io/idpbuilder/pkg/certs/trust"
 )
 
-// GiteaClient handles registry operations with Gitea
-type GiteaClient interface {
-    // Authenticate with Gitea registry
-    Authenticate(ctx context.Context, creds Credentials) error
+// Builder handles container image building operations
+type Builder interface {
+    // BuildImage builds a container image from a Dockerfile
+    BuildImage(ctx context.Context, opts BuildOptions) (*BuildResult, error)
     
-    // Push pushes an image to the registry
-    Push(ctx context.Context, opts PushOptions) (*PushResult, error)
+    // ListImages lists available images
+    ListImages(ctx context.Context) ([]ImageInfo, error)
     
-    // List lists images in a repository
-    List(ctx context.Context, repository string) ([]ImageTag, error)
+    // RemoveImage removes an image by ID
+    RemoveImage(ctx context.Context, imageID string) error
     
-    // Pull pulls an image from the registry
-    Pull(ctx context.Context, imageRef string) (*PullResult, error)
+    // TagImage tags an existing image
+    TagImage(ctx context.Context, source, target string) error
 }
 
-type Credentials struct {
-    Username string
-    Password string
-    Token    string
+type BuildOptions struct {
+    DockerfilePath string
+    ContextDir     string
+    Tag            string
+    Args           map[string]string
+    NoCache        bool
 }
 
-type PushOptions struct {
-    ImageID    string
-    Repository string
-    Tag        string
-    Insecure   bool
-}
-
-type PushResult struct {
-    Digest     string
-    Size       int64
-    PushTime   time.Duration
-    Repository string
-    Tag        string
+type BuildResult struct {
+    ImageID      string
+    Repository   string
+    Tag          string
+    Digest       string
+    Size         int64
+    BuildTime    time.Duration
 }
 ```
 
 ## Implementation Structure
-1. Authentication handling (40 lines)
-2. Push operation with progress (60 lines)
-3. Certificate integration from Phase 1 (40 lines)
-4. List repository contents (40 lines)
-5. Error handling and retries (40 lines)
-6. Helper functions (30 lines)
+1. Parse Dockerfile (50 lines)
+2. Prepare build context (40 lines)
+3. Configure Buildah options (40 lines)
+4. Execute build with progress tracking (60 lines)
+5. Handle errors and cleanup (30 lines)
+6. Tag management (30 lines)
 
 ## Phase 1 Integration
-- Use CertExtractor to get Gitea certificates
-- Use ChainValidator for certificate validation
-- Use FallbackHandler for error recovery
-- Integrate with SecurityAuditor for audit logging
+- Use TrustManager from Phase 1 for certificate handling
+- Integrate with audit logging for security events
+- Leverage fallback strategies for registry access
 
 ## Testing Requirements
-- Test authentication flows
-- Test push operations with cert validation
-- Test --insecure flag behavior
-- Test error scenarios and recovery
+- Test successful builds with simple Dockerfile
+- Test build failures and error handling
+- Test certificate integration
+- Test tag operations
 - Achieve 80% code coverage
