@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/cnoe-io/idpbuilder/pkg/certs/audit"
 )
 
 // DefaultChainValidator implements the ChainValidator interface
@@ -13,6 +15,7 @@ type DefaultChainValidator struct {
 	basicValidator CertValidator
 	trustManager   TrustManager
 	allowSelfSigned bool
+	auditLogger    audit.AuditLoggerInterface
 }
 
 // ChainValidatorConfig holds configuration for the chain validator
@@ -20,6 +23,7 @@ type ChainValidatorConfig struct {
 	BasicValidator  CertValidator
 	TrustManager    TrustManager
 	AllowSelfSigned bool
+	AuditLogger     audit.AuditLoggerInterface
 }
 
 // NewChainValidator creates a new chain validator with the specified configuration
@@ -31,10 +35,17 @@ func NewChainValidator(config *ChainValidatorConfig) ChainValidator {
 		panic("BasicValidator cannot be nil")
 	}
 	
+	// Use NoOpAuditLogger if none provided
+	auditLogger := config.AuditLogger
+	if auditLogger == nil {
+		auditLogger = audit.NewNoOpAuditLogger()
+	}
+	
 	return &DefaultChainValidator{
 		basicValidator:  config.BasicValidator,
 		trustManager:    config.TrustManager,
 		allowSelfSigned: config.AllowSelfSigned,
+		auditLogger:     auditLogger,
 	}
 }
 
@@ -140,6 +151,9 @@ func (cv *DefaultChainValidator) ValidateChain(ctx context.Context, cert *x509.C
 		cv.validateTrustAnchor(ctx, chain, result)
 	}
 
+	// Log the validation decision
+	cv.logValidationResult(cert, result)
+
 	return result, nil
 }
 
@@ -218,6 +232,10 @@ func (cv *DefaultChainValidator) VerifyHostname(cert *x509.Certificate, hostname
 
 	// Use Go's built-in hostname verification
 	err := cert.VerifyHostname(hostname)
+	
+	// Log the hostname verification decision
+	cv.logHostnameVerification(cert, hostname, err)
+	
 	if err != nil {
 		// Create a more detailed error with context
 		return fmt.Errorf("hostname verification failed for '%s': certificate is valid for %v but not for %s", 
@@ -485,4 +503,63 @@ func (cv *DefaultChainValidator) extKeyUsageStrings(usages []x509.ExtKeyUsage) [
 		}
 	}
 	return result
+}
+
+// logValidationResult logs the result of certificate chain validation
+func (cv *DefaultChainValidator) logValidationResult(cert *x509.Certificate, result *ChainValidationResult) {
+	decision := "VALID"
+	if !result.Valid {
+		decision = "INVALID"
+	}
+	
+	var reasons []string
+	if !result.ChainComplete {
+		reasons = append(reasons, "incomplete_chain")
+	}
+	if !result.TrustAnchorFound {
+		reasons = append(reasons, "no_trust_anchor")
+	}
+	for _, issue := range result.Issues {
+		if issue.Severity == SeverityCritical || issue.Severity == SeverityError {
+			reasons = append(reasons, issue.Code)
+		}
+	}
+	
+	reasonStr := "chain_validation"
+	if len(reasons) > 0 {
+		reasonStr = strings.Join(reasons, ", ")
+	}
+	
+	// Extract user ID from context if available (defaulting to "system" for now)
+	userID := "system"
+	
+	cv.auditLogger.LogCertificateValidation(
+		cert.Subject.String(),
+		"", // hostname not available in this context
+		decision,
+		reasonStr,
+		userID,
+	)
+}
+
+// logHostnameVerification logs hostname verification attempts
+func (cv *DefaultChainValidator) logHostnameVerification(cert *x509.Certificate, hostname string, err error) {
+	decision := "VALID"
+	reason := "hostname_verified"
+	
+	if err != nil {
+		decision = "INVALID"
+		reason = "hostname_verification_failed"
+	}
+	
+	// Extract user ID from context if available (defaulting to "system" for now)
+	userID := "system"
+	
+	cv.auditLogger.LogCertificateValidation(
+		cert.Subject.String(),
+		hostname,
+		decision,
+		reason,
+		userID,
+	)
 }
