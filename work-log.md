@@ -23,3 +23,18 @@ Command: git merge origin/idpbuilder-oci-mvp/phase2/wave1/gitea-registry-client 
 Result: Success - merged with auto-resolved conflicts in work-log.md
 Files Added: pkg/registry/gitea_client.go, pkg/registry/gitea_client_test.go, pkg/registry/types.go
 Total Changes: 13 files changed, 1636 insertions(+), 177 deletions(-)
+
+### Operation 5: Merge buildah-build-wrapper-split-001
+Command: git merge origin/idpbuilder-oci-mvp/phase2/wave1/buildah-build-wrapper-split-001 --no-ff -m "merge: integrate buildah-build-wrapper split-001 (516 lines) - core implementation"
+Result: Success - merged with conflicts resolved
+Conflicts resolved in:
+- go.mod: Combined dependencies from both branches
+- go.sum: Accepted incoming version  
+- CODE-REVIEW-REPORT.md: Accepted incoming version
+- IMPLEMENTATION-PLAN.md: Accepted incoming version
+Files Added: pkg/build/builder.go, pkg/build/builder_basic_test.go, pkg/build/builder_buildah.go, pkg/build/types.go
+
+### Operation 6: Merge buildah-build-wrapper-split-002
+Command: git merge origin/idpbuilder-oci-mvp/phase2/wave1/buildah-build-wrapper-split-002 --no-ff -m "merge: integrate buildah-build-wrapper split-002 (484 lines) - registry and push"
+Result: Success - merged without conflicts
+Files Added: SPLIT-002-COMPLETE.md, SPLIT-002-REVIEW-REPORT.md
