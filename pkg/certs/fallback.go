@@ -105,24 +105,8 @@ const (
 	DecisionUseInsecure
 )
 
-// Recommendation provides actionable advice for resolving issues
-type Recommendation struct {
-	Priority    RecommendationPriority
-	Title       string
-	Description string
-	Command     string // Specific command to run
-	Link        string // Documentation link
-}
-
-// RecommendationPriority defines the priority of recommendations
-type RecommendationPriority int
-
-const (
-	PriorityLow RecommendationPriority = iota
-	PriorityMedium
-	PriorityHigh
-	PriorityCritical
-)
+// Recommendation and RecommendationPriority types are now defined in types_chain.go
+// to avoid duplication in the package
 
 // Wave 1 Integration Interfaces (adapted from trust-store effort)
 type TrustManagerInterface interface {
