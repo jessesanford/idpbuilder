@@ -48,3 +48,29 @@
 **Time**: 2025-08-29 05:50:15 UTC
 **Action**: Moved cert-extraction work log to separate file cert-extraction-work-log.md
 **Result**: Resolved - preserved both work logs
+
+### Operation 9: Complete cert-extraction Merge
+**Time**: 2025-08-29 05:50:30 UTC
+**Command**: git commit -m "integrate: cert-extraction effort (Phase 1 Wave 1) - resolved work-log conflict"
+**Result**: Success - cert-extraction merged
+
+### Operation 10: Add trust-store Remote
+**Time**: 2025-08-29 05:50:45 UTC
+**Command**: git remote add trust-store ../trust-store/.git && git fetch trust-store
+**Result**: Success - Remote added and fetched
+
+### Operation 11: Second Merge Attempt - trust-store
+**Time**: 2025-08-29 05:51:00 UTC
+**Command**: git merge --no-ff trust-store/idpbuilder-oci-mvp/phase1/wave1/trust-store -m "integrate: trust-store effort (Phase 1 Wave 1)"
+**Result**: CONFLICT - Expected conflicts in types.go and work-log.md
+
+### Operation 12: Resolve work-log.md Conflict for trust-store
+**Time**: 2025-08-29 05:51:15 UTC
+**Action**: Moved trust-store work log to separate file trust-store-work-log.md
+**Result**: Resolved - preserved both work logs
+
+### Operation 13: Resolve types.go Conflict
+**Time**: 2025-08-29 05:51:30 UTC
+**Action**: Merging both sets of types as per integration plan
+**Strategy**: Keep all types from both efforts, organize with clear section comments
+**Result**: In progress...
