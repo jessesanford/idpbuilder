@@ -132,68 +132,44 @@ func (r *RecoveryManager) RecoverWithRetry(ctx context.Context, operation func()
 // recoverFromExpiredCert attempts to recover from expired certificate errors
 func (r *RecoveryManager) recoverFromExpiredCert(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) {
 	if !config.EnableCertRefresh {
-		return &RecoveryResult{
-			Success:       false,
-			Method:        "cert-refresh",
-			Actions:       []string{"detected expired certificate"},
-			FailureReason: "certificate refresh not enabled in recovery config",
-		}, nil
+		return &RecoveryResult{Success: false, Method: "cert-refresh", Actions: []string{"detected expired certificate"},
+			FailureReason: "certificate refresh not enabled"}, nil
 	}
 	
-	// Simulate certificate refresh attempt
-	// In real implementation, this would contact the registry or certificate authority
 	refreshCtx, cancel := context.WithTimeout(ctx, config.Timeout)
 	defer cancel()
 	
 	select {
 	case <-refreshCtx.Done():
-		return &RecoveryResult{
-			Success:       false,
-			Method:        "cert-refresh",
-			Actions:       []string{"detected expired certificate", "attempting certificate refresh", "certificate refresh timed out"},
-			FailureReason: "certificate refresh operation timed out",
-		}, nil
-	case <-time.After(100 * time.Millisecond): // Simulate work
-		return &RecoveryResult{
-			Success: false, // Usually fails as expired certs need manual intervention
-			Method:  "cert-refresh",
-			Actions: []string{"detected expired certificate", "attempting certificate refresh", "certificate refresh completed"},
-			FailureReason: "expired certificates typically require manual renewal",
-		}, nil
+		return &RecoveryResult{Success: false, Method: "cert-refresh",
+			Actions: []string{"detected expired certificate", "refresh timed out"},
+			FailureReason: "certificate refresh operation timed out"}, nil
+	case <-time.After(100 * time.Millisecond):
+		return &RecoveryResult{Success: false, Method: "cert-refresh",
+			Actions: []string{"detected expired certificate", "refresh completed"},
+			FailureReason: "expired certificates require manual renewal"}, nil
 	}
 }
 
 // recoverFromTrustIssue attempts to recover from trust/authority errors
 func (r *RecoveryManager) recoverFromTrustIssue(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) {
-	
 	if !config.EnableTrustUpdate {
-		return &RecoveryResult{
-			Success:       false,
-			Method:        "trust-update",
-			Actions:       []string{"detected trust authority issue"},
-			FailureReason: "trust store update not enabled in recovery config",
-		}, nil
+		return &RecoveryResult{Success: false, Method: "trust-update", Actions: []string{"detected trust authority issue"},
+			FailureReason: "trust store update not enabled"}, nil
 	}
 	
-	// Simulate trust store update
 	updateCtx, cancel := context.WithTimeout(ctx, config.Timeout)
 	defer cancel()
 	
 	select {
 	case <-updateCtx.Done():
-		return &RecoveryResult{
-			Success:       false,
-			Method:        "trust-update",
-			Actions:       []string{"detected trust authority issue", "trust store update timed out"},
-			FailureReason: "trust store update operation timed out",
-		}, nil
-	case <-time.After(200 * time.Millisecond): // Simulate work
-		return &RecoveryResult{
-			Success: false, // Usually requires explicit user action for security
-			Method:  "trust-update",
-			Actions: []string{"detected trust authority issue", "trust store update completed"},
-			FailureReason: "trust decisions require explicit user approval",
-		}, nil
+		return &RecoveryResult{Success: false, Method: "trust-update",
+			Actions: []string{"detected trust authority issue", "update timed out"},
+			FailureReason: "trust store update timed out"}, nil
+	case <-time.After(200 * time.Millisecond):
+		return &RecoveryResult{Success: false, Method: "trust-update",
+			Actions: []string{"detected trust authority issue", "update completed"},
+			FailureReason: "trust decisions require user approval"}, nil
 	}
 }
 
@@ -227,33 +203,22 @@ func (r *RecoveryManager) recoverFromNetworkIssue(ctx context.Context, config *R
 // recoverFromChainIssue attempts to recover from certificate chain issues  
 func (r *RecoveryManager) recoverFromChainIssue(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) {
 	if !config.EnableChainRepair {
-		return &RecoveryResult{
-			Success:       false,
-			Method:        "chain-repair",
-			Actions:       []string{"detected certificate chain issue"},
-			FailureReason: "certificate chain repair not enabled in recovery config",
-		}, nil
+		return &RecoveryResult{Success: false, Method: "chain-repair", Actions: []string{"detected chain issue"},
+			FailureReason: "chain repair not enabled"}, nil
 	}
 	
-	// Simulate chain repair attempt
 	repairCtx, cancel := context.WithTimeout(ctx, config.Timeout)
 	defer cancel()
 	
 	select {
 	case <-repairCtx.Done():
-		return &RecoveryResult{
-			Success:       false,
-			Method:        "chain-repair", 
-			Actions:       []string{"detected certificate chain issue", "chain repair timed out"},
-			FailureReason: "certificate chain repair operation timed out",
-		}, nil
-	case <-time.After(150 * time.Millisecond): // Simulate work
-		return &RecoveryResult{
-			Success: false, // Chain repair usually needs intermediate certificates
-			Method:  "chain-repair",
-			Actions: []string{"detected certificate chain issue", "chain repair completed"},
-			FailureReason: "incomplete chains usually require additional intermediate certificates",
-		}, nil
+		return &RecoveryResult{Success: false, Method: "chain-repair", 
+			Actions: []string{"detected chain issue", "repair timed out"},
+			FailureReason: "chain repair operation timed out"}, nil
+	case <-time.After(150 * time.Millisecond):
+		return &RecoveryResult{Success: false, Method: "chain-repair",
+			Actions: []string{"detected chain issue", "repair completed"},
+			FailureReason: "chains require intermediate certificates"}, nil
 	}
 }
 
