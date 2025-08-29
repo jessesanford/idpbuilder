@@ -1,7 +1,9 @@
 package certs
 
+
 import (
 	"context"
+	"crypto/x509"
 	"errors"
 	"testing"
 	"time"
@@ -10,15 +12,26 @@ import (
 // Mock implementations for testing
 type mockTrustManager struct{}
 func (m *mockTrustManager) AddCertificate(ctx context.Context, registry string, cert interface{}) error { return nil }
+func (m *mockTrustManager) RemoveCertificate(ctx context.Context, registry string, fingerprint string) error { return nil }
+func (m *mockTrustManager) ListCertificates(ctx context.Context, registry string) ([]interface{}, error) { return []interface{}{}, nil }
+func (m *mockTrustManager) GetRegistryConfig(ctx context.Context, registry string) (*RegistryConfig, error) { 
+	return &RegistryConfig{Registry: registry, Insecure: false, Certificates: []Certificate{}}, nil 
+}
 func (m *mockTrustManager) SetInsecureRegistry(ctx context.Context, registry string, insecure bool) error { return nil }
+func (m *mockTrustManager) ValidateCertificate(ctx context.Context, registry string, cert *x509.Certificate) error { return nil }
 
 type mockCertStore struct{}
 func (m *mockCertStore) Store(registry string, cert interface{}) error { return nil }
 func (m *mockCertStore) Load(registry string, fingerprint string) (interface{}, error) { return nil, nil }
+func (m *mockCertStore) Delete(registry string, fingerprint string) error { return nil }
+func (m *mockCertStore) List(registry string) ([]interface{}, error) { return []interface{}{}, nil }
+func (m *mockCertStore) Exists(registry string, fingerprint string) (bool, error) { return false, nil }
 
 type mockConfigMgr struct{}
 func (m *mockConfigMgr) UpdateInsecureRegistry(registry string, insecure bool) error { return nil }
 func (m *mockConfigMgr) GetInsecureRegistries() ([]string, error) { return []string{}, nil }
+func (m *mockConfigMgr) LoadConfig() error { return nil }
+func (m *mockConfigMgr) SaveConfig() error { return nil }
 
 func TestFallbackHandler(t *testing.T) {
 	handler := NewFallbackHandler(&mockTrustManager{}, &mockCertStore{}, &mockConfigMgr{})
