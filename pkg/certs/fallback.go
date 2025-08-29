@@ -3,8 +3,6 @@ package certs
 
 import (
 	"context"
-	"crypto/x509"
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -190,7 +188,7 @@ func (h *DefaultFallbackHandler) ApplyInsecureMode(ctx context.Context, config *
 
 // LogSecurityDecision records security-relevant decisions for audit
 func (h *DefaultFallbackHandler) LogSecurityDecision(decision SecurityDecision) error {
-	h.logger.Printf("SECURITY DECISION: %s - %s:%s [%s] Approved=%t Impact=%d", 
+	h.logger.Printf("SECURITY DECISION: %d - %s:%s [%s] Approved=%t Impact=%d", 
 		decision.Type, decision.Registry, decision.Operation, 
 		decision.Reason, decision.Approved, decision.Impact.Level)
 	

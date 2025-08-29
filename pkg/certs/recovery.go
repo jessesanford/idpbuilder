@@ -131,18 +131,14 @@ func (r *RecoveryManager) RecoverWithRetry(ctx context.Context, operation func()
 
 // recoverFromExpiredCert attempts to recover from expired certificate errors
 func (r *RecoveryManager) recoverFromExpiredCert(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) {
-	actions := []string{"detected expired certificate"}
-	
 	if !config.EnableCertRefresh {
 		return &RecoveryResult{
 			Success:       false,
 			Method:        "cert-refresh",
-			Actions:       actions,
+			Actions:       []string{"detected expired certificate"},
 			FailureReason: "certificate refresh not enabled in recovery config",
 		}, nil
 	}
-
-	actions = append(actions, "attempting certificate refresh")
 	
 	// Simulate certificate refresh attempt
 	// In real implementation, this would contact the registry or certificate authority
@@ -151,19 +147,17 @@ func (r *RecoveryManager) recoverFromExpiredCert(ctx context.Context, config *Re
 	
 	select {
 	case <-refreshCtx.Done():
-		actions = append(actions, "certificate refresh timed out")
 		return &RecoveryResult{
 			Success:       false,
 			Method:        "cert-refresh",
-			Actions:       actions,
+			Actions:       []string{"detected expired certificate", "attempting certificate refresh", "certificate refresh timed out"},
 			FailureReason: "certificate refresh operation timed out",
 		}, nil
 	case <-time.After(100 * time.Millisecond): // Simulate work
-		actions = append(actions, "certificate refresh completed")
 		return &RecoveryResult{
 			Success: false, // Usually fails as expired certs need manual intervention
 			Method:  "cert-refresh",
-			Actions: actions,
+			Actions: []string{"detected expired certificate", "attempting certificate refresh", "certificate refresh completed"},
 			FailureReason: "expired certificates typically require manual renewal",
 		}, nil
 	}
@@ -171,18 +165,15 @@ func (r *RecoveryManager) recoverFromExpiredCert(ctx context.Context, config *Re
 
 // recoverFromTrustIssue attempts to recover from trust/authority errors
 func (r *RecoveryManager) recoverFromTrustIssue(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) {
-	actions := []string{"detected trust authority issue"}
 	
 	if !config.EnableTrustUpdate {
 		return &RecoveryResult{
 			Success:       false,
 			Method:        "trust-update",
-			Actions:       actions,
+			Actions:       []string{"detected trust authority issue"},
 			FailureReason: "trust store update not enabled in recovery config",
 		}, nil
 	}
-
-	actions = append(actions, "attempting trust store update")
 	
 	// Simulate trust store update
 	updateCtx, cancel := context.WithTimeout(ctx, config.Timeout)
@@ -190,19 +181,17 @@ func (r *RecoveryManager) recoverFromTrustIssue(ctx context.Context, config *Rec
 	
 	select {
 	case <-updateCtx.Done():
-		actions = append(actions, "trust store update timed out")
 		return &RecoveryResult{
 			Success:       false,
 			Method:        "trust-update",
-			Actions:       actions,
+			Actions:       []string{"detected trust authority issue", "trust store update timed out"},
 			FailureReason: "trust store update operation timed out",
 		}, nil
 	case <-time.After(200 * time.Millisecond): // Simulate work
-		actions = append(actions, "trust store update completed")
 		return &RecoveryResult{
 			Success: false, // Usually requires explicit user action for security
 			Method:  "trust-update",
-			Actions: actions,
+			Actions: []string{"detected trust authority issue", "trust store update completed"},
 			FailureReason: "trust decisions require explicit user approval",
 		}, nil
 	}
@@ -210,8 +199,6 @@ func (r *RecoveryManager) recoverFromTrustIssue(ctx context.Context, config *Rec
 
 // recoverFromNetworkIssue attempts to recover from network connectivity errors
 func (r *RecoveryManager) recoverFromNetworkIssue(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) {
-	actions := []string{"detected network connectivity issue"}
-	
 	// Network issues are good candidates for automatic retry
 	retryConfig := &RecoveryConfig{
 		MaxAttempts: config.MaxAttempts,
@@ -239,18 +226,14 @@ func (r *RecoveryManager) recoverFromNetworkIssue(ctx context.Context, config *R
 
 // recoverFromChainIssue attempts to recover from certificate chain issues  
 func (r *RecoveryManager) recoverFromChainIssue(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) {
-	actions := []string{"detected certificate chain issue"}
-	
 	if !config.EnableChainRepair {
 		return &RecoveryResult{
 			Success:       false,
 			Method:        "chain-repair",
-			Actions:       actions,
+			Actions:       []string{"detected certificate chain issue"},
 			FailureReason: "certificate chain repair not enabled in recovery config",
 		}, nil
 	}
-
-	actions = append(actions, "attempting certificate chain repair")
 	
 	// Simulate chain repair attempt
 	repairCtx, cancel := context.WithTimeout(ctx, config.Timeout)
@@ -258,19 +241,17 @@ func (r *RecoveryManager) recoverFromChainIssue(ctx context.Context, config *Rec
 	
 	select {
 	case <-repairCtx.Done():
-		actions = append(actions, "chain repair timed out")
 		return &RecoveryResult{
 			Success:       false,
 			Method:        "chain-repair", 
-			Actions:       actions,
+			Actions:       []string{"detected certificate chain issue", "chain repair timed out"},
 			FailureReason: "certificate chain repair operation timed out",
 		}, nil
 	case <-time.After(150 * time.Millisecond): // Simulate work
-		actions = append(actions, "chain repair completed")
 		return &RecoveryResult{
 			Success: false, // Chain repair usually needs intermediate certificates
 			Method:  "chain-repair",
-			Actions: actions,
+			Actions: []string{"detected certificate chain issue", "chain repair completed"},
 			FailureReason: "incomplete chains usually require additional intermediate certificates",
 		}, nil
 	}
@@ -278,8 +259,6 @@ func (r *RecoveryManager) recoverFromChainIssue(ctx context.Context, config *Rec
 
 // genericRecovery provides a basic retry mechanism for unknown errors
 func (r *RecoveryManager) genericRecovery(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) {
-	actions := []string{"attempting generic recovery"}
-	
 	operation := func() error {
 		// Simulate a generic operation that might succeed on retry
 		select {
@@ -297,7 +276,7 @@ func (r *RecoveryManager) genericRecovery(ctx context.Context, config *RecoveryC
 	
 	result, err := r.RecoverWithRetry(ctx, operation, recoveryConfig)
 	if result != nil {
-		result.Actions = append(actions, result.Actions...)
+		result.Actions = append([]string{"attempting generic recovery"}, result.Actions...)
 	}
 	
 	return result, err
