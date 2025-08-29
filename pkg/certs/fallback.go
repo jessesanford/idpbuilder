@@ -276,95 +276,43 @@ func (h *DefaultFallbackHandler) AttemptAutoRecovery(ctx context.Context, err er
 }
 
 // Helper methods for creating specific fallback strategies
-
 func (h *DefaultFallbackHandler) createSelfSignedStrategy(config *FallbackConfig) *FallbackStrategy {
 	if config.AllowInsecure {
 		return &FallbackStrategy{
-			Type:        FallbackInsecure,
-			Description: "Bypass certificate validation using --insecure flag",
-			SecurityImpact: SecurityImpact{
-				Level:       ImpactHigh,
-				Description: "Certificate validation bypassed completely",
-				Risks:       []string{"Man-in-the-middle attacks", "Data interception"},
-				Mitigations: []string{"Use only in development", "Limited duration"},
-			},
-			Implementation:  "Use --insecure flag with command",
-			RequiresConsent: true,
+			Type: FallbackInsecure, Description: "Bypass certificate validation using --insecure flag",
+			SecurityImpact: SecurityImpact{Level: ImpactHigh, Description: "Certificate validation bypassed completely"},
+			Implementation: "Use --insecure flag with command", RequiresConsent: true,
 		}
 	}
-	
 	return &FallbackStrategy{
-		Type:        FallbackManualTrust,
-		Description: "Add registry certificate to trust store",
-		SecurityImpact: SecurityImpact{
-			Level:       ImpactMinimal,
-			Description: "Permanently trust specific certificate",
-			Risks:       []string{"Trust misconfigured certificate"},
-			Mitigations: []string{"Verify certificate authenticity first"},
-		},
-		Implementation:  "idpbuilder trust add-registry <registry-url>",
-		RequiresConsent: true,
+		Type: FallbackManualTrust, Description: "Add registry certificate to trust store",
+		SecurityImpact: SecurityImpact{Level: ImpactMinimal, Description: "Permanently trust specific certificate"},
+		Implementation: "idpbuilder trust add-registry <registry-url>", RequiresConsent: true,
 	}
 }
 
 func (h *DefaultFallbackHandler) createExpiredStrategy(config *FallbackConfig) *FallbackStrategy {
-	return &FallbackStrategy{
-		Type:        FallbackRetry,
-		Description: "Wait and retry - certificate may be renewed",
-		SecurityImpact: SecurityImpact{
-			Level:       ImpactMinimal,
-			Description: "No security compromise",
-			Risks:       []string{},
-			Mitigations: []string{"Automatic retry with backoff"},
-		},
-		Implementation:  "Automatic retry in 30 seconds",
-		RequiresConsent: false,
-	}
+	return &FallbackStrategy{Type: FallbackRetry, Description: "Wait and retry - certificate may be renewed",
+		SecurityImpact: SecurityImpact{Level: ImpactMinimal, Description: "No security compromise"},
+		Implementation: "Automatic retry in 30 seconds", RequiresConsent: false}
 }
 
 func (h *DefaultFallbackHandler) createHostnameStrategy(config *FallbackConfig) *FallbackStrategy {
-	return &FallbackStrategy{
-		Type:        FallbackRetry,
-		Description: "Verify registry URL and certificate hostname match",
-		SecurityImpact: SecurityImpact{
-			Level:       ImpactMinimal,
-			Description: "URL verification required",
-			Risks:       []string{"Connecting to wrong registry"},
-			Mitigations: []string{"Manual URL verification"},
-		},
-		Implementation:  "Check registry URL configuration",
-		RequiresConsent: true,
-	}
+	return &FallbackStrategy{Type: FallbackRetry, Description: "Verify registry URL and certificate hostname match",
+		SecurityImpact: SecurityImpact{Level: ImpactMinimal, Description: "URL verification required"},
+		Implementation: "Check registry URL configuration", RequiresConsent: true}
 }
 
 func (h *DefaultFallbackHandler) createNetworkStrategy(config *FallbackConfig) *FallbackStrategy {
-	return &FallbackStrategy{
-		Type:        FallbackRetry,
-		Description: "Network connectivity issue - retry with backoff",
-		SecurityImpact: SecurityImpact{
-			Level:       ImpactMinimal,
-			Description: "Network retry only",
-			Risks:       []string{},
-			Mitigations: []string{"Exponential backoff", "Connection timeout"},
-		},
-		Implementation:  "Automatic retry with exponential backoff",
-		RequiresConsent: false,
-	}
+	return &FallbackStrategy{Type: FallbackRetry, Description: "Network connectivity issue - retry with backoff",
+		SecurityImpact: SecurityImpact{Level: ImpactMinimal, Description: "Network retry only"},
+		Implementation: "Automatic retry with exponential backoff", RequiresConsent: false}
 }
 
 func (h *DefaultFallbackHandler) createGenericStrategy(config *FallbackConfig) *FallbackStrategy {
-	return &FallbackStrategy{
-		Type:        FallbackRetry,
-		Description: "Unknown error - attempt generic retry",
-		SecurityImpact: SecurityImpact{
-			Level:       ImpactMinimal,
-			Description: "Generic retry mechanism",
-			Risks:       []string{},
-			Mitigations: []string{"Limited retry attempts"},
-		},
-		Implementation:  "Retry with exponential backoff",
-		RequiresConsent: false,
-	}
+	return &FallbackStrategy{Type: FallbackRetry, Description: "Unknown error - attempt generic retry",
+		SecurityImpact: SecurityImpact{Level: ImpactMinimal, Description: "Generic retry mechanism"},
+		Implementation: "Retry with exponential backoff", RequiresConsent: false}
 }
 
 func (h *DefaultFallbackHandler) attemptDNSRecovery(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) {

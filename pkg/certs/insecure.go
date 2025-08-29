@@ -56,34 +56,10 @@ func (im *InsecureMode) ApplyInsecureMode(ctx context.Context, config *InsecureC
 
 // issueSecurityWarnings displays comprehensive security warnings
 func (im *InsecureMode) issueSecurityWarnings(config *InsecureConfig) {
-	im.logger.Println("════════════════════════════════════════════════════════")
-	im.logger.Println("🚨🚨🚨 SECURITY WARNING: INSECURE MODE ENABLED 🚨🚨🚨")
-	im.logger.Println("════════════════════════════════════════════════════════")
-	im.logger.Printf("Registry: %s", config.Registry)
-	im.logger.Printf("Operation: %s", config.Operation)
-	im.logger.Printf("Duration: %v", config.Duration)
-	im.logger.Printf("Reason: %s", config.Reason)
-	im.logger.Println("")
-	im.logger.Println("⚠️  CERTIFICATE VALIDATION IS DISABLED")
-	im.logger.Println("⚠️  YOUR CONNECTION MAY NOT BE SECURE")
-	im.logger.Println("⚠️  DATA MAY BE INTERCEPTED OR MODIFIED")
-	im.logger.Println("")
-	im.logger.Println("RISKS INCLUDE:")
-	im.logger.Println("• Man-in-the-middle attacks")
-	im.logger.Println("• Data interception and modification")
-	im.logger.Println("• Malicious registry impersonation")
-	im.logger.Println("• Compromised image integrity")
-	im.logger.Println("")
-	im.logger.Println("RECOMMENDATIONS:")
-	im.logger.Println("• Only use in trusted networks (e.g., development environments)")
-	im.logger.Println("• Verify registry certificates manually when possible")
-	im.logger.Println("• Use secure mode in production environments")
-	im.logger.Println("• Consider adding registry certificate to trust store")
-	im.logger.Println("")
-	im.logger.Println("To resolve permanently:")
-	im.logger.Printf("  idpbuilder trust add-registry %s", config.Registry)
-	im.logger.Println("")
-	im.logger.Println("════════════════════════════════════════════════════════")
+	im.logger.Printf("🚨 SECURITY WARNING: INSECURE MODE ENABLED for %s:%s", config.Registry, config.Operation)
+	im.logger.Printf("⚠️  CERTIFICATE VALIDATION DISABLED - Duration: %v - Reason: %s", config.Duration, config.Reason)
+	im.logger.Println("⚠️  RISKS: Man-in-the-middle attacks, data interception, registry impersonation")
+	im.logger.Printf("⚠️  To resolve permanently: idpbuilder trust add-registry %s", config.Registry)
 }
 
 // PromptUserConsent asks for explicit user confirmation (simulated)
@@ -189,33 +165,16 @@ func (im *InsecureMode) IsInsecureAllowed(registry string) bool {
 // GetInsecureRecommendations provides recommendations for secure alternatives
 func (im *InsecureMode) GetInsecureRecommendations(registry string) []Recommendation {
 	return []Recommendation{
-		{
-			Priority:    PriorityHigh,
-			Title:       "Add certificate to trust store",
+		{Priority: PriorityHigh, Title: "Add certificate to trust store",
 			Description: fmt.Sprintf("Permanently trust %s's certificate", registry),
-			Command:     fmt.Sprintf("idpbuilder trust add-registry %s", registry),
-			Link:        "https://docs.example.com/certificate-trust",
-		},
-		{
-			Priority:    PriorityMedium,
-			Title:       "Verify certificate manually",
+			Command: fmt.Sprintf("idpbuilder trust add-registry %s", registry)},
+		{Priority: PriorityMedium, Title: "Verify certificate manually", 
 			Description: "Check the certificate details before trusting",
-			Command:     fmt.Sprintf("openssl s_client -connect %s:443 -servername %s", registry, registry),
-			Link:        "https://docs.example.com/verify-certificates",
-		},
-		{
-			Priority:    PriorityMedium,
-			Title:       "Use HTTPS with proper certificates",
-			Description: "Configure the registry with valid TLS certificates",
-			Command:     "",
-			Link:        "https://docs.example.com/registry-tls",
-		},
-		{
-			Priority:    PriorityLow,
-			Title:       "Use insecure mode temporarily",
+			Command: fmt.Sprintf("openssl s_client -connect %s:443", registry)},
+		{Priority: PriorityMedium, Title: "Use HTTPS with proper certificates",
+			Description: "Configure the registry with valid TLS certificates"},
+		{Priority: PriorityLow, Title: "Use insecure mode temporarily",
 			Description: "Bypass certificate validation (development only)",
-			Command:     "idpbuilder --insecure <command>",
-			Link:        "https://docs.example.com/insecure-mode",
-		},
+			Command: "idpbuilder --insecure <command>"},
 	}
 }
