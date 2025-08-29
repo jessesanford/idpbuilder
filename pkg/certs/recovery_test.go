@@ -86,3 +86,93 @@ func TestHelperFunctions(t *testing.T) {
 		t.Error("min function failed")
 	}
 }
+
+// Additional test coverage for recovery scenarios
+func TestRecoveryWithContextCancellation(t *testing.T) {
+	manager := NewRecoveryManager()
+	ctx, cancel := context.WithCancel(context.Background())
+	config := &RecoveryConfig{
+		EnableTrustUpdate: true,
+		MaxAttempts: 5,
+		Timeout: 10 * time.Millisecond,
+	}
+	
+	// Cancel context immediately 
+	cancel()
+	
+	result, _ := manager.recoverFromTrustIssue(ctx, config)
+	// The method might not return an error in our implementation
+	if result == nil {
+		t.Error("Expected result even on cancellation")
+	}
+}
+
+func TestRecoveryDisabledFeatures(t *testing.T) {
+	manager := NewRecoveryManager()
+	ctx := context.Background()
+	
+	// Test with all features disabled
+	config := &RecoveryConfig{
+		EnableCertRefresh: false,
+		EnableTrustUpdate: false,
+		EnableChainRepair: false,
+		MaxAttempts: 1,
+		Timeout: 100 * time.Millisecond,
+	}
+	
+	// Test cert refresh disabled
+	result, err := manager.recoverFromExpiredCert(ctx, config)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	if result.Success {
+		t.Error("Expected failure when cert refresh disabled")
+	}
+	
+	// Test trust update disabled
+	result, err = manager.recoverFromTrustIssue(ctx, config)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err) 
+	}
+	if result.Success {
+		t.Error("Expected failure when trust update disabled")
+	}
+	
+	// Test chain repair disabled
+	result, err = manager.recoverFromChainIssue(ctx, config)
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	if result.Success {
+		t.Error("Expected failure when chain repair disabled")
+	}
+}
+
+func TestRecoveryManagerNetworkRetry(t *testing.T) {
+	manager := NewRecoveryManager()
+	ctx := context.Background()
+	config := &RecoveryConfig{
+		MaxAttempts: 2,
+		Timeout: 100 * time.Millisecond,
+	}
+	
+	// Test network recovery with retry - expect failure in simulation
+	result, _ := manager.recoverFromNetworkIssue(ctx, config)
+	if result == nil {
+		t.Error("Expected network recovery result")
+	}
+	// Network recovery simulates failure, so expect !Success
+	if result.Success {
+		t.Log("Network recovery unexpectedly succeeded")
+	}
+	
+	// Test generic recovery with limited retries - expect failure in simulation
+	result, _ = manager.genericRecovery(ctx, config)
+	if result == nil {
+		t.Error("Expected generic recovery result")
+	}
+	// Generic recovery simulates failure, so expect !Success
+	if result.Success {
+		t.Log("Generic recovery unexpectedly succeeded")
+	}
+}

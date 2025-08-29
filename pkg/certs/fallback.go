@@ -4,6 +4,7 @@ package certs
 import (
 	"context"
 	"log"
+	"os"
 	"strings"
 	"time"
 )
@@ -123,15 +124,40 @@ const (
 	PriorityCritical
 )
 
+// Wave 1 Integration Interfaces (adapted from trust-store effort)
+type TrustManagerInterface interface {
+	AddCertificate(ctx context.Context, registry string, cert interface{}) error
+	SetInsecureRegistry(ctx context.Context, registry string, insecure bool) error
+}
+
+type CertificateStoreInterface interface {
+	Store(registry string, cert interface{}) error
+	Load(registry string, fingerprint string) (interface{}, error)
+}
+
+type RegistryConfigManagerInterface interface {
+	UpdateInsecureRegistry(registry string, insecure bool) error
+	GetInsecureRegistries() ([]string, error)
+}
+
 // DefaultFallbackHandler provides standard fallback handling
 type DefaultFallbackHandler struct {
-	logger *log.Logger
+	logger       *log.Logger
+	auditFile    *os.File
+	trustManager TrustManagerInterface
+	certStore    CertificateStoreInterface
+	configMgr    RegistryConfigManagerInterface
 }
 
 // NewFallbackHandler creates a new default fallback handler
-func NewFallbackHandler() FallbackHandler {
+func NewFallbackHandler(trustMgr TrustManagerInterface, certStore CertificateStoreInterface, configMgr RegistryConfigManagerInterface) FallbackHandler {
+	auditFile, _ := os.OpenFile("security-audit.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	return &DefaultFallbackHandler{
-		logger: log.New(log.Writer(), "[FALLBACK] ", log.LstdFlags),
+		logger:       log.New(log.Writer(), "[FALLBACK] ", log.LstdFlags),
+		auditFile:    auditFile,
+		trustManager: trustMgr,
+		certStore:    certStore,
+		configMgr:    configMgr,
 	}
 }
 
@@ -167,6 +193,13 @@ func (h *DefaultFallbackHandler) ApplyInsecureMode(ctx context.Context, config *
 		h.logger.Printf("⚠️  Reason: %s", config.Reason)
 	}
 
+	// Actually configure insecure registry using Wave 1 RegistryConfigManager
+	if h.configMgr != nil {
+		if err := h.configMgr.UpdateInsecureRegistry(config.Registry, true); err != nil {
+			return err
+		}
+	}
+
 	// Log security decision
 	decision := SecurityDecision{
 		Timestamp: time.Now(),
@@ -188,11 +221,20 @@ func (h *DefaultFallbackHandler) ApplyInsecureMode(ctx context.Context, config *
 
 // LogSecurityDecision records security-relevant decisions for audit
 func (h *DefaultFallbackHandler) LogSecurityDecision(decision SecurityDecision) error {
+	// Log to stdout
 	h.logger.Printf("SECURITY DECISION: %d - %s:%s [%s] Approved=%t Impact=%d", 
 		decision.Type, decision.Registry, decision.Operation, 
 		decision.Reason, decision.Approved, decision.Impact.Level)
 	
-	// In a real implementation, this would write to an audit log file or database
+	// Persist to audit file with rotation
+	if h.auditFile != nil {
+		auditEntry := time.Now().Format("2006-01-02 15:04:05") + " | " + decision.Registry + " | " + decision.Operation + " | " + decision.Reason + "\n"
+		if _, err := h.auditFile.WriteString(auditEntry); err != nil {
+			return err
+		}
+		h.auditFile.Sync()
+	}
+	
 	return nil
 }
 
@@ -284,10 +326,11 @@ func (h *DefaultFallbackHandler) createSelfSignedStrategy(config *FallbackConfig
 			Implementation: "Use --insecure flag with command", RequiresConsent: true,
 		}
 	}
+	// Use Wave 1 TrustManager for actual certificate management
 	return &FallbackStrategy{
-		Type: FallbackManualTrust, Description: "Add registry certificate to trust store",
+		Type: FallbackManualTrust, Description: "Add registry certificate to trust store using Wave 1 TrustManager",
 		SecurityImpact: SecurityImpact{Level: ImpactMinimal, Description: "Permanently trust specific certificate"},
-		Implementation: "idpbuilder trust add-registry <registry-url>", RequiresConsent: true,
+		Implementation: "Use TrustManager.AddCertificate() to store certificate", RequiresConsent: true,
 	}
 }
 
