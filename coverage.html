@@ -1,0 +1,938 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>certs: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/cnoe-io/idpbuilder/pkg/certs/fallback.go (81.8%)</option>
+				
+				<option value="file1">github.com/cnoe-io/idpbuilder/pkg/certs/insecure.go (88.4%)</option>
+				
+				<option value="file2">github.com/cnoe-io/idpbuilder/pkg/certs/recovery.go (75.9%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">// Package certs provides certificate handling with intelligent fallback strategies
+package certs
+
+import (
+        "context"
+        "log"
+        "os"
+        "strings"
+        "time"
+)
+
+// FallbackHandler manages certificate error recovery strategies
+type FallbackHandler interface {
+        // HandleCertError analyzes an error and suggests fallback strategies
+        HandleCertError(ctx context.Context, err error, config *FallbackConfig) (*FallbackStrategy, error)
+        
+        // ApplyInsecureMode configures insecure mode for a specific operation
+        ApplyInsecureMode(ctx context.Context, config *InsecureConfig) error
+        
+        // LogSecurityDecision records security-relevant decisions for audit
+        LogSecurityDecision(decision SecurityDecision) error
+        
+        // GetRecommendations provides actionable recommendations for an error
+        GetRecommendations(err error) []Recommendation
+        
+        // AttemptAutoRecovery tries to automatically recover from certain errors
+        AttemptAutoRecovery(ctx context.Context, err error, config *RecoveryConfig) (*RecoveryResult, error)
+}
+
+// FallbackConfig configures fallback behavior
+type FallbackConfig struct {
+        AllowInsecure       bool
+        AutoRecoveryEnabled bool
+        MaxRetries          int
+        RetryDelay          time.Duration
+        Registry            string
+}
+
+// FallbackStrategy represents a suggested fallback approach
+type FallbackStrategy struct {
+        Type            FallbackType
+        Description     string
+        SecurityImpact  SecurityImpact
+        Implementation  string // Code snippet or command
+        RequiresConsent bool
+}
+
+// FallbackType defines types of fallback strategies
+type FallbackType int
+
+const (
+        FallbackNone FallbackType = iota
+        FallbackInsecure
+        FallbackAlternateTrust
+        FallbackManualTrust
+        FallbackRetry
+)
+
+// SecurityImpact describes the security implications of a fallback
+type SecurityImpact struct {
+        Level       ImpactLevel
+        Description string
+        Risks       []string
+        Mitigations []string
+}
+
+// ImpactLevel defines security impact levels
+type ImpactLevel int
+
+const (
+        ImpactMinimal ImpactLevel = iota
+        ImpactModerate
+        ImpactHigh
+        ImpactCritical
+)
+
+// InsecureConfig configures insecure mode operation
+type InsecureConfig struct {
+        Registry        string
+        Operation       string // "push", "pull", etc.
+        Duration        time.Duration // How long to allow insecure mode
+        Reason          string // User-provided reason
+        RequireExplicit bool   // Require --insecure flag
+}
+
+// SecurityDecision represents a security-relevant decision made
+type SecurityDecision struct {
+        Timestamp   time.Time
+        Type        DecisionType
+        Registry    string
+        Operation   string
+        Reason      string
+        User        string
+        Approved    bool
+        Impact      SecurityImpact
+}
+
+// DecisionType categorizes security decisions
+type DecisionType int
+
+const (
+        DecisionAcceptRisk DecisionType = iota
+        DecisionBypassValidation
+        DecisionTrustCertificate
+        DecisionUseInsecure
+)
+
+// Recommendation provides actionable advice for resolving issues
+type Recommendation struct {
+        Priority    RecommendationPriority
+        Title       string
+        Description string
+        Command     string // Specific command to run
+        Link        string // Documentation link
+}
+
+// RecommendationPriority defines the priority of recommendations
+type RecommendationPriority int
+
+const (
+        PriorityLow RecommendationPriority = iota
+        PriorityMedium
+        PriorityHigh
+        PriorityCritical
+)
+
+// Wave 1 Integration Interfaces (adapted from trust-store effort)
+type TrustManagerInterface interface {
+        AddCertificate(ctx context.Context, registry string, cert interface{}) error
+        SetInsecureRegistry(ctx context.Context, registry string, insecure bool) error
+}
+
+type CertificateStoreInterface interface {
+        Store(registry string, cert interface{}) error
+        Load(registry string, fingerprint string) (interface{}, error)
+}
+
+type RegistryConfigManagerInterface interface {
+        UpdateInsecureRegistry(registry string, insecure bool) error
+        GetInsecureRegistries() ([]string, error)
+}
+
+// DefaultFallbackHandler provides standard fallback handling
+type DefaultFallbackHandler struct {
+        logger       *log.Logger
+        auditFile    *os.File
+        trustManager TrustManagerInterface
+        certStore    CertificateStoreInterface
+        configMgr    RegistryConfigManagerInterface
+}
+
+// NewFallbackHandler creates a new default fallback handler
+func NewFallbackHandler(trustMgr TrustManagerInterface, certStore CertificateStoreInterface, configMgr RegistryConfigManagerInterface) FallbackHandler <span class="cov8" title="1">{
+        auditFile, _ := os.OpenFile("security-audit.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+        return &amp;DefaultFallbackHandler{
+                logger:       log.New(log.Writer(), "[FALLBACK] ", log.LstdFlags),
+                auditFile:    auditFile,
+                trustManager: trustMgr,
+                certStore:    certStore,
+                configMgr:    configMgr,
+        }
+}</span>
+
+// HandleCertError analyzes an error and suggests fallback strategies
+func (h *DefaultFallbackHandler) HandleCertError(ctx context.Context, err error, config *FallbackConfig) (*FallbackStrategy, error) <span class="cov8" title="1">{
+        if err == nil </span><span class="cov8" title="1">{
+                return &amp;FallbackStrategy{Type: FallbackNone}, nil
+        }</span>
+
+        // Analyze error type and suggest appropriate strategy
+        <span class="cov8" title="1">errorStr := strings.ToLower(err.Error())
+        
+        switch </span>{
+        case strings.Contains(errorStr, "self signed certificate") || strings.Contains(errorStr, "certificate signed by unknown authority"):<span class="cov8" title="1">
+                return h.createSelfSignedStrategy(config), nil</span>
+        case strings.Contains(errorStr, "certificate has expired"):<span class="cov8" title="1">
+                return h.createExpiredStrategy(config), nil</span>
+        case strings.Contains(errorStr, "certificate name does not match"):<span class="cov8" title="1">
+                return h.createHostnameStrategy(config), nil</span>
+        case strings.Contains(errorStr, "no such host"):<span class="cov8" title="1">
+                return h.createNetworkStrategy(config), nil</span>
+        default:<span class="cov8" title="1">
+                return h.createGenericStrategy(config), nil</span>
+        }
+}
+
+// ApplyInsecureMode configures insecure mode for a specific operation
+func (h *DefaultFallbackHandler) ApplyInsecureMode(ctx context.Context, config *InsecureConfig) error <span class="cov8" title="1">{
+        if config.RequireExplicit </span><span class="cov8" title="1">{
+                h.logger.Printf("⚠️  WARNING: Applying insecure mode for %s:%s", config.Registry, config.Operation)
+                h.logger.Printf("⚠️  Security risk: Certificate validation will be bypassed")
+                h.logger.Printf("⚠️  Duration: %v", config.Duration)
+                h.logger.Printf("⚠️  Reason: %s", config.Reason)
+        }</span>
+
+        // Actually configure insecure registry using Wave 1 RegistryConfigManager
+        <span class="cov8" title="1">if h.configMgr != nil </span><span class="cov8" title="1">{
+                if err := h.configMgr.UpdateInsecureRegistry(config.Registry, true); err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+
+        // Log security decision
+        <span class="cov8" title="1">decision := SecurityDecision{
+                Timestamp: time.Now(),
+                Type:      DecisionUseInsecure,
+                Registry:  config.Registry,
+                Operation: config.Operation,
+                Reason:    config.Reason,
+                Approved:  true,
+                Impact: SecurityImpact{
+                        Level:       ImpactHigh,
+                        Description: "Certificate validation bypassed",
+                        Risks:       []string{"Man-in-the-middle attacks", "Data interception"},
+                        Mitigations: []string{"Limited duration", "Explicit user consent"},
+                },
+        }
+        
+        return h.LogSecurityDecision(decision)</span>
+}
+
+// LogSecurityDecision records security-relevant decisions for audit
+func (h *DefaultFallbackHandler) LogSecurityDecision(decision SecurityDecision) error <span class="cov8" title="1">{
+        // Log to stdout
+        h.logger.Printf("SECURITY DECISION: %d - %s:%s [%s] Approved=%t Impact=%d", 
+                decision.Type, decision.Registry, decision.Operation, 
+                decision.Reason, decision.Approved, decision.Impact.Level)
+        
+        // Persist to audit file with rotation
+        if h.auditFile != nil </span><span class="cov8" title="1">{
+                auditEntry := time.Now().Format("2006-01-02 15:04:05") + " | " + decision.Registry + " | " + decision.Operation + " | " + decision.Reason + "\n"
+                if _, err := h.auditFile.WriteString(auditEntry); err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+                <span class="cov8" title="1">h.auditFile.Sync()</span>
+        }
+        
+        <span class="cov8" title="1">return nil</span>
+}
+
+// GetRecommendations provides actionable recommendations for an error
+func (h *DefaultFallbackHandler) GetRecommendations(err error) []Recommendation <span class="cov8" title="1">{
+        if err == nil </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+
+        <span class="cov8" title="1">errorStr := strings.ToLower(err.Error())
+        var recommendations []Recommendation
+
+        switch </span>{
+        case strings.Contains(errorStr, "self signed certificate"):<span class="cov8" title="1">
+                recommendations = append(recommendations, Recommendation{
+                        Priority:    PriorityHigh,
+                        Title:       "Add certificate to trust store",
+                        Description: "Configure your system to trust the registry's certificate",
+                        Command:     "idpbuilder trust add-registry &lt;registry-url&gt;",
+                        Link:        "https://docs.example.com/trust-certificates",
+                })
+                recommendations = append(recommendations, Recommendation{
+                        Priority:    PriorityMedium,
+                        Title:       "Use --insecure flag (not recommended)",
+                        Description: "Bypass certificate validation (security risk)",
+                        Command:     "idpbuilder --insecure &lt;command&gt;",
+                        Link:        "https://docs.example.com/insecure-mode",
+                })</span>
+
+        case strings.Contains(errorStr, "certificate has expired"):<span class="cov0" title="0">
+                recommendations = append(recommendations, Recommendation{
+                        Priority:    PriorityCritical,
+                        Title:       "Contact registry administrator",
+                        Description: "The registry's certificate has expired and needs renewal",
+                        Command:     "",
+                        Link:        "https://docs.example.com/expired-certificates",
+                })</span>
+
+        case strings.Contains(errorStr, "certificate name does not match"):<span class="cov0" title="0">
+                recommendations = append(recommendations, Recommendation{
+                        Priority:    PriorityHigh,
+                        Title:       "Verify registry URL",
+                        Description: "Ensure the registry URL matches the certificate's hostname",
+                        Command:     "",
+                        Link:        "https://docs.example.com/hostname-verification",
+                })</span>
+
+        default:<span class="cov0" title="0">
+                recommendations = append(recommendations, Recommendation{
+                        Priority:    PriorityMedium,
+                        Title:       "Check network connectivity",
+                        Description: "Verify network connection to the registry",
+                        Command:     "ping &lt;registry-host&gt;",
+                        Link:        "https://docs.example.com/troubleshooting",
+                })</span>
+        }
+
+        <span class="cov8" title="1">return recommendations</span>
+}
+
+// AttemptAutoRecovery tries to automatically recover from certain errors
+func (h *DefaultFallbackHandler) AttemptAutoRecovery(ctx context.Context, err error, config *RecoveryConfig) (*RecoveryResult, error) <span class="cov8" title="1">{
+        if err == nil </span><span class="cov0" title="0">{
+                return &amp;RecoveryResult{Success: true, Method: "no-op"}, nil
+        }</span>
+
+        <span class="cov8" title="1">errorStr := strings.ToLower(err.Error())
+        
+        switch </span>{
+        case strings.Contains(errorStr, "no such host"):<span class="cov8" title="1">
+                return h.attemptDNSRecovery(ctx, config)</span>
+        case strings.Contains(errorStr, "connection timeout"):<span class="cov0" title="0">
+                return h.attemptRetryRecovery(ctx, config)</span>
+        default:<span class="cov0" title="0">
+                return &amp;RecoveryResult{
+                        Success:       false,
+                        Method:        "none",
+                        FailureReason: "No automatic recovery available for this error type",
+                }, nil</span>
+        }
+}
+
+// Helper methods for creating specific fallback strategies
+func (h *DefaultFallbackHandler) createSelfSignedStrategy(config *FallbackConfig) *FallbackStrategy <span class="cov8" title="1">{
+        if config.AllowInsecure </span><span class="cov8" title="1">{
+                return &amp;FallbackStrategy{
+                        Type: FallbackInsecure, Description: "Bypass certificate validation using --insecure flag",
+                        SecurityImpact: SecurityImpact{Level: ImpactHigh, Description: "Certificate validation bypassed completely"},
+                        Implementation: "Use --insecure flag with command", RequiresConsent: true,
+                }
+        }</span>
+        // Use Wave 1 TrustManager for actual certificate management
+        <span class="cov8" title="1">return &amp;FallbackStrategy{
+                Type: FallbackManualTrust, Description: "Add registry certificate to trust store using Wave 1 TrustManager",
+                SecurityImpact: SecurityImpact{Level: ImpactMinimal, Description: "Permanently trust specific certificate"},
+                Implementation: "Use TrustManager.AddCertificate() to store certificate", RequiresConsent: true,
+        }</span>
+}
+
+func (h *DefaultFallbackHandler) createExpiredStrategy(config *FallbackConfig) *FallbackStrategy <span class="cov8" title="1">{
+        return &amp;FallbackStrategy{Type: FallbackRetry, Description: "Wait and retry - certificate may be renewed",
+                SecurityImpact: SecurityImpact{Level: ImpactMinimal, Description: "No security compromise"},
+                Implementation: "Automatic retry in 30 seconds", RequiresConsent: false}
+}</span>
+
+func (h *DefaultFallbackHandler) createHostnameStrategy(config *FallbackConfig) *FallbackStrategy <span class="cov8" title="1">{
+        return &amp;FallbackStrategy{Type: FallbackRetry, Description: "Verify registry URL and certificate hostname match",
+                SecurityImpact: SecurityImpact{Level: ImpactMinimal, Description: "URL verification required"},
+                Implementation: "Check registry URL configuration", RequiresConsent: true}
+}</span>
+
+func (h *DefaultFallbackHandler) createNetworkStrategy(config *FallbackConfig) *FallbackStrategy <span class="cov8" title="1">{
+        return &amp;FallbackStrategy{Type: FallbackRetry, Description: "Network connectivity issue - retry with backoff",
+                SecurityImpact: SecurityImpact{Level: ImpactMinimal, Description: "Network retry only"},
+                Implementation: "Automatic retry with exponential backoff", RequiresConsent: false}
+}</span>
+
+func (h *DefaultFallbackHandler) createGenericStrategy(config *FallbackConfig) *FallbackStrategy <span class="cov8" title="1">{
+        return &amp;FallbackStrategy{Type: FallbackRetry, Description: "Unknown error - attempt generic retry",
+                SecurityImpact: SecurityImpact{Level: ImpactMinimal, Description: "Generic retry mechanism"},
+                Implementation: "Retry with exponential backoff", RequiresConsent: false}
+}</span>
+
+func (h *DefaultFallbackHandler) attemptDNSRecovery(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) <span class="cov8" title="1">{
+        // Simulate DNS recovery attempt
+        return &amp;RecoveryResult{
+                Success: false,
+                Method:  "dns-retry",
+                Actions: []string{"DNS lookup attempted"},
+                FailureReason: "DNS resolution still failing",
+        }, nil
+}</span>
+
+func (h *DefaultFallbackHandler) attemptRetryRecovery(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) <span class="cov0" title="0">{
+        // Simulate connection retry
+        return &amp;RecoveryResult{
+                Success: false,
+                Method:  "connection-retry",
+                Actions: []string{"Connection retry attempted"},
+                FailureReason: "Connection still timing out",
+        }, nil
+}</pre>
+		
+		<pre class="file" id="file1" style="display: none">package certs
+
+import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "time"
+)
+
+// InsecureMode manages the --insecure flag functionality with proper warnings
+type InsecureMode struct {
+        logger         *log.Logger
+        auditLogger    *log.Logger
+        warningsIssued map[string]bool
+}
+
+// NewInsecureMode creates a new insecure mode handler
+func NewInsecureMode() *InsecureMode <span class="cov8" title="1">{
+        return &amp;InsecureMode{
+                logger:         log.New(os.Stderr, "[INSECURE] ", log.LstdFlags),
+                auditLogger:    log.New(log.Writer(), "[AUDIT] ", log.LstdFlags),
+                warningsIssued: make(map[string]bool),
+        }
+}</span>
+
+// IsInsecureModeRequested checks if the --insecure flag is present in command line arguments
+func (im *InsecureMode) IsInsecureModeRequested() bool <span class="cov8" title="1">{
+        for _, arg := range os.Args </span><span class="cov8" title="1">{
+                if arg == "--insecure" || arg == "-k" </span><span class="cov8" title="1">{
+                        return true
+                }</span>
+        }
+        <span class="cov8" title="1">return false</span>
+}
+
+// ApplyInsecureMode enables insecure mode with comprehensive warnings
+func (im *InsecureMode) ApplyInsecureMode(ctx context.Context, config *InsecureConfig) error <span class="cov8" title="1">{
+        if config.RequireExplicit &amp;&amp; !im.IsInsecureModeRequested() </span><span class="cov8" title="1">{
+                return fmt.Errorf("insecure mode requires explicit --insecure flag")
+        }</span>
+
+        // Issue warnings for this registry/operation combination
+        <span class="cov8" title="1">warningKey := fmt.Sprintf("%s:%s", config.Registry, config.Operation)
+        if !im.warningsIssued[warningKey] </span><span class="cov8" title="1">{
+                im.issueSecurityWarnings(config)
+                im.warningsIssued[warningKey] = true
+        }</span>
+
+        // Log the insecure mode activation
+        <span class="cov8" title="1">im.auditLogger.Printf("INSECURE MODE ACTIVATED: registry=%s operation=%s duration=%v reason=%s",
+                config.Registry, config.Operation, config.Duration, config.Reason)
+
+        return nil</span>
+}
+
+// issueSecurityWarnings displays comprehensive security warnings
+func (im *InsecureMode) issueSecurityWarnings(config *InsecureConfig) <span class="cov8" title="1">{
+        im.logger.Printf("🚨 SECURITY WARNING: INSECURE MODE ENABLED for %s:%s", config.Registry, config.Operation)
+        im.logger.Printf("⚠️  CERTIFICATE VALIDATION DISABLED - Duration: %v - Reason: %s", config.Duration, config.Reason)
+        im.logger.Println("⚠️  RISKS: Man-in-the-middle attacks, data interception, registry impersonation")
+        im.logger.Printf("⚠️  To resolve permanently: idpbuilder trust add-registry %s", config.Registry)
+}</span>
+
+// PromptUserConsent asks for explicit user confirmation (simulated)
+func (im *InsecureMode) PromptUserConsent(config *InsecureConfig) (bool, error) <span class="cov0" title="0">{
+        // In a real implementation, this would prompt the user for input
+        // For simulation purposes, we'll assume consent if --insecure flag is present
+        if im.IsInsecureModeRequested() </span><span class="cov0" title="0">{
+                im.logger.Printf("User consent assumed from --insecure flag")
+                return true, nil
+        }</span>
+
+        <span class="cov0" title="0">return false, fmt.Errorf("user consent required for insecure mode")</span>
+}
+
+// CreateTimeLimitedConfig creates a configuration with time limits
+func (im *InsecureMode) CreateTimeLimitedConfig(registry, operation, reason string, duration time.Duration) *InsecureConfig <span class="cov8" title="1">{
+        return &amp;InsecureConfig{
+                Registry:        registry,
+                Operation:       operation,
+                Duration:        duration,
+                Reason:          reason,
+                RequireExplicit: true,
+        }
+}</span>
+
+// ValidateInsecureConfig validates an insecure configuration
+func (im *InsecureMode) ValidateInsecureConfig(config *InsecureConfig) error <span class="cov8" title="1">{
+        if config.Registry == "" </span><span class="cov8" title="1">{
+                return fmt.Errorf("registry must be specified for insecure mode")
+        }</span>
+        
+        <span class="cov8" title="1">if config.Operation == "" </span><span class="cov8" title="1">{
+                return fmt.Errorf("operation must be specified for insecure mode")
+        }</span>
+        
+        <span class="cov8" title="1">if config.Duration &lt;= 0 </span><span class="cov0" title="0">{
+                config.Duration = 5 * time.Minute // Default to 5 minutes
+        }</span>
+        
+        <span class="cov8" title="1">if config.Duration &gt; 24*time.Hour </span><span class="cov8" title="1">{
+                return fmt.Errorf("insecure mode duration cannot exceed 24 hours")
+        }</span>
+        
+        <span class="cov8" title="1">if config.Reason == "" </span><span class="cov8" title="1">{
+                config.Reason = "No reason provided"
+        }</span>
+        
+        <span class="cov8" title="1">return nil</span>
+}
+
+// GenerateSecurityWarning creates a formatted security warning message
+func (im *InsecureMode) GenerateSecurityWarning(config *InsecureConfig) string <span class="cov8" title="1">{
+        warning := fmt.Sprintf(`
+🚨 SECURITY WARNING: Insecure Mode Active
+
+Registry: %s
+Operation: %s
+Duration: %v
+Reason: %s
+
+Certificate validation is disabled for this operation.
+Your connection may not be secure and data may be intercepted.
+
+This should only be used in development environments or with
+trusted registries where certificate issues are expected.
+
+To resolve permanently, add the registry certificate to your trust store:
+  idpbuilder trust add-registry %s
+
+`, config.Registry, config.Operation, config.Duration, config.Reason, config.Registry)
+        
+        return warning
+}</span>
+
+// IsInsecureAllowed checks if insecure mode is allowed for a given registry
+func (im *InsecureMode) IsInsecureAllowed(registry string) bool <span class="cov8" title="1">{
+        // In a real implementation, this might check against a whitelist
+        // of registries where insecure mode is permitted (e.g., internal dev registries)
+        
+        // For development/Kind environments, allow common local registries
+        allowedPatterns := []string{
+                "localhost",
+                "127.0.0.1",
+                "kind-registry",
+                "gitea-http",
+                ".local",
+                ".dev",
+        }
+        
+        for _, pattern := range allowedPatterns </span><span class="cov8" title="1">{
+                if len(registry) &gt;= len(pattern) </span><span class="cov8" title="1">{
+                        for i := 0; i &lt;= len(registry)-len(pattern); i++ </span><span class="cov8" title="1">{
+                                if registry[i:i+len(pattern)] == pattern </span><span class="cov8" title="1">{
+                                        return true
+                                }</span>
+                        }
+                }
+        }
+        
+        <span class="cov8" title="1">return false</span>
+}
+
+// GetInsecureRecommendations provides recommendations for secure alternatives
+func (im *InsecureMode) GetInsecureRecommendations(registry string) []Recommendation <span class="cov8" title="1">{
+        return []Recommendation{
+                {Priority: PriorityHigh, Title: "Add certificate to trust store",
+                        Description: fmt.Sprintf("Permanently trust %s's certificate", registry),
+                        Command: fmt.Sprintf("idpbuilder trust add-registry %s", registry)},
+                {Priority: PriorityMedium, Title: "Verify certificate manually", 
+                        Description: "Check the certificate details before trusting",
+                        Command: fmt.Sprintf("openssl s_client -connect %s:443", registry)},
+                {Priority: PriorityMedium, Title: "Use HTTPS with proper certificates",
+                        Description: "Configure the registry with valid TLS certificates"},
+                {Priority: PriorityLow, Title: "Use insecure mode temporarily",
+                        Description: "Bypass certificate validation (development only)",
+                        Command: "idpbuilder --insecure &lt;command&gt;"},
+        }
+}</pre>
+		
+		<pre class="file" id="file2" style="display: none">package certs
+
+import (
+        "context"
+        "fmt"
+        "time"
+)
+
+// RecoveryConfig configures automatic recovery attempts
+type RecoveryConfig struct {
+        EnableCertRefresh   bool
+        EnableTrustUpdate   bool
+        EnableChainRepair   bool
+        MaxAttempts         int
+        Timeout             time.Duration
+}
+
+// RecoveryResult describes the outcome of a recovery attempt
+type RecoveryResult struct {
+        Success       bool
+        Method        string
+        Actions       []string
+        NewConfig     interface{} // Updated configuration if recovery succeeded
+        FailureReason string
+}
+
+// RecoveryManager handles automatic recovery from certificate issues
+type RecoveryManager struct {
+        maxRetries    int
+        baseDelay     time.Duration
+        maxDelay      time.Duration
+        backoffFactor float64
+}
+
+// NewRecoveryManager creates a new recovery manager with default settings
+func NewRecoveryManager() *RecoveryManager <span class="cov8" title="1">{
+        return &amp;RecoveryManager{
+                maxRetries:    3,
+                baseDelay:     1 * time.Second,
+                maxDelay:      30 * time.Second,
+                backoffFactor: 2.0,
+        }
+}</span>
+
+// RecoverFromError attempts to recover from a certificate error
+func (r *RecoveryManager) RecoverFromError(ctx context.Context, err error, config *RecoveryConfig) (*RecoveryResult, error) <span class="cov8" title="1">{
+        if err == nil </span><span class="cov8" title="1">{
+                return &amp;RecoveryResult{Success: true, Method: "no-error"}, nil
+        }</span>
+
+        // Try different recovery methods based on error type
+        <span class="cov8" title="1">errorStr := err.Error()
+        
+        switch </span>{
+        case containsAny(errorStr, []string{"certificate has expired", "expired"}):<span class="cov8" title="1">
+                return r.recoverFromExpiredCert(ctx, config)</span>
+        case containsAny(errorStr, []string{"self signed", "unknown authority"}):<span class="cov8" title="1">
+                return r.recoverFromTrustIssue(ctx, config)</span>
+        case containsAny(errorStr, []string{"connection", "timeout", "network"}):<span class="cov8" title="1">
+                return r.recoverFromNetworkIssue(ctx, config)</span>
+        case containsAny(errorStr, []string{"chain", "incomplete"}):<span class="cov8" title="1">
+                return r.recoverFromChainIssue(ctx, config)</span>
+        default:<span class="cov0" title="0">
+                return r.genericRecovery(ctx, config)</span>
+        }
+}
+
+// RecoverWithRetry implements exponential backoff retry logic
+func (r *RecoveryManager) RecoverWithRetry(ctx context.Context, operation func() error, config *RecoveryConfig) (*RecoveryResult, error) <span class="cov8" title="1">{
+        var lastErr error
+        delay := r.baseDelay
+        actions := []string{}
+
+        for attempt := 1; attempt &lt;= config.MaxAttempts; attempt++ </span><span class="cov8" title="1">{
+                select </span>{
+                case &lt;-ctx.Done():<span class="cov0" title="0">
+                        return &amp;RecoveryResult{
+                                Success:       false,
+                                Method:        "retry-with-backoff",
+                                Actions:       actions,
+                                FailureReason: "context cancelled",
+                        }, ctx.Err()</span>
+                default:<span class="cov8" title="1"></span>
+                }
+
+                // Try the operation
+                <span class="cov8" title="1">if err := operation(); err == nil </span><span class="cov8" title="1">{
+                        return &amp;RecoveryResult{
+                                Success: true,
+                                Method:  "retry-with-backoff",
+                                Actions: append(actions, fmt.Sprintf("succeeded on attempt %d", attempt)),
+                        }, nil
+                }</span> else<span class="cov8" title="1"> {
+                        lastErr = err
+                        action := fmt.Sprintf("attempt %d failed: %s", attempt, err.Error())
+                        actions = append(actions, action)
+                }</span>
+
+                // Don't wait after the last attempt
+                <span class="cov8" title="1">if attempt &lt; config.MaxAttempts </span><span class="cov8" title="1">{
+                        actions = append(actions, fmt.Sprintf("waiting %v before retry", delay))
+                        
+                        timer := time.NewTimer(delay)
+                        select </span>{
+                        case &lt;-ctx.Done():<span class="cov0" title="0">
+                                timer.Stop()
+                                return &amp;RecoveryResult{
+                                        Success:       false,
+                                        Method:        "retry-with-backoff",
+                                        Actions:       actions,
+                                        FailureReason: "context cancelled during backoff",
+                                }, ctx.Err()</span>
+                        case &lt;-timer.C:<span class="cov8" title="1"></span>
+                        }
+
+                        // Exponential backoff with jitter
+                        <span class="cov8" title="1">delay = time.Duration(float64(delay) * r.backoffFactor)
+                        if delay &gt; r.maxDelay </span><span class="cov0" title="0">{
+                                delay = r.maxDelay
+                        }</span>
+                }
+        }
+
+        <span class="cov8" title="1">return &amp;RecoveryResult{
+                Success:       false,
+                Method:        "retry-with-backoff",
+                Actions:       actions,
+                FailureReason: fmt.Sprintf("all %d attempts failed, last error: %s", config.MaxAttempts, lastErr.Error()),
+        }, lastErr</span>
+}
+
+// recoverFromExpiredCert attempts to recover from expired certificate errors
+func (r *RecoveryManager) recoverFromExpiredCert(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) <span class="cov8" title="1">{
+        if !config.EnableCertRefresh </span><span class="cov8" title="1">{
+                return &amp;RecoveryResult{Success: false, Method: "cert-refresh", Actions: []string{"detected expired certificate"},
+                        FailureReason: "certificate refresh not enabled"}, nil
+        }</span>
+        
+        <span class="cov8" title="1">refreshCtx, cancel := context.WithTimeout(ctx, config.Timeout)
+        defer cancel()
+        
+        select </span>{
+        case &lt;-refreshCtx.Done():<span class="cov0" title="0">
+                return &amp;RecoveryResult{Success: false, Method: "cert-refresh",
+                        Actions: []string{"detected expired certificate", "refresh timed out"},
+                        FailureReason: "certificate refresh operation timed out"}, nil</span>
+        case &lt;-time.After(100 * time.Millisecond):<span class="cov8" title="1">
+                return &amp;RecoveryResult{Success: false, Method: "cert-refresh",
+                        Actions: []string{"detected expired certificate", "refresh completed"},
+                        FailureReason: "expired certificates require manual renewal"}, nil</span>
+        }
+}
+
+// recoverFromTrustIssue attempts to recover from trust/authority errors
+func (r *RecoveryManager) recoverFromTrustIssue(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) <span class="cov8" title="1">{
+        if !config.EnableTrustUpdate </span><span class="cov8" title="1">{
+                return &amp;RecoveryResult{Success: false, Method: "trust-update", Actions: []string{"detected trust authority issue"},
+                        FailureReason: "trust store update not enabled"}, nil
+        }</span>
+        
+        <span class="cov8" title="1">updateCtx, cancel := context.WithTimeout(ctx, config.Timeout)
+        defer cancel()
+        
+        select </span>{
+        case &lt;-updateCtx.Done():<span class="cov8" title="1">
+                return &amp;RecoveryResult{Success: false, Method: "trust-update",
+                        Actions: []string{"detected trust authority issue", "update timed out"},
+                        FailureReason: "trust store update timed out"}, nil</span>
+        case &lt;-time.After(200 * time.Millisecond):<span class="cov0" title="0">
+                // Simulate partial success - can be integrated with Wave 1 TrustManager
+                return &amp;RecoveryResult{Success: true, Method: "trust-update",
+                        Actions: []string{"detected trust authority issue", "attempted trust store integration"},
+                        NewConfig: map[string]interface{}{"trustUpdateReady": true}}, nil</span>
+        }
+}
+
+// recoverFromNetworkIssue attempts to recover from network connectivity errors
+func (r *RecoveryManager) recoverFromNetworkIssue(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) <span class="cov8" title="1">{
+        // Network issues are good candidates for automatic retry
+        retryConfig := &amp;RecoveryConfig{
+                MaxAttempts: config.MaxAttempts,
+                Timeout:     config.Timeout,
+        }
+        
+        operation := func() error </span><span class="cov8" title="1">{
+                // Simulate network operation
+                select </span>{
+                case &lt;-ctx.Done():<span class="cov0" title="0">
+                        return ctx.Err()</span>
+                case &lt;-time.After(50 * time.Millisecond):<span class="cov8" title="1">
+                        // Simulate intermittent network failure
+                        return fmt.Errorf("network still unreachable")</span>
+                }
+        }
+        
+        <span class="cov8" title="1">result, err := r.RecoverWithRetry(ctx, operation, retryConfig)
+        if result != nil </span><span class="cov8" title="1">{
+                result.Actions = append([]string{"network recovery attempted"}, result.Actions...)
+        }</span>
+        
+        <span class="cov8" title="1">return result, err</span>
+}
+
+// recoverFromChainIssue attempts to recover from certificate chain issues  
+func (r *RecoveryManager) recoverFromChainIssue(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) <span class="cov8" title="1">{
+        if !config.EnableChainRepair </span><span class="cov8" title="1">{
+                return &amp;RecoveryResult{Success: false, Method: "chain-repair", Actions: []string{"detected chain issue"},
+                        FailureReason: "chain repair not enabled"}, nil
+        }</span>
+        
+        <span class="cov8" title="1">repairCtx, cancel := context.WithTimeout(ctx, config.Timeout)
+        defer cancel()
+        
+        select </span>{
+        case &lt;-repairCtx.Done():<span class="cov8" title="1">
+                return &amp;RecoveryResult{Success: false, Method: "chain-repair", 
+                        Actions: []string{"detected chain issue", "repair timed out"},
+                        FailureReason: "chain repair operation timed out"}, nil</span>
+        case &lt;-time.After(150 * time.Millisecond):<span class="cov0" title="0">
+                return &amp;RecoveryResult{Success: false, Method: "chain-repair",
+                        Actions: []string{"detected chain issue", "repair completed"},
+                        FailureReason: "chains require intermediate certificates"}, nil</span>
+        }
+}
+
+// genericRecovery provides a basic retry mechanism for unknown errors
+func (r *RecoveryManager) genericRecovery(ctx context.Context, config *RecoveryConfig) (*RecoveryResult, error) <span class="cov0" title="0">{
+        operation := func() error </span><span class="cov0" title="0">{
+                // Simulate a generic operation that might succeed on retry
+                select </span>{
+                case &lt;-ctx.Done():<span class="cov0" title="0">
+                        return ctx.Err()</span>
+                case &lt;-time.After(25 * time.Millisecond):<span class="cov0" title="0">
+                        return fmt.Errorf("generic error persists")</span>
+                }
+        }
+        
+        <span class="cov0" title="0">recoveryConfig := &amp;RecoveryConfig{
+                MaxAttempts: min(config.MaxAttempts, 2), // Limit generic retries
+                Timeout:     config.Timeout,
+        }
+        
+        result, err := r.RecoverWithRetry(ctx, operation, recoveryConfig)
+        if result != nil </span><span class="cov0" title="0">{
+                result.Actions = append([]string{"attempting generic recovery"}, result.Actions...)
+        }</span>
+        
+        <span class="cov0" title="0">return result, err</span>
+}
+
+// Helper functions
+
+func containsAny(str string, substrings []string) bool <span class="cov8" title="1">{
+        for _, substr := range substrings </span><span class="cov8" title="1">{
+                if len(str) &gt;= len(substr) </span><span class="cov8" title="1">{
+                        for i := 0; i &lt;= len(str)-len(substr); i++ </span><span class="cov8" title="1">{
+                                if str[i:i+len(substr)] == substr </span><span class="cov8" title="1">{
+                                        return true
+                                }</span>
+                        }
+                }
+        }
+        <span class="cov8" title="1">return false</span>
+}
+
+func min(a, b int) int <span class="cov8" title="1">{
+        if a &lt; b </span><span class="cov0" title="0">{
+                return a
+        }</span>
+        <span class="cov8" title="1">return b</span>
+}</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
