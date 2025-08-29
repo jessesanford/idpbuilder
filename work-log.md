@@ -37,4 +37,31 @@ Command: Created INTEGRATION-PLAN.md
 Result: Documentation created
 Status: Success
 
+### Operation 7: Commit Documentation
+Command: git add INTEGRATION-PLAN.md work-log.md WAVE-MERGE-PLAN.md && git commit -m "docs: integration planning and work log setup for Phase 2 Wave 1"
+Result: Committed 3 files
+Status: Success
+
+## Merge Operations
+
+### Merge 1: gitea-registry-client
+Command: git merge origin/idpbuilder-oci-mvp/phase2/wave1/gitea-registry-client --no-ff -m "integrate: gitea-registry-client (736 lines) into Phase 2 Wave 1 integration"
+Result: Successful merge, 7 files changed, 1338 insertions(+), 197 deletions(-)
+Files Added:
+  - pkg/registry/gitea_client.go
+  - pkg/registry/gitea_client_test.go
+  - pkg/registry/types.go
+  - CODE-REVIEW-REPORT.md
+  - IMPLEMENTATION-PLAN.md
+Files Modified:
+  - go.mod
+  - go.sum
+Status: Success
+
+### Test Attempt 1: Registry Package
+Command: go test ./pkg/registry/... -v
+Result: Build failed - missing system dependencies (gpgme, btrfs headers)
+Note: Upstream dependency issue, not a code problem
+Status: Build Failed (documented as upstream issue)
+
 ---
