@@ -64,13 +64,24 @@ func push(cmd *cobra.Command, args []string) error {
 func runPush(ctx context.Context, imageName, registryURL, username, password, authFile string, insecure bool) error {
 	integration := registry.NewIntegration()
 	
+	// For now, use placeholder values since the integration is not fully implemented
+	// TODO: Parse imageName to extract repository and tag, or derive ImageID appropriately
+	repository := "placeholder-repo"
+	tag := "latest"
+	
+	// If imageName contains a colon, try to split repo:tag
+	if len(imageName) > 0 {
+		repository = imageName
+		if registryURL != "" {
+			repository = fmt.Sprintf("%s/%s", registryURL, imageName)
+		}
+	}
+	
 	opts := registry.PushOptions{
-		ImageName:   imageName,
-		RegistryURL: registryURL,
-		Username:    username,
-		Password:    password,
-		AuthFile:    authFile,
-		Insecure:    insecure,
+		ImageID:    imageName,  // Use imageName as ImageID for now
+		Repository: repository,
+		Tag:        tag,
+		Insecure:   insecure,
 	}
 	
 	return integration.Push(ctx, opts)

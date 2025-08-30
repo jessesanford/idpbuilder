@@ -27,6 +27,7 @@ type BuildOptions struct {
 	Tag            string
 	Args           map[string]string
 	NoCache        bool
+	Insecure       bool
 }
 
 // BuildResult contains the result of a successful build

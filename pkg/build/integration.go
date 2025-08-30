@@ -6,13 +6,6 @@ import (
 	"path/filepath"
 )
 
-// BuildOptions contains configuration for building container images
-type BuildOptions struct {
-	ContextDir     string
-	DockerfilePath string
-	Tag           string
-	Insecure      bool
-}
 
 // Integration provides a wrapper around Phase 2 Wave 1 buildah functionality
 type Integration struct {

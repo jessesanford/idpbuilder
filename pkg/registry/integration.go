@@ -5,15 +5,6 @@ import (
 	"fmt"
 )
 
-// PushOptions contains configuration for pushing container images to registries
-type PushOptions struct {
-	ImageName   string
-	RegistryURL string
-	Username    string
-	Password    string
-	AuthFile    string
-	Insecure    bool
-}
 
 // Integration provides a wrapper around Phase 2 Wave 1 registry functionality
 type Integration struct {
@@ -46,10 +37,9 @@ func (i *Integration) Push(ctx context.Context, opts PushOptions) error {
 	// 5. Special handling for Gitea registries
 	
 	fmt.Printf("Push integration placeholder:\n")
-	fmt.Printf("  Image: %s\n", opts.ImageName)
-	fmt.Printf("  Registry: %s\n", opts.RegistryURL)
-	fmt.Printf("  Username: %s\n", opts.Username)
-	fmt.Printf("  AuthFile: %s\n", opts.AuthFile)
+	fmt.Printf("  ImageID: %s\n", opts.ImageID)
+	fmt.Printf("  Repository: %s\n", opts.Repository)
+	fmt.Printf("  Tag: %s\n", opts.Tag)
 	fmt.Printf("  Insecure: %v\n", opts.Insecure)
 	
 	return fmt.Errorf("push integration not yet implemented - requires Phase 2 Wave 1 gitea-registry-client")
@@ -57,23 +47,16 @@ func (i *Integration) Push(ctx context.Context, opts PushOptions) error {
 
 // validateOptions validates the push options
 func (i *Integration) validateOptions(opts PushOptions) error {
-	if opts.ImageName == "" {
-		return fmt.Errorf("image name is required")
+	if opts.ImageID == "" {
+		return fmt.Errorf("image ID is required")
 	}
 	
-	// If no registry URL provided, extract from image name if it includes one
-	if opts.RegistryURL == "" {
-		// TODO: Parse registry from image name (e.g., registry.example.com/image:tag)
-		fmt.Printf("Registry URL not provided, will extract from image name: %s\n", opts.ImageName)
+	if opts.Repository == "" {
+		return fmt.Errorf("repository is required")
 	}
 	
-	// Validate authentication - either username/password or authfile
-	if opts.Username != "" && opts.Password == "" {
-		return fmt.Errorf("password is required when username is provided")
-	}
-	
-	if opts.Username != "" && opts.AuthFile != "" {
-		fmt.Printf("Warning: both username and authfile provided, username will take precedence\n")
+	if opts.Tag == "" {
+		return fmt.Errorf("tag is required")
 	}
 	
 	return nil
