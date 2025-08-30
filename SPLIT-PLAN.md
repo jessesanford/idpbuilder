@@ -1,145 +1,121 @@
-# Split Plan for cli-commands Effort
+# Split Plan for buildah-build-wrapper Effort
 
-## Current Situation
-**Problem**: Entire codebase (10,147 lines) copied instead of focused CLI implementation
-**Solution**: Complete reimplementation with proper scoping and splits
+## Overview
+**Total Size**: 983 lines (exceeds 800 line limit by 183 lines)
+**Splits Required**: 2
+**Planner**: Code Reviewer Instance
+**Created**: 2025-08-29
 
-## Complete Split Inventory
-**Total Expected Size**: ~1,500 lines (properly scoped CLI only)
-**Splits Required**: 3
-**Sole Planner**: Code Reviewer Agent
+## Split Inventory
 
-## Split Boundaries (NO OVERLAPS)
+### Split 001: Core Buildah Wrapper Implementation
+**Target Size**: ~500 lines
+**Branch**: `idpbuilder-oci-mvp/phase2/wave1/buildah-build-wrapper-split-001`
+**Files**:
+- `pkg/build/types.go` (50 lines) - Core type definitions
+- `pkg/build/builder.go` (97 lines) - Mock/fallback implementation
+- `pkg/build/builder_buildah.go` (278 lines) - Main buildah implementation
+- Basic unit tests for core functionality (~75 lines)
 
-| Split | Description | Size | Files | Dependencies |
-|-------|------------|------|-------|--------------|
-| 001 | Core CLI Framework | 500 | root.go, helpers | None |
-| 002 | Create/Delete Commands | 500 | create/, delete/ | Split 001 |
-| 003 | Get/Version Commands | 500 | get/, version/ | Split 001 |
+**Total**: ~500 lines
 
-## Deduplication Matrix
+### Split 002: Test Suite and Integration
+**Target Size**: ~483 lines  
+**Branch**: `idpbuilder-oci-mvp/phase2/wave1/buildah-build-wrapper-split-002`
+**Files**:
+- `pkg/build/builder_buildah_test.go` (257 lines) - Comprehensive buildah tests
+- `pkg/build/builder_mock_test.go` (229 lines) - Mock builder tests
+- Integration with Phase 1 trust manager improvements
+- Documentation updates
 
-| Component | Split 001 | Split 002 | Split 003 |
-|-----------|-----------|-----------|-----------|
-| Root command setup | ✅ | ❌ | ❌ |
-| Command helpers | ✅ | ❌ | ❌ |
-| Create command | ❌ | ✅ | ❌ |
-| Delete command | ❌ | ✅ | ❌ |
-| Get commands | ❌ | ❌ | ✅ |
-| Version command | ❌ | ❌ | ✅ |
+**Total**: ~483 lines
 
----
+## Split Strategy
 
-# SPLIT-PLAN-001.md
-## Split 001 of 3: Core CLI Framework
-**Planner**: Code Reviewer Agent
-**Parent Effort**: cli-commands
-**Branch**: phase2/wave2/cli-commands-split-001
+### Split 001: Core Implementation (Priority 1)
+This split contains the essential buildah wrapper functionality:
 
-### Boundaries
-- **Previous Split**: None (first split)
-- **This Split**: Split 001 of phase2/wave2/cli-commands
-  - Path: efforts/phase2/wave2/cli-commands/split-001/
-- **Next Split**: Split 002 of phase2/wave2/cli-commands
-  - Path: efforts/phase2/wave2/cli-commands/split-002/
+1. **Type Definitions** (`types.go`):
+   - Builder interface definition
+   - BuildOptions structure
+   - BuildResult structure
+   - ImageInfo structure
 
-### Files in This Split
-- pkg/cmd/root.go (50 lines) - Root command setup
-- pkg/cmd/helpers/validation.go (100 lines) - Input validation
-- pkg/cmd/helpers/output.go (100 lines) - Output formatting
-- pkg/cmd/helpers/config.go (100 lines) - Configuration handling
-- pkg/cmd/helpers/logger.go (100 lines) - Logging setup
-- Tests: 50 lines
+2. **Mock Implementation** (`builder.go`):
+   - Fallback implementation when buildah is not available
+   - Uses build tags for conditional compilation
+   - Provides TrustManager interface for Phase 1 integration
 
-### Implementation Instructions
-1. Create root command with cobra
-2. Set up persistent flags (log-level, color output)
-3. Implement validation helpers
-4. Create output formatting utilities
-5. Add configuration loading
-6. Set up structured logging
+3. **Buildah Implementation** (`builder_buildah.go`):
+   - Real buildah integration using containers/buildah libraries
+   - BuildImage functionality with proper error handling
+   - ListImages, RemoveImage, and TagImage operations
+   - Integration with Phase 1 TrustManager for certificate handling
 
-### Size Target: 500 lines
+4. **Basic Tests**:
+   - Core functionality tests
+   - Happy path validation
+   - Basic error handling tests
 
----
+### Split 002: Test Coverage and Polish (Priority 2)
+This split focuses on comprehensive testing and integration:
 
-# SPLIT-PLAN-002.md
-## Split 002 of 3: Create/Delete Commands
-**Planner**: Code Reviewer Agent
-**Parent Effort**: cli-commands
-**Branch**: phase2/wave2/cli-commands-split-002
+1. **Comprehensive Test Suite** (`builder_buildah_test.go`):
+   - Full test coverage for buildah operations
+   - Error condition testing
+   - Edge case handling
+   - Integration tests with mock storage
 
-### Boundaries
-- **Previous Split**: Split 001 of phase2/wave2/cli-commands
-  - Summary: Core CLI framework, helpers, validation
-- **This Split**: Split 002 of phase2/wave2/cli-commands
-  - Path: efforts/phase2/wave2/cli-commands/split-002/
-- **Next Split**: Split 003 of phase2/wave2/cli-commands
-  - Path: efforts/phase2/wave2/cli-commands/split-003/
+2. **Mock Implementation Tests** (`builder_mock_test.go`):
+   - Tests for fallback implementation
+   - Build tag validation
+   - Mock builder behavior tests
 
-### Files in This Split
-- pkg/cmd/create/root.go (200 lines) - Create command implementation
-- pkg/cmd/create/validate.go (50 lines) - Create validation
-- pkg/cmd/delete/root.go (150 lines) - Delete command implementation
-- pkg/cmd/delete/confirm.go (50 lines) - Deletion confirmation
-- Tests: 50 lines
+3. **Phase 1 Integration Polish**:
+   - Enhanced TrustManager integration
+   - Certificate validation improvements
+   - Security context configuration
 
-### Dependencies
-- Requires Split 001 (imports helpers and root setup)
+## Implementation Order
 
-### Implementation Instructions
-1. Import Split 001's helpers and root command
-2. Implement create command with flags
-3. Add validation for create inputs
-4. Implement delete command with confirmation
-5. Register commands with root
-6. Add unit tests
+1. **Split 001 First**: Implement core buildah wrapper functionality
+   - Complete types and interfaces
+   - Implement both mock and real buildah builders
+   - Add basic tests for validation
+   - Ensure it compiles and passes basic tests
 
-### Size Target: 500 lines
-
----
-
-# SPLIT-PLAN-003.md
-## Split 003 of 3: Get/Version Commands
-**Planner**: Code Reviewer Agent
-**Parent Effort**: cli-commands
-**Branch**: phase2/wave2/cli-commands-split-003
-
-### Boundaries
-- **Previous Split**: Split 002 of phase2/wave2/cli-commands
-  - Summary: Create and Delete commands
-- **This Split**: Split 003 of phase2/wave2/cli-commands
-  - Path: efforts/phase2/wave2/cli-commands/split-003/
-- **Next Split**: None (final split)
-
-### Files in This Split
-- pkg/cmd/get/root.go (50 lines) - Get subcommand root
-- pkg/cmd/get/clusters.go (150 lines) - Get clusters command
-- pkg/cmd/get/packages.go (100 lines) - Get packages command
-- pkg/cmd/get/secrets.go (100 lines) - Get secrets command
-- pkg/cmd/version/root.go (50 lines) - Version command
-- Tests: 50 lines
-
-### Dependencies
-- Requires Split 001 (imports helpers and root setup)
-
-### Implementation Instructions
-1. Import Split 001's helpers and root command
-2. Create get subcommand structure
-3. Implement individual get commands
-4. Add version command with build info
-5. Register all commands with root
-6. Add comprehensive tests
-
-### Size Target: 500 lines
-
----
+2. **Split 002 Second**: Add comprehensive testing
+   - Depends on Split 001 being complete
+   - Adds full test coverage
+   - Enhances Phase 1 integration
+   - Polishes error handling
 
 ## Verification Checklist
-- [x] No file appears in multiple splits
-- [x] All CLI functionality covered
-- [x] Each split compiles independently (with dependencies)
-- [x] Dependencies properly ordered
-- [x] Each split <800 lines (target ~500)
-- [x] Clear boundaries between splits
-- [x] No duplication of code
+
+### Split 001:
+- [ ] Types compile without errors
+- [ ] Mock builder works in non-buildah environments
+- [ ] Buildah builder compiles with build tags
+- [ ] Basic tests pass
+- [ ] Under 500 lines total
+
+### Split 002:
+- [ ] All tests pass
+- [ ] Test coverage >80%
+- [ ] Phase 1 integration validated
+- [ ] Under 500 lines total
+- [ ] Combined splits = original functionality
+
+## Integration Notes
+
+- Both splits must be merged sequentially (001 then 002)
+- Split 002 depends on Split 001 being merged first
+- Final integration testing required after both splits merge
+- Ensure build tags work correctly in both environments
+
+## Risk Mitigation
+
+- Each split independently compilable
+- Split 001 provides minimum viable functionality
+- Split 002 adds quality and coverage without breaking core
+- Clear dependency chain prevents integration issues
