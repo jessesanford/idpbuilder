@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/jessesanford/idpbuilder/pkg/tests/integration"
+	"github.com/cnoe-io/idpbuilder/pkg/tests/integration"
 )
 
 // TestCompleteWorkflow tests the complete build and push workflow
