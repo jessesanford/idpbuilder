@@ -78,7 +78,7 @@ func TestPushWithInsecureFlag(t *testing.T) {
 		"--tag", giteaTag)
 	
 	buildCmd.Dir = env.WorkingDir
-	buildOutput, buildErr := buildCmd.CombinedOutput()
+	_, buildErr := buildCmd.CombinedOutput()
 	
 	if buildErr != nil {
 		t.Logf("Build for insecure push test failed: %v", buildErr)
@@ -116,7 +116,7 @@ func TestPushWithAuthentication(t *testing.T) {
 		"--tag", giteaTag)
 	
 	buildCmd.Dir = env.WorkingDir
-	buildOutput, buildErr := buildCmd.CombinedOutput()
+	_, buildErr := buildCmd.CombinedOutput()
 	
 	if buildErr != nil {
 		t.Logf("Build for auth push test failed: %v", buildErr)
@@ -131,7 +131,7 @@ func TestPushWithAuthentication(t *testing.T) {
 		giteaTag)
 	
 	pushCmd.Dir = env.WorkingDir
-	pushOutput, pushErr := pushCmd.CombinedOutput()
+	pushOutput, _ := pushCmd.CombinedOutput()
 	
 	// Authentication might fail, but we should get appropriate response
 	pushOutputStr := string(pushOutput)
@@ -187,15 +187,14 @@ func TestPushInvalidCredentials(t *testing.T) {
 		giteaTag)
 	
 	pushCmd.Dir = env.WorkingDir  
-	pushOutput, pushErr := pushCmd.CombinedOutput()
+	pushOutput, _ := pushCmd.CombinedOutput()
 	
 	// Should report authentication issue
 	pushOutputStr := string(pushOutput)
 	t.Logf("Invalid creds push output: %s", pushOutputStr)
 	
 	// Should either error or show auth failure
-	hasAuthError := pushErr != nil ||
-		strings.Contains(pushOutputStr, "auth") ||
+	hasAuthError := strings.Contains(pushOutputStr, "auth") ||
 		strings.Contains(pushOutputStr, "credential") ||
 		strings.Contains(pushOutputStr, "unauthorized") ||
 		strings.Contains(pushOutputStr, "forbidden")
@@ -246,7 +245,7 @@ func TestPushNetworkInterruption(t *testing.T) {
 		"--tag", giteaTag)
 	
 	buildCmd.Dir = env.WorkingDir
-	buildOutput, buildErr := buildCmd.CombinedOutput()
+	_, buildErr := buildCmd.CombinedOutput()
 	
 	if buildErr != nil {
 		t.Skipf("Skipping network test due to build failure: %v", buildErr)

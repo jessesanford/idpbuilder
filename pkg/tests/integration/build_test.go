@@ -265,7 +265,9 @@ func TestBuildVersionCompatibility(t *testing.T) {
 CMD ["echo", "local build test"]`
 	
 	err := os.WriteFile(dockerfilePath, []byte(dockerfileContent), 0644)
-	require.NoError(t, err, "Should create local Dockerfile")
+	if err != nil {
+		t.Fatalf("Should create local Dockerfile: %v", err)
+	}
 
 	testTag := GenerateTestImageTag()
 	
