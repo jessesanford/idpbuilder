@@ -162,7 +162,7 @@ func TestPushWithoutCluster(t *testing.T) {
 
 	pushCmd := exec.Command(env.CLIPath, "push", giteaTag)
 	pushCmd.Dir = env.WorkingDir
-	pushOutput, pushErr := pushCmd.CombinedOutput()
+	pushOutput, _ := pushCmd.CombinedOutput()
 	
 	// Should handle missing cluster gracefully
 	pushOutputStr := string(pushOutput)

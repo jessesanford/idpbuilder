@@ -197,7 +197,7 @@ func TestBuildWithoutCluster(t *testing.T) {
 		"--tag", testTag)
 	
 	cmd.Dir = env.WorkingDir
-	output, err := cmd.CombinedOutput()
+	output, _ := cmd.CombinedOutput()
 	
 	// Should handle missing cluster gracefully
 	outputStr := string(output)
