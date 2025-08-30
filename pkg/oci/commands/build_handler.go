@@ -120,8 +120,8 @@ func executeBuildahBuild(ctx context.Context, contextDir string, opts BuildOptio
 		fmt.Printf("Executing: buildah %s\n", strings.Join(args, " "))
 	} else {
 		// Capture output to show progress
-		cmd.Stdout = &progressWriter{prefix: "  "}
-		cmd.Stderr = &progressWriter{prefix: "  "}
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 	}
 
 	// Execute the build
@@ -132,20 +132,6 @@ func executeBuildahBuild(ctx context.Context, contextDir string, opts BuildOptio
 	return nil
 }
 
-// progressWriter writes build progress with a prefix
-type progressWriter struct {
-	prefix string
-}
-
-func (pw *progressWriter) Write(p []byte) (n int, err error) {
-	lines := strings.Split(string(p), "\n")
-	for _, line := range lines {
-		if line != "" {
-			fmt.Printf("%s%s\n", pw.prefix, line)
-		}
-	}
-	return len(p), nil
-}
 
 // CheckBuildahAvailable checks if buildah is available on the system
 func CheckBuildahAvailable() error {

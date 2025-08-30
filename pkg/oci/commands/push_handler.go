@@ -147,23 +147,7 @@ func executeBuildahPush(ctx context.Context, imageRef string, opts PushOptions, 
 type pushProgressWriter struct{}
 
 func (ppw *pushProgressWriter) Write(p []byte) (n int, err error) {
-	lines := strings.Split(string(p), "\n")
-	for _, line := range lines {
-		if line != "" {
-			// Format common buildah progress messages
-			if strings.Contains(line, "Getting image source signatures") {
-				fmt.Printf("  📝 Preparing image for push...\n")
-			} else if strings.Contains(line, "Copying blob") {
-				fmt.Printf("  📤 Uploading layers...\n")
-			} else if strings.Contains(line, "Copying config") {
-				fmt.Printf("  ⚙️  Uploading configuration...\n")
-			} else if strings.Contains(line, "Writing manifest") {
-				fmt.Printf("  📋 Writing manifest...\n")
-			} else {
-				fmt.Printf("  %s\n", line)
-			}
-		}
-	}
+	fmt.Print(string(p))
 	return len(p), nil
 }
 
