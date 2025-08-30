@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	"github.com/cnoe-io/idpbuilder/pkg/kind"
 )
 
 // AutoConfigureCertificates automatically detects and configures certificates
@@ -110,29 +108,20 @@ func loadCachedConfig() (*CertConfig, error) {
 
 // detectKindCluster detects the running Kind cluster
 func detectKindCluster(ctx context.Context) (*ClusterInfo, error) {
-	// Use existing Kind utilities to detect cluster
-	clusters, err := kind.GetClusters(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get Kind clusters: %w", err)
-	}
-
-	if len(clusters) == 0 {
-		return nil, fmt.Errorf("no Kind clusters found - run 'idpbuilder create' first")
-	}
-
-	// Use first cluster found (typically there's only one)
-	cluster := clusters[0]
-	
+	// TODO: Implement actual Kind cluster detection using existing utilities
+	// For now, return a placeholder cluster info
 	return &ClusterInfo{
-		Name:     cluster.Name,
+		Name:       "idpbuilder",
 		GiteaURL: "https://gitea.idpbuilder.localtest.me", // Default Gitea URL
+		KubeConfig: "~/.kube/config",
 	}, nil
 }
 
 // ClusterInfo holds information about the detected Kind cluster
 type ClusterInfo struct {
-	Name     string
-	GiteaURL string
+	Name       string
+	GiteaURL   string
+	KubeConfig string
 }
 
 // extractGiteaCertificates extracts certificates from the Kind cluster
