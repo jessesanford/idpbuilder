@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/cnoe-io/idpbuilder/pkg/cmd/build"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/create"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/delete"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/get"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/helpers"
+	"github.com/cnoe-io/idpbuilder/pkg/cmd/push"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/version"
 	"github.com/spf13/cobra"
 )
@@ -22,9 +24,11 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&helpers.LogLevel, "log-level", "l", "info", helpers.LogLevelMsg)
 	rootCmd.PersistentFlags().BoolVar(&helpers.ColoredOutput, "color", false, helpers.ColoredOutputMsg)
+	rootCmd.AddCommand(build.BuildCmd)
 	rootCmd.AddCommand(create.CreateCmd)
-	rootCmd.AddCommand(get.GetCmd)
 	rootCmd.AddCommand(delete.DeleteCmd)
+	rootCmd.AddCommand(get.GetCmd)
+	rootCmd.AddCommand(push.PushCmd)
 	rootCmd.AddCommand(version.VersionCmd)
 }
 
