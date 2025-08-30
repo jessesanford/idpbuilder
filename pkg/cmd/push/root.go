@@ -1,11 +1,8 @@
 package push
 
 import (
-	"context"
-	"fmt"
-	"strings"
-
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/helpers"
+	"github.com/cnoe-io/idpbuilder/pkg/oci/commands"
 	"github.com/spf13/cobra"
 )
 
@@ -30,21 +27,19 @@ Examples:
 `,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// Check if buildah/podman is available
+		if err := commands.CheckPodmanAvailable(); err != nil {
+			return err
+		}
+		
 		ctx := cmd.Context()
-		return executePush(ctx, args[0], pushOptions{
-			insecure: insecure,
-			username: username,
-			password: password,
-			verbose:  helpers.LogLevel == "debug",
+		return commands.ExecutePush(ctx, args[0], commands.PushOptions{
+			Insecure: insecure,
+			Username: username,
+			Password: password,
+			Verbose:  helpers.LogLevel == "debug",
 		})
 	},
-}
-
-type pushOptions struct {
-	insecure bool
-	username string
-	password string
-	verbose  bool
 }
 
 var (
@@ -57,29 +52,4 @@ func init() {
 	PushCmd.Flags().BoolVar(&insecure, "insecure", false, "Skip certificate verification")
 	PushCmd.Flags().StringVar(&username, "username", "", "Registry username")
 	PushCmd.Flags().StringVar(&password, "password", "", "Registry password")
-}
-
-func executePush(ctx context.Context, imageRef string, opts pushOptions) error {
-	// TODO: Will be implemented in Step 4
-	fmt.Printf("Pushing image %s\n", imageRef)
-	if opts.username != "" {
-		fmt.Printf("  Username: %s\n", opts.username)
-		fmt.Println("  Password: [REDACTED]")
-	}
-	if opts.insecure {
-		fmt.Println("  Insecure: true (skipping certificate verification)")
-	}
-	
-	// Basic validation of image reference
-	if !strings.Contains(imageRef, ":") {
-		return fmt.Errorf("image reference must include tag: %s", imageRef)
-	}
-	
-	parts := strings.Split(imageRef, "/")
-	if len(parts) < 2 {
-		return fmt.Errorf("invalid image reference format: %s", imageRef)
-	}
-	
-	fmt.Println("Push functionality will be implemented in Step 4")
-	return nil
 }
