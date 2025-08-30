@@ -10,11 +10,7 @@ import (
 )
 
 // AutoConfigureCertificates automatically detects and configures certificates
-// from the local Kind cluster for OCI operations. This function:
-// 1. Checks if Kind cluster exists
-// 2. Extracts Gitea certificates from the cluster
-// 3. Configures trust store for secure OCI operations
-// 4. Caches result for subsequent commands
+// from the local Kind cluster for OCI operations.
 func AutoConfigureCertificates(ctx context.Context) (*CertConfig, error) {
 	// Check if certificates are already cached
 	if config, err := loadCachedConfig(); err == nil && config.IsValid() {
@@ -146,10 +142,8 @@ func extractGiteaCertificates(ctx context.Context, cluster *ClusterInfo) ([]byte
 	// 2. Extract the Gitea TLS certificate
 	// 3. Return the certificate data
 	
-	// For now, return placeholder certificate data
-	certData := []byte(`-----BEGIN CERTIFICATE-----
-PLACEHOLDER_CERTIFICATE_DATA
------END CERTIFICATE-----`)
+	// Placeholder for actual certificate extraction
+	certData := []byte("") // TODO: Implement actual extraction
 	
 	return certData, nil
 }
