@@ -1,0 +1,30 @@
+# TODO State at 2025-08-30 10:45:00
+# Agent: orchestrator
+# State: MONITOR
+# Phase: 2, Wave: 2
+
+## Completed (4)
+- [x] Spawn Code Reviewer for cli-commands effort
+- [x] Spawn Code Reviewer for integration-testing effort  
+- [x] Spawn SW Engineer to execute cli-commands split plan
+- [x] Re-review cli-commands after splits - FAILED
+
+## In Progress (1)
+- [ ] CRITICAL: SW Engineer didn't delete original 10,147 lines! [STATUS: Must fix immediately]
+
+## Pending (5)
+- [ ] Spawn SW Engineer to DELETE pkg/ and fix splits
+- [ ] Save TODOs per R187
+- [ ] Re-review after fixes
+- [ ] Check if both efforts pass review
+- [ ] Transition to WAVE_COMPLETE if all pass
+
+## Critical Issues
+- cli-commands: 13,319 total lines (10,147 old + 3,172 new)
+- SW Engineer created splits but didn't delete original violation
+- Each split also exceeds 800 lines (1,034, 1,091, 1,047)
+- integration-testing: ACCEPTED (389 lines)
+
+## Status Summary
+- Phase 2 Wave 2 BLOCKED by cli-commands violations
+- Cannot proceed to WAVE_COMPLETE until fixed

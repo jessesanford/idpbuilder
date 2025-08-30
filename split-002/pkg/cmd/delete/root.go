@@ -11,43 +11,20 @@ import (
 )
 
 var (
-	// Command-specific flags
-	force           bool
-	wait            bool
-	timeout         time.Duration
-	namespace       string
-	selector        string
-	allNamespaces   bool
-	gracePeriod     int
-	cascade         string
+	force         bool
+	wait          bool
+	timeout       time.Duration
+	namespace     string
+	selector      string
+	allNamespaces bool
+	gracePeriod   int
+	cascade       string
 )
 
-// DeleteCmd represents the delete command
 var DeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete IDP resources and configurations",
-	Long: `Delete IDP resources and configurations by name, selector, or configuration file.
-
-This command allows you to delete various IDP components including:
-- Individual resources by name
-- Multiple resources by label selector
-- All resources in a namespace
-- Resources defined in configuration files
-
-Examples:
-  # Delete a specific package
-  idpbuilder delete package my-package
-
-  # Delete all packages in a namespace
-  idpbuilder delete packages --all -n development
-
-  # Delete resources by label selector
-  idpbuilder delete all -l app=myapp
-
-  # Delete with confirmation bypass
-  idpbuilder delete package my-package --force
-
-  # Delete and wait for completion
+	Long:  `Delete IDP resources and configurations by name, selector, or file.`,
   idpbuilder delete deployment my-app --wait --timeout=2m
 `,
 	Args:              cobra.MinimumNArgs(1),
@@ -64,22 +41,14 @@ var validResourceTypesList = []string{
 }
 
 func init() {
-	// Target selection flags
-	DeleteCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Target namespace (default: current namespace)")
-	DeleteCmd.Flags().StringVarP(&selector, "selector", "l", "", "Selector (label query) to filter resources")
-	DeleteCmd.Flags().BoolVarP(&allNamespaces, "all-namespaces", "A", false, "Delete resources across all namespaces")
-
-	// Behavior flags
-	DeleteCmd.Flags().BoolVar(&force, "force", false, "Skip confirmation prompts")
-	DeleteCmd.Flags().BoolVar(&wait, "wait", false, "Wait for resources to be fully deleted")
-	DeleteCmd.Flags().DurationVar(&timeout, "timeout", 2*time.Minute, "Timeout for wait operations")
-	DeleteCmd.Flags().IntVar(&gracePeriod, "grace-period", -1, "Grace period in seconds for deletion")
-	DeleteCmd.Flags().StringVar(&cascade, "cascade", "background", "Cascade deletion policy (background, foreground, orphan)")
-
-	// Validation
-	DeleteCmd.RegisterFlagCompletionFunc("cascade", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"background", "foreground", "orphan"}, cobra.ShellCompDirectiveNoFileComp
-	})
+	DeleteCmd.Flags().StringVarP(&namespace, "namespace", "n", "", "Target namespace")
+	DeleteCmd.Flags().StringVarP(&selector, "selector", "l", "", "Label selector")
+	DeleteCmd.Flags().BoolVarP(&allNamespaces, "all-namespaces", "A", false, "All namespaces")
+	DeleteCmd.Flags().BoolVar(&force, "force", false, "Skip confirmation")
+	DeleteCmd.Flags().BoolVar(&wait, "wait", false, "Wait for deletion")
+	DeleteCmd.Flags().DurationVar(&timeout, "timeout", 2*time.Minute, "Timeout")
+	DeleteCmd.Flags().IntVar(&gracePeriod, "grace-period", -1, "Grace period")
+	DeleteCmd.Flags().StringVar(&cascade, "cascade", "background", "Cascade policy")
 }
 
 // validResourceTypes provides completion for resource types

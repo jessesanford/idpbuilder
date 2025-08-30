@@ -12,27 +12,19 @@ import (
 )
 
 var (
-	// ColoredOutput controls whether output should be colored
-	ColoredOutput bool
-	// ColoredOutputMsg provides help text for colored output
+	ColoredOutput    bool
 	ColoredOutputMsg = "Enable colored output"
 )
 
-// OutputFormat represents different output formats
 type OutputFormat string
 
 const (
-	// TableOutput formats output as a table
 	TableOutput OutputFormat = "table"
-	// JSONOutput formats output as JSON
-	JSONOutput OutputFormat = "json"
-	// YAMLOutput formats output as YAML
-	YAMLOutput OutputFormat = "yaml"
-	// WideOutput formats output as wide table
-	WideOutput OutputFormat = "wide"
+	JSONOutput  OutputFormat = "json"
+	YAMLOutput  OutputFormat = "yaml"
+	WideOutput  OutputFormat = "wide"
 )
 
-// ANSI color codes
 const (
 	ColorReset  = "\033[0m"
 	ColorRed    = "\033[31m"
@@ -45,14 +37,12 @@ const (
 	ColorBold   = "\033[1m"
 )
 
-// Printer provides structured output functionality
 type Printer struct {
-	format     OutputFormat
-	colored    bool
-	writer     *tabwriter.Writer
+	format  OutputFormat
+	colored bool
+	writer  *tabwriter.Writer
 }
 
-// NewPrinter creates a new printer with the specified format
 func NewPrinter(format OutputFormat) *Printer {
 	return &Printer{
 		format:  format,
@@ -61,7 +51,6 @@ func NewPrinter(format OutputFormat) *Printer {
 	}
 }
 
-// Print outputs data in the configured format
 func (p *Printer) Print(data interface{}) error {
 	switch p.format {
 	case JSONOutput:
@@ -75,14 +64,12 @@ func (p *Printer) Print(data interface{}) error {
 	}
 }
 
-// printJSON outputs data as JSON
 func (p *Printer) printJSON(data interface{}) error {
 	encoder := json.NewEncoder(os.Stdout)
 	encoder.SetIndent("", "  ")
 	return encoder.Encode(data)
 }
 
-// printYAML outputs data as YAML
 func (p *Printer) printYAML(data interface{}) error {
 	encoder := yaml.NewEncoder(os.Stdout)
 	defer encoder.Close()
@@ -90,7 +77,6 @@ func (p *Printer) printYAML(data interface{}) error {
 	return encoder.Encode(data)
 }
 
-// printTable outputs data as a formatted table
 func (p *Printer) printTable(data interface{}) error {
 	defer p.writer.Flush()
 	
@@ -104,27 +90,19 @@ func (p *Printer) printTable(data interface{}) error {
 	}
 }
 
-// printMapSlice prints a slice of maps as a table
 func (p *Printer) printMapSlice(data []map[string]interface{}) error {
 	if len(data) == 0 {
-		p.PrintInfo("No resources found")
+		fmt.Println("No resources found")
 		return nil
 	}
 
-	// Extract headers from first item
 	var headers []string
 	for key := range data[0] {
 		headers = append(headers, strings.ToUpper(key))
 	}
 
-	// Print headers
-	headerRow := strings.Join(headers, "\t")
-	if p.colored {
-		headerRow = p.colorize(headerRow, ColorBold)
-	}
-	fmt.Fprintln(p.writer, headerRow)
+	fmt.Fprintln(p.writer, strings.Join(headers, "\t"))
 
-	// Print data rows
 	for _, item := range data {
 		var values []string
 		for _, header := range headers {
@@ -137,86 +115,37 @@ func (p *Printer) printMapSlice(data []map[string]interface{}) error {
 		}
 		fmt.Fprintln(p.writer, strings.Join(values, "\t"))
 	}
-
 	return nil
 }
 
-// printSingleMap prints a single map as key-value pairs
 func (p *Printer) printSingleMap(data map[string]interface{}) error {
 	for key, value := range data {
-		keyStr := strings.ToUpper(key)
-		if p.colored {
-			keyStr = p.colorize(keyStr, ColorCyan)
-		}
-		fmt.Fprintf(p.writer, "%s:\t%v\n", keyStr, value)
+		fmt.Fprintf(p.writer, "%s:\t%v\n", strings.ToUpper(key), value)
 	}
 	return nil
 }
 
-// PrintSuccess prints a success message
 func PrintSuccess(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	if ColoredOutput {
-		fmt.Printf("%s✓ %s%s\n", ColorGreen, msg, ColorReset)
-	} else {
-		fmt.Printf("✓ %s\n", msg)
-	}
+	fmt.Printf("✓ %s\n", fmt.Sprintf(format, args...))
 }
 
-// PrintError prints an error message
 func PrintError(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	if ColoredOutput {
-		fmt.Fprintf(os.Stderr, "%s✗ %s%s\n", ColorRed, msg, ColorReset)
-	} else {
-		fmt.Fprintf(os.Stderr, "✗ %s\n", msg)
-	}
+	fmt.Fprintf(os.Stderr, "✗ %s\n", fmt.Sprintf(format, args...))
 }
 
-// PrintWarning prints a warning message
 func PrintWarning(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	if ColoredOutput {
-		fmt.Printf("%s⚠ %s%s\n", ColorYellow, msg, ColorReset)
-	} else {
-		fmt.Printf("⚠ %s\n", msg)
-	}
+	fmt.Printf("⚠ %s\n", fmt.Sprintf(format, args...))
 }
 
-// PrintInfo prints an info message
 func (p *Printer) PrintInfo(format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
-	if p.colored {
-		fmt.Printf("%sℹ %s%s\n", ColorBlue, msg, ColorReset)
-	} else {
-		fmt.Printf("ℹ %s\n", msg)
-	}
+	fmt.Printf("ℹ %s\n", fmt.Sprintf(format, args...))
 }
 
-// PrintStep prints a step message with timestamp
 func PrintStep(step, format string, args ...interface{}) {
-	msg := fmt.Sprintf(format, args...)
 	timestamp := time.Now().Format("15:04:05")
-	
-	if ColoredOutput {
-		fmt.Printf("%s[%s]%s %s%s%s %s\n", 
-			ColorCyan, timestamp, ColorReset,
-			ColorBold, step, ColorReset,
-			msg)
-	} else {
-		fmt.Printf("[%s] %s %s\n", timestamp, step, msg)
-	}
+	fmt.Printf("[%s] %s %s\n", timestamp, step, fmt.Sprintf(format, args...))
 }
 
-// colorize applies color codes to text if coloring is enabled
-func (p *Printer) colorize(text, color string) string {
-	if p.colored {
-		return color + text + ColorReset
-	}
-	return text
-}
-
-// ValidateOutputFormat validates the output format string
 func ValidateOutputFormat(format string) (OutputFormat, error) {
 	switch strings.ToLower(format) {
 	case "table", "":
@@ -228,6 +157,6 @@ func ValidateOutputFormat(format string) (OutputFormat, error) {
 	case "wide":
 		return WideOutput, nil
 	default:
-		return "", fmt.Errorf("invalid output format: %s (supported: table, json, yaml, wide)", format)
+		return "", fmt.Errorf("invalid output format: %s", format)
 	}
 }
