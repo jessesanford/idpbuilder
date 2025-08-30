@@ -1,12 +1,8 @@
 package build
 
 import (
-	"context"
-	"fmt"
-	"os"
-	"path/filepath"
-
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/helpers"
+	"github.com/cnoe-io/idpbuilder/pkg/oci/commands"
 	"github.com/spf13/cobra"
 )
 
@@ -31,21 +27,20 @@ Examples:
 `,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// Check if buildah is available
+		if err := commands.CheckBuildahAvailable(); err != nil {
+			return err
+		}
+		
 		ctx := cmd.Context()
-		return executeBuild(ctx, args[0], buildOptions{
-			dockerfile: dockerfile,
-			tag:        tag,
-			platform:   platform,
-			verbose:    helpers.LogLevel == "debug",
+		return commands.ExecuteBuild(ctx, args[0], commands.BuildOptions{
+			Dockerfile: dockerfile,
+			Tag:        tag,
+			Platform:   platform,
+			Verbose:    helpers.LogLevel == "debug",
+			Context:    args[0],
 		})
 	},
-}
-
-type buildOptions struct {
-	dockerfile string
-	tag        string
-	platform   string
-	verbose    bool
 }
 
 var (
@@ -61,29 +56,4 @@ func init() {
 	
 	// Mark tag as required
 	BuildCmd.MarkFlagRequired("tag")
-}
-
-func executeBuild(ctx context.Context, contextPath string, opts buildOptions) error {
-	// TODO: Will be implemented in Step 3
-	fmt.Printf("Building image from %s\n", contextPath)
-	fmt.Printf("  Dockerfile: %s\n", opts.dockerfile)
-	fmt.Printf("  Tag: %s\n", opts.tag)
-	if opts.platform != "" {
-		fmt.Printf("  Platform: %s\n", opts.platform)
-	}
-	
-	// Validate context path exists
-	if contextPath != "-" {
-		absPath, err := filepath.Abs(contextPath)
-		if err != nil {
-			return fmt.Errorf("invalid context path: %w", err)
-		}
-		
-		if _, err := os.Stat(absPath); os.IsNotExist(err) {
-			return fmt.Errorf("build context does not exist: %s", absPath)
-		}
-	}
-	
-	fmt.Println("Build functionality will be implemented in Step 3")
-	return nil
 }
