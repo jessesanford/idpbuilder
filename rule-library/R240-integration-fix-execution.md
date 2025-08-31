@@ -1,0 +1,110 @@
+# 🚨🚨🚨 BLOCKING RULE R240: Integration Fix Execution Protocol
+
+## Criticality: BLOCKING
+**Orchestrator executing fixes = -100% AUTOMATIC FAILURE**
+
+## Description
+Integration fixes MUST be executed by Software Engineers, NEVER by the orchestrator. The orchestrator only coordinates.
+
+## Requirements
+
+### 1. Orchestrator Responsibilities (COORDINATION ONLY)
+The orchestrator MUST:
+- Spawn SW Engineers for fixes
+- Monitor fix progress
+- Check for completion flags
+- Spawn Code Reviewers for review
+
+The orchestrator MUST NOT:
+- Execute any fixes directly
+- Write any code
+- Modify effort files
+- Run build commands
+
+### 2. SW Engineer Fix Execution
+Engineers in FIX_INTEGRATION_ISSUES state MUST:
+```bash
+# 1. Read fix plan
+FIX_PLAN=$(cat FIX_PLAN_LOCATION.txt)
+cat "$FIX_PLAN"
+
+# 2. Implement fixes
+- Apply all code changes
+- Install missing dependencies
+- Resolve conflicts
+- Fix build issues
+
+# 3. Verify fixes
+- Run verification commands
+- Ensure build passes
+- Run tests
+
+# 4. Mark completion
+rm FIX_REQUIRED.flag
+echo "Fixes applied: [summary]" > FIX_COMPLETE.flag
+git add -A
+git commit -m "fix: Integration issues resolved"
+git push
+```
+
+### 3. Completion Detection
+Orchestrator in MONITORING_FIX_PROGRESS MUST detect:
+- Presence of `FIX_COMPLETE.flag`
+- Absence of `FIX_REQUIRED.flag`
+- Commit history showing fixes
+
+### 4. Fix Review Requirement
+After fixes complete:
+1. Orchestrator spawns Code Reviewers
+2. Reviews verify fixes are correct
+3. Only then proceed to retry integration
+
+## Violations
+
+### AUTOMATIC FAILURE (-100%)
+- Orchestrator executing fixes directly
+- Orchestrator writing code
+- Orchestrator modifying effort files
+
+### MAJOR VIOLATIONS (-50%)
+- Not spawning engineers for fixes
+- Missing completion detection
+- Skipping fix review
+
+## Retry Limits
+
+Maximum retry attempts to prevent infinite loops:
+- Wave integration: 3 attempts
+- Phase integration: 2 attempts
+- After max retries: transition to ERROR_RECOVERY
+
+## Implementation Example
+
+```bash
+# CORRECT: Orchestrator spawns engineer
+spawn_fix_engineer() {
+    local effort="$1"
+    echo "@agent-sw-engineer Fix integration issues in $effort"
+    # Create command file
+    # Spawn engineer
+    # Monitor progress
+}
+
+# WRONG: Orchestrator fixes directly
+fix_integration_directly() {  # NEVER DO THIS!
+    cd "$effort_dir"
+    vim broken_file.go  # VIOLATION!
+    make build          # VIOLATION!
+}
+```
+
+## Related Rules
+- R006: Orchestrator Never Writes Code
+- R197: One Agent Per Effort
+- R238: Integration Report Evaluation
+- R239: Fix Plan Distribution Protocol
+
+## Grading Impact
+- **Proper delegation**: +20% compliance bonus
+- **Orchestrator writes code**: -100% AUTOMATIC FAILURE
+- **Missing engineers**: -50% major violation

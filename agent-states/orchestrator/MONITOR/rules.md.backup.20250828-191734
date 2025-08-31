@@ -1,0 +1,991 @@
+# Orchestrator - MONITOR State Rules
+
+## ⚠️⚠️⚠️ MANDATORY RULE READING AND ACKNOWLEDGMENT ⚠️⚠️⚠️
+
+**YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. YOUR READ TOOL CALLS ARE BEING MONITORED.**
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+1. Fake acknowledgment without reading
+2. Bulk acknowledgment
+3. Reading from memory
+
+### ✅ CORRECT PATTERN:
+1. READ each rule file
+2. Acknowledge individually with rule number and description
+
+## 📋 PRIMARY DIRECTIVES FOR MONITOR STATE
+
+### 🚨🚨🚨 R104 - Monitor Requirements
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R104-monitor-requirements.md`
+**Criticality**: BLOCKING - Track all agents continuously
+**Summary**: Continuous tracking, validation, and coordination of agents
+
+### ⚠️⚠️⚠️ R018 - Progress Reporting
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R018-progress-reporting.md`
+**Criticality**: CRITICAL - Report every 10 minutes
+**Summary**: Validate agent progress against expected timelines
+
+### 🚨🚨🚨 R222 - Code Review Gate
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R222-code-review-gate.md`
+**Criticality**: BLOCKING - All reviews must pass
+**Summary**: Cannot proceed to WAVE_COMPLETE without passing reviews
+
+### 🚨🚨🚨 R254 - Agent Error Reporting
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R254-agent-error-reporting.md`
+**Criticality**: BLOCKING - Report and handle agent errors
+**Summary**: Detect and report agent failures immediately
+
+### 🚨🚨🚨 R255 - Post-Agent Work Verification
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R255-post-agent-work-verification.md`
+**Criticality**: BLOCKING - Verify all work locations
+**Summary**: Confirm agents worked in correct directories and branches
+
+### 🔴🔴🔴 R021 - Orchestrator Never Stops (SUPREME LAW #7)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R021-orchestrator-never-stops.md`
+**Criticality**: SUPREME LAW - Violation = -100% failure
+**Summary**: Continue monitoring until all agents complete
+
+### 🚨🚨🚨 R188 - TODO Save Frequency Requirements
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R188-todo-save-frequency-requirements.md`
+**Criticality**: BLOCKING - Save every 15 minutes/10 messages
+**Summary**: Mandatory TODO saves during monitoring
+
+## 📋 RULE ENFORCEMENT SUMMARY FOR MONITOR STATE
+
+### Critical Requirements:
+1. Never stop monitoring - Penalty: -100%
+2. Save TODOs every 15 minutes - Penalty: -15% per violation
+3. Verify R255 for completions - Penalty: -100%
+4. All reviews must pass for WAVE_COMPLETE - Penalty: -100%
+5. Sequential processing for split fixes - Penalty: -100%
+
+### Success Criteria:
+- ✅ All agents tracked continuously
+- ✅ Progress validated every 10 minutes
+- ✅ TODOs saved every 15 minutes
+- ✅ All work in correct locations
+- ✅ All reviews passed before completion
+
+### Failure Triggers:
+- ❌ Stop monitoring = R021 VIOLATION
+- ❌ Forget TODO saves = -15% per violation
+- ❌ Accept wrong location work = R255 VIOLATION
+- ❌ Go to WAVE_COMPLETE with failed review = R222 VIOLATION
+- ❌ Spawn parallel fixes for splits = R254 VIOLATION
+
+## 🔴🔴🔴 CRITICAL: MONITOR IS A VERB - START MONITORING IMMEDIATELY! 🔴🔴🔴
+
+**MONITOR MEANS ACTIVELY MONITORING RIGHT NOW!**
+- ❌ NOT "I'm in monitor state"  
+- ❌ NOT "Ready to monitor"
+- ❌ NOT "Monitoring mode activated"
+- ✅ YES "I'm checking agent E3.1.2 status NOW"
+- ✅ YES "I'm verifying E3.1.3 line count NOW"
+- ✅ YES "I'm detecting blocking conditions NOW"
+
+## State Context
+MONITOR = You ARE ACTIVELY monitoring spawned agents THIS INSTANT. Not preparing to monitor, not ready to monitor, but MONITORING NOW!
+
+### 🚨🚨🚨 RULE R104 - Monitor Requirements
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R104-monitor-requirements.md`
+
+### 🔴🔴🔴 RULE R021 - Never Stop Monitoring
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R021-orchestrator-never-stops.md`
+**CRITICAL FOR MONITOR STATE**: Never stop until all agents complete
+
+**CONTEXT CONFIDENCE IN MONITOR STATE:**
+```bash
+# R188 ENFORCEMENT - TODO SAVES ARE MANDATORY!
+MONITOR_START_TIME=$(date +%s)
+LAST_TODO_SAVE=$(date +%s)
+MESSAGE_COUNT=0
+
+# Function to enforce R188
+check_todo_save_requirement() {
+    local CURRENT_TIME=$(date +%s)
+    local TIME_SINCE_SAVE=$((CURRENT_TIME - LAST_TODO_SAVE))
+    
+    # Every 15 minutes (900 seconds) - MANDATORY
+    if [ $TIME_SINCE_SAVE -gt 900 ]; then
+        echo "🚨 R188 VIOLATION IMMINENT: ${TIME_SINCE_SAVE}s since last save!"
+        echo "💾 SAVING TODOs NOW (R188 enforcement)..."
+        save_todos "MONITOR R188 15-minute checkpoint"
+        LAST_TODO_SAVE=$CURRENT_TIME
+        
+        # R189: Commit within 60 seconds
+        cd $CLAUDE_PROJECT_DIR
+        git add todos/*.todo orchestrator-state.yaml
+        git commit -m "todo: monitor checkpoint - R188 compliance"
+        git push
+    fi
+    
+    # Every 10 messages - MANDATORY
+    MESSAGE_COUNT=$((MESSAGE_COUNT + 1))
+    if [ $((MESSAGE_COUNT % 10)) -eq 0 ]; then
+        echo "📝 R188: 10 messages reached - saving TODOs..."
+        save_todos "MONITOR R188 message checkpoint"
+        LAST_TODO_SAVE=$CURRENT_TIME
+    fi
+}
+
+# State preserved continuously (R252-R253):
+update_state "agents_monitoring" "$AGENT_COUNT"
+update_state "monitor_start_time" "$MONITOR_START_TIME"
+update_state "last_todo_save" "$LAST_TODO_SAVE"
+
+# If compaction happens:
+# 1. TODOs are in /todos directory (R187-R190)
+# 2. State is in orchestrator-state.yaml (R252)
+# 3. Reload and continue monitoring (R190)
+# NO FEAR, FULL RECOVERY WITH TODO PERSISTENCE
+```
+---
+
+## 🚨🚨🚨 IMMEDIATE ACTIONS UPON ENTERING MONITOR STATE 🚨🚨🚨
+
+**THE INSTANT YOU ENTER MONITOR STATE, DO THIS:**
+
+```bash
+# ✅ CORRECT - IMMEDIATE ACTION
+echo "🔍 MONITORING: Checking all spawned agents NOW..."
+
+# Step 1: List all agents being monitored (DO NOW!)
+echo "📊 Active agents under monitoring:"
+for agent in "${SPAWNED_AGENTS[@]}"; do
+    echo "  - $agent: checking status..."
+    check_agent_status "$agent"
+done
+
+# Step 2: Check for completed agents (DO NOW!)
+echo "🔍 Checking for completed efforts..."
+check_completed_efforts
+
+# Step 3: Check for violations (DO NOW!)
+echo "⚠️ Checking for size violations..."
+run_line_counter_on_active_branches
+
+# Step 4: Check for blocked agents (DO NOW!)
+echo "🚧 Checking for blocked agents..."
+detect_blocking_conditions
+
+# Step 5: Determine next action (DO NOW!)
+echo "🎯 Determining immediate next action based on monitoring..."
+determine_next_action_from_monitoring
+```
+
+**❌❌❌ VIOLATIONS THAT CAUSE AUTOMATIC FAILURE:**
+
+```bash
+# ❌ CATASTROPHIC - Stopping after transition
+transition_to_state "MONITOR"
+echo "STATE TRANSITION COMPLETE: Now in MONITOR State"
+# [stops here] - AUTOMATIC FAILURE!
+
+# ❌ CATASTROPHIC - Announcing state without action
+echo "Successfully entered MONITOR state"
+echo "Ready to begin monitoring when needed..."
+# NO! Start monitoring NOW!
+
+# ❌ CATASTROPHIC - Summarizing instead of monitoring
+echo "📊 Summary: We're now monitoring agents"
+echo "Previous actions completed successfully"
+# STOP TALKING, START MONITORING!
+```
+
+## Agent Progress Tracking
+
+### ⚠️⚠️⚠️ RULE R018 - Progress Reporting Requirements
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R018-progress-reporting.md`
+
+## Monitoring Implementation
+
+```python
+class AgentMonitor:
+    def __init__(self):
+        self.monitored_agents = {}
+        self.last_check = None
+        self.check_interval = 600  # 10 minutes
+        
+    def monitor_agent_progress(self, agent_id, agent_data):
+        """Monitor individual agent progress"""
+        
+        current_time = datetime.now()
+        
+        # Get current status
+        status_check = self.check_agent_status(agent_id)
+        
+        # Validate progress
+        progress_validation = self.validate_progress(agent_data, status_check)
+        
+        # Check timeline adherence
+        timeline_check = self.check_timeline(agent_data, current_time)
+        
+        # Size limit validation
+        size_check = self.validate_size_limits(agent_data)
+        
+        # Update monitoring record
+        monitoring_record = {
+            'agent_id': agent_id,
+            'last_check': current_time.isoformat(),
+            'status': status_check,
+            'progress': progress_validation,
+            'timeline': timeline_check,
+            'size': size_check,
+            'overall_health': self.calculate_agent_health(
+                status_check, progress_validation, timeline_check, size_check
+            )
+        }
+        
+        self.monitored_agents[agent_id] = monitoring_record
+        return monitoring_record
+    
+    def check_agent_status(self, agent_id):
+        """Check if agent is responsive and active"""
+        
+        try:
+            # This would be implemented based on agent communication protocol
+            response = ping_agent(agent_id, timeout=30)
+            
+            if response['responsive']:
+                return {
+                    'status': 'ACTIVE',
+                    'last_response': response['timestamp'],
+                    'current_task': response.get('current_task', 'Unknown')
+                }
+            else:
+                return {
+                    'status': 'UNRESPONSIVE',
+                    'last_seen': response.get('last_seen'),
+                    'action_needed': 'INVESTIGATE'
+                }
+        except Exception as e:
+            return {
+                'status': 'ERROR',
+                'error': str(e),
+                'action_needed': 'RESTART_AGENT'
+            }
+    
+    def validate_progress(self, agent_data, status_check):
+        """Validate agent is making expected progress"""
+        
+        expected_milestones = agent_data.get('expected_milestones', [])
+        current_milestone = status_check.get('current_milestone')
+        
+        # Calculate expected vs actual progress
+        time_elapsed = self.calculate_elapsed_time(agent_data['started_at'])
+        expected_completion = agent_data.get('expected_completion_percentage', 0)
+        
+        # This would be implemented based on work-log.md parsing
+        actual_completion = self.parse_work_log_progress(agent_data['working_dir'])
+        
+        progress_ratio = actual_completion / expected_completion if expected_completion > 0 else 1.0
+        
+        if progress_ratio >= 0.9:
+            grade = 'ON_TRACK'
+        elif progress_ratio >= 0.7:
+            grade = 'SLIGHTLY_BEHIND'
+        elif progress_ratio >= 0.5:
+            grade = 'BEHIND'
+        else:
+            grade = 'SIGNIFICANTLY_BEHIND'
+        
+        return {
+            'expected_completion': expected_completion,
+            'actual_completion': actual_completion,
+            'progress_ratio': progress_ratio,
+            'grade': grade,
+            'action_needed': self.determine_progress_action(grade)
+        }
+    
+    def check_timeline(self, agent_data, current_time):
+        """Check if agent is meeting timeline expectations"""
+        
+        started_at = datetime.fromisoformat(agent_data['started_at'])
+        expected_duration = agent_data.get('expected_duration_hours', 4)
+        expected_completion = started_at + timedelta(hours=expected_duration)
+        
+        time_remaining = expected_completion - current_time
+        time_elapsed = current_time - started_at
+        
+        utilization = time_elapsed.total_seconds() / (expected_duration * 3600)
+        
+        if utilization <= 0.5:
+            timeline_grade = 'AHEAD'
+        elif utilization <= 0.8:
+            timeline_grade = 'ON_TIME'
+        elif utilization <= 1.0:
+            timeline_grade = 'APPROACHING_DEADLINE'
+        else:
+            timeline_grade = 'OVERDUE'
+        
+        return {
+            'started_at': started_at.isoformat(),
+            'expected_completion': expected_completion.isoformat(),
+            'time_remaining_hours': time_remaining.total_seconds() / 3600,
+            'utilization': utilization,
+            'grade': timeline_grade,
+            'action_needed': self.determine_timeline_action(timeline_grade)
+        }
+```
+
+## Dependency Coordination
+
+---
+### ℹ️ RULE R008.0.0 - Continuous Execution
+**Source:** rule-library/RULE-REGISTRY.md#R008
+**Criticality:** INFO - Best practice
+
+DEPENDENCY MANAGEMENT:
+
+When monitoring dependent efforts:
+1. Track prerequisite completion status
+2. Notify dependent agents when prerequisites ready
+3. Prevent premature starts
+4. Optimize start times for maximum parallelization
+5. Handle dependency failures gracefully
+---
+
+```yaml
+# Dependency tracking in orchestrator-state.yaml
+dependency_monitoring:
+  wave2_dependencies:
+    effort1_api_types:
+      status: "COMPLETED"
+      completed_at: "2025-08-23T14:30:00Z"
+      dependent_efforts: ["effort2_controller", "effort3_webhooks"]
+      
+    effort2_controller:
+      status: "IN_PROGRESS"
+      started_at: "2025-08-23T14:35:00Z"
+      depends_on: ["effort1_api_types"]
+      progress: 60
+      expected_completion: "2025-08-23T16:30:00Z"
+      dependent_efforts: ["effort4_integration"]
+      
+    effort3_webhooks:
+      status: "IN_PROGRESS" 
+      started_at: "2025-08-23T14:35:00Z"
+      depends_on: ["effort1_api_types"]
+      progress: 45
+      expected_completion: "2025-08-23T16:45:00Z"
+      
+    effort4_integration:
+      status: "WAITING"
+      depends_on: ["effort2_controller", "effort3_webhooks"]
+      ready_to_start: false
+      can_start_when: "Both dependencies complete"
+```
+
+## Intervention Triggers
+
+---
+### 🚨 RULE R155.0.0 - State Transition Speed
+**Source:** rule-library/RULE-REGISTRY.md#R155
+**Criticality:** CRITICAL - Major impact on grading
+
+INTERVENTION THRESHOLDS:
+
+IMMEDIATE (Stop monitoring, take action):
+- Agent unresponsive >15 minutes
+- Size limit exceeded
+- Critical test failures
+- Build system failure
+
+WARNING (Alert, continue monitoring):
+- Progress <70% of expected
+- Timeline utilization >80%
+- Agent reporting difficulties
+
+OPTIMIZATION (Suggest improvements):
+- Progress significantly ahead
+- Resource underutilization
+- Potential for increased parallelization
+---
+
+```python
+def check_intervention_triggers(monitoring_data):
+    """Check if any agents require intervention"""
+    
+    interventions_needed = []
+    
+    for agent_id, data in monitoring_data.items():
+        # Critical interventions
+        if data['status']['status'] == 'UNRESPONSIVE':
+            last_seen = data['status'].get('last_seen')
+            if last_seen:
+                unresponsive_minutes = (datetime.now() - 
+                    datetime.fromisoformat(last_seen)).total_seconds() / 60
+                if unresponsive_minutes > 15:
+                    interventions_needed.append({
+                        'agent': agent_id,
+                        'type': 'CRITICAL',
+                        'issue': 'AGENT_UNRESPONSIVE',
+                        'action': 'RESTART_AGENT',
+                        'urgency': 'IMMEDIATE'
+                    })
+        
+        # Size limit violations
+        if data['size']['status'] == 'EXCEEDED':
+            interventions_needed.append({
+                'agent': agent_id,
+                'type': 'CRITICAL',
+                'issue': 'SIZE_LIMIT_EXCEEDED',
+                'action': 'SPAWN_CODE_REVIEWER_SPLIT',
+                'urgency': 'IMMEDIATE'
+            })
+        
+        # Progress issues
+        if data['progress']['grade'] in ['BEHIND', 'SIGNIFICANTLY_BEHIND']:
+            interventions_needed.append({
+                'agent': agent_id,
+                'type': 'WARNING',
+                'issue': 'PROGRESS_BEHIND',
+                'action': 'INVESTIGATE_BLOCKERS',
+                'urgency': 'HIGH'
+            })
+        
+        # Timeline issues
+        if data['timeline']['grade'] == 'OVERDUE':
+            interventions_needed.append({
+                'agent': agent_id,
+                'type': 'CRITICAL',
+                'issue': 'TIMELINE_OVERDUE',
+                'action': 'ESCALATE_PRIORITY',
+                'urgency': 'IMMEDIATE'
+            })
+    
+    return interventions_needed
+```
+
+## Status Reporting
+
+```yaml
+# Real-time status in orchestrator-state.yaml
+monitoring_status:
+  last_full_check: "2025-08-23T15:30:00Z"
+  check_interval_minutes: 10
+  
+  agents_monitored:
+    sw-engineer-effort1:
+      status: "ACTIVE"
+      progress_percentage: 85
+      timeline_status: "ON_TIME"
+      size_status: "COMPLIANT"
+      health_grade: "GOOD"
+      last_update: "2025-08-23T15:28:00Z"
+      
+    code-reviewer-effort2:
+      status: "ACTIVE" 
+      progress_percentage: 40
+      timeline_status: "ON_TIME"
+      size_status: "COMPLIANT"
+      health_grade: "GOOD"
+      last_update: "2025-08-23T15:27:00Z"
+      
+  interventions_pending:
+    - agent: "sw-engineer-effort3"
+      issue: "PROGRESS_BEHIND"
+      action: "INVESTIGATE_BLOCKERS"
+      created: "2025-08-23T15:25:00Z"
+      
+  dependency_status:
+    ready_to_start: ["effort4_integration"]
+    blocked_efforts: []
+    
+  overall_wave_health: "ON_TRACK"
+```
+
+## State Transition Triggers
+
+Monitor for these conditions to transition from MONITOR state:
+
+```python
+def check_state_transition_conditions(monitoring_data):
+    """Check if we should transition from MONITOR state"""
+    
+    all_agents = list(monitoring_data.keys())
+    
+    # Check for wave completion
+    completed_agents = [
+        agent for agent, data in monitoring_data.items()
+        if data['status']['status'] in ['COMPLETED', 'READY_FOR_REVIEW']
+    ]
+    
+    if len(completed_agents) == len(all_agents):
+        return {
+            'transition_to': 'WAVE_COMPLETE',
+            'reason': 'All agents completed their work',
+            'data': {'completed_agents': completed_agents}
+        }
+    
+    # Check for critical errors requiring intervention
+    critical_errors = [
+        agent for agent, data in monitoring_data.items()
+        if data['overall_health'] == 'CRITICAL'
+    ]
+    
+    if critical_errors:
+        return {
+            'transition_to': 'ERROR_RECOVERY',
+            'reason': 'Critical errors detected requiring intervention',
+            'data': {'failed_agents': critical_errors}
+        }
+    
+    # Check if any agents need code review
+    needs_review = [
+        agent for agent, data in monitoring_data.items()
+        if data['status']['status'] == 'IMPLEMENTATION_COMPLETE'
+    ]
+    
+    if needs_review:
+        return {
+            'transition_to': 'SPAWN_AGENTS',
+            'reason': 'Agents ready for code review',
+            'data': {'agents_for_review': needs_review}
+        }
+    
+    # Continue monitoring
+    return {
+        'transition_to': 'MONITOR',
+        'reason': 'Agents still in progress',
+        'data': {'active_agents': len(all_agents) - len(completed_agents)}
+    }
+```
+
+## Monitoring Dashboard
+
+```python
+def generate_monitoring_dashboard():
+    """Generate real-time monitoring dashboard"""
+    
+    dashboard = {
+        'timestamp': datetime.now().isoformat(),
+        'wave_progress': calculate_overall_wave_progress(),
+        'agent_statuses': get_all_agent_statuses(),
+        'timeline_summary': generate_timeline_summary(),
+        'health_indicators': generate_health_indicators(),
+        'interventions': get_pending_interventions(),
+        'next_milestones': predict_next_milestones()
+    }
+    
+    print("📊 ORCHESTRATOR MONITORING DASHBOARD")
+    print(f"Wave Progress: {dashboard['wave_progress']['percentage']:.1f}%")
+    print(f"Active Agents: {dashboard['agent_statuses']['active']}")
+    print(f"Timeline Status: {dashboard['timeline_summary']['status']}")
+    print(f"Health Grade: {dashboard['health_indicators']['overall']}")
+    
+    if dashboard['interventions']:
+        print("⚠️ Interventions Needed:")
+        for intervention in dashboard['interventions']:
+            print(f"  - {intervention['agent']}: {intervention['issue']}")
+    
+    return dashboard
+```
+
+## State Transitions
+
+From MONITOR state:
+- **ALL_COMPLETE + ALL_REVIEWS_PASS** → WAVE_COMPLETE (R222 gate enforced!)
+- **CRITICAL_ERROR** → ERROR_RECOVERY  
+- **READY_FOR_REVIEW** → SPAWN_AGENTS (Code Reviewers)
+- **SIZE_VIOLATIONS** → SPAWN_AGENTS (Code Reviewer for splits)
+- **REVIEW_FAILED** → FIX_ISSUES (Review-Fix loop per R222)
+
+## 🔴🔴🔴 RULE R222 - CODE REVIEW GATE REQUIREMENT (BLOCKING!) 🔴🔴🔴
+
+**Source:** rule-library/R222-code-review-gate-requirement.md
+**Criticality:** BLOCKING - Cannot proceed without ALL reviews passing
+
+### YOU CANNOT TRANSITION TO WAVE_COMPLETE UNLESS:
+1. **ALL** Code Reviews have been run
+2. **ALL** Code Reviews have PASSED
+3. **ALL** Size compliance checks PASSED (<800 lines)
+4. **NO** effort is in FIX_ISSUES state
+5. **NO** effort is BLOCKED
+
+### MONITOR STATE MUST CHECK:
+```bash
+# Check every effort's review status
+for effort in $WAVE_EFFORTS; do
+    REVIEW_STATUS=$(check_effort_review_status "$effort")
+    if [ "$REVIEW_STATUS" != "PASSED" ]; then
+        echo "❌ Cannot go to WAVE_COMPLETE - $effort review: $REVIEW_STATUS"
+        echo "🔄 Starting Review-Fix Loop:"
+        echo "  1️⃣ Spawn SW Engineer to FIX_ISSUES for $effort"
+        echo "  2️⃣ After fixes, spawn Code Reviewer to re-review"
+        echo "  3️⃣ Loop until review passes"
+        TRANSITION_BLOCKED=true
+    fi
+done
+
+if [ "$TRANSITION_BLOCKED" = true ]; then
+    echo "🚫 BLOCKED: Cannot transition to WAVE_COMPLETE"
+    echo "🔧 Action: Execute review-fix loop for all failed reviews"
+    echo "🔁 Loop: CODE_REVIEW → FIX_ISSUES → CODE_REVIEW → ..."
+    exit 1
+fi
+```
+
+### THE REVIEW-FIX LOOP (MANDATORY):
+
+⚠️⚠️⚠️ **CRITICAL: SEQUENTIAL PROCESSING FOR SPLIT FIXES** ⚠️⚠️⚠️
+**NEVER spawn SW Engineers in parallel for review fixes on splits!**
+- Split fixes MUST be done ONE AT A TIME in SEQUENCE
+- Complete one split's fix before starting the next
+- This prevents merge conflicts and maintains consistency
+
+```bash
+# For each effort with failed review:
+while [ "$REVIEW_STATUS" != "PASSED" ]; do
+    # 1. Spawn SW Engineer to fix issues (ONE AT A TIME FOR SPLITS!)
+    Task: sw-engineer
+    State: FIX_ISSUES
+    Effort: $effort
+    Issues: [from review feedback]
+    
+    # ⚠️ IF THIS IS A SPLIT FIX:
+    # WAIT for completion before spawning next SW Engineer!
+    # DO NOT spawn multiple SW Engineers in parallel for split fixes!
+    
+    # 2. Wait for SW Engineer to complete fixes
+    # SW Engineer: FIX_ISSUES → IMPLEMENTATION → REQUEST_REVIEW
+    
+    # 3. Spawn Code Reviewer to re-review
+    Task: code-reviewer  
+    State: CODE_REVIEW
+    Effort: $effort
+    Note: "Re-review after fixes"
+    
+    # 4. Check review status again
+    REVIEW_STATUS=$(check_effort_review_status "$effort")
+    
+    # 5. Loop continues until PASSED
+done
+```
+
+### GRADING PENALTIES:
+- Transitioning with failed review: -100% (AUTOMATIC FAILURE)
+- Skipping review verification: -50%
+- Not remediating review issues: -50%
+
+**ACKNOWLEDGMENT REQUIRED:**
+"I acknowledge R222: I CANNOT go to WAVE_COMPLETE unless ALL reviews pass"
+
+---
+### 🔴 RULE R254 - SEQUENTIAL SPLIT FIX PROCESSING (BLOCKING!)
+**Source:** rule-library/R254-sequential-split-fix-processing.md
+**Criticality:** BLOCKING - Parallel split fixes = AUTOMATIC FAILURE
+**Used in states:** MONITOR, FIX_ISSUES
+
+⚠️⚠️⚠️ **ABSOLUTELY FORBIDDEN: Spawning SW Engineers in parallel for split fixes!** ⚠️⚠️⚠️
+
+When Code Reviewer requests fixes for multiple splits of the same effort:
+
+**❌ WRONG (AUTOMATIC FAILURE):**
+```bash
+# NEVER DO THIS - Spawning multiple SW Engineers at once for splits
+for split in split1 split2 split3; do
+    Task: sw-engineer  # WRONG! Parallel spawn!
+    Effort: $split
+done
+```
+
+**✅ CORRECT (REQUIRED):**
+```bash
+# Process splits ONE AT A TIME in sequence
+for split in split1 split2 split3; do
+    echo "🔧 Spawning SW Engineer for $split"
+    
+    # 1. Spawn ONE SW Engineer
+    Task: sw-engineer
+    State: FIX_ISSUES
+    Effort: $split
+    
+    # 2. WAIT for completion
+    wait_for_agent_completion "$split"
+    
+    # 3. Spawn Code Reviewer for this split
+    Task: code-reviewer
+    State: CODE_REVIEW
+    Effort: $split
+    
+    # 4. WAIT for review result
+    wait_for_review_result "$split"
+    
+    # 5. Only THEN proceed to next split
+    echo "✅ $split complete, moving to next"
+done
+```
+
+**WHY SEQUENTIAL IS MANDATORY:**
+1. **Prevents merge conflicts** between parallel changes
+2. **Maintains consistency** across split boundaries
+3. **Allows learning** from first split's fixes
+4. **Ensures clean integration** of changes
+5. **Avoids duplicate work** across splits
+
+**DETECTION AND ENFORCEMENT:**
+```bash
+# Monitor for parallel spawning violations
+check_parallel_violation() {
+    local ACTIVE_SW_ENGINEERS=$(count_active_sw_engineers)
+    local ACTIVE_SPLITS=$(count_active_split_fixes)
+    
+    if [ "$ACTIVE_SPLITS" -gt 0 ] && [ "$ACTIVE_SW_ENGINEERS" -gt 1 ]; then
+        echo "🚨🚨🚨 R254 VIOLATION: Multiple SW Engineers on splits!"
+        echo "AUTOMATIC FAILURE - Sequential processing required!"
+        exit 1
+    fi
+}
+```
+
+**ACKNOWLEDGMENT REQUIRED:**
+"I acknowledge R254: Split fixes MUST be done sequentially, NEVER in parallel"
+
+---
+### 🔴🔴🔴 RULE R255 - POST-AGENT WORK VERIFICATION (DELETE AND RESTART!)
+**Source:** rule-library/R255-POST-AGENT-WORK-VERIFICATION.md
+**Criticality:** BLOCKING - Wrong location = DELETE ALL WORK AND RESTART
+**Used in states:** MONITOR (continuous checking)
+
+⚠️⚠️⚠️ **CHECK EVERY AGENT'S WORK LOCATION OR AUTOMATIC FAILURE!** ⚠️⚠️⚠️
+
+**MANDATORY CHECK AFTER EVERY AGENT REPORTS COMPLETE:**
+
+```bash
+# YOU MUST RUN THIS AFTER EVERY AGENT COMPLETION!
+post_agent_verification() {
+    local AGENT_TYPE="$1"
+    local EFFORT_NAME="$2"
+    local PHASE="$3"
+    local WAVE="$4"
+    
+    echo "🔍🔍🔍 R255 POST-AGENT VERIFICATION 🔍🔍🔍"
+    
+    # EXPECTED VALUES
+    EXPECTED_DIR="$(pwd)/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+    EXPECTED_BRANCH="phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+    
+    # CHECK 1: Directory exists?
+    if [ ! -d "$EXPECTED_DIR" ]; then
+        echo "❌❌❌ R255 VIOLATION: DIRECTORY MISSING!"
+        echo "Expected: $EXPECTED_DIR"
+        delete_and_restart_agent
+        return 1
+    fi
+    
+    # CHECK 2: Has actual work?
+    cd "$EXPECTED_DIR"
+    if [ "$AGENT_TYPE" = "sw-engineer" ]; then
+        if [ -z "$(find pkg/ -name '*.go' 2>/dev/null)" ]; then
+            echo "❌❌❌ R255 VIOLATION: NO CODE IN pkg/!"
+            delete_and_restart_agent
+            return 1
+        fi
+    elif [ "$AGENT_TYPE" = "code-reviewer" ]; then
+        if [ ! -f "IMPLEMENTATION-PLAN.md" ]; then
+            echo "❌❌❌ R255 VIOLATION: NO IMPLEMENTATION PLAN!"
+            delete_and_restart_agent
+            return 1
+        fi
+    fi
+    
+    # CHECK 3: Correct branch?
+    CURRENT_BRANCH=$(git branch --show-current)
+    if [ "$CURRENT_BRANCH" != "$EXPECTED_BRANCH" ]; then
+        echo "❌❌❌ R255 VIOLATION: WRONG BRANCH!"
+        echo "Expected: $EXPECTED_BRANCH"
+        echo "Found: $CURRENT_BRANCH"
+        delete_and_restart_agent
+        return 1
+    fi
+    
+    # CHECK 4: Committed?
+    if [ -n "$(git status --porcelain)" ]; then
+        echo "❌❌❌ R255 VIOLATION: UNCOMMITTED WORK!"
+        delete_and_restart_agent
+        return 1
+    fi
+    
+    # CHECK 5: Pushed?
+    git fetch origin
+    AHEAD=$(git rev-list origin/${EXPECTED_BRANCH}..HEAD --count 2>/dev/null || echo "999")
+    if [ "$AHEAD" != "0" ]; then
+        echo "❌❌❌ R255 VIOLATION: NOT PUSHED TO REMOTE!"
+        echo "$AHEAD commits not pushed"
+        delete_and_restart_agent
+        return 1
+    fi
+    
+    echo "✅✅✅ R255 VERIFICATION PASSED!"
+    return 0
+}
+
+# INTELLIGENT SALVAGE ASSESSMENT
+try_to_salvage_work() {
+    echo "🔍 R255: Assessing if work can be salvaged before deletion..."
+    
+    # SALVAGEABLE SCENARIO 1: Wrong directory, correct content
+    if [ ! -d "$EXPECTED_DIR" ] && [ -f "./IMPLEMENTATION-PLAN.md" ]; then
+        echo "✅ SALVAGING: Found work in wrong directory"
+        mkdir -p "$EXPECTED_DIR"
+        mv ./IMPLEMENTATION-PLAN.md "$EXPECTED_DIR/"
+        mv ./work-log.md "$EXPECTED_DIR/" 2>/dev/null || true
+        cd "$EXPECTED_DIR"
+        git add -A
+        git commit -m "fix: salvage misplaced ${AGENT_TYPE} work [R255]"
+        git push origin "$EXPECTED_BRANCH"
+        echo "✅ Work salvaged and relocated!"
+        return 0
+    fi
+    
+    # SALVAGEABLE SCENARIO 2: Uncommitted work in correct location
+    if [ -d "$EXPECTED_DIR" ]; then
+        cd "$EXPECTED_DIR"
+        if [ -n "$(git status --porcelain)" ]; then
+            echo "✅ SALVAGING: Committing uncommitted work"
+            git add -A
+            git commit -m "fix: commit ${AGENT_TYPE} work [R255 salvage]"
+            git push origin "$EXPECTED_BRANCH"
+            echo "✅ Work salvaged via commit/push!"
+            return 0
+        fi
+    fi
+    
+    # SALVAGEABLE SCENARIO 3: Wrong branch, can cherry-pick
+    if [ -d "$EXPECTED_DIR" ]; then
+        cd "$EXPECTED_DIR"
+        CURRENT_BRANCH=$(git branch --show-current)
+        if [ "$CURRENT_BRANCH" != "$EXPECTED_BRANCH" ]; then
+            # Try to cherry-pick commits
+            COMMITS=$(git log --oneline main.."$CURRENT_BRANCH" | wc -l)
+            if [ "$COMMITS" -gt 0 ]; then
+                echo "✅ SALVAGING: Cherry-picking $COMMITS commits"
+                git checkout -b "$EXPECTED_BRANCH" main
+                git cherry-pick main.."$CURRENT_BRANCH"
+                git push -u origin "$EXPECTED_BRANCH"
+                git branch -D "$CURRENT_BRANCH"
+                echo "✅ Work salvaged via cherry-pick!"
+                return 0
+            fi
+        fi
+    fi
+    
+    # NOT SALVAGEABLE: Wrong repository
+    if [ -d "$EXPECTED_DIR/.git" ]; then
+        cd "$EXPECTED_DIR"
+        REMOTE=$(git remote get-url origin 2>/dev/null)
+        if [[ "$REMOTE" != *"$TARGET_REPO_URL"* ]]; then
+            echo "❌ NOT SALVAGEABLE: Wrong repository base"
+            return 1
+        fi
+    fi
+    
+    # NOT SALVAGEABLE: Merge conflicts
+    if [ -d "$EXPECTED_DIR" ]; then
+        cd "$EXPECTED_DIR"
+        git fetch origin "$EXPECTED_BRANCH" 2>/dev/null
+        if ! git merge --no-commit --no-ff origin/"$EXPECTED_BRANCH" 2>/dev/null; then
+            git merge --abort 2>/dev/null
+            echo "❌ NOT SALVAGEABLE: Merge conflicts"
+            return 1
+        fi
+        git merge --abort 2>/dev/null
+    fi
+    
+    echo "❌ Cannot salvage - must delete and restart"
+    return 1
+}
+
+# DELETE AND RESTART PROTOCOL (AFTER SALVAGE ATTEMPT)
+delete_and_restart_agent() {
+    # First try to salvage
+    if try_to_salvage_work; then
+        echo "✅ Work salvaged - no restart needed!"
+        return 0
+    fi
+    
+    echo "🗑️🗑️🗑️ SALVAGE FAILED - DELETING ALL WORK!"
+    
+    # Save evidence
+    cp -r "$EXPECTED_DIR" "/tmp/R255-deleted-$(date +%s)" 2>/dev/null || true
+    
+    # DELETE EVERYTHING
+    cd "$(pwd)"  # Return to orchestrator dir
+    rm -rf "$EXPECTED_DIR"
+    
+    # Recreate clean infrastructure
+    setup_effort_infrastructure "$EFFORT_NAME" "$PHASE" "$WAVE"
+    
+    # RESPAWN WITH ULTRA-SPECIFIC INSTRUCTIONS
+    ENHANCED_PROMPT="🚨🚨🚨 R255 CRITICAL RESTART - YOU WORKED IN WRONG LOCATION! 🚨🚨🚨
+
+YOUR PREVIOUS WORK WAS DELETED BECAUSE YOU DIDN'T FOLLOW INSTRUCTIONS!
+
+YOU MUST DO EXACTLY THIS OR BE DELETED AGAIN:
+
+STEP 1 - CD TO THIS EXACT PATH (COPY AND PASTE THIS COMMAND):
+cd $EXPECTED_DIR
+
+STEP 2 - VERIFY YOU ARE IN CORRECT DIRECTORY:
+pwd
+MUST OUTPUT: $EXPECTED_DIR
+
+STEP 3 - VERIFY GIT BRANCH:
+git branch --show-current
+MUST OUTPUT: $EXPECTED_BRANCH
+
+STEP 4 - DO ALL WORK HERE:
+- ALL code in: $EXPECTED_DIR/pkg/
+- NEVER leave this directory
+- NEVER cd anywhere else
+
+STEP 5 - COMMIT AND PUSH:
+git add -A
+git commit -m 'feat: implement $EFFORT_NAME [R255 compliance]'
+git push origin $EXPECTED_BRANCH
+
+STEP 6 - VERIFY BEFORE SAYING COMPLETE:
+pwd  # Must show $EXPECTED_DIR
+git status  # Must show clean
+git log --oneline -1  # Must show commit
+git branch -vv  # Must show tracking origin
+
+🚨 FAILURE = DELETION AND RESTART AGAIN! 🚨
+
+[Original task follows...]"
+    
+    # Respawn the agent
+    Task: "$AGENT_TYPE"
+    Prompt: "$ENHANCED_PROMPT"
+    
+    # Log violation
+    echo "$(date): R255 violation - restarted $AGENT_TYPE for $EFFORT_NAME" >> R255-violations.log
+}
+```
+
+**CONTINUOUS MONITORING LOOP:**
+```bash
+while monitoring_agents; do
+    for agent in "${ACTIVE_AGENTS[@]}"; do
+        if agent_reports_complete "$agent"; then
+            echo "⏰ Agent $agent complete - R255 CHECK TIME!"
+            
+            if ! post_agent_verification "$AGENT_TYPE" "$EFFORT" "$PHASE" "$WAVE"; then
+                echo "💀 AGENT FAILED R255 - WORK DELETED - RESTARTING!"
+            fi
+        fi
+    done
+    
+    sleep 30
+done
+```
+
+**GRADING PENALTIES:**
+- Not checking = -100% AUTOMATIC FAILURE
+- First violation per effort = -20%
+- Second violation same effort = -40%  
+- Third violation = -100% AUTOMATIC FAILURE
+
+**ACKNOWLEDGMENT REQUIRED:**
+"I acknowledge R255: I MUST verify EVERY agent's work is in the correct /efforts/ directory, on the correct branch, committed AND pushed. If not, I MUST delete everything and restart with enhanced instructions."

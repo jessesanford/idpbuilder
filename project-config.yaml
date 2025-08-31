@@ -1,0 +1,39 @@
+# Software Factory 2.0 Project Configuration
+# Generated: Sun Aug 31 08:24:54 UTC 2025
+
+project:
+  name: "idpbuidler-oci-go-cr"
+  description: "A feature addition to the idpbuilder cli that allows it to build and push images to from the local file system to the idpbuilder internal gitea at gitea.cnoe.localtest.me and accept the self signed certs that gitea is using while running on the local idpbuilder cluster. This way users don''t have to modify their docker daemons to push to the internal gitea server because of cert validation errors."
+  language: "Go"
+  repository: "https://github.com/jessesanford/idpbuilder-oci-mgmt-attempt3.git"
+  
+technology_stack:
+  - Kubernetes
+  - kind
+  - gitea
+  - kubebuilder
+  - idpbuilder
+  - go-containerregistry
+
+agents:
+  - Orchestrator
+  - (Required)
+  - orchestrator
+  - code-reviewer
+  - architect-reviewer
+  - sw-engineer-go
+
+expertise_areas:
+  - Cloud Architecture API Design Testing Strategies Prompt Engineering Kubernetes Internals Kubernetes Controllers Kubernetes API Kubernetes Reconciler Kubernetes Operators
+
+constraints:
+  max_lines_per_effort: 800
+  max_parallel_agents: 3
+  code_review: mandatory
+  test_coverage_target: 80
+  security_level: 1
+
+implementation:
+  estimated_loc: 5000
+  phases: 3
+  project_type: "Kubernetes Controller/Operator"

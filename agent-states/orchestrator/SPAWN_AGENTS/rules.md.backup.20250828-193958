@@ -1,0 +1,297 @@
+# Orchestrator - SPAWN_AGENTS State Rules
+
+## 🔴🔴🔴 STOP! STATE RULE READING IS ABSOLUTELY FIRST! 🔴🔴🔴
+
+**YOU HAVE ENTERED SPAWN_AGENTS STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
+
+### ❌ DO NOT DO ANY SPAWN_AGENTS WORK UNTIL RULES ARE READ:
+- ❌ Start spawn software engineer agents
+- ❌ Start assign effort work
+- ❌ Start distribute implementation tasks
+- ❌ Update state files
+- ❌ Continue to next state
+- ❌ Think about what to do in this state
+
+### ✅ YOU MUST IMMEDIATELY:
+1. **READ** every rule file listed in PRIMARY DIRECTIVES below
+2. **ACKNOWLEDGE** each rule individually with number and description
+3. **ONLY THEN** proceed with SPAWN_AGENTS work
+
+### 🚨 FAILURE TO READ STATE RULES FIRST = IMMEDIATE EXIT 🚨
+**If you do ANY SPAWN_AGENTS work before reading and acknowledging rules:**
+- **STOP ALL WORK IMMEDIATELY**
+- **EXIT WITH FAILURE STATUS**
+- **YOU HAVE VIOLATED STATE COMPLIANCE**
+
+**THE SYSTEM IS MONITORING YOUR READ TOOL CALLS!**
+
+## 📋 PRIMARY DIRECTIVES FOR SPAWN_AGENTS
+
+**YOU MUST READ EACH RULE LISTED HERE. YOUR READ TOOL CALLS ARE BEING MONITORED.**
+
+### State-Specific Rules (NOT in orchestrator.md):
+
+1. **🚨🚨🚨 R151** - Parallel Spawning Timestamp Requirement
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R151-parallel-agent-spawning-timing.md`
+   - Criticality: CRITICAL - Timestamps must be within 5s for parallel agents (50% of orchestrator grade)
+   - Summary: All parallel agents must emit timestamps within 5 seconds, acknowledge plan creator's decision
+
+2. **R052** - Agent Spawning Protocol
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/RULE-REGISTRY.md#R052`
+   - Criticality: CRITICAL - Complete context and deliverables required
+   - Summary: Provide complete context, startup requirements, deliverables, size limits to each agent
+
+3. **R197** - One Agent Per Effort
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R197-one-agent-per-effort.md`
+   - Criticality: BLOCKING - Never spawn multiple agents for same effort
+
+4. **R255** - Post-Agent Work Verification
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R255-post-agent-work-verification.md`
+   - Criticality: BLOCKING - Verify correct locations after completion
+
+**Note**: R208 (CD before spawn), R221 (bash reset) are already in orchestrator.md Supreme Laws.
+
+## 🚨 SPAWN_AGENTS IS A VERB - START SPAWNING AGENTS IMMEDIATELY! 🚨
+
+**See R151 for immediate action requirements when entering this state.**
+
+The SPAWN_AGENTS state requires IMMEDIATE spawning action - no pausing or waiting.
+See rule R151 which includes requirements for immediate state execution.
+
+## State Context
+You are spawning SW Engineers to implement efforts based on the implementation plans created by Code Reviewers.
+
+## 🔴🔴🔴 PREREQUISITES FOR SPAWN_AGENTS 🔴🔴🔴
+
+**BEFORE ENTERING THIS STATE, YOU MUST ALREADY HAVE:**
+1. ✅ All effort directories created (done in SETUP_EFFORT_INFRASTRUCTURE)
+2. ✅ All git clones and branches ready (done in SETUP_EFFORT_INFRASTRUCTURE) 
+3. ✅ All effort IMPLEMENTATION-PLAN.md files (created by Code Reviewers)
+4. ✅ All work-log.md files initialized
+5. ✅ **PARALLELIZATION ANALYSIS COMPLETE (ANALYZE_IMPLEMENTATION_PARALLELIZATION)**
+6. ✅ **SW Engineer parallelization plan in orchestrator-state.yaml**
+
+**IF PARALLELIZATION NOT ANALYZED, GO BACK TO ANALYZE_IMPLEMENTATION_PARALLELIZATION!**
+**Infrastructure was created BEFORE Code Reviewers made plans!**
+**Now you're just spawning SW Engineers to implement using the PRE-ANALYZED strategy.**
+
+
+## Parallel Spawning
+
+
+## ✅ Infrastructure Already Ready
+
+Infrastructure was set up in SETUP_EFFORT_INFRASTRUCTURE state:
+- Effort directories exist at: `efforts/phase{X}/wave{Y}/{effort-name}`
+- Git branches created with project prefix from target-repo-config.yaml
+- Remote tracking configured
+- IMPLEMENTATION-PLAN.md files created by Code Reviewers
+- work-log.md files initialized
+- **SW Engineer parallelization plan in orchestrator-state.yaml**
+
+**Just CD to directories and spawn SW Engineers per the analyzed plan!**
+
+### R187-R189 TODO PERSISTENCE
+```bash
+# After all SW Engineers spawned
+echo "💾 R187: Saving TODOs after spawning SW Engineers..."
+save_todos "SPAWN_AGENTS complete - all SW Engineers spawned"
+
+# R189: Commit within 60 seconds
+cd $CLAUDE_PROJECT_DIR
+git add todos/*.todo orchestrator-state.yaml
+git commit -m "todo: SW Engineers spawned, entering monitoring"
+git push
+
+# Transition to MONITOR
+echo "➡️ Transitioning to MONITOR state..."
+```
+
+## Spawn Message Template WITH EXPLICIT DIRECTORY NAVIGATION
+
+```markdown
+# SPAWN SW ENGINEER WITH MANDATORY DIRECTORY NAVIGATION:
+Task sw-engineer:
+PURPOSE: Implement {effort_id} - {effort_name}
+
+🔴🔴🔴 CRITICAL: YOU WILL NOT BE IN THE RIGHT DIRECTORY! 🔴🔴🔴
+YOU MUST NAVIGATE TO YOUR EFFORT DIRECTORY IMMEDIATELY!
+
+TARGET_DIRECTORY: /efforts/phase{X}/wave{Y}/{effort-name}
+EXPECTED_BRANCH: {PROJECT_PREFIX}/phase{X}/wave{Y}/{effort-name}
+
+YOUR MANDATORY FIRST ACTIONS:
+1. Echo your current directory: pwd
+2. Navigate to effort directory: cd /efforts/phase{X}/wave{Y}/{effort-name}
+3. Verify you're now in correct directory: pwd
+4. Verify branch: git branch --show-current
+5. If directory doesn't exist or branch is wrong:
+   - STOP IMMEDIATELY
+   - Report: "❌ ENVIRONMENT ERROR: Directory or branch incorrect"
+   - Request orchestrator correction
+6. Run R209 directory isolation protocol
+7. Set readonly EFFORT_ISOLATION_DIR environment variable
+
+BRANCH: {PROJECT_PREFIX}/phase{X}/wave{Y}/effort{Z}-{name}  # Include project prefix from target-repo-config.yaml!
+
+REQUIREMENTS:
+- Follow IMPLEMENTATION-PLAN.md exactly
+- Size limit: {limit} lines
+- Test coverage: {X}% minimum
+- Update work-log.md every checkpoint
+
+STARTUP REQUIREMENTS:
+1. Print: "AGENT STARTUP: $(date '+%Y-%m-%d %H:%M:%S %Z')"
+2. Verify pwd matches WORKING_DIR
+3. Verify branch matches BRANCH
+4. Acknowledge rules R054, R007, R013, R060, R017, R152
+
+DELIVERABLES:
+- Implementation complete
+- Tests passing at required coverage
+- Size under limit
+- Work log updated
+- Code committed and pushed
+```
+
+## Parallelization Matrix
+
+**See R053 in rule-library for parallelization decisions guidance.**
+
+Key points:
+- Can parallelize: Independent efforts, no shared dependencies
+- Must serialize: Dependent efforts, splits, shared files
+
+## Recording Spawn Times
+
+```yaml
+# Update in orchestrator-state.yaml
+parallel_spawn_records:
+  wave{X}_group{Y}:
+    spawned_at: "2025-08-23T14:30:45Z"
+    agents:
+      - name: "sw-engineer-effort1"
+        timestamp: "2025-08-23T14:30:47Z"
+      - name: "sw-engineer-effort2"
+        timestamp: "2025-08-23T14:30:49Z"
+      - name: "sw-engineer-effort3"
+        timestamp: "2025-08-23T14:30:51Z"
+    deltas: [2, 2]
+    average_delta: 2.0
+    grade: "PASS"
+```
+
+## Common Spawn Patterns
+
+### Pattern 1: Wave Start (All Planning)
+```
+Spawn all Code Reviewers for planning → Wait → Spawn all SW Engineers
+```
+
+### Pattern 2: Post-Implementation (All Reviews)
+```
+Spawn all Code Reviewers for review → Process decisions → Handle splits/fixes
+```
+
+### Pattern 3: Mixed Dependencies
+```
+Spawn independent efforts → Monitor → Spawn dependent efforts as prerequisites complete
+```
+
+## Grading Calculation
+
+```python
+def calculate_spawn_grade(timestamps):
+    if len(timestamps) < 2:
+        return "PASS"  # Single spawn
+    
+    deltas = []
+    for i in range(1, len(timestamps)):
+        delta = (timestamps[i] - timestamps[i-1]).total_seconds()
+        deltas.append(delta)
+    
+    avg = sum(deltas) / len(deltas)
+    grade = "PASS" if avg < 5.0 else "FAIL"
+    
+    print(f"Spawn Grade: {grade}")
+    print(f"Average Delta: {avg:.2f}s (target: <5s)")
+    
+    return grade
+```
+
+---
+### 🔴 RULE R254 - NO PARALLEL SPAWNING FOR SPLIT FIXES!
+**Source:** rule-library/R254-sequential-split-fix-processing.md  
+**Criticality:** BLOCKING - Parallel split fixes = AUTOMATIC FAILURE
+**Used in states:** SPAWN_AGENTS (when spawning for fixes)
+
+⚠️⚠️⚠️ **EXCEPTION TO R151: Split fixes MUST be sequential!** ⚠️⚠️⚠️
+
+When spawning SW Engineers to fix issues in splits:
+- **DO NOT** apply parallel spawning rules
+- **DO NOT** spawn multiple SW Engineers at once
+- **MUST** process splits ONE AT A TIME
+- **MUST** wait for each to complete before next
+
+```bash
+# ❌ WRONG: Parallel spawn for split fixes
+if [ "$IS_SPLIT_FIX" = true ]; then
+    for split in split1 split2 split3; do
+        spawn_sw_engineer "$split" &  # NO! AUTOMATIC FAILURE!
+    done
+fi
+
+# ✅ CORRECT: Sequential spawn for split fixes
+if [ "$IS_SPLIT_FIX" = true ]; then
+    for split in split1 split2 split3; do
+        echo "Processing split $split sequentially..."
+        spawn_sw_engineer "$split"
+        wait_for_completion "$split"
+        echo "✅ Split $split complete"
+    done
+fi
+```
+
+**Detection:**
+The orchestrator MUST track whether spawning is for:
+- Initial implementation → Parallel OK (follow R151)
+- Split fixes → Sequential REQUIRED (follow R254)
+```
+
+## Handling Agent Error Reports (R254)
+
+When agents report environment errors:
+
+### If agent says "ORCHESTRATOR, YOU GAVE ME THE WRONG PROMPT!"
+1. **READ THE ENTIRE ERROR MESSAGE** - They will echo your prompt back
+2. **CHECK WHAT YOU SPECIFIED** vs what directory actually exists
+3. **VERIFY INFRASTRUCTURE**:
+   ```bash
+   ls -la /efforts/phase${PHASE}/wave${WAVE}/
+   ```
+4. **RE-SPAWN WITH CORRECTED PATH**:
+   ```
+   TARGET_DIRECTORY: /efforts/phase1/wave1/core-api-types  # BE SPECIFIC!
+   ```
+
+### Common Issues and Fixes:
+- **"Directory doesn't exist"** → Run SETUP_EFFORT_INFRASTRUCTURE first
+- **"Wrong branch"** → Include project prefix in branch name
+- **"Can't find IMPLEMENTATION-PLAN.md"** → Ensure Code Reviewer completed planning
+- **"Path not specified"** → Always include explicit TARGET_DIRECTORY
+
+### Recording Errors (R253 compliant):
+```bash
+# When agent reports error
+yq -i ".agent_errors += [{\"agent\": \"sw-engineer\", \"effort\": \"$EFFORT\", \"error\": \"wrong directory\", \"time\": \"$(date -Iseconds)\"}]" orchestrator-state.yaml
+git add orchestrator-state.yaml && git commit -m "state: agent error recorded [R253]" && git push
+```
+
+## State Transition
+
+After spawning all required agents:
+1. Update orchestrator-state.yaml with spawn records
+2. Calculate and record grade
+3. Check for immediate error reports
+4. If errors, handle per R254 before transitioning
+5. Transition to MONITOR state

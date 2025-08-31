@@ -1,0 +1,259 @@
+# Orchestrator State for idpbuidler-oci-mgmt
+# Corrected to valid state machine state
+
+current_phase: 1
+current_wave: 2
+current_state: WAVE_START
+previous_state: WAVE_COMPLETE
+transition_time: "2025-08-25T03:05:00Z"
+transition_reason: "Wave 2 fully reset - all remote branches deleted, ready for Code Reviewers to create implementation plans"
+
+violations:
+  - effort: "oci-types"
+    lines: 974
+    limit: 800
+    requires_split: true
+    split_planned: true
+    splits_needed: 2
+    split_sizes: [661, 313]
+  - effort: "registry-auth-types"
+    lines: 965
+    limit: 800
+    requires_split: true
+    split_planned: true
+    splits_needed: 2
+    split_sizes: [649, 310]
+
+project_info:
+  name: "idpbuidler-oci-mgmt"
+  description: "A feature addition to the idpbuilder cli that allows it to build and push images to from the local file system to the idpbuilder internal gitea at gitea.cnoe.localtest.me and accept the self signed certs that gitea is using while running on the local idpbuilder cluster."
+  start_date: "2025-08-24"
+  
+phases_planned: 5
+waves_per_phase: [3, 4, 3, 3, 3]
+
+efforts_completed:
+  - phase: 1
+    wave: 1
+    name: "oci-types"
+    status: "completed_with_splits"
+    splits: 2
+    split_sizes: [629, 376]
+    review_status: "ACCEPTED"
+    completion_time: "2025-08-25T01:00:00Z"
+  - phase: 1
+    wave: 1
+    name: "registry-auth-types"
+    status: "completed_with_splits"
+    splits: 2
+    split_sizes: [860, 623]
+    review_status: "ACCEPTED"
+    completion_time: "2025-08-25T01:00:00Z"
+  - phase: 1
+    wave: 1
+    name: "error-reporting-types"
+    status: "completed_with_splits"
+    splits: 2
+    split_sizes: [600, 747]
+    review_status: "ACCEPTED"
+    completion_time: "2025-08-25T01:10:00Z"
+efforts_in_progress: []
+efforts_pending:
+  - phase: 1
+    wave: 2
+    efforts:
+      - name: "buildah-builder-interface"
+        description: "Buildah builder interface"
+        target_lines: 400
+        status: "pending"
+      - name: "gitea-registry-interface"
+        description: "Gitea registry client interface"
+        target_lines: 400
+        status: "pending"
+      - name: "stack-manager-interface"
+        description: "Stack manager interface"
+        target_lines: 300
+        status: "pending"
+
+efforts_planned:
+  - phase: 1
+    wave: 1
+    efforts:
+      - name: "oci-types"
+        description: "OCI types and stack configuration types"
+        target_lines: 500
+        actual_lines: 974
+        status: "split_planned"
+      - name: "registry-auth-types"
+        description: "Registry authentication and certificate types"
+        target_lines: 400
+        actual_lines: 965
+        status: "split_planned"
+      - name: "error-reporting-types"
+        description: "Error types and progress reporting types"
+        target_lines: 300
+        status: "ready"
+
+integration_branches:
+  - branch: "phase1/wave1/integration"
+    phase: 1
+    wave: 1
+    created_at: "2025-08-25T01:58:00Z"
+    merged_splits: 6
+    architect_review: "PROCEED"
+    review_time: "2025-08-25T02:10:00Z"
+
+grading_history:
+  parallel_spawn_average: 0.0
+  review_first_try_rate: 0.0
+  integration_success_rate: 0.0
+  
+last_checkpoint: "2025-08-25T02:20:00Z"
+
+wave_summary:
+  phase: 1
+  wave: 1
+  total_efforts: 3
+  completed_efforts: 3
+  total_splits: 6
+  all_splits_compliant: true
+  review_status: "ALL_ACCEPTED"
+  integration_status: "COMPLETE"
+  architect_decision: "PROCEED"
+notes: "Wave 2 clean slate - all artifacts removed. Ready to spawn Code Reviewers for implementation planning of buildah-builder-interface, gitea-registry-interface, and stack-manager-interface."
+
+# ════════════════════════════════════════════════════════════════
+# NEW: Architecture Planning States (R210, R211)
+# ════════════════════════════════════════════════════════════════
+
+# Phase Architecture Plans (Created by Architect after PHASE_ASSESSMENT passes)
+phase_architecture_plans:
+  # Example:
+  # - phase: 2
+  #   status: "created"
+  #   file: "phase-plans/PHASE-2-ARCHITECTURE-PLAN.md"
+  #   created_by: "architect"
+  #   created_at: "2025-08-25T10:00:00Z"
+  #   architectural_decisions:
+  #     - "Use event-driven architecture for notifications"
+  #     - "Implement CQRS for read/write separation"
+  #   parallelization_strategy: "Waves 1-2 concurrent, Wave 3 depends on both"
+
+# Wave Architecture Plans (Created by Architect after wave review)
+wave_architecture_plans:
+  # Example:
+  # - phase: 1
+  #   wave: 3
+  #   status: "created"
+  #   file: "phase-plans/PHASE-1-WAVE-3-ARCHITECTURE-PLAN.md"
+  #   created_by: "architect"
+  #   created_at: "2025-08-25T11:00:00Z"
+  #   effort_contracts:
+  #     - effort: "api-gateway"
+  #       interfaces: ["RouteHandler", "AuthMiddleware"]
+  #     - effort: "rate-limiter"
+  #       interfaces: ["RateLimiter", "TokenBucket"]
+  #   mvp_features: ["Basic routing", "JWT validation"]
+  #   nice_to_have: ["Request caching", "Response compression"]
+
+# Phase Implementation Plans (Created by Code Reviewer from Architecture)
+phase_implementation_plans:
+  # Example:
+  # - phase: 2
+  #   status: "created"
+  #   file: "phase-plans/PHASE-2-IMPLEMENTATION-PLAN.md"
+  #   created_by: "code-reviewer"
+  #   created_at: "2025-08-25T12:00:00Z"
+  #   source_architecture: "phase-plans/PHASE-2-ARCHITECTURE-PLAN.md"
+  #   wave_count: 4
+  #   total_estimated_lines: 3200
+
+# Wave Implementation Plans (Created by Code Reviewer from Architecture)
+wave_implementation_plans:
+  # Example:
+  # - phase: 1
+  #   wave: 3
+  #   status: "created"
+  #   file: "phase-plans/PHASE-1-WAVE-3-IMPLEMENTATION-PLAN.md"
+  #   created_by: "code-reviewer"
+  #   created_at: "2025-08-25T13:00:00Z"
+  #   source_architecture: "phase-plans/PHASE-1-WAVE-3-ARCHITECTURE-PLAN.md"
+  #   effort_count: 3
+  #   r213_metadata_injected: true
+  #   wave_root: "efforts/phase1/wave3"
+
+# R212 Phase Directory Acknowledgments
+phase_directory_acknowledgments:
+  # Example:
+  # - phase: 1
+  #   acknowledged_by: ["architect", "code-reviewer"]
+  #   phase_root: "efforts/phase1"
+  #   acknowledgment_time: "2025-08-25T09:00:00Z"
+
+# R213 Wave Metadata Injections (Orchestrator as master)
+wave_metadata_injections:
+  # Example:
+  # - phase: 1
+  #   wave: 2
+  #   metadata_source: "ORCHESTRATOR"
+  #   wave_root: "efforts/phase1/wave2"
+  #   effort_count: 3
+  #   injection_time: "2025-08-25T08:00:00Z"
+  #   acknowledged_by: ["code-reviewer"]
+
+# R214 Code Reviewer Wave Acknowledgments
+code_reviewer_wave_acknowledgments:
+  # Example:
+  # - phase: 1
+  #   wave: 2
+  #   acknowledged: true
+  #   wave_root: "efforts/phase1/wave2"
+  #   acknowledgment_time: "2025-08-25T14:00:00Z"
+  #   effort_plans_created: 3
+
+# New Architect States (for state machine)
+architect_review_states:
+  phase_assessments:
+    # Example:
+    # - phase: 1
+    #   assessment_time: "2025-08-25T15:00:00Z"
+    #   result: "PASS"
+    #   architecture_plan_created: true
+  wave_reviews:
+    # Example:
+    # - phase: 1
+    #   wave: 1
+    #   review_time: "2025-08-25T16:00:00Z"
+    #   result: "PROCEED"
+    #   architecture_plan_created: true
+
+# New Code Reviewer Planning States
+code_reviewer_planning_states:
+  # Track when code reviewers are in planning mode vs review mode
+  current_mode: "PLANNING"  # PLANNING | REVIEWING
+  planning_queue:
+    # Example:
+    # - phase: 1
+    #   wave: 3
+    #   type: "wave_implementation"
+    #   source_architecture: "phase-plans/PHASE-1-WAVE-3-ARCHITECTURE-PLAN.md"
+    #   status: "pending"
+
+# Extended State Machine States
+extended_states:
+  # New states added for architecture-driven planning
+  orchestrator_states:
+    - "SPAWN_ARCHITECT_PHASE_PLANNING"
+    - "SPAWN_ARCHITECT_WAVE_PLANNING"
+    - "SPAWN_CODE_REVIEWER_PHASE_IMPL"
+    - "SPAWN_CODE_REVIEWER_WAVE_IMPL"
+    - "WAITING_FOR_ARCHITECTURE_PLAN"
+    - "WAITING_FOR_IMPLEMENTATION_PLAN"
+  architect_states:
+    - "PHASE_ARCHITECTURE_PLANNING"
+    - "WAVE_ARCHITECTURE_PLANNING"
+    - "ARCHITECTURE_VALIDATION"
+  code_reviewer_states:
+    - "PHASE_IMPLEMENTATION_PLANNING"
+    - "WAVE_IMPLEMENTATION_PLANNING"
+    - "WAVE_DIRECTORY_ACKNOWLEDGMENT"

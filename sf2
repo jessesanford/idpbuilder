@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Software Factory 2.0 Command Line Tool
+# Quick access to SF 2.0 operations from anywhere
+
+# Find the SF 2.0 template directory
+SF2_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Handle commands
+case "${1:-help}" in
+    new|create)
+        shift
+        "$SF2_DIR/setup.sh" "$@"
+        ;;
+    migrate)
+        shift
+        "$SF2_DIR/migrate-from-1.0.sh" "$@"
+        ;;
+    migrate-planning)
+        shift
+        "$SF2_DIR/migrate-planning-only.sh" "$@"
+        ;;
+    install)
+        "$SF2_DIR/install-sf2.sh"
+        ;;
+    help|--help|-h)
+        cat << EOF
+Software Factory 2.0 CLI
+
+Usage: sf2 <command> [options]
+
+Commands:
+  new, create         Create a new SF 2.0 project
+  migrate            Migrate a SF 1.0 project (full)
+  migrate-planning   Migrate SF 1.0 planning only (discard code)
+  install            Interactive installer menu
+  help               Show this help message
+
+Examples:
+  sf2 new                    # Interactive project creation
+  sf2 migrate /path/to/sf1   # Migrate existing SF 1.0 project
+  sf2 migrate-planning /path # Migrate planning only
+  sf2 install                # Show interactive menu
+
+Template Location: $SF2_DIR
+EOF
+        ;;
+    *)
+        echo "Unknown command: $1"
+        echo "Run 'sf2 help' for usage information"
+        exit 1
+        ;;
+esac

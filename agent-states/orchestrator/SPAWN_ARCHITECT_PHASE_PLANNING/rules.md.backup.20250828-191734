@@ -1,0 +1,41 @@
+# Orchestrator - SPAWN_ARCHITECT_PHASE_PLANNING State Rules
+
+## 🚨 SPAWN_ARCHITECT_PHASE_PLANNING IS A VERB - START SPAWNING ARCHITECT IMMEDIATELY! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING SPAWN_ARCHITECT_PHASE_PLANNING
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Spawn Architect with Phase planning request NOW
+2. Include phase requirements in spawn message
+3. Check TodoWrite for pending items and process them
+4. Provide context from master plan immediately
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in SPAWN_ARCHITECT_PHASE_PLANNING" [stops]
+- ❌ "Successfully entered SPAWN_ARCHITECT_PHASE_PLANNING state" [waits]
+- ❌ "Ready to start spawning architect" [pauses]
+- ❌ "I'm in SPAWN_ARCHITECT_PHASE_PLANNING state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering SPAWN_ARCHITECT_PHASE_PLANNING, Spawn Architect with Phase planning request NOW..."
+- ✅ "START SPAWNING ARCHITECT, include phase requirements in spawn message..."
+- ✅ "SPAWN_ARCHITECT_PHASE_PLANNING: Provide context from master plan immediately..."
+
+## State Context
+This is the SPAWN_ARCHITECT_PHASE_PLANNING state for the orchestrator.
+
+## Acknowledgment Required
+Thank you for reading the rules file for the SPAWN_ARCHITECT_PHASE_PLANNING state.
+
+**IMPORTANT**: Please report that you have successfully read the SPAWN_ARCHITECT_PHASE_PLANNING rules file.
+
+Say: "✅ Successfully read SPAWN_ARCHITECT_PHASE_PLANNING rules for orchestrator"
+
+## State-Specific Rules
+No additional state-specific rules are defined for this state at this time.
+
+## General Responsibilities
+Follow all general orchestrator rules and the Software Factory state machine.
+
+## Next Steps
+Proceed with the standard workflow for the SPAWN_ARCHITECT_PHASE_PLANNING state as defined in the state machine.

@@ -1,0 +1,72 @@
+# SOFTWARE FACTORY MANAGER TODOs - Testing Compaction Recovery
+# Generated: 2025-08-26 19:56:00 UTC
+# Agent: software-factory-manager
+# State: TESTING (Testing compaction recovery system)
+# Context: Testing transcript-based identification for multi-agent workflows
+
+## COMPLETED (4 items)
+✓ Review and migrate rules from CRITICAL folder to rule-library
+  - Moved all rules from 🚨-CRITICAL to rule-library
+  - Created proper rule files with enforcement details
+  - Updated all references across the codebase
+
+✓ Create R021 supreme law to prevent orchestrator stopping
+  - Created as SUPREME LAW with -100% penalty
+  - Enhanced with context recovery confidence
+  - Added to multiple visibility points
+
+✓ Fix line counter usage in sparse clones (R198 and R022)
+  - Updated R198 for SW Engineer sparse clone scenario
+  - Created R022 for Architect-specific guidance
+  - Emphasized NO PARAMETERS requirement
+
+✓ Implement transcript-based agent identification
+  - Created transcript-based-precompact.sh
+  - Created transcript-based-pretooluse.sh
+  - Tested with multiple agent scenarios
+  - Proven precise blocking works
+
+## IN PROGRESS (1 item)
+→ Test compaction recovery with multi-agent scenarios
+  - Hook scripts deployed and configured
+  - Settings.json updated with new scripts
+  - Creating test TODOs for recovery testing
+  - Next: Trigger actual compaction to test
+
+## PENDING (3 items)
+○ Document transcript-based recovery system
+  - Create comprehensive documentation
+  - Include usage examples
+  - Add troubleshooting guide
+
+○ Create integration tests for hook system
+  - Test automatic compaction detection
+  - Test manual compaction handling
+  - Verify multi-agent isolation
+
+○ Update all agent configs with new rules
+  - Add R021 to all agent configs
+  - Update R198 and R022 references
+  - Ensure rule visibility at key points
+
+## RECOVERY CONTEXT
+This TODO file is designed to test the compaction recovery system.
+When compaction occurs:
+1. PreCompact hook should detect this file as the latest TODO
+2. Copy it to /tmp/todos-precompact-{TRANSCRIPT_ID}.txt
+3. Create marker with TODO_STATE_SAVED pointing to the copy
+4. On recovery, agent reads this file and loads TODOs
+
+## KEY ACHIEVEMENTS
+- Successfully migrated from 🚨-CRITICAL to rule-library structure
+- Created R021 as SUPREME LAW preventing orchestrator from stopping
+- Fixed line counter confusion for both SW Engineers and Architects
+- Implemented precise agent identification using transcript IDs
+- Enabled true multi-agent workflows with isolated recovery
+
+## NEXT IMMEDIATE ACTIONS
+1. Trigger compaction with /compact command
+2. Verify TODO state is preserved
+3. Test recovery process
+4. Confirm only this agent is blocked
+5. Validate other agents continue normally

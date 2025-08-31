@@ -1,0 +1,25 @@
+# TODO List - Factory Manager - State Fixes
+Timestamp: 2025-08-29 21:16:58
+
+## Completed
+✅ Fix INTEGRATION_FEEDBACK_REVIEW rules.md - add R237 marker and mandatory reading sections
+✅ Fix SPAWN_CODE_REVIEWER_FIX_PLAN rules.md - add R237 marker and mandatory reading sections
+
+## In Progress
+None
+
+## Pending
+- Fix DISTRIBUTE_FIX_PLANS rules.md - add R237 marker and mandatory reading sections
+- Fix SPAWN_ENGINEERS_FOR_FIXES rules.md - add R237 marker and mandatory reading sections
+- Fix MONITORING_FIX_PROGRESS rules.md - add R237 marker and mandatory reading sections
+- Fix PHASE_INTEGRATION_FEEDBACK_REVIEW rules.md - add R237 marker and mandatory reading sections
+- Fix SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN rules.md - add R237 marker and mandatory reading sections
+- Create DISTRIBUTE_PHASE_FIX_PLANS state directory and rules.md
+- Create SPAWN_ENGINEERS_FOR_PHASE_FIXES state directory and rules.md
+- Create MONITORING_PHASE_FIX_PROGRESS state directory and rules.md
+- Create INTEGRATION_RETRY_DECISION state directory and rules.md
+- Commit and push all changes
+
+## Summary
+Fixed: 2/11 state files
+Remaining: 5 files to fix, 4 files to create

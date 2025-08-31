@@ -1,0 +1,65 @@
+# Orchestrator - WAVE_START State Rules
+
+## 🚨 WAVE_START IS A VERB - START THE WAVE IMMEDIATELY! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING WAVE_START
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Initialize wave infrastructure NOW (directories, branches)
+2. Load wave implementation plan immediately
+3. Check TodoWrite for pending wave setup tasks
+4. Verify all effort planning is complete
+5. Transition to next state based on readiness
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in WAVE_START" [stops]
+- ❌ "Successfully entered WAVE_START state" [waits]
+- ❌ "Ready to start wave" [pauses]
+- ❌ "I'm in WAVE_START state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering WAVE_START, creating wave ${WAVE} infrastructure now..."
+- ✅ "Starting Wave ${WAVE}, checking effort plans..."
+- ✅ "WAVE_START: Initializing directories for ${EFFORT_COUNT} efforts..."
+
+## State Context
+Beginning a new wave of implementation. Must set up all infrastructure and verify readiness before spawning agents.
+
+## Primary Actions (DO IMMEDIATELY!)
+1. Create wave directory structure
+2. Initialize effort branches
+3. Verify all effort plans exist
+4. Check agent availability
+5. Determine parallelization strategy
+6. Transition to appropriate next state
+
+## Critical Validations
+- All effort implementation plans must exist
+- All effort directories must be created
+- All branches must be initialized
+- Agent pool must be sufficient
+
+## State Transitions
+- If plans missing → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+- If infrastructure needed → SETUP_EFFORT_INFRASTRUCTURE
+- If ready to spawn → ANALYZE_CODE_REVIEWER_PARALLELIZATION
+- If error → ERROR_RECOVERY
+
+## Immediate Action Examples
+```bash
+# CORRECT - Immediate action:
+echo "Entering WAVE_START for Phase ${PHASE} Wave ${WAVE}"
+mkdir -p phase${PHASE}/wave${WAVE}
+for effort in E3.1.1 E3.1.2 E3.1.3; do
+    mkdir -p efforts/${effort}
+    echo "Created ${effort} directory"
+done
+
+# WRONG - Passive waiting:
+echo "Now in WAVE_START state"
+echo "Ready to begin wave"
+# [waits for something]
+```
+
+## Next Steps
+Based on what's found during immediate checks, transition to the appropriate state WITHOUT DELAY.

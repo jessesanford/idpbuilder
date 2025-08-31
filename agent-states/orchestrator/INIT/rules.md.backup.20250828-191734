@@ -1,0 +1,198 @@
+# Orchestrator - INIT State Rules
+
+## ⚠️⚠️⚠️ MANDATORY RULE READING AND ACKNOWLEDGMENT ⚠️⚠️⚠️
+
+**YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. YOUR READ TOOL CALLS ARE BEING MONITORED.**
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+1. Fake acknowledgment without reading
+2. Bulk acknowledgment
+3. Reading from memory
+
+### ✅ CORRECT PATTERN:
+1. READ each rule file
+2. Acknowledge individually with rule number and description
+
+## 📋 PRIMARY DIRECTIVES FOR INIT STATE
+
+### 🚨🚨🚨 R191 - Target Repository Configuration
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R191-target-repository-configuration.md`
+**Criticality**: BLOCKING - Must load target-repo-config.yaml
+**Summary**: Load target repository configuration from specified file
+
+### 🚨🚨🚨 R192 - Repository Separation Enforcement
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R192-repository-separation.md`
+**Criticality**: BLOCKING - Keep Software Factory and target repos separate
+**Summary**: Maintain strict separation between factory and target code
+
+### 🚨🚨🚨 R203 - State-Aware Agent Startup
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R203-state-aware-agent-startup.md`
+**Criticality**: BLOCKING - Must follow startup sequence
+**Summary**: Load config, determine state, load state rules, acknowledge
+
+### 🚨🚨🚨 R187-R190 - TODO Persistence Suite
+**Files**:
+- R187: `$CLAUDE_PROJECT_DIR/rule-library/R187-mandatory-todo-save-triggers.md`
+- R188: `$CLAUDE_PROJECT_DIR/rule-library/R188-todo-save-frequency-requirements.md`
+- R189: `$CLAUDE_PROJECT_DIR/rule-library/R189-todo-file-commit-protocol.md`
+- R190: `$CLAUDE_PROJECT_DIR/rule-library/R190-todo-recovery-verification.md`
+**Criticality**: BLOCKING - TODO loss = -50% to -100% penalty
+**Summary**: Save TODOs within 30s, every 10 messages/15 min, commit within 60s
+
+### 🔴🔴🔴 R235 - Mandatory Pre-Flight Verification (SUPREME LAW #4)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R235-mandatory-pre-flight-verification.md`
+**Criticality**: SUPREME LAW - Wrong location = -100% failure
+**Summary**: Verify correct directory and branch before ANY work
+
+### 🔴🔴🔴 R252 - Mandatory State File Updates (SUPREME LAW #10)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R252-mandatory-state-file-updates.md`
+**Criticality**: SUPREME LAW - Update on every transition
+**Summary**: Update orchestrator-state.yaml on all state changes
+
+### 🚨🚨🚨 R253 - Mandatory State File Commit Push
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R253-mandatory-state-file-commit-push.md`
+**Criticality**: BLOCKING - Push within 60 seconds
+**Summary**: Commit and push state file immediately after updates
+
+### 🔴🔴🔴 R232 - TodoWrite Pending Items Override (SUPREME LAW #9)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R232-todowrite-pending-items-override.md`
+**Criticality**: SUPREME LAW - Pending items are COMMANDS
+**Summary**: Any pending TODO items must be executed immediately
+
+## 📋 RULE ENFORCEMENT SUMMARY FOR INIT STATE
+
+### Critical Requirements:
+1. Check for compaction IMMEDIATELY - Penalty: -100%
+2. Load orchestrator-state.yaml NOW - Penalty: -50%
+3. Load target-repo-config.yaml NOW - Penalty: -50%
+4. Run R203 startup sequence - Penalty: -100%
+5. Check TodoWrite for pending items - Penalty: -30%
+6. Save TODOs within 30 seconds - Penalty: -20%
+
+### Success Criteria:
+- ✅ Compaction check completed
+- ✅ All configs loaded successfully
+- ✅ TODOs checked and processed
+- ✅ State file updated
+- ✅ Next state determined
+
+### Failure Triggers:
+- ❌ Skip compaction check = IMMEDIATE STOP
+- ❌ Skip R203 startup = -100% penalty
+- ❌ Forget TODO persistence = -20% per violation
+- ❌ Stop after entering state = AUTOMATIC FAILURE
+
+## 🚨 INIT IS A VERB - START INITIALIZING IMMEDIATELY! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING INIT
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+
+```bash
+# 🔴🔴🔴 STEP 0: CHECK FOR COMPACTION (HIGHEST PRIORITY) 🔴🔴🔴
+echo "🔍 Checking for compaction..."
+bash $CLAUDE_PROJECT_DIR/utilities/check-compaction.sh
+if [ -f /tmp/claude-compaction-detected ]; then
+    echo "⚠️ COMPACTION DETECTED - Recovering state..."
+    # R190: Load saved TODOs into TodoWrite
+    if [ -f todos/*.todo ]; then
+        echo "📝 Loading saved TODOs..."
+        # MUST use TodoWrite to load, not just read!
+    fi
+fi
+
+# STEP 1: R203 STATE-AWARE STARTUP (MANDATORY)
+echo "🚀 R203: Starting state-aware initialization..."
+echo "📋 Loading core orchestrator config..."
+# READ: $CLAUDE_PROJECT_DIR/.claude/agents/orchestrator.md
+
+# STEP 2: LOAD TODO PERSISTENCE RULES (R187-R190)
+echo "📝 Loading TODO persistence rules..."
+# READ: $CLAUDE_PROJECT_DIR/rule-library/R187-mandatory-todo-save-triggers.md
+# READ: $CLAUDE_PROJECT_DIR/rule-library/R188-todo-save-frequency-requirements.md  
+# READ: $CLAUDE_PROJECT_DIR/rule-library/R189-todo-commit-protocol.md
+# READ: $CLAUDE_PROJECT_DIR/rule-library/R190-todo-recovery-verification.md
+
+# STEP 3: LOAD STATE AND CONFIG
+echo "📊 Loading orchestrator state..."
+# Load orchestrator-state.yaml NOW to check current state
+STATE_FILE="$CLAUDE_PROJECT_DIR/orchestrator-state.yaml"
+if [ -f "$STATE_FILE" ]; then
+    CURRENT_STATE=$(yq '.current_state' "$STATE_FILE")
+    echo "✅ Found existing state: $CURRENT_STATE"
+else
+    echo "📝 Creating initial state file..."
+fi
+
+# STEP 4: LOAD TARGET CONFIG (R191)
+echo "🎯 R191: Loading target repository configuration..."
+CONFIG_FILE="$CLAUDE_PROJECT_DIR/target-repo-config.yaml"
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "🔴🔴🔴 CRITICAL: target-repo-config.yaml NOT FOUND!"
+    exit 191
+fi
+
+# STEP 5: CHECK TODOS (R232 - Pending items are COMMANDS)
+echo "📋 R232: Checking TodoWrite for pending items..."
+# Check TodoWrite for any pending initialization tasks
+# CRITICAL: If pending items exist, they are COMMANDS to execute NOW!
+
+# STEP 6: VERIFY ENVIRONMENT (R235)
+echo "🔍 R235: Pre-flight verification..."
+# Verify environment (pwd, git branch) immediately
+pwd
+git branch --show-current
+
+# STEP 7: DETERMINE AND TRANSITION (R231 - Never stop)
+echo "➡️ Determining next state and transitioning NOW..."
+# Determine next state and transition WITHOUT PAUSE
+```
+
+1. Check for compaction FIRST (highest priority)
+2. Run R203 state-aware startup sequence
+3. Load orchestrator-state.yaml NOW to check current state
+4. Load target-repo-config.yaml NOW to get configuration  
+5. Check TodoWrite for pending items (they are COMMANDS!)
+6. Run R235 pre-flight verification
+7. Save TODOs per R187 (within 30 seconds)
+8. Determine next state and transition WITHOUT PAUSE
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in INIT" [stops]
+- ❌ "Successfully entered INIT state" [waits]
+- ❌ "Ready to initialize" [pauses]
+- ❌ "I'm in INIT state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering INIT, loading orchestrator-state.yaml now..."
+- ✅ "Initializing, checking for existing state file..."
+- ✅ "INIT: Reading configuration and determining next state..."
+
+## State Context
+Initial state when orchestrator starts. Load configuration and determine next state - BUT DO IT IMMEDIATELY!
+
+## Primary Actions
+1. Load target-repo-config.yaml
+2. Check/create orchestrator-state.yaml
+3. Determine if resuming or starting fresh
+4. Transition to appropriate state (PLANNING if new, current state if resuming)
+
+## State Transition
+- If orchestrator-state.yaml exists with current_state → Resume from that state
+- If no state file → Create initial state file and go to PLANNING
+- If error loading config → HARD_STOP
+
+## Critical Rule Enforcement Order
+
+1. **FIRST**: Check for compaction (highest priority)
+2. **R203**: Follow complete startup sequence
+3. **R191**: Load target repository configuration
+4. **R252**: Verify/update state file integrity
+5. **R232**: Check and execute pending TodoWrite items
+6. **R187**: Save TODOs within 30 seconds of changes
+7. **R188**: Save TODOs every 10 messages/15 minutes
+8. **R189**: Commit TODOs within 60 seconds
+9. **R190**: Verify TODO recovery after compaction
+10. **R235**: Run pre-flight verification before ANY work
+
+**Remember**: All SUPREME LAWs override other rules. Violation of any BLOCKING rule = immediate failure.

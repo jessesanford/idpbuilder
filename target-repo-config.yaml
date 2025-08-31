@@ -1,0 +1,78 @@
+# Target Repository Configuration
+# This file specifies the actual project repository that Software Factory will work on
+# Generated: Sun Aug 31 08:24:54 UTC 2025
+
+target_repository:
+  # The upstream repository URL
+  url: "https://github.com/jessesanford/idpbuilder.git"
+  
+  # The default base branch to work from
+  base_branch: "main"
+  
+  # Clone depth for sparse checkouts (0 for full history)
+  clone_depth: 100
+  
+  # Authentication method
+  auth_method: "https"
+
+# Branch naming configuration
+branch_naming:
+  # Project prefix for all branches (lowercase kebab-case)
+  # This will be prepended to all branch names with a slash
+  project_prefix: "idpbuidler-oci-go-cr"
+  
+  # Format for effort branches
+  # Variables: {prefix}, {phase}, {wave}, {effort_name}
+  # Note: {prefix} includes the trailing slash if project_prefix is set
+  effort_format: "{prefix}phase{phase}/wave{wave}/{effort_name}"
+  
+  # Format for integration branches
+  # Variables: {prefix}, {phase}, {wave}
+  integration_format: "{prefix}phase{phase}/wave{wave}/integration"
+  
+  # Format for phase integration branches
+  # Variables: {prefix}, {phase}
+  phase_integration_format: "{prefix}phase{phase}/integration"
+
+# Workspace configuration
+workspace:
+  # Root directory for effort workspaces
+  efforts_root: "efforts"
+  
+  # Structure under efforts_root
+  effort_path: "phase{phase}/wave{wave}/{effort_name}"
+  
+  # Sparse checkout patterns (empty for full checkout)
+  sparse_patterns: []
+
+# Repository separation enforcement
+separation:
+  # Prevent agents from modifying SF instance repository
+  protect_sf_instance: true
+  
+  # List of protected paths in SF instance
+  protected_paths:
+    - "rule-library/"
+    - "utilities/"
+    - ".claude/"
+    - "*.yaml"
+    - "*.md"
+  
+  # Allowed operations in SF instance repo
+  allowed_in_sf_instance:
+    - "read"
+    - "state"
+
+# Validation rules
+validation:
+  # Require all effort branches to track remote
+  require_remote_tracking: true
+  
+  # Require push verification after commits
+  require_push_verification: true
+  
+  # Maximum time between push attempts (minutes)
+  max_push_delay: 5
+  
+  # Require clean git status before switching efforts
+  require_clean_status: true

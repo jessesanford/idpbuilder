@@ -1,0 +1,267 @@
+# Orchestrator - PHASE_COMPLETE State Rules
+
+## ⚠️⚠️⚠️ MANDATORY RULE READING AND ACKNOWLEDGMENT ⚠️⚠️⚠️
+
+**YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. YOUR READ TOOL CALLS ARE BEING MONITORED.**
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+1. Fake acknowledgment without reading
+2. Bulk acknowledgment
+3. Reading from memory
+
+### ✅ CORRECT PATTERN:
+1. READ each rule file
+2. Acknowledge individually with rule number and description
+
+## 📋 PRIMARY DIRECTIVES FOR PHASE_COMPLETE STATE
+
+### 🚨🚨🚨 R257 - Mandatory Phase Assessment Report
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R257-mandatory-phase-assessment-report.md`
+**Criticality**: BLOCKING - Required for phase completion
+**Summary**: Architect must create assessment report before phase completion
+
+### 🔴🔴🔴 R252 - Mandatory State File Updates (SUPREME LAW #10)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R252-mandatory-state-file-updates.md`
+**Criticality**: SUPREME LAW - Update on every transition
+**Summary**: Update orchestrator-state.yaml with phase completion metrics
+
+### 🚨🚨🚨 R253 - Mandatory State File Commit Push
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R253-mandatory-state-file-commit-push.md`
+**Criticality**: BLOCKING - Push within 60 seconds
+**Summary**: Commit and push state file immediately after updates
+
+### 🚨🚨🚨 R035 - Phase Completion Testing
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R035-phase-completion-testing.md`
+**Criticality**: BLOCKING - All tests must pass
+**Summary**: Run full test suite at phase level before completion
+
+### 🚨🚨🚨 R040 - Documentation Requirements
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R040-documentation-requirements.md`
+**Criticality**: BLOCKING - Complete documentation required
+**Summary**: Generate phase completion report and documentation
+
+### 🔴🔴🔴 R021 - Orchestrator Never Stops (SUPREME LAW #7)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R021-orchestrator-never-stops.md`
+**Criticality**: SUPREME LAW - Continue until SUCCESS or next phase
+**Summary**: Keep working through phase completion tasks
+
+## 🚨 PHASE_COMPLETE IS A VERB - FINALIZE PHASE NOW! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING PHASE_COMPLETE
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Create final phase integration branch NOW
+2. Document all phase achievements
+3. Generate phase completion report
+4. Determine if more phases exist
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Phase is complete" [stops]
+- ❌ "Successfully completed the phase" [celebrates early]
+- ❌ "Phase done, waiting for next steps" [pauses]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Creating phase integration branch..."
+- ✅ "Documenting phase achievements..."
+- ✅ "Generating completion report..."
+- ✅ "Checking for additional phases..."
+
+## State Context
+
+This state is entered ONLY after architect approves the complete phase AND creates the mandatory assessment report (R257). It handles final phase-level tasks before SUCCESS or next phase.
+
+## 🚨🚨🚨 PREREQUISITE: Verified Phase Assessment Report per R257 🚨🚨🚨
+
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R257-mandatory-phase-assessment-report.md`
+
+**CRITICAL**: You can ONLY be in this state if:
+1. Architect completed phase assessment
+2. Assessment report file exists at `phase-assessments/phase{N}/PHASE-{N}-ASSESSMENT-REPORT.md`
+3. Report contains PHASE_COMPLETE decision
+4. Report was verified in WAITING_FOR_PHASE_ASSESSMENT state
+
+**The assessment report path MUST be in your state file:**
+```yaml
+phase_assessment:
+  report_file: "phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md"
+  decision: "PHASE_COMPLETE"
+```
+
+## 🔴🔴🔴 CRITICAL: Post-Assessment Actions 🔴🔴🔴
+
+**This state performs MANDATORY phase finalization:**
+- Create final phase integration branch
+- Document all deliverables
+- Update metrics and reporting
+- Prepare for SUCCESS or next phase
+
+## Primary Purpose
+
+The PHASE_COMPLETE state is for:
+1. Creating phase-level integration branch
+2. Documenting phase achievements
+3. Generating phase completion metrics
+4. Determining single vs multi-phase flow
+5. Transitioning to SUCCESS or next phase
+
+## Phase Integration Tasks
+
+```bash
+# Create phase integration branch
+PHASE_BRANCH="phase$PHASE-complete"
+git checkout -b "$PHASE_BRANCH"
+
+# Merge all wave integration branches
+for wave_branch in $(list_wave_branches "$PHASE"); do
+    git merge "$wave_branch" --no-ff -m "Integrate Wave $wave into Phase $PHASE"
+done
+
+# Tag phase completion
+git tag -a "phase$PHASE-v1.0" -m "Phase $PHASE Complete - Architect Approved"
+git push origin "$PHASE_BRANCH" --tags
+```
+
+## Phase Documentation
+
+```bash
+# Generate phase completion report
+ASSESSMENT_REPORT=$(yq '.phase_assessment.report_file' orchestrator-state.yaml)
+if [ -z "$ASSESSMENT_REPORT" ] || [ ! -f "$ASSESSMENT_REPORT" ]; then
+    echo "❌ CRITICAL: No phase assessment report found in state!"
+    echo "❌ This violates R257 - cannot complete phase without report"
+    exit 1
+fi
+
+cat > "PHASE-${PHASE}-COMPLETION-REPORT.md" << EOF
+# Phase $PHASE Completion Report
+
+## Summary
+- **Phase**: $PHASE
+- **Waves Completed**: $WAVE_COUNT
+- **Efforts Delivered**: $EFFORT_COUNT
+- **Lines of Code**: $TOTAL_LINES
+- **Test Coverage**: $COVERAGE%
+- **Architect Assessment Report**: $ASSESSMENT_REPORT
+- **Architect Approval**: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+## Achievements
+$(list_phase_achievements)
+
+## Delivered Features
+$(list_delivered_features)
+
+## Architecture Decisions
+$(list_architecture_decisions)
+
+## Metrics
+- Code Review First-Try Success: $REVIEW_SUCCESS%
+- Split Compliance Rate: $SPLIT_COMPLIANCE%
+- Integration Success Rate: $INTEGRATION_SUCCESS%
+- Average Effort Size: $AVG_EFFORT_SIZE lines
+
+## Lessons Learned
+$(compile_lessons_learned)
+
+## Next Steps
+$(determine_next_steps)
+EOF
+
+git add "PHASE-${PHASE}-COMPLETION-REPORT.md"
+git commit -m "docs: Phase $PHASE completion report"
+git push
+```
+
+## State File Updates
+
+```bash
+# Record phase completion
+yq -i ".phases_completed[] = $PHASE" orchestrator-state.yaml
+yq -i ".phase_metrics.phase$PHASE.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+yq -i ".phase_metrics.phase$PHASE.waves = $WAVE_COUNT" orchestrator-state.yaml
+yq -i ".phase_metrics.phase$PHASE.efforts = $EFFORT_COUNT" orchestrator-state.yaml
+yq -i ".phase_metrics.phase$PHASE.integration_branch = \"$PHASE_BRANCH\"" orchestrator-state.yaml
+```
+
+## Multi-Phase Decision Logic
+
+```bash
+# Check if more phases exist
+TOTAL_PHASES=$(get_total_phases_from_plan)
+CURRENT_PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+
+if [ "$CURRENT_PHASE" -lt "$TOTAL_PHASES" ]; then
+    # More phases to complete
+    echo "Phase $CURRENT_PHASE complete. Preparing for Phase $((CURRENT_PHASE + 1))"
+    
+    # Update for next phase
+    yq -i ".current_phase = $((CURRENT_PHASE + 1))" orchestrator-state.yaml
+    yq -i ".current_wave = 1" orchestrator-state.yaml
+    yq -i ".current_state = \"INIT\"" orchestrator-state.yaml
+    
+    # Transition to start next phase
+    transition_to "INIT"  # Start next phase planning
+else
+    # All phases complete
+    echo "All $TOTAL_PHASES phases completed successfully!"
+    
+    # Create final project summary
+    create_project_completion_summary
+    
+    # Transition to terminal success
+    transition_to "SUCCESS"  # Project complete!
+fi
+```
+
+## Success Criteria
+
+Phase completion tasks succeed when:
+- [ ] Phase integration branch created
+- [ ] All waves merged successfully
+- [ ] Phase tagged appropriately
+- [ ] Completion report generated
+- [ ] Metrics updated in state file
+- [ ] Next action determined
+
+## State Transitions
+
+From PHASE_COMPLETE:
+- **Single phase project** → SUCCESS (project done)
+- **Multi-phase, more phases** → INIT (next phase)
+- **Multi-phase, last phase** → SUCCESS (project done)
+- **Integration failure** → ERROR_RECOVERY
+
+## Phase Completion Checklist
+
+Before transitioning from PHASE_COMPLETE:
+1. ✅ Phase integration branch created and pushed
+2. ✅ All wave branches merged
+3. ✅ Phase completion report written
+4. ✅ Metrics documented
+5. ✅ State file updated
+6. ✅ Lessons learned captured
+7. ✅ Next steps determined
+
+## Common Tasks
+
+1. **Create Pull Request**: For phase branch to main
+2. **Update Documentation**: Phase-level docs
+3. **Notify Stakeholders**: Phase complete
+4. **Archive Branches**: Clean up wave branches
+5. **Update Roadmap**: Mark phase done
+
+## Required Actions
+
+1. Create phase integration branch
+2. Merge all wave integrations
+3. Generate completion report
+4. Update state file metrics
+5. Determine if more phases exist
+6. Transition to SUCCESS or INIT
+
+## Grading Impact
+
+- Phase integration successful: +20 points
+- Complete documentation: +15 points
+- Proper metrics capture: +10 points
+- Clean state transitions: +10 points
+- Skipping phase finalization: -50 points

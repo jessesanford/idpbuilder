@@ -1,0 +1,427 @@
+# Orchestrator - MONITOR State Rules
+
+## State Context
+You are monitoring spawned agents and tracking their progress toward completion.
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R104.0.0 - MONITOR Rules                                  │
+│ Source: rule-library/RULE-REGISTRY.md#R104                     │
+├─────────────────────────────────────────────────────────────────┤
+│ MONITORING REQUIREMENTS:                                       │
+│ 1. Track all spawned agents continuously                      │
+│ 2. Validate progress against expected timelines               │
+│ 3. Detect blocking conditions early                           │
+│ 4. Coordinate dependencies between agents                      │
+│ 5. Trigger interventions when needed                          │
+│ 6. Maintain real-time status in orchestrator state           │
+└─────────────────────────────────────────────────────────────────┘
+
+## Agent Progress Tracking
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R018.0.0 - Progress Reporting                             │
+│ Source: rule-library/RULE-REGISTRY.md#R018                     │
+├─────────────────────────────────────────────────────────────────┤
+│ PROGRESS VALIDATION:                                           │
+│                                                                 │
+│ Every 10 minutes, verify each agent:                          │
+│ 1. Is responding to status requests                           │
+│ 2. Has made measurable progress                               │
+│ 3. Is within expected timeline                                │
+│ 4. Has not exceeded size limits                               │
+│ 5. Is following implementation plan                           │
+│                                                                 │
+│ Update orchestrator-state.yaml with findings                  │
+└─────────────────────────────────────────────────────────────────┘
+
+## Monitoring Implementation
+
+```python
+class AgentMonitor:
+    def __init__(self):
+        self.monitored_agents = {}
+        self.last_check = None
+        self.check_interval = 600  # 10 minutes
+        
+    def monitor_agent_progress(self, agent_id, agent_data):
+        """Monitor individual agent progress"""
+        
+        current_time = datetime.now()
+        
+        # Get current status
+        status_check = self.check_agent_status(agent_id)
+        
+        # Validate progress
+        progress_validation = self.validate_progress(agent_data, status_check)
+        
+        # Check timeline adherence
+        timeline_check = self.check_timeline(agent_data, current_time)
+        
+        # Size limit validation
+        size_check = self.validate_size_limits(agent_data)
+        
+        # Update monitoring record
+        monitoring_record = {
+            'agent_id': agent_id,
+            'last_check': current_time.isoformat(),
+            'status': status_check,
+            'progress': progress_validation,
+            'timeline': timeline_check,
+            'size': size_check,
+            'overall_health': self.calculate_agent_health(
+                status_check, progress_validation, timeline_check, size_check
+            )
+        }
+        
+        self.monitored_agents[agent_id] = monitoring_record
+        return monitoring_record
+    
+    def check_agent_status(self, agent_id):
+        """Check if agent is responsive and active"""
+        
+        try:
+            # This would be implemented based on agent communication protocol
+            response = ping_agent(agent_id, timeout=30)
+            
+            if response['responsive']:
+                return {
+                    'status': 'ACTIVE',
+                    'last_response': response['timestamp'],
+                    'current_task': response.get('current_task', 'Unknown')
+                }
+            else:
+                return {
+                    'status': 'UNRESPONSIVE',
+                    'last_seen': response.get('last_seen'),
+                    'action_needed': 'INVESTIGATE'
+                }
+        except Exception as e:
+            return {
+                'status': 'ERROR',
+                'error': str(e),
+                'action_needed': 'RESTART_AGENT'
+            }
+    
+    def validate_progress(self, agent_data, status_check):
+        """Validate agent is making expected progress"""
+        
+        expected_milestones = agent_data.get('expected_milestones', [])
+        current_milestone = status_check.get('current_milestone')
+        
+        # Calculate expected vs actual progress
+        time_elapsed = self.calculate_elapsed_time(agent_data['started_at'])
+        expected_completion = agent_data.get('expected_completion_percentage', 0)
+        
+        # This would be implemented based on work-log.md parsing
+        actual_completion = self.parse_work_log_progress(agent_data['working_dir'])
+        
+        progress_ratio = actual_completion / expected_completion if expected_completion > 0 else 1.0
+        
+        if progress_ratio >= 0.9:
+            grade = 'ON_TRACK'
+        elif progress_ratio >= 0.7:
+            grade = 'SLIGHTLY_BEHIND'
+        elif progress_ratio >= 0.5:
+            grade = 'BEHIND'
+        else:
+            grade = 'SIGNIFICANTLY_BEHIND'
+        
+        return {
+            'expected_completion': expected_completion,
+            'actual_completion': actual_completion,
+            'progress_ratio': progress_ratio,
+            'grade': grade,
+            'action_needed': self.determine_progress_action(grade)
+        }
+    
+    def check_timeline(self, agent_data, current_time):
+        """Check if agent is meeting timeline expectations"""
+        
+        started_at = datetime.fromisoformat(agent_data['started_at'])
+        expected_duration = agent_data.get('expected_duration_hours', 4)
+        expected_completion = started_at + timedelta(hours=expected_duration)
+        
+        time_remaining = expected_completion - current_time
+        time_elapsed = current_time - started_at
+        
+        utilization = time_elapsed.total_seconds() / (expected_duration * 3600)
+        
+        if utilization <= 0.5:
+            timeline_grade = 'AHEAD'
+        elif utilization <= 0.8:
+            timeline_grade = 'ON_TIME'
+        elif utilization <= 1.0:
+            timeline_grade = 'APPROACHING_DEADLINE'
+        else:
+            timeline_grade = 'OVERDUE'
+        
+        return {
+            'started_at': started_at.isoformat(),
+            'expected_completion': expected_completion.isoformat(),
+            'time_remaining_hours': time_remaining.total_seconds() / 3600,
+            'utilization': utilization,
+            'grade': timeline_grade,
+            'action_needed': self.determine_timeline_action(timeline_grade)
+        }
+```
+
+## Dependency Coordination
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R008.0.0 - Continuous Execution                           │
+│ Source: rule-library/RULE-REGISTRY.md#R008                     │
+├─────────────────────────────────────────────────────────────────┤
+│ DEPENDENCY MANAGEMENT:                                         │
+│                                                                 │
+│ When monitoring dependent efforts:                             │
+│ 1. Track prerequisite completion status                       │
+│ 2. Notify dependent agents when prerequisites ready           │
+│ 3. Prevent premature starts                                   │
+│ 4. Optimize start times for maximum parallelization          │
+│ 5. Handle dependency failures gracefully                      │
+└─────────────────────────────────────────────────────────────────┘
+
+```yaml
+# Dependency tracking in orchestrator-state.yaml
+dependency_monitoring:
+  wave2_dependencies:
+    effort1_api_types:
+      status: "COMPLETED"
+      completed_at: "2025-08-23T14:30:00Z"
+      dependent_efforts: ["effort2_controller", "effort3_webhooks"]
+      
+    effort2_controller:
+      status: "IN_PROGRESS"
+      started_at: "2025-08-23T14:35:00Z"
+      depends_on: ["effort1_api_types"]
+      progress: 60
+      expected_completion: "2025-08-23T16:30:00Z"
+      dependent_efforts: ["effort4_integration"]
+      
+    effort3_webhooks:
+      status: "IN_PROGRESS" 
+      started_at: "2025-08-23T14:35:00Z"
+      depends_on: ["effort1_api_types"]
+      progress: 45
+      expected_completion: "2025-08-23T16:45:00Z"
+      
+    effort4_integration:
+      status: "WAITING"
+      depends_on: ["effort2_controller", "effort3_webhooks"]
+      ready_to_start: false
+      can_start_when: "Both dependencies complete"
+```
+
+## Intervention Triggers
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R155.0.0 - State Transition Speed                         │
+│ Source: rule-library/RULE-REGISTRY.md#R155                     │
+├─────────────────────────────────────────────────────────────────┤
+│ INTERVENTION THRESHOLDS:                                       │
+│                                                                 │
+│ IMMEDIATE (Stop monitoring, take action):                     │
+│ - Agent unresponsive >15 minutes                              │
+│ - Size limit exceeded                                         │
+│ - Critical test failures                                      │
+│ - Build system failure                                        │
+│                                                                 │
+│ WARNING (Alert, continue monitoring):                         │
+│ - Progress <70% of expected                                   │
+│ - Timeline utilization >80%                                   │
+│ - Agent reporting difficulties                                │
+│                                                                 │
+│ OPTIMIZATION (Suggest improvements):                          │
+│ - Progress significantly ahead                                │
+│ - Resource underutilization                                   │
+│ - Potential for increased parallelization                     │
+└─────────────────────────────────────────────────────────────────┘
+
+```python
+def check_intervention_triggers(monitoring_data):
+    """Check if any agents require intervention"""
+    
+    interventions_needed = []
+    
+    for agent_id, data in monitoring_data.items():
+        # Critical interventions
+        if data['status']['status'] == 'UNRESPONSIVE':
+            last_seen = data['status'].get('last_seen')
+            if last_seen:
+                unresponsive_minutes = (datetime.now() - 
+                    datetime.fromisoformat(last_seen)).total_seconds() / 60
+                if unresponsive_minutes > 15:
+                    interventions_needed.append({
+                        'agent': agent_id,
+                        'type': 'CRITICAL',
+                        'issue': 'AGENT_UNRESPONSIVE',
+                        'action': 'RESTART_AGENT',
+                        'urgency': 'IMMEDIATE'
+                    })
+        
+        # Size limit violations
+        if data['size']['status'] == 'EXCEEDED':
+            interventions_needed.append({
+                'agent': agent_id,
+                'type': 'CRITICAL',
+                'issue': 'SIZE_LIMIT_EXCEEDED',
+                'action': 'SPAWN_CODE_REVIEWER_SPLIT',
+                'urgency': 'IMMEDIATE'
+            })
+        
+        # Progress issues
+        if data['progress']['grade'] in ['BEHIND', 'SIGNIFICANTLY_BEHIND']:
+            interventions_needed.append({
+                'agent': agent_id,
+                'type': 'WARNING',
+                'issue': 'PROGRESS_BEHIND',
+                'action': 'INVESTIGATE_BLOCKERS',
+                'urgency': 'HIGH'
+            })
+        
+        # Timeline issues
+        if data['timeline']['grade'] == 'OVERDUE':
+            interventions_needed.append({
+                'agent': agent_id,
+                'type': 'CRITICAL',
+                'issue': 'TIMELINE_OVERDUE',
+                'action': 'ESCALATE_PRIORITY',
+                'urgency': 'IMMEDIATE'
+            })
+    
+    return interventions_needed
+```
+
+## Status Reporting
+
+```yaml
+# Real-time status in orchestrator-state.yaml
+monitoring_status:
+  last_full_check: "2025-08-23T15:30:00Z"
+  check_interval_minutes: 10
+  
+  agents_monitored:
+    sw-engineer-effort1:
+      status: "ACTIVE"
+      progress_percentage: 85
+      timeline_status: "ON_TIME"
+      size_status: "COMPLIANT"
+      health_grade: "GOOD"
+      last_update: "2025-08-23T15:28:00Z"
+      
+    code-reviewer-effort2:
+      status: "ACTIVE" 
+      progress_percentage: 40
+      timeline_status: "ON_TIME"
+      size_status: "COMPLIANT"
+      health_grade: "GOOD"
+      last_update: "2025-08-23T15:27:00Z"
+      
+  interventions_pending:
+    - agent: "sw-engineer-effort3"
+      issue: "PROGRESS_BEHIND"
+      action: "INVESTIGATE_BLOCKERS"
+      created: "2025-08-23T15:25:00Z"
+      
+  dependency_status:
+    ready_to_start: ["effort4_integration"]
+    blocked_efforts: []
+    
+  overall_wave_health: "ON_TRACK"
+```
+
+## State Transition Triggers
+
+Monitor for these conditions to transition from MONITOR state:
+
+```python
+def check_state_transition_conditions(monitoring_data):
+    """Check if we should transition from MONITOR state"""
+    
+    all_agents = list(monitoring_data.keys())
+    
+    # Check for wave completion
+    completed_agents = [
+        agent for agent, data in monitoring_data.items()
+        if data['status']['status'] in ['COMPLETED', 'READY_FOR_REVIEW']
+    ]
+    
+    if len(completed_agents) == len(all_agents):
+        return {
+            'transition_to': 'WAVE_COMPLETE',
+            'reason': 'All agents completed their work',
+            'data': {'completed_agents': completed_agents}
+        }
+    
+    # Check for critical errors requiring intervention
+    critical_errors = [
+        agent for agent, data in monitoring_data.items()
+        if data['overall_health'] == 'CRITICAL'
+    ]
+    
+    if critical_errors:
+        return {
+            'transition_to': 'ERROR_RECOVERY',
+            'reason': 'Critical errors detected requiring intervention',
+            'data': {'failed_agents': critical_errors}
+        }
+    
+    # Check if any agents need code review
+    needs_review = [
+        agent for agent, data in monitoring_data.items()
+        if data['status']['status'] == 'IMPLEMENTATION_COMPLETE'
+    ]
+    
+    if needs_review:
+        return {
+            'transition_to': 'SPAWN_AGENTS',
+            'reason': 'Agents ready for code review',
+            'data': {'agents_for_review': needs_review}
+        }
+    
+    # Continue monitoring
+    return {
+        'transition_to': 'MONITOR',
+        'reason': 'Agents still in progress',
+        'data': {'active_agents': len(all_agents) - len(completed_agents)}
+    }
+```
+
+## Monitoring Dashboard
+
+```python
+def generate_monitoring_dashboard():
+    """Generate real-time monitoring dashboard"""
+    
+    dashboard = {
+        'timestamp': datetime.now().isoformat(),
+        'wave_progress': calculate_overall_wave_progress(),
+        'agent_statuses': get_all_agent_statuses(),
+        'timeline_summary': generate_timeline_summary(),
+        'health_indicators': generate_health_indicators(),
+        'interventions': get_pending_interventions(),
+        'next_milestones': predict_next_milestones()
+    }
+    
+    print("📊 ORCHESTRATOR MONITORING DASHBOARD")
+    print(f"Wave Progress: {dashboard['wave_progress']['percentage']:.1f}%")
+    print(f"Active Agents: {dashboard['agent_statuses']['active']}")
+    print(f"Timeline Status: {dashboard['timeline_summary']['status']}")
+    print(f"Health Grade: {dashboard['health_indicators']['overall']}")
+    
+    if dashboard['interventions']:
+        print("⚠️ Interventions Needed:")
+        for intervention in dashboard['interventions']:
+            print(f"  - {intervention['agent']}: {intervention['issue']}")
+    
+    return dashboard
+```
+
+## State Transitions
+
+From MONITOR state:
+- **ALL_COMPLETE** → WAVE_COMPLETE
+- **CRITICAL_ERROR** → ERROR_RECOVERY  
+- **READY_FOR_REVIEW** → SPAWN_AGENTS (Code Reviewers)
+- **SIZE_VIOLATIONS** → SPAWN_AGENTS (Code Reviewer for splits)
+- **DEPENDENCIES_READY** → SPAWN_AGENTS (Start dependent efforts)
