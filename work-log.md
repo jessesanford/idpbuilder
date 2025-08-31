@@ -24,3 +24,8 @@ Load custom CA into x509.CertPool and configure ggcr remote transport with TLS
   - Lines added: ~280 (estimated)
   - Features: Certificate management, persistence, validation, thread safety
 
+[2025-08-31 14:50] Implemented: GGCR transport configuration in transport.go
+  - Files created: pkg/certs/transport.go
+  - Lines added: ~210 (estimated)
+  - Features: GGCR integration, HTTP client creation, connection testing, TLS debugging
+
