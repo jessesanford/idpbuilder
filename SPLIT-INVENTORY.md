@@ -15,8 +15,8 @@ NO splits should reference efforts outside this path!
 
 | Split | Start Line | End Line | Estimated Size | Files | Status |
 |-------|------------|----------|----------------|-------|--------|
-| 001   | N/A        | N/A      | ~400 lines     | trust.go, partial tests | Planned |
-| 002   | N/A        | N/A      | ~407 lines     | transport.go, trust_store.go, remaining tests | Planned |
+| 001   | N/A        | N/A      | 511 lines     | trust.go (317), partial tests (194) | ✅ Complete |
+| 002   | N/A        | N/A      | 468 lines     | transport.go (251), trust_store.go (217) | ✅ Complete |
 
 ## File Distribution Matrix
 
