@@ -1,0 +1,18 @@
+# Code Reviewer TODOs - Trigger: SPLIT_PLAN_COMPLETE
+# State: CREATE_SPLIT_PLAN
+# Effort: fallback-strategies
+# Timestamp: 2025-08-31T20:46:00+00:00
+
+## Completed Tasks
+- [x] Analyzed fallback-strategies implementation structure
+- [x] Measured exact size: 1,136 lines (violation)
+- [x] Identified logical split boundaries
+- [x] Created SPLIT-INVENTORY-20250831-203723.md
+- [x] Created SPLIT-PLAN-001-20250831-203800.md
+- [x] Created SPLIT-PLAN-002-20250831-203830.md
+- [x] Verified each split is under 800 lines
+
+## Split Summary
+- Split 001: ~718 lines (core detection and handling)
+- Split 002: ~756 lines (logging, recommendations, tests)
+- Both splits verified under 800-line limit
