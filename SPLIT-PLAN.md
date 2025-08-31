@@ -1,145 +1,86 @@
-# Split Plan for cli-commands Effort
+# Split Plan for Registry TLS Trust Integration
 
-## Current Situation
-**Problem**: Entire codebase (10,147 lines) copied instead of focused CLI implementation
-**Solution**: Complete reimplementation with proper scoping and splits
+## Overview
 
-## Complete Split Inventory
-**Total Expected Size**: ~1,500 lines (properly scoped CLI only)
-**Splits Required**: 3
-**Sole Planner**: Code Reviewer Agent
-
-## Split Boundaries (NO OVERLAPS)
-
-| Split | Description | Size | Files | Dependencies |
-|-------|------------|------|-------|--------------|
-| 001 | Core CLI Framework | 500 | root.go, helpers | None |
-| 002 | Create/Delete Commands | 500 | create/, delete/ | Split 001 |
-| 003 | Get/Version Commands | 500 | get/, version/ | Split 001 |
-
-## Deduplication Matrix
-
-| Component | Split 001 | Split 002 | Split 003 |
-|-----------|-----------|-----------|-----------|
-| Root command setup | ✅ | ❌ | ❌ |
-| Command helpers | ✅ | ❌ | ❌ |
-| Create command | ❌ | ✅ | ❌ |
-| Delete command | ❌ | ✅ | ❌ |
-| Get commands | ❌ | ❌ | ✅ |
-| Version command | ❌ | ❌ | ✅ |
-
----
-
-# SPLIT-PLAN-001.md
-## Split 001 of 3: Core CLI Framework
+**Effort**: E1.1.2 - Registry TLS Trust Integration
+**Current Size**: 807 lines (7 lines over 800-line limit)
+**Split Strategy**: 2 sequential splits
 **Planner**: Code Reviewer Agent
-**Parent Effort**: cli-commands
-**Branch**: phase2/wave2/cli-commands-split-001
+**Date**: 2025-08-31
 
-### Boundaries
-- **Previous Split**: None (first split)
-- **This Split**: Split 001 of phase2/wave2/cli-commands
-  - Path: efforts/phase2/wave2/cli-commands/split-001/
-- **Next Split**: Split 002 of phase2/wave2/cli-commands
-  - Path: efforts/phase2/wave2/cli-commands/split-002/
+## Problem Statement
 
-### Files in This Split
-- pkg/cmd/root.go (50 lines) - Root command setup
-- pkg/cmd/helpers/validation.go (100 lines) - Input validation
-- pkg/cmd/helpers/output.go (100 lines) - Output formatting
-- pkg/cmd/helpers/config.go (100 lines) - Configuration handling
-- pkg/cmd/helpers/logger.go (100 lines) - Logging setup
-- Tests: 50 lines
+The implementation exceeded the 800-line hard limit by 7 lines. The code needs to be split into smaller, manageable pieces that each stay well under the limit while maintaining logical cohesion.
 
-### Implementation Instructions
-1. Create root command with cobra
-2. Set up persistent flags (log-level, color output)
-3. Implement validation helpers
-4. Create output formatting utilities
-5. Add configuration loading
-6. Set up structured logging
+## Split Summary
 
-### Size Target: 500 lines
+| Split | Description | Files | Size | Dependencies |
+|-------|-------------|-------|------|--------------|
+| 001 | Core Trust Store Management | trust.go, partial tests | ~377 lines | None |
+| 002 | Transport & Utilities | transport.go, trust_store.go, remaining tests | ~551 lines | Split 001 |
 
----
+## Execution Order
 
-# SPLIT-PLAN-002.md
-## Split 002 of 3: Create/Delete Commands
-**Planner**: Code Reviewer Agent
-**Parent Effort**: cli-commands
-**Branch**: phase2/wave2/cli-commands-split-002
+**CRITICAL**: These splits must be executed SEQUENTIALLY, not in parallel:
 
-### Boundaries
-- **Previous Split**: Split 001 of phase2/wave2/cli-commands
-  - Summary: Core CLI framework, helpers, validation
-- **This Split**: Split 002 of phase2/wave2/cli-commands
-  - Path: efforts/phase2/wave2/cli-commands/split-002/
-- **Next Split**: Split 003 of phase2/wave2/cli-commands
-  - Path: efforts/phase2/wave2/cli-commands/split-003/
+1. **Split 001** - Implement core trust store first (provides interfaces)
+2. **Split 002** - Then implement transport and utilities (uses Split 001's interfaces)
 
-### Files in This Split
-- pkg/cmd/create/root.go (200 lines) - Create command implementation
-- pkg/cmd/create/validate.go (50 lines) - Create validation
-- pkg/cmd/delete/root.go (150 lines) - Delete command implementation
-- pkg/cmd/delete/confirm.go (50 lines) - Deletion confirmation
-- Tests: 50 lines
+## Key Benefits of This Split
 
-### Dependencies
-- Requires Split 001 (imports helpers and root setup)
+1. **Logical Separation**: Core trust management is separated from transport configuration
+2. **Size Compliance**: Each split is well under 800 lines (377 and 551)
+3. **Clean Dependencies**: Split 002 depends on Split 001's interfaces only
+4. **Testability**: Each split can be tested independently
+5. **Future Buffer**: Both splits have room for growth without exceeding limits
 
-### Implementation Instructions
-1. Import Split 001's helpers and root command
-2. Implement create command with flags
-3. Add validation for create inputs
-4. Implement delete command with confirmation
-5. Register commands with root
-6. Add unit tests
+## Files Created
 
-### Size Target: 500 lines
+- `SPLIT-INVENTORY.md` - Complete inventory and deduplication matrix
+- `SPLIT-PLAN-001.md` - Detailed plan for Split 001 (Core Trust Store)
+- `SPLIT-PLAN-002.md` - Detailed plan for Split 002 (Transport & Utilities)
 
----
+## Implementation Guidelines for SW Engineers
 
-# SPLIT-PLAN-003.md
-## Split 003 of 3: Get/Version Commands
-**Planner**: Code Reviewer Agent
-**Parent Effort**: cli-commands
-**Branch**: phase2/wave2/cli-commands-split-003
+### For Split 001:
+- Focus on core trust store functionality
+- Ensure interface is well-defined for Split 002 to use
+- Include basic tests for trust store operations
+- Target: ~377 lines
 
-### Boundaries
-- **Previous Split**: Split 002 of phase2/wave2/cli-commands
-  - Summary: Create and Delete commands
-- **This Split**: Split 003 of phase2/wave2/cli-commands
-  - Path: efforts/phase2/wave2/cli-commands/split-003/
-- **Next Split**: None (final split)
+### For Split 002:
+- Import and use Split 001's TrustStoreManager interface
+- Implement transport configuration for go-containerregistry
+- Add utility functions for certificate operations
+- Complete test coverage
+- Target: ~551 lines
 
-### Files in This Split
-- pkg/cmd/get/root.go (50 lines) - Get subcommand root
-- pkg/cmd/get/clusters.go (150 lines) - Get clusters command
-- pkg/cmd/get/packages.go (100 lines) - Get packages command
-- pkg/cmd/get/secrets.go (100 lines) - Get secrets command
-- pkg/cmd/version/root.go (50 lines) - Version command
-- Tests: 50 lines
+## Verification Steps
 
-### Dependencies
-- Requires Split 001 (imports helpers and root setup)
+1. Each split must compile independently
+2. Each split must pass its tests
+3. Each split must be under 800 lines (use line-counter.sh)
+4. Combined functionality must match original requirements
+5. No code duplication between splits
 
-### Implementation Instructions
-1. Import Split 001's helpers and root command
-2. Create get subcommand structure
-3. Implement individual get commands
-4. Add version command with build info
-5. Register all commands with root
-6. Add comprehensive tests
+## Risk Mitigation
 
-### Size Target: 500 lines
+- Both splits are sized conservatively (< 600 lines) to allow for minor additions
+- Clear interface boundaries prevent coupling issues
+- Sequential execution ensures dependencies are met
+- Comprehensive test coverage in both splits
 
----
+## Next Steps
 
-## Verification Checklist
-- [x] No file appears in multiple splits
-- [x] All CLI functionality covered
-- [x] Each split compiles independently (with dependencies)
-- [x] Dependencies properly ordered
-- [x] Each split <800 lines (target ~500)
-- [x] Clear boundaries between splits
-- [x] No duplication of code
+1. Orchestrator assigns Split 001 to SW Engineer
+2. After Split 001 completion and review, assign Split 002
+3. After both splits complete, merge sequentially to parent branch
+4. Verify integrated functionality meets all requirements
+
+## Success Metrics
+
+- [x] Both splits under 800 lines
+- [x] No code duplication
+- [x] Clear logical separation
+- [x] Maintainable structure
+- [x] All original functionality preserved

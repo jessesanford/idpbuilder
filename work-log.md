@@ -32,7 +32,7 @@ Result: Success - All branches fetched
 ## Operation 6: Merge E1.1.1 (kind-certificate-extraction)
 Time: 17:16:00 UTC
 Command: git merge e111/idpbuidler-oci-go-cr/phase1/wave1/kind-certificate-extraction --no-ff -m "integrate: E1.1.1 kind-certificate-extraction (base types)"
-Result: Conflict in work-log.md - Resolving...
+Result: Conflict in work-log.md - Resolved
 
 ### E1.1.1 Implementation Summary (from merged branch):
 - Branch: idpbuidler-oci-go-cr/phase1/wave1/kind-certificate-extraction
@@ -49,3 +49,28 @@ Result: Conflict in work-log.md - Resolving...
 Time: 17:16:10 UTC
 Command: Resolved work-log.md conflict by consolidating information
 Result: Success - Conflict resolved
+
+## Operation 8: Merge E1.1.2 (registry-tls-trust-integration)
+Time: 17:17:00 UTC
+Command: git merge e112/idpbuidler-oci-go-cr/phase1/wave1/registry-tls-trust-integration --no-ff -m "integrate: E1.1.2 registry-tls-trust-integration (imports from E1.1.1)"
+Result: Conflicts in work-log.md and IMPLEMENTATION-PLAN.md - Resolving...
+
+### E1.1.2 Implementation Summary (from merged branch):
+- Branch: idpbuidler-oci-go-cr/phase1/wave1/registry-tls-trust-integration
+- Implementation: Split into 2 parts due to size
+  - Split 001: 511 lines (trust.go + partial tests)
+  - Split 002: 468 lines (transport.go + trust_store.go + remaining tests)
+  - Total: 979 lines across 2 splits (compliant with 800-line limit per split)
+- Components:
+  - trust.go (317 lines) - TrustStoreManager implementation (imports types from E1.1.1)
+  - transport.go (251 lines) - GGCR transport configuration
+  - trust_store.go (217 lines) - Trust store persistence
+  - trust_test.go (complete) - Comprehensive test suite
+- Test Status: All 19 test functions passing
+- Note: Successfully imports types from E1.1.1 (duplicate types fixed)
+
+## Operation 9: Resolve Merge Conflicts
+Time: 17:17:10 UTC
+Command: rm IMPLEMENTATION-PLAN.md (keeping INTEGRATION-PLAN.md)
+Command: Updated work-log.md with consolidated information
+Result: Success - All conflicts resolved
