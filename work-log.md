@@ -45,3 +45,31 @@ Result: Success - merge completed (commit 6607cc7)
 
 Command: go test ./pkg/certs/... -v
 Result: All tests passing (19 tests, 0.916s)
+
+## Phase 3: Merge E1.1.2 (Registry TLS Trust Integration)
+
+Command: git remote add e112 /home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/wave1/registry-tls-trust-integration
+Result: Success - remote added
+
+Command: git fetch e112
+Result: Success - fetched branches from E1.1.2
+
+Command: git merge e112/idpbuidler-oci-go-cr/phase1/wave1/registry-tls-trust-integration --no-ff -m "feat: integrate E1.1.2 - Registry TLS Trust Integration (905 lines - includes dedup fixes)"
+Result: Conflicts in IMPLEMENTATION-PLAN.md and work-log.md
+
+Command: git checkout --ours work-log.md && git add work-log.md
+Result: Resolved work-log conflict
+
+Command: (manual resolution of IMPLEMENTATION-PLAN.md)
+Result: Created integrated implementation plan
+
+Command: git add IMPLEMENTATION-PLAN.md && git commit --no-edit
+Result: Success - merge completed (commit cbbb406)
+
+## Phase 4: Post-Merge Validation
+
+Command: grep -r "type CertificateInfo struct" pkg/
+Result: DUPLICATE FOUND - CertificateInfo in both types.go and trust_store.go
+
+Command: go build ./pkg/certs/...
+Result: BUILD FAILURE - CertificateInfo redeclared
