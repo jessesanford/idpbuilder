@@ -232,6 +232,63 @@ EOF
     echo "Ready to spawn SW engineer for sequential implementation"
     echo "═══════════════════════════════════════════════════════════════"
 }
+
+# R296: After all splits are complete and verified
+mark_original_branch_deprecated() {
+    local phase="$1"
+    local wave="$2"
+    local effort_name="$3"
+    local too_large_dir="/efforts/phase${phase}/wave${wave}/${effort_name}"
+    
+    echo "═══════════════════════════════════════════════════════════════"
+    echo "🔄 R296: MARKING ORIGINAL BRANCH AS DEPRECATED"
+    echo "═══════════════════════════════════════════════════════════════"
+    
+    # Get properly formatted branch names
+    source "$SF_ROOT/utilities/branch-naming-helpers.sh"
+    local original_branch=$(get_effort_branch_name "$phase" "$wave" "$effort_name")
+    local deprecated_branch="${original_branch}-deprecated-split"
+    
+    cd "$too_large_dir"
+    
+    # Rename local branch
+    echo "Renaming local branch to mark as deprecated..."
+    git branch -m "$original_branch" "$deprecated_branch"
+    
+    # Delete old remote branch and push renamed one
+    echo "Updating remote branches..."
+    git push origin ":$original_branch"  # Delete old remote
+    git push -u origin "$deprecated_branch"  # Push renamed branch
+    
+    echo "✅ Branch renamed: $original_branch → $deprecated_branch"
+    
+    # Update state file per R296
+    echo "Updating orchestrator-state.yaml with SPLIT_DEPRECATED status..."
+    yq eval ".efforts_completed.\"$effort_name\".status = \"SPLIT_DEPRECATED\"" -i orchestrator-state.yaml
+    yq eval ".efforts_completed.\"$effort_name\".deprecated_branch = \"$deprecated_branch\"" -i orchestrator-state.yaml
+    yq eval ".efforts_completed.\"$effort_name\".do_not_integrate = true" -i orchestrator-state.yaml
+    yq eval ".efforts_completed.\"$effort_name\".split_completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.yaml
+    
+    # Add replacement splits to state file
+    local splits_array="["
+    for split_num in $(seq 1 $total_splits); do
+        SPLIT_NAME=$(printf "%03d" $split_num)
+        SPLIT_BRANCH=$(get_split_branch_name "$original_branch" "$SPLIT_NAME")
+        splits_array="${splits_array}\"$SPLIT_BRANCH\""
+        [ $split_num -lt $total_splits ] && splits_array="${splits_array}, "
+    done
+    splits_array="${splits_array}]"
+    
+    yq eval ".efforts_completed.\"$effort_name\".replacement_splits = $splits_array" -i orchestrator-state.yaml
+    
+    # Commit state file update
+    git add orchestrator-state.yaml
+    git commit -m "state: mark $effort_name as SPLIT_DEPRECATED per R296"
+    git push
+    
+    echo "✅ State file updated with SPLIT_DEPRECATED status"
+    echo "✅ Original branch deprecated successfully"
+}
 ```
 
 ### Directory Structure After Split Setup
@@ -407,6 +464,7 @@ git checkout -b split-003 split-002  # Based on previous
 - **R204**: Orchestrator creates infrastructure (THIS RULE)
 - **R196**: Base branch selection from config
 - **R193**: Effort clone protocol
+- **R296**: Deprecated branch marking after splits complete
 
 ## Grading Impact
 

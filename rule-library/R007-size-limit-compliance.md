@@ -21,6 +21,13 @@ NO effort may EVER exceed 800 lines. Soft warning at 700 lines. Automatic split 
 
 ## Measurement Requirements
 
+### 🚨 CRITICAL: Check Splits First (R297)
+**BEFORE measuring ANY effort, check if it was already split!**
+- Check `split_count` in orchestrator-state.yaml
+- If > 0: Effort is COMPLIANT (already split)
+- Measure ORIGINAL effort branches, NOT integration branches
+- Integration branches merge all splits (will exceed limits - EXPECTED)
+
 ### MANDATORY: Use Official Tool
 ```bash
 # ONLY valid measurement method
@@ -212,10 +219,34 @@ If you've exceeded 800 lines:
 7. Each split gets reviewed
 8. Only merge compliant splits
 
+## Split Effort Compliance (R297)
+
+### Already-Split Efforts Are Compliant
+When an effort has been split:
+- Each split branch must be ≤800 lines
+- The integration branch WILL exceed 800 lines (EXPECTED)
+- This is COMPLIANT because PRs come from split branches
+- Architects must check `split_count` before measuring
+
+### Example: Split Effort Compliance
+```yaml
+# E1.1.2 was split into 2 parts:
+split_1_branch: 450 lines  # ✅ Compliant
+split_2_branch: 454 lines  # ✅ Compliant
+integration_branch: 904 lines  # ✅ Still compliant (integration expected to exceed)
+
+# orchestrator-state.yaml shows:
+efforts_completed:
+  E1.1.2:
+    split_count: 2  # This means it's compliant!
+```
+
 ## The 800 Line Law
 
 ```
 No effort exceeds 800 lines - EVER
+Check split_count first - ALWAYS (R297)
+Measure original branches - NOT integration
 Measure with the right tool - ALWAYS  
 Split when needed - IMMEDIATELY
 Monitor continuously - PROACTIVELY
@@ -223,4 +254,4 @@ Merge only compliant code - STRICTLY
 ```
 
 ---
-**Remember:** 800 lines is not a suggestion, it's an absolute limit. Violate it and fail.
+**Remember:** 800 lines is not a suggestion, it's an absolute limit. But already-split efforts are compliant even if their integration exceeds the limit!

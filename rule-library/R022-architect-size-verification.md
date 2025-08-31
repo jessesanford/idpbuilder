@@ -49,6 +49,10 @@ $PROJECT_ROOT/tools/line-counter.sh
 
 ## Complete Architect Workflow for Wave Review
 
+### 🚨🚨🚨 CRITICAL: Check Split Count FIRST (R297) 🚨🚨🚨
+**BEFORE measuring any effort, check if it was already split!**
+See: rule-library/R297-architect-split-detection-protocol.md
+
 ### Measuring All Efforts in a Wave
 
 ```bash
@@ -59,35 +63,52 @@ verify_wave_sizes() {
     
     echo "📊 ARCHITECT: Verifying sizes for Phase $PHASE Wave $WAVE"
     
-    # Find all effort directories
-    for effort_dir in $PROJECT_ROOT/efforts/phase${PHASE}/wave${WAVE}/*; do
-        if [ -d "$effort_dir" ]; then
-            effort_name=$(basename "$effort_dir")
-            echo ""
-            echo "🔍 Checking effort: $effort_name"
-            
-            # Navigate TO the effort directory
-            cd "$effort_dir"
-            
-            # Verify it's a git repo with correct branch
-            if ! git status &>/dev/null; then
-                echo "❌ Not a git repository: $effort_dir"
-                continue
-            fi
-            
-            branch=$(git branch --show-current)
-            echo "   Branch: $branch"
-            
-            # Run line counter with NO PARAMETERS
-            size=$($PROJECT_ROOT/tools/line-counter.sh | grep "Total" | awk '{print $NF}')
-            
-            if [ -z "$size" ]; then
-                echo "   ❌ ERROR: Could not measure size"
-            elif [ "$size" -gt 800 ]; then
-                echo "   ❌ VIOLATION: $size lines (>800 limit)"
-            else
-                echo "   ✅ COMPLIANT: $size lines"
-            fi
+    # Get list of efforts from state file
+    EFFORTS=$(yq ".waves.wave${WAVE}.efforts[]" $PROJECT_ROOT/orchestrator-state.yaml)
+    
+    for effort_name in $EFFORTS; do
+        echo ""
+        echo "🔍 Checking effort: $effort_name"
+        
+        # R297: CHECK SPLIT_COUNT FIRST!
+        SPLIT_COUNT=$(yq ".efforts_completed.\"${effort_name}\".split_count" $PROJECT_ROOT/orchestrator-state.yaml 2>/dev/null || echo "0")
+        
+        if [ "$SPLIT_COUNT" -gt 0 ]; then
+            echo "   ✅ COMPLIANT: Already split into $SPLIT_COUNT parts"
+            echo "   📦 Original branches are size-compliant"
+            echo "   ℹ️ Integration will exceed limit (expected behavior)"
+            continue  # Skip to next effort
+        fi
+        
+        # Only measure if not already split
+        effort_dir="$PROJECT_ROOT/efforts/phase${PHASE}/wave${WAVE}/${effort_name}"
+        
+        if [ ! -d "$effort_dir" ]; then
+            echo "   ❌ ERROR: Effort directory not found: $effort_dir"
+            continue
+        fi
+        
+        # Navigate TO the effort directory
+        cd "$effort_dir"
+        
+        # Verify it's a git repo with correct branch
+        if ! git status &>/dev/null; then
+            echo "   ❌ Not a git repository: $effort_dir"
+            continue
+        fi
+        
+        branch=$(git branch --show-current)
+        echo "   Branch: $branch"
+        
+        # Run line counter with NO PARAMETERS
+        size=$($PROJECT_ROOT/tools/line-counter.sh | grep "Total" | awk '{print $NF}')
+        
+        if [ -z "$size" ]; then
+            echo "   ❌ ERROR: Could not measure size"
+        elif [ "$size" -gt 800 ]; then
+            echo "   ❌ VIOLATION: $size lines (>800 limit)"
+        else
+            echo "   ✅ COMPLIANT: $size lines"
         fi
     done
     
@@ -162,14 +183,23 @@ $PROJECT_ROOT/tools/line-counter.sh
 $PROJECT_ROOT/tools/line-counter.sh  # Just this!
 ```
 
-## Integration with R076 (Size Compliance Verification)
+## Integration with Other Rules
 
+### R297 (Architect Split Detection Protocol)
+**CRITICAL**: Check split_count BEFORE measuring ANY effort!
+- If split_count > 0: Effort is COMPLIANT (already split)
+- Integration branches will exceed limits (EXPECTED)
+- Measure ORIGINAL effort branches, NOT integration
+
+### R076 (Size Compliance Verification)
 This rule supports R076 by ensuring architects measure correctly:
 
 ```yaml
 wave_review_checklist:
   size_compliance:
-    - Navigate to each effort directory
+    - Check split_count in orchestrator-state.yaml (R297)
+    - If already split, mark as compliant
+    - Otherwise, navigate to each effort directory
     - Run line counter with NO parameters
     - Record actual size from output
     - Flag any >800 line violations

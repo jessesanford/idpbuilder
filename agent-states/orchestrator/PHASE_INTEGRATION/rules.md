@@ -131,6 +131,11 @@ The system will check for this marker. No marker = Immediate failure.
 **Criticality**: BLOCKING - Mandatory project prefix for all branches
 **Summary**: Use project prefix for phase integration branches
 
+### 🚨🚨🚨 R296 - Deprecated Branch Marking Protocol
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R296-deprecated-branch-marking-protocol.md`
+**Criticality**: BLOCKING - Prevents integration of wrong branches
+**Summary**: Check for and prevent integration of deprecated split branches
+
 ### 🚨🚨🚨 R271 - Mandatory Production-Ready Validation
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R271-mandatory-production-ready-validation.md`
 **Criticality**: BLOCKING - Full checkouts required

@@ -46,10 +46,13 @@ The system will check for this marker. No marker = Immediate failure.
 1. Read: $CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal-supreme-law.md
 2. Read: $CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md
 3. Read: $CLAUDE_PROJECT_DIR/rule-library/R290-state-rule-reading-verification-supreme-law.md
-5. Read: $CLAUDE_PROJECT_DIR/rule-library/R239-fix-plan-distribution.md
-6. Read: $CLAUDE_PROJECT_DIR/rule-library/R197-one-agent-per-effort.md
-7. Read: $CLAUDE_PROJECT_DIR/rule-library/R209-effort-directory-isolation-protocol.md
-8. Read: $CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-transition-validation.md
+4. Read: $CLAUDE_PROJECT_DIR/rule-library/R293-integration-report-distribution-protocol.md
+5. Read: $CLAUDE_PROJECT_DIR/rule-library/R294-fix-plan-archival-protocol.md
+6. Read: $CLAUDE_PROJECT_DIR/rule-library/R295-sw-engineer-spawn-clarity-protocol.md
+7. Read: $CLAUDE_PROJECT_DIR/rule-library/R239-fix-plan-distribution.md
+8. Read: $CLAUDE_PROJECT_DIR/rule-library/R197-one-agent-per-effort.md
+9. Read: $CLAUDE_PROJECT_DIR/rule-library/R209-effort-directory-isolation-protocol.md
+10. Read: $CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-transition-validation.md
 
 **WE ARE WATCHING EACH READ TOOL CALL**
 
@@ -158,49 +161,71 @@ for effort in "${EFFORTS_TO_FIX[@]}"; do
     
     echo "🚀 Spawning SW Engineer for: $effort"
     
-    # Create command file
+    # Create command file with R295 compliance
     cat > "$COMMAND_FILE" << EOF
 # SOFTWARE ENGINEER FIX IMPLEMENTATION TASK
 
-## Your State
-You are in state: FIX_INTEGRATION_ISSUES
+🔴🔴🔴 CRITICAL STATE INFORMATION (R295):
+YOU ARE IN STATE: FIX_INTEGRATION_ISSUES
+This means you should: Fix integration issues found during integration testing
+🔴🔴🔴
+
+📋 YOUR INSTRUCTIONS (R295):
+FOLLOW ONLY: INTEGRATION-REPORT.md
+LOCATION: In your effort directory (already distributed there)
+IGNORE: Any files named *-COMPLETED-*.md (these are from previous fix cycles)
+
+⚠️⚠️⚠️ IMPORTANT:
+- SPLIT-PLAN-COMPLETED-*.md = old, already done
+- CODE-REVIEW-REPORT-COMPLETED-*.md = old, already done
+- ONLY follow INTEGRATION-REPORT.md
+⚠️⚠️⚠️
+
+🎯 CONTEXT:
+- EFFORT: ${effort}
+- WAVE: ${WAVE}
+- PHASE: ${PHASE}
+- PREVIOUS WORK: Implementation complete, integration testing revealed issues
+- YOUR TASK: Fix ONLY the issues for your effort listed in INTEGRATION-REPORT.md
 
 ## Critical Information
 - **Working Directory**: $EFFORT_DIR
 - **Branch**: phase${PHASE}-wave${WAVE}-${effort}
-- **Fix Plan Location**: Check FIX_PLAN_LOCATION.txt for the fix plan file
+- **Fix Plan**: INTEGRATION-REPORT.md (R293: Already distributed to your directory)
 
 ## Required Actions
 
-1. **Read the fix plan**:
-   - The file path is in FIX_PLAN_LOCATION.txt
-   - Follow ALL instructions in the fix plan
+1. **Read the integration report**:
+   - File: INTEGRATION-REPORT.md in your effort directory
+   - Find the section for your effort
+   - Follow ALL fix instructions for your effort
 
-2. **Implement fixes**:
-   - Apply all code changes specified
-   - Install any missing dependencies
-   - Resolve conflicts if any
-   - Fix build issues
+2. **Implement fixes (R292 compliance)**:
+   - Make ALL fixes in your effort branch
+   - NEVER modify the integration branch directly
+   - Apply only the changes specified for your effort
+   - Install any missing dependencies listed
 
-3. **Verify fixes**:
-   - Run all verification commands from the fix plan
+3. **Archive completed plans (R294)**:
+   - If you see any non-archived fix plans, archive them:
+   - mv SPLIT-PLAN.md SPLIT-PLAN-COMPLETED-\$(date +%Y%m%d-%H%M%S).md
+   - mv CODE-REVIEW-REPORT.md CODE-REVIEW-REPORT-COMPLETED-\$(date +%Y%m%d-%H%M%S).md
+
+4. **Verify fixes**:
+   - Run all verification commands from INTEGRATION-REPORT.md
    - Ensure build passes
    - Run tests to confirm fixes work
 
-4. **Update status**:
-   - Remove FIX_REQUIRED.flag when complete
+5. **Update status**:
+   - Archive INTEGRATION-REPORT.md when complete (R294)
    - Create FIX_COMPLETE.flag with summary
    - Commit all changes with clear message
 
-5. **Important**:
-   - Do NOT create new features
-   - ONLY fix the specified issues
-   - Follow the fix plan exactly
-
 ## Success Criteria
-- All issues from fix plan resolved
+- All issues from INTEGRATION-REPORT.md resolved for your effort
 - Build passes successfully
 - Tests pass (if applicable)
+- INTEGRATION-REPORT.md archived as COMPLETED
 - FIX_COMPLETE.flag created
 EOF
 
@@ -267,6 +292,9 @@ For each engineer spawned:
 
 ## Related Rules
 
+- R293: Integration Report Distribution Protocol (BLOCKING)
+- R294: Fix Plan Archival Protocol (BLOCKING)
+- R295: SW Engineer Spawn Clarity Protocol (SUPREME)
 - R239: Fix Plan Distribution Protocol
 - R197: One Agent Per Effort
 - R209: Effort Directory Isolation

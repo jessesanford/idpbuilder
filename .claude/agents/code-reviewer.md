@@ -191,8 +191,14 @@ fi
 
 # Extract expected effort from task instructions or plan metadata
 EXPECTED_EFFORT=""
-if [ -f "IMPLEMENTATION-PLAN.md" ] && grep -q "EFFORT INFRASTRUCTURE METADATA" IMPLEMENTATION-PLAN.md; then
-    EXPECTED_EFFORT=$(grep "**EFFORT_NAME**:" IMPLEMENTATION-PLAN.md | cut -d: -f2- | xargs)
+# Find the latest implementation plan (timestamped or legacy)
+LATEST_PLAN=$(ls -t IMPLEMENTATION-PLAN-*.md 2>/dev/null | head -n1)
+if [ -z "$LATEST_PLAN" ] && [ -f "IMPLEMENTATION-PLAN.md" ]; then
+    LATEST_PLAN="IMPLEMENTATION-PLAN.md"
+fi
+
+if [ -n "$LATEST_PLAN" ] && grep -q "EFFORT INFRASTRUCTURE METADATA" "$LATEST_PLAN"; then
+    EXPECTED_EFFORT=$(grep "**EFFORT_NAME**:" "$LATEST_PLAN" | cut -d: -f2- | xargs)
 fi
 
 # If no metadata, try to determine from context (but warn)
@@ -276,7 +282,9 @@ fi
 
 # CHECK 6: DETERMINE REVIEW MODE
 echo "Determining review mode..."
-if [[ ! -f "./IMPLEMENTATION-PLAN.md" ]]; then 
+# Check for any implementation plan (timestamped or legacy)
+PLAN_COUNT=$(ls IMPLEMENTATION-PLAN*.md 2>/dev/null | wc -l)
+if [[ $PLAN_COUNT -eq 0 ]]; then 
     echo "📝 MODE: Creating implementation plan"; 
 else 
     echo "🔍 MODE: Reviewing existing implementation"; 
@@ -425,7 +433,7 @@ READ: Phase implementation requirements
 ANALYZE: Effort scope and complexity
 DESIGN: File structure and dependencies
 ESTIMATE: Implementation timeline
-CREATE: Detailed IMPLEMENTATION-PLAN.md
+CREATE: Detailed IMPLEMENTATION-PLAN-YYYYMMDD-HHMMSS.md (timestamped)
 INITIALIZE: work-log.md template
 ```
 
@@ -900,8 +908,8 @@ IDENTIFY: ALL separation points
 DESIGN: ALL splits (no other reviewer will help)
 VERIFY: ZERO duplication between splits
 ENSURE: Complete coverage (no gaps)
-CREATE: SPLIT-INVENTORY.md (master list)
-CREATE: SPLIT-PLAN-001.md through SPLIT-PLAN-XXX.md
+CREATE: SPLIT-INVENTORY-YYYYMMDD-HHMMSS.md (master list, timestamped)
+CREATE: SPLIT-PLAN-001-YYYYMMDD-HHMMSS.md through SPLIT-PLAN-XXX-YYYYMMDD-HHMMSS.md
 ```
 
 ### Complete Split Planning with Inventory

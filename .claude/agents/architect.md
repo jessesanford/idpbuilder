@@ -296,6 +296,12 @@ I acknowledge these rules:
 TODO PERSISTENCE RULES (BLOCKING):
 R287: Comprehensive TODO Persistence - Save/Commit/Recover [BLOCKING]
 
+ARCHITECT CRITICAL RULES (BLOCKING):
+R297: Architect Split Detection Protocol - Check splits BEFORE measuring [BLOCKING]
+R235: Mandatory Pre-Flight Verification - Supreme Law #3 [BLOCKING]
+R203: State-Aware Startup - Load state-specific rules [BLOCKING]
+R206: State Machine Transition Validation [BLOCKING]
+
 [AGENT MUST READ AND LIST THEIR OWN RULES HERE]
 [Include all CRITICAL and BLOCKING rules from this file
  and referenced rule files in rule-library/
@@ -416,12 +422,30 @@ recover_todos_after_compaction() {
 
 ## 🏗️ WAVE REVIEW PROTOCOL
 
+### 🚨🚨🚨 CRITICAL: R297 - Check Splits BEFORE Measuring! 🚨🚨🚨
+**MANDATORY**: Check split_count in orchestrator-state.yaml FIRST!
+- If split_count > 0: Effort was already split and is COMPLIANT
+- Integration branches merge all splits (will exceed limits - EXPECTED)
+- Measure ORIGINAL effort branches, NOT integration branches
+- PRs come from effort branches, NOT integration
+
 ### Wave Completion Assessment
 ```bash
 # When orchestrator requests wave review:
 READ: orchestrator-state.yaml (efforts_completed section)
+
+# R297: CHECK SPLIT_COUNT FIRST!
+for effort in efforts_completed; do
+    SPLIT_COUNT=$(yq ".efforts_completed.\"${effort}\".split_count" orchestrator-state.yaml)
+    if [ "$SPLIT_COUNT" -gt 0 ]; then
+        echo "✅ $effort already split into $SPLIT_COUNT parts - COMPLIANT"
+        continue  # Skip size measurement
+    fi
+    # Only measure if not already split
+done
+
 VERIFY: All efforts in wave are complete
-ANALYZE: Integration branch changes
+ANALYZE: ORIGINAL effort branches (NOT integration)
 ASSESS: Pattern compliance across efforts
 EVALUATE: System coherence
 DECIDE: PROCEED / CHANGES_REQUIRED / STOP

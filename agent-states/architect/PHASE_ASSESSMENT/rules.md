@@ -59,6 +59,18 @@ git push
 ## Core Architecture Assessment Rules
 
 ---
+### 🚨🚨🚨 RULE R297 - Architect Split Detection Protocol
+**Source:** rule-library/R297-architect-split-detection-protocol.md
+**Criticality:** BLOCKING - Must check splits BEFORE measuring integration
+
+MANDATE: Check split_count in orchestrator-state.yaml BEFORE measuring any effort.
+If split_count > 0, the effort was already split and is COMPLIANT.
+Integration branches merge all splits (will exceed limits - EXPECTED).
+Measure ORIGINAL effort branches, NOT integration branches.
+PRs come from effort branches, NOT integration.
+---
+
+---
 ### ℹ️ RULE R071.0.0 - Phase Architectural Integrity Assessment
 **Source:** rule-library/RULE-REGISTRY.md#R071
 **Criticality:** INFO - Best practice

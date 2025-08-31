@@ -28,9 +28,20 @@ if [ -n "$PROMPT_DIR" ]; then
     echo "📋 Orchestrator specified directory: $PROMPT_DIR"
 fi
 
-# Check if we're already in the right place
-if [ -f "IMPLEMENTATION-PLAN.md" ]; then
-    echo "✅ Already in effort directory with IMPLEMENTATION-PLAN.md"
+# Check if we're already in the right place (handle both old and new formats)
+# Look for timestamped plans first
+LATEST_PLAN=$(ls -t IMPLEMENTATION-PLAN-*.md 2>/dev/null | head -n1)
+
+# Fallback to old format if no timestamped versions
+if [ -z "$LATEST_PLAN" ] && [ -f "IMPLEMENTATION-PLAN.md" ]; then
+    LATEST_PLAN="IMPLEMENTATION-PLAN.md"
+    echo "⚠️ Using legacy plan format"
+fi
+
+if [ -n "$LATEST_PLAN" ]; then
+    echo "✅ Already in effort directory with plan: $LATEST_PLAN"
+    # Set global variable for other steps
+    export IMPLEMENTATION_PLAN="$LATEST_PLAN"
 else
     echo "⚠️ Not in effort directory, searching..."
     
@@ -44,17 +55,25 @@ else
         EFFORT_DIRS=$(find /workspaces -type d -path "*/efforts/phase*/wave*/*" -maxdepth 7 2>/dev/null)
         
         for dir in $EFFORT_DIRS; do
-            if [ -f "$dir/IMPLEMENTATION-PLAN.md" ]; then
-                echo "✅ Found effort directory: $dir"
+            # Check for timestamped plans first
+            PLAN_COUNT=$(ls "$dir"/IMPLEMENTATION-PLAN*.md 2>/dev/null | wc -l)
+            if [ $PLAN_COUNT -gt 0 ]; then
+                echo "✅ Found effort directory with plan(s): $dir"
                 cd "$dir"
+                # Find the latest plan
+                LATEST_PLAN=$(ls -t IMPLEMENTATION-PLAN-*.md 2>/dev/null | head -n1)
+                if [ -z "$LATEST_PLAN" ] && [ -f "IMPLEMENTATION-PLAN.md" ]; then
+                    LATEST_PLAN="IMPLEMENTATION-PLAN.md"
+                fi
+                export IMPLEMENTATION_PLAN="$LATEST_PLAN"
                 break
             fi
         done
     fi
     
     # Final check with R254 error reporting
-    if [ ! -f "IMPLEMENTATION-PLAN.md" ]; then
-        echo "❌ ENVIRONMENT ERROR: Cannot find effort directory with IMPLEMENTATION-PLAN.md"
+    if [ -z "$IMPLEMENTATION_PLAN" ]; then
+        echo "❌ ENVIRONMENT ERROR: Cannot find effort directory with IMPLEMENTATION-PLAN*.md"
         echo ""
         echo "🔴 ORCHESTRATOR, YOU GAVE ME THE WRONG PROMPT!"
         echo ""
@@ -67,7 +86,7 @@ else
         echo ""
         echo "WHAT I EXPECTED:"
         echo "- Clear TARGET_DIRECTORY: /efforts/phase{X}/wave{Y}/{effort-name}"
-        echo "- File: IMPLEMENTATION-PLAN.md in that directory"
+        echo "- File: IMPLEMENTATION-PLAN-*.md (or legacy IMPLEMENTATION-PLAN.md) in that directory"
         echo ""
         echo "WHAT I FOUND:"
         echo "- Current directory: $(pwd)"
@@ -85,13 +104,13 @@ else
     fi
 fi
 
-echo "✅ Now in directory with IMPLEMENTATION-PLAN.md: $(pwd)"
+echo "✅ Now in directory with plan $IMPLEMENTATION_PLAN: $(pwd)"
 ```
 
 ### Step 2: VERIFY CORRECT EFFORT DIRECTORY
 ```bash
 # Extract the required directory from the plan
-WORKING_DIR=$(grep "**WORKING_DIRECTORY**:" IMPLEMENTATION-PLAN.md | cut -d: -f2- | xargs)
+WORKING_DIR=$(grep "**WORKING_DIRECTORY**:" "$IMPLEMENTATION_PLAN" | cut -d: -f2- | xargs)
 
 if [ -n "$WORKING_DIR" ]; then
     echo "📋 Plan specifies directory: $WORKING_DIR"
@@ -140,14 +159,14 @@ fi
 ### Step 3: EXTRACT AND VERIFY R209 METADATA
 ```bash
 # Extract metadata
-WORKING_DIR=$(grep "**WORKING_DIRECTORY**:" IMPLEMENTATION-PLAN.md | cut -d: -f2- | xargs)
-BRANCH=$(grep "**BRANCH**:" IMPLEMENTATION-PLAN.md | cut -d: -f2- | xargs)
-EFFORT_NAME=$(grep "**EFFORT_NAME**:" IMPLEMENTATION-PLAN.md | cut -d: -f2- | xargs)
-PHASE=$(grep "**PHASE**:" IMPLEMENTATION-PLAN.md | cut -d: -f2- | xargs)
-WAVE=$(grep "**WAVE**:" IMPLEMENTATION-PLAN.md | cut -d: -f2- | xargs)
+WORKING_DIR=$(grep "**WORKING_DIRECTORY**:" "$IMPLEMENTATION_PLAN" | cut -d: -f2- | xargs)
+BRANCH=$(grep "**BRANCH**:" "$IMPLEMENTATION_PLAN" | cut -d: -f2- | xargs)
+EFFORT_NAME=$(grep "**EFFORT_NAME**:" "$IMPLEMENTATION_PLAN" | cut -d: -f2- | xargs)
+PHASE=$(grep "**PHASE**:" "$IMPLEMENTATION_PLAN" | cut -d: -f2- | xargs)
+WAVE=$(grep "**WAVE**:" "$IMPLEMENTATION_PLAN" | cut -d: -f2- | xargs)
 
 if [ -z "$WORKING_DIR" ]; then
-    echo "❌ FATAL: No R209 metadata in IMPLEMENTATION-PLAN.md!"
+    echo "❌ FATAL: No R209 metadata in $IMPLEMENTATION_PLAN!"
     echo "Orchestrator failed to inject directory metadata!"
     exit 1
 fi
@@ -236,7 +255,7 @@ echo "🔒 LOCKED TO: $EFFORT_ISOLATION_DIR"
 echo "📝 EFFORT: $EFFORT_NAME (Phase $PHASE, Wave $WAVE)"
 echo ""
 echo "NEXT STEPS:"
-echo "1. Read IMPLEMENTATION-PLAN.md completely"
+echo "1. Read $IMPLEMENTATION_PLAN completely"
 echo "2. Update work-log.md with startup entry"
 echo "3. Begin implementation in pkg/ directory"
 echo "4. NEVER attempt to leave this directory"

@@ -60,6 +60,14 @@ size_limits:
 
 ### 4. REVIEW OUTPUT FORMAT
 
+Code review reports MUST use timestamps in the filename:
+```bash
+# Generate timestamped report filename
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+REPORT_FILE="CODE-REVIEW-REPORT-${TIMESTAMP}.md"
+```
+
+Report content format:
 ```markdown
 # CODE REVIEW REPORT
 **Effort**: [effort-name]  
@@ -112,11 +120,15 @@ If effort exceeds size limit:
 # Immediate transition to CREATE_SPLIT_PLAN state
 echo "🚨 Size limit exceeded - initiating split planning"
 
-# Create split plan
-cat > SPLIT-PLAN.md << 'EOF'
+# Create timestamped split plan
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+SPLIT_PLAN_FILE="SPLIT-PLAN-${TIMESTAMP}.md"
+
+cat > "$SPLIT_PLAN_FILE" << 'EOF'
 # SPLIT PLAN
 ## Current Size: [lines]
 ## Target Splits: [number]
+## Created: [timestamp]
 
 ### Split 1: [name]
 - Files: [list]
@@ -128,6 +140,8 @@ cat > SPLIT-PLAN.md << 'EOF'
 - Estimated Size: [lines]
 - Dependencies: split-1
 EOF
+
+echo "✅ Created split plan: $SPLIT_PLAN_FILE"
 ```
 
 ### 6. ORCHESTRATOR RESPONSIBILITIES
@@ -139,6 +153,28 @@ cd $EFFORT_DIR && claude_spawn code-reviewer
 
 # Wait for review completion
 wait_for_review_complete
+
+# Read the latest review report
+get_latest_review_report() {
+    # Check for new timestamped format first
+    LATEST_REPORT=$(ls -t CODE-REVIEW-REPORT-*.md 2>/dev/null | head -n1)
+    
+    # Fallback to old format if no timestamped versions
+    if [ -z "$LATEST_REPORT" ] && [ -f "CODE-REVIEW-REPORT.md" ]; then
+        LATEST_REPORT="CODE-REVIEW-REPORT.md"
+        echo "⚠️ Using legacy report format: $LATEST_REPORT"
+    fi
+    
+    if [ -z "$LATEST_REPORT" ]; then
+        echo "❌ ERROR: No review report found!"
+        exit 1
+    fi
+    
+    echo "✅ Reading review report: $LATEST_REPORT"
+    REVIEW_STATUS=$(grep "Status:" "$LATEST_REPORT" | cut -d: -f2 | tr -d ' ')
+}
+
+get_latest_review_report
 
 # Check review status
 if [[ "$REVIEW_STATUS" == "SPLIT_REQUIRED" ]]; then

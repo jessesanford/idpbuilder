@@ -218,3 +218,11 @@
 - R283.0.0 - Complete File Reading (🔴 SUPREME LAW #12)
 - R288.0.0 - State File Update and Commit Protocol | BLOCKING | State Management, Persistence
 - R289.0.0 - Orphaned State Detection and Prevention | BLOCKING | State Machine Integrity
+- R290.0.0 - State Rule Reading and Verification (🔴 SUPREME LAW #3)
+- R291.0.0 - Integration Demo Requirement | BLOCKING | Integration Validation
+- R292.0.0 - Integration Fixes in Effort Branches | BLOCKING | Fix Protocol
+- R293.0.0 - Integration Report Distribution Protocol | BLOCKING | Fix Distribution
+- R294.0.0 - Fix Plan Archival Protocol | BLOCKING | Plan Management
+- R295.0.0 - SW Engineer Spawn Clarity Protocol | SUPREME | Agent Communication
+- R296.0.0 - Deprecated Branch Marking Protocol | BLOCKING | Split Management, Integration Safety
+- R297.0.0 - Architect Split Detection Protocol | BLOCKING | Size Compliance, Split Recognition

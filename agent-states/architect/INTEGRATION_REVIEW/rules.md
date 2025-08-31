@@ -3,6 +3,18 @@
 ## Core Integration Assessment Rules
 
 ---
+### 🚨🚨🚨 RULE R297 - Architect Split Detection Protocol
+**Source:** rule-library/R297-architect-split-detection-protocol.md
+**Criticality:** BLOCKING - Must check splits BEFORE measuring integration
+
+MANDATE: Check split_count in orchestrator-state.yaml BEFORE measuring any effort.
+If split_count > 0, the effort was already split and is COMPLIANT.
+Integration branches merge all splits (will exceed limits - EXPECTED).
+Measure ORIGINAL effort branches, NOT integration branches.
+PRs come from effort branches, NOT integration.
+---
+
+---
 ### ℹ️ RULE R091.0.0 - Cross-Wave Integration Verification
 **Source:** rule-library/RULE-REGISTRY.md#R091
 **Criticality:** INFO - Best practice

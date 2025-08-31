@@ -29,6 +29,9 @@ The agent MUST recognize:
 - Split branches that subsume original branches
 - Split branch naming conventions (prefix preservation)
 - Split branch hierarchy and ordering
+- **R296: Deprecated branches marked with "-deprecated-split" suffix**
+- **R296: SPLIT_DEPRECATED status in state file**
+- **R296: Replacement splits that must be used instead**
 
 ### 4. Commit History Preservation
 The agent MUST:
@@ -60,6 +63,25 @@ verify_branch_relationships() {
     grep -q "Parent branch:" "$work_log" || echo "❌ Missing parent documentation"
     grep -q "Divergence point:" "$work_log" || echo "❌ Missing divergence analysis"
 }
+
+# R296: Verify deprecated branch handling
+verify_deprecated_branch_handling() {
+    local integration_list="$1"
+    
+    # Check for deprecated branches
+    while read -r branch; do
+        if [[ "$branch" == *"-deprecated-split" ]]; then
+            echo "❌ CRITICAL: Deprecated branch in integration list: $branch"
+            return 1
+        fi
+    done < "$integration_list"
+    
+    # Check state file for SPLIT_DEPRECATED
+    local deprecated_count=$(yq '[.efforts_completed[] | select(.status == "SPLIT_DEPRECATED")] | length' orchestrator-state.yaml)
+    if [ "$deprecated_count" -gt 0 ]; then
+        echo "⚠️ Found $deprecated_count deprecated efforts - must use replacement splits"
+    fi
+}
 ```
 
 ## Grading Impact
@@ -72,3 +94,4 @@ verify_branch_relationships() {
 - R261 - Integration Planning Requirements
 - R262 - Merge Operation Protocols
 - R263 - Integration Documentation Requirements
+- R296 - Deprecated Branch Marking Protocol

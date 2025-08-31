@@ -3,6 +3,18 @@
 ## Core Wave Assessment Rules
 
 ---
+### 🚨🚨🚨 RULE R297 - Architect Split Detection Protocol
+**Source:** rule-library/R297-architect-split-detection-protocol.md
+**Criticality:** BLOCKING - Must check splits BEFORE measuring integration
+
+MANDATE: Check split_count in orchestrator-state.yaml BEFORE measuring any effort.
+If split_count > 0, the effort was already split and is COMPLIANT.
+Integration branches merge all splits (will exceed limits - EXPECTED).
+Measure ORIGINAL effort branches, NOT integration branches.
+PRs come from effort branches, NOT integration.
+---
+
+---
 ### 🚨🚨 RULE R074.0.0 - Wave Completion Architectural Review
 **Source:** rule-library/RULE-REGISTRY.md#R074
 **Criticality:** MANDATORY - Required for approval
@@ -173,18 +185,25 @@ WAVE_REVIEW → [Assessment Complete] → Decision State
 
 ### Size Compliance Assessment
 
-**CRITICAL REQUIREMENT**: Every effort must be ≤800 lines
+**CRITICAL REQUIREMENT**: Every effort must be ≤800 lines (R297 MUST be checked FIRST!)
+- **Split Detection**: Check split_count BEFORE measuring (R297)
 - **Measurement Tool**: `$PROJECT_ROOT/tools/line-counter.sh` (find project root first!)
+- **Measurement Target**: ORIGINAL effort branches, NOT integration branches
 - **Exclusions**: Generated code (zz_generated*.go, *.pb.go, CRDs, SDK clients) - automatic
 - **Action on Violation**: Immediate STOP, require effort splitting
 
-**Size Assessment Process** (Per R022):
-1. Navigate TO each effort directory (cd /path/to/effort)
-2. Find project root: `while [ "$PWD" != "/" ]; do [ -f orchestrator-state.yaml ] && break; cd ..; done`
-3. Run line counter with NO PARAMETERS: `$PROJECT_ROOT/tools/line-counter.sh`
-4. Document results in assessment report  
-5. Flag any efforts >800 lines for splitting
-6. Verify splits maintain logical coherence
+**Size Assessment Process** (Per R297 and R022):
+1. **CHECK SPLIT_COUNT FIRST** (R297):
+   - Read `split_count` from orchestrator-state.yaml
+   - If > 0: Mark as COMPLIANT, skip size measurement
+   - If 0: Continue to measure original branch
+2. Navigate TO each effort directory (cd /efforts/phase*/wave*/[effort-name])
+3. Find project root: `while [ "$PWD" != "/" ]; do [ -f orchestrator-state.yaml ] && break; cd ..; done`
+4. Run line counter with NO PARAMETERS: `$PROJECT_ROOT/tools/line-counter.sh`
+5. Document results in assessment report  
+6. Flag any efforts >800 lines for splitting
+7. Verify splits maintain logical coherence
+8. **NEVER measure integration branch for compliance** (integration merges all splits)
 
 ### KCP Pattern Consistency Assessment
 
@@ -223,12 +242,13 @@ WAVE_REVIEW → [Assessment Complete] → Decision State
 ### Wave Integration Approval Criteria
 
 **PROCEED CONDITIONS** (All must be true):
-- ✅ All efforts ≤800 lines (measured with $PROJECT_ROOT/tools/line-counter.sh)
+- ✅ All efforts size-compliant (R297: check split_count first, then measure original branches ≤800 lines)
 - ✅ All KCP patterns consistent across efforts
 - ✅ Wave integration branch merges cleanly
 - ✅ Integration tests pass with >95% success rate
 - ✅ Performance impact <10% degradation
 - ✅ No security boundary violations
+- ✅ Split efforts recognized as compliant (even if integration exceeds limit)
 
 **CHANGES_REQUIRED CONDITIONS**:
 - Minor API inconsistencies between efforts

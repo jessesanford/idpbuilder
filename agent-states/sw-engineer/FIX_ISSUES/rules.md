@@ -799,3 +799,89 @@ def validate_issue_resolution(issue_list, resolution_results):
     )
     
     return validation_results
+```
+
+## Fix Plan Archival Requirements (R294)
+
+---
+### 🚨🚨🚨 RULE R294 - Fix Plan Archival Protocol
+**Source:** rule-library/R294-fix-plan-archival-protocol.md
+**Criticality:** BLOCKING - Must archive completed fix plans
+
+ARCHIVAL REQUIREMENTS:
+
+When completing fixes from any fix plan, you MUST archive the plan:
+
+1. **CODE-REVIEW-REPORT files**:
+   ```bash
+   # When all fixes from CODE-REVIEW-REPORT are complete
+   # Find the latest report (timestamped or legacy)
+   LATEST_REPORT=$(ls -t CODE-REVIEW-REPORT-*.md 2>/dev/null | head -n1)
+   if [ -z "$LATEST_REPORT" ] && [ -f "CODE-REVIEW-REPORT.md" ]; then
+       LATEST_REPORT="CODE-REVIEW-REPORT.md"
+   fi
+   
+   if [ -n "$LATEST_REPORT" ]; then
+       mv "$LATEST_REPORT" "${LATEST_REPORT%.md}-COMPLETED-$(date +%Y%m%d-%H%M%S).md"
+       echo "✅ Archived completed review report: $LATEST_REPORT"
+   fi
+   ```
+
+2. **SPLIT-PLAN files**:
+   ```bash
+   # If working from a split plan and fixes complete
+   # Find the latest split plan (timestamped or legacy)
+   LATEST_SPLIT=$(ls -t SPLIT-PLAN-*.md 2>/dev/null | head -n1)
+   if [ -z "$LATEST_SPLIT" ] && [ -f "SPLIT-PLAN.md" ]; then
+       LATEST_SPLIT="SPLIT-PLAN.md"
+   fi
+   
+   if [ -n "$LATEST_SPLIT" ]; then
+       mv "$LATEST_SPLIT" "${LATEST_SPLIT%.md}-COMPLETED-$(date +%Y%m%d-%H%M%S).md"
+       echo "✅ Archived completed split plan: $LATEST_SPLIT"
+   fi
+   ```
+
+3. **INTEGRATION-REPORT.md**:
+   ```bash
+   # When integration fixes are complete
+   mv INTEGRATION-REPORT.md INTEGRATION-REPORT-COMPLETED-$(date +%Y%m%d-%H%M%S).md
+   echo "✅ Archived completed integration report"
+   ```
+
+ARCHIVAL VERIFICATION:
+- Ensure no active fix plans remain after archival
+- Check that archived files follow naming convention
+- Commit the archival as part of fix completion
+
+VIOLATIONS:
+- ❌ Leaving fix plans unarchived after completion
+- ❌ Wrong naming convention for archives
+- ❌ Multiple active fix plans causing confusion
+---
+
+## Clarity About Which Plan to Follow (R295)
+
+---
+### 🔴🔴🔴 RULE R295 - SW Engineer Spawn Clarity
+**Source:** rule-library/R295-sw-engineer-spawn-clarity-protocol.md
+**Criticality:** SUPREME - Must have crystal clear instructions
+
+WHEN IN FIX_ISSUES STATE:
+
+1. **Check your spawn instructions**: The orchestrator should have told you EXACTLY which plan to follow
+2. **Look for active plans**: Find the NON-archived plan file (not *-COMPLETED-*.md)
+3. **If multiple active plans exist**: STOP and request clarification
+4. **Follow ONLY the specified plan**: Ignore any archived (*-COMPLETED-*.md) files
+
+COMMON SCENARIOS:
+- **Initial fixes**: Follow latest CODE-REVIEW-REPORT-*.md
+- **Split fixes**: Follow latest SPLIT-PLAN-*.md  
+- **Integration fixes**: Follow latest INTEGRATION-REPORT-*.md or FIX-INSTRUCTIONS-*.md
+- **Phase fixes**: Follow PHASE-FIX-PLAN.md
+
+VIOLATIONS:
+- ❌ Following the wrong plan file
+- ❌ Following an archived plan
+- ❌ Not knowing which state you're in
+---

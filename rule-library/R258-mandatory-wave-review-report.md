@@ -73,13 +73,15 @@ Previously, architects could provide wave review decisions through agent respons
 | Documentation | 5% | {score} | {calculated} |
 | **OVERALL SCORE** | 100% | - | **{FINAL}** |
 
-## Size Compliance Verification (Per R076)
-| Effort | Measured Size | Status | Action Required |
-|--------|---------------|--------|-----------------|
-| {effort-name} | {lines} | [PASS|FAIL] | {split if >800} |
-| {effort-name} | {lines} | [PASS|FAIL] | {split if >800} |
+## Size Compliance Verification (Per R297 and R076)
+| Effort | Split Count | Measured Size | Status | Notes |
+|--------|-------------|---------------|--------|-------|
+| {effort-name} | {0 or N} | {lines or "N/A"} | [PASS|FAIL] | {if split: "Already split - compliant"} |
+| {effort-name} | {0 or N} | {lines or "N/A"} | [PASS|FAIL] | {if split: "Already split - compliant"} |
 
-**Measurement Method Used**: `$PROJECT_ROOT/tools/line-counter.sh` (from effort directory)
+**Split Detection (R297)**: Checked split_count in orchestrator-state.yaml FIRST
+**Measurement Method**: `$PROJECT_ROOT/tools/line-counter.sh` (from ORIGINAL effort directory)
+**Measurement Target**: Original effort branches (NOT integration branches)
 **All Efforts Compliant**: [YES|NO]
 
 ## Wave Deliverables Checklist

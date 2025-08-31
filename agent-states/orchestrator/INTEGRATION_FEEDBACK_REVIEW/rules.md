@@ -48,9 +48,11 @@ The system will check for this marker. No marker = Immediate failure.
 3. Read: $CLAUDE_PROJECT_DIR/rule-library/R290-state-rule-reading-verification-supreme-law.md
 4. Read: $CLAUDE_PROJECT_DIR/rule-library/R291-integration-demo-requirement.md
 5. Read: $CLAUDE_PROJECT_DIR/rule-library/R292-integration-fixes-in-effort-branches.md
-6. Read: $CLAUDE_PROJECT_DIR/rule-library/R238-integration-report-evaluation.md
-7. Read: $CLAUDE_PROJECT_DIR/rule-library/R239-fix-plan-distribution.md
-8. Read: $CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-transition-validation.md
+6. Read: $CLAUDE_PROJECT_DIR/rule-library/R293-integration-report-distribution-protocol.md
+7. Read: $CLAUDE_PROJECT_DIR/rule-library/R294-fix-plan-archival-protocol.md
+8. Read: $CLAUDE_PROJECT_DIR/rule-library/R238-integration-report-evaluation.md
+9. Read: $CLAUDE_PROJECT_DIR/rule-library/R239-fix-plan-distribution.md
+10. Read: $CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-transition-validation.md
 
 **WE ARE WATCHING EACH READ TOOL CALL**
 
@@ -117,11 +119,13 @@ The system will check for this marker. No marker = Immediate failure.
 □ I have read R290 - State Rule Reading and Verification (SUPREME LAW #3)
 □ I have read R291 - Integration Demo Requirement (demo must pass)
 □ I have read R292 - Integration Fixes MUST Be In Effort Branches
+□ I have read R293 - Integration Report Distribution Protocol
+□ I have read R294 - Fix Plan Archival Protocol
 □ I have read R238 - Integration Report Evaluation Protocol
 □ I have read R239 - Fix Plan Distribution Protocol
 □ I have read R206 - State Machine Transition Validation
 
-**CRITICAL**: You must have made 8 actual Read tool calls. Count them!
+**CRITICAL**: You must have made 10 actual Read tool calls. Count them!
 
 ---
 
@@ -189,7 +193,43 @@ if grep -q "BLOCKED_BY_DEPENDENCIES" "$REPORT_FILE"; then
 fi
 ```
 
-### 3. Create Fix Request Metadata
+### 3. Distribute Integration Report and Archive Old Plans (R293 & R294)
+```bash
+# 🚨 MANDATORY (R293): Distribute INTEGRATION-REPORT.md to all affected efforts
+echo "📋 Distributing integration report per R293..."
+INTEGRATION_REPORT="efforts/phase${PHASE}/wave${WAVE}/integration-workspace/INTEGRATION_REPORT.md"
+
+if [[ -f "$INTEGRATION_REPORT" ]]; then
+    for effort in "${EFFORTS_NEEDING_FIXES[@]}"; do
+        EFFORT_DIR="efforts/phase${PHASE}/wave${WAVE}/${effort}"
+        
+        # Archive old plans first (R294)
+        echo "📦 Archiving old fix plans in $EFFORT_DIR per R294..."
+        if [[ -d "$EFFORT_DIR" ]]; then
+            cd "$EFFORT_DIR"
+            TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+            
+            # Archive any existing fix plans
+            [[ -f "SPLIT-PLAN.md" ]] && mv SPLIT-PLAN.md "SPLIT-PLAN-COMPLETED-${TIMESTAMP}.md"
+            [[ -f "CODE-REVIEW-REPORT.md" ]] && mv CODE-REVIEW-REPORT.md "CODE-REVIEW-REPORT-COMPLETED-${TIMESTAMP}.md"
+            [[ -f "INTEGRATION-REPORT.md" ]] && mv INTEGRATION-REPORT.md "INTEGRATION-REPORT-COMPLETED-${TIMESTAMP}.md"
+            
+            cd - > /dev/null
+            
+            # Now copy the new integration report
+            cp "$INTEGRATION_REPORT" "$EFFORT_DIR/INTEGRATION-REPORT.md"
+            echo "✅ Distributed INTEGRATION-REPORT.md to $EFFORT_DIR"
+        else
+            echo "⚠️ Warning: Effort directory $EFFORT_DIR does not exist"
+        fi
+    done
+else
+    echo "❌ CRITICAL: Integration report not found at $INTEGRATION_REPORT"
+    exit 1
+fi
+```
+
+### 4. Create Fix Request Metadata
 ```bash
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 FIX_REQUEST_FILE="efforts/phase${PHASE}/wave${WAVE}/FIX_REQUEST_${TIMESTAMP}.yaml"
@@ -224,7 +264,7 @@ else
 fi
 ```
 
-### 4. Update State File
+### 5. Update State File
 ```bash
 # Update orchestrator state
 yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.yaml
@@ -294,6 +334,9 @@ ALL fixes must be made in the following effort branches:
 
 - R291: Integration Demo Requirement (demo must pass before complete)
 - R292: Integration Fixes MUST Be In Effort Branches
+- R293: Integration Report Distribution Protocol (BLOCKING)
+- R294: Fix Plan Archival Protocol (BLOCKING)
+- R295: SW Engineer Spawn Clarity Protocol (SUPREME)
 - R238: Integration Report Evaluation Protocol
 - R239: Fix Plan Distribution Protocol
 - R260: Integration Agent Core Requirements

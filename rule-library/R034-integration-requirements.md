@@ -23,6 +23,8 @@ Before ANY integration attempt, verify:
 - ✅ Build verification prepared (R291)
 - ✅ Test harness ready (R291)
 - ✅ Demo plan prepared (R291)
+- ✅ No deprecated branches in integration list (R296)
+- ✅ All SPLIT_DEPRECATED efforts using replacement splits
 
 ### 2. State Validation
 ```bash
@@ -31,6 +33,18 @@ for effort in $(yq '.efforts_in_progress[]' orchestrator-state.yaml); do
     status=$(yq ".efforts_completed[] | select(.name == \"$effort\") | .status" orchestrator-state.yaml)
     if [ "$status" != "COMPLETED" ]; then
         echo "🚨 Cannot integrate - $effort not completed"
+        exit 1
+    fi
+done
+
+# R296: Check for deprecated branches
+for effort in $(yq '.efforts_completed[].name' orchestrator-state.yaml); do
+    status=$(yq ".efforts_completed[] | select(.name == \"$effort\") | .status" orchestrator-state.yaml)
+    if [ "$status" == "SPLIT_DEPRECATED" ]; then
+        echo "🚨 BLOCKED: Cannot integrate deprecated effort: $effort"
+        SPLITS=$(yq ".efforts_completed[] | select(.name == \"$effort\") | .replacement_splits[]" orchestrator-state.yaml)
+        echo "Use replacement splits instead:"
+        echo "$SPLITS"
         exit 1
     fi
 done
@@ -83,12 +97,25 @@ for effort_dir in ../effort*/; do
     effort_name=$(basename "$effort_dir")
     echo "📦 Integrating $effort_name..."
     
+    # R296: Skip deprecated branches
+    if [[ "$effort_name" == *"-deprecated-split" ]]; then
+        echo "⚠️ Skipping deprecated branch: $effort_name"
+        continue
+    fi
+    
     # Add effort as remote
     git remote add "$effort_name" "$effort_dir"
     git fetch "$effort_name"
     
     # Get effort branch name
     effort_branch=$(cd "$effort_dir" && git branch --show-current)
+    
+    # R296: Final check - ensure branch isn't deprecated
+    if [[ "$effort_branch" == *"-deprecated-split" ]]; then
+        echo "❌ BLOCKED: Cannot integrate deprecated branch: $effort_branch"
+        echo "Check state file for replacement splits"
+        exit 1
+    fi
     
     # Cherry-pick commits (preferred) or merge
     git cherry-pick $(git rev-list --reverse main.."$effort_name/$effort_branch")
@@ -247,7 +274,8 @@ EOF
 - R222: Code Review Gate
 - R271: Full Checkout Requirement
 - R014: Branch Naming Convention
-- R288/R288: State File Updates
+- R288: State File Updates
+- R296: Deprecated Branch Marking Protocol
 
 ## Common Failures to Avoid
 

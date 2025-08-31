@@ -140,14 +140,18 @@ chmod +x test-harness.sh
 **EVERY INTEGRATION MUST DEMONSTRATE WORKING FUNCTIONALITY:**
 
 ```bash
-# Demo documentation template
-cat > INTEGRATION-DEMO.md << 'EOF'
+# Demo documentation template with timestamp
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+DEMO_FILE="INTEGRATION-DEMO-${TIMESTAMP}.md"
+
+cat > "$DEMO_FILE" << 'EOF'
 # Integration Demo
 
 ## Build Status
 - Build: ✅ PASSING
 - Tests: ✅ ALL PASSING
 - Integration: ✅ COMPLETE
+- Created: [timestamp]
 
 ## Features Demonstrated
 1. [Feature 1]: Working implementation with evidence
@@ -238,14 +242,18 @@ analyze_demo_failure() {
     # Trace errors back to source efforts
 }
 
-# Create fix instructions
-cat > FIX-INSTRUCTIONS.md << 'EOF'
+# Create timestamped fix instructions
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+FIX_FILE="FIX-INSTRUCTIONS-${TIMESTAMP}.md"
+
+cat > "$FIX_FILE" << 'EOF'
 # INTEGRATION DEMO FIX INSTRUCTIONS
 
 ## Demo Failure Summary
 - Build Status: ❌ FAILED
 - Test Status: ❌ FAILED
 - Error Type: [compilation/runtime/test]
+- Created: [timestamp]
 
 ## Root Cause Analysis
 1. [Error 1]: Located in effort-X, file Y, line Z
@@ -278,11 +286,20 @@ EOF
 ```bash
 # Orchestrator reads fix instructions
 read_fix_instructions() {
-    if [ -f "FIX-INSTRUCTIONS.md" ]; then
-        echo "📋 Processing fix instructions..."
+    # Find the latest fix instructions file
+    LATEST_FIX=$(ls -t FIX-INSTRUCTIONS-*.md 2>/dev/null | head -n1)
+    
+    # Fallback to old format if needed
+    if [ -z "$LATEST_FIX" ] && [ -f "FIX-INSTRUCTIONS.md" ]; then
+        LATEST_FIX="FIX-INSTRUCTIONS.md"
+        echo "⚠️ Using legacy fix instructions format"
+    fi
+    
+    if [ -f "$LATEST_FIX" ]; then
+        echo "📋 Processing fix instructions: $LATEST_FIX"
         
         # Extract affected efforts
-        grep "^### Effort:" FIX-INSTRUCTIONS.md | cut -d: -f2
+        grep "^### Effort:" "$LATEST_FIX" | cut -d: -f2
         
         # Spawn SW Engineers for each effort
         for effort in $(get_affected_efforts); do

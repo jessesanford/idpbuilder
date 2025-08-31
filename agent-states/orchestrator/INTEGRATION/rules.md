@@ -122,6 +122,11 @@ The system will check for this marker. No marker = Immediate failure.
 **Criticality**: BLOCKING - Required for wave approval
 **Summary**: Complete integration protocol with testing and validation
 
+### 🚨🚨🚨 R296 - Deprecated Branch Marking Protocol
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R296-deprecated-branch-marking-protocol.md`
+**Criticality**: BLOCKING - Prevents integration of wrong branches
+**Summary**: Check for and prevent integration of deprecated split branches
+
 ### 🚨🚨🚨 R014 - Branch Naming Convention
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R014-branch-naming-convention.md`
 **Criticality**: BLOCKING - Mandatory project prefix for all branches

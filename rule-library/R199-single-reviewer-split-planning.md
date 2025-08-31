@@ -63,11 +63,11 @@ handle_overlimit_correct() {
     4. Ensure NO gaps in coverage
     5. Create logical groupings that compile independently
     
-    Output:
-    - SPLIT-PLAN-001.md (lines 1-700)
-    - SPLIT-PLAN-002.md (lines 701-1400) 
-    - SPLIT-PLAN-003.md (lines 1401-2100)
-    - SPLIT-PLAN-004.md (lines 2101-2400)
+    Output (with timestamps):
+    - SPLIT-PLAN-001-YYYYMMDD-HHMMSS.md (lines 1-700)
+    - SPLIT-PLAN-002-YYYYMMDD-HHMMSS.md (lines 701-1400) 
+    - SPLIT-PLAN-003-YYYYMMDD-HHMMSS.md (lines 1401-2100)
+    - SPLIT-PLAN-004-YYYYMMDD-HHMMSS.md (lines 2101-2400)
     
     You have COMPLETE context. Plan ALL splits now.
 }
@@ -110,13 +110,15 @@ handle_split_planning() {
 
 # Create ALL splits with deduplication awareness
 create_all_split_plans() {
-    local split_inventory="SPLIT-INVENTORY.md"
+    local TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+    local split_inventory="SPLIT-INVENTORY-${TIMESTAMP}.md"
     
     cat > "$split_inventory" << EOF
 # Complete Split Plan for $EFFORT_NAME
 Total Size: $TOTAL_SIZE lines
 Splits: $SPLITS_NEEDED
 Planner: $MY_INSTANCE_ID (sole reviewer)
+Created: $TIMESTAMP
 
 ## Split Boundaries (NO OVERLAPS)
 EOF
@@ -125,8 +127,8 @@ EOF
     for i in $(seq 1 $SPLITS_NEEDED); do
         echo "Planning split $i of $SPLITS_NEEDED..."
         
-        # Create split plan with explicit boundaries
-        cat > "SPLIT-PLAN-$(printf "%03d" $i).md" << EOF
+        # Create timestamped split plan with explicit boundaries
+        cat > "SPLIT-PLAN-$(printf "%03d" $i)-${TIMESTAMP}.md" << EOF
 # Split $i of $SPLITS_NEEDED
 Reviewer: $MY_INSTANCE_ID (same for all splits)
 

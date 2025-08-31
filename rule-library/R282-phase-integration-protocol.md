@@ -59,6 +59,12 @@ for wave in $(seq 1 $TOTAL_WAVES); do
     # Get wave integration branch (R104 naming)
     WAVE_BRANCH="wave-${wave}-integration"
     
+    # R296: Pre-check for deprecated branches
+    if [[ "$WAVE_BRANCH" == *"-deprecated-split" ]]; then
+        echo "❌ BLOCKED: Cannot integrate deprecated branch: $WAVE_BRANCH"
+        exit 1
+    fi
+    
     # Fetch and merge wave
     git fetch origin "$WAVE_BRANCH"
     git merge "origin/$WAVE_BRANCH" --no-ff \
@@ -255,6 +261,8 @@ gh pr create \
 - 🚨 Using non-isolated workspace = FAIL
 - 🚨 Missing wave integrations = FAIL
 - 🚨 Test failures after merge = FAIL
+- 🚨 R296: Attempting to merge deprecated branches = FAIL
+- 🚨 R296: Using original branch instead of splits = FAIL
 
 ### Recovery Protocol
 1. Document failure point
@@ -288,8 +296,9 @@ gh pr create \
 - R250: Integration Isolation
 - R259: Phase Integration After Fixes
 - R256: Phase Assessment Gate
-- R288/R288: State File Updates
+- R288: State File Updates
 - R283: Project Integration Protocol
+- R296: Deprecated Branch Marking Protocol
 
 ## Common Violations
 

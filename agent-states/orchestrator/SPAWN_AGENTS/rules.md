@@ -107,16 +107,21 @@ The system will check for this marker. No marker = Immediate failure.
    - Criticality: CRITICAL - Timestamps must be within 5s for parallel agents (50% of orchestrator grade)
    - Summary: All parallel agents must emit timestamps within 5 seconds, acknowledge plan creator's decision
 
-2. **R052** - Agent Spawning Protocol
+2. **🔴🔴🔴 R295** - SW Engineer Spawn Clarity Protocol
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R295-sw-engineer-spawn-clarity-protocol.md`
+   - Criticality: SUPREME - MUST specify exact state, plan file, and clear instructions
+   - Summary: Every spawn MUST include state name, exact plan file, and warnings about old plans
+
+3. **R052** - Agent Spawning Protocol
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R052-agent-spawning-protocol.md`
    - Criticality: CRITICAL - Complete context and deliverables required
    - Summary: Provide complete context, startup requirements, deliverables, size limits to each agent
 
-3. **R197** - One Agent Per Effort
+4. **R197** - One Agent Per Effort
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R197-one-agent-per-effort.md`
    - Criticality: BLOCKING - Never spawn multiple agents for same effort
 
-4. **R255** - Post-Agent Work Verification
+5. **R255** - Post-Agent Work Verification
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R255-POST-AGENT-WORK-VERIFICATION.md`
    - Criticality: BLOCKING - Verify correct locations after completion
 
@@ -178,12 +183,28 @@ git push
 echo "➡️ Transitioning to MONITOR state..."
 ```
 
-## Spawn Message Template WITH EXPLICIT DIRECTORY NAVIGATION
+## Spawn Message Template WITH R295 COMPLIANCE
 
 ```markdown
-# SPAWN SW ENGINEER WITH MANDATORY DIRECTORY NAVIGATION:
+# SPAWN SW ENGINEER WITH MANDATORY CLARITY (R295):
 Task sw-engineer:
 PURPOSE: Implement {effort_id} - {effort_name}
+
+🔴🔴🔴 CRITICAL STATE INFORMATION (R295):
+YOU ARE IN STATE: IMPLEMENTATION
+This means you should: Implement the features defined in IMPLEMENTATION-PLAN.md
+🔴🔴🔴
+
+📋 YOUR INSTRUCTIONS (R295):
+FOLLOW ONLY: IMPLEMENTATION-PLAN.md
+LOCATION: In your effort directory
+IGNORE: Any files named *-COMPLETED-*.md or other plan files
+
+🎯 CONTEXT:
+- EFFORT: {effort_name}
+- WAVE: {wave_number}
+- PHASE: {phase_number}
+- YOUR TASK: Implement features as specified in IMPLEMENTATION-PLAN.md
 
 🔴🔴🔴 CRITICAL: YOU WILL NOT BE IN THE RIGHT DIRECTORY! 🔴🔴🔴
 YOU MUST NAVIGATE TO YOUR EFFORT DIRECTORY IMMEDIATELY!
@@ -206,7 +227,7 @@ YOUR MANDATORY FIRST ACTIONS:
 BRANCH: {PROJECT_PREFIX}/phase{X}/wave{Y}/effort{Z}-{name}  # Include project prefix from target-repo-config.yaml!
 
 REQUIREMENTS:
-- Follow IMPLEMENTATION-PLAN.md exactly
+- Follow IMPLEMENTATION-PLAN.md exactly (R295: This is your ONLY plan)
 - Size limit: {limit} lines
 - Test coverage: {X}% minimum
 - Update work-log.md every checkpoint
@@ -215,10 +236,10 @@ STARTUP REQUIREMENTS:
 1. Print: "AGENT STARTUP: $(date '+%Y-%m-%d %H:%M:%S %Z')"
 2. Verify pwd matches WORKING_DIR
 3. Verify branch matches BRANCH
-4. Acknowledge rules R054, R007, R013, R060, R017, R152
+4. Acknowledge rules R054, R007, R013, R060, R017, R152, R295
 
 DELIVERABLES:
-- Implementation complete
+- Implementation complete per IMPLEMENTATION-PLAN.md
 - Tests passing at required coverage
 - Size under limit
 - Work log updated

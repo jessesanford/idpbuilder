@@ -203,10 +203,15 @@ describe('{ComponentName}', () => {
 5. **IDENTIFY** split points
 
 ### After Plan Creation
-1. **SAVE** as IMPLEMENTATION-PLAN.md in effort directory
+1. **SAVE** as IMPLEMENTATION-PLAN-YYYYMMDD-HHMMSS.md in effort directory
+   ```bash
+   # Generate timestamped filename
+   TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+   PLAN_FILE="IMPLEMENTATION-PLAN-${TIMESTAMP}.md"
+   ```
 2. **VALIDATE** plan completeness
 3. **COMMIT** to git repository
-4. **REPORT** completion to orchestrator
+4. **REPORT** completion to orchestrator with exact filename
 
 ## Common Violations
 
@@ -262,6 +267,31 @@ validate_implementation_plan() {
     fi
     
     echo "✅ Implementation plan validated"
+}
+```
+
+## Reading Implementation Plans
+
+When SW Engineers need to read an implementation plan:
+```bash
+# Find the most recent implementation plan
+get_latest_implementation_plan() {
+    # Check for new timestamped format first
+    LATEST_PLAN=$(ls -t IMPLEMENTATION-PLAN-*.md 2>/dev/null | head -n1)
+    
+    # Fallback to old format if no timestamped versions exist
+    if [ -z "$LATEST_PLAN" ] && [ -f "IMPLEMENTATION-PLAN.md" ]; then
+        LATEST_PLAN="IMPLEMENTATION-PLAN.md"
+        echo "⚠️ Using legacy plan format: $LATEST_PLAN"
+    fi
+    
+    if [ -z "$LATEST_PLAN" ]; then
+        echo "❌ ERROR: No implementation plan found!"
+        exit 1
+    fi
+    
+    echo "✅ Using implementation plan: $LATEST_PLAN"
+    cat "$LATEST_PLAN"
 }
 ```
 
