@@ -3,10 +3,10 @@
 
 current_phase: 1
 current_wave: 1
-current_state: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
-previous_state: ANALYZE_CODE_REVIEWER_PARALLELIZATION
-transition_time: "2025-08-31T09:10:00Z"
-transition_reason: "Parallelization analysis complete - spawning Code Reviewers per plan"
+current_state: WAITING_FOR_EFFORT_PLANS
+previous_state: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+transition_time: "2025-08-31T09:25:00Z"
+transition_reason: "Code Reviewers spawned - checking effort plan completion"
 
 project_info:
   name: "idpbuidler-oci-go-cr"
