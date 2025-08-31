@@ -3,7 +3,10 @@
 
 current_phase: 1
 current_wave: 1
-current_state: INIT
+current_state: PLANNING
+previous_state: INIT
+transition_time: "2025-08-31T08:44:00Z"
+transition_reason: "Initial state file created with all phases/waves/efforts - proceeding to planning"
 
 project_info:
   name: "idpbuidler-oci-go-cr"
