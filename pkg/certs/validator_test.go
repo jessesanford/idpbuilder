@@ -55,20 +55,20 @@ func TestDefaultValidatorConfig(t *testing.T) {
 
 func TestValidator_ValidateCertificate(t *testing.T) {
 	validator := NewValidator(DefaultValidatorConfig())
-	
+
 	// Test nil certificate
 	if _, err := validator.ValidateCertificate(nil); err == nil {
 		t.Error("Expected error for nil certificate")
 	}
-	
+
 	// Test valid certificate
 	if validCert, _ := generateTestCert("test.com", false); validCert != nil {
 		if result, _ := validator.ValidateCertificate(validCert); !result.Valid {
 			t.Error("Valid certificate should pass validation")
 		}
 	}
-	
-	// Test expired certificate  
+
+	// Test expired certificate
 	if expiredCert, _ := generateTestCert("expired.com", true); expiredCert != nil {
 		if result, _ := validator.ValidateCertificate(expiredCert); result.Valid {
 			t.Error("Expired certificate should fail validation")
@@ -78,19 +78,19 @@ func TestValidator_ValidateCertificate(t *testing.T) {
 
 func TestValidator_CheckExpiry(t *testing.T) {
 	validator := NewValidator(DefaultValidatorConfig())
-	
+
 	// Test nil certificate
 	if _, err := validator.CheckExpiry(nil, 30); err == nil {
 		t.Error("Expected error for nil certificate")
 	}
-	
+
 	// Test expired certificate
 	if expiredCert, _ := generateTestCert("expired.com", true); expiredCert != nil {
 		if result, _ := validator.CheckExpiry(expiredCert, 30); !result.Expired {
 			t.Error("Expired certificate should be detected as expired")
 		}
 	}
-	
+
 	// Test valid certificate
 	if validCert, _ := generateTestCert("valid.com", false); validCert != nil {
 		if result, _ := validator.CheckExpiry(validCert, 30); result.Expired {
@@ -101,12 +101,12 @@ func TestValidator_CheckExpiry(t *testing.T) {
 
 func TestValidator_ValidateChain(t *testing.T) {
 	validator := NewValidator(DefaultValidatorConfig())
-	
+
 	// Test empty chain
 	if _, err := validator.ValidateChain([]*x509.Certificate{}); err == nil {
 		t.Error("Empty chain should return error")
 	}
-	
+
 	// Test single certificate
 	if cert, _ := generateTestCert("test.com", false); cert != nil {
 		if result, _ := validator.ValidateChain([]*x509.Certificate{cert}); !result.Valid {
@@ -117,19 +117,19 @@ func TestValidator_ValidateChain(t *testing.T) {
 
 func TestValidator_VerifyHostname(t *testing.T) {
 	validator := NewValidator(DefaultValidatorConfig())
-	
+
 	// Test nil certificate
 	if err := validator.VerifyHostname(nil, "test.com"); err == nil {
 		t.Error("Expected error for nil certificate")
 	}
-	
+
 	// Test empty hostname
 	if cert, _ := generateTestCert("test.com", false); cert != nil {
 		if err := validator.VerifyHostname(cert, ""); err == nil {
 			t.Error("Expected error for empty hostname")
 		}
 	}
-	
+
 	// Test matching hostname
 	if cert, _ := generateTestCert("test.com", false); cert != nil {
 		if err := validator.VerifyHostname(cert, "test.com"); err != nil {
@@ -140,13 +140,13 @@ func TestValidator_VerifyHostname(t *testing.T) {
 
 func TestValidator_GenerateDiagnostics(t *testing.T) {
 	validator := NewValidator(DefaultValidatorConfig())
-	
+
 	// Test nil certificate
 	diagnostics := validator.GenerateDiagnostics(nil)
 	if diagnostics["error"] == nil {
 		t.Error("Expected error field for nil certificate")
 	}
-	
+
 	// Test valid certificate
 	if cert, _ := generateTestCert("test.com", false); cert != nil {
 		diagnostics := validator.GenerateDiagnostics(cert)
@@ -161,7 +161,7 @@ func TestValidator_GenerateDiagnostics(t *testing.T) {
 
 func TestValidator_KeyUsageStrings(t *testing.T) {
 	validator := NewValidator(DefaultValidatorConfig())
-	
+
 	result := validator.keyUsageStrings(x509.KeyUsageDigitalSignature | x509.KeyUsageKeyEncipherment)
 	if len(result) != 2 {
 		t.Errorf("Expected 2 key usage strings, got %d", len(result))
@@ -170,7 +170,7 @@ func TestValidator_KeyUsageStrings(t *testing.T) {
 
 func TestValidator_ExtKeyUsageStrings(t *testing.T) {
 	validator := NewValidator(DefaultValidatorConfig())
-	
+
 	usages := []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageClientAuth}
 	result := validator.extKeyUsageStrings(usages)
 	if len(result) != 2 {

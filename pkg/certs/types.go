@@ -15,7 +15,7 @@ import (
 type KindCertExtractor interface {
 	// ExtractGiteaCert extracts the Gitea certificate from the Kind cluster
 	ExtractGiteaCert(ctx context.Context) (*x509.Certificate, error)
-	
+
 	// GetClusterName returns the name of the Kind cluster
 	GetClusterName() string
 }
@@ -24,7 +24,7 @@ type KindCertExtractor interface {
 type CertValidator interface {
 	// ValidateCertificate performs validation checks on a certificate
 	ValidateCertificate(cert *x509.Certificate) (*ValidationResult, error)
-	
+
 	// CheckExpiry checks if a certificate is expired or expiring soon
 	CheckExpiry(cert *x509.Certificate, warnDays int) (*ExpiryResult, error)
 }
@@ -33,19 +33,19 @@ type CertValidator interface {
 type ExtractorConfig struct {
 	// ClusterName is the name of the Kind cluster
 	ClusterName string
-	
+
 	// Namespace is the Kubernetes namespace where Gitea is deployed
 	Namespace string
-	
+
 	// PodSelector is the label selector for finding Gitea pods
 	PodSelector string
-	
+
 	// CertPath is the path to the certificate inside the pod
 	CertPath string
-	
+
 	// OutputDir is the directory where extracted certificates will be saved
 	OutputDir string
-	
+
 	// Timeout is the timeout for extraction operations
 	Timeout time.Duration
 }
@@ -66,40 +66,40 @@ func DefaultExtractorConfig() *ExtractorConfig {
 type CertDiagnostics struct {
 	// ClusterName is the name of the Kind cluster
 	ClusterName string
-	
+
 	// ClusterConnected indicates if the cluster connection was successful
 	ClusterConnected bool
-	
+
 	// PodName is the name of the pod where the certificate was extracted
 	PodName string
-	
+
 	// PodsFound is the number of pods found
 	PodsFound int
-	
+
 	// CertificateFound indicates if the certificate file was found
 	CertificateFound bool
-	
+
 	// CertificateParsed indicates if the certificate was successfully parsed
 	CertificateParsed bool
-	
+
 	// ExtractedAt is when the certificate was extracted
 	ExtractedAt time.Time
-	
+
 	// ExtractionDuration is how long the extraction took
 	ExtractionDuration time.Duration
-	
+
 	// ValidationResult contains the validation results
 	ValidationResult *ValidationResult
-	
+
 	// ExpiryResult contains expiry information
 	ExpiryResult *ExpiryResult
-	
+
 	// SavedTo is the path where the certificate was saved
 	SavedTo string
-	
+
 	// Errors contains any errors encountered during extraction
 	Errors []string
-	
+
 	// Warnings contains any warnings during extraction
 	Warnings []string
 }
@@ -108,37 +108,37 @@ type CertDiagnostics struct {
 type ValidationResult struct {
 	// Valid indicates if the certificate passed all validation checks
 	Valid bool
-	
+
 	// Issues contains any validation issues found
 	Issues []string
-	
+
 	// Errors contains any validation errors found
 	Errors []string
-	
+
 	// Warnings contains any validation warnings
 	Warnings []string
-	
+
 	// Subject is the certificate subject
 	Subject string
-	
+
 	// Issuer is the certificate issuer
 	Issuer string
-	
+
 	// NotBefore is the certificate validity start time
 	NotBefore time.Time
-	
+
 	// NotAfter is the certificate validity end time
 	NotAfter time.Time
-	
+
 	// IsCA indicates if this is a CA certificate
 	IsCA bool
-	
+
 	// IsSelfSigned indicates if the certificate is self-signed
 	IsSelfSigned bool
-	
+
 	// DNSNames contains the DNS names in the certificate
 	DNSNames []string
-	
+
 	// IPAddresses contains the IP addresses in the certificate
 	IPAddresses []string
 }
@@ -147,13 +147,13 @@ type ValidationResult struct {
 type ExpiryResult struct {
 	// Expired indicates if the certificate has already expired
 	Expired bool
-	
+
 	// ExpiringSoon indicates if the certificate will expire within the warning period
 	ExpiringSoon bool
-	
+
 	// DaysUntilExpiry is the number of days until the certificate expires
 	DaysUntilExpiry int
-	
+
 	// ExpiryDate is the certificate expiry date
 	ExpiryDate time.Time
 }

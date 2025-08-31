@@ -10,16 +10,16 @@ import (
 type CertificateError struct {
 	// Code is a unique error code for programmatic handling
 	Code string
-	
+
 	// Message is the human-readable error message
 	Message string
-	
+
 	// Context provides additional context about the error
 	Context map[string]interface{}
-	
+
 	// Suggestions provides actionable suggestions to resolve the error
 	Suggestions []string
-	
+
 	// Underlying is the wrapped underlying error if any
 	Underlying error
 }
@@ -27,13 +27,13 @@ type CertificateError struct {
 // Error implements the error interface
 func (e *CertificateError) Error() string {
 	var parts []string
-	
+
 	if e.Code != "" {
 		parts = append(parts, fmt.Sprintf("[%s]", e.Code))
 	}
-	
+
 	parts = append(parts, e.Message)
-	
+
 	if len(e.Context) > 0 {
 		contextParts := make([]string, 0, len(e.Context))
 		for key, value := range e.Context {
@@ -41,11 +41,11 @@ func (e *CertificateError) Error() string {
 		}
 		parts = append(parts, fmt.Sprintf("context: %s", strings.Join(contextParts, ", ")))
 	}
-	
+
 	if e.Underlying != nil {
 		parts = append(parts, fmt.Sprintf("underlying: %v", e.Underlying))
 	}
-	
+
 	return strings.Join(parts, " | ")
 }
 
@@ -96,7 +96,7 @@ var (
 			"Check your kubeconfig context with 'kubectl config current-context'",
 		},
 	}
-	
+
 	// ErrClusterConnection indicates failure to connect to the cluster
 	ErrClusterConnection = &CertificateError{
 		Code:    "CLUSTER_CONNECTION_FAILED",
@@ -107,7 +107,7 @@ var (
 			"Try running 'kubectl get nodes' to test connectivity",
 		},
 	}
-	
+
 	// ErrGiteaPodNotFound indicates no Gitea pods were found
 	ErrGiteaPodNotFound = &CertificateError{
 		Code:    "GITEA_POD_NOT_FOUND",
@@ -118,7 +118,7 @@ var (
 			"Ensure idpbuilder has been run successfully",
 		},
 	}
-	
+
 	// ErrMultipleGiteaPods indicates multiple Gitea pods were found
 	ErrMultipleGiteaPods = &CertificateError{
 		Code:    "MULTIPLE_GITEA_PODS",
@@ -129,7 +129,7 @@ var (
 			"Consider using a more specific selector",
 		},
 	}
-	
+
 	// ErrCertificateNotFound indicates the certificate file was not found in the pod
 	ErrCertificateNotFound = &CertificateError{
 		Code:    "CERTIFICATE_NOT_FOUND",
@@ -140,7 +140,7 @@ var (
 			"Look for certificates in alternative paths",
 		},
 	}
-	
+
 	// ErrCertificateRead indicates failure to read the certificate from the pod
 	ErrCertificateRead = &CertificateError{
 		Code:    "CERTIFICATE_READ_FAILED",
@@ -151,7 +151,7 @@ var (
 			"Ensure the certificate file is readable",
 		},
 	}
-	
+
 	// ErrCertificateParse indicates failure to parse the certificate
 	ErrCertificateParse = &CertificateError{
 		Code:    "CERTIFICATE_PARSE_FAILED",
@@ -162,7 +162,7 @@ var (
 			"Ensure the certificate is not corrupted",
 		},
 	}
-	
+
 	// ErrCertificateStore indicates failure to store the certificate locally
 	ErrCertificateStore = &CertificateError{
 		Code:    "CERTIFICATE_STORE_FAILED",

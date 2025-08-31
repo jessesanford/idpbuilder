@@ -65,7 +65,7 @@ func (b *BuildahBuilder) BuildImage(ctx context.Context, opts BuildOptions) (*Bu
 
 	// Prepare build options
 	systemContext := &define.SystemContext{}
-	
+
 	// Integrate with Phase 1 certificate infrastructure if available
 	if b.trustManager != nil {
 		if err := b.configureTrustStore(systemContext); err != nil {
@@ -74,46 +74,46 @@ func (b *BuildahBuilder) BuildImage(ctx context.Context, opts BuildOptions) (*Bu
 	}
 
 	buildOptions := define.BuildOptions{
-		ContextDirectory:     opts.ContextDir,
-		SystemContext:        systemContext,
-		Isolation:            define.IsolationDefault,
-		ConfigureNetwork:     define.NetworkDefault,
-		CNIPluginPath:        "",
-		CNIConfigDir:         "",
-		CommonBuildOpts:      &define.CommonBuildOptions{},
-		DefaultMountsFilePath: "",
-		IIDFile:              "",
-		Squash:               false,
-		Args:                 opts.Args,
-		NoCache:              opts.NoCache,
-		RemoveIntermediateCtrs: true,
+		ContextDirectory:        opts.ContextDir,
+		SystemContext:           systemContext,
+		Isolation:               define.IsolationDefault,
+		ConfigureNetwork:        define.NetworkDefault,
+		CNIPluginPath:           "",
+		CNIConfigDir:            "",
+		CommonBuildOpts:         &define.CommonBuildOptions{},
+		DefaultMountsFilePath:   "",
+		IIDFile:                 "",
+		Squash:                  false,
+		Args:                    opts.Args,
+		NoCache:                 opts.NoCache,
+		RemoveIntermediateCtrs:  true,
 		ForceRmIntermediateCtrs: false,
-		BlobDirectory:        "",
-		Target:               "",
-		Devices:              nil,
-		DeviceSpecs:          nil,
-		LogRusage:            false,
-		Quiet:                false,
-		Runtime:              "",
-		RuntimeArgs:          nil,
-		Output:               opts.Tag,
-		OutputFormat:         "docker",
-		AdditionalTags:       nil,
-		Log:                  func(format string, args ...interface{}) {},
-		In:                   os.Stdin,
-		Out:                  os.Stdout,
-		Err:                  os.Stderr,
-		SignBy:               "",
-		Architecture:         "",
-		Timestamp:            nil,
-		OS:                   "",
-		MaxPullPushRetries:   3,
-		PullPushRetryDelay:   2 * time.Second,
-		OciDecryptConfig:     nil,
-		Jobs:                 nil,
-		LogSplitByPlatform:   false,
-		OSFeatures:           nil,
-		OSVersion:            "",
+		BlobDirectory:           "",
+		Target:                  "",
+		Devices:                 nil,
+		DeviceSpecs:             nil,
+		LogRusage:               false,
+		Quiet:                   false,
+		Runtime:                 "",
+		RuntimeArgs:             nil,
+		Output:                  opts.Tag,
+		OutputFormat:            "docker",
+		AdditionalTags:          nil,
+		Log:                     func(format string, args ...interface{}) {},
+		In:                      os.Stdin,
+		Out:                     os.Stdout,
+		Err:                     os.Stderr,
+		SignBy:                  "",
+		Architecture:            "",
+		Timestamp:               nil,
+		OS:                      "",
+		MaxPullPushRetries:      3,
+		PullPushRetryDelay:      2 * time.Second,
+		OciDecryptConfig:        nil,
+		Jobs:                    nil,
+		LogSplitByPlatform:      false,
+		OSFeatures:              nil,
+		OSVersion:               "",
 	}
 
 	// Read Dockerfile
@@ -228,10 +228,10 @@ func (b *BuildahBuilder) configureTrustStore(systemContext *define.SystemContext
 	// Integration with Phase 1 TrustManager would go here
 	// For now, we'll just ensure the system context is configured for certificate validation
 	systemContext.DockerInsecureSkipTLSVerify = define.OptionalBoolFalse
-	
+
 	// Log security event (placeholder for Phase 1 audit integration)
 	fmt.Printf("Security: Configured trust store for image operations\n")
-	
+
 	return nil
 }
 
@@ -255,12 +255,12 @@ func getRepository(imageName string) string {
 	if imageName == "" {
 		return ""
 	}
-	
+
 	parts := strings.Split(imageName, ":")
 	if len(parts) == 1 {
 		return imageName
 	}
-	
+
 	return strings.Join(parts[:len(parts)-1], ":")
 }
 
@@ -268,11 +268,11 @@ func getTag(imageName string) string {
 	if imageName == "" {
 		return ""
 	}
-	
+
 	parts := strings.Split(imageName, ":")
 	if len(parts) == 1 {
 		return "latest"
 	}
-	
+
 	return parts[len(parts)-1]
 }

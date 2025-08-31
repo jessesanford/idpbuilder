@@ -35,7 +35,7 @@ type manager struct {
 func NewTrustManager(config TrustStoreConfig) TrustManager {
 	store := newFileStore(config)
 	registryMgr := newRegistryConfigManager(config)
-	
+
 	return &manager{
 		config:      config,
 		store:       store,
@@ -51,17 +51,17 @@ func (m *manager) AddCertificate(ctx context.Context, registry string, cert *Cer
 	if cert == nil {
 		return fmt.Errorf("certificate cannot be nil")
 	}
-	
+
 	// Parse the certificate to extract metadata
 	if err := m.parseCertificateInfo(cert); err != nil {
 		return fmt.Errorf("failed to parse certificate: %w", err)
 	}
-	
+
 	// Store the certificate
 	if err := m.store.Store(registry, cert); err != nil {
 		return fmt.Errorf("failed to store certificate: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -73,7 +73,7 @@ func (m *manager) RemoveCertificate(ctx context.Context, registry string, finger
 	if fingerprint == "" {
 		return fmt.Errorf("fingerprint cannot be empty")
 	}
-	
+
 	exists, err := m.store.Exists(registry, fingerprint)
 	if err != nil {
 		return fmt.Errorf("failed to check certificate existence: %w", err)
@@ -81,7 +81,7 @@ func (m *manager) RemoveCertificate(ctx context.Context, registry string, finger
 	if !exists {
 		return fmt.Errorf("certificate with fingerprint %s not found for registry %s", fingerprint, registry)
 	}
-	
+
 	return m.store.Delete(registry, fingerprint)
 }
 
@@ -90,7 +90,7 @@ func (m *manager) ListCertificates(ctx context.Context, registry string) ([]Cert
 	if registry == "" {
 		return nil, fmt.Errorf("registry cannot be empty")
 	}
-	
+
 	return m.store.List(registry)
 }
 
@@ -99,17 +99,17 @@ func (m *manager) GetRegistryConfig(ctx context.Context, registry string) (*Regi
 	if registry == "" {
 		return nil, fmt.Errorf("registry cannot be empty")
 	}
-	
+
 	certs, err := m.store.List(registry)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list certificates: %w", err)
 	}
-	
+
 	insecureRegistries, err := m.registryMgr.GetInsecureRegistries()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get insecure registries: %w", err)
 	}
-	
+
 	insecure := false
 	for _, insecureReg := range insecureRegistries {
 		if insecureReg == registry {
@@ -117,7 +117,7 @@ func (m *manager) GetRegistryConfig(ctx context.Context, registry string) (*Regi
 			break
 		}
 	}
-	
+
 	return &RegistryConfig{
 		Registry:     registry,
 		Insecure:     insecure,
@@ -130,7 +130,7 @@ func (m *manager) SetInsecureRegistry(ctx context.Context, registry string, inse
 	if registry == "" {
 		return fmt.Errorf("registry cannot be empty")
 	}
-	
+
 	return m.registryMgr.UpdateInsecureRegistry(registry, insecure)
 }
 
@@ -142,22 +142,22 @@ func (m *manager) ValidateCertificate(ctx context.Context, registry string, cert
 	if cert == nil {
 		return fmt.Errorf("certificate cannot be nil")
 	}
-	
+
 	certs, err := m.store.List(registry)
 	if err != nil {
 		return fmt.Errorf("failed to list certificates: %w", err)
 	}
-	
+
 	// Calculate fingerprint of the provided certificate
 	fingerprint := calculateFingerprint(cert.Raw)
-	
+
 	// Check if the certificate is in our trust store
 	for _, trustCert := range certs {
 		if trustCert.Info.Fingerprint == fingerprint {
 			return nil // Certificate is trusted
 		}
 	}
-	
+
 	return fmt.Errorf("certificate not found in trust store for registry %s", registry)
 }
 
@@ -167,12 +167,12 @@ func (m *manager) parseCertificateInfo(cert *Certificate) error {
 	if block == nil {
 		return fmt.Errorf("failed to decode PEM certificate")
 	}
-	
+
 	x509Cert, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
 		return fmt.Errorf("failed to parse X.509 certificate: %w", err)
 	}
-	
+
 	cert.Info = CertificateInfo{
 		Subject:      x509Cert.Subject.String(),
 		Issuer:       x509Cert.Issuer.String(),
@@ -181,7 +181,7 @@ func (m *manager) parseCertificateInfo(cert *Certificate) error {
 		NotAfter:     x509Cert.NotAfter.Format(time.RFC3339),
 		Fingerprint:  calculateFingerprint(x509Cert.Raw),
 	}
-	
+
 	return nil
 }
 

@@ -1,8 +1,8 @@
 package certs
 
 import (
-	"crypto/x509"
 	"context"
+	"crypto/x509"
 )
 
 // TrustManager defines the interface for managing trust store certificates

@@ -21,9 +21,9 @@ func (m *MockTrustManager) ValidateCertificate(cert []byte) error {
 
 func TestNewBuildahBuilder(t *testing.T) {
 	mockTM := &MockTrustManager{}
-	
+
 	builder, err := NewBuildahBuilder(mockTM)
-	
+
 	require.NoError(t, err)
 	assert.NotNil(t, builder)
 	assert.Equal(t, mockTM, builder.trustManager)
@@ -33,9 +33,9 @@ func TestBuildImage_ValidationErrors(t *testing.T) {
 	mockTM := &MockTrustManager{}
 	builder, err := NewBuildahBuilder(mockTM)
 	require.NoError(t, err)
-	
+
 	ctx := context.Background()
-	
+
 	// Test empty dockerfile path
 	_, err = builder.BuildImage(ctx, BuildOptions{
 		ContextDir: "/tmp",
@@ -43,7 +43,7 @@ func TestBuildImage_ValidationErrors(t *testing.T) {
 	})
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "dockerfile path cannot be empty")
-	
+
 	// Test empty context directory
 	_, err = builder.BuildImage(ctx, BuildOptions{
 		DockerfilePath: "/tmp/Dockerfile",
@@ -55,8 +55,8 @@ func TestBuildImage_ValidationErrors(t *testing.T) {
 
 func TestGetRepository(t *testing.T) {
 	tests := []struct {
-		imageName  string
-		expected   string
+		imageName string
+		expected  string
 	}{
 		{"", ""},
 		{"nginx", "nginx"},
@@ -64,7 +64,7 @@ func TestGetRepository(t *testing.T) {
 		{"docker.io/library/nginx:1.21", "docker.io/library/nginx"},
 		{"localhost:5000/myapp:v1.0.0", "localhost:5000/myapp"},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.imageName, func(t *testing.T) {
 			result := getRepository(tt.imageName)
@@ -75,8 +75,8 @@ func TestGetRepository(t *testing.T) {
 
 func TestGetTag(t *testing.T) {
 	tests := []struct {
-		imageName  string
-		expected   string
+		imageName string
+		expected  string
 	}{
 		{"", ""},
 		{"nginx", "latest"},
@@ -84,7 +84,7 @@ func TestGetTag(t *testing.T) {
 		{"docker.io/library/nginx:1.21", "1.21"},
 		{"localhost:5000/myapp:v1.0.0", "v1.0.0"},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.imageName, func(t *testing.T) {
 			result := getTag(tt.imageName)

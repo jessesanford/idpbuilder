@@ -12,9 +12,9 @@ import (
 
 func TestNewGiteaClient(t *testing.T) {
 	tests := []struct {
-		name     string
-		config   RegistryConfig
-		wantErr  bool
+		name    string
+		config  RegistryConfig
+		wantErr bool
 	}{
 		{
 			name: "valid config with token auth",
@@ -61,14 +61,14 @@ func TestNewGiteaClient(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := testr.New(t)
 			client, err := NewGiteaClient(tt.config, logger)
-			
+
 			if tt.wantErr {
 				assert.Error(t, err)
 				assert.Nil(t, client)
 			} else {
 				assert.NoError(t, err)
 				assert.NotNil(t, client)
-				
+
 				// Verify client type
 				impl, ok := client.(*giteaClientImpl)
 				assert.True(t, ok)
@@ -206,7 +206,7 @@ func TestPushOptions(t *testing.T) {
 				Token:    "test-token",
 				Insecure: true,
 			}
-			
+
 			client, err := NewGiteaClient(config, logger)
 			require.NoError(t, err)
 
@@ -344,7 +344,7 @@ func TestRegistryConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.NotEmpty(t, tt.config.Host)
 			assert.NotEmpty(t, tt.config.Username)
-			
+
 			if tt.config.Token != "" {
 				assert.NotEmpty(t, tt.config.Token)
 			}

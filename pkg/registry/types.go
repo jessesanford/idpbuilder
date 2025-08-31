@@ -17,6 +17,8 @@ type PushOptions struct {
 	Repository string
 	Tag        string
 	Insecure   bool
+	Username   string
+	Password   string
 }
 
 // PushResult contains the result of a push operation

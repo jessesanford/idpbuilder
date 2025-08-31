@@ -9,13 +9,13 @@ import (
 type Builder interface {
 	// BuildImage builds a container image from a Dockerfile
 	BuildImage(ctx context.Context, opts BuildOptions) (*BuildResult, error)
-	
+
 	// ListImages lists available images
 	ListImages(ctx context.Context) ([]ImageInfo, error)
-	
+
 	// RemoveImage removes an image by ID
 	RemoveImage(ctx context.Context, imageID string) error
-	
+
 	// TagImage tags an existing image
 	TagImage(ctx context.Context, source, target string) error
 }
@@ -32,12 +32,12 @@ type BuildOptions struct {
 
 // BuildResult contains the result of a successful build
 type BuildResult struct {
-	ImageID      string
-	Repository   string
-	Tag          string
-	Digest       string
-	Size         int64
-	BuildTime    time.Duration
+	ImageID    string
+	Repository string
+	Tag        string
+	Digest     string
+	Size       int64
+	BuildTime  time.Duration
 }
 
 // ImageInfo contains information about an available image

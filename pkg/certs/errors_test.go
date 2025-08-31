@@ -11,13 +11,13 @@ func TestCertificateError_Error(t *testing.T) {
 	if result := err.Error(); !containsString(result, "[TEST]") || !containsString(result, "Test message") {
 		t.Errorf("Expected error to contain '[TEST]' and 'Test message', got '%s'", result)
 	}
-	
+
 	// Test error with context
 	err.WithContext("key", "value")
 	if result := err.Error(); !containsString(result, "context:") {
 		t.Error("Error string should contain context")
 	}
-	
+
 	// Test error with underlying
 	underlying := errors.New("original")
 	err.Wrap(underlying)
@@ -29,11 +29,11 @@ func TestCertificateError_Error(t *testing.T) {
 func TestCertificateError_Unwrap(t *testing.T) {
 	underlying := errors.New("original error")
 	err := &CertificateError{Code: "TEST", Message: "Wrapped", Underlying: underlying}
-	
+
 	if unwrapped := err.Unwrap(); unwrapped != underlying {
 		t.Error("Unwrap should return underlying error")
 	}
-	
+
 	// Test nil underlying
 	errNoUnderlying := &CertificateError{Code: "TEST", Message: "test"}
 	if unwrapped := errNoUnderlying.Unwrap(); unwrapped != nil {
@@ -44,7 +44,7 @@ func TestCertificateError_Unwrap(t *testing.T) {
 func TestCertificateError_WithContext(t *testing.T) {
 	err := NewCertificateError("TEST", "Test message")
 	result := err.WithContext("key1", "value1").WithContext("key2", 42)
-	
+
 	if result != err {
 		t.Error("WithContext should return same instance")
 	}
@@ -56,7 +56,7 @@ func TestCertificateError_WithContext(t *testing.T) {
 func TestCertificateError_WithSuggestion(t *testing.T) {
 	err := NewCertificateError("TEST", "Test message")
 	result := err.WithSuggestion("Try this").WithSuggestion("Or that")
-	
+
 	if result != err || len(err.Suggestions) != 2 {
 		t.Error("WithSuggestion should return same instance with 2 suggestions")
 	}
@@ -65,7 +65,7 @@ func TestCertificateError_WithSuggestion(t *testing.T) {
 func TestCertificateError_Wrap(t *testing.T) {
 	original := errors.New("original")
 	err := NewCertificateError("TEST", "Wrapper").Wrap(original)
-	
+
 	if err.Underlying != original || !errors.Is(err, original) {
 		t.Error("Wrap should set underlying error and be detectable with errors.Is")
 	}
@@ -73,7 +73,7 @@ func TestCertificateError_Wrap(t *testing.T) {
 
 func TestNewCertificateError(t *testing.T) {
 	err := NewCertificateError("CODE", "Message")
-	
+
 	if err.Code != "CODE" || err.Message != "Message" || err.Context == nil {
 		t.Error("NewCertificateError should initialize all fields correctly")
 	}
@@ -84,7 +84,7 @@ func TestPredefinedErrors(t *testing.T) {
 		ErrClusterNotFound, ErrClusterConnection, ErrGiteaPodNotFound, ErrMultipleGiteaPods,
 		ErrCertificateNotFound, ErrCertificateRead, ErrCertificateParse, ErrCertificateStore,
 	}
-	
+
 	for _, err := range predefinedErrors {
 		if err.Code == "" || err.Message == "" || len(err.Suggestions) == 0 {
 			t.Errorf("Predefined error %s should have code, message, and suggestions", err.Code)
@@ -95,7 +95,7 @@ func TestPredefinedErrors(t *testing.T) {
 func TestWrapError(t *testing.T) {
 	original := errors.New("original")
 	wrapped := WrapError(original, "CODE", "Message")
-	
+
 	if wrapped.Code != "CODE" || wrapped.Message != "Message" || wrapped.Underlying != original {
 		t.Error("WrapError should set all fields correctly")
 	}
@@ -103,7 +103,7 @@ func TestWrapError(t *testing.T) {
 
 func TestIsErrorCode(t *testing.T) {
 	certErr := NewCertificateError("TEST_CODE", "Message")
-	
+
 	if !IsErrorCode(certErr, "TEST_CODE") {
 		t.Error("IsErrorCode should return true for matching code")
 	}

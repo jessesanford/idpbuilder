@@ -19,13 +19,13 @@ import (
 type GiteaClient interface {
 	// Authenticate with Gitea registry
 	Authenticate(ctx context.Context, creds Credentials) error
-	
+
 	// Push pushes an image to the registry
 	Push(ctx context.Context, opts PushOptions) (*PushResult, error)
-	
+
 	// List lists images in a repository
 	List(ctx context.Context, repository string) ([]ImageTag, error)
-	
+
 	// Pull pulls an image from the registry
 	Pull(ctx context.Context, imageRef string) (*PullResult, error)
 }
@@ -78,7 +78,7 @@ func NewGiteaClient(config RegistryConfig, logger logr.Logger) (GiteaClient, err
 // Authenticate verifies credentials with the Gitea registry
 func (g *giteaClientImpl) Authenticate(ctx context.Context, creds Credentials) error {
 	g.logger.Info("Authenticating with Gitea registry", "host", g.config.Host, "username", creds.Username)
-	
+
 	// Update system context with new credentials
 	if creds.Token != "" {
 		g.sysCtx.DockerAuthConfig = &types.DockerAuthConfig{
@@ -155,7 +155,7 @@ func (g *giteaClientImpl) Push(ctx context.Context, opts PushOptions) (*PushResu
 	// Perform the copy operation
 	_, err = copy.Image(ctx, policyContext, destImageRef, srcImageRef, &copy.Options{
 		DestinationCtx: destSysCtx,
-		SourceCtx:     &types.SystemContext{},
+		SourceCtx:      &types.SystemContext{},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to push image: %w", err)
@@ -279,15 +279,15 @@ func setupSecureTLS(sysCtx *types.SystemContext, host string, logger logr.Logger
 	// This would integrate with Phase 1's certificate extraction and validation
 	// For now, we'll use standard TLS verification
 	logger.Info("Setting up secure TLS connection", "host", host)
-	
+
 	sysCtx.DockerInsecureSkipTLSVerify = types.OptionalBoolFalse
 	sysCtx.OCIInsecureSkipTLSVerify = false
-	
+
 	// In a complete implementation, we would:
 	// 1. Use CertExtractor to get certificates from Kind cluster
 	// 2. Use ChainValidator to validate certificate chains
 	// 3. Use FallbackHandler for error recovery
 	// 4. Configure custom CA bundle if needed
-	
+
 	return nil
 }

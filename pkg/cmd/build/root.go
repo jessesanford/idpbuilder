@@ -12,15 +12,15 @@ import (
 const (
 	dockerfilePathUsage = "Path to the Dockerfile to build"
 	contextDirUsage     = "Build context directory"
-	tagUsage           = "Name and optionally a tag in the 'name:tag' format"
-	insecureUsage      = "Skip certificate validation for registries"
+	tagUsage            = "Name and optionally a tag in the 'name:tag' format"
+	insecureUsage       = "Skip certificate validation for registries"
 )
 
 var (
 	dockerfilePath string
 	contextDir     string
-	tag           string
-	insecure      bool
+	tag            string
+	insecure       bool
 )
 
 var BuildCmd = &cobra.Command{
@@ -45,29 +45,29 @@ func preBuildE(cmd *cobra.Command, args []string) error {
 
 func build(cmd *cobra.Command, args []string) error {
 	ctx := cmd.Context()
-	
+
 	// Use context from args if provided, otherwise use flag
 	buildContext := contextDir
 	if len(args) > 0 {
 		buildContext = args[0]
 	}
-	
+
 	if tag == "" {
 		return fmt.Errorf("tag is required for build")
 	}
-	
+
 	return runBuild(ctx, buildContext, dockerfilePath, tag, insecure)
 }
 
 func runBuild(ctx context.Context, contextDir, dockerfilePath, tag string, insecure bool) error {
 	integration := buildintegration.NewIntegration()
-	
+
 	opts := buildintegration.BuildOptions{
 		ContextDir:     contextDir,
 		DockerfilePath: dockerfilePath,
-		Tag:           tag,
-		Insecure:      insecure,
+		Tag:            tag,
+		Insecure:       insecure,
 	}
-	
+
 	return integration.Build(ctx, opts)
 }

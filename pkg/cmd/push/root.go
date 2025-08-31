@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	insecureUsage  = "Skip TLS certificate validation for registries"
-	usernameUsage  = "Username for registry authentication"
-	passwordUsage  = "Password for registry authentication"
-	authFileUsage  = "Path to authentication file"
+	insecureUsage = "Skip TLS certificate validation for registries"
+	usernameUsage = "Username for registry authentication"
+	passwordUsage = "Password for registry authentication"
+	authFileUsage = "Path to authentication file"
 )
 
 var (
@@ -46,43 +46,38 @@ func prePushE(cmd *cobra.Command, args []string) error {
 
 func push(cmd *cobra.Command, args []string) error {
 	ctx := cmd.Context()
-	
+
 	if len(args) < 1 {
 		return fmt.Errorf("image name is required")
 	}
-	
+
 	imageName := args[0]
 	var registryURL string
-	
+
 	if len(args) > 1 {
 		registryURL = args[1]
 	}
-	
+
 	return runPush(ctx, imageName, registryURL, username, password, authFile, insecure)
 }
 
 func runPush(ctx context.Context, imageName, registryURL, username, password, authFile string, insecure bool) error {
 	integration := registry.NewIntegration()
-	
-	// For now, use placeholder values since the integration is not fully implemented
-	// TODO: Parse imageName to extract repository and tag, or derive ImageID appropriately
-	repository := "placeholder-repo"
-	tag := "latest"
-	
-	// If imageName contains a colon, try to split repo:tag
-	if len(imageName) > 0 {
-		repository = imageName
-		if registryURL != "" {
-			repository = fmt.Sprintf("%s/%s", registryURL, imageName)
-		}
+
+	// Pass credentials via environment for buildah
+	if username != "" && password != "" {
+		ctx = context.WithValue(ctx, "username", username)
+		ctx = context.WithValue(ctx, "password", password)
 	}
-	
+
 	opts := registry.PushOptions{
-		ImageID:    imageName,  // Use imageName as ImageID for now
-		Repository: repository,
-		Tag:        tag,
+		ImageID:    imageName,  // The local image to push
+		Repository: registryURL, // The registry destination
+		Tag:        "",         // Tag is already in imageName
 		Insecure:   insecure,
+		Username:   username,
+		Password:   password,
 	}
-	
+
 	return integration.Push(ctx, opts)
 }

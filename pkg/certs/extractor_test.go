@@ -50,7 +50,7 @@ func TestNewKindExtractor(t *testing.T) {
 	if _, err := NewKindExtractor(nil); err == nil {
 		t.Error("Expected error due to missing kubeconfig")
 	}
-	
+
 	// Test with custom config - should also fail on kubeconfig but validate structure
 	config := &ExtractorConfig{
 		ClusterName: "test-cluster",
@@ -67,7 +67,7 @@ func TestKindExtractor_GetClusterName(t *testing.T) {
 		config: &ExtractorConfig{ClusterName: "test-cluster-name"},
 		client: fake.NewSimpleClientset(),
 	}
-	
+
 	if clusterName := extractor.GetClusterName(); clusterName != "test-cluster-name" {
 		t.Errorf("Expected cluster name 'test-cluster-name', got '%s'", clusterName)
 	}
@@ -80,15 +80,15 @@ func TestKindExtractor_ExtractGiteaCert(t *testing.T) {
 		client: fakeClient,
 		config: DefaultExtractorConfig(),
 	}
-	
+
 	if _, err := extractor.ExtractGiteaCert(nil); !IsErrorCode(err, "GITEA_POD_NOT_FOUND") {
 		t.Error("Should return GITEA_POD_NOT_FOUND error when no pods exist")
 	}
-	
+
 	// Test multiple pods found
 	fakeClient.CoreV1().Pods("gitea").Create(nil, createTestPod("gitea-1", "gitea"), metav1.CreateOptions{})
 	fakeClient.CoreV1().Pods("gitea").Create(nil, createTestPod("gitea-2", "gitea"), metav1.CreateOptions{})
-	
+
 	if _, err := extractor.ExtractGiteaCert(nil); !IsErrorCode(err, "MULTIPLE_GITEA_PODS") {
 		t.Error("Should return MULTIPLE_GITEA_PODS error when multiple pods exist")
 	}
@@ -96,7 +96,7 @@ func TestKindExtractor_ExtractGiteaCert(t *testing.T) {
 
 func TestKindExtractor_ConfigValidation(t *testing.T) {
 	config := DefaultExtractorConfig()
-	
+
 	// Test all default config fields are set
 	if config.ClusterName == "" || config.Namespace == "" || config.PodSelector == "" {
 		t.Error("Default config should have all required fields set")
@@ -108,22 +108,22 @@ func TestKindExtractor_ConfigValidation(t *testing.T) {
 
 func TestKindExtractor_CertificateStorage(t *testing.T) {
 	certPEM, _, _ := generateTestCertPEM()
-	
+
 	// Test valid certificate data validation
 	if len(certPEM) == 0 {
 		t.Error("Generated certificate PEM should not be empty")
 	}
-	
+
 	// Test empty certificate data handling
 	emptyCert := []byte{}
 	if len(emptyCert) != 0 {
 		t.Error("Empty certificate data should have zero length")
 	}
-	
+
 	// Test output directory validation
 	validDir := "/tmp/test-certs"
 	invalidDir := "/invalid/path/no/permissions"
-	
+
 	if validDir == "" {
 		t.Error("Valid directory path should not be empty")
 	}
@@ -134,16 +134,16 @@ func TestKindExtractor_CertificateStorage(t *testing.T) {
 
 func TestDefaultExtractorConfig(t *testing.T) {
 	config := DefaultExtractorConfig()
-	
+
 	expected := map[string]interface{}{
 		"ClusterName": "localdev",
-		"Namespace":   "gitea", 
+		"Namespace":   "gitea",
 		"PodSelector": "app=gitea",
 		"CertPath":    "/data/git/tls/cert.pem",
 		"OutputDir":   "~/.idpbuilder/certs",
 		"Timeout":     30 * time.Second,
 	}
-	
+
 	if config.ClusterName != expected["ClusterName"] ||
 		config.Namespace != expected["Namespace"] ||
 		config.PodSelector != expected["PodSelector"] ||
@@ -169,12 +169,12 @@ func TestKindExtractor_DiagnosticsGeneration(t *testing.T) {
 		client: fakeClient,
 		config: DefaultExtractorConfig(),
 	}
-	
+
 	// Verify basic structure exists for diagnostics
 	if extractor.client == nil {
 		t.Error("Client should be initialized")
 	}
 	if extractor.config == nil {
-		t.Error("Config should be initialized")  
+		t.Error("Config should be initialized")
 	}
 }

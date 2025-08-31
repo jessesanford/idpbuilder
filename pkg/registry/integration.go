@@ -3,76 +3,93 @@ package registry
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/exec"
+	"strings"
 )
-
 
 // Integration provides a wrapper around Phase 2 Wave 1 registry functionality
 type Integration struct {
-	// TODO: Add fields to integrate with Phase 2 Wave 1 gitea-registry-client
-	// This will include certificate trust manager integration
+	// Uses buildah command-line tool for pushing
 }
 
 // NewIntegration creates a new registry integration instance
 func NewIntegration() *Integration {
-	return &Integration{
-		// TODO: Initialize with Phase 2 Wave 1 dependencies
-		// - gitea-registry-client
-		// - certificate trust manager
-	}
+	return &Integration{}
 }
 
 // Push executes a container image push to a registry
 func (i *Integration) Push(ctx context.Context, opts PushOptions) error {
-	// Validate options
-	if err := i.validateOptions(opts); err != nil {
-		return fmt.Errorf("invalid push options: %w", err)
-	}
-	
-	// TODO: Integrate with Phase 2 Wave 1 gitea-registry-client
-	// This will include:
-	// 1. Setting up certificate trust if not using --insecure
-	// 2. Handling authentication (username/password or authfile)
-	// 3. Pushing image to registry with proper error handling
-	// 4. Progress reporting
-	// 5. Special handling for Gitea registries
-	
-	fmt.Printf("Push integration placeholder:\n")
-	fmt.Printf("  ImageID: %s\n", opts.ImageID)
-	fmt.Printf("  Repository: %s\n", opts.Repository)
-	fmt.Printf("  Tag: %s\n", opts.Tag)
-	fmt.Printf("  Insecure: %v\n", opts.Insecure)
-	
-	return fmt.Errorf("push integration not yet implemented - requires Phase 2 Wave 1 gitea-registry-client")
-}
-
-// validateOptions validates the push options
-func (i *Integration) validateOptions(opts PushOptions) error {
+	// Validate that we have an image and registry
 	if opts.ImageID == "" {
 		return fmt.Errorf("image ID is required")
 	}
-	
 	if opts.Repository == "" {
-		return fmt.Errorf("repository is required")
+		return fmt.Errorf("repository/registry is required")
+	}
+
+	// Check if buildah is available (we use it for pushing too)
+	if _, err := exec.LookPath("buildah"); err != nil {
+		return fmt.Errorf("buildah not found in PATH: %w", err)
+	}
+
+	// Build command arguments
+	args := []string{"push"}
+	
+	// Add insecure flag if needed
+	if opts.Insecure {
+		args = append(args, "--tls-verify=false")
 	}
 	
-	if opts.Tag == "" {
-		return fmt.Errorf("tag is required")
+	// Add credentials if provided
+	if opts.Username != "" && opts.Password != "" {
+		args = append(args, "--creds", fmt.Sprintf("%s:%s", opts.Username, opts.Password))
 	}
 	
+	// Source image (local)
+	args = append(args, opts.ImageID)
+	
+	// Destination (registry)
+	// Format: docker://registry/namespace/image:tag
+	// Extract just the image name and tag from the source
+	imageParts := strings.Split(opts.ImageID, "/")
+	shortName := imageParts[len(imageParts)-1] // Get last part (image:tag)
+	
+	destRef := fmt.Sprintf("docker://%s/%s", opts.Repository, shortName)
+	args = append(args, destRef)
+	
+	// Execute buildah push command
+	fmt.Printf("Pushing image to registry...\n")
+	fmt.Printf("  Source: %s\n", opts.ImageID)
+	fmt.Printf("  Destination: %s\n", destRef)
+	if opts.Insecure {
+		fmt.Printf("  Mode: Insecure (skipping TLS verification)\n")
+	}
+	
+	cmd := exec.CommandContext(ctx, "buildah", args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("buildah push failed: %w", err)
+	}
+	
+	fmt.Printf("✅ Push successful!\n")
 	return nil
 }
+
 
 // GetRegistryConfig returns registry configuration for secure operations
 func (i *Integration) GetRegistryConfig(insecure bool) (map[string]interface{}, error) {
 	// TODO: Integrate with Phase 2 Wave 1 certificate trust manager
 	// This will provide certificate bundles for secure registry operations
-	
+
 	if insecure {
 		return map[string]interface{}{
 			"skip_tls_verify": true,
 		}, nil
 	}
-	
+
 	// Placeholder for registry configuration
 	return map[string]interface{}{
 		"certificate_bundle_path": "/etc/ssl/certs/ca-certificates.crt",

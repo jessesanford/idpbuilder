@@ -74,12 +74,12 @@ func getRepository(imageName string) string {
 	if imageName == "" {
 		return ""
 	}
-	
+
 	parts := strings.Split(imageName, ":")
 	if len(parts) == 1 {
 		return imageName
 	}
-	
+
 	return strings.Join(parts[:len(parts)-1], ":")
 }
 
@@ -87,11 +87,11 @@ func getTag(imageName string) string {
 	if imageName == "" {
 		return ""
 	}
-	
+
 	parts := strings.Split(imageName, ":")
 	if len(parts) == 1 {
 		return "latest"
 	}
-	
+
 	return parts[len(parts)-1]
 }
