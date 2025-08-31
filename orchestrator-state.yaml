@@ -1,8 +1,8 @@
 # Orchestrator State for idpbuidler-oci-go-cr
 # Generated: Sun Aug 31 08:24:54 UTC 2025
 
-current_phase: 0
-current_wave: 0
+current_phase: 1
+current_wave: 1
 current_state: INIT
 
 project_info:
@@ -10,12 +10,76 @@ project_info:
   description: "A feature addition to the idpbuilder cli that allows it to build and push images to from the local file system to the idpbuilder internal gitea at gitea.cnoe.localtest.me and accept the self signed certs that gitea is using while running on the local idpbuilder cluster. This way users don''t have to modify their docker daemons to push to the internal gitea server because of cert validation errors."
   start_date: "2025-08-31"
   
-phases_planned: 3
-waves_per_phase: []
+phases_planned: 2
+waves_per_phase: [2, 2]
 
 efforts_completed: []
 efforts_in_progress: []
-efforts_planned: []
+efforts_planned:
+  # Phase 1: Certificate Infrastructure
+  - phase: 1
+    wave: 1
+    effort_id: "E1.1.1"
+    name: "kind-certificate-extraction"
+    description: "Extract and manage certificates from Kind/Gitea"
+    estimated_lines: 500
+    status: "PLANNED"
+    assigned_to: null
+    
+  - phase: 1
+    wave: 1
+    effort_id: "E1.1.2"
+    name: "registry-tls-trust-integration"
+    description: "Load custom CA into x509.CertPool and configure ggcr remote transport with TLS"
+    estimated_lines: 600
+    status: "PLANNED"
+    assigned_to: null
+    
+  - phase: 1
+    wave: 2
+    effort_id: "E1.2.1"
+    name: "certificate-validation-pipeline"
+    description: "Validate cert chain, check expiry, verify hostname match"
+    estimated_lines: 400
+    status: "PLANNED"
+    assigned_to: null
+    
+  - phase: 1
+    wave: 2
+    effort_id: "E1.2.2"
+    name: "fallback-strategies"
+    description: "Auto-detect cert problems, suggest solutions, implement --insecure flag"
+    estimated_lines: 400
+    status: "PLANNED"
+    assigned_to: null
+    
+  # Phase 2: Build & Push Implementation
+  - phase: 2
+    wave: 1
+    effort_id: "E2.1.1"
+    name: "go-containerregistry-image-builder"
+    description: "Create single-layer from context directory, generate minimal image config"
+    estimated_lines: 600
+    status: "PLANNED"
+    assigned_to: null
+    
+  - phase: 2
+    wave: 1
+    effort_id: "E2.1.2"
+    name: "gitea-registry-client"
+    description: "Authenticate with Gitea, push image with cert handling"
+    estimated_lines: 600
+    status: "PLANNED"
+    assigned_to: null
+    
+  - phase: 2
+    wave: 2
+    effort_id: "E2.2.1"
+    name: "cli-commands"
+    description: "User-friendly CLI commands for build and push"
+    estimated_lines: 500
+    status: "PLANNED"
+    assigned_to: null
 
 integration_branches: []
 
@@ -24,4 +88,48 @@ grading_history:
   review_first_try_rate: 0.0
   integration_success_rate: 0.0
   
+phases:
+  - phase_number: 1
+    name: "Certificate Infrastructure"
+    description: "Extract and manage certificates from Kind/Gitea with proper TLS trust"
+    status: "NOT_STARTED"
+    waves_count: 2
+    efforts_count: 4
+    estimated_lines: 1900
+    
+  - phase_number: 2
+    name: "Build & Push Implementation"
+    description: "Basic image assembly and registry push with certificate handling"
+    status: "NOT_STARTED"
+    waves_count: 2
+    efforts_count: 3
+    estimated_lines: 1700
+
+waves:
+  - phase: 1
+    wave_number: 1
+    name: "Certificate Management Core"
+    status: "NOT_STARTED"
+    efforts_count: 2
+    
+  - phase: 1
+    wave_number: 2
+    name: "Certificate Validation & Fallback"
+    status: "NOT_STARTED"
+    efforts_count: 2
+    
+  - phase: 2
+    wave_number: 1
+    name: "Core Build & Push"
+    status: "NOT_STARTED"
+    efforts_count: 2
+    
+  - phase: 2
+    wave_number: 2
+    name: "CLI Integration"
+    status: "NOT_STARTED"
+    efforts_count: 1
+
 last_checkpoint: "2025-08-31T08:24:54+00:00"
+state_file_version: "2.0"
+completeness_validated: false
