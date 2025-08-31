@@ -22,7 +22,7 @@ Without proper workspace isolation, agents will:
 ### 1. Workspace Creation Protocol
 ```bash
 # For each effort, create isolated working copy
-effort_dir="${PROJECT_NAME}-phase${PHASE}-wave${WAVE}-effort${EFFORT}"
+effort_dir="idpbuidler-oci-go-cr-phase${PHASE}-wave${WAVE}-effort${EFFORT}"
 mkdir -p "/tmp/workspaces/$effort_dir"
 cd "/tmp/workspaces/$effort_dir"
 

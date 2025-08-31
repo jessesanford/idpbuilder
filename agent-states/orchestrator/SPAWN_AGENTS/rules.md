@@ -108,7 +108,7 @@ The system will check for this marker. No marker = Immediate failure.
    - Summary: All parallel agents must emit timestamps within 5 seconds, acknowledge plan creator's decision
 
 2. **R052** - Agent Spawning Protocol
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/RULE-REGISTRY.md#R052`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R052-agent-spawning-protocol.md`
    - Criticality: CRITICAL - Complete context and deliverables required
    - Summary: Provide complete context, startup requirements, deliverables, size limits to each agent
 
@@ -117,7 +117,7 @@ The system will check for this marker. No marker = Immediate failure.
    - Criticality: BLOCKING - Never spawn multiple agents for same effort
 
 4. **R255** - Post-Agent Work Verification
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R255-post-agent-work-verification.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R255-POST-AGENT-WORK-VERIFICATION.md`
    - Criticality: BLOCKING - Verify correct locations after completion
 
 **Note**: R208 (CD before spawn), R221 (bash reset) are already in orchestrator.md Supreme Laws.

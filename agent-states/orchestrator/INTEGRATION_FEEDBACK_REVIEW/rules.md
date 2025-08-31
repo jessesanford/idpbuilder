@@ -113,13 +113,15 @@ The system will check for this marker. No marker = Immediate failure.
 
 **After reading ALL rules, acknowledge them:**
 □ I have read R234 - Mandatory State Traversal (SUPREME LAW #1)
-□ I have read R208 - No Implementation in Orchestrator (SUPREME LAW #2)
+□ I have read R006 - Orchestrator Never Writes Code
 □ I have read R290 - State Rule Reading and Verification (SUPREME LAW #3)
+□ I have read R291 - Integration Demo Requirement (demo must pass)
+□ I have read R292 - Integration Fixes MUST Be In Effort Branches
 □ I have read R238 - Integration Report Evaluation Protocol
 □ I have read R239 - Fix Plan Distribution Protocol
 □ I have read R206 - State Machine Transition Validation
 
-**CRITICAL**: You must have made 7 actual Read tool calls. Count them!
+**CRITICAL**: You must have made 8 actual Read tool calls. Count them!
 
 ---
 
@@ -130,6 +132,9 @@ The system will check for this marker. No marker = Immediate failure.
 ## State Overview
 
 In INTEGRATION_FEEDBACK_REVIEW, you analyze the integration report to identify which efforts failed and what fixes are needed.
+
+**🚨 CRITICAL (R291): Integration is NOT complete until demo passes!**
+**🚨 CRITICAL (R292): ALL fixes MUST be made in effort branches, NEVER in integration branch!**
 
 ## Required Actions
 
@@ -262,19 +267,33 @@ git push
 Integration Status: FAILED
 Build Status: BLOCKED_BY_DEPENDENCIES
 Test Status: NOT_RUN
+Demo Status: FAILED  # R291: Must be PASSING for integration to complete
 
 ## Failed Branches
 - phase1-wave1-effort1: Missing dependency libgpgme
 - phase1-wave1-effort2: Build error in authentication module
 - phase1-wave1-effort3: Merge conflict in shared config
 
+## Demo Failures (R291 Violations)
+- Build failed: Cannot compile due to missing dependencies
+- Tests failed: 5 test suites failing
+- Demo script error: demo-features.sh exits with code 1
+
 ## Missing Dependencies
 - libgpgme-dev
 - libbtrfs-dev
+
+## Fix Instructions (R292 Compliance)
+ALL fixes must be made in the following effort branches:
+- feature/effort1: Add libgpgme dependency
+- feature/effort2: Fix authentication module compilation
+- feature/effort3: Resolve config conflicts
 ```
 
 ## Related Rules
 
+- R291: Integration Demo Requirement (demo must pass before complete)
+- R292: Integration Fixes MUST Be In Effort Branches
 - R238: Integration Report Evaluation Protocol
 - R239: Fix Plan Distribution Protocol
 - R260: Integration Agent Core Requirements
