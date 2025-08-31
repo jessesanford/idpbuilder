@@ -3,10 +3,10 @@
 
 current_phase: 1
 current_wave: 1
-current_state: INTEGRATION
-previous_state: WAVE_COMPLETE
-transition_time: "2025-08-31T16:48:00Z"
-transition_reason: "Wave 1 complete - creating integration branch"
+current_state: ERROR_RECOVERY
+previous_state: INTEGRATION
+transition_time: "2025-08-31T16:54:00Z"
+transition_reason: "Integration found duplicate types - need fixes"
 
 project_info:
   name: "idpbuidler-oci-go-cr"
@@ -107,7 +107,15 @@ efforts_planned:
     status: "PLANNED"
     assigned_to: null
 
-integration_branches: []
+integration_branches:
+  - branch: "idpbuidler-oci-go-cr/phase1/wave1/integration-20250831-165123"
+    phase: 1
+    wave: 1
+    status: "ISSUES_FOUND"
+    issues:
+      - "Duplicate CertificateInfo struct in both efforts"
+      - "Duplicate createTestCertificate test helper"
+    created_at: "2025-08-31T16:51:00Z"
 
 grading_history:
   parallel_spawn_average: 0.0
