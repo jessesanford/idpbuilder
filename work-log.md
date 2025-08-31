@@ -37,3 +37,19 @@ Load custom CA into x509.CertPool and configure ggcr remote transport with TLS
   - Status: STOPPING implementation immediately
   - Next action: Request split from orchestrator
 
+[2025-08-31 15:07] SPLIT 001 IMPLEMENTATION COMPLETED
+  - Implemented: Core Trust Store Management (Split 001 of 2)
+  - Files modified: pkg/certs/trust_test.go
+  - Files added: SPLIT-INVENTORY.md, SPLIT-PLAN-001.md, SPLIT-PLAN-002.md
+  - Lines: trust.go (317) + trust_test.go (194) = 511 total
+  - Test coverage: 7 test functions, all passing
+  - Status: Under 800 line limit ✅
+  - Interface provided for Split 002: TrustStoreManager
+
+[2025-08-31 15:16] SPLIT 002 COMPLETED: Transport Configuration & Utilities
+  - Files implemented: pkg/certs/transport.go (251 lines), pkg/certs/trust_store.go (217 lines)
+  - Tests added: Comprehensive transport and utility tests in trust_test.go
+  - Total Split 002 lines: 468 lines (under 551 line limit)
+  - Integration: Added transport methods to TrustStoreManager interface
+  - Status: All tests passing, code compiles successfully
+

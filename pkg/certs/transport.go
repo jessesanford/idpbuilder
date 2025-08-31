@@ -3,27 +3,13 @@ package certs
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 )
-
-// TransportConfig holds configuration options for registry transport
-type TransportConfig struct {
-	// Timeout for HTTP requests (default: 30 seconds)
-	Timeout time.Duration
-	
-	// MaxIdleConns controls the maximum number of idle connections
-	MaxIdleConns int
-	
-	// MaxIdleConnsPerHost controls the maximum idle connections per host
-	MaxIdleConnsPerHost int
-	
-	// IdleConnTimeout is the maximum amount of time an idle connection will remain idle
-	IdleConnTimeout time.Duration
-}
 
 // DefaultTransportConfig returns a default transport configuration
 func DefaultTransportConfig() *TransportConfig {
@@ -59,11 +45,6 @@ func (m *trustStoreManager) ConfigureTransportWithConfig(registry string, config
 			MaxIdleConns:        config.MaxIdleConns,
 			MaxIdleConnsPerHost: config.MaxIdleConnsPerHost,
 			IdleConnTimeout:     config.IdleConnTimeout,
-		}
-
-		client := &http.Client{
-			Transport: transport,
-			Timeout:   config.Timeout,
 		}
 
 		return remote.WithTransport(transport), nil
