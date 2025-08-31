@@ -3,10 +3,10 @@
 
 current_phase: 1
 current_wave: 1
-current_state: ERROR_RECOVERY
-previous_state: INTEGRATION
-transition_time: "2025-08-31T16:54:00Z"
-transition_reason: "Integration found duplicate types - need fixes"
+current_state: INTEGRATION
+previous_state: ERROR_RECOVERY
+transition_time: "2025-08-31T16:58:00Z"
+transition_reason: "Duplicates fixed - re-running integration"
 
 project_info:
   name: "idpbuidler-oci-go-cr"
