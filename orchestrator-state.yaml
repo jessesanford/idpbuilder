@@ -169,6 +169,33 @@ parallel_code_reviewer_spawns:
     spawn_mode: "parallel"
     status: "completed"
 
+sw_engineer_parallelization_plan:
+  wave: 1
+  phase: 1
+  analysis_timestamp: "2025-08-31T09:40:00Z"
+  
+  blocking_efforts: []
+    
+  parallel_groups:
+    group_1:
+      can_start_after: []
+      efforts:
+        - effort_id: "E1.1.1"
+          name: "kind-certificate-extraction"
+          description: "Implement certificate extraction from Kind/Gitea"
+          estimated_lines: 500
+        - effort_id: "E1.1.2"
+          name: "registry-tls-trust-integration"
+          description: "Implement TLS trust configuration for registry"
+          estimated_lines: 600
+          
+  spawn_sequence:
+    - step: 1
+      action: "spawn_parallel"
+      efforts: ["E1.1.1", "E1.1.2"]
+      r151_requirement: "All in ONE message with <5s delta"
+      rationale: "Both efforts are independent foundational tasks"
+
 last_checkpoint: "2025-08-31T08:24:54+00:00"
 state_file_version: "2.0"
 completeness_validated: false
