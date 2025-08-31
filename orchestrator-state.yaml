@@ -16,7 +16,22 @@ project_info:
 phases_planned: 2
 waves_per_phase: [2, 2]
 
-efforts_completed: []
+efforts_completed:
+  - effort_id: "E1.1.1"
+    name: "kind-certificate-extraction"
+    phase: 1
+    wave: 1
+    lines_implemented: 418
+    status: "COMPLETED"
+    completed_at: "2025-08-31T16:27:00Z"
+  - effort_id: "E1.1.2"
+    name: "registry-tls-trust-integration"
+    phase: 1
+    wave: 1
+    lines_implemented: 936
+    split_count: 2
+    status: "COMPLETED"
+    completed_at: "2025-08-31T16:27:00Z"
 efforts_in_progress: []
 efforts_planned:
   # Phase 1: Certificate Infrastructure
@@ -26,8 +41,9 @@ efforts_planned:
     name: "kind-certificate-extraction"
     description: "Extract and manage certificates from Kind/Gitea"
     estimated_lines: 500
-    status: "PLANNED"
-    assigned_to: null
+    status: "COMPLETED"
+    assigned_to: "sw-engineer-001"
+    completed_at: "2025-08-31T16:27:00Z"
     
   - phase: 1
     wave: 1
@@ -35,8 +51,9 @@ efforts_planned:
     name: "registry-tls-trust-integration"
     description: "Load custom CA into x509.CertPool and configure ggcr remote transport with TLS"
     estimated_lines: 600
-    status: "PLANNED"
-    assigned_to: null
+    status: "COMPLETED"
+    assigned_to: "sw-engineer-002"
+    completed_at: "2025-08-31T16:27:00Z"
     
   - phase: 1
     wave: 2
