@@ -305,7 +305,7 @@ Initial state when orchestrator starts. Load configuration and determine next st
 2. **R203**: Follow complete startup sequence
 3. **R191**: Load target repository configuration
 4. **R281**: Create COMPLETE state file with ALL phases/waves/efforts (SUPREME LAW #7)
-5. **R252**: Verify/update state file integrity
+5. **R288**: Verify/update state file integrity (includes commit/push)
 6. **R232**: Check and execute pending TodoWrite items
 7. **R287**: Save TODOs within 30 seconds of changes
 8. **R287**: Save TODOs every 10 messages/15 minutes

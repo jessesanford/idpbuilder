@@ -304,7 +304,7 @@ Every change must be documented with:
 ## ⚠️ COMMON VIOLATIONS TO WATCH FOR
 
 1. **Delimiter Drift**: 🚨 used instead of 🚨🚨🚨
-2. **Rule Number Mismatch**: R187 referenced as R186
+2. **Rule Number Mismatch**: R290 referenced as R289
 3. **Missing Criticality**: BLOCKING without delimiters
 4. **Orphaned Rules**: Rules with zero references
 5. **State Machine Violations**: States not in machine

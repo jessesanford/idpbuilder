@@ -460,8 +460,7 @@ echo "Transitioning to SPAWN_AGENTS"
 - **R208**: Directory protocol for each spawn
 - **R219**: Dependency-aware planning
 - **R197**: One agent per effort requirement
-- **R252**: Mandatory state file updates
-- **R253**: Mandatory commit and push
+- **R288**: Mandatory state file updates (includes commit/push)
 
 ## Grading Impact
 
@@ -503,10 +502,7 @@ This state is a **MANDATORY GATE** that:
 **THIS STATE CANNOT BE SKIPPED! R234 VIOLATION = -100% FAILURE!**
 
 ### Additional Rules Referenced:
-- **R287**: `$CLAUDE_PROJECT_DIR/rule-library/R287-mandatory-todo-save-triggers.md`
-- **R287**: `$CLAUDE_PROJECT_DIR/rule-library/R287-todo-save-frequency-requirements.md`
-- **R287**: `$CLAUDE_PROJECT_DIR/rule-library/R287-todo-file-commit-protocol.md`
-- **R252**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
-- **R253**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
+- **R287**: `$CLAUDE_PROJECT_DIR/rule-library/R287-comprehensive-todo-persistence.md`
+- **R288**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
 - **R208**: `$CLAUDE_PROJECT_DIR/rule-library/R208-orchestrator-spawn-cd-protocol.md`
 - **R197**: `$CLAUDE_PROJECT_DIR/rule-library/R197-one-agent-per-effort.md`

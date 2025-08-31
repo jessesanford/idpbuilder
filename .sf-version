@@ -1,7 +1,7 @@
 version: 2.0
-upgraded_at: 20250831-190106
+upgraded_at: 20250831-194952
 upgraded_from: /home/vscode/software-factory-template
-template_commit: 0abeee6512aef162c7cfe65f8e13451867caba2c
+template_commit: e59efad9f19f18412510f595ad3def3be3b3763f
 template_branch: enforce-split-protocol-after-fixes-state
 template_remote: https://github.com/jessesanford/software-factory-template.git
-upgrade_date: 2025-08-31T19:01:06Z
+upgrade_date: 2025-08-31T19:49:52Z

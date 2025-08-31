@@ -119,8 +119,7 @@ The system will check for this marker. No marker = Immediate failure.
 
 ### Rules Enforced in This State:
 - R222: Code Review Gate [BLOCKING - ALL reviews must pass]
-- R288: State File Update and Commit [SUPREME LAW - Update immediately]
-- R253: Commit and Push [BLOCKING - Within 60 seconds]
+- R288: State File Update and Commit [SUPREME LAW - Update immediately, includes commit/push]
 - R105: Wave Completion Protocol [INFO - Best practice]
 - R035: Phase Completion Testing [MANDATORY - Validation required]
 - R287: TODO Save Triggers [BLOCKING - Save on completion]

@@ -465,8 +465,7 @@ echo "Transitioning to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
 - **R151**: Parallel spawn timing requirements (<5s delta)
 - **R208**: Directory protocol for spawning
 - **R219**: Dependency-aware effort planning
-- **R252**: Mandatory state file updates
-- **R253**: Mandatory state file commit and push
+- **R288**: Mandatory state file updates (includes commit/push)
 
 ## Grading Impact
 

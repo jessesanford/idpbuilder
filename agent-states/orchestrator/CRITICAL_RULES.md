@@ -174,8 +174,8 @@ fi
 ```
 
 **THE ORCHESTRATOR'S CONFIDENCE:**
-- "Context concerns don't matter - R187-R190 save my TODOs every 10 messages."
-- "Compaction doesn't scare me - R288 preserve my state continuously."
+- "Context concerns don't matter - R287 saves my TODOs every 10 messages."
+- "Compaction doesn't scare me - R288 preserves my state continuously."
 - "Recovery is automatic - I read state, load TODOs, and continue."
 - "The system protects my progress - I can work indefinitely."
 - "Only completion or user 'stop' matters."
