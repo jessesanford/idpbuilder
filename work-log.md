@@ -33,3 +33,15 @@ Result: Success - remote added
 
 Command: git fetch e111
 Result: Success - fetched branches from E1.1.1
+
+Command: git merge e111/idpbuidler-oci-go-cr/phase1/wave1/kind-certificate-extraction --no-ff -m "feat: integrate E1.1.1 - Kind Certificate Extraction (418 lines)"
+Result: Conflict in work-log.md
+
+Command: git checkout --ours work-log.md && git add work-log.md
+Result: Resolved conflict, kept integration work log
+
+Command: git commit --no-edit
+Result: Success - merge completed (commit 6607cc7)
+
+Command: go test ./pkg/certs/... -v
+Result: All tests passing (19 tests, 0.916s)
