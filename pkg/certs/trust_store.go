@@ -15,6 +15,18 @@ import (
 // TrustStoreUtils provides utility functions for trust store operations
 type TrustStoreUtils struct{}
 
+// CertificateInfo contains metadata about an extracted certificate
+// This type is shared with E1.1.1 (kind-certificate-extraction)
+// TODO: In final integration, import from shared package
+type CertificateInfo struct {
+	Subject   string
+	Issuer    string
+	NotBefore time.Time
+	NotAfter  time.Time
+	IsCA      bool
+	DNSNames  []string
+}
+
 // NewTrustStoreUtils creates a new instance of trust store utilities
 func NewTrustStoreUtils() *TrustStoreUtils {
 	return &TrustStoreUtils{}
@@ -122,69 +134,25 @@ func (u *TrustStoreUtils) ValidateCertificate(cert *x509.Certificate) error {
 }
 
 // GetCertificateInfo returns human-readable information about a certificate
+// This function now returns the shared CertificateInfo type from E1.1.1
 func (u *TrustStoreUtils) GetCertificateInfo(cert *x509.Certificate) *CertificateInfo {
 	if cert == nil {
-		return &CertificateInfo{Error: "certificate is nil"}
+		// Since the shared type doesn't have Error field, we need to handle this differently
+		return &CertificateInfo{
+			Subject: "Error: certificate is nil",
+		}
 	}
 
 	info := &CertificateInfo{
-		Subject:    cert.Subject.String(),
-		Issuer:     cert.Issuer.String(),
-		NotBefore:  cert.NotBefore,
-		NotAfter:   cert.NotAfter,
-		DNSNames:   cert.DNSNames,
-		IPAddresses: make([]string, len(cert.IPAddresses)),
-		SerialNumber: cert.SerialNumber.String(),
-		IsCA:       cert.IsCA,
-		IsSelfSigned: cert.Subject.String() == cert.Issuer.String(),
-	}
-
-	// Convert IP addresses to strings
-	for i, ip := range cert.IPAddresses {
-		info.IPAddresses[i] = ip.String()
+		Subject:   cert.Subject.String(),
+		Issuer:    cert.Issuer.String(),
+		NotBefore: cert.NotBefore,
+		NotAfter:  cert.NotAfter,
+		DNSNames:  cert.DNSNames,
+		IsCA:      cert.IsCA,
 	}
 
 	return info
-}
-
-// CertificateInfo holds certificate information for display
-type CertificateInfo struct {
-	Subject      string
-	Issuer       string
-	NotBefore    time.Time
-	NotAfter     time.Time
-	DNSNames     []string
-	IPAddresses  []string
-	SerialNumber string
-	IsCA         bool
-	IsSelfSigned bool
-	Error        string
-}
-
-// String returns a human-readable string representation of certificate info
-func (ci *CertificateInfo) String() string {
-	if ci.Error != "" {
-		return fmt.Sprintf("Error: %s", ci.Error)
-	}
-
-	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("Subject: %s\n", ci.Subject))
-	sb.WriteString(fmt.Sprintf("Issuer: %s\n", ci.Issuer))
-	sb.WriteString(fmt.Sprintf("Serial Number: %s\n", ci.SerialNumber))
-	sb.WriteString(fmt.Sprintf("Valid From: %s\n", ci.NotBefore.Format("2006-01-02 15:04:05 MST")))
-	sb.WriteString(fmt.Sprintf("Valid To: %s\n", ci.NotAfter.Format("2006-01-02 15:04:05 MST")))
-	sb.WriteString(fmt.Sprintf("Is CA: %t\n", ci.IsCA))
-	sb.WriteString(fmt.Sprintf("Self-Signed: %t\n", ci.IsSelfSigned))
-
-	if len(ci.DNSNames) > 0 {
-		sb.WriteString(fmt.Sprintf("DNS Names: %s\n", strings.Join(ci.DNSNames, ", ")))
-	}
-
-	if len(ci.IPAddresses) > 0 {
-		sb.WriteString(fmt.Sprintf("IP Addresses: %s\n", strings.Join(ci.IPAddresses, ", ")))
-	}
-
-	return sb.String()
 }
 
 // DiscoverCertificateFiles finds all certificate files in a directory
