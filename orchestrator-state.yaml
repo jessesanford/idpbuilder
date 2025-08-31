@@ -2,11 +2,11 @@
 # Generated: Sun Aug 31 08:24:54 UTC 2025
 
 current_phase: 1
-current_wave: 1
-current_state: INTEGRATION
-previous_state: WAVE_COMPLETE
-transition_time: "2025-08-31T17:20:00Z"
-transition_reason: "Creating integration branch to merge Wave 1 efforts"
+current_wave: 2
+current_state: WAVE_START
+previous_state: INTEGRATION
+transition_time: "2025-08-31T20:15:00Z"
+transition_reason: "Starting Wave 2 after Wave 1 integration completion"
 
 project_info:
   name: "idpbuidler-oci-go-cr"
@@ -38,7 +38,24 @@ efforts_completed:
     review_status: "PASSED"
     review_completed_at: "2025-08-31T16:43:00Z"
     review_notes: "Properly split, all tests passing"
-efforts_in_progress: []
+  - effort_id: "E1.2.1"
+    name: "certificate-validation-pipeline"
+    phase: 1
+    wave: 2
+    lines_implemented: 568
+    status: "COMPLETED"
+    completed_at: "2025-08-31T21:00:00Z"
+    review_status: "PASSED"
+    review_completed_at: "2025-08-31T20:38:00Z"
+    review_notes: "Excellent implementation, 84.6% test coverage"
+efforts_in_progress:
+  - effort_id: "E1.2.2-split-001"
+    name: "fallback-strategies-split-001"
+    phase: 1
+    wave: 2
+    status: "SPLITTING"
+    assigned_to: "sw-engineer-split"
+    started_at: "2025-08-31T20:40:00Z"
 efforts_planned:
   # Phase 1: Certificate Infrastructure
   - phase: 1
