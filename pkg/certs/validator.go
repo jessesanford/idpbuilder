@@ -8,6 +8,34 @@ import (
 	"time"
 )
 
+// TrustStoreManager interface from E1.1.2 (registry-tls-trust-integration)
+// This interface will be implemented by the trust store manager from Wave 1
+type TrustStoreManager interface {
+	// AddCertificate adds a certificate for a specific registry
+	AddCertificate(registry string, cert *x509.Certificate) error
+
+	// RemoveCertificate removes the certificate for a registry
+	RemoveCertificate(registry string) error
+
+	// SetInsecureRegistry marks a registry as insecure (skip TLS verification)
+	SetInsecureRegistry(registry string, insecure bool) error
+
+	// GetTrustedCerts returns all trusted certificates for a registry
+	GetTrustedCerts(registry string) ([]*x509.Certificate, error)
+
+	// GetCertPool returns a configured cert pool for a registry
+	GetCertPool(registry string) (*x509.CertPool, error)
+
+	// IsInsecure checks if a registry is marked as insecure
+	IsInsecure(registry string) bool
+
+	// LoadFromDisk loads all certificates from persistent storage
+	LoadFromDisk() error
+
+	// SaveToDisk saves a certificate to persistent storage
+	SaveToDisk(registry string, cert *x509.Certificate) error
+}
+
 // CertValidator provides comprehensive X.509 certificate validation
 type CertValidator interface {
 	// ValidateChain verifies the certificate chain against trusted roots
