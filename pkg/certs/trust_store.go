@@ -9,23 +9,11 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 // TrustStoreUtils provides utility functions for trust store operations
 type TrustStoreUtils struct{}
 
-// CertificateInfo contains metadata about an extracted certificate
-// This type is shared with E1.1.1 (kind-certificate-extraction)
-// TODO: In final integration, import from shared package
-type CertificateInfo struct {
-	Subject   string
-	Issuer    string
-	NotBefore time.Time
-	NotAfter  time.Time
-	IsCA      bool
-	DNSNames  []string
-}
 
 // NewTrustStoreUtils creates a new instance of trust store utilities
 func NewTrustStoreUtils() *TrustStoreUtils {
