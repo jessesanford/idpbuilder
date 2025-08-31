@@ -12,12 +12,9 @@ import (
 	"time"
 )
 
-// TrustStoreUtils provides utility functions for trust store operations
-type TrustStoreUtils struct{}
-
 // CertificateInfo contains metadata about an extracted certificate
-// This type is shared with E1.1.1 (kind-certificate-extraction)
-// TODO: In final integration, import from shared package
+// This type matches the CertificateInfo from E1.1.1 (kind-certificate-extraction)
+// to ensure compatibility during integration
 type CertificateInfo struct {
 	Subject   string
 	Issuer    string
@@ -26,6 +23,10 @@ type CertificateInfo struct {
 	IsCA      bool
 	DNSNames  []string
 }
+
+// TrustStoreUtils provides utility functions for trust store operations
+type TrustStoreUtils struct{}
+
 
 // NewTrustStoreUtils creates a new instance of trust store utilities
 func NewTrustStoreUtils() *TrustStoreUtils {
@@ -134,10 +135,10 @@ func (u *TrustStoreUtils) ValidateCertificate(cert *x509.Certificate) error {
 }
 
 // GetCertificateInfo returns human-readable information about a certificate
-// This function now returns the shared CertificateInfo type from E1.1.1
+// This function returns the CertificateInfo type that matches E1.1.1's structure
 func (u *TrustStoreUtils) GetCertificateInfo(cert *x509.Certificate) *CertificateInfo {
 	if cert == nil {
-		// Since the shared type doesn't have Error field, we need to handle this differently
+		// Return a CertificateInfo with error information in Subject field
 		return &CertificateInfo{
 			Subject: "Error: certificate is nil",
 		}
