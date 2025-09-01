@@ -43,236 +43,62 @@ func NewRecommender(registryURL string, allowInsecure bool) *DefaultRecommender 
 	}
 }
 
-// NewRecommenderWithEnvironment creates a recommender with environment-specific advice
-func NewRecommenderWithEnvironment(registryURL string, allowInsecure bool, environment string) *DefaultRecommender {
-	return &DefaultRecommender{
-		registryURL:     registryURL,
-		insecureAllowed: allowInsecure,
-		environment:     environment,
-	}
-}
-
 // Recommend generates problem-specific recommendations with security considerations
 func (r *DefaultRecommender) Recommend(problem *CertProblem) ([]*Recommendation, error) {
 	if problem == nil {
 		return nil, fmt.Errorf("problem cannot be nil")
 	}
 
-	var recommendations []*Recommendation
-
 	switch problem.Type {
 	case ProblemSelfSigned:
-		recommendations = r.recommendForSelfSigned(problem)
+		return r.getRecommendations([]string{"Use --insecure for dev", "Add cert to trust store"}, 
+			[]string{"idpbuilder <command> --insecure", "openssl s_client -connect " + r.extractHost() + ":443"})
 	case ProblemExpired:
-		recommendations = r.recommendForExpired(problem)
+		return r.getRecommendations([]string{"Renew certificate", "Use --insecure temporarily"}, 
+			[]string{"# Contact administrator", "idpbuilder <command> --insecure"})
 	case ProblemNotYetValid:
-		recommendations = r.recommendForNotYetValid(problem)
+		return r.getRecommendations([]string{"Check system clock", "Verify cert dates"}, 
+			[]string{"sudo ntpdate -s time.nist.gov", "openssl x509 -noout -dates"})
 	case ProblemHostnameMismatch:
-		recommendations = r.recommendForHostnameMismatch(problem)
-	case ProblemUntrustedCA:
-		recommendations = r.recommendForUntrustedCA(problem)
-	case ProblemUnknownAuthority:
-		recommendations = r.recommendForUnknownAuthority(problem)
-	default:
-		recommendations = r.recommendForUnknown(problem)
-	}
-
-	return recommendations, nil
-}
-
-// recommendForSelfSigned provides solutions for self-signed certificate issues
-func (r *DefaultRecommender) recommendForSelfSigned(problem *CertProblem) []*Recommendation {
-	recs := make([]*Recommendation, 0)
-
-	if r.environment == "development" || r.environment == "testing" {
-		// Development environment - insecure flag is reasonable
-		if r.insecureAllowed {
-			recs = append(recs, &Recommendation{
-				Priority:    1,
-				Title:       "Use --insecure flag for development",
-				Command:     "idpbuilder <command> --insecure",
-				Explanation: "Skip TLS verification for self-signed certificates in development environments. This is the quickest solution for local Kind clusters.",
-				Risks:       []string{"Not suitable for production", "Vulnerable to man-in-the-middle attacks"},
-			})
+		validHosts := ""
+		if hosts, ok := problem.Details["valid_hostnames"].([]string); ok && len(hosts) > 0 {
+			validHosts = strings.Join(hosts, ", ")
 		}
+		return r.getRecommendations([]string{"Use correct hostname", "Update certificate"}, 
+			[]string{"# Use: " + validHosts, "# Request new cert with correct SANs"})
+	case ProblemUntrustedCA:
+		return r.getRecommendations([]string{"Import CA certificate", "Verify cert chain"}, 
+			[]string{"# Add CA to trust store", "openssl s_client -connect " + r.extractHost() + ":443 -showcerts"})
+	default:
+		return r.getRecommendations([]string{"Inspect certificate manually", "Enable debug logging"}, 
+			[]string{"openssl x509 -text -noout", "# Add debug flags"})
 	}
-
-	// Add certificate to trust store (always recommended for proper security)
-	recs = append(recs, &Recommendation{
-		Priority:    2,
-		Title:       "Add certificate to system trust store",
-		Command:     fmt.Sprintf("# Extract certificate:\necho -n | openssl s_client -connect %s:443 -servername %s 2>/dev/null | openssl x509 > registry.crt\n# Add to trust store (varies by OS)", r.extractHost(), r.extractHost()),
-		Explanation: "Import the self-signed certificate into your system's trusted certificate store. This provides secure validation without disabling TLS.",
-		Risks:       []string{"Requires system administrator privileges", "Must be done on each client system"},
-	})
-
-	// Registry-specific solution
-	recs = append(recs, &Recommendation{
-		Priority:    3,
-		Title:       "Configure registry with proper TLS certificate",
-		Command:     "# Generate proper certificate with valid CA or use Let's Encrypt",
-		Explanation: "Replace the self-signed certificate with one issued by a trusted Certificate Authority. This is the most secure long-term solution.",
-		Risks:       []string{"Requires access to registry configuration", "May require DNS setup for public CA"},
-	})
-
-	return recs
 }
 
-// recommendForExpired provides solutions for expired certificates
-func (r *DefaultRecommender) recommendForExpired(problem *CertProblem) []*Recommendation {
-	recs := make([]*Recommendation, 0)
-
-	// Primary recommendation: renew certificate
-	recs = append(recs, &Recommendation{
-		Priority:    1,
-		Title:       "Renew the expired certificate",
-		Command:     "# Contact registry administrator to renew certificate",
-		Explanation: "The certificate has expired and must be renewed. Contact your registry administrator or certificate authority.",
-		Risks:       []string{"Service may be unavailable until renewal"},
-	})
-
-	// Temporary workaround for development
-	if r.environment != "production" && r.insecureAllowed {
+// getRecommendations creates recommendations from titles and commands
+func (r *DefaultRecommender) getRecommendations(titles []string, commands []string) ([]*Recommendation, error) {
+	recs := make([]*Recommendation, 0, len(titles))
+	for i, title := range titles {
+		cmd := ""
+		if i < len(commands) {
+			cmd = commands[i]
+		}
+		
+		// Add --insecure option for development if applicable
+		risks := []string{"Check documentation for full details"}
+		if strings.Contains(cmd, "--insecure") && r.environment != "development" {
+			risks = []string{"NOT for production use", "Security vulnerability"}
+		}
+		
 		recs = append(recs, &Recommendation{
-			Priority:    2,
-			Title:       "Temporary workaround with --insecure flag",
-			Command:     "idpbuilder <command> --insecure",
-			Explanation: "Temporarily bypass certificate validation while waiting for certificate renewal. Only use in development/testing.",
-			Risks:       []string{"NEVER use in production", "Temporary solution only", "Security vulnerability"},
+			Priority:    i + 1,
+			Title:       title,
+			Command:     cmd,
+			Explanation: "Recommended solution for this certificate problem.",
+			Risks:       risks,
 		})
 	}
-
-	return recs
-}
-
-// recommendForNotYetValid provides solutions for not-yet-valid certificates
-func (r *DefaultRecommender) recommendForNotYetValid(problem *CertProblem) []*Recommendation {
-	return []*Recommendation{
-		{
-			Priority:    1,
-			Title:       "Check system clock synchronization",
-			Command:     "# Linux: sudo ntpdate -s time.nist.gov\n# macOS: sudo sntp -sS time.apple.com",
-			Explanation: "The certificate is not yet valid, which often indicates system clock skew. Synchronize your system time with NTP servers.",
-			Risks:       []string{"May require system administrator privileges"},
-		},
-		{
-			Priority:    2,
-			Title:       "Verify certificate validity period",
-			Command:     "echo -n | openssl s_client -connect " + r.extractHost() + ":443 -servername " + r.extractHost() + " 2>/dev/null | openssl x509 -noout -dates",
-			Explanation: "Check the certificate's actual validity period to confirm if this is a time synchronization issue or a certificate configuration problem.",
-			Risks:       []string{"None - informational only"},
-		},
-	}
-}
-
-// recommendForHostnameMismatch provides solutions for hostname validation failures
-func (r *DefaultRecommender) recommendForHostnameMismatch(problem *CertProblem) []*Recommendation {
-	recs := make([]*Recommendation, 0)
-
-	// Extract valid hostnames from problem details
-	var validHosts []string
-	if hosts, ok := problem.Details["valid_hostnames"].([]string); ok {
-		validHosts = hosts
-	}
-
-	if len(validHosts) > 0 {
-		recs = append(recs, &Recommendation{
-			Priority:    1,
-			Title:       "Use correct hostname from certificate",
-			Command:     fmt.Sprintf("# Use one of these hostnames: %s", strings.Join(validHosts, ", ")),
-			Explanation: fmt.Sprintf("The certificate is valid for specific hostnames. Update your registry URL to use one of: %s", strings.Join(validHosts, ", ")),
-			Risks:       []string{"May require DNS configuration or /etc/hosts changes"},
-		})
-	}
-
-	// Add hostname mapping for development
-	if r.environment == "development" && len(validHosts) > 0 {
-		recs = append(recs, &Recommendation{
-			Priority:    2,
-			Title:       "Add hostname mapping for development",
-			Command:     fmt.Sprintf("# Add to /etc/hosts:\n127.0.0.1 %s", validHosts[0]),
-			Explanation: "Map the certificate's hostname to your local IP address for development testing.",
-			Risks:       []string{"Requires root/administrator privileges", "Development only - not for production"},
-		})
-	}
-
-	// Certificate update recommendation
-	recs = append(recs, &Recommendation{
-		Priority:    3,
-		Title:       "Update certificate with correct Subject Alternative Names",
-		Command:     "# Contact certificate authority to reissue with correct SANs",
-		Explanation: "Request a new certificate that includes the hostname you're trying to use in the Subject Alternative Names.",
-		Risks:       []string{"Requires certificate authority interaction", "May involve cost for new certificate"},
-	})
-
-	return recs
-}
-
-// recommendForUntrustedCA provides solutions for untrusted Certificate Authority issues
-func (r *DefaultRecommender) recommendForUntrustedCA(problem *CertProblem) []*Recommendation {
-	recs := make([]*Recommendation, 0)
-
-	// Import CA certificate
-	recs = append(recs, &Recommendation{
-		Priority:    1,
-		Title:       "Import root Certificate Authority certificate",
-		Command:     "# Get CA certificate and add to system trust store",
-		Explanation: "The certificate was issued by a CA that's not in your system's trust store. Import the root CA certificate.",
-		Risks:       []string{"Requires system administrator privileges", "Ensure CA certificate is from trusted source"},
-	})
-
-	// Verify certificate chain
-	recs = append(recs, &Recommendation{
-		Priority:    2,
-		Title:       "Verify complete certificate chain",
-		Command:     "openssl s_client -connect " + r.extractHost() + ":443 -servername " + r.extractHost() + " -showcerts",
-		Explanation: "Check if intermediate CA certificates are missing from the server configuration. The server should present the complete certificate chain.",
-		Risks:       []string{"None - diagnostic command"},
-	})
-
-	// Insecure option for development
-	if r.environment != "production" && r.insecureAllowed {
-		recs = append(recs, &Recommendation{
-			Priority:    3,
-			Title:       "Development workaround with --insecure flag",
-			Command:     "idpbuilder <command> --insecure",
-			Explanation: "Skip CA validation for development/testing while resolving the trust store issue.",
-			Risks:       []string{"NOT for production use", "Security vulnerability"},
-		})
-	}
-
-	return recs
-}
-
-// recommendForUnknownAuthority provides solutions for unknown authority errors
-func (r *DefaultRecommender) recommendForUnknownAuthority(problem *CertProblem) []*Recommendation {
-	// Similar to untrusted CA but with focus on completely unknown CAs
-	return r.recommendForUntrustedCA(problem)
-}
-
-// recommendForUnknown provides general solutions for unrecognized problems
-func (r *DefaultRecommender) recommendForUnknown(problem *CertProblem) []*Recommendation {
-	recs := make([]*Recommendation, 0)
-
-	// General diagnostic
-	recs = append(recs, &Recommendation{
-		Priority:    1,
-		Title:       "Manual certificate inspection",
-		Command:     "echo -n | openssl s_client -connect " + r.extractHost() + ":443 -servername " + r.extractHost() + " 2>/dev/null | openssl x509 -text -noout",
-		Explanation: "Manually inspect the certificate to understand the validation failure.",
-		Risks:       []string{"None - diagnostic command"},
-	})
-
-	// Debug logging
-	recs = append(recs, &Recommendation{
-		Priority:    2,
-		Title:       "Enable debug logging",
-		Command:     "# Add debug flags to see detailed error information",
-		Explanation: "Enable verbose logging to get more details about the certificate validation failure.",
-		Risks:       []string{"None - informational only"},
-	})
-
-	return recs
+	return recs, nil
 }
 
 // GetQuickFix returns the highest priority recommendation for immediate action
@@ -281,20 +107,10 @@ func (r *DefaultRecommender) GetQuickFix(problem *CertProblem) (*Recommendation,
 	if err != nil {
 		return nil, err
 	}
-	
 	if len(recommendations) == 0 {
 		return nil, fmt.Errorf("no recommendations available for problem type: %s", problem.Type)
 	}
-	
-	// Find highest priority (lowest number)
-	quickFix := recommendations[0]
-	for _, rec := range recommendations {
-		if rec.Priority < quickFix.Priority {
-			quickFix = rec
-		}
-	}
-	
-	return quickFix, nil
+	return recommendations[0], nil // First is highest priority
 }
 
 // FormatRecommendations creates user-friendly output for displaying recommendations
@@ -304,38 +120,21 @@ func (r *DefaultRecommender) FormatRecommendations(recs []*Recommendation) strin
 	}
 
 	var sb strings.Builder
-	
-	sb.WriteString("Certificate Problem Solutions\n")
-	sb.WriteString("============================\n\n")
+	sb.WriteString("Certificate Problem Solutions\n============================\n\n")
 
 	for i, rec := range recs {
 		sb.WriteString(fmt.Sprintf("%d. %s\n", i+1, rec.Title))
-		sb.WriteString("   " + strings.ReplaceAll(rec.Explanation, "\n", "\n   ") + "\n\n")
+		sb.WriteString("   " + rec.Explanation + "\n")
 		
 		if rec.Command != "" {
-			sb.WriteString("   Command:\n")
-			commandLines := strings.Split(rec.Command, "\n")
-			for _, line := range commandLines {
-				if strings.TrimSpace(line) != "" {
-					sb.WriteString("   $ " + line + "\n")
-				}
-			}
-			sb.WriteString("\n")
+			sb.WriteString("   Command: " + rec.Command + "\n")
 		}
 		
 		if len(rec.Risks) > 0 {
-			sb.WriteString("   Security Considerations:\n")
-			for _, risk := range rec.Risks {
-				sb.WriteString("   ⚠ " + risk + "\n")
-			}
-			sb.WriteString("\n")
+			sb.WriteString("   Risks: " + strings.Join(rec.Risks, ", ") + "\n")
 		}
-		
-		if i < len(recs)-1 {
-			sb.WriteString("---\n\n")
-		}
+		sb.WriteString("\n")
 	}
-
 	return sb.String()
 }
 
@@ -345,7 +144,6 @@ func (r *DefaultRecommender) extractHost() string {
 		return "registry.example.com"
 	}
 	
-	// Simple extraction - remove protocol and path
 	url := r.registryURL
 	if strings.HasPrefix(url, "https://") {
 		url = url[8:]
@@ -353,15 +151,11 @@ func (r *DefaultRecommender) extractHost() string {
 		url = url[7:]
 	}
 	
-	// Remove path
 	if idx := strings.Index(url, "/"); idx > 0 {
 		url = url[:idx]
 	}
-	
-	// Remove port for hostname examples
 	if idx := strings.Index(url, ":"); idx > 0 {
 		url = url[:idx]
 	}
-	
 	return url
 }

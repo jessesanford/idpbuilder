@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -35,74 +36,38 @@ func CreateInsecureTLSConfig() *tls.Config {
 	}
 }
 
-// CreateInsecureTLSConfigWithSNI creates insecure TLS config with Server Name Indication
-func CreateInsecureTLSConfigWithSNI(serverName string) *tls.Config {
-	return &tls.Config{
-		InsecureSkipVerify: true,
-		ServerName:         serverName,
-	}
-}
-
 // ShowInsecureWarning displays prominent security warning to the user
 func ShowInsecureWarning() {
-	warning := `
-===============================================
+	warning := `===============================================
 🚨 WARNING: TLS VERIFICATION DISABLED 🚨
 ===============================================
-
-You are using the --insecure flag which disables
-TLS certificate verification. This means:
-
 ⚠️  DANGEROUS in production environments
 ⚠️  Only suitable for development/testing  
 ⚠️  Vulnerable to man-in-the-middle attacks
 ⚠️  All TLS security guarantees are void
 
-This should ONLY be used with:
-✓ Local Kind clusters
-✓ Development registries
-✓ Testing environments with self-signed certs
-
-NEVER use --insecure with production registries!
-
+Use --insecure only for local Kind clusters!
 ===============================================`
-	
 	fmt.Fprintln(os.Stderr, warning)
 }
 
 // ShowInsecureWarningWithRegistry displays warning with specific registry context
 func ShowInsecureWarningWithRegistry(registryURL string) {
-	warning := fmt.Sprintf(`
-===============================================
+	fmt.Fprintf(os.Stderr, `===============================================
 🚨 WARNING: TLS VERIFICATION DISABLED 🚨
 ===============================================
-
-TLS certificate verification has been disabled
-for registry: %s
-
-This connection is NOT SECURE and is vulnerable
-to man-in-the-middle attacks.
-
+Registry: %s
+This connection is NOT SECURE!
 ⚠️  All data transmitted can be intercepted
 ⚠️  Registry identity cannot be verified
-⚠️  NEVER use with sensitive data
-
-Use --insecure only for:
-✓ Local development with Kind clusters
-✓ Testing with self-signed certificates
-✓ Non-production environments
-
-===============================================`, registryURL)
-	
-	fmt.Fprintln(os.Stderr, warning)
+===============================================
+`, registryURL)
 }
 
 // ApplyInsecureFlag configures the system based on the --insecure flag value
 func (ic *InsecureConfig) ApplyInsecureFlag(flagValue bool, registryURL string) error {
 	if flagValue {
 		ic.Enabled = true
-		
-		// Show warning if not shown before
 		if !ic.WarningShown {
 			if registryURL != "" {
 				ShowInsecureWarningWithRegistry(registryURL)
@@ -112,52 +77,24 @@ func (ic *InsecureConfig) ApplyInsecureFlag(flagValue bool, registryURL string) 
 			ic.WarningShown = true
 		}
 		
-		// Add to audit log
 		auditEntry := fmt.Sprintf("Insecure mode enabled at %v for registry: %s", 
 			time.Now().Format(time.RFC3339), registryURL)
 		ic.AuditLog = append(ic.AuditLog, auditEntry)
-		
-		// Log to system
 		ic.logger.Printf("SECURITY WARNING: Insecure mode enabled for %s", registryURL)
-		
-		return nil
+	} else {
+		// Flag is false - disable insecure mode if it was enabled
+		if ic.Enabled {
+			ic.Enabled = false
+			auditEntry := fmt.Sprintf("Insecure mode disabled at %v", time.Now().Format(time.RFC3339))
+			ic.AuditLog = append(ic.AuditLog, auditEntry)
+			ic.logger.Printf("Insecure mode disabled")
+		}
 	}
-	
-	// Flag is false - disable insecure mode
-	if ic.Enabled {
-		ic.Enabled = false
-		auditEntry := fmt.Sprintf("Insecure mode disabled at %v", time.Now().Format(time.RFC3339))
-		ic.AuditLog = append(ic.AuditLog, auditEntry)
-		ic.logger.Printf("Insecure mode disabled")
-	}
-	
 	return nil
 }
 
 // WrapTransportWithInsecure wraps HTTP transport to use insecure TLS when enabled
 func WrapTransportWithInsecure(transport http.RoundTripper, insecure bool) http.RoundTripper {
-	if !insecure {
-		return transport // Return unchanged if not insecure
-	}
-	
-	// Handle different transport types
-	switch t := transport.(type) {
-	case *http.Transport:
-		// Clone the transport to avoid modifying the original
-		clonedTransport := t.Clone()
-		clonedTransport.TLSClientConfig = CreateInsecureTLSConfig()
-		return clonedTransport
-		
-	default:
-		// For unknown transport types, wrap with a new Transport
-		return &http.Transport{
-			TLSClientConfig: CreateInsecureTLSConfig(),
-		}
-	}
-}
-
-// WrapTransportWithInsecureAndSNI wraps transport with insecure TLS and specific SNI
-func WrapTransportWithInsecureAndSNI(transport http.RoundTripper, insecure bool, serverName string) http.RoundTripper {
 	if !insecure {
 		return transport
 	}
@@ -165,12 +102,11 @@ func WrapTransportWithInsecureAndSNI(transport http.RoundTripper, insecure bool,
 	switch t := transport.(type) {
 	case *http.Transport:
 		clonedTransport := t.Clone()
-		clonedTransport.TLSClientConfig = CreateInsecureTLSConfigWithSNI(serverName)
+		clonedTransport.TLSClientConfig = CreateInsecureTLSConfig()
 		return clonedTransport
-		
 	default:
 		return &http.Transport{
-			TLSClientConfig: CreateInsecureTLSConfigWithSNI(serverName),
+			TLSClientConfig: CreateInsecureTLSConfig(),
 		}
 	}
 }
@@ -185,27 +121,9 @@ func CreateInsecureHTTPClient() *http.Client {
 	}
 }
 
-// CreateInsecureHTTPClientWithTimeout creates insecure HTTP client with custom timeout
-func CreateInsecureHTTPClientWithTimeout(timeout time.Duration) *http.Client {
-	return &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: CreateInsecureTLSConfig(),
-		},
-		Timeout: timeout,
-	}
-}
-
 // IsInsecureModeEnabled checks if insecure mode is currently enabled
 func (ic *InsecureConfig) IsInsecureModeEnabled() bool {
 	return ic.Enabled
-}
-
-// GetAuditLog returns the complete audit log of insecure mode usage
-func (ic *InsecureConfig) GetAuditLog() []string {
-	// Return a copy to prevent modification
-	log := make([]string, len(ic.AuditLog))
-	copy(log, ic.AuditLog)
-	return log
 }
 
 // LogInsecureConnection logs when an insecure connection is established
@@ -216,26 +134,12 @@ func (ic *InsecureConfig) LogInsecureConnection(registryURL string) {
 	ic.logger.Printf("INSECURE CONNECTION: %s", registryURL)
 }
 
-// PrintSecurityReminder prints a final security reminder when operations complete
-func PrintSecurityReminder() {
-	reminder := `
-🔒 SECURITY REMINDER:
-Remember to use proper TLS certificates in production.
-Consider these secure alternatives:
-• Add self-signed certificates to your trust store
-• Use certificates from a trusted Certificate Authority
-• Configure proper certificate validation
-`
-	fmt.Fprintln(os.Stderr, reminder)
-}
-
 // ValidateInsecureUsage checks if insecure mode is being used appropriately
 func (ic *InsecureConfig) ValidateInsecureUsage(registryURL string) error {
 	if !ic.Enabled {
-		return nil // Not using insecure mode
+		return nil
 	}
 	
-	// Check for obviously problematic usage
 	if registryURL == "" {
 		return fmt.Errorf("cannot validate insecure usage: registry URL is empty")
 	}
@@ -243,35 +147,19 @@ func (ic *InsecureConfig) ValidateInsecureUsage(registryURL string) error {
 	// Warn about suspicious patterns
 	if containsProductionIndicators(registryURL) {
 		ic.logger.Printf("WARNING: Insecure mode with production-like registry: %s", registryURL)
-		fmt.Fprintf(os.Stderr, "\n🚨 CRITICAL WARNING: Using --insecure with what appears to be a production registry!\n")
-		fmt.Fprintf(os.Stderr, "Registry: %s\n", registryURL)
-		fmt.Fprintf(os.Stderr, "This is EXTREMELY DANGEROUS and should be avoided.\n\n")
+		fmt.Fprintf(os.Stderr, "🚨 CRITICAL WARNING: Using --insecure with production-like registry: %s\n", registryURL)
 	}
-	
 	return nil
 }
 
 // containsProductionIndicators checks if a URL looks like a production registry
 func containsProductionIndicators(url string) bool {
-	productionPatterns := []string{
-		"prod", "production", "live", "release",
-		".com", ".net", ".org", // Public domains
-		"docker.io", "gcr.io", "quay.io", // Well-known registries
-	}
-	
-	urlLower := fmt.Sprintf("%s", url) // Convert to lowercase for comparison
+	productionPatterns := []string{"prod", "production", "live", ".com", ".net", "docker.io", "gcr.io", "quay.io"}
+	urlLower := strings.ToLower(url)
 	for _, pattern := range productionPatterns {
-		if fmt.Sprintf("%s", pattern) != pattern {
-			// Simple contains check - avoiding regex for simplicity
-			if len(urlLower) >= len(pattern) {
-				for i := 0; i <= len(urlLower)-len(pattern); i++ {
-					if urlLower[i:i+len(pattern)] == pattern {
-						return true
-					}
-				}
-			}
+		if strings.Contains(urlLower, pattern) {
+			return true
 		}
 	}
-	
 	return false
 }
