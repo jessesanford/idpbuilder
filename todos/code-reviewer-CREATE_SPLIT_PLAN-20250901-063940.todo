@@ -1,0 +1,22 @@
+# Code Reviewer TODOs - Trigger: SPLIT_PLAN_COMPLETE
+# State: CREATE_SPLIT_PLAN
+# Effort: fallback-strategies-split-001
+# Timestamp: 2025-09-01T06:35:00Z
+
+## Completed Tasks
+✅ Analyze detector.go (522 lines) for logical boundaries
+✅ Analyze handler.go (607 lines) for logical boundaries  
+✅ Determine optimal split point between 001A and 001B
+✅ Create SPLIT-PLAN-001A.md
+✅ Create SPLIT-PLAN-001B.md
+✅ Create SPLIT-SUMMARY-001.md
+✅ Verify size projections with line-counter.sh
+✅ Save TODOs per R287 compliance
+
+## Split Plan Summary
+- Original implementation: 1129 lines (329 over limit)
+- Sub-Split 001A: ~722 lines (detector.go + handler types)
+- Sub-Split 001B: ~408 lines (handler implementation only)
+- Both sub-splits well under 800-line limit
+- Clean interface boundary between splits
+- Sequential implementation required (001A before 001B)
