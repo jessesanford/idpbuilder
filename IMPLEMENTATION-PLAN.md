@@ -24,8 +24,14 @@
 
 ### E1.2.1 - Certificate Validation Pipeline
 - **Branch**: `idpbuidler-oci-go-cr/phase1/wave2/certificate-validation-pipeline`
-- **Status**: Pending merge
+- **Size**: 568 lines (well within 800 limit)
+- **Status**: Merged
 - **Dependencies**: E1.1.1, E1.1.2
+- **Added Files**:
+  - pkg/certs/validator.go (250 lines)
+  - pkg/certs/diagnostics.go (150 lines)
+  - pkg/certs/testdata/certs.go (130 lines)
+  - pkg/certs/validator_test.go (470 lines)
 
 ### E1.2.2 - Fallback Strategies
 - **Branch**: `idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies`
@@ -36,3 +42,4 @@
 - Wave 1 efforts (E1.1.1 and E1.1.2) were developed in parallel
 - Both efforts contribute to the pkg/certs package
 - Wave 2 efforts depend on Wave 1 foundation
+- Certificate validation pipeline adds validation layer on top of Wave 1
