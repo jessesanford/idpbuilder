@@ -2,6 +2,7 @@
 package certs
 
 import (
+	"context"
 	"crypto/x509"
 	"net/http"
 	"time"
@@ -91,3 +92,38 @@ type ConnectionInfo struct {
 
 // TrustStoreUtils provides utility functions for trust store operations
 type TrustStoreUtils struct{}
+
+// SecurityLevel represents different security validation levels
+type SecurityLevel int
+
+const (
+	SecurityNone SecurityLevel = iota
+	SecurityLow
+	SecurityMedium  
+	SecurityHigh
+)
+
+// ValidationInput contains input parameters for certificate validation
+type ValidationInput struct {
+	Registry  string
+	Operation string
+	Error     error
+}
+
+// ValidationResult contains the results of a validation attempt
+type ValidationResult struct {
+	Success       bool
+	Strategy      string
+	Message       string
+	SecurityLevel SecurityLevel
+	Actions       []string
+	NewConfig     map[string]interface{}
+}
+
+// FallbackStrategy defines the interface for fallback validation strategies
+type FallbackStrategy interface {
+	Name() string
+	Priority() int
+	CanHandle(err error) bool
+	Execute(ctx context.Context, input *ValidationInput) (*ValidationResult, error)
+}
