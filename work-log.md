@@ -65,3 +65,16 @@ Resolution Strategy:
 Result: Merge successful, validation files present
 Files Added: validator.go, diagnostics.go, validator_test.go, testdata/certs.go
 Status: ✅ Success
+
+## Phase 4: Merge fallback-strategies
+
+### Operation 1: Merge with type consolidation
+Command: git merge fallback/idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies --no-ff -m "merge: Wave 2 fallback-strategies [Phase 1]"
+Conflicts: pkg/certs/types.go, work-log.md, IMPLEMENTATION-PLAN.md
+Resolution Strategy:
+  - pkg/certs/types.go: Merged both versions (added CertValidator interface to consolidated types)
+  - work-log.md: Keep integration version (--ours)
+  - IMPLEMENTATION-PLAN.md: Keep effort version (--theirs)
+Result: Merge successful, fallback package present
+Files Added: pkg/fallback/{detector,recommender,insecure,logger}.go and tests
+Status: ✅ Success

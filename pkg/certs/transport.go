@@ -15,8 +15,8 @@ func DefaultTransportConfig() *TransportConfig {
 	return &TransportConfig{
 		Timeout:             30 * time.Second,
 		MaxIdleConns:        10,
-		MaxIdleConnsPerHost: 2,
-		IdleConnTimeout:     90 * time.Second,
+		MaxConnsPerHost:     2,
+		TLSHandshakeTimeout: 10 * time.Second,
 	}
 }
 
@@ -42,8 +42,8 @@ func (m *trustStoreManager) ConfigureTransportWithConfig(registry string, config
 				InsecureSkipVerify: true,
 			},
 			MaxIdleConns:        config.MaxIdleConns,
-			MaxIdleConnsPerHost: config.MaxIdleConnsPerHost,
-			IdleConnTimeout:     config.IdleConnTimeout,
+			MaxConnsPerHost:     config.MaxConnsPerHost,
+			IdleConnTimeout:     90 * time.Second,
 		}
 
 		return remote.WithTransport(transport), nil
@@ -68,8 +68,8 @@ func (m *trustStoreManager) ConfigureTransportWithConfig(registry string, config
 			MinVersion:         tls.VersionTLS12, // Enforce minimum TLS version
 		},
 		MaxIdleConns:        config.MaxIdleConns,
-		MaxIdleConnsPerHost: config.MaxIdleConnsPerHost,
-		IdleConnTimeout:     config.IdleConnTimeout,
+		MaxConnsPerHost:     config.MaxConnsPerHost,
+		IdleConnTimeout:     90 * time.Second,
 	}
 
 	return remote.WithTransport(transport), nil
@@ -108,8 +108,8 @@ func (m *trustStoreManager) CreateHTTPClientWithConfig(registry string, config *
 				InsecureSkipVerify: true,
 			},
 			MaxIdleConns:        config.MaxIdleConns,
-			MaxIdleConnsPerHost: config.MaxIdleConnsPerHost,
-			IdleConnTimeout:     config.IdleConnTimeout,
+			MaxConnsPerHost:     config.MaxConnsPerHost,
+			IdleConnTimeout:     90 * time.Second,
 		}
 	} else {
 		// Get certificate pool for secure connection
@@ -125,8 +125,8 @@ func (m *trustStoreManager) CreateHTTPClientWithConfig(registry string, config *
 				MinVersion:         tls.VersionTLS12,
 			},
 			MaxIdleConns:        config.MaxIdleConns,
-			MaxIdleConnsPerHost: config.MaxIdleConnsPerHost,
-			IdleConnTimeout:     config.IdleConnTimeout,
+			MaxConnsPerHost:     config.MaxConnsPerHost,
+			IdleConnTimeout:     90 * time.Second,
 		}
 	}
 
@@ -179,8 +179,8 @@ func (m *trustStoreManager) TestConnection(registry string) error {
 		registry, resp.StatusCode, resp.Status)
 }
 
-// GetTLSConnectionInfo returns TLS connection information for debugging
-func (m *trustStoreManager) GetTLSConnectionInfo(registry string) (*ConnectionInfo, error) {
+// GetTLSTLSDebugInfo returns TLS connection information for debugging
+func (m *trustStoreManager) GetTLSTLSDebugInfo(registry string) (*TLSDebugInfo, error) {
 	if registry == "" {
 		return nil, fmt.Errorf("registry name cannot be empty")
 	}
@@ -199,19 +199,13 @@ func (m *trustStoreManager) GetTLSConnectionInfo(registry string) (*ConnectionIn
 
 	// Extract TLS connection state
 	if resp.TLS == nil {
-		return &ConnectionInfo{
-			Registry:    registry,
-			IsSecure:    false,
-			IsInsecure:  m.IsInsecure(registry),
-			Error:       "No TLS connection state available",
+		return &TLSDebugInfo{
+			Error: "No TLS connection state available",
 		}, nil
 	}
 
-	info := &ConnectionInfo{
-		Registry:         registry,
-		IsSecure:         true,
-		IsInsecure:       m.IsInsecure(registry),
-		TLSVersion:       tlsVersionString(resp.TLS.Version),
+	info := &TLSDebugInfo{
+		Version:          resp.TLS.Version,
 		CipherSuite:      tls.CipherSuiteName(resp.TLS.CipherSuite),
 		ServerCerts:      resp.TLS.PeerCertificates,
 		VerifiedChains:   resp.TLS.VerifiedChains,
@@ -221,7 +215,7 @@ func (m *trustStoreManager) GetTLSConnectionInfo(registry string) (*ConnectionIn
 	return info, nil
 }
 
-// ConnectionInfo type is now defined in types.go
+// TLSDebugInfo type is now defined in types.go
 
 // tlsVersionString converts TLS version constant to string
 func tlsVersionString(version uint16) string {

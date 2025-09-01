@@ -8,71 +8,8 @@ import (
 	"time"
 )
 
-// TrustStoreManager interface from E1.1.2 (registry-tls-trust-integration)
-// This interface will be implemented by the trust store manager from Wave 1
-type TrustStoreManager interface {
-	// AddCertificate adds a certificate for a specific registry
-	AddCertificate(registry string, cert *x509.Certificate) error
-
-	// RemoveCertificate removes the certificate for a registry
-	RemoveCertificate(registry string) error
-
-	// SetInsecureRegistry marks a registry as insecure (skip TLS verification)
-	SetInsecureRegistry(registry string, insecure bool) error
-
-	// GetTrustedCerts returns all trusted certificates for a registry
-	GetTrustedCerts(registry string) ([]*x509.Certificate, error)
-
-	// GetCertPool returns a configured cert pool for a registry
-	GetCertPool(registry string) (*x509.CertPool, error)
-
-	// IsInsecure checks if a registry is marked as insecure
-	IsInsecure(registry string) bool
-
-	// LoadFromDisk loads all certificates from persistent storage
-	LoadFromDisk() error
-
-	// SaveToDisk saves a certificate to persistent storage
-	SaveToDisk(registry string, cert *x509.Certificate) error
-}
-
-// CertValidator provides comprehensive X.509 certificate validation
-type CertValidator interface {
-	// ValidateChain verifies the certificate chain against trusted roots
-	ValidateChain(cert *x509.Certificate) error
-	
-	// CheckExpiry checks if certificate is expired or expiring soon
-	// Returns remaining validity duration and any warnings
-	CheckExpiry(cert *x509.Certificate) (*time.Duration, error)
-	
-	// VerifyHostname checks if the certificate is valid for the given hostname
-	VerifyHostname(cert *x509.Certificate, hostname string) error
-	
-	// GenerateDiagnostics creates a detailed diagnostic report for the certificate
-	GenerateDiagnostics(cert *x509.Certificate) (*CertDiagnostics, error)
-}
-
-// CertDiagnostics contains detailed information about certificate validation
-type CertDiagnostics struct {
-	Subject         string
-	Issuer          string
-	SerialNumber    string
-	NotBefore       time.Time
-	NotAfter        time.Time
-	DNSNames        []string
-	IPAddresses     []net.IP
-	ValidationErrors []ValidationError
-	Warnings        []string
-}
-
-// ValidationError represents a specific validation failure
-type ValidationError struct {
-	Type    string // "chain", "expiry", "hostname", etc.
-	Message string
-	Detail  string
-}
-
 // DefaultValidator implements CertValidator with configurable options
+// Types are defined in types.go
 type DefaultValidator struct {
 	trustStore    TrustStoreManager // From E1.1.2
 	expiryWarning time.Duration     // Default 30 days
