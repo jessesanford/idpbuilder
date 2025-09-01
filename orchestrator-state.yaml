@@ -140,6 +140,17 @@ integration_branches:
     build_status: "PASS"
     test_status: "PASS"
     duplicate_fix_applied: true
+  - branch: "idpbuidler-oci-go-cr/phase1/wave2/integration"
+    phase: 1
+    wave: 2
+    created_at: "2025-09-01T15:08:00Z"
+    status: "COMPLETE_WITH_ISSUES"
+    efforts_merged: ["E1.2.1", "E1.2.2"]
+    total_lines: 2373
+    build_status: "FAIL"
+    test_status: "PARTIAL"
+    issues: "Duplicate type declarations between pkg/certs/validator.go and pkg/certs/types.go"
+    upstream_bugs_documented: true
 
 grading_history:
   parallel_spawn_average: 0.0
