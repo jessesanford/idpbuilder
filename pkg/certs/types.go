@@ -3,6 +3,7 @@ package certs
 
 import (
 	"crypto/x509"
+	"net"
 	"net/http"
 	"time"
 
@@ -29,59 +30,56 @@ type TransportConfig struct {
 	// MaxIdleConns controls the maximum number of idle connections
 	MaxIdleConns int
 	
-	// MaxIdleConnsPerHost controls the maximum idle connections per host
-	MaxIdleConnsPerHost int
+	// MaxConnsPerHost limits connections per host
+	MaxConnsPerHost int
 	
-	// IdleConnTimeout is the maximum amount of time an idle connection will remain idle
-	IdleConnTimeout time.Duration
+	// TLSHandshakeTimeout specifies TLS handshake timeout
+	TLSHandshakeTimeout time.Duration
+	
+	// InsecureSkipVerify allows skipping TLS verification (development only)
+	InsecureSkipVerify bool
+	
+	// CustomCA allows specifying custom CA certificates
+	CustomCA *x509.CertPool
+	
+	// DebugTLS enables detailed TLS debugging
+	DebugTLS bool
 }
 
-// TrustStoreManager manages trusted certificates for registry operations
+// TrustStoreManager provides an interface for managing certificate trust stores
+// This interface is implemented by E1.1.2 (registry-tls-trust-integration)
 type TrustStoreManager interface {
-	// AddCertificate adds a certificate for a specific registry
-	AddCertificate(registry string, cert *x509.Certificate) error
-
-	// RemoveCertificate removes the certificate for a registry
-	RemoveCertificate(registry string) error
-
-	// SetInsecureRegistry marks a registry as insecure (skip TLS verification)
-	SetInsecureRegistry(registry string, insecure bool) error
-
-	// GetTrustedCerts returns all trusted certificates for a registry
-	GetTrustedCerts(registry string) ([]*x509.Certificate, error)
-
-	// GetCertPool returns a configured cert pool for a registry
-	GetCertPool(registry string) (*x509.CertPool, error)
-
-	// IsInsecure checks if a registry is marked as insecure
-	IsInsecure(registry string) bool
-
-	// LoadFromDisk loads all certificates from persistent storage
-	LoadFromDisk() error
-
-	// SaveToDisk saves a certificate to persistent storage
-	SaveToDisk(registry string, cert *x509.Certificate) error
-
-	// Transport configuration methods
-	// ConfigureTransport creates a remote.Option with proper TLS configuration
-	ConfigureTransport(registry string) (remote.Option, error)
-
-	// ConfigureTransportWithConfig creates a remote.Option with custom transport configuration
-	ConfigureTransportWithConfig(registry string, config *TransportConfig) (remote.Option, error)
-
-	// CreateHTTPClient creates an HTTP client with proper TLS configuration
-	CreateHTTPClient(registry string) (*http.Client, error)
-
-	// CreateHTTPClientWithConfig creates an HTTP client with custom configuration
-	CreateHTTPClientWithConfig(registry string, config *TransportConfig) (*http.Client, error)
+	// AddCertificate adds a certificate to the trust store
+	AddCertificate(cert *x509.Certificate) error
+	
+	// RemoveCertificate removes a certificate from the trust store
+	RemoveCertificate(cert *x509.Certificate) error
+	
+	// GetCertPool returns the current certificate pool
+	GetCertPool() *x509.CertPool
+	
+	// SaveTrustStore persists the trust store to disk
+	SaveTrustStore() error
+	
+	// LoadTrustStore loads the trust store from disk
+	LoadTrustStore() error
+	
+	// CreateTransport creates an HTTP transport with the trust store
+	CreateTransport(config *TransportConfig) (http.RoundTripper, error)
+	
+	// CreateRemoteOptions creates GGCR remote options with the trust store
+	CreateRemoteOptions(config *TransportConfig) []remote.Option
+	
+	// ValidateCertificate validates a certificate against the trust store
+	ValidateCertificate(cert *x509.Certificate) error
+	
+	// ListCertificates returns all certificates in the trust store
+	ListCertificates() ([]*x509.Certificate, error)
 }
 
-// ConnectionInfo holds TLS connection information for debugging and diagnostics
-type ConnectionInfo struct {
-	Registry          string
-	IsSecure          bool
-	IsInsecure        bool
-	TLSVersion        string
+// TLSDebugInfo contains detailed TLS handshake information for debugging
+type TLSDebugInfo struct {
+	Version           uint16
 	CipherSuite       string
 	ServerCerts       []*x509.Certificate
 	VerifiedChains    [][]*x509.Certificate
@@ -91,3 +89,41 @@ type ConnectionInfo struct {
 
 // TrustStoreUtils provides utility functions for trust store operations
 type TrustStoreUtils struct{}
+
+// CertValidator provides comprehensive X.509 certificate validation
+// Added from fallback-strategies effort
+type CertValidator interface {
+	// ValidateChain verifies the certificate chain against trusted roots
+	ValidateChain(cert *x509.Certificate) error
+	
+	// CheckExpiry checks if certificate is expired or expiring soon
+	CheckExpiry(cert *x509.Certificate) (*time.Duration, error)
+	
+	// VerifyHostname checks if the certificate is valid for the given hostname
+	VerifyHostname(cert *x509.Certificate, hostname string) error
+	
+	// GenerateDiagnostics creates a detailed diagnostic report for the certificate
+	GenerateDiagnostics(cert *x509.Certificate) (*CertDiagnostics, error)
+}
+
+// CertDiagnostics contains detailed information about certificate validation
+// Added from fallback-strategies effort
+type CertDiagnostics struct {
+	Subject         string
+	Issuer          string
+	SerialNumber    string
+	NotBefore       time.Time
+	NotAfter        time.Time
+	DNSNames        []string
+	IPAddresses     []net.IP
+	ValidationErrors []ValidationError
+	Warnings        []string
+}
+
+// ValidationError represents a specific validation failure
+// Added from fallback-strategies effort
+type ValidationError struct {
+	Type    string // "chain", "expiry", "hostname", etc.
+	Message string
+	Detail  string
+}

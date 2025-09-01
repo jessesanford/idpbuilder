@@ -1,30 +1,30 @@
-# Certificate Validation Pipeline Implementation Plan
+# Fallback Strategies Implementation Plan
 
-**Effort ID**: E1.2.1  
-**Effort Name**: certificate-validation-pipeline  
+**Effort ID**: E1.2.2  
+**Effort Name**: fallback-strategies  
 **Phase**: 1 - Certificate Infrastructure  
 **Wave**: 2 - Certificate Validation & Fallback  
 **Created By**: Code Reviewer (code-reviewer)  
-**Date Created**: 2025-08-31  
-**Assigned To**: SW Engineer 1  
+**Date Created**: 2025-09-01  
+**Assigned To**: SW Engineer 2  
 
-## =¨ CRITICAL EFFORT METADATA (FROM WAVE PLAN)
-**Branch**: `idpbuidler-oci-go-cr/phase1/wave2/certificate-validation-pipeline`
+## CRITICAL EFFORT METADATA (FROM WAVE PLAN)
+**Branch**: `idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies`
 **Can Parallelize**: Yes
-**Parallel With**: E1.2.2 (fallback-strategies)
+**Parallel With**: E1.2.1 (certificate-validation-pipeline)
 **Size Estimate**: ~400 lines
-**Dependencies**: E1.1.1 (kind-certificate-extraction), E1.1.2 (registry-tls-trust-integration)
+**Dependencies**: E1.2.1 (certificate-validation-pipeline)
 
-<!--   ORCHESTRATOR METADATA PLACEHOLDER - DO NOT REMOVE   -->
+<!-- ORCHESTRATOR METADATA PLACEHOLDER - DO NOT REMOVE -->
 <!-- The orchestrator will add infrastructure metadata below: -->
 <!-- WORKING_DIRECTORY, BRANCH, REMOTE, BASE_BRANCH, etc. -->
 <!-- SW Engineers MUST read this metadata to navigate to the correct directory -->
 <!-- END PLACEHOLDER -->
 
-## =Ë Effort Overview
+## Effort Overview
 
 ### Description
-This effort implements a comprehensive certificate validation pipeline that validates X.509 certificate chains, checks expiry dates with warnings for soon-to-expire certificates, and verifies hostname matching including wildcard support. It provides clear diagnostics for troubleshooting certificate issues, a critical component for the self-signed certificate handling in the IDPBuilder OCI MVP.
+This effort implements comprehensive fallback strategies for certificate-related issues in registry operations. It auto-detects certificate problems (self-signed, expired, hostname mismatches, untrusted CAs), provides actionable solution recommendations, and implements the --insecure flag for development environments. This is critical for enabling developers to work with self-signed certificates in local Kind clusters.
 
 ### Size Estimate
 - **Estimated Lines**: 400 (well within limit)
@@ -33,46 +33,50 @@ This effort implements a comprehensive certificate validation pipeline that vali
 
 ### Dependencies
 - **Requires**: 
-  - E1.1.1 (kind-certificate-extraction) - Provides extracted certificates to validate
-  - E1.1.2 (registry-tls-trust-integration) - Uses trust store for chain validation
+  - E1.2.1 (certificate-validation-pipeline) - Imports CertValidator interface and ValidationError types
 - **Blocks**: 
-  - E2.1.2 (gitea-registry-client) - Needs validation before push operations
+  - E2.1.2 (gitea-registry-client) - Fallback strategies needed for push operations
 - **External**: 
-  - Standard library crypto/x509 for certificate operations
-  - Standard library time for expiry calculations
+  - Standard library crypto/tls for insecure flag implementation
+  - Standard library crypto/x509 for certificate error types
 
-## <¯ Requirements
+## Requirements
 
 ### Functional Requirements
-- [ ] Validate complete X.509 certificate chains against system and custom trust stores
-- [ ] Check certificate expiry with configurable warning threshold (default 30 days)
-- [ ] Verify hostname matches certificate CN/SAN including wildcard support
-- [ ] Generate comprehensive diagnostics for all validation failures
-- [ ] Support both self-signed and CA-signed certificates
+- [ ] Auto-detect certificate validation failures from E1.2.1's CertValidator
+- [ ] Identify specific certificate problem types (self-signed, expired, hostname mismatch, untrusted CA)
+- [ ] Generate actionable solution recommendations for each problem type
+- [ ] Implement --insecure flag for CLI commands to skip TLS verification
+- [ ] Display prominent security warnings when --insecure is used
+- [ ] Log detailed certificate chain information for debugging
 
 ### Non-Functional Requirements
-- [ ] Performance: Validation must complete in <100ms for typical certificates
-- [ ] Security: Never bypass validation without explicit user consent
-- [ ] Maintainability: Clear separation of validation concerns
-- [ ] Scalability: Support validation of multiple certificates concurrently
+- [ ] Performance: Problem detection must add <10ms overhead
+- [ ] Security: --insecure flag must require explicit user consent
+- [ ] UX: Error messages must be clear and actionable
+- [ ] Maintainability: Clear separation between detection and recommendation logic
 
 ### Acceptance Criteria
 - [ ] All unit tests passing
-- [ ] Test coverage e 80%
+- [ ] Test coverage >= 80%
 - [ ] Code review approved
-- [ ] Size d 800 lines (measured with line-counter.sh)
+- [ ] Size <= 800 lines (measured with line-counter.sh)
 - [ ] No critical TODOs
 - [ ] Documentation complete
+- [ ] Integration with E1.2.1 validated
 
-## =Á Implementation Details
+## Implementation Details
 
 ### Files to Create
 | File Path | Purpose | Estimated Lines |
 |-----------|---------|-----------------|
-| `pkg/certs/validator.go` | Main validation logic and CertValidator interface | 180 |
-| `pkg/certs/diagnostics.go` | Diagnostic generation and formatting | 80 |
-| `pkg/certs/validator_test.go` | Comprehensive test suite | 120 |
-| `pkg/certs/testdata/certs.go` | Test certificate fixtures | 20 |
+| `pkg/fallback/detector.go` | Certificate problem detection logic | 100 |
+| `pkg/fallback/recommender.go` | Solution recommendation engine | 80 |
+| `pkg/fallback/insecure.go` | --insecure flag implementation and TLS config | 60 |
+| `pkg/fallback/logger.go` | Certificate chain logging utilities | 40 |
+| `pkg/fallback/detector_test.go` | Tests for problem detection | 60 |
+| `pkg/fallback/recommender_test.go` | Tests for recommendations | 40 |
+| `pkg/fallback/insecure_test.go` | Tests for insecure mode | 20 |
 | **Total** | | 400 |
 
 ### Files to Modify
@@ -80,280 +84,411 @@ None - this is a new component that will be integrated by consumers.
 
 ### Key Components
 
-#### Component 1: CertValidator Interface
-**Purpose**: Define the contract for certificate validation operations  
-**Location**: `pkg/certs/validator.go`  
-**Lines**: ~40  
+#### Component 1: Problem Detector
+**Purpose**: Analyze certificate validation errors and identify specific problem types  
+**Location**: `pkg/fallback/detector.go`  
+**Lines**: ~100  
 
 ```go
-// CertValidator provides comprehensive X.509 certificate validation
-type CertValidator interface {
-    // ValidateChain verifies the certificate chain against trusted roots
-    ValidateChain(cert *x509.Certificate) error
-    
-    // CheckExpiry checks if certificate is expired or expiring soon
-    // Returns remaining validity duration and any warnings
-    CheckExpiry(cert *x509.Certificate) (*time.Duration, error)
-    
-    // VerifyHostname checks if the certificate is valid for the given hostname
-    VerifyHostname(cert *x509.Certificate, hostname string) error
-    
-    // GenerateDiagnostics creates a detailed diagnostic report for the certificate
-    GenerateDiagnostics(cert *x509.Certificate) (*CertDiagnostics, error)
+// ProblemType represents specific certificate issues
+type ProblemType string
+
+const (
+    ProblemSelfSigned     ProblemType = "self-signed"
+    ProblemExpired        ProblemType = "expired"
+    ProblemHostnameMismatch ProblemType = "hostname-mismatch"
+    ProblemUntrustedCA    ProblemType = "untrusted-ca"
+    ProblemUnknown        ProblemType = "unknown"
+)
+
+// CertProblem contains detailed information about a certificate issue
+type CertProblem struct {
+    Type        ProblemType
+    Certificate *x509.Certificate
+    Error       error
+    Details     map[string]interface{}
 }
 
-// CertDiagnostics contains detailed information about certificate validation
-type CertDiagnostics struct {
-    Subject         string
-    Issuer          string
-    SerialNumber    string
-    NotBefore       time.Time
-    NotAfter        time.Time
-    DNSNames        []string
-    IPAddresses     []net.IP
-    ValidationErrors []ValidationError
-    Warnings        []string
+// ProblemDetector analyzes certificate validation errors
+type ProblemDetector interface {
+    // DetectProblem analyzes a validation error from CertValidator
+    DetectProblem(validationErr error, cert *x509.Certificate) (*CertProblem, error)
+    
+    // AnalyzeCertChain provides detailed chain analysis
+    AnalyzeCertChain(certs []*x509.Certificate) ([]*CertProblem, error)
 }
 
-// ValidationError represents a specific validation failure
-type ValidationError struct {
-    Type    string // "chain", "expiry", "hostname", etc.
-    Message string
-    Detail  string
+// DefaultDetector implements ProblemDetector
+type DefaultDetector struct {
+    validator *certs.CertValidator // From E1.2.1
+}
+
+// NewDetector creates a detector integrated with CertValidator
+func NewDetector(validator *certs.CertValidator) *DefaultDetector {
+    return &DefaultDetector{validator: validator}
+}
+
+// DetectProblem implementation with pattern matching
+func (d *DefaultDetector) DetectProblem(validationErr error, cert *x509.Certificate) (*CertProblem, error) {
+    // Check for x509.UnknownAuthorityError (self-signed or untrusted)
+    // Check for x509.CertificateInvalidError (expired, not yet valid)
+    // Check for x509.HostnameError (hostname mismatch)
+    // Extract specific details for each problem type
+    // Return structured CertProblem
 }
 ```
 
-#### Component 2: DefaultValidator Implementation
-**Purpose**: Concrete implementation of CertValidator with integration to trust store  
-**Location**: `pkg/certs/validator.go`  
-**Lines**: ~140  
-
-```go
-// DefaultValidator implements CertValidator with configurable options
-type DefaultValidator struct {
-    trustStore      *TrustStoreManager // From E1.1.2
-    expiryWarning   time.Duration      // Default 30 days
-    systemRoots     *x509.CertPool     // System CA certificates
-    customRoots     *x509.CertPool     // Custom CA certificates from trust store
-}
-
-// NewValidator creates a validator with trust store integration
-func NewValidator(trustStore *TrustStoreManager) (*DefaultValidator, error) {
-    // Load system roots
-    // Initialize custom roots from trust store
-    // Set default expiry warning
-    return validator, nil
-}
-
-// ValidateChain implementation with detailed error reporting
-func (v *DefaultValidator) ValidateChain(cert *x509.Certificate) error {
-    // Build verification options
-    // Try system roots first
-    // Fall back to custom roots
-    // Return detailed error on failure
-}
-
-// CheckExpiry with configurable warning threshold
-func (v *DefaultValidator) CheckExpiry(cert *x509.Certificate) (*time.Duration, error) {
-    // Calculate time until expiry
-    // Check if expired
-    // Check if within warning threshold
-    // Return duration and any warnings
-}
-
-// VerifyHostname with wildcard support
-func (v *DefaultValidator) VerifyHostname(cert *x509.Certificate, hostname string) error {
-    // Use x509.VerifyHostname
-    // Provide clear error messages
-    // List valid hostnames in error
-}
-```
-
-#### Component 3: Diagnostic Generator
-**Purpose**: Generate human-readable diagnostic reports for troubleshooting  
-**Location**: `pkg/certs/diagnostics.go`  
+#### Component 2: Solution Recommender
+**Purpose**: Generate actionable recommendations for each problem type  
+**Location**: `pkg/fallback/recommender.go`  
 **Lines**: ~80  
 
 ```go
-// GenerateDiagnostics creates comprehensive diagnostic report
-func (v *DefaultValidator) GenerateDiagnostics(cert *x509.Certificate) (*CertDiagnostics, error) {
-    diag := &CertDiagnostics{
-        Subject:      cert.Subject.String(),
-        Issuer:       cert.Issuer.String(),
-        SerialNumber: cert.SerialNumber.String(),
-        NotBefore:    cert.NotBefore,
-        NotAfter:     cert.NotAfter,
-        DNSNames:     cert.DNSNames,
-        IPAddresses:  cert.IPAddresses,
-    }
-    
-    // Run all validations and collect errors
-    // Add warnings for soon-to-expire
-    // Format for human readability
-    
-    return diag, nil
+// Recommendation contains a suggested solution
+type Recommendation struct {
+    Priority    int      // 1=highest, for ordering multiple recommendations
+    Title       string   // Brief description
+    Command     string   // Example command to run
+    Explanation string   // Detailed explanation
+    Risks       []string // Security implications
 }
 
-// FormatDiagnostics returns human-readable diagnostic output
-func FormatDiagnostics(diag *CertDiagnostics) string {
-    // Format as clear, structured text
-    // Include all relevant details
-    // Highlight errors and warnings
+// Recommender generates solutions for certificate problems
+type Recommender interface {
+    // Recommend generates solutions for a detected problem
+    Recommend(problem *CertProblem) ([]*Recommendation, error)
+    
+    // FormatRecommendations creates user-friendly output
+    FormatRecommendations(recs []*Recommendation) string
+}
+
+// DefaultRecommender implements Recommender
+type DefaultRecommender struct {
+    registryURL string
+    insecureAllowed bool
+}
+
+// NewRecommender creates a recommender with context
+func NewRecommender(registryURL string, allowInsecure bool) *DefaultRecommender {
+    return &DefaultRecommender{
+        registryURL: registryURL,
+        insecureAllowed: allowInsecure,
+    }
+}
+
+// Recommend implementation with problem-specific logic
+func (r *DefaultRecommender) Recommend(problem *CertProblem) ([]*Recommendation, error) {
+    switch problem.Type {
+    case ProblemSelfSigned:
+        // Recommend: 1) Add to trust store, 2) Use --insecure for dev
+    case ProblemExpired:
+        // Recommend: 1) Renew certificate, 2) Use --insecure temporarily
+    case ProblemHostnameMismatch:
+        // Recommend: 1) Use correct hostname, 2) Update certificate SANs
+    case ProblemUntrustedCA:
+        // Recommend: 1) Import CA certificate, 2) Verify CA chain
+    }
+}
+
+// FormatRecommendations with clear, actionable output
+func (r *DefaultRecommender) FormatRecommendations(recs []*Recommendation) string {
+    // Format as numbered list with commands
+    // Highlight security warnings
+    // Include explanations
 }
 ```
 
-## >ê Testing Strategy
+#### Component 3: Insecure Mode Implementation
+**Purpose**: Implement --insecure flag for development environments  
+**Location**: `pkg/fallback/insecure.go`  
+**Lines**: ~60  
+
+```go
+// InsecureConfig manages insecure mode settings
+type InsecureConfig struct {
+    Enabled      bool
+    WarningShown bool
+    AuditLog     []string
+}
+
+// CreateInsecureTLSConfig creates TLS config that skips verification
+func CreateInsecureTLSConfig() *tls.Config {
+    return &tls.Config{
+        InsecureSkipVerify: true,
+    }
+}
+
+// ShowInsecureWarning displays prominent security warning
+func ShowInsecureWarning() {
+    fmt.Println("===============================================")
+    fmt.Println("WARNING: TLS VERIFICATION DISABLED")
+    fmt.Println("===============================================")
+    fmt.Println("You are using --insecure flag which disables")
+    fmt.Println("TLS certificate verification. This is:")
+    fmt.Println("- DANGEROUS in production")
+    fmt.Println("- Only for development/testing")
+    fmt.Println("- Vulnerable to man-in-the-middle attacks")
+    fmt.Println("===============================================")
+}
+
+// ApplyInsecureFlag updates configuration based on flag
+func ApplyInsecureFlag(config *InsecureConfig, flagValue bool) error {
+    if flagValue {
+        config.Enabled = true
+        if !config.WarningShown {
+            ShowInsecureWarning()
+            config.WarningShown = true
+        }
+        config.AuditLog = append(config.AuditLog, 
+            fmt.Sprintf("Insecure mode enabled at %v", time.Now()))
+    }
+    return nil
+}
+
+// WrapTransportWithInsecure wraps HTTP transport for insecure mode
+func WrapTransportWithInsecure(transport http.RoundTripper, insecure bool) http.RoundTripper {
+    if insecure {
+        if t, ok := transport.(*http.Transport); ok {
+            t.TLSClientConfig = CreateInsecureTLSConfig()
+        }
+    }
+    return transport
+}
+```
+
+#### Component 4: Certificate Chain Logger
+**Purpose**: Log detailed certificate information for debugging  
+**Location**: `pkg/fallback/logger.go`  
+**Lines**: ~40  
+
+```go
+// LogCertificateChain logs detailed certificate chain information
+func LogCertificateChain(certs []*x509.Certificate, logger *log.Logger) {
+    for i, cert := range certs {
+        logger.Printf("Certificate %d of %d:", i+1, len(certs))
+        logger.Printf("  Subject: %s", cert.Subject)
+        logger.Printf("  Issuer: %s", cert.Issuer)
+        logger.Printf("  Serial: %s", cert.SerialNumber)
+        logger.Printf("  NotBefore: %v", cert.NotBefore)
+        logger.Printf("  NotAfter: %v", cert.NotAfter)
+        logger.Printf("  DNS Names: %v", cert.DNSNames)
+        logger.Printf("  IP Addresses: %v", cert.IPAddresses)
+        logger.Printf("  Is CA: %v", cert.IsCA)
+        
+        // Check signature algorithm
+        logger.Printf("  Signature Algorithm: %v", cert.SignatureAlgorithm)
+        
+        // Log any certificate extensions
+        if len(cert.Extensions) > 0 {
+            logger.Printf("  Extensions: %d", len(cert.Extensions))
+        }
+    }
+}
+
+// LogValidationError logs structured validation error details
+func LogValidationError(err error, cert *x509.Certificate, logger *log.Logger) {
+    logger.Printf("Certificate validation failed:")
+    logger.Printf("  Error Type: %T", err)
+    logger.Printf("  Error Message: %v", err)
+    
+    // Log certificate details for context
+    if cert != nil {
+        logger.Printf("  Certificate Subject: %s", cert.Subject)
+        logger.Printf("  Certificate Issuer: %s", cert.Issuer)
+    }
+}
+```
+
+## Testing Strategy
 
 ### Unit Tests Required
-- [ ] Test file: `pkg/certs/validator_test.go`
+- [ ] Test file: `pkg/fallback/detector_test.go`
+- [ ] Test file: `pkg/fallback/recommender_test.go`
+- [ ] Test file: `pkg/fallback/insecure_test.go`
 - [ ] Coverage target: 80%
 - [ ] Test cases:
-  - [ ] Valid certificate chain validation
-  - [ ] Self-signed certificate validation
-  - [ ] Expired certificate detection
-  - [ ] Soon-to-expire warning (< 30 days)
-  - [ ] Hostname match validation
-  - [ ] Wildcard certificate matching
-  - [ ] Hostname mismatch error
-  - [ ] Chain validation with missing intermediate
-  - [ ] Diagnostic generation for various scenarios
+  - [ ] Detect self-signed certificate errors
+  - [ ] Detect expired certificate errors
+  - [ ] Detect hostname mismatch errors
+  - [ ] Detect untrusted CA errors
+  - [ ] Generate recommendations for each problem type
+  - [ ] Format recommendations for user output
+  - [ ] Create insecure TLS config
+  - [ ] Display insecure mode warnings
+  - [ ] Log certificate chain details
+  - [ ] Handle unknown error types gracefully
 
 ### Test Fixtures
 ```go
-// pkg/certs/testdata/certs.go
-// Generate test certificates for various scenarios:
-// - Valid certificate
-// - Expired certificate  
-// - Self-signed certificate
-// - Certificate with wildcard CN
-// - Certificate with SAN entries
-// - Certificate expiring in 15 days
+// Use test certificates from E1.2.1
+import (
+    "github.com/idpbuilder/idpbuilder-oci-go-cr/pkg/certs/testdata"
+)
+
+// Additional test cases:
+// - Error scenarios from real registry interactions
+// - Various x509 error types
+// - Edge cases in certificate chains
 ```
 
 ### Integration Tests
-- [ ] Integration with trust store from E1.1.2
-- [ ] Validation of real Gitea certificates from E1.1.1
-- [ ] End-to-end validation pipeline
+- [ ] Integration with CertValidator from E1.2.1
+- [ ] End-to-end fallback flow with recommendations
+- [ ] --insecure flag with actual registry connections
 
-## = Integration Points
+## Integration Points
 
-### With E1.1.1 (kind-certificate-extraction)
-- Receive extracted certificates for validation
-- Use KindCertExtractor.ExtractGiteaCert() output as input
-
-### With E1.1.2 (registry-tls-trust-integration)  
-- Use TrustStoreManager for custom CA certificates
-- Integrate with trust store for chain validation
-
-### With E1.2.2 (fallback-strategies)
-- Provide validation errors for fallback handler
-- Generate diagnostics for fallback recommendations
+### With E1.2.1 (certificate-validation-pipeline)
+- Import CertValidator interface for validation
+- Import ValidationError types for error analysis
+- Import CertDiagnostics for detailed problem information
+- Use test certificates from E1.2.1's testdata
 
 ### With Future E2.1.2 (gitea-registry-client)
-- Called before any registry push operation
-- Validation errors trigger fallback strategies
+- Provide ProblemDetector for analyzing push failures
+- Provide Recommender for user guidance
+- Provide InsecureConfig for --insecure mode
+- Integrate with registry client's TLS configuration
 
-## =Ê Size Management Strategy
+## Size Management Strategy
 
 ### Measurement Protocol
 ```bash
 # Measure using project line counter (R200 compliance)
-cd /home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/wave2/certificate-validation-pipeline
+cd /home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/wave2/fallback-strategies
 $PROJECT_ROOT/tools/line-counter.sh
 
 # Check points:
-# - After validator.go implementation (~180 lines)
-# - After diagnostics.go implementation (~260 lines)  
-# - After tests implementation (~380 lines)
-# - Final measurement (~400 lines)
+# - After detector.go implementation (~100 lines)
+# - After recommender.go implementation (~180 lines)
+# - After insecure.go implementation (~240 lines)
+# - After logger.go implementation (~280 lines)
+# - After all tests implementation (~400 lines)
 ```
 
 ### Split Prevention
-- Core validation logic kept concise (~180 lines)
-- Diagnostics separated to own file (~80 lines)
-- Test fixtures minimal (~20 lines)
+- Core detection logic kept focused (~100 lines)
+- Recommendations separated from detection (~80 lines)
+- Insecure mode isolated (~60 lines)
+- Logging utilities minimal (~40 lines)
 - Total well under 800 line limit with 400 line buffer
 
-## =€ Implementation Sequence
+## Implementation Sequence
 
-1. **Define Interfaces and Types** (30 min)
-   - Create CertValidator interface
-   - Define CertDiagnostics struct
-   - Define ValidationError type
+1. **Import Dependencies from E1.2.1** (15 min)
+   - Import CertValidator interface
+   - Import ValidationError types
+   - Import CertDiagnostics struct
 
-2. **Implement Core Validation** (2 hours)
-   - ValidateChain with trust store integration
-   - CheckExpiry with warning threshold
-   - VerifyHostname with wildcard support
+2. **Implement Problem Detection** (2 hours)
+   - Create ProblemDetector interface
+   - Implement error pattern matching
+   - Extract problem-specific details
 
-3. **Add Diagnostic Generation** (1 hour)
-   - GenerateDiagnostics method
-   - FormatDiagnostics helper
-   - Error collection and formatting
+3. **Build Recommendation Engine** (1.5 hours)
+   - Create Recommender interface
+   - Implement problem-specific recommendations
+   - Format user-friendly output
 
-4. **Create Test Suite** (2 hours)
-   - Generate test certificates
-   - Unit tests for all methods
-   - Integration test with trust store
+4. **Add Insecure Mode** (1 hour)
+   - Implement --insecure flag handling
+   - Create insecure TLS configuration
+   - Add prominent warnings
 
-5. **Documentation** (30 min)
+5. **Implement Logging Utilities** (30 min)
+   - Certificate chain logger
+   - Validation error logger
+   - Debug output formatting
+
+6. **Create Test Suite** (2 hours)
+   - Unit tests for all components
+   - Integration tests with E1.2.1
+   - Edge case coverage
+
+7. **Documentation** (30 min)
    - Code comments
-   - Package documentation
    - Usage examples
+   - Security warnings
 
-## =Ý Notes for SW Engineer
+## Notes for SW Engineer
 
 ### Critical Considerations
-1. **Trust Store Integration**: Must use TrustStoreManager from E1.1.2 for custom roots
-2. **Clear Error Messages**: Each validation failure must have actionable error message
-3. **Expiry Warning**: Default to 30 days but make configurable
-4. **Wildcard Support**: Use standard x509.VerifyHostname which handles wildcards
-5. **Diagnostic Output**: Should be human-readable and help troubleshooting
+1. **Import from E1.2.1**: Must import and use CertValidator interface and types
+2. **Security Warnings**: --insecure mode MUST show prominent warnings
+3. **Error Analysis**: Use type assertions to identify specific x509 error types
+4. **Actionable Output**: Every recommendation must include a concrete action
+5. **Audit Trail**: Log when insecure mode is enabled for security auditing
 
 ### Example Usage
 ```go
-// Create validator with trust store
-trustStore := getTrustStoreFromE112()
-validator, err := NewValidator(trustStore)
+// Import validator from E1.2.1
+import (
+    "github.com/idpbuilder/idpbuilder-oci-go-cr/pkg/certs"
+    "github.com/idpbuilder/idpbuilder-oci-go-cr/pkg/fallback"
+)
 
-// Validate a certificate
-cert := getCertificateFromE111()
+// Detect and handle certificate problems
+validator := certs.NewValidator(trustStore)
+cert := getRegistryCertificate()
+
 if err := validator.ValidateChain(cert); err != nil {
-    // Generate diagnostics for troubleshooting
-    diag, _ := validator.GenerateDiagnostics(cert)
-    fmt.Println(FormatDiagnostics(diag))
-    return err
-}
-
-// Check expiry
-duration, err := validator.CheckExpiry(cert)
-if err != nil {
-    log.Warnf("Certificate expiring soon: %v", duration)
-}
-
-// Verify hostname
-if err := validator.VerifyHostname(cert, "gitea.local"); err != nil {
-    return fmt.Errorf("hostname verification failed: %w", err)
+    // Detect the specific problem
+    detector := fallback.NewDetector(validator)
+    problem, _ := detector.DetectProblem(err, cert)
+    
+    // Generate recommendations
+    recommender := fallback.NewRecommender(registryURL, true)
+    recommendations, _ := recommender.Recommend(problem)
+    
+    // Display to user
+    fmt.Println(recommender.FormatRecommendations(recommendations))
+    
+    // If --insecure flag is set
+    if insecureFlag {
+        fallback.ShowInsecureWarning()
+        tlsConfig = fallback.CreateInsecureTLSConfig()
+    }
 }
 ```
 
 ### Dependencies to Import
 ```go
 import (
+    "crypto/tls"
     "crypto/x509"
     "fmt"
-    "net"
+    "log"
+    "net/http"
     "time"
     
-    // From other efforts
-    "github.com/idpbuilder/idpbuilder-oci-go-cr/pkg/certs" // TrustStoreManager from E1.1.2
+    // From E1.2.1
+    "github.com/idpbuilder/idpbuilder-oci-go-cr/pkg/certs"
 )
 ```
 
-##  Review Checklist
+### CLI Flag Integration
+```go
+// Add to CLI command definitions
+var insecureFlag = &cli.BoolFlag{
+    Name:    "insecure",
+    Aliases: []string{"k"},
+    Usage:   "Skip TLS certificate verification (INSECURE - development only)",
+    EnvVars: []string{"IDPBUILDER_INSECURE"},
+}
+
+// Check flag in command action
+if c.Bool("insecure") {
+    fallback.ShowInsecureWarning()
+    // Configure HTTP client with insecure TLS
+}
+```
+
+## Review Checklist
 - [ ] All functional requirements addressed
 - [ ] Size within 400 line estimate
 - [ ] Test coverage plan adequate
-- [ ] Integration points clear
-- [ ] Dependencies properly identified
+- [ ] Integration with E1.2.1 clear
+- [ ] Security warnings prominent
+- [ ] Recommendations actionable
 - [ ] Implementation sequence logical
+- [ ] Documentation complete
