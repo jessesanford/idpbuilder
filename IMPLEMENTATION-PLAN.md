@@ -1,208 +1,359 @@
-# Kind Certificate Extraction Implementation Plan
+# Certificate Validation Pipeline Implementation Plan
 
-## 🚨 CRITICAL EFFORT METADATA (FROM WAVE PLAN)
-**Branch**: `idpbuidler-oci-go-cr/phase1/wave1/kind-certificate-extraction`
+**Effort ID**: E1.2.1  
+**Effort Name**: certificate-validation-pipeline  
+**Phase**: 1 - Certificate Infrastructure  
+**Wave**: 2 - Certificate Validation & Fallback  
+**Created By**: Code Reviewer (code-reviewer)  
+**Date Created**: 2025-08-31  
+**Assigned To**: SW Engineer 1  
+
+## =� CRITICAL EFFORT METADATA (FROM WAVE PLAN)
+**Branch**: `idpbuidler-oci-go-cr/phase1/wave2/certificate-validation-pipeline`
 **Can Parallelize**: Yes
-**Parallel With**: Effort 1.1.2 (Registry TLS Trust Integration)
-**Size Estimate**: ~500 lines
-**Dependencies**: None (foundational effort)
+**Parallel With**: E1.2.2 (fallback-strategies)
+**Size Estimate**: ~400 lines
+**Dependencies**: E1.1.1 (kind-certificate-extraction), E1.1.2 (registry-tls-trust-integration)
 
-<!-- ⚠️ ORCHESTRATOR METADATA PLACEHOLDER - DO NOT REMOVE ⚠️ -->
+<!-- � ORCHESTRATOR METADATA PLACEHOLDER - DO NOT REMOVE � -->
 <!-- The orchestrator will add infrastructure metadata below: -->
-<!-- WORKING_DIRECTORY: /home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/wave1/kind-certificate-extraction -->
-<!-- BRANCH: idpbuidler-oci-go-cr/phase1/wave1/kind-certificate-extraction -->
-<!-- REMOTE: origin (https://github.com/jessesanford/idpbuilder.git) -->
-<!-- BASE_BRANCH: software-factory-2.0 -->
+<!-- WORKING_DIRECTORY, BRANCH, REMOTE, BASE_BRANCH, etc. -->
 <!-- SW Engineers MUST read this metadata to navigate to the correct directory -->
 <!-- END PLACEHOLDER -->
 
-## Overview
-- **Effort**: Extract and manage certificates from Kind/Gitea
-- **Phase**: 1 (Certificate Infrastructure), Wave: 1 (Certificate Management Core)
-- **Estimated Size**: ~500 lines
-- **Implementation Time**: 1 day (Day 1 of MVP)
+## =� Effort Overview
 
-## Detailed Description
-This effort implements the core functionality to extract self-signed certificates from the Gitea instance running inside the Kind cluster. The extracted certificates will be stored locally and made available for the registry client to establish secure TLS connections.
+### Description
+This effort implements a comprehensive certificate validation pipeline that validates X.509 certificate chains, checks expiry dates with warnings for soon-to-expire certificates, and verifies hostname matching including wildcard support. It provides clear diagnostics for troubleshooting certificate issues, a critical component for the self-signed certificate handling in the IDPBuilder OCI MVP.
 
-## File Structure
-```
-pkg/
-└── certs/
-    ├── extractor.go         # Main certificate extraction logic (~250 lines)
-    ├── extractor_test.go     # Unit tests for extractor (~150 lines)
-    ├── types.go              # Interface and type definitions (~50 lines)
-    └── errors.go             # Custom error types and handling (~50 lines)
-```
+### Size Estimate
+- **Estimated Lines**: 400 (well within limit)
+- **Confidence Level**: High
+- **Split Risk**: Low
 
-## Implementation Steps
+### Dependencies
+- **Requires**: 
+  - E1.1.1 (kind-certificate-extraction) - Provides extracted certificates to validate
+  - E1.1.2 (registry-tls-trust-integration) - Uses trust store for chain validation
+- **Blocks**: 
+  - E2.1.2 (gitea-registry-client) - Needs validation before push operations
+- **External**: 
+  - Standard library crypto/x509 for certificate operations
+  - Standard library time for expiry calculations
 
-### Step 1: Define Core Interfaces and Types (types.go)
+## <� Requirements
+
+### Functional Requirements
+- [ ] Validate complete X.509 certificate chains against system and custom trust stores
+- [ ] Check certificate expiry with configurable warning threshold (default 30 days)
+- [ ] Verify hostname matches certificate CN/SAN including wildcard support
+- [ ] Generate comprehensive diagnostics for all validation failures
+- [ ] Support both self-signed and CA-signed certificates
+
+### Non-Functional Requirements
+- [ ] Performance: Validation must complete in <100ms for typical certificates
+- [ ] Security: Never bypass validation without explicit user consent
+- [ ] Maintainability: Clear separation of validation concerns
+- [ ] Scalability: Support validation of multiple certificates concurrently
+
+### Acceptance Criteria
+- [ ] All unit tests passing
+- [ ] Test coverage e 80%
+- [ ] Code review approved
+- [ ] Size d 800 lines (measured with line-counter.sh)
+- [ ] No critical TODOs
+- [ ] Documentation complete
+
+## =� Implementation Details
+
+### Files to Create
+| File Path | Purpose | Estimated Lines |
+|-----------|---------|-----------------|
+| `pkg/certs/validator.go` | Main validation logic and CertValidator interface | 180 |
+| `pkg/certs/diagnostics.go` | Diagnostic generation and formatting | 80 |
+| `pkg/certs/validator_test.go` | Comprehensive test suite | 120 |
+| `pkg/certs/testdata/certs.go` | Test certificate fixtures | 20 |
+| **Total** | | 400 |
+
+### Files to Modify
+None - this is a new component that will be integrated by consumers.
+
+### Key Components
+
+#### Component 1: CertValidator Interface
+**Purpose**: Define the contract for certificate validation operations  
+**Location**: `pkg/certs/validator.go`  
+**Lines**: ~40  
+
 ```go
-// pkg/certs/types.go
-package certs
+// CertValidator provides comprehensive X.509 certificate validation
+type CertValidator interface {
+    // ValidateChain verifies the certificate chain against trusted roots
+    ValidateChain(cert *x509.Certificate) error
+    
+    // CheckExpiry checks if certificate is expired or expiring soon
+    // Returns remaining validity duration and any warnings
+    CheckExpiry(cert *x509.Certificate) (*time.Duration, error)
+    
+    // VerifyHostname checks if the certificate is valid for the given hostname
+    VerifyHostname(cert *x509.Certificate, hostname string) error
+    
+    // GenerateDiagnostics creates a detailed diagnostic report for the certificate
+    GenerateDiagnostics(cert *x509.Certificate) (*CertDiagnostics, error)
+}
 
+// CertDiagnostics contains detailed information about certificate validation
+type CertDiagnostics struct {
+    Subject         string
+    Issuer          string
+    SerialNumber    string
+    NotBefore       time.Time
+    NotAfter        time.Time
+    DNSNames        []string
+    IPAddresses     []net.IP
+    ValidationErrors []ValidationError
+    Warnings        []string
+}
+
+// ValidationError represents a specific validation failure
+type ValidationError struct {
+    Type    string // "chain", "expiry", "hostname", etc.
+    Message string
+    Detail  string
+}
+```
+
+#### Component 2: DefaultValidator Implementation
+**Purpose**: Concrete implementation of CertValidator with integration to trust store  
+**Location**: `pkg/certs/validator.go`  
+**Lines**: ~140  
+
+```go
+// DefaultValidator implements CertValidator with configurable options
+type DefaultValidator struct {
+    trustStore      *TrustStoreManager // From E1.1.2
+    expiryWarning   time.Duration      // Default 30 days
+    systemRoots     *x509.CertPool     // System CA certificates
+    customRoots     *x509.CertPool     // Custom CA certificates from trust store
+}
+
+// NewValidator creates a validator with trust store integration
+func NewValidator(trustStore *TrustStoreManager) (*DefaultValidator, error) {
+    // Load system roots
+    // Initialize custom roots from trust store
+    // Set default expiry warning
+    return validator, nil
+}
+
+// ValidateChain implementation with detailed error reporting
+func (v *DefaultValidator) ValidateChain(cert *x509.Certificate) error {
+    // Build verification options
+    // Try system roots first
+    // Fall back to custom roots
+    // Return detailed error on failure
+}
+
+// CheckExpiry with configurable warning threshold
+func (v *DefaultValidator) CheckExpiry(cert *x509.Certificate) (*time.Duration, error) {
+    // Calculate time until expiry
+    // Check if expired
+    // Check if within warning threshold
+    // Return duration and any warnings
+}
+
+// VerifyHostname with wildcard support
+func (v *DefaultValidator) VerifyHostname(cert *x509.Certificate, hostname string) error {
+    // Use x509.VerifyHostname
+    // Provide clear error messages
+    // List valid hostnames in error
+}
+```
+
+#### Component 3: Diagnostic Generator
+**Purpose**: Generate human-readable diagnostic reports for troubleshooting  
+**Location**: `pkg/certs/diagnostics.go`  
+**Lines**: ~80  
+
+```go
+// GenerateDiagnostics creates comprehensive diagnostic report
+func (v *DefaultValidator) GenerateDiagnostics(cert *x509.Certificate) (*CertDiagnostics, error) {
+    diag := &CertDiagnostics{
+        Subject:      cert.Subject.String(),
+        Issuer:       cert.Issuer.String(),
+        SerialNumber: cert.SerialNumber.String(),
+        NotBefore:    cert.NotBefore,
+        NotAfter:     cert.NotAfter,
+        DNSNames:     cert.DNSNames,
+        IPAddresses:  cert.IPAddresses,
+    }
+    
+    // Run all validations and collect errors
+    // Add warnings for soon-to-expire
+    // Format for human readability
+    
+    return diag, nil
+}
+
+// FormatDiagnostics returns human-readable diagnostic output
+func FormatDiagnostics(diag *CertDiagnostics) string {
+    // Format as clear, structured text
+    // Include all relevant details
+    // Highlight errors and warnings
+}
+```
+
+## >� Testing Strategy
+
+### Unit Tests Required
+- [ ] Test file: `pkg/certs/validator_test.go`
+- [ ] Coverage target: 80%
+- [ ] Test cases:
+  - [ ] Valid certificate chain validation
+  - [ ] Self-signed certificate validation
+  - [ ] Expired certificate detection
+  - [ ] Soon-to-expire warning (< 30 days)
+  - [ ] Hostname match validation
+  - [ ] Wildcard certificate matching
+  - [ ] Hostname mismatch error
+  - [ ] Chain validation with missing intermediate
+  - [ ] Diagnostic generation for various scenarios
+
+### Test Fixtures
+```go
+// pkg/certs/testdata/certs.go
+// Generate test certificates for various scenarios:
+// - Valid certificate
+// - Expired certificate  
+// - Self-signed certificate
+// - Certificate with wildcard CN
+// - Certificate with SAN entries
+// - Certificate expiring in 15 days
+```
+
+### Integration Tests
+- [ ] Integration with trust store from E1.1.2
+- [ ] Validation of real Gitea certificates from E1.1.1
+- [ ] End-to-end validation pipeline
+
+## = Integration Points
+
+### With E1.1.1 (kind-certificate-extraction)
+- Receive extracted certificates for validation
+- Use KindCertExtractor.ExtractGiteaCert() output as input
+
+### With E1.1.2 (registry-tls-trust-integration)  
+- Use TrustStoreManager for custom CA certificates
+- Integrate with trust store for chain validation
+
+### With E1.2.2 (fallback-strategies)
+- Provide validation errors for fallback handler
+- Generate diagnostics for fallback recommendations
+
+### With Future E2.1.2 (gitea-registry-client)
+- Called before any registry push operation
+- Validation errors trigger fallback strategies
+
+## =� Size Management Strategy
+
+### Measurement Protocol
+```bash
+# Measure using project line counter (R200 compliance)
+cd /home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/wave2/certificate-validation-pipeline
+$PROJECT_ROOT/tools/line-counter.sh
+
+# Check points:
+# - After validator.go implementation (~180 lines)
+# - After diagnostics.go implementation (~260 lines)  
+# - After tests implementation (~380 lines)
+# - Final measurement (~400 lines)
+```
+
+### Split Prevention
+- Core validation logic kept concise (~180 lines)
+- Diagnostics separated to own file (~80 lines)
+- Test fixtures minimal (~20 lines)
+- Total well under 800 line limit with 400 line buffer
+
+## =� Implementation Sequence
+
+1. **Define Interfaces and Types** (30 min)
+   - Create CertValidator interface
+   - Define CertDiagnostics struct
+   - Define ValidationError type
+
+2. **Implement Core Validation** (2 hours)
+   - ValidateChain with trust store integration
+   - CheckExpiry with warning threshold
+   - VerifyHostname with wildcard support
+
+3. **Add Diagnostic Generation** (1 hour)
+   - GenerateDiagnostics method
+   - FormatDiagnostics helper
+   - Error collection and formatting
+
+4. **Create Test Suite** (2 hours)
+   - Generate test certificates
+   - Unit tests for all methods
+   - Integration test with trust store
+
+5. **Documentation** (30 min)
+   - Code comments
+   - Package documentation
+   - Usage examples
+
+## =� Notes for SW Engineer
+
+### Critical Considerations
+1. **Trust Store Integration**: Must use TrustStoreManager from E1.1.2 for custom roots
+2. **Clear Error Messages**: Each validation failure must have actionable error message
+3. **Expiry Warning**: Default to 30 days but make configurable
+4. **Wildcard Support**: Use standard x509.VerifyHostname which handles wildcards
+5. **Diagnostic Output**: Should be human-readable and help troubleshooting
+
+### Example Usage
+```go
+// Create validator with trust store
+trustStore := getTrustStoreFromE112()
+validator, err := NewValidator(trustStore)
+
+// Validate a certificate
+cert := getCertificateFromE111()
+if err := validator.ValidateChain(cert); err != nil {
+    // Generate diagnostics for troubleshooting
+    diag, _ := validator.GenerateDiagnostics(cert)
+    fmt.Println(FormatDiagnostics(diag))
+    return err
+}
+
+// Check expiry
+duration, err := validator.CheckExpiry(cert)
+if err != nil {
+    log.Warnf("Certificate expiring soon: %v", duration)
+}
+
+// Verify hostname
+if err := validator.VerifyHostname(cert, "gitea.local"); err != nil {
+    return fmt.Errorf("hostname verification failed: %w", err)
+}
+```
+
+### Dependencies to Import
+```go
 import (
-    "context"
     "crypto/x509"
+    "fmt"
+    "net"
+    "time"
+    
+    // From other efforts
+    "github.com/idpbuilder/idpbuilder-oci-go-cr/pkg/certs" // TrustStoreManager from E1.1.2
 )
-
-// KindCertExtractor defines the interface for extracting certificates from Kind clusters
-type KindCertExtractor interface {
-    // ExtractGiteaCert extracts the Gitea certificate from the Kind cluster
-    ExtractGiteaCert(ctx context.Context) (*x509.Certificate, error)
-    
-    // GetClusterName returns the name of the Kind cluster
-    GetClusterName() (string, error)
-    
-    // ValidateCertificate performs basic validation on the extracted certificate
-    ValidateCertificate(cert *x509.Certificate) error
-    
-    // SaveCertificate saves the certificate to the local trust store
-    SaveCertificate(cert *x509.Certificate, path string) error
-}
-
-// CertificateInfo contains metadata about an extracted certificate
-type CertificateInfo struct {
-    Subject    string
-    Issuer     string
-    NotBefore  time.Time
-    NotAfter   time.Time
-    IsCA       bool
-    DNSNames   []string
-}
 ```
 
-### Step 2: Implement Error Handling (errors.go)
-```go
-// pkg/certs/errors.go
-package certs
-
-// Define custom error types for clear diagnostics
-type ClusterNotFoundError struct {
-    ClusterName string
-}
-
-type PodNotFoundError struct {
-    PodName   string
-    Namespace string
-}
-
-type CertificateInvalidError struct {
-    Reason string
-}
-
-type PermissionError struct {
-    Path   string
-    Action string
-}
-```
-
-### Step 3: Implement Certificate Extraction (extractor.go)
-Key implementation points:
-1. **Detect Kind cluster**: Use kubectl to check for Kind clusters
-2. **Locate Gitea pod**: Find the Gitea pod in the cluster
-3. **Extract certificate**: Copy cert from `/data/gitea/https/cert.pem` in pod
-4. **Parse certificate**: Convert PEM to x509.Certificate
-5. **Validate certificate**: Check expiry, subject, and basic validity
-6. **Store locally**: Save to `~/.idpbuilder/certs/gitea.pem` with proper permissions
-
-Implementation approach:
-- Use `exec.Command` to run kubectl commands
-- Handle errors gracefully with clear messages
-- Support both docker and podman as container runtimes
-- Create certificate directory if it doesn't exist
-- Set appropriate file permissions (0600 for cert files)
-
-### Step 4: Write Comprehensive Tests (extractor_test.go)
-Test scenarios to cover:
-1. **Happy path**: Successful certificate extraction
-2. **Missing cluster**: Handle when Kind cluster doesn't exist
-3. **Missing pod**: Handle when Gitea pod is not found
-4. **Invalid certificate**: Handle malformed certificate data
-5. **Permission issues**: Handle file system permission errors
-6. **Certificate validation**: Test expiry and validity checks
-7. **Mock kubectl**: Mock kubectl commands for unit testing
-
-## Size Management
-- **Estimated Lines**: ~500 lines total
-- **Measurement Tool**: `/home/vscode/workspaces/idpbuilder-oci-go-cr/tools/line-counter.sh`
-- **Check Frequency**: After each major component (every ~100 lines)
-- **Split Threshold**: 700 lines (warning), 800 lines (stop immediately)
-- **Current Status**: New effort, starting from 0 lines
-
-## Test Requirements
-- **Unit Tests**: 80% minimum coverage
-- **Integration Tests**: Not required for this effort (Phase 2 responsibility)
-- **Test Strategy**: 
-  - Mock kubectl commands using interface injection
-  - Test all error scenarios
-  - Validate certificate parsing and storage
-  - Use testify for assertions
-  - Use golang/mock for kubectl mocking
-
-### Test Files Expected:
-- `pkg/certs/extractor_test.go` - Main unit tests
-- Test fixtures for mock certificates
-- Mock implementations for kubectl interface
-
-## Pattern Compliance
-- **Go Patterns**: 
-  - Follow Go standard project layout
-  - Use interfaces for testability
-  - Return errors, don't panic
-  - Use context for cancellation
-  - Clear error messages with context
-  
-- **Security Requirements**:
-  - Never expose private keys in logs
-  - Set restrictive file permissions (0600)
-  - Validate certificates before trusting
-  - Clear audit trail for security operations
-  - Support --insecure flag but log warnings
-
-- **Code Style**:
-  - gofmt compliant
-  - golint clean
-  - Meaningful variable names
-  - Comprehensive comments for exported functions
-  - Example usage in comments
-
-## Dependencies
-External packages required:
-- `k8s.io/client-go` - For Kubernetes client operations
-- `k8s.io/apimachinery` - For Kubernetes API types
-- Standard library packages:
-  - `crypto/x509` - Certificate handling
-  - `encoding/pem` - PEM encoding/decoding
-  - `os/exec` - For kubectl commands
-  - `path/filepath` - Path manipulation
-  - `io/ioutil` or `os` - File operations
-
-## Success Criteria
-- ✅ Successfully extracts certificate from Gitea pod
-- ✅ Stores certificate in local trust store
-- ✅ Clear error messages for all failure scenarios
-- ✅ 80% test coverage achieved
-- ✅ No security vulnerabilities
-- ✅ Code stays under 500 lines
-- ✅ All tests pass
-- ✅ Integrates cleanly with Effort 1.1.2
-
-## Integration Points
-This effort provides the foundation for:
-- **Effort 1.1.2**: Registry TLS Trust Integration will use the extracted certificates
-- **Phase 2**: Build & Push operations will rely on the certificate infrastructure
-
-The `KindCertExtractor` interface will be consumed by the trust store manager in Effort 1.1.2.
-
-## Notes for SW Engineer
-1. Start with the interface definitions to establish the contract
-2. Implement error types early for consistent error handling
-3. Use dependency injection for kubectl to enable testing
-4. Consider using k8s.io/client-go instead of exec.Command for better error handling
-5. Ensure all file operations check permissions first
-6. Log security-relevant operations for audit trail
-7. Keep the implementation focused - don't add features not in spec
-8. Measure size frequently with the line-counter tool
-9. Stop immediately if approaching 800 lines
+##  Review Checklist
+- [ ] All functional requirements addressed
+- [ ] Size within 400 line estimate
+- [ ] Test coverage plan adequate
+- [ ] Integration points clear
+- [ ] Dependencies properly identified
+- [ ] Implementation sequence logical
