@@ -46,3 +46,28 @@ Result: Conflict in work-log.md - resolving
 Time: 2025-09-01 15:15:20 UTC
 Action: Resolved work-log.md conflict by keeping integration log and archiving effort log
 Result: Conflict resolved, ready to continue merge
+
+## Operation 9: Complete E1.2.1 Merge
+Time: 2025-09-01 15:15:30 UTC
+Command: git add work-log.md archived-E1.2.1-work-log.md && git commit -m "resolve: merge conflicts from E1.2.1 integration"
+Result: Success - E1.2.1 merged successfully
+
+## Operation 10: Verify E1.2.1 Files
+Time: 2025-09-01 15:15:40 UTC
+Command: git diff HEAD~2..HEAD --stat | grep "pkg/"
+Result: 4 files added (diagnostics.go, testdata/certs.go, validator.go, validator_test.go)
+
+## Operation 11: Test E1.2.1
+Time: 2025-09-01 15:15:50 UTC
+Command: go test ./pkg/certs/... -v
+Result: All 19 tests pass
+
+## Operation 12: Merge E1.2.2 (First Attempt)
+Time: 2025-09-01 15:16:00 UTC
+Command: git merge origin/idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies --no-ff -m "merge: integrate E1.2.2 fallback-strategies (744 lines)"
+Result: Conflicts in work-log.md and IMPLEMENTATION-PLAN.md - resolving
+
+## Operation 13: Resolve E1.2.2 Conflicts
+Time: 2025-09-01 15:16:10 UTC
+Action: Archived effort-specific documents, kept integration work log
+Result: Ready to continue merge
