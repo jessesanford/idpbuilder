@@ -3,10 +3,10 @@
 
 current_phase: 1
 current_wave: 2
-current_state: SPAWN_AGENTS
-previous_state: ERROR_RECOVERY
-transition_time: "2025-09-01T07:20:00Z"
-transition_reason: "Sub-split plan created for Split 002 - ready to spawn for 002C tests"
+current_state: WAVE_START
+previous_state: WAVE_COMPLETE
+transition_time: "2025-09-01T12:40:00Z"
+transition_reason: "Wave 2 reset - E1.2.2 needs redesign"
 
 project_info:
   name: "idpbuidler-oci-go-cr"
@@ -53,28 +53,9 @@ efforts_in_progress:
     name: "fallback-strategies"
     phase: 1
     wave: 2
-    status: "SPLIT_001_SIZE_VIOLATION"
-    split_plan_created: true
-    split_plan_location: "efforts/phase1/wave2/fallback-strategies/SPLIT-PLAN.md"
-    needs_split_implementation: true
-    estimated_splits: 2
-    splits_attempted:
-      - split_id: "001"
-        directory: "efforts/phase1/wave2/fallback-strategies-split-001"
-        status: "COMPLETED_WITH_SUB_SPLITS"
-        sub_splits:
-          - split_id: "001A"
-            lines_implemented: 718
-            status: "COMPLETED"
-            files: ["detector.go", "handler_types.go"]
-          - split_id: "001B"
-            lines_implemented: 426
-            status: "COMPLETED"
-            files: ["handler_impl.go"]
-        total_lines: 1144
-        completed_at: "2025-09-01T06:52:00Z"
-    assigned_to: "sw-engineer-split-001"
-    started_at: "2025-08-31T20:40:00Z"
+    status: "NOT_STARTED"
+    estimated_lines: 400
+    assigned_to: null
 efforts_planned:
   # Phase 1: Certificate Infrastructure
   - phase: 1
