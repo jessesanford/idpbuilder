@@ -92,3 +92,23 @@ Conflict Resolution:
 - Resolution: Kept integration work log, merged implementation plans, combined type definitions
 - The effort branch added: pkg/fallback/ with detector, recommender, insecure, and logger (744 lines total)
 - Note: pkg/certs/types.go conflict resolved by merging both interface definitions
+
+## Post-Merge Validation
+
+### Dependency Resolution
+Command: go mod tidy
+Result: Success - dependencies updated
+
+### Build Attempt
+Command: go build ./...
+Result: FAILED - Duplicate type definitions found
+
+### Upstream Bugs Identified (NOT FIXED per R266)
+1. **Duplicate Type Definitions**:
+   - CertificateInfo defined in both pkg/certs/types.go:27 and pkg/certs/trust_store.go:18
+   - TrustStoreManager defined in both pkg/certs/validator.go:13 and pkg/certs/trust.go:34
+   - CertValidator defined in both pkg/certs/types.go:37 and pkg/certs/validator.go:40
+   - CertDiagnostics defined in both pkg/certs/types.go:52 and pkg/certs/validator.go:56
+   - ValidationError defined in both pkg/certs/types.go:65 and pkg/certs/validator.go:69
+
+**Status**: Documented but NOT FIXED (upstream issue from development efforts)
