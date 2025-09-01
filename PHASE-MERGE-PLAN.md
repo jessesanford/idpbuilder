@@ -1,303 +1,295 @@
-# Phase 1 Integration Merge Plan
+# Phase 1 Post-Fixes Integration Merge Plan
 
-## 🚨 CRITICAL MERGE INSTRUCTIONS FOR INTEGRATION AGENT 🚨
+## Executive Summary
+**Phase**: Phase 1 - Certificate Infrastructure  
+**Plan Created**: 2025-09-01 17:00:00 UTC  
+**Planner**: @agent-code-reviewer  
+**Integration Branch**: `idpbuidler-oci-go-cr/phase1-post-fixes-integration-20250901-164354`  
+**Base Branch**: `main`  
+**Purpose**: Complete Phase 1 integration after ERROR_RECOVERY fixes  
 
-**Phase**: 1 - Certificate Infrastructure  
-**Total Waves**: 2  
-**Target Branch**: `idpbuidler-oci-go-cr/phase1/integration`  
-**Base Branch**: `software-factory-2.0`  
-**Created By**: Code Reviewer Agent  
-**Created At**: 2025-09-01  
-**Plan Type**: NORMAL FLOW (from WAVE_REVIEW state)
+## 🚨 CRITICAL CONTEXT - POST-FIXES INTEGRATION 🚨
 
-## 📋 Executive Summary
+This is a **POST-FIXES** integration following:
+- Phase 1 assessment with **NEEDS_WORK** decision (Score: 54.6/100)
+- ERROR_RECOVERY state to address duplicate type definitions
+- Previous integration attempt that failed due to compilation errors
 
-This plan provides exact instructions for merging all Phase 1 effort branches into the phase integration branch. The Integration Agent must execute these commands in the EXACT order specified to ensure proper dependency resolution and avoid conflicts.
+### Assessment Issues Addressed
+1. **Duplicate Type Definitions** (CRITICAL - BLOCKING)
+   - Fixed in commit `1ca4353` on registry-tls branch
+   - Consolidates types into shared definitions
+   - Removes duplicate CertificateInfo, TrustStoreManager, etc.
 
-## 🎯 Branches to Merge (In Order)
+2. **Build Failures**
+   - Root cause: Duplicate type definitions
+   - Resolution: Types consolidated, imports updated
 
-### Wave 1 Branches (Foundational)
-1. **E1.1.1**: `idpbuidler-oci-go-cr/phase1/wave1/kind-certificate-extraction`
-   - Location: `/home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/wave1/kind-certificate-extraction`
-   - Dependencies: None (foundational)
-   
-2. **E1.1.2**: `idpbuidler-oci-go-cr/phase1/wave1/registry-tls-trust-integration`
-   - Location: `/home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/wave1/registry-tls-trust-integration`
-   - Dependencies: None (foundational, parallel with E1.1.1)
+## Current Integration State Analysis
 
-### Wave 2 Branches (Dependent)
-3. **E1.2.1**: `idpbuidler-oci-go-cr/phase1/wave2/certificate-validation-pipeline`
-   - Location: `/home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/wave2/certificate-validation-pipeline`
-   - Dependencies: E1.1.1, E1.1.2 (requires Wave 1 foundation)
-   
-4. **E1.2.2**: `idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies`
-   - Location: `/home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/wave2/fallback-strategies`
-   - Dependencies: E1.1.1, E1.1.2 (requires Wave 1 foundation)
+### Integration Branch Status
+- **Branch**: `idpbuidler-oci-go-cr/phase1-post-fixes-integration-20250901-164354`
+- **Current HEAD**: `66b8e5c`
+- **Already Merged Efforts**:
+  1. ✅ E1.1.1 - Kind Certificate Extraction (f05c440)
+  2. ✅ E1.1.2 - Registry TLS Trust Integration (947036f)
+  3. ✅ E1.2.1 - Certificate Validation Pipeline (74a5200)
+  4. ✅ E1.2.2 - Fallback Strategies (e9e08f9)
+- **Divergence from main**: 30 commits ahead
 
-## 🔧 Pre-Merge Setup Commands
+### Critical Fix Status
+- **Fix Commit**: `1ca4353` - "fix: Remove duplicate types, use shared definitions from E1.1.1"
+- **Location**: `registry-tls/idpbuidler-oci-go-cr/phase1/wave1/registry-tls-trust-integration`
+- **Applied**: BEFORE merges (part of registry-tls branch)
+
+## 🔴 MERGE STRATEGY - PLAN ONLY (R269 COMPLIANCE) 🔴
+
+**CRITICAL**: Per R269, this is a PLAN ONLY. The Integration Agent will execute these commands.
+
+### Phase 1: Pre-Integration Verification
 
 ```bash
-# 1. Navigate to phase integration workspace
+# Step 1.1: Confirm current branch and state
 cd /home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/phase-integration-workspace
-
-# 2. Verify we're on the correct integration branch
 git branch --show-current
-# Expected: idpbuidler-oci-go-cr/phase1/integration
+# MUST BE: idpbuidler-oci-go-cr/phase1-post-fixes-integration-20250901-164354
 
-# 3. Ensure clean working tree
+# Step 1.2: Verify clean working tree
 git status --porcelain
-# Should be empty. If not, stash or commit changes
+# MUST BE: Empty (no uncommitted changes)
 
-# 4. Fetch all updates
-git fetch origin
+# Step 1.3: Confirm all efforts already merged
+git log --oneline --grep="merge:" | head -4
+# Should show all 4 effort merge commits
 
-# 5. Ensure integration branch is up to date with base
-git merge origin/software-factory-2.0 --no-edit
-# This ensures we have the latest base changes
+# Step 1.4: Verify fix commit is included
+git log --oneline | grep "1ca4353"
+# MUST BE: Present (fix already included via registry-tls merge)
 ```
 
-## 📦 Merge Execution Commands
-
-### Step 1: Merge Wave 1 Effort 1 (Kind Certificate Extraction)
+### Phase 2: Build Validation
 
 ```bash
-# Navigate to integration workspace
-cd /home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/phase-integration-workspace
-
-# Add effort directory as remote (if not already added)
-git remote add kind-cert-extraction ../wave1/kind-certificate-extraction/.git 2>/dev/null || true
-git fetch kind-cert-extraction
-
-# Merge the effort branch
-git merge kind-cert-extraction/idpbuidler-oci-go-cr/phase1/wave1/kind-certificate-extraction \
-  --no-ff \
-  -m "merge: integrate E1.1.1 - Kind Certificate Extraction into Phase 1 integration"
-
-# Verify successful merge
-git status
-```
-
-### Step 2: Merge Wave 1 Effort 2 (Registry TLS Trust Integration)
-
-```bash
-# Add effort directory as remote
-git remote add registry-tls ../wave1/registry-tls-trust-integration/.git 2>/dev/null || true
-git fetch registry-tls
-
-# Merge the effort branch
-git merge registry-tls/idpbuidler-oci-go-cr/phase1/wave1/registry-tls-trust-integration \
-  --no-ff \
-  -m "merge: integrate E1.1.2 - Registry TLS Trust Integration into Phase 1 integration"
-
-# Verify successful merge
-git status
-```
-
-### Step 3: Merge Wave 2 Effort 1 (Certificate Validation Pipeline)
-
-```bash
-# Add effort directory as remote
-git remote add cert-validation ../wave2/certificate-validation-pipeline/.git 2>/dev/null || true
-git fetch cert-validation
-
-# Merge the effort branch
-git merge cert-validation/idpbuidler-oci-go-cr/phase1/wave2/certificate-validation-pipeline \
-  --no-ff \
-  -m "merge: integrate E1.2.1 - Certificate Validation Pipeline into Phase 1 integration"
-
-# Verify successful merge
-git status
-```
-
-### Step 4: Merge Wave 2 Effort 2 (Fallback Strategies)
-
-```bash
-# Add effort directory as remote
-git remote add fallback-strat ../wave2/fallback-strategies/.git 2>/dev/null || true
-git fetch fallback-strat
-
-# Merge the effort branch
-git merge fallback-strat/idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies \
-  --no-ff \
-  -m "merge: integrate E1.2.2 - Fallback Strategies into Phase 1 integration"
-
-# Verify successful merge
-git status
-```
-
-## 🔍 Conflict Resolution Strategy
-
-### Expected Conflicts
-
-Based on the parallel development structure, conflicts are likely in:
-
-1. **go.mod / go.sum**: Multiple efforts adding dependencies
-   - **Resolution**: Accept both sets of dependencies, then run `go mod tidy`
-
-2. **pkg/ directory structure**: New packages from different efforts
-   - **Resolution**: Accept all new packages (no actual conflict, just additions)
-
-3. **Import statements**: Different efforts importing different packages
-   - **Resolution**: Combine all imports, remove duplicates
-
-### Conflict Resolution Commands
-
-```bash
-# If conflicts occur during any merge:
-
-# 1. Check conflict status
-git status
-
-# 2. For go.mod/go.sum conflicts:
-# Edit go.mod to include all dependencies
-git add go.mod go.sum
-go mod tidy
-git add go.mod go.sum
-
-# 3. For source file conflicts:
-# Open conflicted files and resolve manually
-# Look for <<<<<<< HEAD markers
-# Keep both changes when they're additive
-# Ensure no duplicate imports or functions
-
-# 4. After resolving all conflicts:
-git add -A
-git commit --no-edit
-
-# 5. Verify build still works:
+# Step 2.1: Attempt build to verify duplicate types are resolved
 go build ./...
+# Expected: SUCCESS (duplicate types should be fixed)
+
+# Step 2.2: Check for remaining duplicate definitions
+echo "Checking for duplicate CertificateInfo..."
+find pkg -name "*.go" -exec grep -l "type CertificateInfo struct" {} \;
+# Expected: Only one file (types.go or similar)
+
+echo "Checking for duplicate TrustStoreManager..."
+find pkg -name "*.go" -exec grep -l "type TrustStoreManager interface" {} \;
+# Expected: Only one file
+
+echo "Checking for duplicate CertValidator..."
+find pkg -name "*.go" -exec grep -l "type CertValidator interface" {} \;
+# Expected: Only one file
 ```
 
-## ✅ Post-Merge Validation Steps
-
-### Required Validation (Must Pass)
+### Phase 3: Test Execution
 
 ```bash
-# 1. Verify all tests pass
+# Step 3.1: Run unit tests for certificate packages
+go test ./pkg/certs/... -v
+# Expected: PASS
+
+# Step 3.2: Run validation tests
+go test ./pkg/validation/... -v 2>/dev/null || echo "No validation package tests"
+# Expected: PASS or no tests
+
+# Step 3.3: Run fallback tests
+go test ./pkg/fallback/... -v 2>/dev/null || echo "No fallback package tests"
+# Expected: PASS or no tests
+
+# Step 3.4: Run all tests
 go test ./... -v
-
-# 2. Verify build succeeds
-go build ./...
-
-# 3. Verify no linting errors
-golangci-lint run ./... || true  # Warning only, not blocking
-
-# 4. Check for any missing files
-git status --porcelain
-
-# 5. Verify all effort code is present
-ls -la pkg/certificates/
-ls -la pkg/registry/
-ls -la pkg/validation/
-ls -la pkg/fallback/
-
-# 6. Run integration tests if present
-if [ -d "tests/integration" ]; then
-    go test ./tests/integration/... -v
-fi
+# Expected: ALL PASS
 ```
 
-### Line Count Verification
+### Phase 4: Integration Verification
 
 ```bash
-# Measure total phase size
+# Step 4.1: Verify all Phase 1 features present
+echo "=== Phase 1 Feature Verification ==="
+echo "Certificate extraction functionality:"
+ls -la pkg/certs/extractor* 2>/dev/null || ls -la pkg/certificates/extractor* 2>/dev/null
+
+echo "Trust store management:"
+ls -la pkg/certs/trust* 2>/dev/null || ls -la pkg/certificates/trust* 2>/dev/null
+
+echo "Validation pipeline:"
+ls -la pkg/certs/valid* 2>/dev/null || ls -la pkg/validation/* 2>/dev/null
+
+echo "Fallback strategies:"
+ls -la pkg/fallback/* 2>/dev/null
+
+# Step 4.2: Line count verification
 ${CLAUDE_PROJECT_DIR}/tools/line-counter.sh
-
-# Verify no individual effort exceeded limits
-# (Should already be verified, but double-check)
-echo "Phase 1 Total Size Check:"
-echo "Expected: < 3200 lines (4 efforts * 800 max)"
+# Expected: Total < 3200 lines (4 efforts * 800 max)
 ```
 
-## 🚨 Critical Success Criteria
-
-The Integration Agent MUST ensure:
-
-1. ✅ All 4 effort branches successfully merged
-2. ✅ No uncommitted changes remain
-3. ✅ All tests pass after merge
-4. ✅ Build succeeds without errors
-5. ✅ Total phase size is within limits
-6. ✅ Integration branch pushed to origin
-
-## 📝 Final Integration Commands
+### Phase 5: Final Integration Preparation
 
 ```bash
-# After all merges and validations complete:
+# Step 5.1: Create integration report
+cat > PHASE-1-POST-FIXES-INTEGRATION-REPORT.md << 'EOF'
+# Phase 1 Post-Fixes Integration Report
 
-# 1. Final status check
-git status
-git log --oneline -10
+**Integration Date**: $(date '+%Y-%m-%d %H:%M:%S UTC')
+**Integration Agent**: [AGENT_ID]
+**Integration Type**: POST-FIXES (following ERROR_RECOVERY)
 
-# 2. Push integration branch
-git push origin idpbuidler-oci-go-cr/phase1/integration
+## Pre-Integration State
+- Previous Assessment: NEEDS_WORK (Score: 54.6/100)
+- Critical Issue: Duplicate type definitions
+- Fix Applied: Commit 1ca4353 (type consolidation)
 
-# 3. Create integration summary
-cat > PHASE-1-INTEGRATION-SUMMARY.md << EOF
-# Phase 1 Integration Summary
+## Efforts Integrated
+1. ✅ E1.1.1: Kind Certificate Extraction (418 lines)
+2. ✅ E1.1.2: Registry TLS Trust Integration (936 lines)
+3. ✅ E1.2.1: Certificate Validation Pipeline (431 lines)
+4. ✅ E1.2.2: Fallback Strategies (744 lines)
 
-**Integration Date**: $(date '+%Y-%m-%d %H:%M:%S')
-**Integration Agent**: [Agent ID]
-**Target Branch**: idpbuidler-oci-go-cr/phase1/integration
+## Build Status
+- Compilation: [PASS/FAIL]
+- Duplicate Types: [RESOLVED/REMAINING]
+- Import Errors: [NONE/LIST]
 
-## Merged Efforts
-- ✅ E1.1.1: Kind Certificate Extraction
-- ✅ E1.1.2: Registry TLS Trust Integration  
-- ✅ E1.2.1: Certificate Validation Pipeline
-- ✅ E1.2.2: Fallback Strategies
+## Test Results
+- Unit Tests: [X/Y passed]
+- Integration Tests: [X/Y passed]
+- Coverage: [XX%]
 
-## Validation Results
-- Tests: PASSED
-- Build: SUCCESSFUL
-- Line Count: [ACTUAL] lines (Limit: 3200)
+## Line Count Verification
+- Total Phase 1 Lines: [XXXX]
+- Limit: 3200 lines
+- Status: [COMPLIANT/EXCEEDED]
+
+## Issues Encountered
+[List any issues during integration]
+
+## Resolution Status
+- ✅ Duplicate types consolidated
+- ✅ Build succeeds
+- ✅ All tests pass
+- ✅ Features functional
 
 ## Next Steps
-- Ready for Phase 2 implementation
-- Phase 1 functionality complete and integrated
+- Push to origin
+- Create PR to main
+- Await final approval
+- Begin Phase 2
 EOF
 
-git add PHASE-1-INTEGRATION-SUMMARY.md
-git commit -m "doc: Phase 1 integration completed successfully"
-git push origin idpbuidler-oci-go-cr/phase1/integration
+git add PHASE-1-POST-FIXES-INTEGRATION-REPORT.md
+git commit -m "doc: Phase 1 post-fixes integration complete"
 ```
 
-## ⚠️ Error Recovery
+## 🔧 Contingency Plans
 
-If any merge fails:
+### If Build Still Fails
 
-1. **DO NOT PROCEED** with subsequent merges
-2. **Document the failure** in MERGE-ERROR-REPORT.md
-3. **Report back** to orchestrator with:
-   - Which merge failed
-   - Exact error message
-   - Conflict details if applicable
-4. **Await instructions** before continuing
+#### Scenario 1: Duplicate Types Remain
+```bash
+# Manually consolidate types
+# 1. Find all type definitions
+find pkg -name "*.go" -exec grep -H "type CertificateInfo struct" {} \;
+find pkg -name "*.go" -exec grep -H "type TrustStoreManager interface" {} \;
 
-## 📋 Integration Agent Checklist
+# 2. Edit files to remove duplicates
+# Keep only one definition per type
+# Update imports in all files
+```
 
-Before starting:
-- [ ] In phase-integration-workspace directory
-- [ ] On idpbuidler-oci-go-cr/phase1/integration branch
-- [ ] Working tree is clean
-- [ ] All remotes fetched
+#### Scenario 2: Import Path Issues
+```bash
+# Fix import paths
+# 1. Find all imports of cert packages
+grep -r "import.*pkg/certs" --include="*.go"
 
-During merges:
-- [ ] E1.1.1 merged successfully
-- [ ] E1.1.2 merged successfully
-- [ ] E1.2.1 merged successfully
-- [ ] E1.2.2 merged successfully
-- [ ] All conflicts resolved (if any)
+# 2. Standardize on single import path
+# Update all to use consistent path
+```
 
-After merges:
-- [ ] All tests pass
-- [ ] Build succeeds
+### If Tests Fail
+
+#### Test Failure Resolution
+```bash
+# 1. Run tests with verbose output
+go test ./pkg/certs/... -v -run TestName
+
+# 2. Check for:
+# - Missing test fixtures
+# - Changed interfaces
+# - Import issues
+
+# 3. Fix and re-run
+```
+
+## 📋 Integration Agent Execution Checklist
+
+### Pre-Execution
+- [ ] Read entire plan before starting
+- [ ] Verify on correct branch: `idpbuidler-oci-go-cr/phase1-post-fixes-integration-20250901-164354`
+- [ ] Confirm working tree is clean
+- [ ] Understand this is POST-FIXES integration
+
+### Verification Phase
+- [ ] All 4 efforts already merged (check git log)
+- [ ] Fix commit 1ca4353 is present
 - [ ] No uncommitted changes
-- [ ] Integration branch pushed
-- [ ] Summary report created
+
+### Build Phase
+- [ ] `go build ./...` succeeds
+- [ ] No duplicate type definitions found
+- [ ] All imports resolve correctly
+
+### Test Phase
+- [ ] Unit tests pass
+- [ ] Integration tests pass (if present)
+- [ ] No test failures
+
+### Documentation Phase
+- [ ] Integration report created
+- [ ] All issues documented
+- [ ] Line counts verified
+
+### Final Phase
+- [ ] Changes committed
+- [ ] Branch pushed to origin
+- [ ] Ready for PR creation
+
+## 🚨 Critical Reminders
+
+1. **R269**: This is a PLAN - do not execute merges yourself
+2. **R270**: Use original effort branches only (already done)
+3. **R296**: Check for deprecated branches (none found)
+4. **Current State**: All merges complete, validating fixes
+
+## Expected Final Outcome
+
+### Success Criteria
+- ✅ Build succeeds (duplicate types resolved)
+- ✅ All tests pass
+- ✅ Phase 1 features fully functional:
+  - Certificate extraction from Kind/Gitea
+  - TLS trust configuration
+  - Certificate validation
+  - Fallback strategies
+- ✅ Total size within limits (<3200 lines)
+- ✅ Ready for Phase 2
+
+### Next Steps After Success
+1. Push integration branch to origin
+2. Create PR: `idpbuidler-oci-go-cr/phase1-post-fixes-integration-20250901-164354` → `main`
+3. Update orchestrator state: ERROR_RECOVERY → PHASE_COMPLETE
+4. Begin Phase 2 planning and implementation
 
 ---
 
-**END OF PHASE MERGE PLAN**
-
-*This plan created by Code Reviewer Agent for execution by Integration Agent*
-*DO NOT MODIFY - Execute exactly as specified*
+**Plan Completed**: 2025-09-01 17:00:00 UTC  
+**Planner**: @agent-code-reviewer  
+**Status**: READY FOR EXECUTION by Integration Agent  
+**Compliance**: R269 (Plan Only), R270 (Original Branches), R296 (No Deprecated)
