@@ -10,4 +10,29 @@ Result: Success - in correct directory
 Command: git branch --show-current
 Result: idpbuidler-oci-go-cr/phase1/integration
 
-## Pre-Merge Checks Starting...
+Command: git status --porcelain
+Result: Had uncommitted docs - committed them
+
+Command: git add PHASE-MERGE-PLAN.md work-log.md
+Command: git commit -m "docs: add integration plan and work log for Phase 1 integration"
+Result: Success
+
+Command: git fetch origin
+Result: Success
+
+## Merge Operations
+
+### Operation 1: Merge E1.1.1 - Kind Certificate Extraction
+Command: git remote add kind-cert-extraction ../wave1/kind-certificate-extraction/.git
+Result: Success
+
+Command: git fetch kind-cert-extraction
+Result: Success - fetched branch
+
+Command: git merge kind-cert-extraction/idpbuidler-oci-go-cr/phase1/wave1/kind-certificate-extraction --no-ff -m "merge: integrate E1.1.1 - Kind Certificate Extraction into Phase 1 integration"
+Result: Conflict in work-log.md - resolving...
+
+Conflict Resolution:
+- File: work-log.md
+- Resolution: Kept integration work log, documented effort's work in separate file
+- The effort branch added: pkg/certs with 815 lines of certificate extraction code
