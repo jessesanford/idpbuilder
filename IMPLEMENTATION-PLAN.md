@@ -1,376 +1,208 @@
-# Registry TLS Trust Integration Implementation Plan
+# Kind Certificate Extraction Implementation Plan
 
 ## 🚨 CRITICAL EFFORT METADATA (FROM WAVE PLAN)
-**Branch**: `idpbuidler-oci-go-cr/phase1/wave1/registry-tls-trust-integration`
-**Can Parallelize**: Yes (foundational effort)
-**Parallel With**: E1.1.1 (Kind Certificate Extraction)
-**Size Estimate**: ~600 lines
-**Dependencies**: None (foundational effort - can run parallel with E1.1.1)
+**Branch**: `idpbuidler-oci-go-cr/phase1/wave1/kind-certificate-extraction`
+**Can Parallelize**: Yes
+**Parallel With**: Effort 1.1.2 (Registry TLS Trust Integration)
+**Size Estimate**: ~500 lines
+**Dependencies**: None (foundational effort)
+
+<!-- ⚠️ ORCHESTRATOR METADATA PLACEHOLDER - DO NOT REMOVE ⚠️ -->
+<!-- The orchestrator will add infrastructure metadata below: -->
+<!-- WORKING_DIRECTORY: /home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/wave1/kind-certificate-extraction -->
+<!-- BRANCH: idpbuidler-oci-go-cr/phase1/wave1/kind-certificate-extraction -->
+<!-- REMOTE: origin (https://github.com/jessesanford/idpbuilder.git) -->
+<!-- BASE_BRANCH: software-factory-2.0 -->
+<!-- SW Engineers MUST read this metadata to navigate to the correct directory -->
+<!-- END PLACEHOLDER -->
 
 ## Overview
-- **Effort**: E1.1.2 - Registry TLS Trust Integration
-- **Phase**: 1, Wave: 1
-- **Estimated Size**: ~600 lines
-- **Implementation Time**: 1 day (Day 2 of implementation)
-- **Purpose**: Configure TLS trust for registry operations with go-containerregistry
+- **Effort**: Extract and manage certificates from Kind/Gitea
+- **Phase**: 1 (Certificate Infrastructure), Wave: 1 (Certificate Management Core)
+- **Estimated Size**: ~500 lines
+- **Implementation Time**: 1 day (Day 1 of MVP)
 
-## Context & Goals
-
-### Primary Objective
-Implement a robust TLS trust management system that enables go-containerregistry (ggcr) to work with Gitea's self-signed certificates. This is a critical component of the MVP that solves the certificate problem preventing reliable OCI image operations.
-
-### Key Success Criteria
-- ✅ Load custom CA certificates into x509.CertPool
-- ✅ Configure ggcr remote transport with proper TLS settings
-- ✅ Support certificate rotation without restart
-- ✅ Provide --insecure override for testing
-- ✅ Clear error messages for certificate issues
-- ✅ Zero certificate errors during normal operation
+## Detailed Description
+This effort implements the core functionality to extract self-signed certificates from the Gitea instance running inside the Kind cluster. The extracted certificates will be stored locally and made available for the registry client to establish secure TLS connections.
 
 ## File Structure
 ```
-efforts/phase1/wave1/registry-tls-trust-integration/
-└── pkg/
-    └── certs/
-        ├── trust.go              # Main TrustStoreManager implementation (~250 lines)
-        ├── transport.go          # GGCR transport configuration (~150 lines)
-        ├── trust_store.go        # Trust store persistence (~100 lines)
-        └── trust_test.go         # Comprehensive test suite (~100 lines)
+pkg/
+└── certs/
+    ├── extractor.go         # Main certificate extraction logic (~250 lines)
+    ├── extractor_test.go     # Unit tests for extractor (~150 lines)
+    ├── types.go              # Interface and type definitions (~50 lines)
+    └── errors.go             # Custom error types and handling (~50 lines)
 ```
 
 ## Implementation Steps
 
-### Step 1: Core Trust Store Manager (250 lines)
-**File**: `pkg/certs/trust.go`
-
-Create the main TrustStoreManager interface and implementation:
-
+### Step 1: Define Core Interfaces and Types (types.go)
 ```go
-// pkg/certs/trust.go
+// pkg/certs/types.go
 package certs
 
 import (
-    "crypto/tls"
+    "context"
     "crypto/x509"
-    "fmt"
-    "io/ioutil"
-    "os"
-    "path/filepath"
-    "sync"
 )
 
-// TrustStoreManager manages trusted certificates for registry operations
-type TrustStoreManager interface {
-    // AddCertificate adds a certificate for a specific registry
-    AddCertificate(registry string, cert *x509.Certificate) error
+// KindCertExtractor defines the interface for extracting certificates from Kind clusters
+type KindCertExtractor interface {
+    // ExtractGiteaCert extracts the Gitea certificate from the Kind cluster
+    ExtractGiteaCert(ctx context.Context) (*x509.Certificate, error)
     
-    // RemoveCertificate removes the certificate for a registry
-    RemoveCertificate(registry string) error
+    // GetClusterName returns the name of the Kind cluster
+    GetClusterName() (string, error)
     
-    // SetInsecureRegistry marks a registry as insecure (skip TLS verification)
-    SetInsecureRegistry(registry string, insecure bool) error
+    // ValidateCertificate performs basic validation on the extracted certificate
+    ValidateCertificate(cert *x509.Certificate) error
     
-    // GetTrustedCerts returns all trusted certificates for a registry
-    GetTrustedCerts(registry string) ([]*x509.Certificate, error)
-    
-    // GetCertPool returns a configured cert pool for a registry
-    GetCertPool(registry string) (*x509.CertPool, error)
-    
-    // IsInsecure checks if a registry is marked as insecure
-    IsInsecure(registry string) bool
+    // SaveCertificate saves the certificate to the local trust store
+    SaveCertificate(cert *x509.Certificate, path string) error
 }
 
-type trustStoreManager struct {
-    certsDir        string
-    trustedCerts    map[string][]*x509.Certificate
-    insecureRegistries map[string]bool
-    mu              sync.RWMutex
+// CertificateInfo contains metadata about an extracted certificate
+type CertificateInfo struct {
+    Subject    string
+    Issuer     string
+    NotBefore  time.Time
+    NotAfter   time.Time
+    IsCA       bool
+    DNSNames   []string
 }
 ```
 
-Key implementation details:
-- Thread-safe operations with sync.RWMutex
-- Persistent storage at `~/.idpbuilder/certs/`
-- Certificate files named by registry hostname
-- Support for multiple certificates per registry
-- Automatic reload of certificates on access
-
-### Step 2: GGCR Transport Configuration (150 lines)
-**File**: `pkg/certs/transport.go`
-
-Configure go-containerregistry remote options with TLS settings:
-
+### Step 2: Implement Error Handling (errors.go)
 ```go
-// pkg/certs/transport.go
+// pkg/certs/errors.go
 package certs
 
-import (
-    "crypto/tls"
-    "net/http"
-    "github.com/google/go-containerregistry/pkg/v1/remote"
-)
+// Define custom error types for clear diagnostics
+type ClusterNotFoundError struct {
+    ClusterName string
+}
 
-// ConfigureTransport creates remote.Option with proper TLS configuration
-func (m *trustStoreManager) ConfigureTransport(registry string) (remote.Option, error) {
-    if m.IsInsecure(registry) {
-        return remote.WithTransport(&http.Transport{
-            TLSClientConfig: &tls.Config{
-                InsecureSkipVerify: true,
-            },
-        }), nil
-    }
-    
-    certPool, err := m.GetCertPool(registry)
-    if err != nil {
-        return nil, fmt.Errorf("failed to get cert pool: %w", err)
-    }
-    
-    return remote.WithTransport(&http.Transport{
-        TLSClientConfig: &tls.Config{
-            RootCAs: certPool,
-        },
-    }), nil
+type PodNotFoundError struct {
+    PodName   string
+    Namespace string
+}
+
+type CertificateInvalidError struct {
+    Reason string
+}
+
+type PermissionError struct {
+    Path   string
+    Action string
 }
 ```
 
-Key features:
-- Seamless integration with go-containerregistry
-- Support for --insecure flag via InsecureSkipVerify
-- Custom CA pool configuration
-- Error handling with clear messages
+### Step 3: Implement Certificate Extraction (extractor.go)
+Key implementation points:
+1. **Detect Kind cluster**: Use kubectl to check for Kind clusters
+2. **Locate Gitea pod**: Find the Gitea pod in the cluster
+3. **Extract certificate**: Copy cert from `/data/gitea/https/cert.pem` in pod
+4. **Parse certificate**: Convert PEM to x509.Certificate
+5. **Validate certificate**: Check expiry, subject, and basic validity
+6. **Store locally**: Save to `~/.idpbuilder/certs/gitea.pem` with proper permissions
 
-### Step 3: Trust Store Persistence (100 lines)
-**File**: `pkg/certs/trust_store.go`
+Implementation approach:
+- Use `exec.Command` to run kubectl commands
+- Handle errors gracefully with clear messages
+- Support both docker and podman as container runtimes
+- Create certificate directory if it doesn't exist
+- Set appropriate file permissions (0600 for cert files)
 
-Implement certificate persistence and loading:
-
-```go
-// pkg/certs/trust_store.go
-package certs
-
-// LoadFromDisk loads certificates from disk into memory
-func (m *trustStoreManager) LoadFromDisk() error {
-    // Implementation details:
-    // 1. Scan ~/.idpbuilder/certs/ directory
-    // 2. Load all .pem files
-    // 3. Parse certificates
-    // 4. Populate in-memory maps
-    // 5. Handle file permissions errors gracefully
-}
-
-// SaveToDisk persists a certificate to disk
-func (m *trustStoreManager) SaveToDisk(registry string, cert *x509.Certificate) error {
-    // Implementation details:
-    // 1. Create directory if not exists
-    // 2. Write certificate to PEM file
-    // 3. Set appropriate file permissions (0600)
-    // 4. Handle write errors with clear messages
-}
-```
-
-### Step 4: Comprehensive Test Suite (100 lines)
-**File**: `pkg/certs/trust_test.go`
-
-Test all functionality with high coverage:
-
-```go
-// pkg/certs/trust_test.go
-package certs
-
-import (
-    "testing"
-    "github.com/stretchr/testify/assert"
-    "github.com/stretchr/testify/require"
-)
-
-func TestTrustStoreManager(t *testing.T) {
-    t.Run("AddCertificate", func(t *testing.T) {
-        // Test adding certificates
-    })
-    
-    t.Run("LoadFromPEM", func(t *testing.T) {
-        // Test loading PEM files
-    })
-    
-    t.Run("CertRotation", func(t *testing.T) {
-        // Test certificate rotation support
-    })
-    
-    t.Run("InsecureMode", func(t *testing.T) {
-        // Test --insecure flag behavior
-    })
-    
-    t.Run("TransportConfiguration", func(t *testing.T) {
-        // Test GGCR transport setup
-    })
-}
-```
-
-## Integration Points
-
-### With E1.1.1 (Kind Certificate Extraction)
-While this effort can run in parallel with E1.1.1, they will integrate:
-- E1.1.1 extracts certificates from Kind/Gitea
-- E1.1.2 (this effort) provides the trust store to use them
-- Both efforts share the `pkg/certs` package namespace
-
-### With Phase 2 Efforts
-This trust store will be consumed by:
-- E2.1.2: Gitea Registry Client (uses ConfigureTransport)
-- All registry operations will use the trust configuration
+### Step 4: Write Comprehensive Tests (extractor_test.go)
+Test scenarios to cover:
+1. **Happy path**: Successful certificate extraction
+2. **Missing cluster**: Handle when Kind cluster doesn't exist
+3. **Missing pod**: Handle when Gitea pod is not found
+4. **Invalid certificate**: Handle malformed certificate data
+5. **Permission issues**: Handle file system permission errors
+6. **Certificate validation**: Test expiry and validity checks
+7. **Mock kubectl**: Mock kubectl commands for unit testing
 
 ## Size Management
-- **Estimated Lines**: 600
-- **Current Structure**: 250 + 150 + 100 + 100 = 600 lines
-- **Measurement Tool**: ${PROJECT_ROOT}/tools/line-counter.sh
-- **Check Frequency**: After each major component
-- **Split Threshold**: 700 lines (warning), 800 lines (stop)
+- **Estimated Lines**: ~500 lines total
+- **Measurement Tool**: `/home/vscode/workspaces/idpbuilder-oci-go-cr/tools/line-counter.sh`
+- **Check Frequency**: After each major component (every ~100 lines)
+- **Split Threshold**: 700 lines (warning), 800 lines (stop immediately)
+- **Current Status**: New effort, starting from 0 lines
 
 ## Test Requirements
-- **Unit Tests**: 80% coverage minimum
-- **Integration Tests**: Test with actual certificates
-- **E2E Tests**: Not required in Phase 1
-- **Test Files**: 
-  - `pkg/certs/trust_test.go` - Main test suite
-  - Test fixtures in `testdata/` if needed
+- **Unit Tests**: 80% minimum coverage
+- **Integration Tests**: Not required for this effort (Phase 2 responsibility)
+- **Test Strategy**: 
+  - Mock kubectl commands using interface injection
+  - Test all error scenarios
+  - Validate certificate parsing and storage
+  - Use testify for assertions
+  - Use golang/mock for kubectl mocking
 
-### Test Coverage Areas
-1. **Certificate Management**
-   - Adding/removing certificates
-   - Loading from PEM files
-   - Certificate validation
-   - Error handling
-
-2. **Transport Configuration**
-   - TLS configuration with custom CA
-   - Insecure mode handling
-   - Connection testing
-
-3. **Persistence**
-   - Save/load from disk
-   - File permission handling
-   - Directory creation
-
-4. **Certificate Rotation**
-   - Reload certificates without restart
-   - Handle expired certificates
-   - Update notifications
+### Test Files Expected:
+- `pkg/certs/extractor_test.go` - Main unit tests
+- Test fixtures for mock certificates
+- Mock implementations for kubectl interface
 
 ## Pattern Compliance
-- **Go Best Practices**: 
-  - Interface-driven design (TrustStoreManager)
-  - Error wrapping with context
-  - Thread-safe operations
-  - Clear package boundaries
-
+- **Go Patterns**: 
+  - Follow Go standard project layout
+  - Use interfaces for testability
+  - Return errors, don't panic
+  - Use context for cancellation
+  - Clear error messages with context
+  
 - **Security Requirements**:
-  - Never silently ignore certificate errors
-  - Require explicit --insecure flag
-  - Log all security decisions
-  - Secure file permissions (0600)
+  - Never expose private keys in logs
+  - Set restrictive file permissions (0600)
+  - Validate certificates before trusting
+  - Clear audit trail for security operations
+  - Support --insecure flag but log warnings
 
-- **Performance Targets**:
-  - Certificate loading < 100ms
-  - In-memory caching for performance
-  - Lazy loading on first use
+- **Code Style**:
+  - gofmt compliant
+  - golint clean
+  - Meaningful variable names
+  - Comprehensive comments for exported functions
+  - Example usage in comments
 
-## Error Handling Strategy
+## Dependencies
+External packages required:
+- `k8s.io/client-go` - For Kubernetes client operations
+- `k8s.io/apimachinery` - For Kubernetes API types
+- Standard library packages:
+  - `crypto/x509` - Certificate handling
+  - `encoding/pem` - PEM encoding/decoding
+  - `os/exec` - For kubectl commands
+  - `path/filepath` - Path manipulation
+  - `io/ioutil` or `os` - File operations
 
-### Certificate Errors
-```go
-// Clear, actionable error messages
-return fmt.Errorf("certificate verification failed for %s: %w\n" +
-    "To fix this issue:\n" +
-    "1. Ensure the certificate is valid\n" +
-    "2. Check certificate expiry: %s\n" +
-    "3. Or use --insecure flag for testing", 
-    registry, err, cert.NotAfter)
-```
+## Success Criteria
+- ✅ Successfully extracts certificate from Gitea pod
+- ✅ Stores certificate in local trust store
+- ✅ Clear error messages for all failure scenarios
+- ✅ 80% test coverage achieved
+- ✅ No security vulnerabilities
+- ✅ Code stays under 500 lines
+- ✅ All tests pass
+- ✅ Integrates cleanly with Effort 1.1.2
 
-### Permission Errors
-```go
-// Handle permission issues gracefully
-if os.IsPermission(err) {
-    return fmt.Errorf("permission denied accessing certificate store at %s\n" +
-        "Please check file permissions or run with appropriate privileges",
-        m.certsDir)
-}
-```
+## Integration Points
+This effort provides the foundation for:
+- **Effort 1.1.2**: Registry TLS Trust Integration will use the extracted certificates
+- **Phase 2**: Build & Push operations will rely on the certificate infrastructure
 
-## CLI Integration
-
-The trust store will integrate with CLI commands:
-
-```bash
-# Normal operation with certificates
-idpbuilder-oci push myimage:latest
-
-# Testing with --insecure flag
-idpbuilder-oci push --insecure myimage:latest
-
-# Certificate management (future)
-idpbuilder-oci cert add gitea.local ~/certs/gitea.pem
-idpbuilder-oci cert list
-idpbuilder-oci cert remove gitea.local
-```
-
-## Success Metrics
-- ✅ Zero certificate errors during normal operation
-- ✅ Clear error messages when certificate issues occur
-- ✅ Successful integration with go-containerregistry
-- ✅ 80%+ test coverage
-- ✅ Implementation within 600 line budget
-
-## Dependencies & Imports
-```go
-import (
-    // Standard library
-    "crypto/tls"
-    "crypto/x509"
-    "encoding/pem"
-    "fmt"
-    "io/ioutil"
-    "os"
-    "path/filepath"
-    "sync"
-    
-    // External dependencies
-    "github.com/google/go-containerregistry/pkg/v1/remote"
-    
-    // Testing
-    "github.com/stretchr/testify/assert"
-    "github.com/stretchr/testify/require"
-)
-```
+The `KindCertExtractor` interface will be consumed by the trust store manager in Effort 1.1.2.
 
 ## Notes for SW Engineer
-
-### Priority Order
-1. Implement TrustStoreManager interface first
-2. Add transport configuration for GGCR
-3. Implement persistence layer
-4. Write comprehensive tests
-5. Integrate with CLI commands (coordination with other efforts)
-
-### Key Considerations
-- This is a foundational component - quality is critical
-- Focus on clear error messages for debugging
-- Certificate rotation must work without restarts
-- Security decisions must be explicit and logged
-- Coordinate with E1.1.1 on shared package structure
-
-### Testing Approach
-- Use self-signed certificates in test fixtures
-- Test both happy path and error cases
-- Verify thread safety with concurrent tests
-- Mock filesystem for permission testing
-
-## Completion Checklist
-- [ ] TrustStoreManager interface implemented
-- [ ] GGCR transport configuration working
-- [ ] Certificate persistence functional
-- [ ] 80%+ test coverage achieved
-- [ ] Error messages are clear and actionable
-- [ ] --insecure flag properly implemented
-- [ ] Code review passed
-- [ ] Size limit compliance (<800 lines)
+1. Start with the interface definitions to establish the contract
+2. Implement error types early for consistent error handling
+3. Use dependency injection for kubectl to enable testing
+4. Consider using k8s.io/client-go instead of exec.Command for better error handling
+5. Ensure all file operations check permissions first
+6. Log security-relevant operations for audit trail
+7. Keep the implementation focused - don't add features not in spec
+8. Measure size frequently with the line-counter tool
+9. Stop immediately if approaching 800 lines
