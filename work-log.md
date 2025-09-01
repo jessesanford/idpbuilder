@@ -32,3 +32,12 @@ Status: ✅ Success
 Command: git fetch --all
 Result: All effort branches fetched successfully
 Status: ✅ Success
+
+## Phase 1: Merge registry-tls-trust-integration
+
+### Operation 1: Merge with consolidated types
+Command: git merge registry-tls/idpbuidler-oci-go-cr/phase1/wave1/registry-tls-trust-integration --no-ff -m "merge: Wave 1 registry-tls-trust-integration with consolidated types [Phase 1]"
+Conflict: work-log.md (resolved by keeping integration version)
+Resolution: git checkout --ours work-log.md
+Result: Merge successful, consolidated types.go present
+Status: ✅ Success
