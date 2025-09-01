@@ -36,3 +36,19 @@ Conflict Resolution:
 - File: work-log.md
 - Resolution: Kept integration work log, documented effort's work in separate file
 - The effort branch added: pkg/certs with 815 lines of certificate extraction code
+
+### Operation 2: Merge E1.1.2 - Registry TLS Trust Integration
+Command: git remote add registry-tls ../wave1/registry-tls-trust-integration/.git
+Result: Success
+
+Command: git fetch registry-tls
+Result: Success - fetched branch
+
+Command: git merge registry-tls/idpbuidler-oci-go-cr/phase1/wave1/registry-tls-trust-integration --no-ff -m "merge: integrate E1.1.2 - Registry TLS Trust Integration into Phase 1 integration"
+Result: Conflicts in work-log.md and IMPLEMENTATION-PLAN.md - resolving...
+
+Conflict Resolution:
+- Files: work-log.md, IMPLEMENTATION-PLAN.md
+- Resolution: Kept integration work log, merged implementation plans
+- The effort branch added: Additional files to pkg/certs (trust.go, transport.go, trust_store.go, tests)
+- Note: This effort was split into 2 parts to stay under 800 line limit (979 total lines)
