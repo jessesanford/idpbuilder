@@ -9,23 +9,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
-// CertificateInfo contains metadata about an extracted certificate
-// This type matches the CertificateInfo from E1.1.1 (kind-certificate-extraction)
-// to ensure compatibility during integration
-type CertificateInfo struct {
-	Subject   string
-	Issuer    string
-	NotBefore time.Time
-	NotAfter  time.Time
-	IsCA      bool
-	DNSNames  []string
-}
-
-// TrustStoreUtils provides utility functions for trust store operations
-type TrustStoreUtils struct{}
+// Types are now consolidated in types.go - using those definitions
 
 
 // NewTrustStoreUtils creates a new instance of trust store utilities

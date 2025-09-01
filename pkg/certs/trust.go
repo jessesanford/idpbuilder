@@ -6,69 +6,13 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
-
-	"github.com/google/go-containerregistry/pkg/v1/remote"
 )
 
-// TransportConfig holds configuration options for registry transport (from Split 002)
-type TransportConfig struct {
-	// Timeout for HTTP requests (default: 30 seconds)
-	Timeout time.Duration
-	
-	// MaxIdleConns controls the maximum number of idle connections
-	MaxIdleConns int
-	
-	// MaxIdleConnsPerHost controls the maximum idle connections per host
-	MaxIdleConnsPerHost int
-	
-	// IdleConnTimeout is the maximum amount of time an idle connection will remain idle
-	IdleConnTimeout time.Duration
-}
-
-// TrustStoreManager manages trusted certificates for registry operations
-type TrustStoreManager interface {
-	// AddCertificate adds a certificate for a specific registry
-	AddCertificate(registry string, cert *x509.Certificate) error
-
-	// RemoveCertificate removes the certificate for a registry
-	RemoveCertificate(registry string) error
-
-	// SetInsecureRegistry marks a registry as insecure (skip TLS verification)
-	SetInsecureRegistry(registry string, insecure bool) error
-
-	// GetTrustedCerts returns all trusted certificates for a registry
-	GetTrustedCerts(registry string) ([]*x509.Certificate, error)
-
-	// GetCertPool returns a configured cert pool for a registry
-	GetCertPool(registry string) (*x509.CertPool, error)
-
-	// IsInsecure checks if a registry is marked as insecure
-	IsInsecure(registry string) bool
-
-	// LoadFromDisk loads all certificates from persistent storage
-	LoadFromDisk() error
-
-	// SaveToDisk saves a certificate to persistent storage
-	SaveToDisk(registry string, cert *x509.Certificate) error
-
-	// Transport configuration methods from Split 002
-	// ConfigureTransport creates a remote.Option with proper TLS configuration
-	ConfigureTransport(registry string) (remote.Option, error)
-
-	// ConfigureTransportWithConfig creates a remote.Option with custom transport configuration
-	ConfigureTransportWithConfig(registry string, config *TransportConfig) (remote.Option, error)
-
-	// CreateHTTPClient creates an HTTP client with proper TLS configuration
-	CreateHTTPClient(registry string) (*http.Client, error)
-
-	// CreateHTTPClientWithConfig creates an HTTP client with custom configuration
-	CreateHTTPClientWithConfig(registry string, config *TransportConfig) (*http.Client, error)
-}
+// Types are now consolidated in types.go - using those definitions
 
 // trustStoreManager implements the TrustStoreManager interface
 type trustStoreManager struct {

@@ -3,7 +3,6 @@ package certs
 
 import (
 	"crypto/tls"
-	"crypto/x509"
 	"fmt"
 	"net/http"
 	"time"
@@ -222,18 +221,7 @@ func (m *trustStoreManager) GetTLSConnectionInfo(registry string) (*ConnectionIn
 	return info, nil
 }
 
-// ConnectionInfo holds TLS connection information
-type ConnectionInfo struct {
-	Registry          string
-	IsSecure          bool
-	IsInsecure        bool
-	TLSVersion        string
-	CipherSuite       string
-	ServerCerts       []*x509.Certificate
-	VerifiedChains    [][]*x509.Certificate
-	HandshakeComplete bool
-	Error             string
-}
+// ConnectionInfo type is now defined in types.go
 
 // tlsVersionString converts TLS version constant to string
 func tlsVersionString(version uint16) string {
