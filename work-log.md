@@ -41,3 +41,15 @@ Conflict: work-log.md (resolved by keeping integration version)
 Resolution: git checkout --ours work-log.md
 Result: Merge successful, consolidated types.go present
 Status: ✅ Success
+## Phase 2: Merge kind-certificate-extraction
+
+### Operation 1: Merge with conflict resolution
+Command: git merge kind-cert/idpbuidler-oci-go-cr/phase1/wave1/kind-certificate-extraction --no-ff -m "merge: Wave 1 kind-certificate-extraction [Phase 1]"
+Conflicts: pkg/certs/types.go, work-log.md, IMPLEMENTATION-PLAN.md
+Resolution Strategy:
+  - pkg/certs/types.go: Keep consolidated version (--ours)
+  - work-log.md: Keep integration version (--ours)
+  - IMPLEMENTATION-PLAN.md: Keep effort version (--theirs)
+Result: Merge successful, all kind-certificate-extraction files present
+Files Added: extractor.go, errors.go, extractor_test.go
+Status: ✅ Success
