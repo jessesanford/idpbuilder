@@ -53,3 +53,15 @@ Resolution Strategy:
 Result: Merge successful, all kind-certificate-extraction files present
 Files Added: extractor.go, errors.go, extractor_test.go
 Status: ✅ Success
+
+## Phase 3: Merge certificate-validation-pipeline
+
+### Operation 1: Merge with conflict resolution  
+Command: git merge cert-valid/idpbuidler-oci-go-cr/phase1/wave2/certificate-validation-pipeline --no-ff -m "merge: Wave 2 certificate-validation-pipeline [Phase 1]"
+Conflicts: work-log.md, IMPLEMENTATION-PLAN.md
+Resolution Strategy:
+  - work-log.md: Keep integration version (--ours)
+  - IMPLEMENTATION-PLAN.md: Keep effort version (--theirs)
+Result: Merge successful, validation files present
+Files Added: validator.go, diagnostics.go, validator_test.go, testdata/certs.go
+Status: ✅ Success
