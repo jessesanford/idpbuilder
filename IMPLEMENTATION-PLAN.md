@@ -35,11 +35,24 @@
 
 ### E1.2.2 - Fallback Strategies
 - **Branch**: `idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies`
-- **Status**: Pending merge
-- **Dependencies**: E1.1.1, E1.1.2
+- **Size**: 744 lines (within 800 limit after optimization)
+- **Status**: Merged
+- **Dependencies**: E1.1.1, E1.1.2, E1.2.1
+- **Added Files**:
+  - pkg/fallback/detector.go (258 lines)
+  - pkg/fallback/recommender.go (160 lines)
+  - pkg/fallback/insecure.go (164 lines)
+  - pkg/fallback/logger.go (115 lines)
+  - pkg/fallback/detector_test.go (160 lines)
+  - pkg/fallback/recommender_test.go (168 lines)
+  - pkg/fallback/insecure_test.go (217 lines)
+  - pkg/certs/types.go (42 lines - extended with CertValidator interface)
 
 ## Integration Notes
 - Wave 1 efforts (E1.1.1 and E1.1.2) were developed in parallel
 - Both efforts contribute to the pkg/certs package
 - Wave 2 efforts depend on Wave 1 foundation
 - Certificate validation pipeline adds validation layer on top of Wave 1
+- Fallback strategies provide error handling and --insecure mode
+- All four efforts successfully integrated with proper dependency resolution
+- pkg/certs/types.go contains merged interfaces from both E1.1.1 and E1.2.2

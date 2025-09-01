@@ -37,6 +37,9 @@ Conflict Resolution:
 - Resolution: Kept integration work log, documented effort's work in separate file
 - The effort branch added: pkg/certs with 815 lines of certificate extraction code
 
+Command: git add work-log.md && git commit --no-edit
+Result: Success - merge completed
+
 ### Operation 2: Merge E1.1.2 - Registry TLS Trust Integration
 Command: git remote add registry-tls ../wave1/registry-tls-trust-integration/.git
 Result: Success
@@ -53,6 +56,9 @@ Conflict Resolution:
 - The effort branch added: Additional files to pkg/certs (trust.go, transport.go, trust_store.go, tests)
 - Note: This effort was split into 2 parts to stay under 800 line limit (979 total lines)
 
+Command: git add work-log.md IMPLEMENTATION-PLAN.md && git commit --no-edit
+Result: Success - merge completed
+
 ### Operation 3: Merge E1.2.1 - Certificate Validation Pipeline
 Command: git remote add cert-validation ../wave2/certificate-validation-pipeline/.git
 Result: Success
@@ -67,3 +73,22 @@ Conflict Resolution:
 - Files: work-log.md, IMPLEMENTATION-PLAN.md
 - Resolution: Kept integration work log, merged implementation plans
 - The effort branch added: pkg/certs/validator.go, diagnostics.go, and tests (568 lines total)
+
+Command: git add work-log.md IMPLEMENTATION-PLAN.md && git commit --no-edit
+Result: Success - merge completed
+
+### Operation 4: Merge E1.2.2 - Fallback Strategies
+Command: git remote add fallback-strat ../wave2/fallback-strategies/.git
+Result: Success
+
+Command: git fetch fallback-strat
+Result: Success - fetched branch
+
+Command: git merge fallback-strat/idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies --no-ff -m "merge: integrate E1.2.2 - Fallback Strategies into Phase 1 integration"
+Result: Conflicts in work-log.md, IMPLEMENTATION-PLAN.md, and pkg/certs/types.go - resolving...
+
+Conflict Resolution:
+- Files: work-log.md, IMPLEMENTATION-PLAN.md, pkg/certs/types.go
+- Resolution: Kept integration work log, merged implementation plans, combined type definitions
+- The effort branch added: pkg/fallback/ with detector, recommender, insecure, and logger (744 lines total)
+- Note: pkg/certs/types.go conflict resolved by merging both interface definitions
