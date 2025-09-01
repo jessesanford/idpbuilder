@@ -179,9 +179,10 @@ waves:
     name: "Certificate Validation & Fallback"
     status: "COMPLETE"
     efforts_count: 2
-    completed_at: "2025-09-01T14:50:00Z"
+    completed_at: "2025-09-01T15:01:00Z"
     all_reviews_passed: true
     size_compliant: true
+    integration_branch: "idpbuidler-oci-go-cr/phase1/wave2/integration"
     
   - phase: 2
     wave_number: 1
