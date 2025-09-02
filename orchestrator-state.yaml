@@ -308,6 +308,38 @@ code_reviewer_parallelization_plan:
       r151_requirement: "All in ONE message with <5s delta"
       rationale: "Both efforts are foundational and independent"
 
+sw_engineer_parallelization_plan:
+  wave: 1
+  phase: 2
+  analysis_timestamp: "2025-09-02T02:02:30Z"
+  
+  blocking_implementations: []
+    
+  parallel_groups:
+    group_1:
+      can_start_immediately: true
+      efforts:
+        - effort_id: "E2.1.1"
+          name: "go-containerregistry-image-builder"
+          description: "Implement OCI image building with go-containerregistry"
+          estimated_lines: 600
+          working_directory: "efforts/phase2/wave1/go-containerregistry-image-builder"
+          branch: "idpbuidler-oci-go-cr/phase2/wave1/go-containerregistry-image-builder"
+        - effort_id: "E2.1.2"
+          name: "gitea-registry-client"
+          description: "Implement Gitea registry client with certificate support"
+          estimated_lines: 600
+          working_directory: "efforts/phase2/wave1/gitea-registry-client"
+          branch: "idpbuidler-oci-go-cr/phase2/wave1/gitea-registry-client"
+          
+  spawn_sequence:
+    - step: 1
+      action: "spawn_parallel"
+      agent_type: "sw-engineer"
+      efforts: ["E2.1.1", "E2.1.2"]
+      r151_requirement: "All in ONE message with <5s delta"
+      rationale: "Both efforts independent and marked for parallel execution"
+
 parallel_code_reviewer_spawns:
   phase1_wave1_effort_planning:
     agents_spawned: 2
