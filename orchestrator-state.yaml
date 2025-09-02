@@ -443,19 +443,22 @@ split_tracking:
     effort_name: "go-containerregistry-image-builder"
     original_lines: 856
     split_count: 2
-    status: "SPLIT_PLAN_CREATED"
+    status: "SPLIT_IN_PROGRESS"
     split_plan_created_at: "2025-09-02T06:40:00Z"
     splits:
       - split_id: "Split-001"
         description: "Core Builder Infrastructure"
         target_lines: 450
-        status: "PENDING"
+        actual_lines: 782
+        status: "COMPLETE_REVIEWED_PASSED"
+        completed_at: "2025-09-02T06:50:00Z"
+        review_passed_at: "2025-09-02T06:59:15Z"
         dependencies: []
         must_complete_before: ["Split-002"]
       - split_id: "Split-002"
         description: "Layer and Manifest Management"
         target_lines: 406
-        status: "PENDING"
+        status: "READY_TO_START"
         dependencies: ["Split-001"]
         must_complete_before: []
     
@@ -463,19 +466,23 @@ split_tracking:
     effort_name: "gitea-registry-client"
     original_lines: 927
     split_count: 3
-    status: "SPLIT_PLAN_CREATED"
+    status: "SPLIT_IN_PROGRESS"
     split_plan_created_at: "2025-09-02T06:42:00Z"
     splits:
       - split_id: "Split-001"
         description: "Foundation layer with types and transport"
         target_lines: 405
-        status: "PENDING"
+        actual_lines: 568
+        status: "COMPLETE_REVIEWED_PASSED"
+        completed_at: "2025-09-02T06:57:00Z"
+        review_passed_at: "2025-09-02T06:58:25Z"
+        branch: "idpbuilder-oci-go-cr/phase2/wave1/gitea-registry-client-split-001"
         dependencies: []
         must_complete_before: ["Split-002"]
       - split_id: "Split-002"
         description: "Authentication layer"
         target_lines: 350
-        status: "PENDING"
+        status: "READY_TO_START"
         dependencies: ["Split-001"]
         must_complete_before: ["Split-003"]
       - split_id: "Split-003"
