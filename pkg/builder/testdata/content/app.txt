@@ -1,0 +1,5 @@
+This is a sample application file for testing the OCI image builder.
+
+This file will be included in the container layer during the build process.
+It serves as test content to verify that directory contents are properly
+packaged into OCI image layers.
