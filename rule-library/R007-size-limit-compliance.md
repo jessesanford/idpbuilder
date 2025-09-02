@@ -8,6 +8,13 @@
 
 NO effort may EVER exceed 800 lines. Soft warning at 700 lines. Automatic split required at violation.
 
+### 🔴🔴🔴 PARAMOUNT REQUIREMENT (Per R307) 🔴🔴🔴
+**EVERY effort AND split must be independently mergeable!**
+- Must compile and pass tests when merged alone
+- Must NOT break existing functionality
+- Must use feature flags for incomplete features
+- Must be mergeable months/years later
+
 ## Size Limits
 
 | Threshold | Action Required | Grading Impact |
@@ -83,6 +90,17 @@ When splitting is required:
 3. Each split must be <700 lines
 4. Splits execute SEQUENTIALLY
 5. Each split gets full review
+
+### 🔴 Split Independence Requirements (R307)
+**CRITICAL**: Each split must be independently mergeable!
+1. **Split 1** must work alone (even if Split 2 never merges)
+2. **Split 2** must work with just Split 1 merged
+3. **No split** can break existing functionality
+4. **Feature flags** hide incomplete features across splits
+5. **Example**: Authentication split sequence
+   - Split 1: Basic auth interface + stub (works alone)
+   - Split 2: OAuth implementation (enhances Split 1)
+   - Split 3: Advanced features (optional enhancement)
 
 ## Common Violations
 

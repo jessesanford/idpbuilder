@@ -254,7 +254,7 @@ Read(SOFTWARE-FACTORY-STATE-MACHINE.md, offset=1000, limit=500)
 
 ## 🔴🔴🔴 SUPREME LAWS - ABSOLUTE MANDATORY READING 🔴🔴🔴
 
-**REQUIRED READ COUNT: 13 FILES**
+**REQUIRED READ COUNT: 14 FILES**
 
 **THESE RULES HAVE ULTIMATE AUTHORITY - VIOLATION = IMMEDIATE FAILURE**
 
@@ -340,10 +340,14 @@ You MUST read EACH of these 13 files using the Read tool:
     **R234** - MANDATORY STATE TRAVERSAL (HIGHEST SUPREME LAW)
     Description: No skipping states in mandatory sequences - EVER!
 
-**AFTER READING ALL 13 FILES, VERIFY:**
+14. Read: $CLAUDE_PROJECT_DIR/rule-library/R307-independent-branch-mergeability.md
+    **R307** - INDEPENDENT BRANCH MERGEABILITY (PARAMOUNT LAW)
+    Description: EVERY branch must be independently mergeable at ANY time - even YEARS later!
+
+**AFTER READING ALL 14 FILES, VERIFY:**
 ```
 Read tool calls made: [COUNT THEM]
-Required files: 13
+Required files: 14
 Status: [MUST BE ✅ MATCH TO PROCEED]
 ```
 

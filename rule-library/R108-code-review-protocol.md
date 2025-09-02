@@ -44,6 +44,13 @@ cd $REVIEW_DIR && go test -cover ./...
 - **Concurrency Safety**: No race conditions
 - **Security**: No vulnerabilities introduced
 
+#### 🔴🔴🔴 Independence Verification (R307 - PARAMOUNT) 🔴🔴🔴
+- **Builds Independently**: PR compiles when merged alone to main
+- **No Breaking Changes**: Existing functionality remains intact
+- **Feature Flags Present**: All incomplete features behind flags
+- **Graceful Degradation**: Handles missing dependencies
+- **Future-Proof**: Could merge years from now
+
 #### Size Compliance (CRITICAL)
 ```yaml
 size_limits:
@@ -82,6 +89,12 @@ Report content format:
 ## Architecture Compliance
 - Pattern Adherence: COMPLIANT | VIOLATIONS_FOUND
 - Details: [specific issues]
+
+## 🔴 Independence Verification (R307)
+- Builds Alone: PASS | FAIL
+- Breaks Existing: NO | YES
+- Feature Flags: PRESENT | MISSING
+- Can Merge Anytime: YES | NO
 
 ## Issues Found
 ### BLOCKING (Must fix)

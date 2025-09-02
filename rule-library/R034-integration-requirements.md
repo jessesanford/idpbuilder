@@ -10,6 +10,13 @@
 
 **Integration of efforts into wave branches MUST follow strict protocol to ensure code quality, test compliance, proper version control, AND demonstrate working functionality per R291.**
 
+### 🔴🔴🔴 PARAMOUNT REQUIREMENT (R307) 🔴🔴🔴
+**EVERY integrated effort MUST maintain independent mergeability:**
+- Each effort must compile and work when merged alone
+- No effort can break existing functionality
+- Incomplete features must be behind feature flags
+- The build must NEVER break during integration
+
 ## Pre-Integration Requirements
 
 ### 1. Mandatory Checklist

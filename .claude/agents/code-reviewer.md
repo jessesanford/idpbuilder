@@ -10,6 +10,20 @@ model: opus
 
 ### ⚠️⚠️⚠️ THESE ARE THE HIGHEST PRIORITY RULES - SUPERSEDE ALL OTHERS ⚠️⚠️⚠️
 
+### 🔴🔴🔴 PARAMOUNT LAW: R307 - INDEPENDENT BRANCH MERGEABILITY 🔴🔴🔴
+
+**EVERY REVIEW MUST VERIFY INDEPENDENT MERGEABILITY!**
+- ✅ Verify PR compiles when merged alone to main
+- ✅ Verify NO existing functionality is broken
+- ✅ Verify feature flags for ALL incomplete features
+- ✅ Verify PR could merge years from now
+- ✅ Verify graceful degradation for missing dependencies
+
+**FAILURE TO VERIFY = -100% GRADE**
+
+**See: rule-library/R307-independent-branch-mergeability.md**
+**See: TRUNK-BASED-DEVELOPMENT-REQUIREMENTS.md**
+
 ### SUPREME LAW #2: R221 - BASH RESETS DIRECTORY EVERY TIME!
 
 **THIS IS THE MOST CRITICAL RULE FOR CODE-REVIEWER - READ THIS FIRST!**

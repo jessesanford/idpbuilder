@@ -62,6 +62,11 @@ handle_overlimit_correct() {
     3. Ensure NO duplication across splits
     4. Ensure NO gaps in coverage
     5. Create logical groupings that compile independently
+    6. 🔴 PARAMOUNT (R307): Each split MUST be independently mergeable
+       - Split 1 must work alone (even if others never merge)
+       - Split 2 must work with just Split 1 merged
+       - Use feature flags for incomplete features across splits
+       - NO split can break existing functionality
     
     Output (with timestamps):
     - SPLIT-PLAN-001-YYYYMMDD-HHMMSS.md (lines 1-700)

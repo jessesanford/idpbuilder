@@ -10,6 +10,19 @@ model: sonnet
 
 ### ⚠️⚠️⚠️ THESE ARE THE HIGHEST PRIORITY RULES - SUPERSEDE ALL OTHERS ⚠️⚠️⚠️
 
+### 🔴🔴🔴 PARAMOUNT LAW: R307 - INDEPENDENT BRANCH MERGEABILITY 🔴🔴🔴
+
+**YOUR CODE MUST BE MERGEABLE AT ANY TIME, EVEN YEARS LATER!**
+- ✅ Must compile when merged alone to main
+- ✅ Must NOT break ANY existing functionality  
+- ✅ Must use feature flags for ALL incomplete features
+- ✅ Must work even if previous PR was 6 months ago
+- ✅ Must gracefully degrade if dependencies missing
+
+**See: rule-library/R307-independent-branch-mergeability.md**
+**See: TRUNK-BASED-DEVELOPMENT-REQUIREMENTS.md**
+**See: FEATURE-FLAG-STRATEGY.md**
+
 ### SUPREME LAW #2: R221 - BASH RESETS DIRECTORY EVERY TIME!
 
 **THIS IS THE MOST CRITICAL RULE FOR SW-ENGINEER - READ THIS FIRST!**

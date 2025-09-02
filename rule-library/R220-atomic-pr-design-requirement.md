@@ -4,7 +4,7 @@
 **Status**: ACTIVE  
 **Criticality**: 🔴🔴🔴 SUPREME LAW - ABSOLUTE REQUIREMENT
 **Supersedes**: None
-**Related Rules**: R221 (CD requirement), R277 (continuous build), R280 (main branch protection)
+**Related Rules**: R307 (PARAMOUNT independent mergeability), R221 (CD requirement), R277 (continuous build), R280 (main branch protection)
 
 ## ABSOLUTE REQUIREMENT
 
@@ -14,13 +14,16 @@ This is a SUPREME LAW for trunk-based development and continuous delivery. No ex
 
 ## Core Requirements
 
-### 1. Atomic PR Mergeability
+### 1. Atomic PR Mergeability (See R307 for PARAMOUNT details)
 - **MANDATORY**: Each effort = ONE atomic PR to upstream main
 - **MANDATORY**: Must merge independently without breaking build
 - **MANDATORY**: Must not introduce bugs or regressions
 - **MANDATORY**: Must maintain working binary at all times
+- **MANDATORY**: Must be mergeable MONTHS/YEARS later (R307)
+- **MANDATORY**: Feature flags for ALL incomplete features
 - **FORBIDDEN**: Multi-effort PRs that cannot be split
 - **FORBIDDEN**: PRs that break the build when merged alone
+- **FORBIDDEN**: Dependencies on unmerged work
 
 ### 2. Required Implementation Techniques
 
