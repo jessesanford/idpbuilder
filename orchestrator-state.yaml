@@ -112,16 +112,24 @@ efforts_in_progress:
     wave: 1
     implementation_status: "COMPLETE"
     implementation_completed_at: "2025-09-02T02:19:00Z"
-    review_status: "NOT_STARTED"
-    notes: "Implementation complete, awaiting code review with proper line-counter.sh measurement"
+    review_status: "NEEDS_SPLIT"
+    review_completed_at: "2025-09-02T05:04:32Z"
+    lines_measured: 856
+    split_required: true
+    split_count: 2
+    notes: "Code review complete - exceeds 800 line limit by 56 lines. Split plan created."
   - effort_id: "E2.1.2"
     name: "gitea-registry-client"
     phase: 2
     wave: 1
     implementation_status: "COMPLETE"
     implementation_completed_at: "2025-09-02T02:19:00Z"
-    review_status: "NOT_STARTED"
-    notes: "Implementation complete, awaiting code review with proper line-counter.sh measurement"
+    review_status: "NEEDS_SPLIT"
+    review_completed_at: "2025-09-02T05:11:30Z"
+    lines_measured: 927
+    split_required: true
+    split_count: 3
+    notes: "Code review complete - exceeds 800 line limit by 127 lines. Also lacks tests and Phase 1 integration. Split plan created."
 efforts_planned:
   # Phase 1: Certificate Infrastructure
   - phase: 1
