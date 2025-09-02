@@ -433,7 +433,57 @@ phase_assessment:
     - Architecture sound with good interface design
     - Minor test compilation error can be fixed in Phase 2
 
-# Split tracking removed - awaiting new split plans with updated rules
+# Split tracking per R302 - Comprehensive Split Tracking Protocol
+split_tracking:
+  phase: 2
+  wave: 1
+  updated_at: "2025-09-02T06:45:00Z"
+  
+  E2.1.1_splits:
+    effort_name: "go-containerregistry-image-builder"
+    original_lines: 856
+    split_count: 2
+    status: "SPLIT_PLAN_CREATED"
+    split_plan_created_at: "2025-09-02T06:40:00Z"
+    splits:
+      - split_id: "Split-001"
+        description: "Core Builder Infrastructure"
+        target_lines: 450
+        status: "PENDING"
+        dependencies: []
+        must_complete_before: ["Split-002"]
+      - split_id: "Split-002"
+        description: "Layer and Manifest Management"
+        target_lines: 406
+        status: "PENDING"
+        dependencies: ["Split-001"]
+        must_complete_before: []
+    
+  E2.1.2_splits:
+    effort_name: "gitea-registry-client"
+    original_lines: 927
+    split_count: 3
+    status: "SPLIT_PLAN_CREATED"
+    split_plan_created_at: "2025-09-02T06:42:00Z"
+    splits:
+      - split_id: "Split-001"
+        description: "Foundation layer with types and transport"
+        target_lines: 405
+        status: "PENDING"
+        dependencies: []
+        must_complete_before: ["Split-002"]
+      - split_id: "Split-002"
+        description: "Authentication layer"
+        target_lines: 350
+        status: "PENDING"
+        dependencies: ["Split-001"]
+        must_complete_before: ["Split-003"]
+      - split_id: "Split-003"
+        description: "Client implementation"
+        target_lines: 330
+        status: "PENDING"
+        dependencies: ["Split-002"]
+        must_complete_before: []
 
 error_recovery:
   error_id: "ERR-PHASE1-INTERFACE-20250901-203600"
