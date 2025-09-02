@@ -343,11 +343,14 @@ You MUST read EACH of these 13 files using the Read tool:
 14. Read: $CLAUDE_PROJECT_DIR/rule-library/R307-independent-branch-mergeability.md
     **R307** - INDEPENDENT BRANCH MERGEABILITY (PARAMOUNT LAW)
     Description: EVERY branch must be independently mergeable at ANY time - even YEARS later!
+15. Read: $CLAUDE_PROJECT_DIR/rule-library/R308-incremental-branching-strategy.md
+    **R308** - INCREMENTAL BRANCHING STRATEGY (CORE TENANT)
+    Description: Every effort builds on previous wave/phase integration - TRUE trunk-based development!
 
-**AFTER READING ALL 14 FILES, VERIFY:**
+**AFTER READING ALL 15 FILES, VERIFY:**
 ```
 Read tool calls made: [COUNT THEM]
-Required files: 14
+Required files: 15
 Status: [MUST BE ✅ MATCH TO PROCEED]
 ```
 
@@ -755,13 +758,42 @@ orchestrator_states:
 - Ensure TODO persistence
 - Track grading metrics
 
-### 4. Integration Management
+### 4. Split Infrastructure Creation (R204)
+**🔴🔴🔴 CRITICAL: ORCHESTRATOR CREATES SPLIT INFRASTRUCTURE, NOT SW ENGINEERS! 🔴🔴🔴**
+
+When Code Reviewer creates split plans (SPLIT-INVENTORY.md and SPLIT-PLAN-XXX.md):
+
+#### ORCHESTRATOR MUST:
+1. **WAIT** for Code Reviewer to complete and push split plans
+2. **CREATE** all split directories with -SPLIT-XXX suffix
+3. **CLONE** target repository into each split directory
+4. **CREATE** sequential branches (split-002 based on split-001, etc.)
+5. **COPY** relevant SPLIT-PLAN-XXX.md to each directory
+6. **PUSH** all branches to remote with tracking
+7. **THEN** spawn SW Engineer for sequential implementation
+
+#### ORCHESTRATOR MUST NOT:
+- ❌ Expect SW Engineers to create split infrastructure
+- ❌ Spawn SW Engineers before infrastructure is ready
+- ❌ Create parallel branches (must be sequential)
+- ❌ Skip infrastructure verification
+
+#### Split Infrastructure Checklist:
+```bash
+✅ Split directories created: efforts/phase1/wave1/auth-SPLIT-001/
+✅ Each has separate clone: .git/ directory exists
+✅ Sequential branches: split-002 based on split-001
+✅ Split plans copied: SPLIT-PLAN-XXX.md in each directory
+✅ Remote tracking configured: git push -u origin done
+```
+
+### 5. Integration Management
 - Coordinate wave integration branches
 - Spawn integration agent when needed
 - Manage phase integration
 - Ensure clean merges
 
-### 5. Progress Tracking
+### 6. Progress Tracking
 - Monitor every 5 messages (R008)
 - Update TODO lists frequently
 - Report status to user

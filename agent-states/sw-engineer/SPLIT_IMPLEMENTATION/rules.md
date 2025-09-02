@@ -7,6 +7,25 @@
 ## State Context
 You are in SPLIT_IMPLEMENTATION state because an effort exceeded size limits and must be split into smaller branches.
 
+## 🔴🔴🔴 CRITICAL: Split Infrastructure Requirements 🔴🔴🔴
+
+**EACH SPLIT MUST HAVE ITS OWN DIRECTORY AND CLONE!**
+
+### Split Directory Structure:
+```
+efforts/phase1/wave1/
+├── original-effort/                    # DEPRECATED (too large)
+├── original-effort-SPLIT-001/          # Split 1 (separate clone)
+├── original-effort-SPLIT-002/          # Split 2 (separate clone)
+└── original-effort-SPLIT-003/          # Split 3 (separate clone)
+```
+
+### Key Requirements:
+1. **Separate Directory**: Each split in its own `-SPLIT-00Z` directory
+2. **Separate Clone**: Each split directory has own git repository
+3. **Clear Naming**: Directory names include `-SPLIT-` suffix
+4. **Sequential Branches**: Each split branch based on previous
+
 ## 🔴🔴🔴 CRITICAL: Sequential Split Branching 🔴🔴🔴
 
 **SPLITS ARE CREATED SEQUENTIALLY - EACH BASED ON THE PREVIOUS!**
@@ -40,17 +59,54 @@ git log --oneline -1 --format="%B" | grep "from branch:"
 ### 1. Verify Split Infrastructure (R204)
 ```bash
 # MANDATORY: Verify orchestrator created split infrastructure
-if [[ ! -f "SPLIT-PLAN-*.md" ]]; then
-    echo "❌ FATAL: No split plan found!"
-    echo "Orchestrator must create split infrastructure first per R204"
+echo "🔍 Verifying split infrastructure..."
+
+# Check 1: We're in a properly named split directory
+CURRENT_DIR=$(pwd)
+if [[ "$CURRENT_DIR" != *"-SPLIT-"* ]]; then
+    echo "❌ FATAL: Not in a split directory!"
+    echo "   Current: $CURRENT_DIR"
+    echo "   Expected: path containing '-SPLIT-XXX'"
+    echo "   Orchestrator must create split directories first per R204"
     exit 1
 fi
 
-# Verify you're in a split directory
-if [[ $(pwd) != *"--split-"* ]]; then
-    echo "❌ FATAL: Not in a split directory!"
+# Extract split number from directory name
+SPLIT_NUM=$(echo "$CURRENT_DIR" | grep -o 'SPLIT-[0-9]*' | grep -o '[0-9]*')
+if [ -z "$SPLIT_NUM" ]; then
+    echo "❌ FATAL: Cannot determine split number from directory name!"
     exit 1
 fi
+
+# Check 2: Split plan exists for this specific split
+if [[ ! -f "SPLIT-PLAN-${SPLIT_NUM}.md" ]]; then
+    echo "❌ FATAL: No split plan found for split ${SPLIT_NUM}!"
+    echo "   Expected: SPLIT-PLAN-${SPLIT_NUM}.md"
+    echo "   Orchestrator must copy split plans from too-large branch per R204"
+    exit 1
+fi
+
+# Check 3: This is a separate git repository
+if [[ ! -d ".git" ]]; then
+    echo "❌ FATAL: This is not a git repository!"
+    echo "   Each split must have its own clone per R204"
+    exit 1
+fi
+
+# Check 4: We're on a split branch
+CURRENT_BRANCH=$(git branch --show-current)
+if [[ "$CURRENT_BRANCH" != *"SPLIT-${SPLIT_NUM}"* ]] && [[ "$CURRENT_BRANCH" != *"split-${SPLIT_NUM}"* ]]; then
+    echo "❌ FATAL: Not on correct split branch!"
+    echo "   Current branch: $CURRENT_BRANCH"
+    echo "   Expected: branch containing 'SPLIT-${SPLIT_NUM}' or 'split-${SPLIT_NUM}'"
+    exit 1
+fi
+
+echo "✅ Split infrastructure verified:"
+echo "   Directory: $CURRENT_DIR"
+echo "   Split number: $SPLIT_NUM"
+echo "   Branch: $CURRENT_BRANCH"
+echo "   Plan file: SPLIT-PLAN-${SPLIT_NUM}.md"
 ```
 
 ### 2. Sequential Split Implementation (R202, R205)

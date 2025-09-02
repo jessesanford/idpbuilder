@@ -240,3 +240,7 @@
 - R301.0.0 - File Naming Collision Prevention | BLOCKING | Prevents file overwrites during parallel operations
 - R302.0.0 - Comprehensive Split Tracking Protocol | 🚨 BLOCKING | Meticulous tracking of all split operations and relationships
 - R303.0.0 - Phase/Wave Document Location Protocol | 🚨 BLOCKING | Centralized storage of phase/wave documents in phase-plans directory
+- R304.0.0 - Mandatory Line Counter Enforcement | 🔴 SUPREME LAW | ONLY use line-counter.sh with correct base branch
+- R305.0.0 - SW Engineer Self-Monitoring Protocol | BLOCKING | Continuous size monitoring during implementation
+- R307.0.0 - Independent Branch Mergeability | 🔴 PARAMOUNT LAW | Every branch must be independently mergeable
+- R308.0.0 - Incremental Branching Strategy | 🔴 SUPREME LAW | Core tenant of trunk-based development

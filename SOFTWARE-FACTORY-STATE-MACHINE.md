@@ -254,6 +254,8 @@ PRODUCTION_READY_VALIDATION → BUILD_VALIDATION → PR_PLAN_CREATION → SUCCES
 4. If PASSED → effort marked complete with review_status: PASSED
 5. If FAILED → Orchestrator spawns SW Engineer to FIX_ISSUES
 6. If NEEDS_SPLIT → Code Reviewer creates split plan
+   → **ORCHESTRATOR creates split infrastructure (R204)**
+   → ORCHESTRATOR spawns SW Engineer for sequential splits
 
 If any review fails or cannot be run:
 1. Orchestrator spawns SW Engineer to FIX_ISSUES state
@@ -274,6 +276,31 @@ SPAWN_FIX_AGENT → FIX_ISSUES → implementation COMPLETE
     ↓ (detected in MONITOR)
 SPAWN_CODE_REVIEWER → CODE_REVIEW (re-run)
 ```
+
+## Split Infrastructure Flow
+
+**🔴🔴🔴 CRITICAL: ORCHESTRATOR CREATES SPLIT INFRASTRUCTURE (R204) 🔴🔴🔴**
+
+When an effort exceeds size limits, the split flow is:
+
+1. **SW Engineer**: Detects >800 lines → reports to orchestrator
+2. **Orchestrator**: Spawns Code Reviewer for CREATE_SPLIT_PLAN
+3. **Code Reviewer**: Creates SPLIT-INVENTORY.md and SPLIT-PLAN-XXX.md files
+4. **Code Reviewer**: Commits and pushes split plans to too-large branch
+5. **🔴 ORCHESTRATOR 🔴**: Creates split infrastructure:
+   - Creates directories: effort-name-SPLIT-001, 002, 003
+   - Clones target repo into EACH split directory
+   - Creates sequential branches (002 based on 001, etc.)
+   - Copies relevant SPLIT-PLAN-XXX.md to each directory
+   - Pushes all branches to remote
+6. **Orchestrator**: Spawns SW Engineer for SPLIT_IMPLEMENTATION
+7. **SW Engineer**: Implements splits SEQUENTIALLY in pre-created infrastructure
+8. **Orchestrator**: Marks original as SPLIT_DEPRECATED (R296)
+
+**WHO DOES WHAT:**
+- **Code Reviewer**: Creates split PLANS (documentation)
+- **Orchestrator**: Creates split INFRASTRUCTURE (directories/repos)
+- **SW Engineer**: IMPLEMENTS in existing infrastructure
 
 ## Phase 1 Special Flow
 

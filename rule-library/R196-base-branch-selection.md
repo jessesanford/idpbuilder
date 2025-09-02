@@ -1,7 +1,7 @@
 # Rule R196: Base Branch Selection and Clone Creation Protocol
 
 ## Rule Statement
-The ORCHESTRATOR MUST create all effort clones with proper branches BEFORE spawning agents. The orchestrator MUST use the base_branch from target-repo-config.yaml and create properly named branches. Agents MUST NEVER create their own clones.
+The ORCHESTRATOR MUST create all effort clones with proper branches BEFORE spawning agents. The orchestrator MUST determine the correct INCREMENTAL base branch per R308 (not just use target-repo-config.yaml). Agents MUST NEVER create their own clones.
 
 ## Criticality Level
 **BLOCKING** - Incorrect branch/clone setup causes cascading failures
@@ -29,15 +29,34 @@ The ORCHESTRATOR MUST create all effort clones with proper branches BEFORE spawn
 ## Detailed Requirements
 
 ### 1. ORCHESTRATOR: Complete Clone Creation Workflow
+
+#### 🔴🔴🔴 CRITICAL: Use R308 Incremental Branching 🔴🔴🔴
+**The base branch is NOT always from target-repo-config.yaml!**
+- Phase 1, Wave 1: Use main (from config)
+- Phase 1, Wave 2+: Use previous wave's integration branch
+- Phase 2+, Wave 1: Use previous phase's integration branch
+- See R308 for complete incremental branching requirements
+
 ```bash
-# Step 1: Read configuration
-BASE_BRANCH=$(grep "base_branch:" target-repo-config.yaml | awk '{print $2}' | tr -d '"')
+# Step 1: Determine incremental base branch per R308
+source /path/to/determine_effort_base_branch.sh  # From R308
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+BASE_BRANCH=$(determine_effort_base_branch $PHASE $WAVE)
+
+# Fallback to config only for Phase 1, Wave 1
+if [ -z "$BASE_BRANCH" ]; then
+    BASE_BRANCH=$(grep "base_branch:" target-repo-config.yaml | awk '{print $2}' | tr -d '"')
+fi
+
 TARGET_REPO_URL=$(grep "url:" target-repo-config.yaml | head -1 | awk '{print $2}' | tr -d '"')
 
 if [ -z "$BASE_BRANCH" ] || [ -z "$TARGET_REPO_URL" ]; then
-    echo "❌ FATAL: Missing configuration in target-repo-config.yaml"
+    echo "❌ FATAL: Cannot determine base branch or repository"
     exit 1
 fi
+
+echo "📌 Using incremental base: $BASE_BRANCH (per R308)"
 
 # Step 2: Verify base branch exists on remote
 git ls-remote --heads "$TARGET_REPO_URL" "$BASE_BRANCH" > /dev/null 2>&1
@@ -218,7 +237,8 @@ git ls-remote --heads "$TARGET_REPO_URL" "feature-branch" || echo "Oh well, tryi
 
 ## Integration with Other Rules
 
-- **R191**: Target repository configuration (provides the base_branch)
+- **R308**: Incremental branching strategy (DETERMINES the base branch)
+- **R191**: Target repository configuration (provides default for P1W1 only)
 - **R193**: Effort clone protocol (uses this branch selection)
 - **R194**: Remote branch tracking (tracks against correct base)
 - **R007**: Size limits (applies after correct clone)

@@ -48,28 +48,63 @@ echo "  Repository: ${REPO_URL}"
 echo "  Base Branch: ${BASE_BRANCH}"
 echo ""
 
-# Function to determine appropriate base branch (R271 compliance)
+# Function to determine appropriate base branch (R308 Incremental Branching)
 determine_base_branch() {
     local phase="$1"
     local wave="$2"
     local effort="$3"
     local default_base="$4"
     
-    echo "🧠 THINKING: What base branch should $effort use?"
+    echo "🧠 THINKING: What base branch should $effort use? (R308)"
     
-    # Check if this effort has dependencies in orchestrator-state.yaml
-    if [ -f "../../orchestrator-state.yaml" ]; then
-        local deps=$(yq ".efforts_planned.\"$effort\".depends_on[]" ../../orchestrator-state.yaml 2>/dev/null)
-        if [ -n "$deps" ] && [ "$deps" != "null" ]; then
-            echo "   Decision: Has dependencies, checking if they're ready..."
-            # For now, use default base (dependency checking would be more complex)
-            echo "$default_base"
+    # R308: Incremental Branching Strategy
+    # Phase 1, Wave 1: Use main/default
+    if [[ $phase -eq 1 && $wave -eq 1 ]]; then
+        echo "   Decision: Phase 1, Wave 1 - using main branch"
+        echo "$default_base"
+        return
+    fi
+    
+    # First wave of new phase: Use previous phase integration
+    if [[ $wave -eq 1 ]]; then
+        local prev_phase=$((phase - 1))
+        local integration_branch="phase${prev_phase}-integration"
+        
+        # Check if integration branch exists
+        if git ls-remote --heads origin "$integration_branch" > /dev/null 2>&1; then
+            echo "   Decision: Wave 1 of Phase $phase - using previous phase integration"
+            echo "$integration_branch"
             return
+        else
+            echo "   ⚠️ Previous phase integration not found, checking for last wave..."
+            # Fallback: try to find last wave of previous phase
+            for w in 5 4 3 2 1; do
+                local alt_branch="phase${prev_phase}-wave${w}-integration"
+                if git ls-remote --heads origin "$alt_branch" > /dev/null 2>&1; then
+                    echo "   Decision: Using last available wave integration from Phase $prev_phase"
+                    echo "$alt_branch"
+                    return
+                fi
+            done
         fi
     fi
     
-    echo "   Decision: No dependencies, using default base branch"
-    echo "$default_base"
+    # Subsequent waves: Use previous wave integration
+    local prev_wave=$((wave - 1))
+    local wave_integration="phase${phase}-wave${prev_wave}-integration"
+    
+    # Check if previous wave integration exists
+    if git ls-remote --heads origin "$wave_integration" > /dev/null 2>&1; then
+        echo "   Decision: Wave $wave - using previous wave integration (R308)"
+        echo "$wave_integration"
+        return
+    else
+        echo "   ⚠️ WARNING: Previous wave integration not found: $wave_integration"
+        echo "   ⚠️ This violates R308 - Incremental Branching!"
+        echo "   Using default base as fallback (not recommended)"
+        echo "$default_base"
+        return
+    fi
 }
 
 # Step 1: Create directory structure

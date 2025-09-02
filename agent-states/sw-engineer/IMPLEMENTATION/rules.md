@@ -3,6 +3,32 @@
 ## State Context
 You are actively implementing code for an effort, following the implementation plan and maintaining quality standards.
 
+## 🔴🔴🔴 MANDATORY: Verify Incremental Base (R308)
+**Your effort MUST be based on the latest integrated code!**
+```bash
+# Verify you're building on previous work
+echo "🔍 Verifying incremental base branch..."
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo "Current branch: $BRANCH"
+
+# Check what we're based on
+MERGE_BASE=$(git merge-base HEAD origin/main)
+COMMITS_SINCE_MAIN=$(git rev-list --count $MERGE_BASE..HEAD)
+
+echo "📊 Commits ahead of main: $COMMITS_SINCE_MAIN"
+
+# For Wave 2+, should include previous wave work
+if [[ "$BRANCH" =~ wave([0-9]+) ]]; then
+    WAVE_NUM="${BASH_REMATCH[1]}"
+    if [[ $WAVE_NUM -gt 1 && $COMMITS_SINCE_MAIN -eq 0 ]]; then
+        echo "⚠️ WARNING: Not based on previous wave integration!"
+        echo "This violates R308 - Incremental Branching"
+    else
+        echo "✅ Building on previous integrated work"
+    fi
+fi
+```
+
 ## 🔴 MANDATORY: Verify Directory Isolation (R209)
 ```bash
 # VERIFY YOU'RE STILL IN YOUR EFFORT DIRECTORY

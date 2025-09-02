@@ -1,7 +1,12 @@
-# Rule R204: Orchestrator Must Create Complete Split Infrastructure
+# Rule R204: ORCHESTRATOR (Not SW Engineer!) Must Create Complete Split Infrastructure
 
 ## Rule Statement
-The orchestrator MUST create ALL split directories, working copies, branches, and remote tracking branches BEFORE spawning SW engineering agents for split implementation. Split branches MUST include the project prefix from target-repo-config.yaml using the branch-naming-helpers.sh functions. Split directories must be in the /efforts folder alongside the too-large branch. Splits MUST follow SEQUENTIAL branching strategy: split-001 based on the same base as original, split-002 based on split-001, split-003 based on split-002, etc. This ensures correct line counting and clean integration.
+**THE ORCHESTRATOR** (not SW Engineers, not Code Reviewers) MUST create ALL split directories, working copies, branches, and remote tracking branches BEFORE spawning SW engineering agents for split implementation. Each split MUST have its own directory with `-SPLIT-00Z` suffix and a SEPARATE clone of the target repository. Split branches MUST include the project prefix from target-repo-config.yaml using the branch-naming-helpers.sh functions. Split directories must be in the /efforts folder alongside the too-large branch. Splits MUST follow SEQUENTIAL branching strategy: split-001 based on the same base as original, split-002 based on split-001, split-003 based on split-002, etc. This ensures correct line counting and clean integration.
+
+## 🔴🔴🔴 CRITICAL CLARIFICATION: WHO DOES WHAT 🔴🔴🔴
+- **CODE REVIEWER**: Creates split PLANS (SPLIT-INVENTORY.md, SPLIT-PLAN-XXX.md)
+- **ORCHESTRATOR**: Creates split INFRASTRUCTURE (directories, clones, branches)
+- **SW ENGINEER**: IMPLEMENTS in pre-created infrastructure
 
 ## 🔴🔴🔴 PREREQUISITE: Code Reviewer Must Create Split Plans First 🔴🔴🔴
 Before the orchestrator can create split infrastructure:
@@ -62,10 +67,13 @@ git checkout -b split-003  # ERROR: Shows 1200 lines (includes all!)
 
 ## Detailed Requirements
 
-### ORCHESTRATOR: Complete Split Infrastructure Creation
+### 🔴🔴🔴 ORCHESTRATOR RESPONSIBILITY: Complete Split Infrastructure Creation 🔴🔴🔴
+
+**THIS IS THE ORCHESTRATOR'S JOB - NOT THE SW ENGINEER'S!**
 
 ```bash
-# ✅✅✅ CORRECT - Create ALL split infrastructure FIRST
+# ✅✅✅ CORRECT - ORCHESTRATOR Creates ALL split infrastructure FIRST
+# This function is called BY THE ORCHESTRATOR, not SW Engineers!
 create_split_infrastructure() {
     local phase="1"
     local wave="1"
@@ -140,8 +148,9 @@ create_split_infrastructure() {
         # Use branch naming helper for split branch
         SPLIT_BRANCH=$(get_split_branch_name "$too_large_branch" "$SPLIT_NAME")
         
-        # Directory naming (without project prefix for filesystem paths)
-        SPLIT_DIR="/efforts/phase${phase}/wave${wave}/${effort_name}--split-${SPLIT_NAME}"
+        # Directory naming - CRITICAL: Use -SPLIT- suffix (uppercase)
+        # This makes splits immediately visible in filesystem
+        SPLIT_DIR="/efforts/phase${phase}/wave${wave}/${effort_name}-SPLIT-${SPLIT_NAME}"
         
         echo "═══════════════════════════════════════════════════════════════"
         echo "Creating Split $SPLIT_NAME Infrastructure"
@@ -324,19 +333,22 @@ mark_original_branch_deprecated() {
 efforts/
 ├── phase1/
 │   └── wave1/
-│       ├── api-types/                    # Original too-large branch (WILL BE ABANDONED)
+│       ├── api-types/                    # Original too-large branch (WILL BE DEPRECATED)
 │       │   ├── SPLIT-INVENTORY.md        # Created by Code Reviewer
 │       │   ├── SPLIT-PLAN-001.md         # Created by Code Reviewer
 │       │   ├── SPLIT-PLAN-002.md         # Created by Code Reviewer
 │       │   ├── SPLIT-PLAN-003.md         # Created by Code Reviewer
 │       │   └── pkg/                      # Original oversized implementation
-│       ├── api-types--split-001/         # Split 1 (based on main)
+│       ├── api-types-SPLIT-001/          # Split 1 (separate clone, based on main)
+│       │   ├── .git/                     # Own git repository
 │       │   ├── SPLIT-PLAN-001.md         # Copied from too-large branch (with metadata)
 │       │   └── pkg/                      # Ready for implementation
-│       ├── api-types--split-002/         # Split 2 (based on split-001)
+│       ├── api-types-SPLIT-002/          # Split 2 (separate clone, based on split-001)
+│       │   ├── .git/                     # Own git repository
 │       │   ├── SPLIT-PLAN-002.md         # Copied from too-large branch (with metadata)
 │       │   └── pkg/                      # Ready for implementation
-│       └── api-types--split-003/         # Split 3 (based on split-002)
+│       └── api-types-SPLIT-003/          # Split 3 (separate clone, based on split-002)
+│           ├── .git/                     # Own git repository
 │           ├── SPLIT-PLAN-003.md         # Copied from too-large branch (with metadata)
 │           └── pkg/                      # Ready for implementation
 ```

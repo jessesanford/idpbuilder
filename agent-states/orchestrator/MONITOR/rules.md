@@ -315,6 +315,10 @@ MONITOR continues, tracking review_status
 If PASSED → Check if all efforts complete
 If FAILED → Spawn SW Engineer to FIX_ISSUES
 If NEEDS_SPLIT → Spawn Code Reviewer for SPLIT_PLAN
+    ↓ (After Code Reviewer creates split plans)
+ORCHESTRATOR CREATES SPLIT INFRASTRUCTURE (R204)
+    ↓ (Infrastructure ready)
+Then spawn SW Engineer for sequential splits
 ```
 
 ## 🚨🚨🚨 SPLIT TRACKING REQUIREMENTS (R302) 🚨🚨🚨
@@ -327,6 +331,82 @@ When monitoring splits:
 3. **Record line counts** for each completed split
 4. **Mark original as SPLIT_DEPRECATED** when all splits done
 5. **Update integration planning** to use split branches
+
+## 🔴🔴🔴 ORCHESTRATOR CREATES SPLIT INFRASTRUCTURE (R204) 🔴🔴🔴
+
+**CRITICAL: When Code Reviewer creates split plans, ORCHESTRATOR MUST:**
+
+1. **WAIT for Code Reviewer to complete split planning**
+   - SPLIT-INVENTORY.md created in too-large branch
+   - All SPLIT-PLAN-XXX.md files created
+   - Plans committed and pushed to remote
+
+2. **ORCHESTRATOR CREATES ALL SPLIT INFRASTRUCTURE:**
+```bash
+# When split plans detected, orchestrator must:
+create_split_infrastructure_after_plan() {
+    local EFFORT_NAME="$1"
+    local TOO_LARGE_DIR="/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+    
+    echo "🔴🔴🔴 R204: ORCHESTRATOR CREATING SPLIT INFRASTRUCTURE"
+    
+    # Pull latest from too-large branch to get split plans
+    cd "$TOO_LARGE_DIR"
+    git pull
+    
+    # Check split plans exist
+    if [ ! -f "SPLIT-INVENTORY.md" ]; then
+        echo "❌ Waiting for Code Reviewer to create split plans..."
+        return 1
+    fi
+    
+    # Count splits needed
+    TOTAL_SPLITS=$(grep -c "^| [0-9]" SPLIT-INVENTORY.md)
+    echo "📋 Found $TOTAL_SPLITS splits to create"
+    
+    # Create infrastructure for EACH split
+    for split_num in $(seq 1 $TOTAL_SPLITS); do
+        SPLIT_NAME=$(printf "%03d" $split_num)
+        SPLIT_DIR="/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}-SPLIT-${SPLIT_NAME}"
+        
+        echo "Creating split $SPLIT_NAME infrastructure..."
+        
+        # 1. Create split directory
+        mkdir -p "$SPLIT_DIR"
+        
+        # 2. Clone target repo (sequential branching!)
+        if [ $split_num -eq 1 ]; then
+            # First split from same base as original
+            git clone --branch "$BASE_BRANCH" "$TARGET_REPO_URL" "$SPLIT_DIR"
+        else
+            # Subsequent splits from previous split
+            PREV_SPLIT=$(printf "%03d" $((split_num - 1)))
+            PREV_BRANCH="${PROJECT_PREFIX}/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}-SPLIT-${PREV_SPLIT}"
+            git clone --branch "$PREV_BRANCH" "$TARGET_REPO_URL" "$SPLIT_DIR"
+        fi
+        
+        # 3. Create split branch
+        cd "$SPLIT_DIR"
+        SPLIT_BRANCH="${PROJECT_PREFIX}/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}-SPLIT-${SPLIT_NAME}"
+        git checkout -b "$SPLIT_BRANCH"
+        git push -u origin "$SPLIT_BRANCH"
+        
+        # 4. Copy split plan from too-large branch
+        cp "$TOO_LARGE_DIR/SPLIT-PLAN-${SPLIT_NAME}.md" .
+        
+        # 5. Commit initial setup
+        git add -A
+        git commit -m "chore: initialize split-${SPLIT_NAME} infrastructure"
+        git push
+        
+        echo "✅ Split $SPLIT_NAME infrastructure ready"
+    done
+    
+    echo "✅ ALL SPLIT INFRASTRUCTURE CREATED - Ready for SW Engineer"
+}
+```
+
+3. **THEN AND ONLY THEN spawn SW Engineer for splits**
 
 ```bash
 # Check for split completion markers

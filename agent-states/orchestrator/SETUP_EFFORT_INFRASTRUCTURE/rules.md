@@ -114,6 +114,10 @@ The system will check for this marker. No marker = Immediate failure.
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R271-single-branch-full-checkout.md`
    - Criticality: SUPREME LAW - Full single-branch checkout required
 
+4. **R308** - Incremental Branching Strategy
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R308-incremental-branching-strategy.md`
+   - Criticality: SUPREME LAW - Core tenant of trunk-based development
+
 **Note**: R234, R208, R221, R287, R288 are already in your orchestrator.md Supreme Laws section.
 
 ## 📋 RULE SUMMARY FOR SETUP_EFFORT_INFRASTRUCTURE STATE
@@ -125,15 +129,18 @@ The system will check for this marker. No marker = Immediate failure.
 - R191: Target Repository Configuration [BLOCKING - Must load config]
 - R176: Effort Infrastructure Setup [BLOCKING - Create all directories]
 - R271: Full Checkouts Only [SUPREME LAW - No sparse checkouts]
+- R308: Incremental Branching [SUPREME LAW - Build on previous work]
 - R287: TODO Save Triggers [BLOCKING - Save within 30s]
 - R288: State File Update and Commit [SUPREME LAW - Update on transition]
 
 ### Critical Requirements:
 1. Load target-repo-config.yaml FIRST - Penalty: -100%
-2. Create ALL effort directories - Penalty: -50%
-3. Clone FULL repos (no sparse) - Penalty: -100%
-4. Push all branches to remote - Penalty: -30%
-5. Must transition to ANALYZE_CODE_REVIEWER_PARALLELIZATION - Penalty: -100%
+2. Determine INCREMENTAL base branch per R308 - Penalty: -100%
+3. Create ALL effort directories - Penalty: -50%
+4. Clone FULL repos (no sparse) - Penalty: -100%
+5. Clone from CORRECT incremental base - Penalty: -100%
+6. Push all branches to remote - Penalty: -30%
+7. Must transition to ANALYZE_CODE_REVIEWER_PARALLELIZATION - Penalty: -100%
 
 ### Success Criteria:
 - ✅ Target config loaded and validated

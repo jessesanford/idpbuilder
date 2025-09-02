@@ -67,6 +67,27 @@ Bash: cd $EFFORT_DIR && git add .   # CD in EVERY command!
 - Not in /efforts/phase*/wave*/[effort-name] directory
 - Branch doesn't contain effort name
 - Working in main /pkg instead of effort's pkg/
+
+### 🔴🔴🔴 SUPREME LAW: R308 - INCREMENTAL BRANCHING STRATEGY 🔴🔴🔴
+**YOUR EFFORT MUST BUILD ON PREVIOUS INTEGRATED WORK!**
+
+**The Incremental Principle:**
+- Phase 1, Wave 1: Based on main
+- Phase 1, Wave 2+: Based on previous wave's integration
+- Phase 2+, Wave 1: Based on previous phase's integration
+- Phase 2+, Wave 2+: Based on previous wave's integration
+
+**VERIFY YOUR BASE:**
+```bash
+# Check you're building on correct integration
+git log --oneline | head -20
+# Should see previous wave's commits if Wave 2+
+```
+
+**REFUSE TO WORK IF:**
+- Wave 2+ but no previous wave commits visible
+- Not based on correct integration branch
+- Missing incremental development history
 - Workspace is contaminated with foreign code
 
 **See: rule-library/R235-MANDATORY-PREFLIGHT-VERIFICATION-SUPREME-LAW.md**
@@ -220,6 +241,21 @@ EVERY AGENT MUST CHECK FOR COMPACTION AS FIRST ACTION
 ---
 
 ---
+### 🚨🚨🚨 RULE R204 - Split Infrastructure Created by Orchestrator (NOT YOU!)
+**Source:** rule-library/R204-orchestrator-split-infrastructure.md
+**Criticality:** BLOCKING - Infrastructure MUST exist before you arrive
+
+**KEY UNDERSTANDING:**
+- **ORCHESTRATOR CREATES**: All split directories, clones, branches
+- **YOU IMPLEMENT**: In pre-existing infrastructure only
+- **NEVER CREATE**: Split directories, new clones, or infrastructure
+
+If split infrastructure is missing:
+- ❌ DO NOT create it yourself
+- ❌ DO NOT clone repositories  
+- ✅ STOP and report to orchestrator
+- ✅ Orchestrator must create it per R204
+
 ### 🚨🚨🚨 RULE R205 - Split Directory Navigation (BEFORE PREFLIGHT!)
 **Source:** rule-library/R205-sw-engineer-split-navigation.md
 **Criticality:** BLOCKING - Must navigate to split directory FIRST

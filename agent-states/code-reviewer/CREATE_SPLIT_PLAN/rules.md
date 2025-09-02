@@ -3,17 +3,24 @@
 ## State Context
 You are creating individual split plan files for an oversized implementation (>800 lines). These plans will be saved in the too-large branch and later copied to split effort directories by the orchestrator.
 
-## 🔴🔴🔴 CRITICAL: Sequential Branching Strategy 🔴🔴🔴
+## 🔴🔴🔴 CRITICAL: Sequential Branching Strategy (Within R308 Incremental) 🔴🔴🔴
 
 **ALL SPLITS MUST BE PLANNED FOR SEQUENTIAL BRANCHING!**
 
+### Understanding Split Branching vs Incremental Branching:
+- **R308 Incremental**: Efforts branch from previous wave/phase integration
+- **Split Sequential**: Splits branch from each other sequentially
+- **The Base**: Original effort's base is determined by R308
+
 ### The Mandatory Pattern:
 ```
-Split-001: Based on phase-integration (same as original)
+Original effort base (per R308): phase1-wave2-integration (example)
+    ↓
+Split-001: Based on same incremental base as original
     ↓ (becomes base for next)
-Split-002: Based on Split-001 (NOT phase-integration!)
+Split-002: Based on Split-001 (NOT the integration!)
     ↓ (becomes base for next)
-Split-003: Based on Split-002 (NOT phase-integration!)
+Split-003: Based on Split-002 (NOT the integration!)
 ```
 
 ### Why This is CRITICAL:
@@ -77,6 +84,12 @@ This effort exceeded 800 lines and has been split into manageable sub-efforts.
 - **Date Split**: $(date '+%Y-%m-%d')
 - **Split By**: Code Reviewer Agent
 
+## Infrastructure Requirements
+Each split requires:
+- **Separate Directory**: ${EFFORT_NAME}-SPLIT-00Z format
+- **Separate Clone**: Own git repository in each directory
+- **Sequential Branches**: Each based on previous split
+
 ## Split Structure
 
 | Split # | Name | Description | Est. Lines | Status |
@@ -128,6 +141,12 @@ for SPLIT_NUM in 001 002 003; do
 - **Original Branch**: ${TOO_LARGE_BRANCH}
 - **Target Size**: ${TARGET_SIZE} lines (max 800)
 - **Created**: $(date '+%Y-%m-%d %H:%M:%S')
+
+## Infrastructure Requirements
+- **Directory Name**: ${PARENT_EFFORT_NAME}-SPLIT-${SPLIT_NUM}
+- **Location**: efforts/phase${PHASE}/wave${WAVE}/${PARENT_EFFORT_NAME}-SPLIT-${SPLIT_NUM}/
+- **Clone Required**: Yes - separate clone of target repository
+- **Branch Base**: $([ ${SPLIT_NUM} = "001" ] && echo "Same as original (e.g., phase-integration)" || echo "Previous split branch (split-$(printf "%03d" $((10#${SPLIT_NUM} - 1))))")
 
 ## Implementation Scope
 
