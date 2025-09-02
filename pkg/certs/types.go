@@ -1,9 +1,11 @@
-// Package certs provides consolidated type definitions for certificate management
+// Package certs provides consolidated type definitions for certificate management and validation
+// This file consolidates types from all Phase 1 efforts to ensure compatibility
 package certs
 
 import (
 	"context"
 	"crypto/x509"
+	"net"
 	"net/http"
 	"time"
 
@@ -111,20 +113,23 @@ type TrustStoreUtils struct{}
 type SecurityLevel int
 
 const (
-	SecurityNone SecurityLevel = iota
+	SecurityHigh SecurityLevel = iota
+	SecurityMedium
 	SecurityLow
-	SecurityMedium  
-	SecurityHigh
+	SecurityNone
 )
 
-// ValidationInput contains input parameters for certificate validation
+// ValidationInput contains the input data for certificate validation operations
+// This consolidates both basic validation and advanced certificate validation
 type ValidationInput struct {
-	Registry  string
-	Operation string
-	Error     error
+	Certificates []*x509.Certificate   // New field from certificate-validation-pipeline
+	Registry     string
+	Operation    string
+	Error        error
+	Options      map[string]interface{} // New field from certificate-validation-pipeline
 }
 
-// ValidationResult contains the results of a validation attempt
+// ValidationResult contains the result of a certificate validation attempt
 type ValidationResult struct {
 	Success       bool
 	Strategy      string
@@ -134,10 +139,64 @@ type ValidationResult struct {
 	NewConfig     map[string]interface{}
 }
 
-// FallbackStrategy defines the interface for fallback validation strategies
+// RecoveryConfig contains configuration for certificate recovery operations
+// This consolidates fields from both fallback.go and recovery.go versions
+type RecoveryConfig struct {
+	// From recovery.go
+	EnableCertRefresh   bool
+	EnableTrustUpdate   bool
+	EnableChainRepair   bool
+	MaxAttempts         int
+	Timeout             time.Duration
+	CircuitBreakerThreshold int
+	CircuitBreakerTimeout   time.Duration
+	
+	// From fallback.go (additional fields)  
+	AllowInsecure      bool
+	FallbackRegistries []string
+	RecoveryStrategies []string
+	TrustStoreUpdate   bool
+}
+
+// RecoveryResult contains the result of a recovery operation
+// This consolidates fields from both fallback.go and recovery.go versions
+type RecoveryResult struct {
+	Success          bool
+	Method           string    // From recovery.go (was 'Method')
+	Strategy         string    // From fallback.go (additional)
+	Actions          []string
+	NewConfig        interface{}
+	Message          string    // From recovery.go
+	FailureReason    string    // From fallback.go (additional)
+	RecoveredCerts   []*x509.Certificate // From fallback.go (additional)
+	SecurityDowngrade bool     // From fallback.go (additional)
+	NextRetryAfter   time.Duration // From fallback.go (additional)
+}
+
+// FallbackStrategy defines the interface for certificate validation fallback strategies
 type FallbackStrategy interface {
 	Name() string
 	Priority() int
 	CanHandle(err error) bool
 	Execute(ctx context.Context, input *ValidationInput) (*ValidationResult, error)
+}
+
+// CertDiagnostics contains comprehensive certificate diagnostic information
+type CertDiagnostics struct {
+	Subject          string
+	Issuer           string
+	SerialNumber     string
+	NotBefore        time.Time
+	NotAfter         time.Time
+	DNSNames         []string
+	IPAddresses      []net.IP
+	ValidationErrors []ValidationError
+	Warnings         []string
+}
+
+// ValidationError represents a certificate validation error
+type ValidationError struct {
+	Type    string // e.g., "chain", "expiry", "hostname"
+	Message string
+	Detail  string
 }
