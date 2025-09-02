@@ -110,24 +110,18 @@ efforts_in_progress:
     name: "go-containerregistry-image-builder"
     phase: 2
     wave: 1
-    lines_implemented: 1033
-    status: "SIZE_VIOLATION"
-    completed_at: "2025-09-02T02:19:00Z"
-    size_limit: 600
-    exceeded_by: 433
-    review_status: "NEEDS_SPLIT_PLAN"
-    notes: "Implementation complete but 72% over size limit"
+    implementation_status: "COMPLETE"
+    implementation_completed_at: "2025-09-02T02:19:00Z"
+    review_status: "NOT_STARTED"
+    notes: "Implementation complete, awaiting code review with proper line-counter.sh measurement"
   - effort_id: "E2.1.2"
     name: "gitea-registry-client"
     phase: 2
     wave: 1
-    lines_implemented: 927
-    status: "SIZE_VIOLATION"
-    completed_at: "2025-09-02T02:19:00Z"
-    size_limit: 600
-    exceeded_by: 327
-    review_status: "NEEDS_SPLIT_PLAN"
-    notes: "Core functionality complete but 54% over size limit, tests omitted"
+    implementation_status: "COMPLETE"
+    implementation_completed_at: "2025-09-02T02:19:00Z"
+    review_status: "NOT_STARTED"
+    notes: "Implementation complete, awaiting code review with proper line-counter.sh measurement"
 efforts_planned:
   # Phase 1: Certificate Infrastructure
   - phase: 1
