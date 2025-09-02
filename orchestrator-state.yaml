@@ -437,6 +437,42 @@ phase_assessment:
     - Architecture sound with good interface design
     - Minor test compilation error can be fixed in Phase 2
 
+split_tracking:
+  E2.1.1:
+    effort_name: "go-containerregistry-image-builder"
+    total_splits: 2
+    original_lines: 856
+    splits_completed:
+      - split_id: "split-001"
+        name: "Core Image Builder"
+        lines: 783
+        status: "REVIEWED_PASSED"
+        reviewed_at: "2025-09-02T05:35:00Z"
+    splits_pending:
+      - split_id: "split-002"
+        name: "Storage and Extensions"
+        estimated_lines: 400
+        status: "PENDING"
+  E2.1.2:
+    effort_name: "gitea-registry-client"
+    total_splits: 3
+    original_lines: 927
+    splits_completed:
+      - split_id: "split-001"
+        name: "Core Types and Interfaces"
+        lines: 226
+        status: "REVIEWED_PASSED"
+        reviewed_at: "2025-09-02T05:40:00Z"
+    splits_pending:
+      - split_id: "split-002"
+        name: "Authentication and Transport"
+        estimated_lines: 461
+        status: "PENDING"
+      - split_id: "split-003"
+        name: "Client Implementation"
+        estimated_lines: 400
+        status: "PENDING"
+
 error_recovery:
   error_id: "ERR-PHASE1-INTERFACE-20250901-203600"
   detected_at: "2025-09-01T20:36:00Z"
