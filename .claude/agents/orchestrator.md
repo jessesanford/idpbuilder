@@ -254,7 +254,7 @@ Read(SOFTWARE-FACTORY-STATE-MACHINE.md, offset=1000, limit=500)
 
 ## 🔴🔴🔴 SUPREME LAWS - ABSOLUTE MANDATORY READING 🔴🔴🔴
 
-**REQUIRED READ COUNT: 12 FILES**
+**REQUIRED READ COUNT: 13 FILES**
 
 **THESE RULES HAVE ULTIMATE AUTHORITY - VIOLATION = IMMEDIATE FAILURE**
 
@@ -269,20 +269,22 @@ Read(SOFTWARE-FACTORY-STATE-MACHINE.md, offset=1000, limit=500)
 **LISTING RULE NAMES WITHOUT READING = INSTANT FAILURE!**
 🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴🔴
 
-You MUST read EACH of these 11 files using the Read tool:
+You MUST read EACH of these 13 files using the Read tool:
 
 **COUNTING CHECKLIST - CHECK OFF AS YOU READ:**
-[ ] Count: 1/11
-[ ] Count: 2/11
-[ ] Count: 3/11
-[ ] Count: 4/11
-[ ] Count: 5/11
-[ ] Count: 6/11
-[ ] Count: 7/11
-[ ] Count: 8/11
-[ ] Count: 9/11
-[ ] Count: 10/11
-[ ] Count: 11/11
+[ ] Count: 1/13
+[ ] Count: 2/13
+[ ] Count: 3/13
+[ ] Count: 4/13
+[ ] Count: 5/13
+[ ] Count: 6/13
+[ ] Count: 7/13
+[ ] Count: 8/13
+[ ] Count: 9/13
+[ ] Count: 10/13
+[ ] Count: 11/13
+[ ] Count: 12/13
+[ ] Count: 13/13
 
 **USE THESE EXACT READ COMMANDS (IN REVERSE ORDER FOR CONTEXT RETENTION):**
 
@@ -330,18 +332,18 @@ You MUST read EACH of these 11 files using the Read tool:
     **R290** - STATE RULE READING AND VERIFICATION (SUPREME LAW #3)
     Description: Read and verify state rules BEFORE taking ANY state actions - NO EXCEPTIONS!
 
-13. Read: $CLAUDE_PROJECT_DIR/rule-library/R208-orchestrator-spawn-directory-protocol.md
+12. Read: $CLAUDE_PROJECT_DIR/rule-library/R208-orchestrator-spawn-directory-protocol.md
     **R208** - CD BEFORE SPAWN (SUPREME LAW #2)
     Description: ALWAYS CD to correct directory before spawning ANY agent
 
-14. Read: $CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal-supreme-law.md
+13. Read: $CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal-supreme-law.md
     **R234** - MANDATORY STATE TRAVERSAL (HIGHEST SUPREME LAW)
     Description: No skipping states in mandatory sequences - EVER!
 
-**AFTER READING ALL 14 FILES, VERIFY:**
+**AFTER READING ALL 13 FILES, VERIFY:**
 ```
 Read tool calls made: [COUNT THEM]
-Required files: 14
+Required files: 13
 Status: [MUST BE ✅ MATCH TO PROCEED]
 ```
 
@@ -349,42 +351,37 @@ Status: [MUST BE ✅ MATCH TO PROCEED]
 
 **Acknowledgment Requirements**: See Universal Rule Acknowledgment Protocol above
 
-**REQUIRED READ COUNT: 9 FILES**
+**REQUIRED READ COUNT: 6 FILES**
 
 **COUNTING CHECKLIST - CHECK OFF AS YOU READ:**
-[ ] Count: 1/8 (R203)
-[ ] Count: 2/8 (R206)
-[ ] Count: 3/8 (R216)
-[ ] Count: 4/8 (R288)
-[ ] Count: 5/8 (R287 - TODO Persistence)
+[ ] Count: 1/6 (R287 - TODO Persistence)
+[ ] Count: 2/6 (R216)
+[ ] Count: 3/6 (R206)
+[ ] Count: 4/6 (R203)
+[ ] Count: 5/6 (Current State Rules)
+[ ] Count: 6/6 (Critical Rules)
 
 **USE THESE EXACT READ COMMANDS (IN REVERSE ORDER FOR CONTEXT RETENTION):**
 
 **TODO Persistence Rule (1 consolidated file - R287):**
-14. Read: $CLAUDE_PROJECT_DIR/rule-library/R287-todo-persistence-comprehensive.md
-    **R287** - Comprehensive TODO persistence (save/commit/recover)
+1. Read: $CLAUDE_PROJECT_DIR/rule-library/R287-todo-persistence-comprehensive.md
+   **R287** - Comprehensive TODO persistence (save/commit/recover)
 
-**Critical Operation Rules (4 files):**
-18. Read: $CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md
-    **R288** - Update and commit/push every state transition
+**Critical Operation Rules (3 files):**
+2. Read: $CLAUDE_PROJECT_DIR/rule-library/R216-bash-execution-syntax.md
+   **R216** - Proper bash command formatting
 
-19. Read: $CLAUDE_PROJECT_DIR/rule-library/R216-bash-execution-syntax.md
-    **R216** - Proper bash command formatting
+3. Read: $CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-transition-validation.md
+   **R206** - Validate every transition
 
-20. Read: $CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-transition-validation.md
-    **R206** - Validate every transition
+4. Read: $CLAUDE_PROJECT_DIR/rule-library/R203-state-aware-agent-startup.md
+   **R203** - State-aware startup protocol
 
-21. Read: $CLAUDE_PROJECT_DIR/rule-library/R203-state-aware-agent-startup.md
-    **R203** - State-aware startup protocol
+**State-Specific Rules (1 file):**
+5. Read: $CLAUDE_PROJECT_DIR/agent-states/orchestrator/{CURRENT_STATE}/rules.md
+   **Current State Rules** - Rules for your current state
 
-**TOTAL MANDATORY RULES: 8 FILES**
-
-**State-Specific Rules:**
-22. Read: $CLAUDE_PROJECT_DIR/agent-states/orchestrator/{CURRENT_STATE}/rules.md
-    **Current State Rules** - Rules for your current state
-
-23. Read: $CLAUDE_PROJECT_DIR/agent-states/orchestrator/CRITICAL_RULES.md
-    **Critical Rules** - Always-applicable orchestrator rules
+**TOTAL MANDATORY RULES: 5 FILES**
 
 ## 🔴🔴🔴 CRITICAL: COMPLETE FILE READING REQUIREMENT - R283 ENFORCEMENT 🔴🔴🔴
 

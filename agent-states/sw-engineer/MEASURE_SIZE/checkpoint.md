@@ -52,8 +52,8 @@ measure_size_checkpoint:
     duration_minutes: 5.0
     
     primary_measurement:
-      tool_used: "/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh"
-      command_executed: "tmc-pr-line-counter.sh -c phase1/wave2/effort2-controller"
+      tool_used: "$PROJECT_ROOT/tools/line-counter.sh"
+      command_executed: "$PROJECT_ROOT/tools/line-counter.sh -b phase1-integration -c phase1/wave2/effort2-controller"
       command_output: "742 lines in effort (excluding generated code)"
       measurement_result: 742
       tool_compliant: true
@@ -75,7 +75,7 @@ measure_size_checkpoint:
       remaining_capacity: 58
       
     detailed_breakdown:
-      tool_used: "/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -d"
+      tool_used: "$PROJECT_ROOT/tools/line-counter.sh -d"
       breakdown_by_directory:
         - path: "pkg/controllers"
           lines: 345
@@ -236,7 +236,7 @@ measure_size_checkpoint:
       entry_timestamp: "2025-08-23T16:48:00Z"
       entry_content: |
         ## [2025-08-23 16:45] SIZE MEASUREMENT - DANGER ZONE
-        **Tool**: tmc-pr-line-counter.sh -c phase1/wave2/effort2-controller
+        **Tool**: $PROJECT_ROOT/tools/line-counter.sh -b phase1-integration -c phase1/wave2/effort2-controller
         **Result**: 742/800 lines (92.75% utilization)
         **Status**: DANGER - Optimization required
         
@@ -389,7 +389,7 @@ def verify_measurement_still_valid(checkpoint_data):
     try:
         # Re-measure current size
         result = subprocess.run([
-            '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+            '$PROJECT_ROOT/tools/line-counter.sh',
             '-c', branch
         ], cwd=working_dir, capture_output=True, text=True)
         
@@ -572,7 +572,7 @@ def execute_size_measurement(branch, working_dir):
     
     try:
         result = subprocess.run([
-            '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+            '$PROJECT_ROOT/tools/line-counter.sh',
             '-c', branch
         ], cwd=working_dir, capture_output=True, text=True, check=True)
         
@@ -710,7 +710,7 @@ def check_measurement_tool_compliance():
     
     compliant_count = sum(
         1 for measurement in recent_measurements
-        if 'tmc-pr-line-counter.sh' in measurement.get('tool_used', '')
+        if 'line-counter.sh' in measurement.get('tool_used', '')
     )
     
     compliance_rate = (compliant_count / len(recent_measurements)) * 100

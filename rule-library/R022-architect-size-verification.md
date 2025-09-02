@@ -17,7 +17,7 @@ Architects MUST verify effort sizes by navigating to each effort directory and r
 $CLAUDE_PROJECT_DIR/tools/line-counter.sh phase2/wave2/effort2-optimizer  # WRONG!
 
 # ❌ ALSO WRONG - Using non-existent tool names
-/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh  # This tool doesn't exist!
+$PROJECT_ROOT/tools/line-counter.sh  # This tool doesn't exist!
 ```
 
 ### ✅ CORRECT - How Architects Must Measure
@@ -152,7 +152,7 @@ $PROJECT_ROOT/tools/line-counter.sh
 ### 4. The Tool Name Is line-counter.sh
 ```bash
 # ❌ WRONG tool names:
-tmc-pr-line-counter.sh  # Doesn't exist!
+line-counter.sh  # Doesn't exist!
 kcp-line-counter.sh     # Doesn't exist!
 
 # ✅ CORRECT tool name:

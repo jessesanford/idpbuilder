@@ -568,7 +568,7 @@ class ValidationQualityAssessor:
         size_result = validation_findings.get('size_compliance', {})
         
         accuracy_criteria = {
-            'used_correct_tool': size_result.get('tool_used') == 'tmc-pr-line-counter.sh',
+            'used_correct_tool': size_result.get('tool_used') == 'line-counter.sh',
             'has_raw_output': 'raw_output' in size_result,
             'has_timestamp': 'measurement_timestamp' in size_result,
             'decision_consistent': self.verify_size_decision_consistency(size_result)

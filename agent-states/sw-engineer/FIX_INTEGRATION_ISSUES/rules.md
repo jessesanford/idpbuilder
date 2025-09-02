@@ -66,8 +66,8 @@ echo "✅ Integration fixes complete and report archived"
 ---
 
 ---
-### 🚨🚨🚨 RULE R292 - Integration Fixes in Effort Branches
-**Source:** rule-library/R292-integration-fixes-in-effort-branches.md
+### 🔴🔴🔴 RULE R300 - Comprehensive Fix Management Protocol
+**Source:** rule-library/R300-comprehensive-fix-management-protocol.md
 **Criticality:** BLOCKING - NEVER modify integration branch
 
 ALL FIXES MUST BE MADE IN YOUR EFFORT BRANCH:
@@ -75,6 +75,28 @@ ALL FIXES MUST BE MADE IN YOUR EFFORT BRANCH:
 - NEVER switch to or modify the integration branch
 - Your fixes will be re-integrated after completion
 - The integration branch is READ-ONLY to you
+---
+
+---
+### 🔴🔴🔴 RULE R300 - Comprehensive Fix Management Protocol (Verification)
+**Source:** rule-library/R300-comprehensive-fix-management-protocol.md
+**Criticality:** SUPREME LAW - Must verify fixes are in effort branch
+
+YOU MUST VERIFY YOUR FIXES:
+- After applying fixes, verify they're committed to effort branch
+- Push fixes to remote effort branch IMMEDIATELY
+- Verify remote has your fixes before marking complete
+- Integration will fail if fixes aren't in effort branches
+
+VERIFICATION STEPS:
+```bash
+# After fixing, MUST verify:
+git branch --show-current  # Must be effort branch, not integration
+git log --oneline -1       # Must show your fix commit
+git push origin $(git branch --show-current)  # Push to remote
+git fetch origin
+git log origin/$(git branch --show-current) --oneline -1  # Verify remote has fix
+```
 ---
 
 ## Required Actions in FIX_INTEGRATION_ISSUES State
@@ -272,7 +294,7 @@ From FIX_INTEGRATION_ISSUES state:
 
 ❌ **Common mistakes:**
 - Following old fix plans instead of INTEGRATION-REPORT.md
-- Modifying the integration branch directly (R292 violation)
+- Modifying the integration branch directly (R300 violation)
 - Not archiving completed plans (R294 violation)
 - Implementing features instead of just fixes
 - Not verifying fixes work in integration context

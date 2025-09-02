@@ -523,7 +523,7 @@ def validate_integration_size(branch_name):
     """Validate size limits maintained during integration"""
     
     result = subprocess.run([
-        '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+        '$PROJECT_ROOT/tools/line-counter.sh',
         '-c', branch_name
     ], capture_output=True, text=True)
     

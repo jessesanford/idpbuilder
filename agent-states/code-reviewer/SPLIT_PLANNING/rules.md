@@ -25,7 +25,7 @@ SPLIT PLANNING PROTOCOL:
 **Criticality:** MANDATORY - Required for approval
 
 MANDATORY SPLIT TRIGGERS:
-1. Implementation >800 lines (measured by tmc-pr-line-counter)
+1. Implementation >800 lines (measured by line-counter.sh per R304)
 2. Effort estimated >800 lines during planning
 3. Implementation approaching 800 lines (>750)
 4. Complex integration requiring size management

@@ -46,13 +46,14 @@ The system will check for this marker. No marker = Immediate failure.
 1. Read: $CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal-supreme-law.md
 2. Read: $CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md
 3. Read: $CLAUDE_PROJECT_DIR/rule-library/R290-state-rule-reading-verification-supreme-law.md
-4. Read: $CLAUDE_PROJECT_DIR/rule-library/R293-integration-report-distribution-protocol.md
-5. Read: $CLAUDE_PROJECT_DIR/rule-library/R294-fix-plan-archival-protocol.md
-6. Read: $CLAUDE_PROJECT_DIR/rule-library/R295-sw-engineer-spawn-clarity-protocol.md
-7. Read: $CLAUDE_PROJECT_DIR/rule-library/R239-fix-plan-distribution.md
-8. Read: $CLAUDE_PROJECT_DIR/rule-library/R197-one-agent-per-effort.md
-9. Read: $CLAUDE_PROJECT_DIR/rule-library/R209-effort-directory-isolation-protocol.md
-10. Read: $CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-transition-validation.md
+4. Read: $CLAUDE_PROJECT_DIR/rule-library/R300-comprehensive-fix-management-protocol.md
+5. Read: $CLAUDE_PROJECT_DIR/rule-library/R293-integration-report-distribution-protocol.md
+6. Read: $CLAUDE_PROJECT_DIR/rule-library/R294-fix-plan-archival-protocol.md
+7. Read: $CLAUDE_PROJECT_DIR/rule-library/R295-sw-engineer-spawn-clarity-protocol.md
+8. Read: $CLAUDE_PROJECT_DIR/rule-library/R239-fix-plan-distribution.md
+9. Read: $CLAUDE_PROJECT_DIR/rule-library/R197-one-agent-per-effort.md
+10. Read: $CLAUDE_PROJECT_DIR/rule-library/R209-effort-directory-isolation-protocol.md
+11. Read: $CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-transition-validation.md
 
 **WE ARE WATCHING EACH READ TOOL CALL**
 
@@ -200,7 +201,7 @@ IGNORE: Any files named *-COMPLETED-*.md (these are from previous fix cycles)
    - Find the section for your effort
    - Follow ALL fix instructions for your effort
 
-2. **Implement fixes (R292 compliance)**:
+2. **Implement fixes (R300 compliance)**:
    - Make ALL fixes in your effort branch
    - NEVER modify the integration branch directly
    - Apply only the changes specified for your effort

@@ -69,8 +69,8 @@ validation_checkpoint:
       
       # CRITICAL: Size measurement details
       size_measurement:
-        tool_used: "tmc-pr-line-counter.sh"
-        command_executed: "/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c phase1/wave2/effort3-webhooks"
+        tool_used: "line-counter.sh"
+        command_executed: "$PROJECT_ROOT/tools/line-counter.sh -c phase1/wave2/effort3-webhooks"
         raw_output: |
           pkg/webhooks/admission/validator.go: 127 lines
           pkg/webhooks/admission/mutator.go: 104 lines
@@ -848,7 +848,7 @@ def revalidate_size_compliance_gate(impl_branch):
     try:
         # Use same tool as original validation
         result = subprocess.run([
-            '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+            '$PROJECT_ROOT/tools/line-counter.sh',
             '-c', impl_branch
         ], capture_output=True, text=True, check=True)
         
@@ -861,7 +861,7 @@ def revalidate_size_compliance_gate(impl_branch):
             'actual_lines': line_count,
             'limit': 800,
             'margin': 800 - line_count,
-            'tool_used': 'tmc-pr-line-counter.sh',
+            'tool_used': 'line-counter.sh',
             'raw_output': result.stdout.strip(),
             'revalidation_timestamp': datetime.now().isoformat(),
             'revalidation_successful': True
@@ -921,7 +921,7 @@ CRITICAL VALIDATION RECOVERY SCENARIOS
 - All validation results potentially compromised
 
 2. Validation Tools Updated or Unavailable:
-- tmc-pr-line-counter.sh not available
+- line-counter.sh not available
 - Test coverage tools updated with different results
 - Validation criteria changed
 

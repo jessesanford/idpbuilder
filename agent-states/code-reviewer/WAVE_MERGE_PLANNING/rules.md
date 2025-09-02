@@ -81,6 +81,16 @@ main
 ```
 
 ### 3. Handle Splits Correctly
+
+#### 🔴🔴🔴 CRITICAL: Split Merge Ordering with Dependencies 🔴🔴🔴
+
+**SUPREME LAW: Dependencies are at EFFORT level, not SPLIT level!**
+
+When creating merge plans with splits and dependencies:
+1. ALL splits of an effort must be listed sequentially
+2. ALL splits must complete before dependent efforts
+3. NEVER interleave dependent efforts between splits
+
 ```markdown
 ## Split Handling
 
@@ -90,12 +100,27 @@ Original branch exceeded 800 lines and was split:
 **EXCLUDE (too large):**
 - phase3/wave1/effort3-contexts (1,234 lines)
 
-**INCLUDE (properly sized splits):**  
-- phase3/wave1/effort3-contexts-split1 (423 lines)
-- phase3/wave1/effort3-contexts-split2 (389 lines)
-- phase3/wave1/effort3-contexts-split3 (401 lines)
+**INCLUDE IN THIS ORDER (properly sized splits):**  
+1. phase3/wave1/effort3-contexts-split-001 (423 lines) - base: main
+2. phase3/wave1/effort3-contexts-split-002 (389 lines) - base: split-001
+3. phase3/wave1/effort3-contexts-split-003 (401 lines) - base: split-002
 
 Total after splits: 1,213 lines (compliant)
+
+### Dependency Handling Example
+
+If E3.1.4 depends on E3.1.3:
+✅ CORRECT ORDER:
+1. effort3-contexts-split-001
+2. effort3-contexts-split-002
+3. effort3-contexts-split-003
+4. effort4-dependent-feature  # NOW has complete E3.1.3
+
+❌ WRONG ORDER:
+1. effort3-contexts-split-001
+2. effort4-dependent-feature  # ERROR: E3.1.3 incomplete!
+3. effort3-contexts-split-002
+4. effort3-contexts-split-003
 ```
 
 ### 4. Create WAVE-MERGE-PLAN.md
@@ -180,7 +205,7 @@ Based on branch analysis, conflicts are likely in:
 2. After all merges:
    ```bash
    make test-integration
-   /workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c $(git branch --show-current)
+   $PROJECT_ROOT/tools/line-counter.sh -c $(git branch --show-current)
    ```
 3. Final validation:
    - Verify all effort features are present

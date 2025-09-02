@@ -3,6 +3,35 @@
 ## State Context
 You are creating individual split plan files for an oversized implementation (>800 lines). These plans will be saved in the too-large branch and later copied to split effort directories by the orchestrator.
 
+## 🔴🔴🔴 CRITICAL: Sequential Branching Strategy 🔴🔴🔴
+
+**ALL SPLITS MUST BE PLANNED FOR SEQUENTIAL BRANCHING!**
+
+### The Mandatory Pattern:
+```
+Split-001: Based on phase-integration (same as original)
+    ↓ (becomes base for next)
+Split-002: Based on Split-001 (NOT phase-integration!)
+    ↓ (becomes base for next)
+Split-003: Based on Split-002 (NOT phase-integration!)
+```
+
+### Why This is CRITICAL:
+1. **Line Counting**: Each split measures ONLY its additions (400 lines, not cumulative)
+2. **Dependencies**: Later splits can use earlier split code
+3. **Clean Integration**: No merge conflicts between splits
+4. **Progressive Building**: Each split extends the previous
+
+### Include in Every Split Plan:
+```markdown
+## Branching Strategy
+- **Split-001**: Branches from `phase-integration` (same as original)
+- **Split-002**: Branches from `split-001` (NOT phase-integration!)
+- **Split-003**: Branches from `split-002` (NOT phase-integration!)
+
+This SEQUENTIAL branching ensures each split measures only its own additions.
+```
+
 ## 🔴🔴🔴 CRITICAL: Split Plan File Management 🔴🔴🔴
 
 **YOU MUST CREATE AND COMMIT SPLIT PLANS IN THE TOO-LARGE BRANCH**
@@ -74,9 +103,9 @@ ${INTEGRATION_STRATEGY}
   - ${FILE_LIST_003}
 
 ## Dependencies
-- Split-002 depends on Split-001
-- Split-003 depends on Split-002
-- All splits must be completed sequentially
+- Split-002 depends on Split-001 (and MUST be branched from Split-001!)
+- Split-003 depends on Split-002 (and MUST be branched from Split-002!)
+- All splits must be completed sequentially with SEQUENTIAL BRANCHING
 
 ## Validation
 Each split must:

@@ -26,7 +26,7 @@
 **Measurement Protocol**:
 ```bash
 # For each effort in wave
-/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c effort-branch-name
+$PROJECT_ROOT/tools/line-counter.sh -b [phase-integration-branch] -c effort-branch-name
 
 # Document results
 effort_1: 650 lines ✅

@@ -1,5 +1,52 @@
 # WAVE_REVIEW State Rules
 
+## 🔴🔴🔴 CRITICAL: REPORT LOCATION REQUIREMENTS 🔴🔴🔴
+
+**YOU MUST CREATE THE WAVE REVIEW REPORT IN THE EXACT LOCATION:**
+```bash
+# MANDATORY LOCATION:
+Directory: wave-reviews/phase{N}/wave{W}/
+Filename:  PHASE-{N}-WAVE-{W}-REVIEW-REPORT.md
+Full path: wave-reviews/phase{N}/wave{W}/PHASE-{N}-WAVE-{W}-REVIEW-REPORT.md
+
+# EXAMPLE for Phase 1, Wave 2:
+mkdir -p wave-reviews/phase1/wave2
+Write wave-reviews/phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md
+
+# WRONG LOCATIONS (WILL FAIL):
+❌ ~/WAVE-1-2-REVIEW-REPORT.md                      # Root directory
+❌ PHASE-1-WAVE-2-REVIEW-REPORT.md                  # Current directory
+❌ ./WAVE-REVIEW.md                                 # Current directory
+❌ reports/PHASE-1-WAVE-2-REVIEW-REPORT.md          # Wrong directory
+❌ wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md            # Missing parent directories
+❌ phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md     # Missing wave-reviews parent
+
+# CORRECT LOCATION (ONLY THIS WORKS):
+✅ wave-reviews/phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md
+```
+
+**VERIFICATION FUNCTION - USE THIS:**
+```bash
+verify_wave_report_location() {
+    local PHASE=$1
+    local WAVE=$2
+    local EXPECTED="wave-reviews/phase${PHASE}/wave${WAVE}/PHASE-${PHASE}-WAVE-${WAVE}-REVIEW-REPORT.md"
+    
+    if [[ ! -f "$EXPECTED" ]]; then
+        echo "❌ CRITICAL ERROR: Report not in correct location!"
+        echo "❌ Expected: $EXPECTED"
+        echo "❌ Orchestrator will NOT find your report!"
+        exit 1
+    fi
+    echo "✅ Report in correct location: $EXPECTED"
+}
+
+# ALWAYS verify after creating:
+verify_wave_report_location 1 2  # For Phase 1, Wave 2
+```
+
+**PENALTY FOR WRONG LOCATION: -50% grading penalty, orchestrator cannot proceed**
+
 ## Core Wave Assessment Rules
 
 ---
@@ -90,7 +137,7 @@ $PROJECT_ROOT/tools/line-counter.sh  # NO PARAMETERS!
 **❌ NEVER DO THIS:**
 - `./tools/line-counter.sh phase2/wave2/effort-name` (NO parameters!)
 - `$CLAUDE_PROJECT_DIR/tools/line-counter.sh` (often undefined!)
-- `tmc-pr-line-counter.sh` (wrong tool name!)
+- Manual counting or alternative tools (ONLY use line-counter.sh per R304!)
 ---
 
 ---
@@ -118,6 +165,32 @@ WAVE-LEVEL VALIDATION:
 **MANDATE**: Architect MUST create a permanent wave review report file before signaling review complete.
 
 **REQUIRED FILE**: `wave-reviews/phase{N}/wave{W}/PHASE-{N}-WAVE-{W}-REVIEW-REPORT.md`
+⚠️⚠️⚠️ **SEE CRITICAL LOCATION SECTION AT TOP OF THIS FILE** ⚠️⚠️⚠️
+
+**🔴 STEP-BY-STEP INSTRUCTIONS:**
+```bash
+# Step 1: Get phase and wave numbers
+PHASE=1  # From orchestrator-state.yaml
+WAVE=2   # From orchestrator-state.yaml
+
+# Step 2: CREATE DIRECTORY STRUCTURE (MANDATORY!)
+mkdir -p wave-reviews/phase${PHASE}/wave${WAVE}
+
+# Step 3: Set exact report path
+REPORT_FILE="wave-reviews/phase${PHASE}/wave${WAVE}/PHASE-${PHASE}-WAVE-${WAVE}-REVIEW-REPORT.md"
+
+# Step 4: Create report with Write tool using EXACT path
+# Example: Write wave-reviews/phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md
+
+# Step 5: Verify location (CRITICAL!)
+ls -la wave-reviews/phase${PHASE}/wave${WAVE}/
+[[ -f "$REPORT_FILE" ]] || { echo "❌ FAILED!"; exit 1; }
+
+# Step 6: Commit and push
+git add "$REPORT_FILE"
+git commit -m "review: Phase ${PHASE} Wave ${WAVE} review - ${DECISION}"
+git push
+```
 
 **DECISION TYPES**:
 - PROCEED_NEXT_WAVE: Wave approved, start next wave
@@ -269,7 +342,14 @@ WAVE_REVIEW → [Assessment Complete] → Decision State
 
 **YOU MUST CREATE THIS FILE BEFORE SIGNALING COMPLETE:**
 - **File**: `wave-reviews/phase{N}/wave{W}/PHASE-{N}-WAVE-{W}-REVIEW-REPORT.md`
+- **Example**: `wave-reviews/phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md`
 - **When**: BEFORE returning your review decision
+- **Location**: ⚠️ MUST be in exact directory structure - see top of file ⚠️
+
+**NEVER CREATE IN:**
+- ❌ Root directory (~/WAVE-REVIEW.md)
+- ❌ Current directory (./PHASE-1-WAVE-2-REVIEW-REPORT.md)
+- ❌ Wrong structure (phase1/wave2/report.md)
 - **Decision**: Must be one of:
   - PROCEED_NEXT_WAVE
   - PROCEED_PHASE_ASSESSMENT

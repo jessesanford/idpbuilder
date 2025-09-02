@@ -57,7 +57,7 @@ effort_assessments:
   webhook-core:
     size_compliance:
       line_count: 650
-      measurement_tool: "tmc-pr-line-counter.sh"
+      measurement_tool: "line-counter.sh"
       status: "PASS"
       evidence: "line-count-webhook-core-20250823.txt"
     
@@ -81,7 +81,7 @@ effort_assessments:
   webhook-validation:
     size_compliance:
       line_count: 720
-      measurement_tool: "tmc-pr-line-counter.sh"
+      measurement_tool: "line-counter.sh"
       status: "PASS"
       evidence: "line-count-webhook-validation-20250823.txt"
     
@@ -105,7 +105,7 @@ effort_assessments:
   config-management:
     size_compliance:
       line_count: 580
-      measurement_tool: "tmc-pr-line-counter.sh"
+      measurement_tool: "line-counter.sh"
       status: "PASS"
       evidence: "line-count-config-management-20250823.txt"
     

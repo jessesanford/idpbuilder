@@ -3,6 +3,34 @@
 ## State Context
 You are focused on resolving specific issues, bugs, or optimization requirements that are blocking progress.
 
+## 🔴🔴🔴 CRITICAL: FIX APPLICATION LOCATION 🔴🔴🔴
+
+---
+### 🔴🔴🔴 RULE R300 - Comprehensive Fix Management Protocol (SUPREME LAW)
+**Source:** rule-library/R300-comprehensive-fix-management-protocol.md
+**Criticality:** SUPREME LAW - Violation = -100% AUTOMATIC FAILURE
+
+ALL FIXES MUST BE APPLIED TO EFFORT BRANCHES, NEVER TO INTEGRATION BRANCHES!
+
+MANDATORY VERIFICATION:
+```bash
+# FIRST THING IN FIX_ISSUES STATE:
+cd /efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}
+CURRENT_BRANCH=$(git branch --show-current)
+if [[ ! "$CURRENT_BRANCH" =~ ^effort- ]]; then
+    echo "🔴 CRITICAL ERROR: Not on effort branch! Violates R300!"
+    exit 1
+fi
+echo "✅ Confirmed on effort branch: $CURRENT_BRANCH"
+```
+
+KEY POINTS:
+- Fixes in integration branches are LOST when branches recreated
+- This causes infinite loops of fixing the same issues
+- ALWAYS work in effort directory and effort branch
+- ALWAYS push to effort branch remote
+---
+
 ---
 ### ℹ️ RULE R109.0.0 - FIX_ISSUES Rules
 **Source:** rule-library/RULE-REGISTRY.md#R109
@@ -168,7 +196,7 @@ REFACTORING APPROACHES:
 - Leverage Go standard library instead of custom code
 
 MEASUREMENT VERIFICATION:
-- Use tmc-pr-line-counter.sh to verify reductions
+- Use line-counter.sh per R304 to verify reductions
 - Measure after each optimization
 - Ensure functionality is preserved
 - Maintain or improve test coverage

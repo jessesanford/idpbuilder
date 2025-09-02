@@ -51,8 +51,8 @@ implementation_checkpoint:
     # Size compliance
     size_measurement:
       measured_at: "2025-08-23T16:25:00Z"
-      tool_used: "/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh"
-      command: "tmc-pr-line-counter.sh -c phase1/wave2/effort2-controller"
+      tool_used: "${PROJECT_ROOT}/tools/line-counter.sh"
+      command: "line-counter.sh -b phase1/integration -c phase1/wave2/effort2-controller"
       result: "542 lines"
       limit: 800
       utilization_percentage: 67.75
@@ -319,7 +319,7 @@ def verify_implementation_status(checkpoint_data):
         
         # Re-measure current size
         size_check = subprocess.run([
-            '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh', '-c', branch
+            '${PROJECT_ROOT}/tools/line-counter.sh', '-b', base_branch, '-c', branch
         ], capture_output=True, text=True)
         
         if size_check.returncode == 0:
@@ -505,7 +505,7 @@ def measure_current_size_compliance(branch):
     
     try:
         result = subprocess.run([
-            '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+            '${PROJECT_ROOT}/tools/line-counter.sh',
             '-c', branch
         ], capture_output=True, text=True, check=True)
         

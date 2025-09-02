@@ -31,7 +31,6 @@ echo "Reading rules NOW before ANY other action..."
 
 # READ: .claude/agents/orchestrator.md
 # READ: SOFTWARE-FACTORY-STATE-MACHINE.md
-# READ: agent-states/orchestrator/CRITICAL_RULES.md
 # READ: agent-states/orchestrator/$NEW_STATE/rules.md
 
 echo "✅ Rules reloaded and acknowledged for state: $NEW_STATE"

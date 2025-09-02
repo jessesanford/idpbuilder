@@ -522,7 +522,7 @@ class QualityGateValidator:
             if effort_branch:
                 try:
                     result = subprocess.run([
-                        '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+                        '$PROJECT_ROOT/tools/line-counter.sh',
                         '-c', effort_branch
                     ], capture_output=True, text=True, check=True)
                     

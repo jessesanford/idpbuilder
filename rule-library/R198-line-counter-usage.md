@@ -1,9 +1,9 @@
 # Rule R198: Line Counter Tool Usage Protocol
 
 ## Rule Statement
-Agents MUST use the line counter tool CORRECTLY by running it FROM WITHIN the effort directory with NO PARAMETERS. 
+Agents MUST use the line counter tool CORRECTLY with the MANDATORY `-b` parameter to specify the correct base branch. Manual counting or using wrong base branches = AUTOMATIC -100% FAILURE.
 
-**CRITICAL FOR SPARSE CLONES**: The tool is in the orchestrator's project root, NOT in your sparse clone! You must find the project root first (where `orchestrator-state.yaml` lives), then use `${PROJECT_ROOT}/tools/line-counter.sh`.
+**CRITICAL FOR SPARSE CLONES**: The tool is in the orchestrator's project root, NOT in your sparse clone! You must find the project root first (where `orchestrator-state.yaml` lives), then use `${PROJECT_ROOT}/tools/line-counter.sh -b [BASE_BRANCH] -c [CURRENT_BRANCH]`.
 
 ## Criticality Level
 **BLOCKING** - Incorrect measurement leads to size limit violations
@@ -11,7 +11,7 @@ Agents MUST use the line counter tool CORRECTLY by running it FROM WITHIN the ef
 ## Enforcement Mechanism
 - **Technical**: Tool execution validation
 - **Behavioral**: Immediate correction on misuse
-- **Grading**: -25% for incorrect line counting
+- **Grading**: -100% for manual counting or wrong base branch
 
 ## 🚨🚨🚨 CRITICAL: How to Use Line Counter
 
@@ -19,7 +19,7 @@ Agents MUST use the line counter tool CORRECTLY by running it FROM WITHIN the ef
 **Your effort directory is a SPARSE CLONE - it doesn't have the tools/ directory!**
 The line counter lives in the orchestrator's project root, not in your sparse clone.
 
-### ✅ CORRECT USAGE - Find Project Root FIRST
+### ✅ CORRECT USAGE - MUST SPECIFY BASE BRANCH
 
 ```bash
 # STEP 1: Navigate to your effort directory
@@ -35,67 +35,81 @@ while [ "$PROJECT_ROOT" != "/" ]; do
 done
 echo "Project root: $PROJECT_ROOT"
 
-# STEP 3: Run the tool from PROJECT_ROOT with NO PARAMETERS
-$PROJECT_ROOT/tools/line-counter.sh
+# STEP 3: Identify the CORRECT base branch
+# For efforts: Use the phase integration branch, NOT "main"!
+BASE_BRANCH="phase1/integration"  # From orchestrator-state.yaml
+CURRENT_BRANCH=$(git branch --show-current)
 
-# OR if you know the absolute path:
-/home/vscode/workspaces/idpbuilder-oci-mgmt/tools/line-counter.sh
+# STEP 4: Run the tool WITH MANDATORY PARAMETERS
+$PROJECT_ROOT/tools/line-counter.sh -b $BASE_BRANCH -c $CURRENT_BRANCH
+
+# CORRECT examples:
+$PROJECT_ROOT/tools/line-counter.sh -b phase1/integration -c phase1/wave1/api-types
+$PROJECT_ROOT/tools/line-counter.sh -b phase2/integration -c phase2/wave1/effort1
 
 # Output will show:
-# Counting lines in phase1/wave1/api-types (excluding generated code)...
+# Counting lines in phase1/wave1/api-types against phase1/integration...
 # Total non-generated lines: 245
 ```
 
-### ❌❌❌ WRONG USAGE - NEVER DO THIS
+### ❌❌❌ WRONG USAGE - AUTOMATIC -100% FAILURE
 
 ```bash
+# ❌❌❌ FATAL - Manual counting = AUTOMATIC FAILURE
+wc -l *.go  # -100% FAILURE!
+find . -name "*.go" | xargs wc -l  # -100% FAILURE!
+
+# ❌❌❌ FATAL - Using "main" as base for efforts = AUTOMATIC FAILURE  
+$PROJECT_ROOT/tools/line-counter.sh -b main -c phase1/wave1/api-types  # -100% FAILURE!
+
+# ❌❌❌ FATAL - No parameters = WRONG (outdated usage)
+$PROJECT_ROOT/tools/line-counter.sh  # WRONG - must specify base branch!
+
 # ❌ WRONG - ./tools doesn't exist in sparse clone!
 ./tools/line-counter.sh  # FAILS - no tools/ directory in sparse clone!
 
-# ❌ WRONG - Don't pass branch names as parameters
-$PROJECT_ROOT/tools/line-counter.sh -c phase1/wave1/api-types  # WRONG!
+# ❌ WRONG - Missing base branch parameter
+$PROJECT_ROOT/tools/line-counter.sh -c phase1/wave1/api-types  # Missing -b!
 
-# ❌ WRONG - Don't use flags
-$PROJECT_ROOT/tools/line-counter.sh --help  # WRONG!
-$PROJECT_ROOT/tools/line-counter.sh -h      # WRONG!
-
-# ❌ WRONG - Don't run from wrong directory
+# ❌ WRONG - Wrong directory
 cd /home/vscode/workspaces/idpbuilder-oci-mgmt
-./tools/line-counter.sh phase1/wave1/api-types  # WRONG!
-
-# ❌ WRONG - Don't pass paths as arguments
-$PROJECT_ROOT/tools/line-counter.sh efforts/phase1/wave1/api-types  # WRONG!
+./tools/line-counter.sh -b phase1/integration  # Wrong directory!
 ```
 
 ## Understanding the Tool
 
 The line counter tool:
-1. **Automatically detects** your current branch
-2. **Compares against** the base branch (usually main)
-3. **Excludes** generated code (zz_generated*, *.pb.go, etc.)
-4. **Requires** you to be IN the git repository
+1. **REQUIRES** `-b` parameter to specify base branch
+2. **REQUIRES** `-c` parameter to specify current branch (or auto-detects)
+3. **Compares** current branch against specified base branch
+4. **Excludes** generated code (zz_generated*, *.pb.go, etc.)
+5. **Must be run** from within the effort directory
 
-### How It Works Internally
+### How It Works With Parameters
 ```bash
-# The tool does this automatically:
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-git diff main..$CURRENT_BRANCH --numstat | 
+# The tool uses your specified parameters:
+BASE_BRANCH="$1"  # From -b parameter (MANDATORY)
+CURRENT_BRANCH="$2"  # From -c parameter (or auto-detected)
+git diff $BASE_BRANCH..$CURRENT_BRANCH --numstat | 
   grep -v "zz_generated" | 
   grep -v ".pb.go" | 
   # ... counts lines
+
+# CRITICAL: For efforts, BASE must be phase integration branch!
+# NOT "main" - that would count ALL phase code as your effort!
 ```
 
 ## Correct Workflow for Size Checking
 
-### For Software Engineers (IN SPARSE CLONES)
+### For Code Reviewers (MANDATORY PROCESS)
 ```bash
 # 1. Verify you're in the right directory
 pwd
 # Should output: /path/to/efforts/phase1/wave1/your-effort
 
 # 2. Confirm you're on the right branch
-git branch --show-current
-# Should output: phase1/wave1/your-effort
+CURRENT_BRANCH=$(git branch --show-current)
+echo "Current branch: $CURRENT_BRANCH"
 
 # 3. Find the project root (where orchestrator lives)
 PROJECT_ROOT=$(pwd)
@@ -107,16 +121,20 @@ while [ "$PROJECT_ROOT" != "/" ]; do
 done
 echo "Found project root: $PROJECT_ROOT"
 
-# 4. Run the line counter from PROJECT ROOT
-$PROJECT_ROOT/tools/line-counter.sh
-# Will output: Total non-generated lines: XXX
+# 4. CRITICAL: Identify the CORRECT base branch
+# Check orchestrator-state.yaml for phase integration branch
+BASE_BRANCH=$(grep "current_phase_integration:" $PROJECT_ROOT/orchestrator-state.yaml -A 2 | grep "branch:" | awk '{print $2}')
+echo "Base branch: $BASE_BRANCH"
 
-# 5. Check if under limit
-SIZE=$($PROJECT_ROOT/tools/line-counter.sh | grep "Total" | awk '{print $NF}')
+# 5. Run the line counter WITH MANDATORY PARAMETERS
+SIZE=$($PROJECT_ROOT/tools/line-counter.sh -b $BASE_BRANCH -c $CURRENT_BRANCH | grep "Total" | awk '{print $NF}')
+echo "Measured size: $SIZE lines"
+
+# 6. Check if under limit
 if [ "$SIZE" -gt 800 ]; then
-    echo "❌ OVER LIMIT ($SIZE) - Need to split"
+    echo "❌ OVER LIMIT ($SIZE) - MUST CREATE SPLIT PLAN"
 else
-    echo "✅ Under limit ($SIZE) - can continue"
+    echo "✅ Under limit ($SIZE) - can approve"
 fi
 ```
 
@@ -254,26 +272,32 @@ monitor_size_during_work() {
 ## Quick Reference Card
 
 ```bash
-# ✅ RIGHT WAY (for sparse clones):
+# ✅ RIGHT WAY - MUST SPECIFY BASE BRANCH:
 cd efforts/phase1/wave1/my-effort
 # Find project root first!
 PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do 
     [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break; 
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
 done
-$PROJECT_ROOT/tools/line-counter.sh  # NO PARAMETERS
+# Get base branch from orchestrator-state.yaml
+BASE_BRANCH="phase1/integration"  # NOT "main"!
+$PROJECT_ROOT/tools/line-counter.sh -b $BASE_BRANCH -c $(git branch --show-current)
 
-# ❌ WRONG WAYS (all will fail):
+# ❌❌❌ AUTOMATIC FAILURES (-100% GRADE):
+wc -l *.go  # Manual counting = -100% FAILURE!
+$PROJECT_ROOT/tools/line-counter.sh -b main  # Wrong base = -100% FAILURE!
+$PROJECT_ROOT/tools/line-counter.sh  # No parameters = WRONG!
+
+# ❌ OTHER WRONG WAYS:
 ./tools/line-counter.sh  # No tools/ in sparse clone!
-$PROJECT_ROOT/tools/line-counter.sh -c branch-name  # No parameters!
-$PROJECT_ROOT/tools/line-counter.sh --help  # No flags!
-$PROJECT_ROOT/tools/line-counter.sh path/to/effort  # No paths!
-$PROJECT_ROOT/tools/line-counter.sh -anything  # Nothing after command!
+$PROJECT_ROOT/tools/line-counter.sh -c branch-name  # Missing -b parameter!
 ```
 
 ## Grading Impact
 
-- **Using parameters with tool**: -25% (Incorrect usage)
+- **Manual counting (wc -l, etc.)**: -100% (AUTOMATIC FAILURE)
+- **Using "main" as base for efforts**: -100% (AUTOMATIC FAILURE)
+- **Missing -b parameter**: -50% (Critical parameter missing)
 - **Not checking size regularly**: -15% (Process violation)
 - **Wrong directory execution**: -20% (Context error)
 - **Exceeding 800 lines**: -40% (Size limit violation)

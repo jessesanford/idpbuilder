@@ -243,7 +243,7 @@ provide_sw_engineer_guidance() {
     echo "   - TEST-DRIVEN-VALIDATION-REQUIREMENTS.md (coverage rules)"
     echo
     echo "3. 📏 CHECK LINE COUNT COMPLIANCE:"
-    echo "   - Run: /workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c \$(git branch --show-current)"
+    echo "   - Run: $PROJECT_ROOT/tools/line-counter.sh -c \$(git branch --show-current)"
     echo "   - If >800 lines: STOP and request split"
     echo "   - If <800 lines: Continue implementation"
     echo
@@ -279,7 +279,7 @@ provide_code_reviewer_guidance() {
     echo "   - work-log.md (implementation progress)"
     echo
     echo "3. 📏 CHECK LINE COUNT STATUS:"
-    echo "   - Run: /workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c \$(git branch --show-current)"
+    echo "   - Run: $PROJECT_ROOT/tools/line-counter.sh -c \$(git branch --show-current)"
     echo "   - If >800 lines: Create split plan immediately"
     echo "   - If <800 lines: Complete review process"
     echo

@@ -26,7 +26,7 @@ VALIDATION PROTOCOL:
 **Criticality:** MANDATORY - Required for approval
 
 MANDATORY QUALITY GATES:
-✅ Size Compliance: ≤800 lines (tmc-pr-line-counter.sh)
+✅ Size Compliance: ≤800 lines (line-counter.sh)
 ✅ Test Coverage: ≥90% unit tests, integration tests present
 ✅ KCP Compliance: Multi-tenancy, APIExport, workspace
 ✅ Security: Input validation, RBAC, secret management
@@ -79,7 +79,7 @@ def validate_size_compliance_gate(implementation_data):
     try:
         # MANDATORY: Use only the approved line counter
         result = subprocess.run([
-            '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+            '$PROJECT_ROOT/tools/line-counter.sh',
             '-c', branch
         ], capture_output=True, text=True, check=True)
         
@@ -92,7 +92,7 @@ def validate_size_compliance_gate(implementation_data):
             'actual_lines': line_count,
             'limit': 800,
             'margin': 800 - line_count,
-            'tool_used': 'tmc-pr-line-counter.sh',
+            'tool_used': 'line-counter.sh',
             'raw_output': result.stdout.strip(),
             'measurement_timestamp': datetime.now().isoformat()
         }
@@ -619,7 +619,7 @@ validation_report:
       actual_lines: 687
       limit: 800
       margin: 113
-      tool_used: "tmc-pr-line-counter.sh"
+      tool_used: "line-counter.sh"
       
     test_coverage:
       gate_passed: true

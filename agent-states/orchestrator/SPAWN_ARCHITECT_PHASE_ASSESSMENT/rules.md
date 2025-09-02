@@ -96,6 +96,28 @@ The system will check for this marker. No marker = Immediate failure.
 
 **THE SYSTEM IS MONITORING YOUR READ TOOL CALLS!**
 
+## 📋 PRIMARY DIRECTIVES FOR SPAWN_ARCHITECT_PHASE_ASSESSMENT STATE
+
+### 🔴🔴🔴 R301 - Integration Branch Current Tracking (SUPREME LAW)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R301-integration-branch-current-tracking.md`
+**Criticality**: SUPREME LAW - Only ONE current integration allowed
+**Summary**: MUST use current_integration.branch, NEVER deprecated branches
+
+### 🚨🚨🚨 R257 - Mandatory Phase Assessment Report
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R257-mandatory-phase-assessment-report.md`
+**Criticality**: BLOCKING - Phase cannot complete without report
+**Summary**: Architect MUST create assessment report file
+
+### 🚨🚨🚨 R285 - Mandatory Phase Integration Before Assessment
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R285-mandatory-phase-integration-before-assessment.md`
+**Criticality**: BLOCKING - Integration must precede assessment
+**Summary**: Assess integrated work, not individual efforts
+
+### 🔴🔴🔴 R233 - All States Require Immediate Action
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R233-all-states-immediate-action.md`
+**Criticality**: CRITICAL - States are verbs
+**Summary**: SPAWN_ARCHITECT_PHASE_ASSESSMENT means SPAWN NOW
+
 ## 🚨 SPAWN_ARCHITECT_PHASE_ASSESSMENT IS A VERB - SPAWN IMMEDIATELY! 🚨
 
 ### IMMEDIATE ACTIONS UPON ENTERING SPAWN_ARCHITECT_PHASE_ASSESSMENT
@@ -155,19 +177,34 @@ The architect must review:
 ## Spawning the Architect
 
 ```bash
-# Determine if this is reassessment or initial
-IS_REASSESSMENT=$(yq '.phase_integration_branches[] | select(.phase == env(PHASE)).ready_for_reassessment' orchestrator-state.yaml)
+# R301 MANDATORY: Get ONLY the current phase integration branch
+CURRENT_BRANCH=$(yq '.current_phase_integration | select(.phase == env(PHASE)).branch' orchestrator-state.yaml)
+CURRENT_STATUS=$(yq '.current_phase_integration | select(.phase == env(PHASE)).status' orchestrator-state.yaml)
+INTEGRATION_TYPE=$(yq '.current_phase_integration | select(.phase == env(PHASE)).type' orchestrator-state.yaml)
 
-if [ "$IS_REASSESSMENT" = "true" ]; then
+# Validate current integration is active (R301)
+if [ "$CURRENT_STATUS" != "active" ]; then
+    echo "🔴🔴🔴 FATAL: Current integration is not active!"
+    echo "  Phase: $PHASE"
+    echo "  Branch: $CURRENT_BRANCH"
+    echo "  Status: $CURRENT_STATUS"
+    exit 1
+fi
+
+# Determine assessment type based on integration type
+if [ "$INTEGRATION_TYPE" = "post_fixes" ]; then
     ASSESSMENT_TYPE="REASSESSMENT after fixes"
-    # Use post-fixes integration branch
-    PHASE_BRANCH=$(yq '.phase_integration_branches[] | select(.phase == env(PHASE)).branch' orchestrator-state.yaml)
+    PHASE_BRANCH="$CURRENT_BRANCH"
     ORIGINAL_REPORT="phase-assessments/phase${PHASE}/PHASE-${PHASE}-ASSESSMENT-REPORT.md"
+    IS_REASSESSMENT="true"
 else
     ASSESSMENT_TYPE="INITIAL ASSESSMENT"
-    PHASE_BRANCH=$(get_phase_integration_branch_name "$PHASE")
+    PHASE_BRANCH="$CURRENT_BRANCH"
     ORIGINAL_REPORT=""
+    IS_REASSESSMENT="false"
 fi
+
+echo "✅ Using current integration per R301: $PHASE_BRANCH"
 
 # Prepare phase assessment request
 PHASE_CONTEXT="Complete Phase $PHASE ${ASSESSMENT_TYPE}"

@@ -412,11 +412,92 @@ git push
 echo "✅ TODOs persisted before transition"
 ```
 
+## 🚨🚨🚨 R209 - EFFORT DIRECTORY ISOLATION PROTOCOL (MISSION CRITICAL!)
+**Source:** rule-library/R209-effort-directory-isolation-protocol.md  
+**Criticality:** MISSION CRITICAL - SW Engineers MUST stay in effort directories  
+
+### MUST INJECT METADATA AND PUSH TO REMOTE!
+
+After Code Reviewer creates IMPLEMENTATION-PLAN.md, YOU MUST ADD DIRECTORY/BRANCH METADATA AND PUSH:
+
+```bash
+# 🚨 MANDATORY: Call this AFTER Code Reviewer creates plan, BEFORE spawning SW Engineer! 🚨
+inject_r209_metadata() {
+    local EFFORT_NAME="$1"
+    local PHASE="$2"
+    local WAVE="$3"
+    local IMPL_PLAN="efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}/IMPLEMENTATION-PLAN.md"
+    
+    echo "🔧 [R209] Injecting metadata for effort: $EFFORT_NAME"
+    
+    # Check if plan exists
+    if [ ! -f "$IMPL_PLAN" ]; then
+        echo "⚠️ ERROR: Implementation plan not found at: $IMPL_PLAN"
+        return 1
+    fi
+    
+    # Source branch naming helpers
+    source utilities/branch-naming-helpers.sh
+    
+    # Get properly formatted branch name with project prefix
+    EFFORT_BRANCH=$(get_effort_branch_name "$PHASE" "$WAVE" "$EFFORT_NAME")
+    
+    # Add metadata header
+    cat > /tmp/r209_metadata.md << EOF
+<!-- ⚠️ EFFORT INFRASTRUCTURE METADATA (R209) ⚠️ -->
+**EFFORT_NAME**: ${EFFORT_NAME}
+**PHASE**: ${PHASE}
+**WAVE**: ${WAVE}
+**WORKING_DIRECTORY**: $(pwd)/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}
+**BRANCH**: ${EFFORT_BRANCH}
+**REMOTE**: origin/${EFFORT_BRANCH}
+**ISOLATION_BOUNDARY**: efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}
+
+⚠️ **SW ENGINEER: YOU MUST STAY IN THIS DIRECTORY!** ⚠️
+ALL work happens in: efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}
+ALL code goes in: efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}/pkg/
+NEVER leave this directory during implementation!
+<!-- END METADATA -->
+
+EOF
+    
+    # Prepend to plan
+    cat /tmp/r209_metadata.md "$IMPL_PLAN" > /tmp/updated_plan.md
+    mv /tmp/updated_plan.md "$IMPL_PLAN"
+    echo "✅ R209: Metadata injected"
+    
+    # 🔴 CRITICAL: Push to remote!
+    ORCH_DIR=$(pwd)
+    cd "efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+    
+    git add IMPLEMENTATION-PLAN.md
+    git commit -m "feat: inject R209 metadata into implementation plan"
+    
+    if git push; then
+        echo "✅ Plan with R209 metadata pushed to remote"
+    else
+        git push -u origin "$(git branch --show-current)"
+    fi
+    
+    cd "$ORCH_DIR"
+}
+```
+
+### MANDATORY WORKFLOW:
+1. Code Reviewer creates IMPLEMENTATION-PLAN.md
+2. **WAIT FOR COMPLETION**
+3. **INJECT R209 METADATA** (orchestrator does this)
+4. **PUSH TO REMOTE**
+5. Then spawn SW Engineer
+
+**Note:** This metadata injection typically happens in WAITING_FOR_EFFORT_PLANS state, but the infrastructure must be ready in SETUP_EFFORT_INFRASTRUCTURE.
+
 ## Common Mistakes to Avoid
 
 ❌ **WRONG:** Spawning Code Reviewers before creating directories
 ❌ **WRONG:** Forgetting project prefix in branch names
 ❌ **WRONG:** Not pushing branches to remote
 ❌ **WRONG:** Creating infrastructure one-by-one as needed
+❌ **WRONG:** Not injecting R209 metadata before spawning SW Engineers
 
-✅ **CORRECT:** Create ALL infrastructure first, then spawn agents
+✅ **CORRECT:** Create ALL infrastructure first, inject metadata, then spawn agents

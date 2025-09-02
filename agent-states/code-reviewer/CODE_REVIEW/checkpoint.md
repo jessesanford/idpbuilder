@@ -10,7 +10,7 @@ Save checkpoint at these critical code review points:
    - Review scope and criteria established
 
 2. **Size Compliance Validation**
-   - Size measured using tmc-pr-line-counter.sh
+   - Size measured using line-counter.sh
    - Compliance decision made
    - Split determination if size exceeded
 
@@ -61,8 +61,10 @@ code_review_checkpoint:
   # Size compliance validation (CRITICAL)
   size_compliance:
     validation_timestamp: "2025-08-23T18:50:00Z"
-    tool_used: "tmc-pr-line-counter.sh"
-    command_executed: "/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c phase1/wave2/effort3-webhooks"
+    tool_used: "${PROJECT_ROOT}/tools/line-counter.sh"  # MANDATORY TOOL
+    base_branch: "phase1/integration"  # NEVER "main" for efforts!
+    current_branch: "phase1/wave2/effort3-webhooks"
+    command_executed: "${PROJECT_ROOT}/tools/line-counter.sh -b phase1/integration -c phase1/wave2/effort3-webhooks"
     raw_output: |
       pkg/webhooks/admission/validator.go: 127 lines
       pkg/webhooks/admission/mutator.go: 104 lines
@@ -659,7 +661,7 @@ def determine_review_recovery_actions(checkpoint, verification, revalidation):
             'type': 'REVALIDATE_SIZE_COMPLIANCE',
             'description': 'Size compliance needs revalidation',
             'priority': 'CRITICAL',
-            'action': 'Re-run tmc-pr-line-counter.sh and validate results'
+            'action': 'Re-run line-counter.sh and validate results'
         })
     
     if revalidation['test_coverage']:
@@ -739,13 +741,15 @@ def revalidate_critical_review_areas(checkpoint_data):
         'action_required': 'NONE' if review_still_valid else 'COMPLETE_REVALIDATION'
     }
 
-def revalidate_size_compliance(effort_branch):
+def revalidate_size_compliance(effort_branch, base_branch):
     """Re-validate size compliance using mandatory tool"""
     
     try:
-        # Use the same tool as original validation
+        # Find project root and use MANDATORY tool with CORRECT base branch
+        project_root = find_project_root()
         result = subprocess.run([
-            '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+            f'{project_root}/tools/line-counter.sh',
+            '-b', base_branch,  # MANDATORY: Use phase integration branch
             '-c', effort_branch
         ], capture_output=True, text=True, check=True)
         
@@ -758,7 +762,10 @@ def revalidate_size_compliance(effort_branch):
             'actual_lines': line_count,
             'limit': 800,
             'margin': 800 - line_count,
-            'tool_used': 'tmc-pr-line-counter.sh',
+            'tool_used': f'{project_root}/tools/line-counter.sh',
+            'base_branch': base_branch,
+            'current_branch': effort_branch,
+            'command': f'{project_root}/tools/line-counter.sh -b {base_branch} -c {effort_branch}',
             'raw_output': result.stdout.strip(),
             'revalidation_successful': True
         }

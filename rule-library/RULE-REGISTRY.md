@@ -28,6 +28,8 @@
 16. **R299.0.0** - DEPRECATED - Consolidated into R300
 17. **R300.0.0** - Comprehensive Fix Management Protocol (ALL FIXES TO EFFORT BRANCHES - SUPREME LAW!)
 18. **R220.0.0** - Atomic PR Design Requirement (EVERY EFFORT = ONE ATOMIC PR TO MAIN!)
+19. **R302.0.0** - Comprehensive Split Tracking Protocol (Meticulous tracking of split operations)
+20. **R303.0.0** - Phase/Wave Document Location Protocol (Centralized document storage)
 
 ## Rule Categories
 
@@ -236,3 +238,5 @@
 - R299.0.0 - DEPRECATED - Consolidated into R300
 - R300.0.0 - Comprehensive Fix Management Protocol | 🔴 SUPREME LAW | Consolidates R299, R240, R292, R298 - ALL fixes to effort branches
 - R301.0.0 - File Naming Collision Prevention | BLOCKING | Prevents file overwrites during parallel operations
+- R302.0.0 - Comprehensive Split Tracking Protocol | 🚨 BLOCKING | Meticulous tracking of all split operations and relationships
+- R303.0.0 - Phase/Wave Document Location Protocol | 🚨 BLOCKING | Centralized storage of phase/wave documents in phase-plans directory

@@ -111,6 +111,11 @@ The system will check for this marker. No marker = Immediate failure.
 
 ## 📋 PRIMARY DIRECTIVES FOR PHASE_INTEGRATION STATE
 
+### 🔴🔴🔴 R301 - Integration Branch Current Tracking (SUPREME LAW)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R301-integration-branch-current-tracking.md`
+**Criticality**: SUPREME LAW - Only ONE current integration allowed
+**Summary**: Track current vs deprecated integrations, prevent wrong branch usage
+
 ### 🚨🚨🚨 R285 - Mandatory Phase Integration Before Assessment  
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R285-mandatory-phase-integration-before-assessment.md`
 **Criticality**: BLOCKING - Must integrate before assessment
@@ -195,6 +200,167 @@ Create a clean phase-level integration branch that includes:
 - All fixes from ERROR_RECOVERY addressing phase assessment issues
 - Ready for architect phase reassessment
 - Comprehensive integration of all phase work
+
+## 🔴 CRITICAL: Locating Effort Branches for Integration
+
+### Effort Branch Locations (Per R193/R191)
+All effort branches are located in specific directories with predictable patterns:
+
+#### Directory Structure:
+```bash
+# Effort workspaces follow this pattern:
+/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}/
+
+# Example for Phase 2, Wave 1 with 3 efforts:
+/efforts/phase2/wave1/auth-system/       # Contains effort branch
+/efforts/phase2/wave1/user-management/   # Contains effort branch
+/efforts/phase2/wave1/api-gateway/       # Contains effort branch
+```
+
+#### Branch Naming Convention:
+```bash
+# Effort branches follow naming from target-repo-config.yaml:
+# Pattern: phase${PHASE}-wave${WAVE}-${EFFORT_NAME}
+# Or with project prefix: ${PREFIX}/phase${PHASE}-wave${WAVE}-${EFFORT_NAME}
+
+# Examples without prefix:
+phase2-wave1-auth-system
+phase2-wave1-user-management
+phase2-wave1-api-gateway
+
+# Examples with prefix (e.g., "tmc-workspace"):
+tmc-workspace/phase2-wave1-auth-system
+tmc-workspace/phase2-wave1-user-management
+tmc-workspace/phase2-wave1-api-gateway
+```
+
+### Finding Efforts to Integrate
+
+**MANDATORY: Before integration, locate all effort branches:**
+
+```bash
+#!/bin/bash
+# Script to find all effort branches for current phase
+
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+SF_INSTANCE_DIR=$(pwd)
+
+echo "🔍 Locating effort branches for Phase ${PHASE} integration"
+echo "================================================="
+
+# Find all waves in the phase
+for wave_num in $(seq 1 10); do
+    WAVE_DIR="/efforts/phase${PHASE}/wave${wave_num}"
+    
+    if [ ! -d "$WAVE_DIR" ]; then
+        continue  # Wave doesn't exist, skip
+    fi
+    
+    echo "\n📁 Wave ${wave_num} efforts:"
+    echo "-------------------"
+    
+    # List all effort directories in this wave
+    for effort_dir in "$WAVE_DIR"/*/; do
+        if [ ! -d "$effort_dir/.git" ]; then
+            continue  # Not a git repository, skip
+        fi
+        
+        EFFORT_NAME=$(basename "$effort_dir")
+        cd "$effort_dir"
+        
+        # Get current branch and remote info
+        CURRENT_BRANCH=$(git branch --show-current)
+        REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "No remote")
+        
+        echo "  ✅ Effort: $EFFORT_NAME"
+        echo "     Directory: $effort_dir"
+        echo "     Branch: $CURRENT_BRANCH"
+        echo "     Remote: $REMOTE_URL"
+        
+        # Check if branch exists on remote
+        if git ls-remote --heads origin "$CURRENT_BRANCH" 2>/dev/null | grep -q "$CURRENT_BRANCH"; then
+            echo "     Status: ✅ Branch exists on remote"
+        else
+            echo "     Status: ⚠️ Branch not found on remote!"
+        fi
+    done
+done
+
+cd "$SF_INSTANCE_DIR"
+echo "\n================================================="
+echo "📊 Effort branch discovery complete"
+```
+
+### Integration Source Requirements (R300)
+
+**Per R300 (Comprehensive Fix Management Protocol):**
+- ALL fixes must be in effort branches before integration
+- Integration branches are temporary and recreated from main
+- Effort branches are the SOURCE OF TRUTH that become PRs
+- NEVER apply fixes directly to integration branches
+
+### Verifying Effort Branches Before Integration
+
+```bash
+#!/bin/bash
+# Verify all effort branches are ready for integration
+
+verify_effort_branches() {
+    local PHASE=$1
+    local ERRORS=0
+    
+    echo "🔍 Verifying effort branches for Phase ${PHASE}"
+    
+    # Check orchestrator-state.yaml for expected efforts
+    EXPECTED_EFFORTS=$(yq ".phases.phase_${PHASE}.efforts[]" orchestrator-state.yaml 2>/dev/null)
+    
+    if [ -z "$EXPECTED_EFFORTS" ]; then
+        echo "⚠️ No efforts recorded in orchestrator-state.yaml for phase ${PHASE}"
+        echo "   Searching filesystem for actual efforts..."
+    fi
+    
+    # Scan filesystem for actual effort branches
+    for wave_num in $(seq 1 10); do
+        WAVE_DIR="/efforts/phase${PHASE}/wave${wave_num}"
+        
+        if [ ! -d "$WAVE_DIR" ]; then
+            continue
+        fi
+        
+        for effort_dir in "$WAVE_DIR"/*/; do
+            if [ ! -d "$effort_dir/.git" ]; then
+                continue
+            fi
+            
+            EFFORT_NAME=$(basename "$effort_dir")
+            cd "$effort_dir"
+            
+            # Verify branch is pushed
+            CURRENT_BRANCH=$(git branch --show-current)
+            if ! git ls-remote --heads origin "$CURRENT_BRANCH" 2>/dev/null | grep -q "$CURRENT_BRANCH"; then
+                echo "❌ Effort '$EFFORT_NAME' branch not pushed to remote!"
+                ((ERRORS++))
+            else
+                echo "✅ Effort '$EFFORT_NAME' ready for integration"
+            fi
+        done
+    done
+    
+    cd "$SF_INSTANCE_DIR"
+    
+    if [ $ERRORS -gt 0 ]; then
+        echo "❌ Found $ERRORS effort(s) not ready for integration"
+        return 1
+    else
+        echo "✅ All effort branches verified and ready"
+        return 0
+    fi
+}
+
+# Run verification
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+verify_effort_branches $PHASE
+```
 
 ## State Context
 
@@ -312,7 +478,26 @@ git checkout -b "$BRANCH_NAME"
 # Push to establish remote tracking
 git push -u origin "$BRANCH_NAME"
 
+# R301 MANDATORY: Update current_phase_integration and deprecate old
+echo "📝 Updating current_phase_integration per R301..."
+
+# First, move any existing current phase integration to deprecated
+EXISTING_PHASE=$(yq ".current_phase_integration | select(.phase == env(PHASE))" "$SF_INSTANCE_DIR/orchestrator-state.yaml")
+if [ ! -z "$EXISTING_PHASE" ]; then
+    yq -i '.deprecated_phase_integrations += (.current_phase_integration | select(.phase == env(PHASE)))' "$SF_INSTANCE_DIR/orchestrator-state.yaml"
+fi
+
+# Set the new current phase integration
+yq -i '.current_phase_integration = {
+  "phase": env(PHASE),
+  "branch": env(BRANCH_NAME),
+  "status": "active",
+  "created_at": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'",
+  "type": "post_fixes"
+}' "$SF_INSTANCE_DIR/orchestrator-state.yaml"
+
 echo "✅ Phase integration infrastructure ready: $BRANCH_NAME"
+echo "✅ Current phase integration updated per R301"
 ```
 
 ### 2. Spawn Code Reviewer for Phase Merge Plan
@@ -324,6 +509,21 @@ echo "✅ Phase integration infrastructure ready: $BRANCH_NAME"
 PHASE=$(yq '.current_phase' orchestrator-state.yaml)
 INTEGRATION_DIR="/efforts/phase${PHASE}/phase-integration-workspace"
 BRANCH_NAME=$(git branch --show-current)
+
+# First, collect all effort branches for Code Reviewer
+EFFORT_BRANCHES=""
+for wave_num in $(seq 1 10); do
+    WAVE_DIR="/efforts/phase${PHASE}/wave${wave_num}"
+    if [ -d "$WAVE_DIR" ]; then
+        for effort_dir in "$WAVE_DIR"/*/; do
+            if [ -d "$effort_dir/.git" ]; then
+                cd "$effort_dir"
+                BRANCH=$(git branch --show-current)
+                EFFORT_BRANCHES="${EFFORT_BRANCHES}\n- ${BRANCH} (from ${effort_dir})"
+            fi
+        done
+    fi
+done
 
 cat > /tmp/code-reviewer-phase-merge-plan-task.md << EOF
 Create PHASE MERGE PLAN for Phase ${PHASE} integration.
@@ -337,6 +537,9 @@ CRITICAL REQUIREMENTS:
 
 Integration Directory: ${INTEGRATION_DIR}
 Target Branch: ${BRANCH_NAME}
+
+Effort Branches Found:${EFFORT_BRANCHES}
+
 Phase Assessment Report: phase-assessments/phase${PHASE}/PHASE-${PHASE}-ASSESSMENT-REPORT.md
 EOF
 
@@ -734,15 +937,17 @@ EOF
 }
 ```
 
-## State Tracking Updates
+## State Tracking Updates (R301 Compliant)
 
 ```yaml
-# Update orchestrator-state.yaml
-phase_integration_branches:
-  - phase: 3
-    branch: "phase3-post-fixes-integration-20250827-143000"
-    created_at: "2025-08-27T14:30:00Z"
-    integration_type: "post_assessment_fixes"
+# Update orchestrator-state.yaml per R301
+current_phase_integration:
+  phase: 3
+  branch: "phase3-post-fixes-integration-20250827-143000"
+  status: "active"  # MUST be "active" for current
+  created_at: "2025-08-27T14:30:00Z"
+  type: "post_fixes"
+  metadata:
     includes_waves: [1, 2, 3, 4]
     includes_fixes: 
       - "phase3-fix-kcp-patterns-20250827-120000"
@@ -751,6 +956,14 @@ phase_integration_branches:
     original_assessment_report: "phase-assessments/phase3/PHASE-3-ASSESSMENT-REPORT.md"
     assessment_score_before_fixes: 68
     ready_for_reassessment: true
+
+# Move previous integration to deprecated
+deprecated_integrations:
+  - phase: 3
+    branch: "phase3-integration-20250827-100000"
+    status: "deprecated"
+    deprecated_at: "2025-08-27T14:30:00Z"
+    reason: "superseded by post-fixes integration"
     
 error_recovery_completed:
   - phase: 3
@@ -841,23 +1054,29 @@ Before transitioning to SPAWN_ARCHITECT_PHASE_ASSESSMENT:
 
 ## Common Mistakes to Avoid
 
-1. **Creating branch from wrong base**
+1. **Not finding effort branches**
+   - ❌ WRONG: Looking for branches in wrong location
+   - ❌ WRONG: Assuming branches are in SF instance directory
+   - ✅ RIGHT: Check `/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}/`
+   - ✅ RIGHT: Verify each effort directory has a git repository
+
+2. **Creating branch from wrong base**
    - ❌ WRONG: Branch from current work branch
    - ✅ RIGHT: Branch from clean main
 
-2. **Missing wave integrations**
+3. **Missing wave integrations**
    - ❌ WRONG: Only merge some waves
    - ✅ RIGHT: Merge ALL waves from the phase
 
-3. **Skipping fix branches**
+4. **Skipping fix branches**
    - ❌ WRONG: Forget ERROR_RECOVERY fixes
    - ✅ RIGHT: Include all fix branches
 
-4. **Not verifying against report**
+5. **Not verifying against report**
    - ❌ WRONG: Assume fixes are complete
    - ✅ RIGHT: Verify each issue from assessment report
 
-5. **Wrong state transition**
+6. **Wrong state transition**
    - ❌ WRONG: Go directly to PHASE_COMPLETE
    - ✅ RIGHT: Go to SPAWN_ARCHITECT_PHASE_ASSESSMENT for reassessment
 
@@ -875,6 +1094,52 @@ Before transitioning to SPAWN_ARCHITECT_PHASE_ASSESSMENT:
 - [ ] Branch pushed to remote repository
 - [ ] Ready to spawn architect for reassessment
 
+## Concrete Example: Phase 2 Integration
+
+```bash
+# Example: Integrating Phase 2 with 2 waves, 5 total efforts
+
+# Step 1: Discover all effort branches
+echo "Finding Phase 2 effort branches..."
+
+# Wave 1 efforts:
+ls -la /efforts/phase2/wave1/
+# Output:
+# drwxr-xr-x auth-system/        # effort branch: phase2-wave1-auth-system
+# drwxr-xr-x user-management/    # effort branch: phase2-wave1-user-management
+# drwxr-xr-x api-gateway/        # effort branch: phase2-wave1-api-gateway
+
+# Wave 2 efforts:
+ls -la /efforts/phase2/wave2/
+# Output:
+# drwxr-xr-x database-layer/     # effort branch: phase2-wave2-database-layer
+# drwxr-xr-x cache-service/      # effort branch: phase2-wave2-cache-service
+
+# Step 2: Verify each effort branch
+for effort_dir in /efforts/phase2/wave*/*/; do
+    cd "$effort_dir"
+    echo "Effort: $(basename $effort_dir)"
+    git branch --show-current
+    git log --oneline -1
+done
+
+# Step 3: Create phase integration branch
+cd /efforts/phase2/phase-integration-workspace
+git checkout main
+git pull origin main
+git checkout -b "phase2-integration-20250901-143000"
+
+# Step 4: Merge all effort branches
+git merge origin/phase2-wave1-auth-system --no-ff -m "feat: merge auth-system effort"
+git merge origin/phase2-wave1-user-management --no-ff -m "feat: merge user-management effort"
+git merge origin/phase2-wave1-api-gateway --no-ff -m "feat: merge api-gateway effort"
+git merge origin/phase2-wave2-database-layer --no-ff -m "feat: merge database-layer effort"
+git merge origin/phase2-wave2-cache-service --no-ff -m "feat: merge cache-service effort"
+
+# Step 5: Push integrated branch
+git push -u origin phase2-integration-20250901-143000
+```
+
 ## Quick Reference
 
 ```bash
@@ -882,18 +1147,31 @@ Before transitioning to SPAWN_ARCHITECT_PHASE_ASSESSMENT:
 PHASE=$(yq '.current_phase' orchestrator-state.yaml)
 BRANCH="phase${PHASE}-post-fixes-integration-$(date +%Y%m%d-%H%M%S)"
 
+# Find all effort branches
+for wave_dir in /efforts/phase${PHASE}/wave*/; do
+    for effort_dir in "$wave_dir"/*/; do
+        if [ -d "$effort_dir/.git" ]; then
+            cd "$effort_dir"
+            echo "Found: $(git branch --show-current) in $effort_dir"
+        fi
+    done
+done
+
 # Create integration branch
+cd /efforts/phase${PHASE}/phase-integration-workspace
 git checkout main && git pull
 git checkout -b "$BRANCH"
 
-# Merge waves
-git branch -r | grep "phase${PHASE}-wave" | while read branch; do
-    git merge "$branch" --no-ff
-done
-
-# Merge fixes
-git branch -r | grep "phase${PHASE}-fix" | while read branch; do
-    git merge "$branch" --no-ff
+# Merge effort branches (NOT wave integration branches!)
+for wave_dir in /efforts/phase${PHASE}/wave*/; do
+    for effort_dir in "$wave_dir"/*/; do
+        if [ -d "$effort_dir/.git" ]; then
+            cd "$effort_dir"
+            EFFORT_BRANCH=$(git branch --show-current)
+            cd /efforts/phase${PHASE}/phase-integration-workspace
+            git merge "origin/$EFFORT_BRANCH" --no-ff
+        fi
+    done
 done
 
 # Push for reassessment

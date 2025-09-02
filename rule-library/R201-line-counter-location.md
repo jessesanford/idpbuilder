@@ -63,10 +63,10 @@ measure_effort_size() {
 
 ```bash
 # ❌❌❌ WRONG - Old location (doesn't exist)
-/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh
+$PROJECT_ROOT/tools/line-counter.sh
 
 # ❌❌❌ WRONG - Wrong tool name
-./tools/tmc-pr-line-counter.sh
+./tools/line-counter.sh
 
 # ❌❌❌ WRONG - Using parameters
 ./tools/line-counter.sh -c branch-name  # NO! No parameters!

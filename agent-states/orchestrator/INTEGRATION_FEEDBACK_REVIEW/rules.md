@@ -47,7 +47,7 @@ The system will check for this marker. No marker = Immediate failure.
 2. Read: $CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md
 3. Read: $CLAUDE_PROJECT_DIR/rule-library/R290-state-rule-reading-verification-supreme-law.md
 4. Read: $CLAUDE_PROJECT_DIR/rule-library/R291-integration-demo-requirement.md
-5. Read: $CLAUDE_PROJECT_DIR/rule-library/R292-integration-fixes-in-effort-branches.md
+5. Read: $CLAUDE_PROJECT_DIR/rule-library/R300-comprehensive-fix-management-protocol.md
 6. Read: $CLAUDE_PROJECT_DIR/rule-library/R293-integration-report-distribution-protocol.md
 7. Read: $CLAUDE_PROJECT_DIR/rule-library/R294-fix-plan-archival-protocol.md
 8. Read: $CLAUDE_PROJECT_DIR/rule-library/R238-integration-report-evaluation.md
@@ -118,7 +118,7 @@ The system will check for this marker. No marker = Immediate failure.
 □ I have read R006 - Orchestrator Never Writes Code
 □ I have read R290 - State Rule Reading and Verification (SUPREME LAW #3)
 □ I have read R291 - Integration Demo Requirement (demo must pass)
-□ I have read R292 - Integration Fixes MUST Be In Effort Branches
+□ I have read R300 - Comprehensive Fix Management Protocol
 □ I have read R293 - Integration Report Distribution Protocol
 □ I have read R294 - Fix Plan Archival Protocol
 □ I have read R238 - Integration Report Evaluation Protocol
@@ -138,7 +138,7 @@ The system will check for this marker. No marker = Immediate failure.
 In INTEGRATION_FEEDBACK_REVIEW, you analyze the integration report to identify which efforts failed and what fixes are needed.
 
 **🚨 CRITICAL (R291): Integration is NOT complete until demo passes!**
-**🚨 CRITICAL (R292): ALL fixes MUST be made in effort branches, NEVER in integration branch!**
+**🚨 CRITICAL (R300): ALL fixes MUST be made in effort branches, NEVER in integration branch!**
 
 ## Required Actions
 
@@ -323,7 +323,7 @@ Demo Status: FAILED  # R291: Must be PASSING for integration to complete
 - libgpgme-dev
 - libbtrfs-dev
 
-## Fix Instructions (R292 Compliance)
+## Fix Instructions (R300 Compliance)
 ALL fixes must be made in the following effort branches:
 - feature/effort1: Add libgpgme dependency
 - feature/effort2: Fix authentication module compilation
@@ -333,7 +333,7 @@ ALL fixes must be made in the following effort branches:
 ## Related Rules
 
 - R291: Integration Demo Requirement (demo must pass before complete)
-- R292: Integration Fixes MUST Be In Effort Branches
+- R300: Comprehensive Fix Management Protocol
 - R293: Integration Report Distribution Protocol (BLOCKING)
 - R294: Fix Plan Archival Protocol (BLOCKING)
 - R295: SW Engineer Spawn Clarity Protocol (SUPREME)

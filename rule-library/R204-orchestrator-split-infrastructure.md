@@ -1,7 +1,7 @@
 # Rule R204: Orchestrator Must Create Complete Split Infrastructure
 
 ## Rule Statement
-The orchestrator MUST create ALL split directories, working copies, branches, and remote tracking branches BEFORE spawning SW engineering agents for split implementation. Split branches MUST include the project prefix from target-repo-config.yaml using the branch-naming-helpers.sh functions. Split directories must be in the /efforts folder alongside the too-large branch. Splits must be based on the SAME base branch as the original, with sequential splits optionally based on each other for clean merging.
+The orchestrator MUST create ALL split directories, working copies, branches, and remote tracking branches BEFORE spawning SW engineering agents for split implementation. Split branches MUST include the project prefix from target-repo-config.yaml using the branch-naming-helpers.sh functions. Split directories must be in the /efforts folder alongside the too-large branch. Splits MUST follow SEQUENTIAL branching strategy: split-001 based on the same base as original, split-002 based on split-001, split-003 based on split-002, etc. This ensures correct line counting and clean integration.
 
 ## 🔴🔴🔴 PREREQUISITE: Code Reviewer Must Create Split Plans First 🔴🔴🔴
 Before the orchestrator can create split infrastructure:
@@ -31,6 +31,33 @@ Split Infrastructure = Complete Setup BEFORE Implementation
 Orchestrator creates ALL directories, branches, and tracking FIRST
 SW Engineers receive ready-to-use split workspaces
 Merge strategy planned from the beginning
+```
+
+## 🔴🔴🔴 MANDATORY: Sequential Split Branching 🔴🔴🔴
+
+**SPLITS MUST BE CREATED SEQUENTIALLY - THIS IS NOT OPTIONAL!**
+
+### Correct Sequential Strategy:
+- **Split-001**: Based on same base as original (e.g., phase-integration)
+- **Split-002**: Based on split-001 (NOT phase-integration!)
+- **Split-003**: Based on split-002 (NOT phase-integration!)
+- **Each split measures ONLY its own additions**
+
+### Why This is MANDATORY:
+1. **Line Counting Accuracy**: Each split shows correct line count
+2. **No Cumulative Measurement**: Split-002 won't include split-001's lines
+3. **Clean Integration**: Splits merge without conflicts
+4. **Dependency Chain**: Later splits can use earlier split code
+
+### FORBIDDEN Parallel Strategy:
+```bash
+# ❌❌❌ NEVER DO THIS - ALL SPLITS FROM SAME BASE
+git checkout phase-integration
+git checkout -b split-001  # OK: 400 lines
+git checkout phase-integration  # WRONG!
+git checkout -b split-002  # ERROR: Shows 800 lines (includes split-001!)
+git checkout phase-integration  # WRONG!
+git checkout -b split-003  # ERROR: Shows 1200 lines (includes all!)
 ```
 
 ## Detailed Requirements

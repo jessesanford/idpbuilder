@@ -57,6 +57,38 @@ Bash: cd $EFFORT_DIR && git diff --stat      # CD in EVERY command!
 
 **See: rule-library/R235-MANDATORY-PREFLIGHT-VERIFICATION-SUPREME-LAW.md**
 
+## 🔴🔴🔴 CRITICAL: LINE COUNTING ENFORCEMENT 🔴🔴🔴
+
+### ⚠️⚠️⚠️ MANDATORY TOOL USAGE - VIOLATIONS = -100% FAILURE ⚠️⚠️⚠️
+
+**YOU MUST USE line-counter.sh WITH CORRECT BASE BRANCH:**
+
+```bash
+# ✅✅✅ CORRECT - THE ONLY ACCEPTABLE WAY:
+PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do 
+    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break; 
+    PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
+done
+BASE_BRANCH="phase1/integration"  # From orchestrator-state.yaml (NOT "main"!)
+CURRENT_BRANCH=$(git branch --show-current)
+$PROJECT_ROOT/tools/line-counter.sh -b $BASE_BRANCH -c $CURRENT_BRANCH
+
+# ❌❌❌ AUTOMATIC -100% FAILURES:
+wc -l *.go                                    # Manual counting = -100% FAILURE!
+find . -name "*.go" | xargs wc -l             # Manual counting = -100% FAILURE!
+$PROJECT_ROOT/tools/line-counter.sh -b main   # Wrong base = -100% FAILURE!
+$PROJECT_ROOT/tools/line-counter.sh           # No parameters = -100% FAILURE!
+```
+
+**CRITICAL FACTS:**
+- Manual counting = AUTOMATIC -100% GRADE
+- Using "main" as base = AUTOMATIC -100% GRADE  
+- Missing -b parameter = -50% GRADE
+- The base branch MUST be the phase integration branch
+- You MUST document the exact command and output in your review
+
+**See: rule-library/R198-line-counter-usage.md for full details**
+
 ## 🚨 CRITICAL: Bash Execution Guidelines 🚨
 **RULE R216**: Bash execution syntax rules (rule-library/R216-bash-execution-syntax.md)
 - Use multi-line format when executing bash commands
@@ -355,6 +387,17 @@ Review effectiveness requirements:
 - Documentation: Complete review reports
 ---
 
+---
+### 🚨 RULE R301 - File Naming Collision Prevention
+**Source:** rule-library/R301-file-naming-collision-prevention.md
+**Criticality:** BLOCKING - Prevents file overwrites
+
+Review reports MUST include timestamps:
+- CODE-REVIEW-REPORT-{effort}-{timestamp}.md
+- SPLIT-PLAN-{effort}-{timestamp}.md
+- Pattern: YYYYMMDD-HHMMSS format
+---
+
 ### Grading Criteria
 ```bash
 PASS Requirements:
@@ -617,16 +660,17 @@ while [ "$PROJECT_ROOT" != "/" ]; do
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
 done
 
-# ✅ CORRECT: Use line counter from project root (WITH CD!)
-Bash: cd $EFFORT_DIR && $PROJECT_ROOT/tools/line-counter.sh  # NO PARAMETERS!
+# Identify the CORRECT base branch (NOT "main"!)
+BASE_BRANCH=$(grep "current_phase_integration:" $PROJECT_ROOT/orchestrator-state.yaml -A 2 | grep "branch:" | awk '{print $2}')
+CURRENT_BRANCH=$(git branch --show-current)
 
-# STOP IMMEDIATELY if measuring base branch files!
-# R221: Must CD for git commands!
-Bash: cd $EFFORT_DIR && [ $(git diff --name-only main..HEAD | wc -l) -eq 0 ] && echo "ERROR" || echo "OK" 
-    echo "❌❌❌ CRITICAL: No changes detected!"; 
-    echo "Am I measuring base branch files? STOPPING!"; 
-    exit 1; 
-fi
+# ✅ CORRECT: Use line counter WITH MANDATORY PARAMETERS
+Bash: cd $EFFORT_DIR && $PROJECT_ROOT/tools/line-counter.sh -b $BASE_BRANCH -c $CURRENT_BRANCH
+
+# ❌❌❌ AUTOMATIC FAILURES (-100% GRADE):
+# wc -l *.go  # Manual counting = -100% FAILURE!
+# $PROJECT_ROOT/tools/line-counter.sh -b main  # Wrong base = -100% FAILURE!
+# $PROJECT_ROOT/tools/line-counter.sh  # No parameters = WRONG!
 ```
 ---
 

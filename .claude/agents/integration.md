@@ -59,6 +59,10 @@ ACKNOWLEDGING CORE RULES:
 ✅ R265 - Integration Testing Requirements
 ✅ R266 - Upstream Bug Documentation (NEVER fix bugs)
 ✅ R267 - Integration Agent Grading Criteria
+✅ R300 - Comprehensive Fix Management Protocol (SUPREME LAW)
+✅ R301 - File Naming Collision Prevention (timestamps required)
+✅ R302 - Comprehensive Split Tracking Protocol
+✅ R306 - Merge Ordering with Splits Protocol (SUPREME LAW)
 
 SUPREME LAWS ACKNOWLEDGED:
 🔴 Will NEVER modify original branches
@@ -122,11 +126,53 @@ Target Branch: main
 EOF
 ```
 
+### Phase 1.5: 🔴🔴🔴 R300 Fix Verification (SUPREME LAW) 🔴🔴🔴
+```bash
+# MANDATORY: If this is a re-integration after fixes, verify fixes are in effort branches
+echo "🔍 R300 VERIFICATION: Checking if fixes exist in effort branches..."
+
+# Check if we're re-integrating after fixes
+if [[ -f "INTEGRATION-REPORT-COMPLETED-*.md" ]] || [[ "$RETRY_AFTER_FIXES" == "true" ]]; then
+    echo "This appears to be a re-integration after fixes. Verifying R300 compliance..."
+    
+    VERIFICATION_FAILED=false
+    for branch in "${BRANCHES[@]}"; do
+        # Check for recent fix commits in effort branches
+        git fetch origin "$branch"
+        FIX_COMMIT=$(git log origin/"$branch" --oneline --grep="fix:" --since="4 hours ago" | head -1)
+        
+        if [[ -n "$FIX_COMMIT" ]]; then
+            echo "✅ Found fix in $branch: $FIX_COMMIT"
+        else
+            echo "⚠️ No recent fixes in $branch (may not have needed fixes)"
+        fi
+        
+        # Verify branch is up to date
+        LOCAL_SHA=$(git rev-parse "$branch" 2>/dev/null || echo "none")
+        REMOTE_SHA=$(git rev-parse origin/"$branch" 2>/dev/null || echo "none")
+        
+        if [[ "$LOCAL_SHA" != "$REMOTE_SHA" ]]; then
+            echo "❌ R300 VIOLATION: $branch not synced with remote!"
+            VERIFICATION_FAILED=true
+        fi
+    done
+    
+    if [[ "$VERIFICATION_FAILED" == "true" ]]; then
+        echo "🔴🔴🔴 R300 VIOLATION: Cannot proceed - effort branches not properly updated!"
+        exit 1
+    fi
+    
+    echo "✅ R300 VERIFIED: All fixes are in effort branches, safe to proceed"
+fi
+```
+
 ### Phase 2: Integration Execution
 ```bash
-# Create integration branch
+# Create integration branch (R271: fresh from main)
 INTEGRATION_BRANCH="integration-$(date +%Y%m%d-%H%M%S)"
-git checkout -b "$INTEGRATION_BRANCH" main
+git checkout main
+git pull origin main
+git checkout -b "$INTEGRATION_BRANCH"
 
 # Document EVERYTHING in work-log.md
 cat > work-log.md << 'EOF'
@@ -138,8 +184,61 @@ Command: git checkout -b integration-xxx main
 Result: Success
 EOF
 
-# Merge branches in planned order
+# 🔴🔴🔴 R306 SUPREME LAW: Split-Aware Merge Ordering 🔴🔴🔴
+# Validate each merge BEFORE executing per R306
+validate_merge_readiness() {
+    local branch="$1"
+    local effort=$(echo "$branch" | sed 's/-split-[0-9]*//')
+    
+    # Check dependencies are complete (including ALL splits)
+    DEPS=$(yq ".efforts.\"$effort\".dependencies[]" orchestrator-state.yaml 2>/dev/null)
+    
+    for dep in $DEPS; do
+        # Check if dependency has splits per R302
+        SPLIT_COUNT=$(yq ".split_tracking.\"$dep\".split_count // 0" orchestrator-state.yaml)
+        
+        if [ "$SPLIT_COUNT" -gt 0 ]; then
+            # ALL splits must be merged first!
+            for i in $(seq 1 $SPLIT_COUNT); do
+                SPLIT_BRANCH="${dep}-split-$(printf "%03d" $i)"
+                if ! grep -q "MERGED:.*$SPLIT_BRANCH" work-log.md 2>/dev/null; then
+                    echo "❌ R306 VIOLATION: Cannot merge $branch!"
+                    echo "   Dependency $dep has unmergeed split: $SPLIT_BRANCH"
+                    echo "   ALL splits must be merged before dependent efforts!"
+                    return 1
+                fi
+            done
+        fi
+    done
+    
+    # If this is a split, verify previous splits are merged
+    if [[ "$branch" =~ -split-([0-9]+) ]]; then
+        SPLIT_NUM="${BASH_REMATCH[1]}"
+        if [ "$SPLIT_NUM" -gt 1 ]; then
+            PREV_SPLIT="${effort}-split-$(printf "%03d" $((SPLIT_NUM-1)))"
+            if ! grep -q "MERGED:.*$PREV_SPLIT" work-log.md 2>/dev/null; then
+                echo "❌ R302 VIOLATION: Split out of order!"
+                echo "   Must merge $PREV_SPLIT before $branch"
+                return 1
+            fi
+        fi
+    fi
+    
+    echo "✅ $branch ready to merge (dependencies complete)"
+    return 0
+}
+
+# Merge branches in planned order with R306 validation
 for branch in "${BRANCHES[@]}"; do
+    echo "Validating merge readiness for $branch..."
+    
+    # R306 ENFORCEMENT: Validate BEFORE merging
+    if ! validate_merge_readiness "$branch"; then
+        echo "🔴 STOPPING: Merge order violation detected!"
+        echo "Fix merge plan to respect split/dependency ordering"
+        exit 1
+    fi
+    
     echo "Merging $branch..."
     git merge "$branch" --no-ff -m "integrate: $branch into $INTEGRATION_BRANCH"
     
@@ -151,8 +250,9 @@ for branch in "${BRANCHES[@]}"; do
         git commit -m "resolve: conflicts from $branch"
     fi
     
-    # Document in work-log
+    # Document in work-log with MERGED status for R306 tracking
     echo "## Operation: Merge $branch" >> work-log.md
+    echo "MERGED: $branch at $(date)" >> work-log.md
 done
 ```
 
@@ -304,6 +404,8 @@ grep "^Command:" work-log.md | wc -l  # Should have many commands
 - R265 - Integration Testing Requirements
 - R266 - Upstream Bug Documentation
 - R267 - Integration Agent Grading Criteria
+- R302 - Comprehensive Split Tracking Protocol
+- R306 - Merge Ordering with Splits Protocol (SUPREME)
 
 **General Rules:**
 - R007 - Size Limit Compliance (800 lines)

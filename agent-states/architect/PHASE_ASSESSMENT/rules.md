@@ -1,5 +1,50 @@
 # PHASE_ASSESSMENT State Rules
 
+## 🔴🔴🔴 CRITICAL: REPORT LOCATION REQUIREMENTS 🔴🔴🔴
+
+**YOU MUST CREATE THE ASSESSMENT REPORT IN THE EXACT LOCATION:**
+```bash
+# MANDATORY LOCATION:
+Directory: phase-assessments/phase{PHASE_NUMBER}/
+Filename:  PHASE-{PHASE_NUMBER}-ASSESSMENT-REPORT.md
+Full path: phase-assessments/phase{PHASE_NUMBER}/PHASE-{PHASE_NUMBER}-ASSESSMENT-REPORT.md
+
+# EXAMPLE for Phase 1:
+mkdir -p phase-assessments/phase1
+Write phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md
+
+# WRONG LOCATIONS (WILL FAIL):
+❌ ~/PHASE-1-ASSESSMENT-REPORT.md              # Root directory
+❌ PHASE-1-ASSESSMENT-REPORT.md                # Current directory
+❌ ./PHASE-1-ASSESSMENT-REPORT.md              # Current directory
+❌ reports/PHASE-1-ASSESSMENT-REPORT.md        # Wrong directory
+❌ phase1/PHASE-1-ASSESSMENT-REPORT.md         # Missing parent directory
+
+# CORRECT LOCATION (ONLY THIS WORKS):
+✅ phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md
+```
+
+**VERIFICATION FUNCTION - USE THIS:**
+```bash
+verify_report_location() {
+    local PHASE=$1
+    local EXPECTED="phase-assessments/phase${PHASE}/PHASE-${PHASE}-ASSESSMENT-REPORT.md"
+    
+    if [[ ! -f "$EXPECTED" ]]; then
+        echo "❌ CRITICAL ERROR: Report not in correct location!"
+        echo "❌ Expected: $EXPECTED"
+        echo "❌ Orchestrator will NOT find your report!"
+        exit 1
+    fi
+    echo "✅ Report in correct location: $EXPECTED"
+}
+
+# ALWAYS verify after creating:
+verify_report_location 1  # For Phase 1
+```
+
+**PENALTY FOR WRONG LOCATION: -50% grading penalty, orchestrator cannot proceed**
+
 ## 🔴🔴🔴 CRITICAL: ARCHITECT ROLE LIMITATIONS 🔴🔴🔴
 
 **THE ARCHITECT IS AN ASSESSOR, NOT A DECIDER:**
@@ -20,33 +65,46 @@
 
 **YOU MUST CREATE A PERMANENT ASSESSMENT REPORT FILE:**
 - **File Name**: `PHASE-{N}-ASSESSMENT-REPORT.md`
-- **Location**: `phase-assessments/phase{N}/`
+- **Location**: `phase-assessments/phase{N}/` ⚠️ SEE CRITICAL LOCATION SECTION ABOVE ⚠️
 - **When**: BEFORE signaling assessment complete
-- **Verification**: Orchestrator will verify file exists
+- **Verification**: Orchestrator will verify file exists AT EXACT LOCATION
 
-**CRITICAL STEPS:**
-1. Complete your architectural assessment
-2. CREATE the assessment report file with ALL mandatory sections
-3. Include your DECISION in the report (PROCEED_NEXT_PHASE|CHANGES_REQUIRED|PHASE_FAILED)
-4. Calculate and document all scoring metrics
-5. Sign off with timestamp
-6. Commit and push the report file
-7. ONLY THEN signal assessment complete to orchestrator
-
-**EXAMPLE:**
+**🔴 CRITICAL STEPS - FOLLOW EXACTLY:**
 ```bash
-# After completing assessment
-PHASE=1
-DECISION="PROCEED_NEXT_PHASE"
-REPORT_DIR="phase-assessments/phase${PHASE}"
-REPORT_FILE="${REPORT_DIR}/PHASE-${PHASE}-ASSESSMENT-REPORT.md"
+# Step 1: Determine phase number
+PHASE=1  # or 2, 3, etc.
 
-mkdir -p "$REPORT_DIR"
-# Create report with all mandatory sections...
+# Step 2: CREATE DIRECTORY (MANDATORY!)
+mkdir -p phase-assessments/phase${PHASE}
+
+# Step 3: Set report path (USE EXACT PATH!)
+REPORT_FILE="phase-assessments/phase${PHASE}/PHASE-${PHASE}-ASSESSMENT-REPORT.md"
+
+# Step 4: Create report with Write tool
+# Use Write tool with EXACT path: phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md
+
+# Step 5: Verify location (MANDATORY!)
+if [[ ! -f "$REPORT_FILE" ]]; then
+    echo "❌ FAILED: Report not at $REPORT_FILE"
+    exit 1
+fi
+
+# Step 6: Commit and push
 git add "$REPORT_FILE"
 git commit -m "assessment: Phase ${PHASE} assessment report - ${DECISION}"
 git push
+
+# Step 7: Final verification
+ls -la phase-assessments/phase${PHASE}/
+cat "$REPORT_FILE" | head -5
 ```
+
+**⚠️ COMMON MISTAKES TO AVOID:**
+- ❌ DON'T create in root directory
+- ❌ DON'T forget to create parent directories
+- ❌ DON'T use relative paths
+- ❌ DON'T skip verification
+- ✅ DO use exact path: phase-assessments/phase{N}/PHASE-{N}-ASSESSMENT-REPORT.md
 
 **VIOLATIONS:**
 - ❌ Providing verbal assessment without report = BLOCKING FAILURE
@@ -197,14 +255,20 @@ PHASE_ASSESSMENT → [Assessment Complete] → Decision State
 5. **API Stability**: Are APIs ready for production consumption?
 
 ### MUST DOCUMENT (IN THE MANDATORY ASSESSMENT REPORT FILE):
-- **PRIMARY**: Create `PHASE-{N}-ASSESSMENT-REPORT.md` per R257
+- **PRIMARY**: Create report at EXACT location per R257:
+  ```
+  phase-assessments/phase{N}/PHASE-{N}-ASSESSMENT-REPORT.md
+  Example: phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md
+  ```
+- **NEVER CREATE IN ROOT DIRECTORY** - Orchestrator won't find it!
 - Architecture decision record for phase approval/rejection
 - Specific issues requiring correction (if CHANGES_REQUIRED)
 - Performance benchmark results and analysis
 - Security assessment findings
 - Integration test results summary
-- All documentation MUST be in the assessment report file
+- All documentation MUST be in the assessment report file AT CORRECT LOCATION
 - Verbal/inline responses are NOT sufficient
+- Report in wrong location = INVALID ASSESSMENT
 
 ### CRITICAL FAILURE CONDITIONS:
 - **IMMEDIATE PHASE_FAILED**: Security vulnerabilities, data leakage between workspaces

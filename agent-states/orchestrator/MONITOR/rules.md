@@ -167,7 +167,19 @@ check_completed_efforts
 
 # Step 3: Check for violations (DO NOW!)
 echo "⚠️ Checking for size violations..."
-run_line_counter_on_active_branches
+# CRITICAL: Each effort is a SEPARATE git repository!
+# Must CD into effort dir and use BRANCH NAMES not directory names!
+for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.yaml); do
+    EFFORT_DIR="/efforts/phase${PHASE}/wave${WAVE}/${effort}"
+    if [ -d "$EFFORT_DIR" ]; then
+        cd "$EFFORT_DIR"
+        # Get ACTUAL branch name (not directory name!)
+        CURRENT_BRANCH=$(git branch --show-current)
+        BASE_BRANCH="phase${PHASE}/integration"  # Or check git branch -a
+        # Run line-counter with BRANCH names
+        ../../tools/line-counter.sh -b "$BASE_BRANCH" -c "$CURRENT_BRANCH"
+    fi
+done
 
 # Step 4: Check for blocked agents (DO NOW!)
 echo "🚧 Checking for blocked agents..."
@@ -231,7 +243,9 @@ for effort in $(yq '.efforts_in_progress[]' orchestrator-state.yaml); do
         cd /efforts/phase${PHASE}/wave${WAVE}/${effort}
         Task: subagent_type="code-reviewer" \
               prompt="Review implementation in ${effort}. 
-              Check: Size compliance (<800 lines using line-counter.sh), Code quality, Tests pass.
+              CRITICAL: CD into effort directory first - it's a separate git repo!
+              Get branch name with 'git branch --show-current' (NOT directory name!).
+              Check: Size compliance (<800 lines using line-counter.sh -b phase${PHASE}/integration -c ACTUAL_BRANCH_NAME), Code quality, Tests pass.
               Create CODE-REVIEW-REPORT.md with status: PASSED/FAILED/NEEDS_SPLIT.
               If NEEDS_SPLIT, create SPLIT-PLAN.md." \
               description="Code Review ${effort}"
@@ -250,7 +264,7 @@ Monitor all agents continuously:
 2. **DETECT IMPLEMENTATION COMPLETION IMMEDIATELY**
 3. **SPAWN CODE REVIEWERS FOR COMPLETED IMPLEMENTATIONS**
 4. Validate progress against expectations
-5. Detect size violations immediately  
+5. Detect size violations immediately (MUST use line-counter.sh with BRANCH names in effort repos!)
 6. Identify blocked/stalled agents
 7. Track completion status
 
@@ -303,6 +317,27 @@ If FAILED → Spawn SW Engineer to FIX_ISSUES
 If NEEDS_SPLIT → Spawn Code Reviewer for SPLIT_PLAN
 ```
 
+## 🚨🚨🚨 SPLIT TRACKING REQUIREMENTS (R302) 🚨🚨🚨
+
+**MANDATORY: Track all split operations meticulously:**
+
+When monitoring splits:
+1. **Update split_tracking section** in orchestrator-state.yaml
+2. **Track each split branch** status (ACTIVE, COMPLETED, REVIEWED)
+3. **Record line counts** for each completed split
+4. **Mark original as SPLIT_DEPRECATED** when all splits done
+5. **Update integration planning** to use split branches
+
+```bash
+# Check for split completion markers
+if [ -f "/tmp/splits-complete-${EFFORT_NAME}.marker" ]; then
+    echo "✅ All splits complete for $EFFORT_NAME"
+    # Update split_tracking in state file
+    # Mark original branch as SPLIT_DEPRECATED
+    # List all replacement splits
+fi
+```
+
 ## Critical Requirements Summary
 
 1. **Never stop monitoring** - R021 violation = -100%
@@ -310,6 +345,7 @@ If NEEDS_SPLIT → Spawn Code Reviewer for SPLIT_PLAN
 3. **Verify work locations** - R255 violation = -100%
 4. **Report agent failures** - R254 violation = -50%
 5. **Update state continuously** - R288 violation = -50%
+6. **Track split operations** - R302 violation = -30%
 
 ## Success Criteria
 - ✅ All agents tracked continuously

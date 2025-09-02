@@ -7,6 +7,34 @@
 ## State Context
 You are in SPLIT_IMPLEMENTATION state because an effort exceeded size limits and must be split into smaller branches.
 
+## 🔴🔴🔴 CRITICAL: Sequential Split Branching 🔴🔴🔴
+
+**SPLITS ARE CREATED SEQUENTIALLY - EACH BASED ON THE PREVIOUS!**
+
+### The Sequential Chain:
+```
+Original Effort (1200 lines from phase-integration) - TOO LARGE!
+    ↓
+Split-001 (400 lines from phase-integration)
+    ↓
+Split-002 (400 lines from split-001) ← NOT from phase-integration!
+    ↓
+Split-003 (400 lines from split-002) ← NOT from phase-integration!
+```
+
+### Why This Matters for You:
+1. **Line Counting**: Your split will measure ONLY what you add
+2. **Dependencies**: You can use code from previous splits
+3. **No Duplicatio**: Don't re-implement what previous splits did
+4. **Clean Merging**: Your work builds progressively
+
+### How to Verify:
+```bash
+# Check what branch you're based on
+git log --oneline -1 --format="%B" | grep "from branch:"
+# Should show previous split for split-002 and later
+```
+
 ## Primary Responsibilities
 
 ### 1. Verify Split Infrastructure (R204)
@@ -32,10 +60,25 @@ fi
 
 ### 3. Size Compliance (R007, R200)
 - Each split MUST stay under 800 lines (HARD LIMIT)
-- Use line-counter.sh to measure ONLY your changes
+- Use line-counter.sh with BRANCH NAMES (not directory names!)
+- Remember: Splits are in SEPARATE git repositories
 - Stop immediately if approaching limit
 
-### 4. 🚨🚨🚨 NOTIFY ORCHESTRATOR WHEN ALL SPLITS COMPLETE (R296) 🚨🚨🚨
+### 4. 🚨🚨🚨 UPDATE SPLIT TRACKING (R302) 🚨🚨🚨
+
+**MANDATORY: Report split details for comprehensive tracking:**
+```bash
+# After completing each split, report to orchestrator:
+SPLIT_REPORT="Split $CURRENT_SPLIT of $TOTAL_SPLITS complete
+Branch: $SPLIT_BRANCH
+Lines: $(../../tools/line-counter.sh -b $BASE_BRANCH -c $(git branch --show-current) | grep Total | awk '{print $NF}')
+Description: [What this split contains]
+Status: COMPLETED"
+
+echo "$SPLIT_REPORT" > /tmp/split-${EFFORT_NAME}-${CURRENT_SPLIT}.status
+```
+
+### 5. 🚨🚨🚨 NOTIFY ORCHESTRATOR WHEN ALL SPLITS COMPLETE (R296, R302) 🚨🚨🚨
 
 **CRITICAL: After completing the FINAL split for an effort:**
 
@@ -93,13 +136,31 @@ cat "$SPLIT_PLAN"
 
 ### 3. Measure After Implementation
 ```bash
-# Use line-counter.sh to measure
-$CLAUDE_PROJECT_DIR/tools/line-counter.sh
+# CRITICAL: Measurement depends on split number!
+CURRENT_BRANCH=$(git branch --show-current)
+SPLIT_NUM=$(echo "$CURRENT_BRANCH" | grep -o 'split-[0-9]*' | grep -o '[0-9]*')
 
-# Verify under limit
-LINES=$(git diff --numstat origin/main | awk '{sum+=$1+$2} END {print sum}')
+# SEQUENTIAL BRANCHING: Each split measured against PREVIOUS split
+if [ "$SPLIT_NUM" = "001" ]; then
+    # First split: measure against original base (e.g., phase-integration)
+    BASE_BRANCH="phase1-integration"  # Same base as original effort
+else
+    # Subsequent splits: measure against PREVIOUS split
+    PREV_NUM=$(printf "%03d" $((10#$SPLIT_NUM - 1)))
+    BASE_BRANCH="${CURRENT_BRANCH/split-${SPLIT_NUM}/split-${PREV_NUM}}"
+fi
+
+echo "📊 Measuring split-${SPLIT_NUM} against: $BASE_BRANCH"
+echo "   (Each split measured against previous, NOT original base)"
+
+# Use line-counter.sh with CORRECT base
+$CLAUDE_PROJECT_DIR/tools/line-counter.sh -b $BASE_BRANCH -c $CURRENT_BRANCH
+
+# Get the actual line count
+LINES=$($CLAUDE_PROJECT_DIR/tools/line-counter.sh -b $BASE_BRANCH -c $CURRENT_BRANCH | grep Total | awk '{print $NF}')
 if [ "$LINES" -gt 800 ]; then
     echo "❌ CRITICAL: Split exceeds 800 lines!"
+    echo "   This split adds $LINES lines to $BASE_BRANCH"
     exit 1
 fi
 ```

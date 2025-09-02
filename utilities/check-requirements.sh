@@ -144,7 +144,7 @@ check_sf_tools() {
     echo ""
     echo "Checking Software Factory specific tools..."
     
-    # Check if tmc-pr-line-counter.sh exists (if specified in target-repo-config.yaml)
+    # Check if line-counter.sh exists (if specified in target-repo-config.yaml)
     if [ -f "target-repo-config.yaml" ]; then
         LINE_COUNTER=$(yq '.tools.line_counter' target-repo-config.yaml 2>/dev/null || echo "")
         if [ -n "$LINE_COUNTER" ] && [ "$LINE_COUNTER" != "null" ]; then

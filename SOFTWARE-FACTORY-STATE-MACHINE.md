@@ -172,7 +172,7 @@ PRODUCTION_READY_VALIDATION → BUILD_VALIDATION → PR_PLAN_CREATION → SUCCES
 - MASTER-PR-PLAN.md provides instructions for humans (R279)
 - SUCCESS only after proving software works (R271)
 
-## Integration Feedback Cycle (R238-R240)
+## Integration Feedback Cycle (R238, R300)
 
 **CRITICAL**: Integration failures MUST be detected and fixed through a proper feedback cycle:
 
@@ -203,7 +203,7 @@ PRODUCTION_READY_VALIDATION → BUILD_VALIDATION → PR_PLAN_CREATION → SUCCES
 **Key Points:**
 - NEVER ignore integration failures (R238)
 - Fix plans must be distributed to effort directories (R239)
-- Engineers execute fixes, not orchestrator (R240)
+- Engineers execute fixes, not orchestrator (R300)
 
 ## 🔴🔴🔴 CRITICAL: INTEGRATION RE-RUN AFTER FIXES 🔴🔴🔴
 
@@ -630,8 +630,12 @@ sed -n '/## SW Engineer States/,/## Code Reviewer States/p' \
 
 #### Example 3: Code Reviewer Split Detection
 ```bash
-# Code Reviewer detecting need for split state
-LINE_COUNT=$(/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c branch)
+# Code Reviewer detecting need for split state (per R304)
+# Find project root and use line-counter.sh with mandatory -b parameter
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$CLAUDE_PROJECT_DIR")
+BASE_BRANCH=$(grep "current_phase_integration:" $PROJECT_ROOT/orchestrator-state.yaml -A 2 | grep "branch:" | awk '{print $2}')
+CURRENT_BRANCH=$(git branch --show-current)
+LINE_COUNT=$($PROJECT_ROOT/tools/line-counter.sh -b "$BASE_BRANCH" -c "$CURRENT_BRANCH" | grep "Total" | awk '{print $NF}')
 
 if [ "$LINE_COUNT" -gt 800 ]; then \
     # Validate CREATE_SPLIT_PLAN exists

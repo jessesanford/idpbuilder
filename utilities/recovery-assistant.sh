@@ -533,11 +533,11 @@ recover_sw_engineer_context() {
     echo "  - Any pending review feedback"
     
     # Check line count if we have the tool
-    if command -v /workspaces/kcp-shared-tools/tmc-pr-line-counter.sh > /dev/null 2>&1; then
+    if command -v $PROJECT_ROOT/tools/line-counter.sh > /dev/null 2>&1; then
         local current_branch=$(git branch --show-current 2>/dev/null || echo "no-branch")
         if [ "$current_branch" != "no-branch" ]; then
             print_info "Checking current line count..."
-            /workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c "$current_branch" || true
+            $PROJECT_ROOT/tools/line-counter.sh -c "$current_branch" || true
         fi
     fi
 }
@@ -679,7 +679,7 @@ validate_environment() {
     
     # Check for critical tools
     local tools=(
-        "/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh"
+        "$PROJECT_ROOT/tools/line-counter.sh"
     )
     
     for tool in "${tools[@]}"; do
@@ -749,7 +749,7 @@ provide_sw_engineer_guidance() {
     echo "  - Continue implementation from last checkpoint"
     echo
     echo "📏 LINE COUNT COMPLIANCE:"
-    echo "  - Run: /workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c \$(git branch --show-current)"
+    echo "  - Run: $PROJECT_ROOT/tools/line-counter.sh -c \$(git branch --show-current)"
     echo "  - If >800 lines: STOP and request split from code reviewer"
     echo "  - Measure every 200 lines during development"
     echo
@@ -774,7 +774,7 @@ provide_code_reviewer_guidance() {
     echo "  - If splitting: Design logical groups <700 lines each"
     echo
     echo "🔧 TOOLS AND VALIDATION:"
-    echo "  - Use tmc-pr-line-counter.sh for accurate measurements"
+    echo "  - Use line-counter.sh for accurate measurements"
     echo "  - Verify test coverage requirements are met"
     echo "  - Ensure KCP architectural patterns compliance"
 }

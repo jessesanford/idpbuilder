@@ -271,7 +271,7 @@ make test-phase3
 ./scripts/verify-assessment-fixes.sh phase3
 
 # 3. Check combined size
-/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c $(git branch --show-current)
+$PROJECT_ROOT/tools/line-counter.sh -c $(git branch --show-current)
 
 # 4. Performance benchmarks
 make benchmark-phase3

@@ -18,6 +18,83 @@ CODE REVIEW PROTOCOL:
 7. Provide detailed feedback
 ---
 
+## 🔴🔴🔴 MANDATORY LINE COUNTING REQUIREMENTS 🔴🔴🔴
+
+### ⚠️⚠️⚠️ CRITICAL: YOU MUST USE LINE-COUNTER.SH TOOL WITH CORRECT BASE BRANCH ⚠️⚠️⚠️
+
+**VIOLATION = -100% IMMEDIATE FAILURE**
+
+### MANDATORY STEPS:
+1. **ALWAYS use ${PROJECT_ROOT}/tools/line-counter.sh** - NO EXCEPTIONS
+2. **ALWAYS specify -b parameter with CORRECT BASE BRANCH**
+3. **NEVER do manual counting** - AUTOMATIC FAILURE (-100%)
+4. **NEVER use "main" as base for efforts** - AUTOMATIC FAILURE (-100%)
+5. **NEVER count test/doc files separately** - tool handles this
+
+### CORRECT USAGE:
+```bash
+# STEP 1: Navigate to effort directory (IT'S A SEPARATE GIT REPO!)
+cd /path/to/effort/directory
+pwd  # Confirm location
+ls -la .git  # MUST exist - this is the effort's own git repository!
+
+# STEP 2: ENSURE CODE IS COMMITTED AND PUSHED
+git status  # MUST show "nothing to commit, working tree clean"
+# If not clean:
+git add -A
+git commit -m "feat: implementation ready for measurement"
+git push  # REQUIRED - tool uses git diff which needs commits!
+
+# STEP 3: Get ACTUAL BRANCH NAMES (not directory names!)
+CURRENT_BRANCH=$(git branch --show-current)
+echo "Current branch: $CURRENT_BRANCH"  # e.g., phase2-wave1-gcr-image-builder
+
+# STEP 4: Find the BASE branch IN THIS REPOSITORY
+git branch -a | grep -E "integration|main"
+# Use what exists, e.g., phase2/integration or main
+BASE_BRANCH="phase2/integration"  # NOT always "main"!
+
+# STEP 5: Find project root (where orchestrator-state.yaml lives)
+PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do 
+    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break; 
+    PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
+done
+
+# STEP 6: Run the tool WITH BRANCH NAMES FROM THIS REPO
+$PROJECT_ROOT/tools/line-counter.sh -b $BASE_BRANCH -c $CURRENT_BRANCH
+```
+
+### 🔴🔴🔴 CRITICAL: Directory Names vs Branch Names 🔴🔴🔴
+
+**THE FATAL MISTAKE:**
+```bash
+# ❌❌❌ WRONG - Using directory name as branch:
+cd /workspaces/project
+./tools/line-counter.sh -b main -c go-containerregistry-image-builder
+# "go-containerregistry-image-builder" is a DIRECTORY, not a branch!
+# Git can't find this "branch" = measurement fails!
+
+# ✅✅✅ RIGHT - Using actual branch name:
+cd efforts/phase2/wave1/go-containerregistry-image-builder
+BRANCH=$(git branch --show-current)  # Gets: phase2-wave1-gcr-image-builder
+../../tools/line-counter.sh -b phase2/integration -c "$BRANCH"
+```
+
+### BASE BRANCH IDENTIFICATION:
+```bash
+# Check orchestrator-state.yaml for current_phase_integration.branch
+cat orchestrator-state.yaml | grep "current_phase_integration" -A 5
+# OR use the phase integration branch naming pattern:
+# phase[N]/integration or phase[N]/integration-[timestamp]
+```
+
+### FORBIDDEN ACTIONS:
+- ❌ Manual line counting (wc -l, etc.)
+- ❌ Using "main" as base for effort measurements
+- ❌ Counting test files separately
+- ❌ Counting documentation files
+- ❌ Using old tool locations (/workspaces/kcp-shared-tools/)
+
 ## Size Compliance Validation
 
 ---
@@ -26,21 +103,31 @@ CODE REVIEW PROTOCOL:
 **Criticality:** MANDATORY - Required for approval
 
 MANDATORY SIZE VALIDATION:
-1. Use ONLY /workspaces/kcp-shared-tools/tmc-pr-line-counter.sh
-2. Exclude generated code (zz_generated*, *.pb.go, CRDs)
-3. Implementation must be ≤800 lines
-4. If >800 lines, IMMEDIATE split required
-5. Document size measurement in review
+1. Use ONLY ${PROJECT_ROOT}/tools/line-counter.sh
+2. Specify correct base branch (-b parameter)
+3. Exclude generated code (tool handles automatically)
+4. Implementation must be ≤800 lines
+5. If >800 lines, IMMEDIATE split required
+6. Document exact command and output in review
 ---
 
 ```python
-def validate_effort_size_compliance(effort_branch):
+def validate_effort_size_compliance(effort_branch, base_branch):
     """Validate effort size using mandatory line counter"""
     
+    # CRITICAL: Identify correct base branch first!
+    if base_branch == "main":
+        raise ValueError("❌ FATAL: Cannot use 'main' as base for effort measurement!")
+    
     try:
-        # CRITICAL: Use only the approved line counter
+        # Find project root first
+        project_root = find_project_root()
+        line_counter = f"{project_root}/tools/line-counter.sh"
+        
+        # CRITICAL: Use only the approved line counter with CORRECT BASE
         result = subprocess.run([
-            '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+            line_counter,
+            '-b', base_branch,  # MUST be phase integration branch
             '-c', effort_branch
         ], capture_output=True, text=True, check=True)
         
@@ -53,7 +140,9 @@ def validate_effort_size_compliance(effort_branch):
             'actual_lines': line_count,
             'limit': 800,
             'margin': 800 - line_count,
-            'tool_used': 'tmc-pr-line-counter.sh',
+            'tool_used': './tools/line-counter.sh',
+            'base_branch': base_branch,
+            'command': f'./tools/line-counter.sh -b {base_branch} -c {effort_branch}',
             'raw_output': result.stdout.strip()
         }
         
@@ -85,7 +174,9 @@ def document_size_measurement(size_result, review_context):
     
     review_context['size_compliance'] = {
         'measured_at': datetime.now().isoformat(),
-        'tool_used': size_result.get('tool_used', 'tmc-pr-line-counter.sh'),
+        'tool_used': size_result.get('tool_used', './tools/line-counter.sh'),
+        'base_branch': size_result.get('base_branch', 'UNKNOWN'),
+        'command_executed': size_result.get('command', 'UNKNOWN'),
         'actual_lines': size_result.get('actual_lines', 0),
         'limit': size_result.get('limit', 800),
         'compliant': size_result.get('compliant', False),
@@ -537,7 +628,7 @@ code_review_report:
   reviewer: "code-reviewer-agent"
   
   size_compliance:
-    tool_used: "tmc-pr-line-counter.sh"
+    tool_used: "line-counter.sh"
     measured_lines: 687
     limit: 800
     compliant: true

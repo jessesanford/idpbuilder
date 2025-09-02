@@ -233,9 +233,31 @@ yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.efforts_count = $EFFORT_COUNT"
 yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.all_reviews_passed = true" orchestrator-state.yaml
 yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.size_compliant = true" orchestrator-state.yaml
 yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.integration_branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.yaml
+
+# R301 MANDATORY: Update current_wave_integration
+echo "📝 Updating current_wave_integration per R301..."
+
+# Deprecate existing wave integration if it exists
+EXISTING_WAVE=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE)" orchestrator-state.yaml)
+if [ ! -z "$EXISTING_WAVE" ]; then
+    yq -i ".deprecated_wave_integrations += (.current_wave_integration | select(.phase == $PHASE and .wave == $WAVE))" orchestrator-state.yaml
+fi
+
+# Set the NEW current wave integration
+yq -i ".current_wave_integration = {
+  \"phase\": $PHASE,
+  \"wave\": $WAVE,
+  \"branch\": \"$INTEGRATION_BRANCH\",
+  \"status\": \"active\",
+  \"created_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
+  \"type\": \"initial\"
+}" orchestrator-state.yaml
+
+echo "✅ Current wave integration updated per R301"
 ```
 
 **VIOLATION = AUTOMATIC FAILURE if wave completion not recorded in state file!**
+**VIOLATION = AUTOMATIC FAILURE if current_wave_integration not updated per R301!**
 
 ### R287-R287 TODO PERSISTENCE ON COMPLETION
 ```bash
@@ -314,7 +336,7 @@ def verify_size_compliance(branch):
     
     try:
         result = subprocess.run([
-            '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+            '$PROJECT_ROOT/tools/line-counter.sh',
             '-c', branch
         ], capture_output=True, text=True, check=True)
         
@@ -380,7 +402,7 @@ done
 
 # Validate integrated size
 echo "📏 Checking integrated wave size..."
-TOTAL_LINES=$(/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c "$INTEGRATION_BRANCH" | tail -1)
+TOTAL_LINES=$($PROJECT_ROOT/tools/line-counter.sh -b main -c "$INTEGRATION_BRANCH" | tail -1)
 echo "Total lines in wave: $TOTAL_LINES"
 
 # Run tests on integration

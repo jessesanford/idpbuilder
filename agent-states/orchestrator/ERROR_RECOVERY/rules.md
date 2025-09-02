@@ -109,10 +109,42 @@ The system will check for this marker. No marker = Immediate failure.
 1. READ each rule file
 2. Acknowledge individually with rule number and description
 
+## 🔴🔴🔴 COMMON ERROR_RECOVERY TRIGGERS (R291 ENFORCEMENT) 🔴🔴🔴
+
+**YOU ARE IN ERROR_RECOVERY BECAUSE ONE OF THESE LIKELY OCCURRED:**
+
+1. **BUILD GATE FAILURE** (R291 Violation)
+   - Build compilation failed (make/npm build/cargo build returned non-zero)
+   - No build artifacts produced (missing dist/build/target)
+   - Build process crashed or timed out
+
+2. **TEST GATE FAILURE** (R291 Violation)
+   - Unit tests failed
+   - Integration tests failed
+   - E2E tests failed
+   - ANY test suite returned non-zero exit code
+
+3. **DEMO GATE FAILURE** (R291 Violation)
+   - Demo script failed (exit code != 0)
+   - Features don't work as expected
+   - Demo cannot be run due to missing components
+
+4. **INTEGRATION FAILURES**
+   - Merge conflicts that couldn't be resolved
+   - Dependency issues blocking build
+   - Incompatible changes between efforts
+
+5. **ASSESSMENT FAILURES**
+   - Architect phase assessment failed
+   - Wave review identified critical issues
+   - Quality gates not met
+
+**YOUR FIRST ACTION:** Check orchestrator-state.yaml for `error_recovery.reason` to understand why you're here!
+
 ## 📋 PRIMARY DIRECTIVES FOR ERROR_RECOVERY STATE
 
 ### 🚨🚨🚨 R019 - Error Recovery Protocol
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R019-error-recovery.md`
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R019-error-recovery-protocol.md`
 **Criticality**: BLOCKING - Must follow recovery protocol
 **Summary**: Systematic error assessment, preservation, and recovery
 
@@ -122,7 +154,7 @@ The system will check for this marker. No marker = Immediate failure.
 **Summary**: Continue operations until success or explicit stop
 
 ### ⚠️⚠️⚠️ R156 - Error Recovery Time Targets
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R156-error-recovery-time.md`
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R156-error-recovery-time-targets.md`
 **Criticality**: CRITICAL - Time targets for recovery by severity
 **Summary**: CRITICAL <30min, HIGH <60min, MEDIUM <2hrs, LOW <4hrs
 
@@ -145,6 +177,11 @@ The system will check for this marker. No marker = Immediate failure.
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R259-mandatory-phase-integration-after-fixes.md`
 **Criticality**: BLOCKING - Must create integration branch after fixes
 **Summary**: Return to PHASE_INTEGRATION after phase assessment fixes
+
+### 🔴🔴🔴 R300 - Comprehensive Fix Management Protocol (SUPREME LAW)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R300-comprehensive-fix-management-protocol.md`
+**Criticality**: SUPREME LAW - Violation = -100% AUTOMATIC FAILURE  
+**Summary**: ALL fixes MUST be applied to effort branches, NEVER to integration branches
 
 ## 🚨 ERROR_RECOVERY IS A VERB - START ERROR RECOVERY IMMEDIATELY! 🚨
 
@@ -236,9 +273,10 @@ def classify_error_and_strategy(error_data):
             'strategy': 'CONFLICT_RESOLUTION',
             'actions': [
                 'Analyze merge conflicts',
-                'Spawn specialized agents for resolution',
-                'Create temporary resolution branch',
-                'Validate resolution before integration'
+                'Spawn SW Engineers to fix IN EFFORT BRANCHES (R300)',
+                'NEVER fix in integration branch - will be lost!',
+                'Validate fixes in effort branches',
+                'Retry integration with updated effort branches'
             ],
             'target_time': '60min'
         },

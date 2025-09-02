@@ -46,9 +46,10 @@ The system will check for this marker. No marker = Immediate failure.
 1. Read: $CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal-supreme-law.md
 2. Read: $CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md
 3. Read: $CLAUDE_PROJECT_DIR/rule-library/R290-state-rule-reading-verification-supreme-law.md
-5. Read: $CLAUDE_PROJECT_DIR/rule-library/R239-fix-plan-distribution.md
-6. Read: $CLAUDE_PROJECT_DIR/rule-library/R008-monitoring-frequency.md
-7. Read: $CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-transition-validation.md
+4. Read: $CLAUDE_PROJECT_DIR/rule-library/R300-comprehensive-fix-management-protocol.md
+6. Read: $CLAUDE_PROJECT_DIR/rule-library/R239-fix-plan-distribution.md
+7. Read: $CLAUDE_PROJECT_DIR/rule-library/R008-monitoring-frequency.md
+8. Read: $CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-transition-validation.md
 
 **WE ARE WATCHING EACH READ TOOL CALL**
 
@@ -171,14 +172,38 @@ echo "Fixes complete: ${#FIXES_COMPLETE[@]}"
 echo "Fixes pending: ${#FIXES_PENDING[@]}"
 ```
 
-### 2. Determine Next State
+### 2. 🔴🔴🔴 VERIFY FIXES IN EFFORT BRANCHES (R300) 🔴🔴🔴
 ```bash
 if [ "$ALL_FIXES_COMPLETE" = true ]; then
-    echo "✅ All fixes complete! Ready to spawn code reviewers"
+    echo "✅ All fixes complete! Verifying fixes are in effort branches (R300)..."
     
-    # CRITICAL: MUST review the fixed code - NEVER skip to MONITORING_INTEGRATION
-    UPDATE_STATE="SPAWN_CODE_REVIEWERS_FOR_REVIEW"  # ONLY valid success transition
-    UPDATE_REASON="All integration fixes complete, need review before re-integration"
+    # R300 MANDATORY VERIFICATION
+    VERIFICATION_FAILED=false
+    for effort in "${FIXES_COMPLETE[@]}"; do
+        EFFORT_BRANCH="phase${PHASE}-wave${WAVE}-${effort}"
+        
+        # Check remote branch for fix commits
+        git fetch origin ${EFFORT_BRANCH} 2>/dev/null
+        FIX_COMMIT=$(git log origin/${EFFORT_BRANCH} --oneline --grep="fix:" --since="2 hours ago" 2>/dev/null | head -1)
+        
+        if [ -z "$FIX_COMMIT" ]; then
+            echo "❌ R300 VIOLATION: No fix commits found in origin/${EFFORT_BRANCH}!"
+            VERIFICATION_FAILED=true
+        else
+            echo "✅ Verified fix in ${EFFORT_BRANCH}: ${FIX_COMMIT}"
+        fi
+    done
+    
+    if [ "$VERIFICATION_FAILED" = true ]; then
+        echo "🔴🔴🔴 R300 VIOLATION: Fixes missing from effort branches! 🔴🔴🔴"
+        UPDATE_STATE="ERROR_RECOVERY"
+        UPDATE_REASON="R300 violation - fixes not in effort branches"
+    else
+        echo "✅ R300 PASSED: All fixes verified in effort branches"
+        # CRITICAL: MUST review the fixed code - NEVER skip to MONITORING_INTEGRATION
+        UPDATE_STATE="SPAWN_CODE_REVIEWERS_FOR_REVIEW"  # ONLY valid success transition
+        UPDATE_REASON="All integration fixes complete and verified in effort branches (R300)"
+    fi
     
     # Record completion
     yq eval ".integration_feedback.wave${WAVE}.all_fixes_completed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.yaml

@@ -22,51 +22,90 @@ if [ -n "$INTEGRATION_PID" ]; then
 fi
 ```
 
-### 2. 🚨🚨🚨 CHECK FOR PHASE INTEGRATION REPORT (CRITICAL) 🚨🚨🚨
+### 2. 🔴🔴🔴 CHECK PHASE INTEGRATION REPORT AND ENFORCE R291 GATES 🔴🔴🔴
 ```bash
-# MANDATORY: Check for phase integration report
+# MANDATORY: Check for phase integration report AND enforce build/test gates
 PHASE=$(yq '.current_phase' orchestrator-state.yaml)
 REPORT_FILE="efforts/phase${PHASE}/phase-integration/PHASE_INTEGRATION_REPORT.md"
 
 if [ ! -f "$REPORT_FILE" ]; then
-    echo "❌ CRITICAL: No phase integration report found at $REPORT_FILE"
-    # Transition to ERROR_RECOVERY
+    echo "🔴 CRITICAL: No phase integration report found at $REPORT_FILE"
+    # NO REPORT = IMMEDIATE ERROR_RECOVERY
     UPDATE_STATE="ERROR_RECOVERY"
-    UPDATE_REASON="No phase integration report generated"
+    UPDATE_REASON="No phase integration report - R291 gates cannot be verified"
 else
-    echo "✅ Found phase integration report, analyzing..."
+    echo "✅ Found phase integration report, enforcing R291 gates..."
     
     # Extract status from report
     INTEGRATION_STATUS=$(grep "^Phase Integration Status:" "$REPORT_FILE" | cut -d: -f2 | tr -d ' ')
     BUILD_STATUS=$(grep "^Phase Build Status:" "$REPORT_FILE" | cut -d: -f2 | tr -d ' ')
     TEST_STATUS=$(grep "^Phase Test Status:" "$REPORT_FILE" | cut -d: -f2 | tr -d ' ')
+    DEMO_STATUS=$(grep "^Phase Demo Status:" "$REPORT_FILE" | cut -d: -f2 | tr -d ' ' || echo "NOT_RUN")
     CONFLICTS=$(grep "^Unresolved Conflicts:" "$REPORT_FILE" | cut -d: -f2 | tr -d ' ')
     
-    echo "Phase Integration Status: $INTEGRATION_STATUS"
-    echo "Phase Build Status: $BUILD_STATUS"
-    echo "Phase Test Status: $TEST_STATUS"
-    echo "Unresolved Conflicts: $CONFLICTS"
+    echo "🔍 Phase Gate Status Check (R291 Enforcement):"
+    echo "  Phase Build: $BUILD_STATUS"
+    echo "  Phase Tests: $TEST_STATUS"
+    echo "  Phase Demo: $DEMO_STATUS"
+    echo "  Phase Integration: $INTEGRATION_STATUS"
+    echo "  Conflicts: $CONFLICTS"
     
-    # Determine next state based on report
-    if [[ "$INTEGRATION_STATUS" == "SUCCESS" ]] && \
-       [[ "$BUILD_STATUS" == "PASSING" ]] && \
-       [[ "$TEST_STATUS" == "PASSING" ]] && \
-       [[ "$CONFLICTS" == "0" ]]; then
-        echo "✅ Phase integration successful - proceeding to SPAWN_ARCHITECT_PHASE_ASSESSMENT"
-        UPDATE_STATE="SPAWN_ARCHITECT_PHASE_ASSESSMENT"
-        UPDATE_REASON="Phase integration complete and successful"
-    elif [[ "$CONFLICTS" != "0" ]] || \
-         [[ "$INTEGRATION_STATUS" == "FAILED" ]] || \
-         [[ "$BUILD_STATUS" == "FAILED" ]]; then
-        echo "🚨 Phase integration has issues - transitioning to PHASE_INTEGRATION_FEEDBACK_REVIEW"
-        UPDATE_STATE="PHASE_INTEGRATION_FEEDBACK_REVIEW"
-        UPDATE_REASON="Phase integration failed with conflicts or build issues"
-    else
-        echo "⚠️ Unexpected status combination - going to ERROR_RECOVERY"
+    # 🔴🔴🔴 R291 SUPREME GATE ENFORCEMENT FOR PHASE 🔴🔴🔴
+    
+    # BUILD GATE CHECK - PHASE LEVEL
+    if [[ "$BUILD_STATUS" != "PASSING" ]] && [[ "$BUILD_STATUS" != "SUCCESS" ]]; then
+        echo "🔴🔴🔴 PHASE BUILD GATE FAILED - MANDATORY ERROR_RECOVERY 🔴🔴🔴"
+        echo "R291 VIOLATION: Phase build did not pass ($BUILD_STATUS)"
+        echo "Cannot proceed to phase assessment without successful build!"
         UPDATE_STATE="ERROR_RECOVERY"
-        UPDATE_REASON="Unexpected phase integration status"
+        UPDATE_REASON="R291 PHASE BUILD GATE FAILURE: $BUILD_STATUS"
+        
+    # TEST GATE CHECK - PHASE LEVEL
+    elif [[ "$TEST_STATUS" != "PASSING" ]] && [[ "$TEST_STATUS" != "SUCCESS" ]]; then
+        echo "🔴🔴🔴 PHASE TEST GATE FAILED - MANDATORY ERROR_RECOVERY 🔴🔴🔴"
+        echo "R291 VIOLATION: Phase tests did not pass ($TEST_STATUS)"
+        echo "Cannot proceed to phase assessment without passing tests!"
+        UPDATE_STATE="ERROR_RECOVERY"
+        UPDATE_REASON="R291 PHASE TEST GATE FAILURE: $TEST_STATUS"
+        
+    # DEMO GATE CHECK - PHASE LEVEL (if present)
+    elif [[ "$DEMO_STATUS" != "NOT_RUN" ]] && \
+         [[ "$DEMO_STATUS" != "PASSING" ]] && \
+         [[ "$DEMO_STATUS" != "SUCCESS" ]]; then
+        echo "🔴🔴🔴 PHASE DEMO GATE FAILED - MANDATORY ERROR_RECOVERY 🔴🔴🔴"
+        echo "R291 VIOLATION: Phase demo did not pass ($DEMO_STATUS)"
+        UPDATE_STATE="ERROR_RECOVERY"
+        UPDATE_REASON="R291 PHASE DEMO GATE FAILURE: $DEMO_STATUS"
+        
+    # CONFLICTS CHECK
+    elif [[ "$CONFLICTS" != "0" ]] && [[ -n "$CONFLICTS" ]]; then
+        echo "🔴 Unresolved conflicts detected - cannot proceed"
+        UPDATE_STATE="PHASE_INTEGRATION_FEEDBACK_REVIEW"
+        UPDATE_REASON="Phase has $CONFLICTS unresolved conflicts"
+        
+    # INTEGRATION STATUS CHECK
+    elif [[ "$INTEGRATION_STATUS" != "SUCCESS" ]]; then
+        echo "🔴 Phase integration failed - review needed"
+        UPDATE_STATE="PHASE_INTEGRATION_FEEDBACK_REVIEW"
+        UPDATE_REASON="Phase integration status: $INTEGRATION_STATUS"
+        
+    # ALL GATES PASSED - PHASE CAN BE ASSESSED
+    else
+        echo "✅✅✅ ALL PHASE R291 GATES PASSED ✅✅✅"
+        echo "  ✅ Phase Build: $BUILD_STATUS"
+        echo "  ✅ Phase Tests: $TEST_STATUS"
+        echo "  ✅ Phase Demo: $DEMO_STATUS (if run)"
+        echo "  ✅ Phase Integration: $INTEGRATION_STATUS"
+        echo "  ✅ Conflicts: $CONFLICTS"
+        echo "Phase is ready for architect assessment!"
+        UPDATE_STATE="SPAWN_ARCHITECT_PHASE_ASSESSMENT"
+        UPDATE_REASON="All phase gates passed - ready for assessment"
     fi
 fi
+
+echo ""
+echo "🎯 DECISION: Transitioning to $UPDATE_STATE"
+echo "📝 REASON: $UPDATE_REASON"
 ```
 
 ### 3. Update State File with Phase Integration Results

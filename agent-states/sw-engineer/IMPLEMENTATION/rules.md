@@ -46,7 +46,7 @@ IMPLEMENTATION PROTOCOL:
 
 SIZE MONITORING REQUIREMENTS:
 
-⚠️ CRITICAL: Use ONLY tmc-pr-line-counter.sh tool
+⚠️ CRITICAL: Use ONLY line-counter.sh tool from PROJECT_ROOT/tools/
 ⚠️ NEVER count lines manually or with other tools
 ⚠️ Exclude generated code (zz_generated*, *.pb.go, CRDs)
 
@@ -65,27 +65,161 @@ RESPONSE TO SIZE WARNINGS:
 
 ```bash
 #!/bin/bash
-# Size monitoring during implementation
+# COMPREHENSIVE SIZE MONITORING WITH BASE BRANCH DETECTION
 
+# Step 1: Find line counter tool
+find_line_counter() {
+    # Search up directory tree
+    SEARCH_DIR=$(pwd)
+    while [ "$SEARCH_DIR" != "/" ]; do
+        if [ -f "$SEARCH_DIR/tools/line-counter.sh" ]; then
+            echo "$SEARCH_DIR/tools/line-counter.sh"
+            return 0
+        fi
+        SEARCH_DIR=$(dirname "$SEARCH_DIR")
+    done
+    
+    # Fallback: search from home
+    find /home -name "line-counter.sh" -path "*/tools/*" 2>/dev/null | head -1
+}
+
+# Step 2: Determine correct base branch
+get_base_branch() {
+    # Try to find orchestrator-state.yaml
+    SEARCH_DIR=$(pwd)
+    while [ "$SEARCH_DIR" != "/" ]; do
+        if [ -f "$SEARCH_DIR/orchestrator-state.yaml" ]; then
+            # Extract phase integration branch
+            BASE=$(grep "current_phase_integration:" "$SEARCH_DIR/orchestrator-state.yaml" -A 2 | \
+                   grep "branch:" | awk '{print $2}' | tr -d '"')
+            if [ -n "$BASE" ]; then
+                echo "$BASE"
+                return 0
+            fi
+        fi
+        SEARCH_DIR=$(dirname "$SEARCH_DIR")
+    done
+    
+    # Fallback: look for phase pattern in current branch
+    CURRENT=$(git branch --show-current)
+    if [[ "$CURRENT" =~ phase([0-9]+)/ ]]; then
+        echo "phase${BASH_REMATCH[1]}/integration"
+    else
+        echo "phase1/integration"  # Default fallback
+    fi
+}
+
+# Step 3: Perform measurement
+LC=$(find_line_counter)
+if [ -z "$LC" ]; then
+    echo "❌ FATAL: Cannot find line-counter.sh tool!"
+    exit 1
+fi
+
+BASE=$(get_base_branch)
 BRANCH=$(git branch --show-current)
-LINES=$(/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c "$BRANCH" | tail -1)
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 
-echo "[$TIMESTAMP] Implementation size check: $LINES lines"
+echo "📊 SIZE MEASUREMENT - $TIMESTAMP"
+echo "Tool: $LC"
+echo "Base: $BASE"
+echo "Current: $BRANCH"
 
-# Log to work log
-echo "- [$TIMESTAMP] Size check: $LINES lines" >> work-log.md
+# Run measurement with proper parameters (R304 compliance)
+RESULT=$("$LC" -b "$BASE" -c "$BRANCH")
+echo "$RESULT"
+LINES=$(echo "$RESULT" | grep "Total" | awk '{print $NF}')
 
-if [ "$LINES" -ge 750 ]; then
-    echo "🚨 CRITICAL: Approaching size limit ($LINES/800 lines)"
-    echo "STOP implementation and prepare for MEASURE_SIZE state"
+if [ -z "$LINES" ]; then
+    echo "⚠️ Could not extract line count, trying without base..."
+    LINES=$("$LC" -c "$BRANCH" | grep "Total" | awk '{print $NF}')
+fi
+
+echo ""
+echo "MEASUREMENT RESULT: $LINES/800 lines"
+
+# Decision logic with R304 compliance
+if [ "$LINES" -ge 800 ]; then
+    echo "🚨🚨🚨 CRITICAL: SIZE LIMIT EXCEEDED ($LINES/800)"
+    echo "ACTION: STOP IMMEDIATELY - AUTOMATIC FAILURE"
     exit 1
+elif [ "$LINES" -ge 750 ]; then
+    echo "🚨 DANGER: Approaching hard limit ($LINES/800)"
+    echo "ACTION: Complete immediately or prepare split"
 elif [ "$LINES" -ge 700 ]; then
-    echo "⚠️ WARNING: High line count ($LINES/800 lines)"
-    echo "Consider code optimization and completion strategy"
+    echo "⚠️ WARNING: High line count ($LINES/800)"
+    echo "ACTION: Optimize code or plan completion"
 elif [ "$LINES" -ge 600 ]; then
-    echo "📊 INFO: Substantial progress ($LINES/800 lines)"
-    echo "Plan completion strategy to stay under limit"
+    echo "📊 CAUTION: Substantial size ($LINES/800)"
+    echo "ACTION: Monitor closely, measure every hour"
+else
+    echo "✅ COMPLIANT: Safe to continue ($LINES/800)"
+fi
+
+# Log measurement with base branch for traceability
+echo "- [$TIMESTAMP] Size: $LINES/800 (base: $BASE)" >> work-log.md
+```
+
+## 🔴🔴🔴 CRITICAL: CONTINUOUS SIZE MONITORING REQUIREMENTS 🔴🔴🔴
+
+### Mandatory Monitoring Schedule
+**YOU MUST MEASURE SIZE AT THESE INTERVALS OR FACE GRADING PENALTIES:**
+
+1. **STARTUP**: Establish baseline when entering IMPLEMENTATION state
+2. **EVERY 100 LINES**: After adding approximately 100 lines
+3. **EVERY 60 MINUTES**: During active coding sessions
+4. **BEFORE COMMITS**: Verify size before any git commit
+5. **AFTER FEATURES**: When completing any component/feature
+
+### R304 Compliance Requirements
+**CRITICAL: Code Reviewer expects these EXACT standards:**
+
+```bash
+# NEVER DO THIS (AUTOMATIC -100% FAILURE):
+wc -l *.go                                    # Manual counting = FAIL
+./tools/line-counter.sh -b main -c mybranch   # Using main = FAIL
+./tools/line-counter.sh                       # No parameters = FAIL
+
+# ALWAYS DO THIS:
+BASE="phase1/integration"  # From orchestrator-state.yaml
+./tools/line-counter.sh -b $BASE -c $(git branch --show-current)
+```
+
+### Base Branch Determination Rules
+- **For Efforts**: Use phase integration branch (e.g., phase1/integration)
+- **For Splits**: Use original effort branch (before split)
+- **For Fixes**: Use current integration branch
+- **NEVER**: Use "main" or "master" as base
+
+### Self-Monitoring Enforcement
+```bash
+# Add to your implementation workflow:
+LAST_MEASUREMENT=$(date +%s)
+
+check_if_measurement_needed() {
+    CURRENT_TIME=$(date +%s)
+    TIME_SINCE_LAST=$((CURRENT_TIME - LAST_MEASUREMENT))
+    
+    # Measure if more than 1 hour
+    if [ $TIME_SINCE_LAST -gt 3600 ]; then
+        echo "⏰ Time trigger: Measuring size (>1 hour since last)"
+        return 0
+    fi
+    
+    # Check if significant changes made
+    LINES_CHANGED=$(git diff --numstat | awk '{sum+=$1+$2} END {print sum}')
+    if [ "$LINES_CHANGED" -gt 100 ]; then
+        echo "📝 Change trigger: Measuring size (>100 lines changed)"
+        return 0
+    fi
+    
+    return 1
+}
+
+# Call this regularly during implementation
+if check_if_measurement_needed; then
+    # Run the comprehensive monitoring script above
+    LAST_MEASUREMENT=$(date +%s)
 fi
 ```
 

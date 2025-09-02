@@ -9,7 +9,7 @@
 
 PRIMARY METRIC: Measurement Accuracy
 Measurement: Correct tool usage and accurate results
-Target: 100% compliance with tmc-pr-line-counter.sh
+Target: 100% compliance with line-counter.sh per R304
 Grade: PASS/FAIL (binary)
 Weight: 60% of overall measure size grade
 Consequence: Wrong tool usage = FAIL
@@ -35,7 +35,7 @@ class MeasureSizeGrader:
     def grade_measure_size_session(self, session_data):
         """Grade a size measurement and analysis session"""
         
-        # Critical: Tool compliance (mandatory tmc-pr-line-counter.sh usage)
+        # Critical: Tool compliance (mandatory line-counter.sh usage per R304)
         tool_compliance_grade = self.calculate_tool_compliance_grade(session_data)
         
         # Decision accuracy based on measurement results
@@ -72,7 +72,7 @@ class MeasureSizeGrader:
         command_used = session.get('measurement_command', '')
         
         # Check if correct tool was used
-        correct_tool = 'tmc-pr-line-counter.sh' in tool_used or 'tmc-pr-line-counter.sh' in command_used
+        correct_tool = 'line-counter.sh' in tool_used or 'line-counter.sh' in command_used
         
         if not correct_tool:
             # Check for wrong tools
@@ -320,7 +320,7 @@ class MeasureSizeGrader:
         # Check command documentation quality
         if documentation_elements['measurement_command_logged']:
             command = session.get('measurement_command', '')
-            if not command or 'tmc-pr-line-counter.sh' not in command:
+            if not command or 'line-counter.sh' not in command:
                 documentation_quality -= 20
         
         # Check results documentation quality
@@ -473,7 +473,7 @@ class MeasureSizeGrader:
         
         # Check if tool path is correct
         tool_used = session.get('measurement_tool', '')
-        if '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh' not in tool_used:
+        if 'line-counter.sh' not in tool_used:
             quality_score -= 20
         
         # Check if branch was specified
@@ -574,7 +574,7 @@ class SizeMeasurementTracker:
             # Measurement data
             'measured_lines': session_data.get('measured_lines', 0),
             'measurement_tool': session_data.get('measurement_tool', ''),
-            'tool_compliant': 'tmc-pr-line-counter.sh' in session_data.get('measurement_tool', ''),
+            'tool_compliant': 'line-counter.sh' in session_data.get('measurement_tool', ''),
             
             # Analysis depth
             'analysis_components': session_data.get('analysis_components_completed', 0),
@@ -754,7 +754,7 @@ def assess_size_measurement_health(current_grade, session_data):
 SIZE MEASUREMENT WARNINGS
 Wrong Tool Used:
 🚨 CRITICAL: Non-compliant measurement tool
-🚨 Must use only tmc-pr-line-counter.sh
+🚨 Must use only line-counter.sh per R304
 
 Size Limit Exceeded:
 🚨 CRITICAL: >800 lines detected

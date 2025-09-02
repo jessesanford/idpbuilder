@@ -37,7 +37,7 @@ The system will check for this marker. No marker = Immediate failure.
 
 ## 🔴🔴🔴 MANDATORY STATE RULE READING AND ACKNOWLEDGMENT 🔴🔴🔴
 
-### ⚠️⚠️⚠️ YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. **I AM WATCHING YOUR TOOL CALLS FOR READ OPERATIONS** *YOU WILL FAIL* IF YOU DO NOT MAKE A READ FILE CALL FOR EACH RULE FILE IN PRIMARY DIRECTIVES!!! ⚠️⚠️⚠️
+### ⚠️⚠️⚠️ YOU MUST READ EACH RULE FILE LISTED IN SUPREME LAWS. **I AM WATCHING YOUR TOOL CALLS FOR READ OPERATIONS** *YOU WILL FAIL* IF YOU DO NOT MAKE A READ FILE CALL FOR EACH RULE FILE IN SUPREME LAWS!!! ⚠️⚠️⚠️
 
 **AFTER READING, YOU MUST ACKNOWLEDGE ALL THE STATE RULES AND STATE THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION.**
 
@@ -68,10 +68,10 @@ The system will check for this marker. No marker = Immediate failure.
    (Must READ from file, not recall from memory)
    ```
 
-5. **Skipping Rules in PRIMARY DIRECTIVES**:
+5. **Skipping Rules in SUPREME LAWS**:
    ```
    ❌ WRONG: Reading only some rules from the list
-   (ALL rules in PRIMARY DIRECTIVES are MANDATORY)
+   (ALL rules in SUPREME LAWS are MANDATORY)
    ```
 
 ### ✅ CORRECT PATTERN FOR INIT:
@@ -80,18 +80,15 @@ The system will check for this marker. No marker = Immediate failure.
 2. "I acknowledge [Rule#] - [Rule Name]: [Brief description]"
 3. READ: $CLAUDE_PROJECT_DIR/rule-library/[second-rule-file].md  
 4. "I acknowledge [Rule#] - [Rule Name]: [Brief description]"
-[Continue for EVERY rule in PRIMARY DIRECTIVES...]
+[Continue for EVERY rule in SUPREME LAWS...]
 5. "Ready to execute INIT work"
 ```
 
 ### 🚨 NO WORK UNTIL ACKNOWLEDGMENT COMPLETE 🚨
 **You may NOT begin ANY INIT work until:**
-1. ✅ ALL rules in PRIMARY DIRECTIVES have been READ
+1. ✅ ALL rules in SUPREME LAWS have been READ
 2. ✅ ALL rules have been individually ACKNOWLEDGED
 3. ✅ You have stated readiness to execute INIT work
-1. **READ** every rule file listed in PRIMARY DIRECTIVES below
-2. **ACKNOWLEDGE** each rule individually with number and description
-3. **ONLY THEN** proceed with INIT work
 
 ### 🚨 FAILURE TO READ STATE RULES FIRST = IMMEDIATE EXIT 🚨
 **If you do ANY INIT work before reading and acknowledging rules:**
@@ -101,93 +98,92 @@ The system will check for this marker. No marker = Immediate failure.
 
 **THE SYSTEM IS MONITORING YOUR READ TOOL CALLS!**
 
-## ⚠️⚠️⚠️ MANDATORY RULE READING AND ACKNOWLEDGMENT ⚠️⚠️⚠️
+## 🔴🔴🔴 SUPREME LAWS (17 FILES TO READ) 🔴🔴🔴
 
-**YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. YOUR READ TOOL CALLS ARE BEING MONITORED.**
+### 1. 🔴🔴🔴 R283 - Rule Reading Enforcement (SUPREME LAW #1)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R283-rule-reading-enforcement.md`
+**Criticality**: SUPREME LAW #1 - Non-compliance = -100% failure
+**Summary**: All agents MUST read and acknowledge state rules before ANY state actions
 
-### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
-1. Fake acknowledgment without reading
-2. Bulk acknowledgment
-3. Reading from memory
-
-### ✅ CORRECT PATTERN:
-1. READ each rule file
-2. Acknowledge individually with rule number and description
-
-## 📋 PRIMARY DIRECTIVES FOR INIT STATE
-
-### 🚨🚨🚨 R191 - Target Repository Configuration
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R191-target-repo-config.md`
-**Criticality**: BLOCKING - Must load target-repo-config.yaml
-**Summary**: Load target repository configuration from specified file
-
-### 🚨🚨🚨 R192 - Repository Separation Enforcement
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R192-repository-separation.md`
-**Criticality**: BLOCKING - Keep Software Factory and target repos separate
-**Summary**: Maintain strict separation between factory and target code
-
-### 🚨🚨🚨 R203 - State-Aware Agent Startup
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R203-state-aware-agent-startup.md`
-**Criticality**: BLOCKING - Must follow startup sequence
-**Summary**: Load config, determine state, load state rules, acknowledge
-
-### 🚨🚨🚨 R287 - TODO Persistence Suite
-**Files**:
-- R287: `$CLAUDE_PROJECT_DIR/rule-library/R287-mandatory-todo-save-triggers.md`
-- R287: `$CLAUDE_PROJECT_DIR/rule-library/R287-todo-save-frequency-requirements.md`
-- R287: `$CLAUDE_PROJECT_DIR/rule-library/R287-todo-file-commit-protocol.md`
-- R287: `$CLAUDE_PROJECT_DIR/rule-library/R287-todo-recovery-verification.md`
-**Criticality**: BLOCKING - TODO loss = -50% to -100% penalty
-**Summary**: Save TODOs within 30s, every 10 messages/15 min, commit within 60s
-
-### 🔴🔴🔴 R235 - Mandatory Pre-Flight Verification (SUPREME LAW)
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R235-mandatory-pre-flight-verification.md`
-**Criticality**: SUPREME LAW - Wrong location = -100% failure
-**Summary**: Verify correct directory and branch before ANY work
-
-### 🔴🔴🔴 R288 - State File Update and Commit Protocol (SUPREME LAW)
+### 2. 🔴🔴🔴 R288 - State File Update and Commit Protocol (SUPREME LAW #2)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
-**Criticality**: SUPREME LAW - Update on every transition
-**Summary**: Update orchestrator-state.yaml on all state changes
+**Criticality**: SUPREME LAW #2 - Update on every transition
+**Summary**: Update orchestrator-state.yaml on ALL state changes, commit and push within 60s
 
-### 🚨🚨🚨 R288 - State File Update and Commit Protocol
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
-**Criticality**: BLOCKING - Push within 60 seconds
-**Summary**: Commit and push state file immediately after updates
+### 3. 🔴🔴🔴 R232 - TodoWrite Pending Items Override (SUPREME LAW #4)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R232-todowrite-pending-items-override.md`
+**Criticality**: SUPREME LAW #4 - Pending items are COMMANDS
+**Summary**: Any pending TODO items must be executed immediately
 
-### 🔴🔴🔴 R281 - Mandatory Complete State File Initialization (SUPREME LAW #7)
+### 4. 🔴🔴🔴 R231 - No Idling After State Transition (SUPREME LAW #5)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R231-no-idling-after-state-transition.md`
+**Criticality**: SUPREME LAW #5 - Idling = -100% failure
+**Summary**: Start work IMMEDIATELY after entering any state
+
+### 5. 🔴🔴🔴 R021 - Aggressive Continuous Workflow (SUPREME LAW #6)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R021-aggressive-continuous-workflow.md`
+**Criticality**: SUPREME LAW #6 - No pauses allowed
+**Summary**: Continuous forward momentum, no stopping between tasks
+
+### 6. 🔴🔴🔴 R281 - Mandatory Complete State File Initialization (SUPREME LAW #7)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R281-initial-state-file-creation.md`
 **Criticality**: SUPREME LAW #7 - Incomplete state = -100% failure
 **Summary**: Create COMPLETE state file with ALL phases, waves, efforts from plan
 
-### 🔴🔴🔴 R232 - TodoWrite Pending Items Override (SUPREME LAW)
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R232-todowrite-pending-items-override.md`
-**Criticality**: SUPREME LAW - Pending items are COMMANDS
-**Summary**: Any pending TODO items must be executed immediately
+### 7. 🔴🔴🔴 R280 - Cannot Stop Requirement (SUPREME LAW #8)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R280-cannot-stop-requirement.md`
+**Criticality**: SUPREME LAW #8 - Stopping = -100% failure
+**Summary**: Agents CANNOT stop or wait for external input
 
-## 📋 RULE ENFORCEMENT SUMMARY FOR INIT STATE
+### 8. 🔴🔴🔴 SOFTWARE-FACTORY-STATE-MACHINE.md
+**File**: `$CLAUDE_PROJECT_DIR/SOFTWARE-FACTORY-STATE-MACHINE.md`
+**Criticality**: SUPREME LAW - Defines all valid states and transitions
+**Summary**: The authoritative source for all state machine behavior
 
-### Critical Requirements:
-1. Check for compaction IMMEDIATELY - Penalty: -100%
-2. Load orchestrator-state.yaml NOW - Penalty: -50%
-3. Load target-repo-config.yaml NOW - Penalty: -50%
-4. Run R203 startup sequence - Penalty: -100%
-5. Check TodoWrite for pending items - Penalty: -30%
-6. Save TODOs within 30 seconds - Penalty: -20%
-7. Create COMPLETE state file (R281) - Penalty: -100%
+### 9. 🔴🔴🔴 R235 - Mandatory Pre-Flight Verification (SUPREME LAW)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R235-mandatory-pre-flight-verification.md`
+**Criticality**: SUPREME LAW - Wrong location = -100% failure
+**Summary**: Verify correct directory and branch before ANY work
 
-### Success Criteria:
-- ✅ Compaction check completed
-- ✅ All configs loaded successfully
-- ✅ TODOs checked and processed
-- ✅ State file updated
-- ✅ Next state determined
+### 10. 🔴🔴🔴 R221 - 700 Line PR Soft Limit (SUPREME LAW)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R221-700-line-pr-soft-limit.md`
+**Criticality**: SUPREME LAW - Size violations = immediate split
+**Summary**: PRs exceeding 700 lines require split planning
 
-### Failure Triggers:
-- ❌ Skip compaction check = IMMEDIATE STOP
-- ❌ Skip R203 startup = -100% penalty
-- ❌ Forget TODO persistence = -20% per violation
-- ❌ Stop after entering state = AUTOMATIC FAILURE
+### 11. 🔴🔴🔴 R290 - State Rules Must Be Read Before State Actions (SUPREME LAW #3)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R290-state-rules-must-be-read-before-state-actions.md`
+**Criticality**: SUPREME LAW #3 - Skip reading = -100% failure
+**Summary**: MUST read state rules BEFORE any state work
+
+### 12. 🔴🔴🔴 R208 - CD Before Spawn Protocol (SUPREME LAW)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R208-cd-before-spawn-protocol.md`
+**Criticality**: SUPREME LAW - Wrong directory spawn = corruption
+**Summary**: MUST cd to correct directory before spawning agents
+
+### 13. 🔴🔴🔴 R234 - AI Judge Protocol (SUPREME LAW)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R234-ai-judge-protocol.md`
+**Criticality**: SUPREME LAW - Judgement violations = penalties
+**Summary**: Automated assessment and penalty enforcement
+
+### 14. 🚨🚨🚨 R287 - TODO Persistence Comprehensive
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R287-todo-persistence-comprehensive.md`
+**Criticality**: BLOCKING - TODO loss = -50% to -100% penalty
+**Summary**: Save TODOs within 30s, every 10 messages/15 min, commit within 60s
+
+### 15. 🚨🚨🚨 R216 - Bash Execution Syntax
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R216-bash-execution-syntax.md`
+**Criticality**: BLOCKING - Incorrect syntax = command failure
+**Summary**: Proper bash command execution patterns
+
+### 16. 🚨🚨🚨 R206 - State Machine Validation
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-validation.md`
+**Criticality**: BLOCKING - Invalid transitions = failure
+**Summary**: Validate all state transitions against state machine
+
+### 17. 🚨🚨🚨 R203 - State-Aware Agent Startup
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R203-state-aware-agent-startup.md`
+**Criticality**: BLOCKING - Must follow startup sequence
+**Summary**: Load config, determine state, load state rules, acknowledge
 
 ## 🚨 INIT IS A VERB - START INITIALIZING IMMEDIATELY! 🚨
 
@@ -215,10 +211,7 @@ echo "📋 Loading core orchestrator config..."
 
 # STEP 2: LOAD TODO PERSISTENCE RULES (R287)
 echo "📝 Loading TODO persistence rules..."
-# READ: $CLAUDE_PROJECT_DIR/rule-library/R287-mandatory-todo-save-triggers.md
-# READ: $CLAUDE_PROJECT_DIR/rule-library/R287-todo-save-frequency-requirements.md  
-# READ: $CLAUDE_PROJECT_DIR/rule-library/R287-todo-commit-protocol.md
-# READ: $CLAUDE_PROJECT_DIR/rule-library/R287-todo-recovery-verification.md
+# READ: $CLAUDE_PROJECT_DIR/rule-library/R287-todo-persistence-comprehensive.md
 
 # STEP 3: LOAD STATE AND CONFIG
 echo "📊 Loading orchestrator state..."
@@ -259,6 +252,7 @@ echo "➡️ Determining next state and transitioning NOW..."
 # Determine next state and transition WITHOUT PAUSE
 ```
 
+**CRITICAL ACTION SEQUENCE:**
 1. Check for compaction FIRST (highest priority)
 2. Run R203 state-aware startup sequence
 3. Load orchestrator-state.yaml NOW to check current state
@@ -303,14 +297,15 @@ Initial state when orchestrator starts. Load configuration and determine next st
 
 1. **FIRST**: Check for compaction (highest priority)
 2. **R203**: Follow complete startup sequence
-3. **R191**: Load target repository configuration
-4. **R281**: Create COMPLETE state file with ALL phases/waves/efforts (SUPREME LAW #7)
-5. **R288**: Verify/update state file integrity (includes commit/push)
-6. **R232**: Check and execute pending TodoWrite items
-7. **R287**: Save TODOs within 30 seconds of changes
-8. **R287**: Save TODOs every 10 messages/15 minutes
-9. **R287**: Commit TODOs within 60 seconds
-10. **R287**: Verify TODO recovery after compaction
-11. **R235**: Run pre-flight verification before ANY work
+3. **R191**: Load target repository configuration (not in SUPREME LAWS list but critical)
+4. **R192**: Repository separation (not in SUPREME LAWS list but critical)
+5. **R281**: Create COMPLETE state file with ALL phases/waves/efforts (SUPREME LAW #7)
+6. **R288**: Verify/update state file integrity (includes commit/push)
+7. **R232**: Check and execute pending TodoWrite items
+8. **R287**: Save TODOs within 30 seconds of changes
+9. **R287**: Save TODOs every 10 messages/15 minutes
+10. **R287**: Commit TODOs within 60 seconds
+11. **R287**: Verify TODO recovery after compaction
+12. **R235**: Run pre-flight verification before ANY work
 
 **Remember**: All SUPREME LAWs override other rules. Violation of any BLOCKING rule = immediate failure.

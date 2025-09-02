@@ -136,7 +136,7 @@ class CodeReviewGrader:
         
         # Critical requirements for size compliance
         requirements_met = {
-            'used_correct_tool': size_review.get('tool_used') == 'tmc-pr-line-counter.sh',
+            'used_correct_tool': size_review.get('tool_used') == 'line-counter.sh',
             'measured_lines': 'actual_lines' in size_review,
             'documented_measurement': 'raw_output' in size_review or 'raw_measurement' in size_review,
             'correct_decision': self.validate_size_decision(size_review)
@@ -454,7 +454,7 @@ Critical Issue Detection <90%:
 
 Size Compliance Validation Error:
 🚨 CRITICAL: Size compliance not properly validated
-🚨 Must use tmc-pr-line-counter.sh tool
+🚨 Must use line-counter.sh tool
 🚨 Size violations will cause downstream failures
 
 KCP Pattern Validation <85%:
@@ -483,7 +483,7 @@ def optimize_code_review_performance():
         ],
         
         'size_compliance_optimization': [
-            'ALWAYS use tmc-pr-line-counter.sh tool',
+            'ALWAYS use line-counter.sh tool',
             'Document measurement process completely',
             'Verify tool output before making decisions',
             'Never estimate size - always measure'
@@ -560,7 +560,7 @@ class ReviewQualityValidator:
         size_data = review_data.get('size_compliance', {})
         if 'actual_lines' in size_data:
             accuracy_checks['size_measurement'] = {
-                'tool_correct': size_data.get('tool_used') == 'tmc-pr-line-counter.sh',
+                'tool_correct': size_data.get('tool_used') == 'line-counter.sh',
                 'decision_logical': self.validate_size_decision_logic(size_data),
                 'documented_properly': 'raw_output' in size_data or 'raw_measurement' in size_data
             }

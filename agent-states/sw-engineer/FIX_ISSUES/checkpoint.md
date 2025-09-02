@@ -413,7 +413,8 @@ def verify_fix_state_consistency(checkpoint_data):
         # Verify size matches checkpoint expectation
         try:
             size_result = subprocess.run([
-                '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+                '$PROJECT_ROOT/tools/line-counter.sh',
+                '-b', 'main',  # Add base branch parameter per R304
                 '-c', checkpoint_data.get('branch', '')
             ], cwd=working_dir, capture_output=True, text=True)
             

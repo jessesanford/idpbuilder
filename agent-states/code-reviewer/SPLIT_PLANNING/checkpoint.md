@@ -59,7 +59,7 @@ split_planning_checkpoint:
       violation_severity: "HIGH"
       
     size_measurement_data:
-      tool_used: "tmc-pr-line-counter.sh"
+      tool_used: "line-counter.sh"
       measurement_timestamp: "2025-08-23T19:30:00Z"
       raw_output: |
         pkg/webhooks/admission/validator.go: 156 lines
@@ -960,7 +960,7 @@ def revalidate_original_size(original_branch):
     try:
         # Re-measure using same tool as original
         result = subprocess.run([
-            '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+            '$PROJECT_ROOT/tools/line-counter.sh',
             '-c', original_branch
         ], capture_output=True, text=True, check=True)
         

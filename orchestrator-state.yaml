@@ -89,12 +89,11 @@ efforts_completed:
     phase: 1
     wave: 1
     lines_implemented: 936
-    split_count: 2
     status: "COMPLETED"
     completed_at: "2025-08-31T16:27:00Z"
     review_status: "PASSED"
     review_completed_at: "2025-08-31T16:43:00Z"
-    review_notes: "Properly split, all tests passing"
+    review_notes: "Implementation complete, all tests passing"
   - effort_id: "E1.2.1"
     name: "certificate-validation-pipeline"
     phase: 1
@@ -115,9 +114,7 @@ efforts_in_progress:
     review_status: "NEEDS_SPLIT"
     review_completed_at: "2025-09-02T05:04:32Z"
     lines_measured: 856
-    split_required: true
-    split_count: 2
-    notes: "Code review complete - exceeds 800 line limit by 56 lines. Split plan created."
+    notes: "Code review complete - exceeds 800 line limit by 56 lines. Awaiting new split rules."
   - effort_id: "E2.1.2"
     name: "gitea-registry-client"
     phase: 2
@@ -127,9 +124,7 @@ efforts_in_progress:
     review_status: "NEEDS_SPLIT"
     review_completed_at: "2025-09-02T05:11:30Z"
     lines_measured: 927
-    split_required: true
-    split_count: 3
-    notes: "Code review complete - exceeds 800 line limit by 127 lines. Also lacks tests and Phase 1 integration. Split plan created."
+    notes: "Code review complete - exceeds 800 line limit by 127 lines. Also lacks tests and Phase 1 integration. Awaiting new split rules."
 efforts_planned:
   # Phase 1: Certificate Infrastructure
   - phase: 1
