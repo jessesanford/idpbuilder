@@ -7,10 +7,16 @@ All agents MUST follow a systematic error recovery protocol when encountering fa
 
 ### 1. Error Classification
 Agents MUST classify errors by severity:
-- **CRITICAL**: System corruption, data loss risk, security breach
-- **HIGH**: Workflow blocked, multi-agent failure, integration broken
-- **MEDIUM**: Single agent failure, recoverable state issue
+- **CRITICAL**: System corruption, data loss risk, security breach, BUILD/TEST GATE FAILURES (R291)
+- **HIGH**: Workflow blocked, multi-agent failure, integration broken, demo failures
+- **MEDIUM**: Single agent failure, recoverable state issue, partial test failures
 - **LOW**: Transient errors, network hiccups, retry-able operations
+
+**🔴 SPECIAL CLASSIFICATION: R291 BUILD/TEST GATE FAILURES = ALWAYS CRITICAL 🔴**
+- Build failure → CRITICAL → ERROR_RECOVERY
+- Test failure → CRITICAL → ERROR_RECOVERY  
+- Demo failure → CRITICAL → ERROR_RECOVERY
+- No artifacts → CRITICAL → ERROR_RECOVERY
 
 ### 2. State Preservation
 Before any recovery attempt:

@@ -85,7 +85,7 @@ distribute_fix_plan() {
 - R238: Integration Report Evaluation Protocol
 - R209: Effort Directory Isolation Protocol
 - R194: Remote Branch Tracking
-- R240: Integration Fix Execution Protocol
+- R300: Comprehensive Fix Management Protocol
 
 ## Grading Impact
 - **Correct distribution**: +15% compliance bonus

@@ -217,6 +217,80 @@ update_state_integration() {
 }
 
 # ========================================
+# R301 INTEGRATION TRACKING FUNCTIONS
+# ========================================
+
+# Validate current wave integration
+validate_current_wave_integration() {
+    local PHASE=$1
+    local WAVE=$2
+    local BRANCH_TO_USE=$3
+    
+    # Get the CURRENT wave integration branch
+    local CURRENT=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).branch" orchestrator-state.yaml)
+    local CURRENT_STATUS=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).status" orchestrator-state.yaml)
+    
+    # FATAL if not using current
+    if [[ "$BRANCH_TO_USE" != "$CURRENT" ]]; then
+        echo "🔴🔴🔴 SUPREME LAW VIOLATION: R301 - Using deprecated wave integration branch!"
+        echo "  Current: $CURRENT (status: $CURRENT_STATUS)"
+        echo "  Attempted: $BRANCH_TO_USE"
+        echo "  PENALTY: -100% AUTOMATIC FAILURE"
+        return 1
+    fi
+    
+    # FATAL if current is not active
+    if [[ "$CURRENT_STATUS" != "active" ]]; then
+        echo "🔴🔴🔴 FATAL: Current wave integration is not active!"
+        return 1
+    fi
+    
+    echo "✅ Using current wave integration: $CURRENT"
+    return 0
+}
+
+# Validate current phase integration
+validate_current_phase_integration() {
+    local PHASE=$1
+    local BRANCH_TO_USE=$2
+    
+    # Get the CURRENT phase integration branch
+    local CURRENT=$(yq ".current_phase_integration | select(.phase == $PHASE).branch" orchestrator-state.yaml)
+    local CURRENT_STATUS=$(yq ".current_phase_integration | select(.phase == $PHASE).status" orchestrator-state.yaml)
+    
+    # FATAL if not using current
+    if [[ "$BRANCH_TO_USE" != "$CURRENT" ]]; then
+        echo "🔴🔴🔴 SUPREME LAW VIOLATION: R301 - Using deprecated phase integration branch!"
+        echo "  Current: $CURRENT (status: $CURRENT_STATUS)"
+        echo "  Attempted: $BRANCH_TO_USE"
+        echo "  PENALTY: -100% AUTOMATIC FAILURE"
+        return 1
+    fi
+    
+    # FATAL if current is not active
+    if [[ "$CURRENT_STATUS" != "active" ]]; then
+        echo "🔴🔴🔴 FATAL: Current phase integration is not active!"
+        return 1
+    fi
+    
+    echo "✅ Using current phase integration: $CURRENT"
+    return 0
+}
+
+# Get current wave integration branch
+get_current_wave_integration() {
+    local PHASE=$1
+    local WAVE=$2
+    yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).branch" orchestrator-state.yaml
+}
+
+# Get current phase integration branch
+get_current_phase_integration() {
+    local PHASE=$1
+    yq ".current_phase_integration | select(.phase == $PHASE).branch" orchestrator-state.yaml
+}
+
+# ========================================
 # ERROR_RECOVERY STATE UPDATES
 # ========================================
 

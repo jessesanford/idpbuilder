@@ -78,7 +78,7 @@ check_integration_report() {
 - R260: Integration Agent Core Requirements
 - R263: Integration Documentation Requirements
 - R239: Fix Plan Distribution Protocol
-- R240: Integration Fix Execution Protocol
+- R300: Comprehensive Fix Management Protocol
 
 ## Grading Impact
 - **Correct evaluation**: +20% compliance bonus

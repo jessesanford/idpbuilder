@@ -1,3 +1,7 @@
+# ⚠️ DEPRECATED - SUPERSEDED BY R300 ⚠️
+**This rule has been consolidated into R300: Comprehensive Fix Management Protocol**
+**Please use R300 for all fix management requirements**
+
 # 🚨🚨🚨 RULE R292: Integration Fixes MUST Be In Effort Branches
 
 ## Classification
@@ -13,11 +17,14 @@
 ## 🔴🔴🔴 ABSOLUTE REQUIREMENT 🔴🔴🔴
 
 **When integration fails (build, test, or demo):**
-1. ✅ ALWAYS fix in effort/feature branches
-2. ✅ ALWAYS push fixes to effort branches
-3. ✅ ALWAYS re-merge from fixed effort branches
-4. ❌ NEVER edit integration branch directly
-5. ❌ NEVER commit fixes to integration branch
+1. ✅ ALWAYS fix in effort/feature branches FIRST
+2. ✅ ALWAYS push fixes to remote effort branches
+3. ✅ ALWAYS verify fixes exist in effort branches before re-integration
+4. ✅ ALWAYS re-merge from fixed effort branches
+5. ✅ ALWAYS use fresh integration branch from main (per R271)
+6. ❌ NEVER edit integration branch directly
+7. ❌ NEVER commit fixes to integration branch
+8. ❌ NEVER proceed without verifying effort branches have fixes
 
 ## Why This Is Critical
 
@@ -38,6 +45,31 @@ When you fix directly in integration branch:
 - ❌ **Lost traceability** - Can't track fixes to efforts
 - ❌ **No rollback** - Can't revert individual changes
 - ❌ **CD violation** - Breaks continuous delivery principles
+
+## 🔴🔴🔴 CRITICAL WORKFLOW - MUST FOLLOW 🔴🔴🔴
+
+### THE ONLY CORRECT FIX WORKFLOW:
+```
+1. Integration fails (build/test/demo)
+   ↓
+2. Identify which effort caused failure
+   ↓
+3. Switch to that effort's branch
+   ↓
+4. Apply fix in effort branch
+   ↓
+5. Commit and push to effort branch
+   ↓
+6. Verify fix is in remote effort branch
+   ↓
+7. Create NEW integration branch from main
+   ↓
+8. Merge ALL effort branches (including fixed)
+   ↓
+9. Test integration again
+```
+
+**ANY DEVIATION FROM THIS WORKFLOW = AUTOMATIC FAILURE**
 
 ## Implementation Protocol
 

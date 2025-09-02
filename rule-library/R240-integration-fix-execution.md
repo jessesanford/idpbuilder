@@ -1,3 +1,7 @@
+# ⚠️ DEPRECATED - SUPERSEDED BY R300 ⚠️
+**This rule has been consolidated into R300: Comprehensive Fix Management Protocol**
+**Please use R300 for all fix management requirements**
+
 # 🚨🚨🚨 BLOCKING RULE R240: Integration Fix Execution Protocol
 
 ## Criticality: BLOCKING
@@ -24,27 +28,38 @@ The orchestrator MUST NOT:
 ### 2. SW Engineer Fix Execution
 Engineers in FIX_INTEGRATION_ISSUES state MUST:
 ```bash
-# 1. Read fix plan
+# 🔴🔴🔴 CRITICAL: Apply fixes to EFFORT BRANCH per R299 🔴🔴🔴
+# NEVER apply fixes to integration branches - they will be LOST!
+
+# 1. Verify correct location (MANDATORY per R299)
+cd /efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}
+CURRENT_BRANCH=$(git branch --show-current)
+if [[ ! "$CURRENT_BRANCH" =~ ^effort- ]]; then
+    echo "🔴 VIOLATION OF R299: Not on effort branch!"
+    exit 1
+fi
+
+# 2. Read fix plan
 FIX_PLAN=$(cat FIX_PLAN_LOCATION.txt)
 cat "$FIX_PLAN"
 
-# 2. Implement fixes
-- Apply all code changes
-- Install missing dependencies
-- Resolve conflicts
-- Fix build issues
+# 3. Implement fixes IN EFFORT BRANCH
+- Apply all code changes to effort branch
+- Install missing dependencies in effort
+- Resolve conflicts in effort code
+- Fix build issues in effort branch
 
-# 3. Verify fixes
-- Run verification commands
-- Ensure build passes
-- Run tests
+# 4. Verify fixes
+- Run verification commands in effort directory
+- Ensure build passes for effort
+- Run tests in effort context
 
-# 4. Mark completion
+# 5. Mark completion and push to effort branch
 rm FIX_REQUIRED.flag
-echo "Fixes applied: [summary]" > FIX_COMPLETE.flag
+echo "Fixes applied to effort branch: $CURRENT_BRANCH" > FIX_COMPLETE.flag
 git add -A
-git commit -m "fix: Integration issues resolved"
-git push
+git commit -m "fix: Integration issues resolved in effort branch"
+git push origin "$CURRENT_BRANCH"  # Push to EFFORT branch, not integration!
 ```
 
 ### 3. Completion Detection
@@ -99,6 +114,7 @@ fix_integration_directly() {  # NEVER DO THIS!
 ```
 
 ## Related Rules
+- R299: Fix Application to Effort Branches Protocol (SUPREME LAW)
 - R006: Orchestrator Never Writes Code
 - R197: One Agent Per Effort
 - R238: Integration Report Evaluation

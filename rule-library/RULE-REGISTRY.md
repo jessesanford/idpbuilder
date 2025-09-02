@@ -25,6 +25,9 @@
 13. **R236.0.0** - DEPRECATED - Consolidated into R290
 14. **R237.0.0** - DEPRECATED - Consolidated into R290
 15. **R290.0.0** - State Rule Reading and Verification (SUPREME LAW #3 - READ AND VERIFY STATE RULES!)
+16. **R299.0.0** - DEPRECATED - Consolidated into R300
+17. **R300.0.0** - Comprehensive Fix Management Protocol (ALL FIXES TO EFFORT BRANCHES - SUPREME LAW!)
+18. **R220.0.0** - Atomic PR Design Requirement (EVERY EFFORT = ONE ATOMIC PR TO MAIN!)
 
 ## Rule Categories
 
@@ -160,6 +163,9 @@
 ### Code Reviewer Planning Enhancement (R219)
 - R219.0.0 - Code Reviewer Dependency-Aware Effort Planning
 
+### Atomic PR Design (R220)
+- R220.0.0 - Atomic PR Design Requirement (🔴 SUPREME LAW - Every effort = one atomic PR to main)
+
 ### Bash Directory Management (R221)
 - R221.0.0 - Bash Directory Reset Protocol (🔴 SUPREME LAW #2 - CD IN EVERY COMMAND!)
 
@@ -220,9 +226,13 @@
 - R289.0.0 - Orphaned State Detection and Prevention | BLOCKING | State Machine Integrity
 - R290.0.0 - State Rule Reading and Verification (🔴 SUPREME LAW #3)
 - R291.0.0 - Integration Demo Requirement | BLOCKING | Integration Validation
-- R292.0.0 - Integration Fixes in Effort Branches | BLOCKING | Fix Protocol
+- R292.0.0 - DEPRECATED - Consolidated into R300
 - R293.0.0 - Integration Report Distribution Protocol | BLOCKING | Fix Distribution
 - R294.0.0 - Fix Plan Archival Protocol | BLOCKING | Plan Management
 - R295.0.0 - SW Engineer Spawn Clarity Protocol | SUPREME | Agent Communication
 - R296.0.0 - Deprecated Branch Marking Protocol | BLOCKING | Split Management, Integration Safety
 - R297.0.0 - Architect Split Detection Protocol | BLOCKING | Size Compliance, Split Recognition
+- R298.0.0 - DEPRECATED - Consolidated into R300
+- R299.0.0 - DEPRECATED - Consolidated into R300
+- R300.0.0 - Comprehensive Fix Management Protocol | 🔴 SUPREME LAW | Consolidates R299, R240, R292, R298 - ALL fixes to effort branches
+- R301.0.0 - File Naming Collision Prevention | BLOCKING | Prevents file overwrites during parallel operations

@@ -10,60 +10,118 @@
 
 **EVERY integration at EVERY level (Wave, Phase, Project) MUST produce a working build, automated test harness, and demonstrable functionality before marking integration as complete.**
 
-## 🚨🚨🚨 CRITICAL: DEMO MUST PASS BEFORE INTEGRATION COMPLETE 🚨🚨🚨
+## 🔴🔴🔴 SUPREME GATE: BUILD/TEST/DEMO MUST PASS OR ERROR_RECOVERY 🔴🔴🔴
 
-**Integration is NOT complete until:**
-1. ✅ Demo builds successfully (no compilation errors)
-2. ✅ Demo runs without errors (no runtime failures)
-3. ✅ Demo shows features working (actual functionality)
-4. ✅ All tests in demo pass (zero test failures)
+**ABSOLUTE REQUIREMENT - NO EXCEPTIONS:**
+Every integration at EVERY level (effort/wave/phase/project) MUST:
+1. ✅ **BUILD SUCCESSFULLY** - Compilation completes without errors
+2. ✅ **PASS ALL TESTS** - Unit, integration, and E2E tests pass
+3. ✅ **PRODUCE WORKING OUTPUT** - Binary/package/dist created
+4. ✅ **DEMO FUNCTIONALITY** - Features actually work
 
-**If demo fails:**
-- ❌ Integration is BLOCKED
-- ❌ Must fix issues and retry
-- ❌ Cannot proceed until demo passes
-- ❌ Cannot mark integration complete
-- ❌ Cannot transition to next state
+**🚨🚨🚨 MANDATORY ERROR_RECOVERY TRIGGERS 🚨🚨🚨**
 
-**THIS IS A GATE, NOT DOCUMENTATION!** The demo must actually work, not just be documented.
+**If ANY of these fail, you MUST:**
+- 🔴 **IMMEDIATELY STOP** - No proceeding whatsoever
+- 🔴 **TRANSITION TO ERROR_RECOVERY** - This is MANDATORY, not optional
+- 🔴 **DOCUMENT FAILURE** - Record exact error in state file
+- 🔴 **INITIATE FIX PROTOCOL** - Follow R300 for fixes in effort branches
+
+**Specific Failure → ERROR_RECOVERY Mappings:**
+- Build failure (make/npm build/cargo build returns non-zero) → **ERROR_RECOVERY**
+- Test failure (ANY test fails) → **ERROR_RECOVERY**
+- No output produced (missing dist/build/target) → **ERROR_RECOVERY**
+- Demo script fails (exit code != 0) → **ERROR_RECOVERY**
+- Feature doesn't work as expected → **ERROR_RECOVERY**
+
+**VIOLATION = -100% AUTOMATIC FAILURE**
+
+Marking integration complete without passing build/test/demo = **IMMEDIATE DISQUALIFICATION**
+
+**THIS IS AN ABSOLUTE GATE!** The code must build, test, and run successfully or you CANNOT proceed!
 
 ## Requirements
 
-### 1. 🏗️ MANDATORY BUILD VERIFICATION
+### 1. 🏗️ MANDATORY BUILD VERIFICATION WITH ERROR_RECOVERY TRIGGER
 
 **NO INTEGRATION IS COMPLETE WITHOUT A WORKING BUILD:**
 
 ```bash
-# Required for EVERY integration
-verify_build() {
-    echo "🏗️ Running build verification..."
+# MANDATORY VERIFICATION - MUST RUN FOR EVERY INTEGRATION
+verify_integration_gates() {
+    echo "🔴🔴🔴 R291 MANDATORY GATES CHECK 🔴🔴🔴"
+    local FAILED=false
+    local FAILURE_REASON=""
     
-    # 1. Clean build environment
+    # 1. BUILD GATE - MUST PASS OR ERROR_RECOVERY
+    echo "🏗️ [GATE 1] Build Verification..."
     rm -rf dist/ build/ out/ target/
     
-    # 2. Execute build with full logging
-    if npm run build 2>&1 | tee build.log; then
-        echo "✅ Build successful"
+    if make build 2>&1 | tee build.log || \
+       npm run build 2>&1 | tee build.log || \
+       cargo build 2>&1 | tee build.log; then
+        echo "✅ BUILD GATE: PASSED"
     else
-        echo "❌ Build failed - integration incomplete!"
-        exit 1
+        echo "🔴 BUILD GATE: FAILED - MUST ENTER ERROR_RECOVERY"
+        FAILED=true
+        FAILURE_REASON="Build compilation failed"
     fi
     
-    # 3. Verify build artifacts exist
+    # 2. ARTIFACT GATE - MUST EXIST OR ERROR_RECOVERY
+    echo "📦 [GATE 2] Artifact Verification..."
     if [ -d "dist" ] || [ -d "build" ] || [ -d "out" ] || [ -d "target" ]; then
-        echo "✅ Build artifacts created"
+        echo "✅ ARTIFACT GATE: PASSED"
         ls -la dist/ build/ out/ target/ 2>/dev/null | tee artifacts.log
     else
-        echo "❌ No build artifacts found!"
-        exit 1
+        echo "🔴 ARTIFACT GATE: FAILED - MUST ENTER ERROR_RECOVERY"
+        FAILED=true
+        FAILURE_REASON="No build artifacts produced"
     fi
     
-    # 4. Verify executable/runnable
-    if [ -f "dist/index.js" ] || [ -f "build/main" ] || [ -f "target/*.jar" ]; then
-        echo "✅ Executable verified"
+    # 3. TEST GATE - ALL MUST PASS OR ERROR_RECOVERY
+    echo "🧪 [GATE 3] Test Verification..."
+    if make test 2>&1 | tee test.log || \
+       npm test 2>&1 | tee test.log || \
+       cargo test 2>&1 | tee test.log || \
+       pytest 2>&1 | tee test.log; then
+        echo "✅ TEST GATE: PASSED"
     else
-        echo "⚠️ Verify executable manually"
+        echo "🔴 TEST GATE: FAILED - MUST ENTER ERROR_RECOVERY"
+        FAILED=true
+        FAILURE_REASON="Tests failed"
     fi
+    
+    # 4. DEMO GATE - MUST WORK OR ERROR_RECOVERY
+    echo "🎬 [GATE 4] Demo Verification..."
+    if [ -f "./demo-features.sh" ] && ./demo-features.sh; then
+        echo "✅ DEMO GATE: PASSED"
+    else
+        echo "🔴 DEMO GATE: FAILED - MUST ENTER ERROR_RECOVERY"
+        FAILED=true
+        FAILURE_REASON="Demo script failed or missing"
+    fi
+    
+    # FINAL VERDICT - ERROR_RECOVERY IF ANY GATE FAILED
+    if [ "$FAILED" = true ]; then
+        echo "🔴🔴🔴 INTEGRATION GATES FAILED 🔴🔴🔴"
+        echo "FAILURE REASON: $FAILURE_REASON"
+        echo "MANDATORY ACTION: Transition to ERROR_RECOVERY state"
+        
+        # Update state file to ERROR_RECOVERY
+        yq eval ".current_state = \"ERROR_RECOVERY\"" -i orchestrator-state.yaml
+        yq eval ".error_recovery.trigger = \"R291_BUILD_TEST_GATE_FAILURE\"" -i orchestrator-state.yaml
+        yq eval ".error_recovery.reason = \"$FAILURE_REASON\"" -i orchestrator-state.yaml
+        yq eval ".error_recovery.timestamp = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.yaml
+        
+        git add orchestrator-state.yaml
+        git commit -m "error: R291 gate failure - entering ERROR_RECOVERY: $FAILURE_REASON"
+        git push
+        
+        exit 1  # STOP IMMEDIATELY
+    fi
+    
+    echo "✅✅✅ ALL GATES PASSED - Integration may proceed ✅✅✅"
+    return 0
 }
 ```
 
