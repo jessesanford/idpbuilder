@@ -165,11 +165,13 @@ efforts_planned:
     name: "go-containerregistry-image-builder"
     description: "Create single-layer from context directory, generate minimal image config"
     estimated_lines: 600
-    status: "INFRASTRUCTURE_READY"
-    assigned_to: null
+    status: "PLAN_CREATED"
+    assigned_to: "code-reviewer-001"
     branch: "idpbuidler-oci-go-cr/phase2/wave1/go-containerregistry-image-builder"
     working_directory: "efforts/phase2/wave1/go-containerregistry-image-builder"
     base_branch: "idpbuidler-oci-go-cr/phase1-post-fixes-integration-20250901-214153"
+    plan_created_at: "2025-09-02T01:44:52Z"
+    plan_filename: "IMPLEMENTATION-PLAN-20250902-014452.md"
     
   - phase: 2
     wave: 1
@@ -177,11 +179,13 @@ efforts_planned:
     name: "gitea-registry-client"
     description: "Authenticate with Gitea, push image with cert handling"
     estimated_lines: 600
-    status: "INFRASTRUCTURE_READY"
-    assigned_to: null
+    status: "PLAN_CREATED"
+    assigned_to: "code-reviewer-002"
     branch: "idpbuidler-oci-go-cr/phase2/wave1/gitea-registry-client"
     working_directory: "efforts/phase2/wave1/gitea-registry-client"
     base_branch: "idpbuidler-oci-go-cr/phase1-post-fixes-integration-20250901-214153"
+    plan_created_at: "2025-09-02T01:46:19Z"
+    plan_filename: "IMPLEMENTATION-PLAN-20250902-014619.md"
     
   - phase: 2
     wave: 2
