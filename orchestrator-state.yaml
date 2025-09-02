@@ -96,16 +96,25 @@ efforts_completed:
     completed_at: "2025-09-02T07:39:00Z"
     review_status: "PASSED"
     review_notes: "All 3 splits passed review (782+467+160 lines)"
+    split_branches:
+      - "idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-001"
+      - "idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-002"
+      - "idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-003"
+    split_infrastructure_created: true
   - effort_id: "E2.1.2"
     name: "gitea-registry-client"
     phase: 2
     wave: 1
     lines_implemented: 1225
-    split_count: 3
+    split_count: 2
     status: "COMPLETED"
     completed_at: "2025-09-02T07:39:00Z"
     review_status: "PASSED"
-    review_notes: "All 3 splits passed review (568+350+307 lines)"
+    review_notes: "Both splits passed review"
+    split_branches:
+      - "idpbuilder-oci-go-cr/phase2/wave1/gitea-registry-client-split-001"
+      - "idpbuilder-oci-go-cr/phase2/wave1/gitea-registry-client-split-002"
+    split_infrastructure_created: true
   - effort_id: "E1.1.1"
     name: "kind-certificate-extraction"
     phase: 1
