@@ -181,6 +181,22 @@ type FallbackStrategy interface {
 	Execute(ctx context.Context, input *ValidationInput) (*ValidationResult, error)
 }
 
+// CertValidator provides comprehensive X.509 certificate validation
+// Added from fallback-strategies effort
+type CertValidator interface {
+	// ValidateChain verifies the certificate chain against trusted roots
+	ValidateChain(cert *x509.Certificate) error
+	
+	// CheckExpiry checks if certificate is expired or expiring soon
+	CheckExpiry(cert *x509.Certificate) (*time.Duration, error)
+	
+	// VerifyHostname checks if the certificate is valid for the given hostname
+	VerifyHostname(cert *x509.Certificate, hostname string) error
+	
+	// GenerateDiagnostics creates a detailed diagnostic report for the certificate
+	GenerateDiagnostics(cert *x509.Certificate) (*CertDiagnostics, error)
+}
+
 // CertDiagnostics contains comprehensive certificate diagnostic information
 type CertDiagnostics struct {
 	Subject          string
