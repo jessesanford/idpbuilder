@@ -2,11 +2,11 @@
 # Generated: Sun Aug 31 08:24:54 UTC 2025
 
 current_phase: 2
-current_wave: 1
-current_state: WAVE_COMPLETE
+current_wave: 2
+current_state: SPAWN_AGENTS
 previous_state: MONITOR
-transition_time: "2025-09-02T07:45:00Z"
-transition_reason: "All Phase 2 Wave 1 splits complete and passed review"
+transition_time: "2025-09-02T14:30:00Z"
+transition_reason: "E2.2.1 ready for split planning after cleanup"
 
 # Code Reviewer Parallelization Plan
 code_reviewer_parallelization_plan:
@@ -73,6 +73,18 @@ project_info:
 phases_planned: 2
 waves_per_phase: [2, 2]
 
+waves_completed:
+  phase2:
+    wave1:
+      completed_at: "2025-09-02T08:15:00Z"
+      status: "COMPLETE"
+      efforts_count: 2
+      all_reviews_passed: true
+      size_compliant: true
+      integration_branch: "idpbuilder-oci-go-cr/phase2/wave1/integration"
+      architect_review_score: "8.5/10"
+      total_lines: 2634
+
 efforts_completed:
   - effort_id: "E2.1.1"
     name: "go-containerregistry-image-builder"
@@ -125,7 +137,17 @@ efforts_completed:
     review_status: "PASSED"
     review_completed_at: "2025-09-01T12:45:00Z"
     review_notes: "Well-implemented validation pipeline with good test coverage"
-efforts_in_progress: []
+efforts_in_progress:
+  - effort_id: "E2.2.1"
+    name: "cli-commands"
+    phase: 2
+    wave: 2
+    status: "SIZE_VIOLATION"
+    lines_implemented: 1381
+    size_limit_exceeded: true
+    split_required: true
+    implementation_complete: true
+    review_status: "PENDING_SPLIT"
 efforts_planned:
   # Phase 1: Certificate Infrastructure
   - phase: 1
@@ -284,8 +306,14 @@ waves:
   - phase: 2
     wave_number: 1
     name: "Core Build & Push"
-    status: "NOT_STARTED"
+    status: "COMPLETE"
     efforts_count: 2
+    completed_at: "2025-09-02T07:50:00Z"
+    all_reviews_passed: true
+    size_compliant: true
+    integration_branch: "idpbuilder-oci-go-cr/phase2/wave1/integration"
+    architect_review_score: 8.5
+    architect_decision: "PROCEED"
     
   - phase: 2
     wave_number: 2
