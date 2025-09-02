@@ -442,9 +442,10 @@ split_tracking:
   E2.1.1_splits:
     effort_name: "go-containerregistry-image-builder"
     original_lines: 856
-    split_count: 2
-    status: "SPLIT_IN_PROGRESS"
+    split_count: 3
+    status: "SPLIT_IN_PROGRESS_REVISED"
     split_plan_created_at: "2025-09-02T06:40:00Z"
+    split_plan_revised_at: "2025-09-02T07:16:00Z"
     splits:
       - split_id: "Split-001"
         description: "Core Builder Infrastructure"
@@ -458,8 +459,16 @@ split_tracking:
       - split_id: "Split-002"
         description: "Layer and Manifest Management"
         target_lines: 406
-        status: "READY_TO_START"
+        actual_lines: 467
+        status: "COMPLETE_SIZE_EXCEEDED"
+        completed_at: "2025-09-02T07:08:00Z"
         dependencies: ["Split-001"]
+        must_complete_before: ["Split-002b"]
+      - split_id: "Split-002b"
+        description: "Push operations and helpers"
+        target_lines: 166
+        status: "READY_TO_START"
+        dependencies: ["Split-002"]
         must_complete_before: []
     
   E2.1.2_splits:
@@ -482,13 +491,16 @@ split_tracking:
       - split_id: "Split-002"
         description: "Authentication layer"
         target_lines: 350
-        status: "READY_TO_START"
+        actual_lines: 350
+        status: "COMPLETE_REVIEWED_PASSED"
+        completed_at: "2025-09-02T07:12:00Z"
+        review_passed_at: "2025-09-02T07:24:00Z"
         dependencies: ["Split-001"]
         must_complete_before: ["Split-003"]
       - split_id: "Split-003"
         description: "Client implementation"
         target_lines: 330
-        status: "PENDING"
+        status: "READY_TO_START"
         dependencies: ["Split-002"]
         must_complete_before: []
 
