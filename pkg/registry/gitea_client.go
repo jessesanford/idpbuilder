@@ -157,13 +157,10 @@ func (c *GiteaClient) Push(ctx context.Context, image v1.Image, ref string, opts
 	// Parse the reference
 	repo, err := name.ParseReference(ref)
 	if err != nil {
-		return &RegistryError{
-			Type:       ErrorInvalidReference,
-			Registry:   c.baseURL,
-			Operation:  "push",
-			Message:    fmt.Sprintf("invalid reference %s", ref),
-			Underlying: err,
-			Retryable:  false,
+		return &ClientError{
+			Code:    "invalid_reference",
+			Message: fmt.Sprintf("invalid reference %s", ref),
+			Details: map[string]interface{}{"registry": c.baseURL, "operation": "push"},
 		}
 	}
 	
@@ -180,51 +177,28 @@ func (c *GiteaClient) Push(ctx context.Context, image v1.Image, ref string, opts
 		return fmt.Errorf("failed to build remote options: %w", err)
 	}
 	
-	// Add progress reporting if provided
-	if opts.Progress != nil {
-		// Note: go-containerregistry doesn't directly support progress callbacks
-		// This would need custom implementation for detailed progress tracking
-		opts.Progress(0, -1) // Signal start
-	}
-	
-	// Perform push with retries
-	maxRetries := c.maxRetries
-	if opts.MaxRetries > 0 {
-		maxRetries = opts.MaxRetries
-	}
-	
-	retryDelay := c.retryDelay
-	if opts.RetryDelay > 0 {
-		retryDelay = opts.RetryDelay
-	}
-	
-	var lastErr error
-	for attempt := 0; attempt <= maxRetries; attempt++ {
+	// Perform push with basic retry
+	for attempt := 0; attempt <= c.maxRetries; attempt++ {
 		if attempt > 0 {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
-			case <-time.After(retryDelay):
+			case <-time.After(c.retryDelay):
 			}
 		}
 		
 		err := remote.Write(repo, image, remoteOpts...)
 		if err == nil {
-			if opts.Progress != nil {
-				opts.Progress(-1, -1) // Signal completion
-			}
 			return nil
 		}
 		
-		lastErr = c.wrapError("push", err)
-		
-		// Check if error is retryable
-		if regErr, ok := lastErr.(*RegistryError); ok && !regErr.IsRetryable() {
-			break
+		// For auth/access errors, don't retry
+		if strings.Contains(err.Error(), "401") || strings.Contains(err.Error(), "403") {
+			return c.wrapError("push", err)
 		}
 	}
 	
-	return lastErr
+	return c.wrapError("push", fmt.Errorf("push failed after %d attempts", c.maxRetries+1))
 }
 
 // Pull pulls an image from the Gitea registry
@@ -236,13 +210,10 @@ func (c *GiteaClient) Pull(ctx context.Context, ref string, opts PullOptions) (v
 	// Parse the reference
 	repo, err := name.ParseReference(ref)
 	if err != nil {
-		return nil, &RegistryError{
-			Type:       ErrorInvalidReference,
-			Registry:   c.baseURL,
-			Operation:  "pull",
-			Message:    fmt.Sprintf("invalid reference %s", ref),
-			Underlying: err,
-			Retryable:  false,
+		return nil, &ClientError{
+			Code:    "invalid_reference",
+			Message: fmt.Sprintf("invalid reference %s", ref),
+			Details: map[string]interface{}{"registry": c.baseURL, "operation": "pull"},
 		}
 	}
 	
@@ -259,24 +230,13 @@ func (c *GiteaClient) Pull(ctx context.Context, ref string, opts PullOptions) (v
 		return nil, fmt.Errorf("failed to build remote options: %w", err)
 	}
 	
-	// Perform pull with retries
-	maxRetries := c.maxRetries
-	if opts.MaxRetries > 0 {
-		maxRetries = opts.MaxRetries
-	}
-	
-	retryDelay := c.retryDelay
-	if opts.RetryDelay > 0 {
-		retryDelay = opts.RetryDelay
-	}
-	
-	var lastErr error
-	for attempt := 0; attempt <= maxRetries; attempt++ {
+	// Perform pull with basic retry
+	for attempt := 0; attempt <= c.maxRetries; attempt++ {
 		if attempt > 0 {
 			select {
 			case <-ctx.Done():
 				return nil, ctx.Err()
-			case <-time.After(retryDelay):
+			case <-time.After(c.retryDelay):
 			}
 		}
 		
@@ -285,15 +245,13 @@ func (c *GiteaClient) Pull(ctx context.Context, ref string, opts PullOptions) (v
 			return image, nil
 		}
 		
-		lastErr = c.wrapError("pull", err)
-		
-		// Check if error is retryable
-		if regErr, ok := lastErr.(*RegistryError); ok && !regErr.IsRetryable() {
-			break
+		// For auth/access errors, don't retry
+		if strings.Contains(err.Error(), "401") || strings.Contains(err.Error(), "403") {
+			return nil, c.wrapError("pull", err)
 		}
 	}
 	
-	return nil, lastErr
+	return nil, c.wrapError("pull", fmt.Errorf("pull failed after %d attempts", c.maxRetries+1))
 }
 
 // Catalog lists repositories in the Gitea registry
@@ -305,13 +263,10 @@ func (c *GiteaClient) Catalog(ctx context.Context) ([]string, error) {
 	// Parse registry URL
 	registry, err := name.NewRegistry(c.baseURL)
 	if err != nil {
-		return nil, &RegistryError{
-			Type:       ErrorInvalidReference,
-			Registry:   c.baseURL,
-			Operation:  "catalog",
-			Message:    "invalid registry URL",
-			Underlying: err,
-			Retryable:  false,
+		return nil, &ClientError{
+			Code:    "invalid_registry",
+			Message: "invalid registry URL",
+			Details: map[string]interface{}{"registry": c.baseURL, "operation": "catalog"},
 		}
 	}
 	
@@ -339,13 +294,10 @@ func (c *GiteaClient) Tags(ctx context.Context, repository string) ([]string, er
 	// Parse repository reference
 	repo, err := name.NewRepository(repository)
 	if err != nil {
-		return nil, &RegistryError{
-			Type:       ErrorInvalidReference,
-			Registry:   c.baseURL,
-			Operation:  "tags",
-			Message:    fmt.Sprintf("invalid repository %s", repository),
-			Underlying: err,
-			Retryable:  false,
+		return nil, &ClientError{
+			Code:    "invalid_repository",
+			Message: fmt.Sprintf("invalid repository %s", repository),
+			Details: map[string]interface{}{"registry": c.baseURL, "operation": "tags"},
 		}
 	}
 	
@@ -410,24 +362,12 @@ func (c *GiteaClient) buildRemoteOptions(insecureOverride bool, platform *v1.Pla
 	// Add user agent
 	opts = append(opts, remote.WithUserAgent(c.userAgent))
 	
-	// Configure transport based on insecure settings
-	useInsecure := c.insecure || insecureOverride || c.insecureRegistryFlag
-	
-	if useInsecure {
-		// Use Phase 1's transport configuration for insecure mode
-		transportOpt, err := c.trustStore.ConfigureTransport(c.baseURL)
-		if err != nil {
-			return nil, fmt.Errorf("failed to configure insecure transport: %w", err)
-		}
-		opts = append(opts, transportOpt)
-	} else {
-		// Use Phase 1's transport configuration with certificates
-		transportOpt, err := c.trustStore.ConfigureTransport(c.baseURL)
-		if err != nil {
-			return nil, fmt.Errorf("failed to configure secure transport: %w", err)
-		}
-		opts = append(opts, transportOpt)
+	// Configure transport using Phase 1's trust store
+	transportOpt, err := c.trustStore.ConfigureTransport(c.baseURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to configure transport: %w", err)
 	}
+	opts = append(opts, transportOpt)
 	
 	// Add platform if specified
 	if platform != nil {
@@ -437,54 +377,29 @@ func (c *GiteaClient) buildRemoteOptions(insecureOverride bool, platform *v1.Pla
 	return opts, nil
 }
 
-// wrapError wraps an error in a RegistryError with appropriate categorization
+// wrapError wraps an error in a ClientError with simplified categorization
 func (c *GiteaClient) wrapError(operation string, err error) error {
 	if err == nil {
 		return nil
 	}
 	
-	// Determine error type and retryability
-	errorType := ErrorUnknown
-	retryable := true
-	statusCode := 0
-	
 	errStr := strings.ToLower(err.Error())
+	var code string
 	
 	switch {
 	case strings.Contains(errStr, "unauthorized") || strings.Contains(errStr, "401"):
-		errorType = ErrorAuthentication
-		retryable = false
-		statusCode = 401
+		code = "auth_failed"
 	case strings.Contains(errStr, "forbidden") || strings.Contains(errStr, "403"):
-		errorType = ErrorAuthorization
-		retryable = false
-		statusCode = 403
+		code = "access_denied"
 	case strings.Contains(errStr, "not found") || strings.Contains(errStr, "404"):
-		errorType = ErrorNotFound
-		retryable = false
-		statusCode = 404
-	case strings.Contains(errStr, "conflict") || strings.Contains(errStr, "409"):
-		errorType = ErrorConflict
-		retryable = false
-		statusCode = 409
-	case strings.Contains(errStr, "timeout"):
-		errorType = ErrorTimeout
-		retryable = true
-	case strings.Contains(errStr, "certificate") || strings.Contains(errStr, "tls") || strings.Contains(errStr, "x509"):
-		errorType = ErrorCertificate
-		retryable = false
-	case strings.Contains(errStr, "network") || strings.Contains(errStr, "connection"):
-		errorType = ErrorNetwork
-		retryable = true
+		code = "not_found"
+	default:
+		code = "registry_error"
 	}
 	
-	return &RegistryError{
-		Type:       errorType,
-		Registry:   c.baseURL,
-		Operation:  operation,
-		Message:    fmt.Sprintf("%s operation failed on %s", operation, c.baseURL),
-		Underlying: err,
-		Retryable:  retryable,
-		StatusCode: statusCode,
+	return &ClientError{
+		Code:    code,
+		Message: fmt.Sprintf("%s operation failed: %v", operation, err),
+		Details: map[string]interface{}{"registry": c.baseURL, "operation": operation},
 	}
 }
