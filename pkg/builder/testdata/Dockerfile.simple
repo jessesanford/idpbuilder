@@ -1,0 +1,6 @@
+FROM alpine:latest
+WORKDIR /app
+COPY . .
+RUN echo "Simple build test"
+EXPOSE 8080
+CMD ["echo", "Hello World"]
