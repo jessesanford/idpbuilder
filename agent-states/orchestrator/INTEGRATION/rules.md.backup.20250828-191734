@@ -1,0 +1,323 @@
+# Orchestrator - INTEGRATION State Rules
+
+## ⚠️⚠️⚠️ MANDATORY RULE READING AND ACKNOWLEDGMENT ⚠️⚠️⚠️
+
+**YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. YOUR READ TOOL CALLS ARE BEING MONITORED.**
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+1. Fake acknowledgment without reading
+2. Bulk acknowledgment
+3. Reading from memory
+
+### ✅ CORRECT PATTERN:
+1. READ each rule file
+2. Acknowledge individually with rule number and description
+
+## 📋 PRIMARY DIRECTIVES FOR INTEGRATION STATE
+
+### 🚨🚨🚨 R250 - Integration Isolation Requirement
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R250-integration-isolation-requirement.md`
+**Criticality**: BLOCKING - Integration must use separate target clone
+**Summary**: Integration must happen under /efforts/ directory structure
+
+### 🚨🚨🚨 R034 - Integration Requirements
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R034-integration-requirements.md`
+**Criticality**: BLOCKING - Required for wave approval
+**Summary**: Complete integration protocol with testing and validation
+
+### 🚨🚨🚨 R014 - Branch Naming Convention
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R014-branch-naming-convention.md`
+**Criticality**: BLOCKING - Mandatory project prefix for all branches
+**Summary**: Use project prefix for all integration branches
+
+### 🚨🚨🚨 R271 - Mandatory Production-Ready Validation
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R271-mandatory-production-ready-validation.md`
+**Criticality**: BLOCKING - Full checkouts required for integration
+**Summary**: Integration must use full repository clones, no sparse checkouts
+
+### 🚨🚨🚨 R258 - Mandatory Wave Review Report
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R258-mandatory-wave-review-report.md`
+**Criticality**: BLOCKING - Required for wave completion
+**Summary**: Architect must create wave review report after integration
+
+### 🚨🚨🚨 R269 - Code Reviewer Merge Plan No Execution
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R269-code-reviewer-merge-plan-no-execution.md`
+**Criticality**: BLOCKING - Code Reviewer only plans, never executes
+**Summary**: Code Reviewer creates plan, Integration Agent executes
+
+### 🚨🚨🚨 R260 - Integration Agent Core Requirements
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R260-integration-agent-core-requirements.md`
+**Criticality**: BLOCKING - Integration Agent must acknowledge INTEGRATION_DIR
+**Summary**: Integration Agent must set and use INTEGRATION_DIR variable
+
+## 🚨 INTEGRATION IS A VERB - SETUP INTEGRATION INFRASTRUCTURE NOW! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING INTEGRATION
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Create integration working directory NOW
+2. Create integration branch immediately
+3. Push integration branch to remote
+4. CD into integration directory
+5. Spawn Code Reviewer for MERGE PLAN creation
+6. After MERGE PLAN ready, spawn Integration Agent for execution
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in INTEGRATION" [stops]
+- ❌ "Successfully entered INTEGRATION state" [waits]
+- ❌ "Ready to start integrating" [pauses]
+- ❌ "I'm in INTEGRATION state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering INTEGRATION, creating integration infrastructure NOW..."
+- ✅ "START INTEGRATION SETUP, creating integration directory and branch..."
+- ✅ "INTEGRATION: Spawning Code Reviewer for merge plan creation..."
+
+## State Context
+You are setting up integration infrastructure and coordinating the integration process. The actual merge planning is done by Code Reviewer, and merge execution is done by Integration Agent. Your role is infrastructure setup and coordination only.
+
+## 🔴🔴🔴 CRITICAL: INTEGRATION LOCATION 🔴🔴🔴
+
+### 🚨🚨🚨 RULE R250 - Integration Isolation Requirements
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R250-integration-isolation-requirement.md`
+**ALSO SEE**: `$CLAUDE_PROJECT_DIR/agent-states/orchestrator/INTEGRATION/RULE-R250-INTEGRATION-ISOLATION.md`
+
+### 🚨🚨🚨 RULE R034 - Integration Protocol Requirements
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R034-integration-requirements.md`
+
+## Branch Creation Strategy
+
+### 🚨🚨🚨 RULE R014 - Branch Naming Convention
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R014-branch-naming-convention.md`
+**NOTE**: Use utilities/branch-naming-helpers.sh for automatic prefix handling
+
+## Integration Infrastructure Setup
+
+### 🚨🚨🚨 R271 Compliance - Full Repository Checkouts Required
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R271-mandatory-production-ready-validation.md`
+
+```bash
+# 🔴 CRITICAL: Start from SF instance directory
+SF_INSTANCE_DIR=$(pwd)  # Save SF instance location
+
+# 0. Source branch naming helpers and get project prefix
+source "$SF_INSTANCE_DIR/utilities/branch-naming-helpers.sh"
+PROJECT_PREFIX=$(yq '.branch_naming.project_prefix' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+
+# THINK about base branch for integration
+echo "🧠 THINKING: Integration needs clean base from main branch"
+BASE_BRANCH=$(yq '.target_repository.base_branch' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
+    BASE_BRANCH="main"  # Default to main
+fi
+echo "📌 Decision: Using '$BASE_BRANCH' as integration base (clean starting point)"
+
+# 1. Create integration workspace under /efforts/ directory structure
+WAVE_DIR="/efforts/phase${X}/wave${Y}"
+INTEGRATION_DIR="${WAVE_DIR}/integration-workspace"
+echo "Creating integration workspace at: $INTEGRATION_DIR"
+mkdir -p "$(dirname "$INTEGRATION_DIR")"
+
+# 2. SINGLE-BRANCH FULL clone of TARGET repository (R271 Supreme Law)
+echo "📦 Creating FULL integration clone from branch: $BASE_BRANCH"
+TARGET_REPO_URL=$(yq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+
+git clone \
+    --single-branch \
+    --branch "$BASE_BRANCH" \
+    "$TARGET_REPO_URL" \
+    "$INTEGRATION_DIR"
+
+if [ $? -ne 0 ]; then
+    echo "❌ Clone failed! Check if base branch '$BASE_BRANCH' exists"
+    exit 1
+fi
+
+cd "$INTEGRATION_DIR"
+
+# Verify FULL checkout (R271 compliance check)
+if [ -f ".git/info/sparse-checkout" ]; then
+    echo "🔴🔴🔴 SUPREME LAW VIOLATION: Sparse checkout detected in integration!"
+    exit 1
+fi
+echo "✅ Full codebase available for integration from $BASE_BRANCH"
+
+# 3. NOW we're in TARGET repo - create integration branch WITH PREFIX
+INTEGRATION_BRANCH=$(get_wave_integration_branch_name "$X" "$Y")
+echo "Creating integration branch: $INTEGRATION_BRANCH"
+git checkout -b "$INTEGRATION_BRANCH"
+
+# 4. Push integration branch to establish remote tracking
+git push -u origin "$INTEGRATION_BRANCH"
+
+# 5. Spawn Code Reviewer for MERGE PLAN creation
+cat > /tmp/code-reviewer-merge-plan-task.md << 'EOF'
+Create MERGE PLAN for Phase ${X} Wave ${Y} integration.
+
+CRITICAL REQUIREMENTS:
+1. Use ONLY original effort branches - NO integration branches!
+2. Analyze branch bases to determine correct merge order
+3. Exclude 'too-large' branches, include only splits
+4. Create WAVE-MERGE-PLAN.md with exact merge instructions
+5. DO NOT execute merges - only plan them!
+
+Integration Directory: ${INTEGRATION_DIR}
+Target Branch: ${INTEGRATION_BRANCH}
+EOF
+
+# Spawn Code Reviewer
+/spawn code-reviewer WAVE_MERGE_PLANNING "$(cat /tmp/code-reviewer-merge-plan-task.md)"
+
+# 6. Transition to waiting for merge plan
+echo "✅ Integration infrastructure setup complete"
+echo "📋 Waiting for Code Reviewer to create MERGE PLAN..."
+# Transition to WAITING_FOR_MERGE_PLAN state
+```
+
+## Spawning Code Reviewer for Merge Plan
+
+```bash
+# Setup integration infrastructure first
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
+
+# Ensure we're in integration directory
+cd "$INTEGRATION_DIR"
+
+# Create and push integration branch
+git checkout -b "phase${PHASE}-wave${WAVE}-integration-$(date +%Y%m%d-%H%M%S)"
+git push -u origin HEAD
+
+# Spawn Code Reviewer for MERGE PLAN
+Task: subagent_type="code-reviewer" \
+      prompt="Create MERGE PLAN for Phase ${PHASE} Wave ${WAVE} integration.
+      
+      CRITICAL REQUIREMENTS:
+      1. Use ONLY original effort branches - NO integration branches!
+      2. Analyze branch bases to determine correct merge order
+      3. Exclude 'too-large' branches, include only splits
+      4. Create WAVE-MERGE-PLAN.md with exact merge instructions
+      5. DO NOT execute merges - only plan them!
+      
+      Integration Directory: ${INTEGRATION_DIR}
+      Target Branch: $(git branch --show-current)" \
+      description="Create Wave ${WAVE} Merge Plan"
+```
+
+## Spawning Integration Agent for Execution
+
+```bash
+# After Code Reviewer creates MERGE PLAN
+cd "$INTEGRATION_DIR"
+
+# Verify merge plan exists
+if [ ! -f "WAVE-MERGE-PLAN.md" ]; then
+    echo "❌ Cannot spawn Integration Agent - no merge plan!"
+    exit 1
+fi
+
+# Spawn Integration Agent
+Task: subagent_type="integration-agent" \
+      prompt="Execute integration merges for Phase ${PHASE} Wave ${WAVE}.
+      
+      CRITICAL REQUIREMENTS:
+      1. You are in INTEGRATION_DIR: ${INTEGRATION_DIR}
+      2. Acknowledge and set INTEGRATION_DIR variable
+      3. Read and follow WAVE-MERGE-PLAN.md EXACTLY
+      4. Execute merges in specified order
+      5. Handle conflicts as directed in plan
+      6. Run tests after each merge
+      
+      Your working directory has been set to: ${INTEGRATION_DIR}
+      The merge plan is: WAVE-MERGE-PLAN.md" \
+      description="Execute Wave ${WAVE} Integration"
+```
+
+## Integration Validation
+
+```yaml
+# Update orchestrator-state.yaml
+integration_records:
+  phase{X}_wave{Y}:
+    started_at: "2025-08-23T15:00:00Z"
+    efforts_included:
+      - "effort1-api-types"
+      - "effort2-controller"
+      - "effort3-webhooks"
+    conflicts_detected: 0
+    resolution_time: "0s"
+    test_results:
+      unit_tests: "PASS"
+      integration_tests: "PASS"
+      build: "PASS"
+    final_size_check: "742 lines"
+    completed_at: "2025-08-23T15:05:22Z"
+    grade: "PASS"
+```
+
+## Phase Transition Protocol
+
+### ⚠️⚠️⚠️ RULE R020 - State Transition Requirements
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R020-state-transitions.md`
+
+## Size Validation During Integration
+
+```python
+def validate_integration_size(branch_name):
+    """Validate size limits maintained during integration"""
+    
+    result = subprocess.run([
+        '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+        '-c', branch_name
+    ], capture_output=True, text=True)
+    
+    total_lines = int(result.stdout.split()[-1])
+    
+    # Integration should not exceed sum of constituent efforts
+    # with reasonable overhead for integration code
+    max_allowed = calculate_effort_sum() * 1.05  # 5% overhead
+    
+    if total_lines > max_allowed:
+        return {
+            'valid': False,
+            'total_lines': total_lines,
+            'max_allowed': max_allowed,
+            'action': 'SPLIT_INTEGRATION'
+        }
+    
+    return {
+        'valid': True,
+        'total_lines': total_lines,
+        'grade': 'PASS'
+    }
+```
+
+## Integration Failure Recovery
+
+If integration fails:
+1. Stop all integration work
+2. Transition to ERROR_RECOVERY state
+3. Analyze failure cause
+4. Create recovery plan
+5. Execute fixes before retrying
+
+## State Transitions
+
+From INTEGRATION state:
+- **SETUP_COMPLETE** → SPAWN_CODE_REVIEWER_MERGE_PLAN
+- **MERGE_PLAN_READY** → SPAWN_INTEGRATION_AGENT  
+- **INTEGRATION_COMPLETE** → WAVE_REVIEW (R258: Architect must create wave review report)
+- **FAILURE** → ERROR_RECOVERY
+
+New intermediate states:
+- **SPAWN_CODE_REVIEWER_MERGE_PLAN** - Spawning Code Reviewer for merge planning
+- **WAITING_FOR_MERGE_PLAN** - Waiting for Code Reviewer to complete plan
+- **SPAWN_INTEGRATION_AGENT** - Spawning Integration Agent for execution
+- **MONITORING_INTEGRATION** - Monitoring Integration Agent progress
+
+**IMPORTANT**: The architect MUST create a wave review report (R258) with one of these decisions:
+- PROCEED_NEXT_WAVE - Wave approved, start next wave
+- PROCEED_PHASE_ASSESSMENT - Last wave complete, trigger phase assessment
+- CHANGES_REQUIRED - Fixes needed before progression
+- WAVE_FAILED - Major issues, cannot proceed

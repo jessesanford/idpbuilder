@@ -1,0 +1,30 @@
+# Code Reviewer TODOs - Trigger: SPLIT_PLANNING_COMPLETE
+# State: SPLIT_PLANNING
+# Effort: go-containerregistry-image-builder
+# Timestamp: 2025-09-02T07:21:00Z
+
+## Completed Tasks
+- [x] Review Split-002 completion status and files
+- [x] Analyze remaining work for Split-002b
+- [x] Create revised SPLIT-PLAN.md with Split-002b
+- [x] Create split-002b directory structure
+- [x] Create IMPLEMENTATION-PLAN.md for Split-002b
+- [x] Update SPLIT-PLAN-SUMMARY.md
+- [x] Save and commit TODO state per R287
+
+## Split Planning Summary
+- Split-001: COMPLETE (782 lines)
+- Split-002: COMPLETE (467 lines, exceeded 406 target)
+- Split-002b: PLANNED (~166 lines for push.go and helpers.go)
+
+## Created Documents
+1. SPLIT-PLAN-REVISED-20250902-071600.md
+2. split-002b/IMPLEMENTATION-PLAN.md
+3. split-002b/work-log.md
+4. SPLIT-PLAN-SUMMARY-REVISED.md
+
+## Next Steps for Orchestrator
+1. Review and merge Split-002
+2. Setup Split-002b infrastructure
+3. Spawn SW Engineer for Split-002b implementation
+4. Ensure sequential implementation (no parallelization)

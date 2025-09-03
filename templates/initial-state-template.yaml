@@ -1,0 +1,107 @@
+# COMPLETE INITIAL STATE FILE TEMPLATE
+# R281: MUST include ALL phases, waves, and efforts from implementation plan
+# This template shows the REQUIRED structure - all items must be populated
+
+current_phase: 1
+current_wave: 1
+current_state: PLANNING
+last_update: "YYYY-MM-DD HH:MM:SS"
+todos_saved: false
+state_history: []
+
+# ALL PHASES FROM IMPLEMENTATION PLAN MUST BE HERE
+phases:
+  - phase_id: 1
+    phase_name: "[EXACT NAME FROM PLAN]"  # e.g., "Foundation & Architecture Phase"
+    status: pending  # pending|in_progress|completed
+    start_time: null
+    end_time: null
+    architect_review_status: null
+    integration_branch: null
+    
+    # ALL WAVES FOR THIS PHASE MUST BE HERE
+    waves:
+      - wave_id: 1
+        wave_name: "[EXACT NAME FROM PLAN]"  # e.g., "Core Infrastructure Wave"
+        status: pending  # pending|in_progress|completed
+        start_time: null
+        end_time: null
+        integration_branch: null
+        architect_review_status: null
+        
+        # ALL EFFORTS FOR THIS WAVE MUST BE HERE
+        efforts:
+          - effort_id: 1
+            effort_name: "[EXACT NAME FROM PLAN]"  # e.g., "Setup CI/CD Pipeline"
+            assigned_agent: null  # Will be populated when agent spawned
+            branch_name: null  # Will be populated when work starts
+            status: pending  # pending|assigned|in_progress|completed|needs_split
+            start_time: null
+            end_time: null
+            working_copy: null  # Which worktree/directory
+            
+            # Metrics for tracking
+            metrics:
+              planned_lines: 0  # From effort plan
+              actual_lines: 0  # From line-counter.sh
+              review_cycles: 0  # Number of review-fix cycles
+              split_count: 0  # If effort was split
+              test_status: null  # pass|fail|not_run
+              
+            # Review tracking
+            review:
+              reviewer_agent: null
+              review_status: null  # pending|in_progress|approved|needs_fixes
+              issues_found: []
+              fixes_applied: []
+              
+            # Split tracking (if needed)
+            splits: []
+            
+          - effort_id: 2
+            effort_name: "[NEXT EFFORT FROM PLAN]"
+            # ... same structure for EVERY effort
+            
+      - wave_id: 2
+        wave_name: "[NEXT WAVE FROM PLAN]"
+        # ... same structure with ALL efforts
+        
+  - phase_id: 2
+    phase_name: "[NEXT PHASE FROM PLAN]"
+    # ... same structure with ALL waves and efforts
+
+# Metrics summary (updated as work progresses)
+metrics:
+  total_phases: 0  # MUST match plan count
+  total_waves: 0  # MUST match plan count  
+  total_efforts: 0  # MUST match plan count
+  completed_phases: 0
+  completed_waves: 0
+  completed_efforts: 0
+  total_lines_written: 0
+  total_review_cycles: 0
+  total_splits: 0
+  
+# Error tracking
+errors:
+  count: 0
+  last_error: null
+  recovery_attempts: 0
+  
+# Validation (R254 requirement)
+validation:
+  plan_phases_count: 0  # From parsing plan
+  plan_waves_count: 0  # From parsing plan
+  plan_efforts_count: 0  # From parsing plan
+  state_phases_count: 0  # From this file
+  state_waves_count: 0  # From this file
+  state_efforts_count: 0  # From this file
+  is_complete: false  # Must be true before leaving INIT
+
+# NOTES:
+# 1. This template MUST be populated with ALL items from PROJECT-IMPLEMENTATION-PLAN.md
+# 2. No placeholders can be left empty - use exact names from plan
+# 3. Validation script will verify completeness:
+#    bash utilities/validate-state-completeness.sh PROJECT-IMPLEMENTATION-PLAN.md orchestrator-state.yaml
+# 4. Incomplete state files cause -100% IMMEDIATE FAILURE (R281)
+# 5. Every phase, wave, and effort MUST have complete structure even if values are null/pending

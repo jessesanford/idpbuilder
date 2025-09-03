@@ -1,0 +1,476 @@
+# Code Reviewer - EFFORT_PLANNING State Rules
+
+## State Context
+You are planning the implementation strategy for a specific effort, creating detailed technical specifications and validation requirements.
+
+---
+### ℹ️ RULE R109.0.0 - PLANNING Rules
+**Source:** rule-library/RULE-REGISTRY.md#R109
+**Criticality:** INFO - Best practice
+
+EFFORT PLANNING PROTOCOL:
+1. Analyze effort requirements and scope
+2. Create comprehensive implementation plan
+3. Define test coverage requirements
+4. Establish size compliance strategy
+5. Create validation checkpoints
+6. Generate work log template
+---
+
+## KCP/Kubernetes Pattern Compliance
+
+---
+### ℹ️ RULE R037.0.0 - Pattern Compliance
+**Source:** rule-library/RULE-REGISTRY.md#R037
+**Criticality:** INFO - Best practice
+
+KCP SPECIFIC REQUIREMENTS:
+1. Multi-tenancy by design (logical clusters)
+2. APIExport integration patterns
+3. Virtual workspace compliance
+4. Resource quotas and permissions
+5. Syncer pattern compatibility
+6. Cross-workspace coordination
+---
+
+```go
+// Example: KCP Multi-tenant Controller Pattern
+type MultiTenantController struct {
+    // Required: Logical cluster awareness
+    client.Client
+    LogicalCluster logicalcluster.Name
+    
+    // Required: API Export integration
+    APIExportClient apiexportclient.Interface
+    
+    // Required: Cross-workspace coordination
+    WorkspaceIndexer cache.Indexer
+    
+    // Optional: Resource quotas
+    ResourceQuotaLister resourcequotalister.ResourceQuotaLister
+}
+
+func (c *MultiTenantController) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+    // MANDATORY: Validate logical cluster context
+    if c.LogicalCluster.Empty() {
+        return ctrl.Result{}, fmt.Errorf("logical cluster context required")
+    }
+    
+    // MANDATORY: Check workspace permissions
+    if !c.hasWorkspaceAccess(ctx, req.NamespacedName) {
+        return ctrl.Result{}, nil // Silent skip for unauthorized workspaces
+    }
+    
+    // Implementation continues...
+    return ctrl.Result{}, nil
+}
+```
+
+## Implementation Plan Creation
+
+---
+### ℹ️ RULE R054.0.0 - Implementation Plan Creation
+**Source:** rule-library/RULE-REGISTRY.md#R054
+**Criticality:** INFO - Best practice
+
+PLAN COMPONENTS:
+1. Technical Architecture Overview
+2. File Structure and Organization
+3. API Design and Interfaces
+4. Implementation Sequence
+5. Testing Strategy
+6. Integration Points
+7. Risk Assessment
+8. Size Estimation and Management
+---
+
+```python
+def create_implementation_plan(effort_requirements):
+    """Create comprehensive implementation plan"""
+    
+    plan = {
+        'effort_id': effort_requirements['id'],
+        'phase': effort_requirements['phase'],
+        'wave': effort_requirements['wave'],
+        'created_at': datetime.now().isoformat(),
+        'created_by': 'code-reviewer',
+        
+        'scope_analysis': analyze_effort_scope(effort_requirements),
+        'architecture': design_technical_architecture(effort_requirements),
+        'implementation_sequence': create_implementation_sequence(effort_requirements),
+        'testing_strategy': design_testing_strategy(effort_requirements),
+        'size_management': plan_size_management_strategy(effort_requirements),
+        'integration_points': identify_integration_points(effort_requirements),
+        'risk_assessment': assess_implementation_risks(effort_requirements)
+    }
+    
+    # Validate plan completeness
+    validate_plan_completeness(plan)
+    
+    return plan
+
+def analyze_effort_scope(requirements):
+    """Analyze and bound the effort scope"""
+    
+    scope = {
+        'primary_objectives': requirements.get('objectives', []),
+        'deliverables': requirements.get('deliverables', []),
+        'dependencies': requirements.get('dependencies', []),
+        'constraints': requirements.get('constraints', [])
+    }
+    
+    # KCP-specific scope analysis
+    kcp_considerations = {
+        'logical_cluster_impact': assess_logical_cluster_impact(requirements),
+        'api_export_requirements': analyze_api_export_needs(requirements),
+        'multi_tenancy_implications': evaluate_multi_tenancy_impact(requirements),
+        'syncer_compatibility': check_syncer_compatibility(requirements)
+    }
+    
+    scope['kcp_specific'] = kcp_considerations
+    
+    return scope
+```
+
+## Test Coverage Strategy
+
+---
+### 🚨🚨 RULE R032.0.0 - Test Coverage Requirements
+**Source:** rule-library/RULE-REGISTRY.md#R032
+**Criticality:** MANDATORY - Required for approval
+
+MANDATORY COVERAGE LEVELS:
+- Unit Tests: 90% line coverage minimum
+- Integration Tests: All API endpoints
+- Multi-tenant Tests: Cross-workspace scenarios
+- Performance Tests: Resource usage validation
+- End-to-End Tests: Critical user workflows
+---
+
+```go
+// Example: Test Coverage Plan Template
+package testplan
+
+type TestCoveragePlan struct {
+    // Unit Test Coverage
+    UnitTests []UnitTestSpec `yaml:"unit_tests"`
+    
+    // Integration Test Coverage  
+    IntegrationTests []IntegrationTestSpec `yaml:"integration_tests"`
+    
+    // KCP-Specific Test Coverage
+    MultiTenancyTests []MultiTenancyTestSpec `yaml:"multi_tenancy_tests"`
+    
+    // Performance Test Coverage
+    PerformanceTests []PerformanceTestSpec `yaml:"performance_tests"`
+}
+
+type UnitTestSpec struct {
+    Package        string   `yaml:"package"`
+    Functions      []string `yaml:"functions"`
+    TargetCoverage int      `yaml:"target_coverage"` // Minimum 90%
+    TestFiles      []string `yaml:"test_files"`
+}
+
+type MultiTenancyTestSpec struct {
+    Scenario       string `yaml:"scenario"`
+    LogicalCluster string `yaml:"logical_cluster"`
+    WorkspaceSetup string `yaml:"workspace_setup"`
+    ExpectedBehavior string `yaml:"expected_behavior"`
+}
+```
+
+## Size Compliance Strategy
+
+---
+### 🚨 RULE R007.0.0 - Size Limit Enforcement
+**Source:** rule-library/RULE-REGISTRY.md#R007
+**Criticality:** CRITICAL - Major impact on grading
+
+SIZE MANAGEMENT STRATEGY:
+1. Estimate total implementation size
+2. Plan modular implementation if >800 lines
+3. Define split boundaries if splitting needed
+4. Create size monitoring checkpoints
+5. Plan progressive implementation approach
+---
+
+```python
+def plan_size_management_strategy(effort_requirements):
+    """Plan strategy for staying within size limits"""
+    
+    # Estimate implementation size
+    size_estimate = estimate_implementation_size(effort_requirements)
+    
+    strategy = {
+        'estimated_total_lines': size_estimate['total_lines'],
+        'estimated_by_component': size_estimate['by_component'],
+        'size_risk_level': determine_size_risk_level(size_estimate['total_lines']),
+        'monitoring_strategy': create_size_monitoring_strategy(),
+        'mitigation_plan': create_size_mitigation_plan(size_estimate)
+    }
+    
+    # If estimate exceeds 800 lines, plan splits
+    if size_estimate['total_lines'] > 800:
+        strategy['split_strategy'] = plan_effort_splits(effort_requirements, size_estimate)
+        strategy['requires_splitting'] = True
+    else:
+        strategy['requires_splitting'] = False
+        strategy['progressive_approach'] = plan_progressive_implementation(size_estimate)
+    
+    return strategy
+
+def estimate_implementation_size(requirements):
+    """Estimate implementation size by component"""
+    
+    # Base estimation factors for KCP/Kubernetes components
+    size_factors = {
+        'api_types': {'lines_per_type': 50, 'base_overhead': 100},
+        'controllers': {'lines_per_controller': 200, 'reconcile_overhead': 150},
+        'webhooks': {'lines_per_webhook': 120, 'validation_overhead': 80},
+        'client_code': {'lines_per_client': 80, 'interface_overhead': 50},
+        'tests': {'test_to_impl_ratio': 1.5, 'setup_overhead': 100}
+    }
+    
+    components = requirements.get('components', {})
+    estimates = {}
+    
+    for component_type, count in components.items():
+        if component_type in size_factors:
+            factor = size_factors[component_type]
+            if 'lines_per_' in str(factor):
+                key = next(k for k in factor.keys() if k.startswith('lines_per_'))
+                base_lines = factor[key] * count
+                overhead_key = next(k for k in factor.keys() if k.endswith('_overhead'))
+                overhead = factor[overhead_key]
+                estimates[component_type] = base_lines + overhead
+    
+    total_estimate = sum(estimates.values())
+    
+    return {
+        'total_lines': total_estimate,
+        'by_component': estimates,
+        'confidence_level': calculate_estimate_confidence(requirements)
+    }
+```
+
+## File Structure Planning
+
+```yaml
+# Implementation Plan Template
+implementation_plan:
+  effort_id: "phase1-wave2-effort3-webhooks"
+  created_at: "2025-08-23T18:00:00Z"
+  
+  scope_analysis:
+    objectives:
+      - "Implement admission webhooks for API validation"
+      - "Add mutating webhooks for resource defaults"
+      - "Integrate with KCP multi-tenancy model"
+    
+    deliverables:
+      - "Validating admission webhook server"
+      - "Mutating admission webhook server" 
+      - "Webhook configuration manifests"
+      - "Multi-tenant webhook routing logic"
+      - "Comprehensive test suite"
+    
+    kcp_considerations:
+      logical_cluster_impact: "HIGH"
+      api_export_integration: "REQUIRED"
+      multi_tenancy_support: "CRITICAL"
+  
+  file_structure:
+    pkg/webhooks/:
+      - admission/
+        - validator.go         # ~150 lines
+        - mutator.go          # ~120 lines
+        - types.go            # ~80 lines
+      - server/
+        - server.go           # ~200 lines
+        - routing.go          # ~100 lines (KCP-specific)
+      - config/
+        - configuration.go    # ~70 lines
+    
+    config/webhooks/:
+      - validating-webhook.yaml # ~30 lines
+      - mutating-webhook.yaml   # ~30 lines
+      
+    test/webhooks/:
+      - admission_test.go       # ~250 lines
+      - server_test.go          # ~180 lines
+      - integration_test.go     # ~200 lines
+  
+  estimated_size: 1410  # EXCEEDS LIMIT - Split Required
+  
+  split_strategy:
+    split_1: "Core webhook server and routing (580 lines)"
+    split_2: "Admission webhook logic (400 lines)" 
+    split_3: "Integration tests and configs (430 lines)"
+  
+  implementation_sequence:
+    phase_1:
+      - "Set up webhook server framework"
+      - "Implement basic routing logic"
+      - "Add KCP logical cluster awareness"
+    
+    phase_2:
+      - "Implement validating admission webhooks"
+      - "Add webhook configuration loading"
+      - "Create unit tests"
+    
+    phase_3:
+      - "Implement mutating admission webhooks"
+      - "Add resource defaulting logic"  
+      - "Extend test coverage"
+      
+    phase_4:
+      - "Integration testing"
+      - "Multi-tenant scenario testing"
+      - "Performance validation"
+  
+  testing_strategy:
+    unit_tests:
+      target_coverage: 90
+      packages:
+        - pkg/webhooks/admission
+        - pkg/webhooks/server
+        - pkg/webhooks/config
+        
+    integration_tests:
+      scenarios:
+        - "Single logical cluster webhook routing"
+        - "Multi-tenant webhook isolation"
+        - "APIExport webhook integration"
+        - "Resource quota enforcement via webhooks"
+    
+    performance_tests:
+      metrics:
+        - "Webhook response latency <100ms"
+        - "Memory usage <50MB per webhook server"
+        - "CPU usage <10% under normal load"
+  
+  risk_assessment:
+    high_risks:
+      - "KCP logical cluster routing complexity"
+      - "Multi-tenant isolation requirements"
+      - "Webhook server performance under load"
+    
+    mitigation_strategies:
+      - "Implement comprehensive logging for debugging"
+      - "Create extensive multi-tenant test scenarios"
+      - "Use performance profiling during development"
+  
+  validation_checkpoints:
+    - checkpoint: "Core server implementation complete"
+      validation: "Basic webhook server starts and responds"
+      
+    - checkpoint: "Admission logic complete"  
+      validation: "All webhook validations working correctly"
+      
+    - checkpoint: "Multi-tenancy integration complete"
+      validation: "Proper isolation between logical clusters"
+      
+    - checkpoint: "Test coverage complete"
+      validation: "90% unit test coverage achieved"
+```
+
+## Work Log Template Creation
+
+---
+### ℹ️ RULE R040.0.0 - Documentation Requirements
+**Source:** rule-library/RULE-REGISTRY.md#R040
+**Criticality:** INFO - Best practice
+
+WORK LOG REQUIREMENTS:
+1. Daily progress tracking
+2. Size measurement recordings
+3. Test coverage progress
+4. Issue and blocker documentation
+5. Decision rationale records
+6. Review preparation notes
+---
+
+## Template Usage Requirements
+
+---
+### 🚨🚨 RULE R166.0.0 - Effort Planning Template Usage
+**Source:** rule-library/RULE-REGISTRY.md#R166
+**Criticality:** MANDATORY - Required for approval
+
+MANDATORY TEMPLATE USAGE:
+
+When creating effort plans, you MUST:
+
+1. Copy Effort Planning Template:
+```bash
+cp templates/EFFORT-PLANNING-TEMPLATE.md \
+efforts/phase[N]/wave[N]/effort[N]/IMPLEMENTATION-PLAN.md
+```
+
+2. Copy Work Log Template:
+```bash
+cp templates/WORK-LOG-TEMPLATE.md \
+efforts/phase[N]/wave[N]/effort[N]/work-log.md
+```
+
+3. Fill ALL Sections:
+- Replace ALL [PLACEHOLDERS]
+- Complete size estimates
+- Define file structure
+- Specify test requirements
+- Plan split contingency
+
+4. Validate Completeness:
+- Every section has content
+- Size estimate ≤800 lines
+- Split plan if >700 lines
+- Test coverage ≥90%
+- Review checklist complete
+---
+
+## Creating Implementation Plan from Template
+
+---
+### ℹ️ RULE R167.0.0 - Implementation Plan Creation
+**Source:** rule-library/RULE-REGISTRY.md#R167
+**Criticality:** INFO - Best practice
+
+STEP-BY-STEP PROCESS:
+
+1. Load Templates:
+READ: templates/EFFORT-PLANNING-TEMPLATE.md
+READ: templates/WORK-LOG-TEMPLATE.md
+
+2. Analyze Phase Plan:
+READ: phase-plans/PHASE-[N]-PLAN.md
+EXTRACT: Your effort's requirements
+
+3. Create Local Copies:
+```bash
+cd efforts/phase[N]/wave[N]/effort[N]/
+cp templates/EFFORT-PLANNING-TEMPLATE.md ./IMPLEMENTATION-PLAN.md
+cp templates/WORK-LOG-TEMPLATE.md ./work-log.md
+```
+
+4. Populate Implementation Plan:
+- Effort ID: E[PHASE].[WAVE].[EFFORT]
+- Size Estimate: Calculate carefully
+- Files to Create: List with line estimates
+- Test Strategy: Define coverage targets
+- Split Contingency: Plan if >700 lines
+
+5. Prepare Work Log:
+- Set initial metrics
+- Define checkpoints
+- Create test execution template
+- Set up size tracking table
+---
+
+## State Transitions
+
+From EFFORT_PLANNING state:
+- **PLAN_COMPLETE** → SPAWN_AGENTS (Spawn Software Engineer)
+- **SPLIT_REQUIRED** → SPLIT_PLANNING (Plan effort splits)
+- **REQUIREMENTS_UNCLEAR** → ERROR_RECOVERY (Clarify requirements)
+- **DEPENDENCIES_BLOCKED** → MONITOR (Wait for dependencies)

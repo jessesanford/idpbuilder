@@ -1,0 +1,360 @@
+# Orchestrator - WAITING_FOR_EFFORT_PLANS State Rules
+
+## 🔴🔴🔴 STOP! STATE RULE READING IS ABSOLUTELY FIRST! 🔴🔴🔴
+
+**YOU HAVE ENTERED WAITING_FOR_EFFORT_PLANS STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
+
+### ❌ DO NOT DO ANY WAITING_FOR_EFFORT_PLANS WORK UNTIL RULES ARE READ:
+- ❌ Start check effort plan status
+- ❌ Start monitor reviewer progress
+- ❌ Start collect completed plans
+- ❌ Update state files
+- ❌ Continue to next state
+- ❌ Think about what to do in this state
+
+### ✅ YOU MUST IMMEDIATELY:
+1. **READ** every rule file listed in PRIMARY DIRECTIVES below
+2. **ACKNOWLEDGE** each rule individually with number and description
+3. **ONLY THEN** proceed with WAITING_FOR_EFFORT_PLANS work
+
+### 🚨 FAILURE TO READ STATE RULES FIRST = IMMEDIATE EXIT 🚨
+**If you do ANY WAITING_FOR_EFFORT_PLANS work before reading and acknowledging rules:**
+- **STOP ALL WORK IMMEDIATELY**
+- **EXIT WITH FAILURE STATUS**
+- **YOU HAVE VIOLATED STATE COMPLIANCE**
+
+**THE SYSTEM IS MONITORING YOUR READ TOOL CALLS!**
+
+## 📋 RULE SUMMARY FOR WAITING_FOR_EFFORT_PLANS STATE
+
+### Rules Enforced in This State:
+- R234: Mandatory State Traversal [SUPREME LAW - Part of sequence]
+- R255: Post-Agent Work Verification [BLOCKING - Check every completion]
+- R021: Never Stop Monitoring [SUPREME LAW - Keep checking]
+- R188: TODO Save Frequency [BLOCKING - Every 10 messages/15 min]
+- R252: State File Updates [SUPREME LAW - Track progress]
+
+### Critical Requirements:
+1. Actively poll for plans NOW - Penalty: -30%
+2. Check every 5-10 seconds - Penalty: -20%
+3. Verify R255 for each completion - Penalty: -100%
+4. Save TODOs every 15 minutes - Penalty: -15%
+5. Transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION - Penalty: -100%
+
+### Success Criteria:
+- ✅ All IMPLEMENTATION-PLAN.md files created
+- ✅ All plans in correct directories (R255)
+- ✅ All plans committed and pushed
+- ✅ Work logs updated
+
+### Failure Triggers:
+- ❌ Skip to SPAWN_AGENTS = -100% R234 VIOLATION
+- ❌ Accept plans in wrong location = R255 VIOLATION
+- ❌ Stop monitoring = R021 VIOLATION
+- ❌ Forget TODO saves = -15% per violation
+
+## 🚨 WAITING_FOR_EFFORT_PLANS IS A VERB - START ACTIVELY CHECKING IMMEDIATELY! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING WAITING_FOR_EFFORT_PLANS
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Poll effort directories for IMPLEMENTATION-PLAN.md NOW
+2. Check every 5-10 seconds for completion
+3. Check TodoWrite for pending items and process them
+4. Report status of each effort immediately
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in WAITING_FOR_EFFORT_PLANS" [stops]
+- ❌ "Successfully entered WAITING_FOR_EFFORT_PLANS state" [waits]
+- ❌ "Ready to start actively checking" [pauses]
+- ❌ "I'm in WAITING_FOR_EFFORT_PLANS state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering WAITING_FOR_EFFORT_PLANS, Poll effort directories for IMPLEMENTATION-PLAN.md NOW..."
+- ✅ "START ACTIVELY CHECKING, check every 5-10 seconds for completion..."
+- ✅ "WAITING_FOR_EFFORT_PLANS: Report status of each effort immediately..."
+
+## State Context
+You are waiting for Code Reviewers to complete individual effort implementation plans.
+
+## 🔴🔴🔴 SUPREME LAW R234 - STAY IN SEQUENCE 🔴🔴🔴
+
+### YOUR POSITION IN THE MANDATORY SEQUENCE:
+```
+SETUP_EFFORT_INFRASTRUCTURE (✓ completed)
+    ↓
+ANALYZE_CODE_REVIEWER_PARALLELIZATION (✓ completed)
+    ↓
+SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (✓ completed)
+    ↓
+WAITING_FOR_EFFORT_PLANS (👈 YOU ARE HERE)
+    ↓ (MUST GO HERE NEXT)
+ANALYZE_IMPLEMENTATION_PARALLELIZATION
+    ↓
+SPAWN_AGENTS
+```
+
+**NOW:** Actively monitor Code Reviewers
+**NEXT:** You MUST go to ANALYZE_IMPLEMENTATION_PARALLELIZATION
+**FORBIDDEN:** Skipping analysis to go directly to SPAWN_AGENTS = -100%
+
+## Monitoring Requirements
+
+```bash
+# Check status of effort plans
+check_effort_plan_status() {
+    local PHASE=$1 WAVE=$2
+    local ALL_COMPLETE=true
+    
+    echo "📊 Checking effort plan status..."
+    
+    # Check each effort directory for IMPLEMENTATION-PLAN.md
+    for effort_dir in efforts/phase${PHASE}/wave${WAVE}/*/; do
+        EFFORT=$(basename "$effort_dir")
+        PLAN_FILE="$effort_dir/IMPLEMENTATION-PLAN.md"
+        
+        if [ -f "$PLAN_FILE" ]; then
+            echo "✅ $EFFORT: Plan complete"
+        else
+            echo "⏳ $EFFORT: Plan in progress"
+            ALL_COMPLETE=false
+        fi
+    done
+    
+    if [ "$ALL_COMPLETE" = true ]; then
+        echo "✅ All effort plans complete!"
+        return 0
+    else
+        echo "⏳ Waiting for remaining plans..."
+        return 1
+    fi
+}
+```
+
+## Validation Before Proceeding
+
+Before transitioning to SPAWN_AGENTS, verify:
+
+1. **All Plans Exist:**
+   ```bash
+   for effort_dir in efforts/phase${PHASE}/wave${WAVE}/*/; do
+       [ -f "$effort_dir/IMPLEMENTATION-PLAN.md" ] || exit 1
+   done
+   ```
+
+2. **Plans Include Required Sections:**
+   - Implementation approach
+   - Test requirements
+   - Size limits
+   - Dependencies
+   - File structure
+
+3. **Work Logs Updated:**
+   ```bash
+   for effort_dir in efforts/phase${PHASE}/wave${WAVE}/*/; do
+       grep -q "Planning complete" "$effort_dir/work-log.md" || echo "Missing"
+   done
+   ```
+
+## State Transition
+
+Once ALL effort plans are complete:
+1. Update orchestrator-state.yaml
+2. Record effort plan locations
+3. **MANDATORY: Transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION (R234)**
+   - DO NOT skip directly to SPAWN_AGENTS
+   - MUST analyze SW Engineer parallelization first!
+   - This is the MANDATORY sequence
+
+### R188 MONITORING CHECKPOINT
+```bash
+# Every 15 minutes while monitoring
+TIME_SINCE_SAVE=$(($(date +%s) - LAST_TODO_SAVE))
+if [ $TIME_SINCE_SAVE -gt 900 ]; then
+    echo "⚠️ R188: 15 minutes elapsed - saving TODOs..."
+    save_todos "WAITING_FOR_EFFORT_PLANS checkpoint"
+    LAST_TODO_SAVE=$(date +%s)
+fi
+
+# Every 10 messages
+if [ $((MESSAGE_COUNT % 10)) -eq 0 ]; then
+    echo "💾 R188: 10 messages - saving TODOs..."
+    save_todos "Message checkpoint"
+fi
+```
+
+### BEFORE TRANSITION
+```bash
+# R187: State transition trigger
+echo "💾 R187: Saving TODOs before state transition..."
+save_todos "All effort plans complete"
+
+# R189: Commit within 60 seconds
+cd $CLAUDE_PROJECT_DIR
+git add todos/*.todo orchestrator-state.yaml
+git commit -m "todo: effort plans complete, ready for analysis"
+git push
+```
+
+## Timeout Handling
+
+If plans not complete within reasonable time:
+- Check for blocked Code Reviewers
+- Review error logs
+- Consider ERROR_RECOVERY state
+
+## Do NOT Proceed If:
+- ❌ Any effort missing IMPLEMENTATION-PLAN.md
+- ❌ Plans are incomplete or malformed
+- ❌ Infrastructure issues detected
+- ❌ Code Reviewers report blocking issues
+
+---
+### 🔴🔴🔴 RULE R255 - POST-CODE-REVIEWER VERIFICATION (MANDATORY!)
+**Source:** rule-library/R255-POST-AGENT-WORK-VERIFICATION.md
+**Criticality:** BLOCKING - Wrong location = DELETE AND RESTART
+
+⚠️⚠️⚠️ **VERIFY EVERY CODE REVIEWER'S WORK LOCATION!** ⚠️⚠️⚠️
+
+```bash
+# MANDATORY after EACH Code Reviewer completes
+verify_code_reviewer_completion() {
+    local EFFORT_NAME="$1"
+    local PHASE="$2"
+    local WAVE="$3"
+    
+    echo "🔍🔍🔍 R255: Verifying Code Reviewer work for $EFFORT_NAME"
+    
+    # EXPECTED VALUES
+    EXPECTED_DIR="$(pwd)/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+    EXPECTED_PLAN="$EXPECTED_DIR/IMPLEMENTATION-PLAN.md"
+    EXPECTED_BRANCH="phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+    
+    # CHECK 1: Plan in correct location?
+    if [ ! -f "$EXPECTED_PLAN" ]; then
+        echo "❌❌❌ R255 VIOLATION: Plan not in correct location!"
+        echo "Expected: $EXPECTED_PLAN"
+        
+        # Search for misplaced plan
+        MISPLACED=$(find . -name "IMPLEMENTATION-PLAN.md" -path "*/effort*" | grep -v "$EXPECTED_DIR" | head -1)
+        if [ -n "$MISPLACED" ]; then
+            echo "❌ Found plan in WRONG location: $MISPLACED"
+            echo "🗑️ DELETING misplaced work!"
+            rm -f "$MISPLACED"
+        fi
+        
+        # RESTART Code Reviewer with explicit path
+        restart_code_reviewer_with_path "$EFFORT_NAME" "$PHASE" "$WAVE"
+        return 1
+    fi
+    
+    # CHECK 2: Correct git branch?
+    cd "$EXPECTED_DIR"
+    CURRENT_BRANCH=$(git branch --show-current)
+    if [ "$CURRENT_BRANCH" != "$EXPECTED_BRANCH" ]; then
+        echo "❌❌❌ R255 VIOLATION: Wrong branch!"
+        echo "Expected: $EXPECTED_BRANCH, Got: $CURRENT_BRANCH"
+        
+        # Fix branch and recommit
+        git checkout -b "$EXPECTED_BRANCH"
+        git add IMPLEMENTATION-PLAN.md work-log.md
+        git commit -m "fix: move Code Reviewer work to correct branch [R255]"
+        git push -u origin "$EXPECTED_BRANCH"
+    fi
+    
+    # CHECK 3: Committed and pushed?
+    if [ -n "$(git status --porcelain)" ]; then
+        echo "⚠️ R255: Uncommitted changes detected - fixing..."
+        git add -A
+        git commit -m "fix: commit Code Reviewer work [R255]"
+        git push
+    fi
+    
+    # CHECK 4: Remote tracking?
+    if ! git branch -r | grep -q "origin/$EXPECTED_BRANCH"; then
+        echo "⚠️ R255: Not pushed to remote - fixing..."
+        git push -u origin "$EXPECTED_BRANCH"
+    fi
+    
+    echo "✅✅✅ R255: Code Reviewer work verified!"
+    cd "$(pwd)"  # Return to orchestrator dir
+    return 0
+}
+
+# RESTART PROTOCOL FOR CODE REVIEWERS
+restart_code_reviewer_with_path() {
+    local EFFORT="$1"
+    local PHASE="$2"
+    local WAVE="$3"
+    local EXPECTED_DIR="$(pwd)/efforts/phase${PHASE}/wave${WAVE}/${EFFORT}"
+    
+    echo "🔄🔄🔄 RESTARTING Code Reviewer with R255 ENFORCEMENT"
+    
+    ENHANCED_PROMPT="🚨 R255 CRITICAL: YOU MUST WORK IN THE CORRECT DIRECTORY! 🚨
+
+MANDATORY STEPS (COPY AND PASTE THESE COMMANDS):
+
+1️⃣ CD TO THIS EXACT PATH:
+cd $EXPECTED_DIR
+
+2️⃣ VERIFY LOCATION:
+pwd
+MUST OUTPUT: $EXPECTED_DIR
+
+3️⃣ CREATE YOUR PLAN HERE:
+cat > IMPLEMENTATION-PLAN.md << 'EOF'
+[Your plan content]
+EOF
+
+4️⃣ UPDATE WORK LOG:
+echo '## Planning Phase' >> work-log.md
+echo '- Created implementation plan' >> work-log.md
+
+5️⃣ COMMIT AND PUSH:
+git add IMPLEMENTATION-PLAN.md work-log.md
+git commit -m 'feat: create implementation plan for $EFFORT'
+git push origin phase${PHASE}/wave${WAVE}/${EFFORT}
+
+⚠️ WORKING IN WRONG DIRECTORY = DELETION AND RESTART! ⚠️"
+
+    Task: code-reviewer
+    Prompt: "$ENHANCED_PROMPT"
+    
+    echo "$(date): R255 restart - Code Reviewer for $EFFORT" >> R255-violations.log
+}
+
+# CHECK ALL CODE REVIEWERS BEFORE PROCEEDING
+check_all_code_reviewers() {
+    echo "🔍 R255: Verifying ALL Code Reviewer work locations..."
+    local ALL_VALID=true
+    
+    for effort_dir in efforts/phase${PHASE}/wave${WAVE}/*/; do
+        EFFORT=$(basename "$effort_dir")
+        if ! verify_code_reviewer_completion "$EFFORT" "$PHASE" "$WAVE"; then
+            ALL_VALID=false
+        fi
+    done
+    
+    if [ "$ALL_VALID" = false ]; then
+        echo "❌ R255: Some Code Reviewers need restart!"
+        return 1
+    fi
+    
+    echo "✅ R255: All Code Reviewer work verified!"
+    return 0
+}
+```
+
+**BEFORE TRANSITIONING TO SPAWN_AGENTS:**
+```bash
+# MANDATORY R255 CHECK
+if ! check_all_code_reviewers; then
+    echo "🚫 BLOCKED: Cannot proceed until all Code Reviewers pass R255!"
+    exit 1
+fi
+```
+
+**ACKNOWLEDGMENT REQUIRED:**
+"I acknowledge R255: I MUST verify EVERY Code Reviewer's plan is in /efforts/, committed, and pushed. Wrong location = DELETE and RESTART."
+"I acknowledge R234: I MUST transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION next, not skip to SPAWN_AGENTS."
+"I acknowledge R188: I MUST save TODOs every 15 minutes while waiting."

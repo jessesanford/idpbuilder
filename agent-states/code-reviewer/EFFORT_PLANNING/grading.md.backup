@@ -1,0 +1,474 @@
+# Code Reviewer - EFFORT_PLANNING State Grading
+
+## Critical Performance Metrics
+
+┌─────────────────────────────────────────────────────────────────┐
+│ PRIMARY METRIC: Implementation Plan Quality                    │
+├─────────────────────────────────────────────────────────────────┤
+│ Measurement: Plan completeness and accuracy                   │
+│ Target: 95% completeness with accurate size estimates         │
+│ Grade: EXCELLENT/GOOD/PASS/FAIL                               │
+│ Weight: 60% of overall code reviewer planning grade           │
+│ Consequence: Poor plans lead to failed implementations        │
+└─────────────────────────────────────────────────────────────────┘
+
+## Grading Rubric
+
+| Metric | Excellent | Good | Acceptable | FAIL |
+|--------|-----------|------|------------|------|
+| Plan Completeness | 95-100% | 85-94% | 75-84% | <75% |
+| Size Estimation Accuracy | ±10% of actual | ±20% of actual | ±30% of actual | >30% off |
+| KCP Pattern Integration | 100% compliant | 90% compliant | 80% compliant | <80% |
+| Test Strategy Coverage | Complete strategy | Good coverage | Adequate plan | Insufficient |
+| Risk Identification | All major risks | Most risks | Some risks | Major risks missed |
+
+## Real-Time Scoring
+
+```python
+class EffortPlanningGrader:
+    def __init__(self):
+        self.plan_quality_weights = {
+            'completeness': 0.25,
+            'accuracy': 0.25,
+            'kcp_compliance': 0.20,
+            'test_strategy': 0.15,
+            'risk_assessment': 0.15
+        }
+        
+    def grade_effort_planning(self, planning_data):
+        """Grade an effort planning cycle"""
+        
+        # Plan completeness assessment
+        completeness_grade = self.assess_plan_completeness(planning_data)
+        
+        # Size estimation accuracy (if implementation exists)
+        accuracy_grade = self.assess_estimation_accuracy(planning_data)
+        
+        # KCP pattern compliance
+        kcp_grade = self.assess_kcp_compliance(planning_data)
+        
+        # Test strategy quality
+        test_grade = self.assess_test_strategy(planning_data)
+        
+        # Risk assessment quality
+        risk_grade = self.assess_risk_identification(planning_data)
+        
+        overall = self.calculate_overall_planning_grade(
+            completeness_grade, accuracy_grade, kcp_grade,
+            test_grade, risk_grade
+        )
+        
+        return {
+            'plan_completeness': completeness_grade,
+            'estimation_accuracy': accuracy_grade,
+            'kcp_compliance': kcp_grade,
+            'test_strategy': test_grade,
+            'risk_assessment': risk_grade,
+            'overall': overall,
+            'timestamp': datetime.now().isoformat()
+        }
+    
+    def assess_plan_completeness(self, planning_data):
+        """Assess implementation plan completeness"""
+        
+        plan = planning_data.get('implementation_plan', {})
+        
+        required_sections = [
+            'scope_analysis', 'architecture', 'file_structure',
+            'implementation_sequence', 'testing_strategy', 
+            'size_management', 'validation_checkpoints'
+        ]
+        
+        completeness_scores = {}
+        for section in required_sections:
+            completeness_scores[section] = self.evaluate_section_completeness(
+                section, plan.get(section, {})
+            )
+        
+        # Weight critical sections more heavily
+        weighted_score = (
+            completeness_scores.get('scope_analysis', 0) * 0.20 +
+            completeness_scores.get('architecture', 0) * 0.20 +
+            completeness_scores.get('implementation_sequence', 0) * 0.15 +
+            completeness_scores.get('testing_strategy', 0) * 0.15 +
+            completeness_scores.get('size_management', 0) * 0.15 +
+            completeness_scores.get('file_structure', 0) * 0.10 +
+            completeness_scores.get('validation_checkpoints', 0) * 0.05
+        )
+        
+        if weighted_score >= 95:
+            grade = 'EXCELLENT'
+        elif weighted_score >= 85:
+            grade = 'GOOD'
+        elif weighted_score >= 75:
+            grade = 'PASS'
+        else:
+            grade = 'FAIL'
+        
+        return {
+            'section_scores': completeness_scores,
+            'weighted_score': weighted_score,
+            'grade': grade,
+            'missing_sections': [s for s in required_sections if s not in plan]
+        }
+    
+    def assess_estimation_accuracy(self, planning_data):
+        """Assess size estimation accuracy against actual implementation"""
+        
+        plan = planning_data.get('implementation_plan', {})
+        actual_data = planning_data.get('actual_implementation', {})
+        
+        estimated_size = plan.get('size_management', {}).get('estimated_total_lines', 0)
+        actual_size = actual_data.get('final_size_lines', 0)
+        
+        if actual_size == 0:
+            # No implementation yet - can't assess accuracy
+            return {
+                'estimated_size': estimated_size,
+                'actual_size': 'TBD',
+                'accuracy_percentage': 'TBD',
+                'grade': 'PENDING',
+                'score': 85  # Default score for reasonable estimates
+            }
+        
+        # Calculate percentage difference
+        if estimated_size == 0:
+            accuracy = 0
+        else:
+            difference = abs(estimated_size - actual_size)
+            accuracy = max(0, 100 - (difference / estimated_size * 100))
+        
+        if accuracy >= 90:  # Within 10%
+            grade = 'EXCELLENT'
+            score = 100
+        elif accuracy >= 80:  # Within 20%
+            grade = 'GOOD'
+            score = 90
+        elif accuracy >= 70:  # Within 30%
+            grade = 'PASS'
+            score = 75
+        else:
+            grade = 'FAIL'
+            score = 0
+        
+        return {
+            'estimated_size': estimated_size,
+            'actual_size': actual_size,
+            'accuracy_percentage': accuracy,
+            'grade': grade,
+            'score': score
+        }
+    
+    def assess_kcp_compliance(self, planning_data):
+        """Assess KCP/Kubernetes pattern compliance in planning"""
+        
+        plan = planning_data.get('implementation_plan', {})
+        scope = plan.get('scope_analysis', {})
+        kcp_considerations = scope.get('kcp_specific', {})
+        
+        compliance_checks = {
+            'multi_tenancy_addressed': 'multi_tenancy_implications' in kcp_considerations,
+            'logical_cluster_considered': 'logical_cluster_impact' in kcp_considerations,
+            'api_export_integration': 'api_export_requirements' in kcp_considerations,
+            'syncer_compatibility': 'syncer_compatibility' in kcp_considerations,
+            'workspace_isolation': self.check_workspace_isolation_planning(plan),
+            'resource_quotas': self.check_resource_quota_consideration(plan)
+        }
+        
+        compliance_score = sum(compliance_checks.values()) / len(compliance_checks) * 100
+        
+        if compliance_score >= 90:
+            grade = 'EXCELLENT'
+        elif compliance_score >= 80:
+            grade = 'GOOD'  
+        elif compliance_score >= 70:
+            grade = 'PASS'
+        else:
+            grade = 'FAIL'
+        
+        failed_checks = [check for check, passed in compliance_checks.items() if not passed]
+        
+        return {
+            'compliance_checks': compliance_checks,
+            'compliance_score': compliance_score,
+            'grade': grade,
+            'failed_checks': failed_checks,
+            'kcp_considerations_present': len(kcp_considerations) > 0
+        }
+    
+    def assess_test_strategy(self, planning_data):
+        """Assess quality of testing strategy"""
+        
+        plan = planning_data.get('implementation_plan', {})
+        test_strategy = plan.get('testing_strategy', {})
+        
+        strategy_quality = {
+            'unit_tests_planned': 'unit_tests' in test_strategy,
+            'integration_tests_planned': 'integration_tests' in test_strategy,
+            'coverage_targets_set': self.check_coverage_targets(test_strategy),
+            'multi_tenancy_tests': self.check_multi_tenancy_tests(test_strategy),
+            'performance_tests': self.check_performance_tests(test_strategy),
+            'test_to_code_ratio': self.assess_test_code_ratio(plan)
+        }
+        
+        quality_score = sum(strategy_quality.values()) / len(strategy_quality) * 100
+        
+        # Check if coverage targets meet minimum requirements
+        coverage_adequate = self.verify_coverage_requirements(test_strategy)
+        if not coverage_adequate:
+            quality_score *= 0.7  # Penalize insufficient coverage targets
+        
+        if quality_score >= 90:
+            grade = 'EXCELLENT'
+        elif quality_score >= 80:
+            grade = 'GOOD'
+        elif quality_score >= 70:
+            grade = 'PASS'
+        else:
+            grade = 'FAIL'
+        
+        return {
+            'strategy_elements': strategy_quality,
+            'quality_score': quality_score,
+            'coverage_adequate': coverage_adequate,
+            'grade': grade,
+            'missing_elements': [elem for elem, present in strategy_quality.items() if not present]
+        }
+    
+    def assess_risk_identification(self, planning_data):
+        """Assess quality of risk identification and mitigation planning"""
+        
+        plan = planning_data.get('implementation_plan', {})
+        risk_assessment = plan.get('risk_assessment', {})
+        
+        risk_quality = {
+            'risks_identified': len(risk_assessment.get('high_risks', [])) > 0,
+            'mitigation_strategies': len(risk_assessment.get('mitigation_strategies', [])) > 0,
+            'technical_risks_covered': self.check_technical_risk_coverage(risk_assessment),
+            'kcp_specific_risks': self.check_kcp_risk_awareness(risk_assessment),
+            'size_risks_addressed': self.check_size_risk_planning(plan),
+            'integration_risks': self.check_integration_risk_planning(risk_assessment)
+        }
+        
+        risk_score = sum(risk_quality.values()) / len(risk_quality) * 100
+        
+        # Bonus for comprehensive risk analysis
+        risk_count = len(risk_assessment.get('high_risks', [])) + len(risk_assessment.get('medium_risks', []))
+        if risk_count >= 5:  # Good risk identification
+            risk_score = min(100, risk_score * 1.1)
+        
+        if risk_score >= 90:
+            grade = 'EXCELLENT'
+        elif risk_score >= 80:
+            grade = 'GOOD'
+        elif risk_score >= 70:
+            grade = 'PASS'
+        else:
+            grade = 'FAIL'
+        
+        return {
+            'risk_elements': risk_quality,
+            'risk_score': risk_score,
+            'total_risks_identified': risk_count,
+            'grade': grade,
+            'risk_gaps': [elem for elem, covered in risk_quality.items() if not covered]
+        }
+    
+    def calculate_overall_planning_grade(self, completeness, accuracy, kcp, testing, risks):
+        """Calculate weighted overall planning grade"""
+        
+        # Use weights defined in __init__
+        weighted_score = (
+            completeness['weighted_score'] * self.plan_quality_weights['completeness'] +
+            (accuracy.get('score', 85)) * self.plan_quality_weights['accuracy'] +
+            kcp['compliance_score'] * self.plan_quality_weights['kcp_compliance'] +
+            testing['quality_score'] * self.plan_quality_weights['test_strategy'] +
+            risks['risk_score'] * self.plan_quality_weights['risk_assessment']
+        )
+        
+        # Critical failure conditions
+        critical_failures = []
+        if completeness['grade'] == 'FAIL':
+            critical_failures.append('Plan completeness insufficient')
+        if kcp['grade'] == 'FAIL':
+            critical_failures.append('KCP compliance inadequate')
+        if testing['grade'] == 'FAIL':
+            critical_failures.append('Test strategy insufficient')
+        
+        # Determine final grade
+        if critical_failures:
+            overall_grade = 'FAIL'
+        elif weighted_score >= 90:
+            overall_grade = 'EXCELLENT'
+        elif weighted_score >= 80:
+            overall_grade = 'GOOD'
+        elif weighted_score >= 70:
+            overall_grade = 'PASS'
+        else:
+            overall_grade = 'FAIL'
+        
+        return {
+            'weighted_score': weighted_score,
+            'grade': overall_grade,
+            'critical_failures': critical_failures,
+            'plan_ready_for_implementation': overall_grade in ['EXCELLENT', 'GOOD', 'PASS']
+        }
+    
+    def evaluate_section_completeness(self, section_name, section_data):
+        """Evaluate completeness of a specific plan section"""
+        
+        section_requirements = {
+            'scope_analysis': ['objectives', 'deliverables', 'dependencies', 'constraints'],
+            'architecture': ['components', 'interfaces', 'patterns'],
+            'file_structure': ['files', 'packages', 'size_estimates'],
+            'implementation_sequence': ['phases', 'milestones'],
+            'testing_strategy': ['unit_tests', 'integration_tests', 'coverage_targets'],
+            'size_management': ['estimated_total_lines', 'monitoring_strategy'],
+            'validation_checkpoints': ['checkpoints', 'validation_criteria']
+        }
+        
+        if section_name not in section_requirements:
+            return 0
+        
+        required_elements = section_requirements[section_name]
+        present_elements = [elem for elem in required_elements if elem in section_data]
+        
+        return (len(present_elements) / len(required_elements)) * 100
+    
+    def check_workspace_isolation_planning(self, plan):
+        """Check if workspace isolation is properly planned"""
+        
+        scope = plan.get('scope_analysis', {})
+        architecture = plan.get('architecture', {})
+        
+        isolation_indicators = [
+            'logical_cluster' in str(scope).lower(),
+            'workspace' in str(scope).lower(),
+            'multi-tenant' in str(architecture).lower(),
+            'isolation' in str(plan).lower()
+        ]
+        
+        return any(isolation_indicators)
+```
+
+## Planning Performance Tracking
+
+```yaml
+# Update orchestrator-state.yaml
+grading:
+  CODE_REVIEWER_EFFORT_PLANNING:
+    latest:
+      timestamp: "2025-08-23T18:15:00Z"
+      effort_id: "phase1-wave2-effort3-webhooks"
+      plan_completeness: 92
+      size_estimation_accuracy: "PENDING" 
+      kcp_compliance: 88
+      test_strategy_quality: 95
+      risk_assessment: 85
+      overall: "GOOD"
+      
+    history:
+      - {timestamp: "...", effort: "effort1", grade: "EXCELLENT", completeness: 96}
+      - {timestamp: "...", effort: "effort2", grade: "GOOD", completeness: 87}
+      
+    cumulative:
+      efforts_planned: 8
+      excellent: 3
+      good: 4
+      pass: 1
+      fail: 0
+      avg_completeness: 89.2
+      avg_kcp_compliance: 91.5
+      avg_estimation_accuracy: 15  # % off actual size
+```
+
+## Warning Triggers
+
+┌─────────────────────────────────────────────────────────────────┐
+│ EFFORT PLANNING WARNINGS                                       │
+├─────────────────────────────────────────────────────────────────┤
+│ Plan Completeness <80%:                                        │
+│ ⚠️ WARNING: Implementation plan insufficient                   │
+│ ⚠️ Missing critical sections: {list}                          │
+│ ⚠️ Implementation likely to fail or require rework            │
+│                                                                 │
+│ KCP Compliance <80%:                                          │
+│ ❌ CRITICAL: KCP patterns not properly addressed              │
+│ ❌ Multi-tenancy requirements missing                         │
+│ ❌ Plan must be revised before implementation                 │
+│                                                                 │
+│ Test Strategy Inadequate:                                      │
+│ ⚠️⚠️ WARNING: Test coverage strategy insufficient            │
+│ ⚠️⚠️ Coverage targets below 85% minimum                     │
+│ ⚠️⚠️ Multi-tenant test scenarios missing                    │
+│                                                                 │
+│ Size Estimation >1000 lines:                                  │
+│ 🚨 CRITICAL: Effort size estimate exceeds limits             │
+│ 🚨 Split planning required immediately                        │
+│ 🚨 Cannot proceed to implementation without splits            │
+└─────────────────────────────────────────────────────────────────┘
+
+## Performance Optimization
+
+```python
+def optimize_effort_planning_performance():
+    """Guidelines for excellent effort planning grades"""
+    
+    optimization_strategies = {
+        'completeness_optimization': [
+            'Use comprehensive planning templates',
+            'Cross-reference requirements with plan sections',
+            'Include KCP-specific considerations in every plan',
+            'Document all assumptions and constraints explicitly'
+        ],
+        
+        'accuracy_optimization': [
+            'Use historical data for size estimation',
+            'Break down estimates by component type',
+            'Include buffer for unexpected complexity',
+            'Validate estimates with similar past implementations'
+        ],
+        
+        'kcp_compliance_optimization': [
+            'Study KCP architecture patterns thoroughly',
+            'Include multi-tenancy in all designs',
+            'Plan for APIExport integration from start',
+            'Consider syncer compatibility early'
+        ],
+        
+        'test_strategy_optimization': [
+            'Plan for 90%+ unit test coverage',
+            'Include comprehensive multi-tenant test scenarios',
+            'Design performance and load tests upfront',
+            'Plan integration tests for all major workflows'
+        ]
+    }
+    
+    return optimization_strategies
+```
+
+## Real-Time Grade Dashboard
+
+```python
+def generate_effort_planning_dashboard():
+    """Generate real-time effort planning performance dashboard"""
+    
+    current_planning = get_current_planning_data()
+    grader = EffortPlanningGrader()
+    grade_data = grader.grade_effort_planning(current_planning)
+    
+    dashboard = {
+        'current_grade': grade_data,
+        'plan_completeness_trend': get_completeness_trend(),
+        'kcp_compliance_trend': get_kcp_compliance_trend(),
+        'historical_accuracy': get_historical_estimation_accuracy()
+    }
+    
+    print("📊 EFFORT PLANNING PERFORMANCE DASHBOARD")
+    print(f"Current Grade: {grade_data['overall']['grade']}")
+    print(f"Plan Completeness: {grade_data['plan_completeness']['weighted_score']:.1f}%")
+    print(f"KCP Compliance: {grade_data['kcp_compliance']['compliance_score']:.1f}%")
+    print(f"Test Strategy: {grade_data['test_strategy']['quality_score']:.1f}%")
+    
+    return dashboard
+```

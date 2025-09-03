@@ -1,0 +1,204 @@
+# Orchestrator - WAITING_FOR_PHASE_ASSESSMENT State Rules
+
+## 🚨 WAITING_FOR_PHASE_ASSESSMENT IS A VERB - ACTIVELY MONITOR! 🚨
+
+## 🚨🚨🚨 MANDATORY: VERIFY PHASE ASSESSMENT REPORT EXISTS [R257] 🚨🚨🚨
+
+**CRITICAL REQUIREMENT**: The architect MUST create a `PHASE-{N}-ASSESSMENT-REPORT.md` file before you can proceed!
+
+### IMMEDIATE ACTIONS UPON ENTERING WAITING_FOR_PHASE_ASSESSMENT
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Check if architect has already responded
+2. **VERIFY ASSESSMENT REPORT FILE EXISTS** at `phase-assessments/phase{N}/PHASE-{N}-ASSESSMENT-REPORT.md`
+3. Read and validate the assessment report content
+4. Extract the DECISION from the report
+5. Monitor for architect decision actively
+6. Process any pending TodoWrite items
+7. Prepare for phase completion or error recovery
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now waiting" [stops]
+- ❌ "I'll wait for the architect" [passive waiting]
+- ❌ "Standing by for assessment" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Checking for architect response..."
+- ✅ "Monitoring phase assessment status..."
+- ✅ "Processing pending tasks while waiting..."
+
+## State Context
+
+Waiting for architect's phase-level assessment that determines if the phase can be marked complete (SUCCESS) or needs more work.
+
+## Primary Purpose
+
+The WAITING_FOR_PHASE_ASSESSMENT state is for:
+1. Actively monitoring architect assessment progress
+2. Processing architect's phase decision
+3. Determining transition to PHASE_COMPLETE or ERROR_RECOVERY
+4. Ensuring no premature SUCCESS without approval
+
+## Processing Architect Decision
+
+### MANDATORY FIRST STEP - Verify Assessment Report:
+```bash
+# MUST verify assessment report exists per R257
+PHASE="$CURRENT_PHASE"
+REPORT_FILE="phase-assessments/phase${PHASE}/PHASE-${PHASE}-ASSESSMENT-REPORT.md"
+
+if [ ! -f "$REPORT_FILE" ]; then
+    echo "❌ CRITICAL: No phase assessment report found!"
+    echo "❌ Expected: $REPORT_FILE"
+    echo "❌ Cannot proceed without assessment report per R257"
+    transition_to "ERROR_RECOVERY"
+    exit 1
+fi
+
+# Extract decision from report
+DECISION=$(grep "^\*\*DECISION\*\*:" "$REPORT_FILE" | cut -d: -f2 | xargs)
+if [ -z "$DECISION" ]; then
+    echo "❌ Invalid assessment report - no decision found!"
+    transition_to "ERROR_RECOVERY"
+    exit 1
+fi
+
+echo "✅ Phase assessment report verified: $REPORT_FILE"
+echo "📊 Decision: $DECISION"
+```
+
+### If PHASE_COMPLETE (Assessment Passed):
+```bash
+# Update state file with report location
+yq -i ".phase_assessment.status = \"COMPLETE\"" orchestrator-state.yaml
+yq -i ".phase_assessment.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+yq -i ".phase_assessment.decision = \"PHASE_COMPLETE\"" orchestrator-state.yaml
+yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.yaml
+yq -i ".phase_assessment.feedback = \"$FEEDBACK\"" orchestrator-state.yaml
+
+# Phase approved - can now complete
+transition_to "PHASE_COMPLETE"  # Handle phase completion tasks
+```
+
+### If NEEDS_WORK (Fixes Required):
+```bash
+# Update state file with decision and report location
+yq -i ".phase_assessment.status = \"NEEDS_WORK\"" orchestrator-state.yaml
+yq -i ".phase_assessment.decision = \"NEEDS_WORK\"" orchestrator-state.yaml
+yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.yaml
+
+# CRITICAL: Extract specific issues from the report (R257)
+echo "📋 Extracting required fixes from assessment report..."
+PRIORITY_1_FIXES=$(sed -n '/### Priority 1/,/### Priority 2/p' "$REPORT_FILE" | grep "^- \[")
+ISSUES_IDENTIFIED=$(sed -n '/## Issues Identified/,/## Required Fixes/p' "$REPORT_FILE")
+
+# Store issues in state file for ERROR_RECOVERY to process
+yq -i ".phase_assessment.priority_1_fixes = \"$PRIORITY_1_FIXES\"" orchestrator-state.yaml
+yq -i ".phase_assessment.issues_identified = \"$ISSUES_IDENTIFIED\"" orchestrator-state.yaml
+yq -i ".error_recovery.source = \"PHASE_ASSESSMENT_NEEDS_WORK\"" orchestrator-state.yaml
+yq -i ".error_recovery.report_to_read = \"$REPORT_FILE\"" orchestrator-state.yaml
+
+echo "❌ Phase assessment returned NEEDS_WORK - transitioning to ERROR_RECOVERY"
+echo "📄 ERROR_RECOVERY must read report: $REPORT_FILE"
+
+# Must fix before phase can complete
+transition_to "ERROR_RECOVERY"  # ERROR_RECOVERY will read report and coordinate fixes
+```
+
+### If PHASE_FAILED (Cannot Complete):
+```bash
+# Update state file
+yq -i ".phase_assessment.status = \"FAILED\"" orchestrator-state.yaml
+yq -i ".phase_assessment.failure_reason = \"$REASON\"" orchestrator-state.yaml
+
+# Phase cannot complete - major rework needed
+transition_to "HARD_STOP"  # Critical failure
+```
+
+## State Transitions
+
+From WAITING_FOR_PHASE_ASSESSMENT:
+- **PHASE_COMPLETE decision** → PHASE_COMPLETE (proceed to completion)
+- **NEEDS_WORK decision** → ERROR_RECOVERY (fix issues)
+- **PHASE_FAILED decision** → HARD_STOP (critical failure)
+- **Timeout** → ERROR_RECOVERY (handle timeout)
+
+**CRITICAL**: This state BLOCKS the path to SUCCESS. No phase can complete without passing through here and getting approval.
+
+## Timeout Handling
+
+```bash
+# Check for timeout (e.g., 45 minutes for phase assessment)
+REQUESTED_AT=$(yq '.phase_assessment.requested_at' orchestrator-state.yaml)
+TIMEOUT_MINUTES=45
+
+if timeout_exceeded "$REQUESTED_AT" "$TIMEOUT_MINUTES"; then
+    yq -i ".phase_assessment.status = \"TIMEOUT\"" orchestrator-state.yaml
+    log_error "Phase assessment timeout after $TIMEOUT_MINUTES minutes"
+    transition_to "ERROR_RECOVERY"
+fi
+```
+
+## Active Monitoring Requirements
+
+While waiting, you must:
+1. Check for architect response every interaction
+2. Process any TodoWrite pending items
+3. Monitor elapsed time for timeout
+4. Prepare phase completion documentation
+5. NOT passively wait doing nothing
+
+## Phase Assessment Tracking
+
+```yaml
+# State file structure for phase assessment
+phase_assessment:
+  phase: 1
+  requested_at: "2025-08-25T23:00:00Z"
+  architect_spawned: "architect-789012"
+  phase_branch: "tmc-workspace/phase1-complete"
+  wave_count: 4
+  report_file: "phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md"  # R257 MANDATORY
+  decision: "PHASE_COMPLETE"  # Extracted from report file
+  score: 92  # Extracted from report file
+  feedback: |
+    - All features implemented successfully
+    - Architecture consistent across waves
+    - APIs stable and well-documented
+    - Test coverage exceeds requirements (85%)
+    - Ready for production deployment
+  completed_at: "2025-08-25T23:30:00Z"
+  next_action: "PHASE_COMPLETE"
+```
+
+## Success Criteria
+
+Successfully process assessment when:
+- [ ] Architect provides clear decision
+- [ ] Decision properly recorded in state file
+- [ ] Appropriate next state determined
+- [ ] Feedback captured for audit trail
+- [ ] Metrics updated
+
+## Common Issues
+
+1. **Timeout**: Architect takes too long - escalate
+2. **Unclear Decision**: Request clarification
+3. **Missing Context**: Provide additional information
+4. **Partial Assessment**: Request complete review
+
+## Required State File Updates
+
+Before leaving WAITING_FOR_PHASE_ASSESSMENT:
+- [ ] Assessment decision recorded
+- [ ] Completion timestamp set
+- [ ] Feedback/issues documented
+- [ ] Next state determined
+- [ ] Phase metrics finalized
+
+## Grading Impact
+
+- Processing decision promptly: +10 points
+- Proper state transitions: +20 points
+- Skipping to SUCCESS without this: -100 points (CRITICAL)
+- Timeout handling: +5 points

@@ -5,3 +5,5 @@ cover.out
 __debug*
 .vscode
 .idea
+efforts/
+.state_rules_*

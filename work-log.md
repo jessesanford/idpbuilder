@@ -31,7 +31,7 @@
 ## Merge Operations Log
 
 ### Operation 1: Merge split-001 (680 lines)
-Command: git merge sf-repo/idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder--split-001 --no-ff -m 'feat(E2.1.1): Merge split-001 - OCI image builder foundation (680 lines)'
-Timestamp: 2025-09-03 16:28:18 UTC
-Note: Remote sf-repo now properly configured. All required branches verified.
-Result: Branch already merged (commits already in history)
+Command: git merge sf-repo/idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder--split-001 --no-ff --allow-unrelated-histories -m 'feat(E2.1.1): Merge split-001 - OCI image builder foundation (680 lines)'
+Timestamp: 2025-09-03 16:31:00 UTC
+Status: CONFLICT - Resolving merge conflicts in go.mod, go.sum, .gitignore
+Resolution: Keeping all dependencies from both sides, merged imports alphabetically

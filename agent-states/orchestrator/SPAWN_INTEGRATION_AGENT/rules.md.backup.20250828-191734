@@ -1,0 +1,142 @@
+# Orchestrator - SPAWN_INTEGRATION_AGENT State Rules
+
+## 🔴🔴🔴 R208 SUPREME LAW #2: CD BEFORE SPAWN 🔴🔴🔴
+
+**YOU MUST CD TO INTEGRATION DIRECTORY BEFORE SPAWNING THE INTEGRATION AGENT!**
+- Violation = -100% GRADE = AUTOMATIC FAILURE
+- NO EXCEPTIONS, NO SHORTCUTS, NO WORKAROUNDS
+
+## State Definition
+The orchestrator spawns an Integration Agent to execute the merge plan created by Code Reviewer. The merge plan must already exist.
+
+## Required Actions
+
+### 1. Verify Merge Plan Exists
+```bash
+# Check that Code Reviewer completed the merge plan
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
+
+cd "$INTEGRATION_DIR"
+
+if [ ! -f "WAVE-MERGE-PLAN.md" ]; then
+    echo "❌ Cannot spawn Integration Agent - no merge plan!"
+    echo "🔍 Code Reviewer must complete WAVE-MERGE-PLAN.md first"
+    exit 1
+fi
+
+echo "✅ Found WAVE-MERGE-PLAN.md"
+
+# Quick validation of merge plan
+MERGE_COUNT=$(grep -c "git merge origin/" WAVE-MERGE-PLAN.md || echo "0")
+echo "📊 Merge plan contains $MERGE_COUNT merge operations"
+
+if [[ $MERGE_COUNT -eq 0 ]]; then
+    echo "⚠️ Warning: No merge commands found in plan!"
+fi
+```
+
+### 2. Spawn Integration Agent
+```bash
+# Prepare spawn command for Integration Agent
+CURRENT_BRANCH=$(git branch --show-current)
+
+cat > /tmp/integration-agent-task.md << EOF
+Execute integration merges for Phase ${PHASE} Wave ${WAVE}.
+
+CRITICAL REQUIREMENTS (R260):
+1. You are in INTEGRATION_DIR: ${INTEGRATION_DIR}
+2. IMMEDIATELY acknowledge and set INTEGRATION_DIR variable
+3. Verify you're in the correct directory
+4. Read and follow WAVE-MERGE-PLAN.md EXACTLY
+5. Execute merges in specified order
+6. Handle conflicts as directed in plan
+7. Run tests after each merge
+8. Document everything in work-log.md
+
+GRADING CRITERIA (R267):
+- 50% Completeness of Integration
+- 50% Meticulous Tracking and Documentation
+
+Your working directory: ${INTEGRATION_DIR}
+Current branch: ${CURRENT_BRANCH}
+Merge plan to follow: WAVE-MERGE-PLAN.md
+
+You are spawned into state: INIT
+EOF
+
+# 🔴🔴🔴 R208 SUPREME LAW: CD BEFORE SPAWN 🔴🔴🔴
+echo "🔴 R208 SUPREME LAW: CD'ing to integration directory"
+cd "$INTEGRATION_DIR" || {
+    echo "❌ R208 VIOLATION: Failed to CD to $INTEGRATION_DIR"
+    echo "❌ GRADE: -100% (AUTOMATIC FAILURE)"
+    exit 1
+}
+
+echo "📍 R208 PWD VERIFICATION: $(pwd)"  # MUST show integration directory
+echo "✅ R208: Confirmed in correct directory for Integration Agent spawn"
+
+echo "🚀 Spawning Integration Agent for merge execution..."
+
+/spawn integration-agent INIT "$(cat /tmp/integration-agent-task.md)"
+
+# R208: Return to orchestrator directory after spawn
+cd /workspaces/project
+echo "📍 R208: Returned to orchestrator directory"
+```
+
+### 3. Update State Tracking
+```yaml
+# Update orchestrator-state.yaml
+integration_status:
+  phase: ${PHASE}
+  wave: ${WAVE}
+  merge_plan_ready: true
+  integration_agent_spawned: true
+  integration_started_at: "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  waiting_for: "integration-agent-completion"
+```
+
+## Critical Requirements
+
+### R260 Compliance - INTEGRATION_DIR Acknowledgment
+The Integration Agent MUST:
+1. Acknowledge the INTEGRATION_DIR immediately upon startup
+2. Set INTEGRATION_DIR environment variable
+3. Verify current directory matches INTEGRATION_DIR
+4. Exit with error if in wrong directory
+
+### Working Directory Setup
+**CRITICAL**: The orchestrator MUST cd into INTEGRATION_DIR before spawning!
+```bash
+cd "$INTEGRATION_DIR"  # MANDATORY before spawn
+```
+
+## Transition Rules
+- Immediate transition to: MONITORING_INTEGRATION
+- Cannot transition if: No merge plan exists
+- Must be in integration directory when spawning
+
+## Success Criteria
+- Merge plan verified to exist
+- Integration Agent spawned with INTEGRATION_DIR
+- Working directory set correctly
+- Clear grading criteria communicated
+- State tracking updated
+
+---
+### 🚨🚨🚨 RULE R260 - Integration Agent INTEGRATION_DIR Acknowledgment
+**Source:** rule-library/R260-integration-agent-core-requirements.md
+**Criticality:** BLOCKING
+
+Integration Agent MUST acknowledge INTEGRATION_DIR immediately!
+---
+
+---
+### ⚠️⚠️⚠️ RULE R267 - Integration Agent Grading Criteria
+**Source:** rule-library/R267-integration-agent-grading-criteria.md
+**Criticality:** WARNING
+
+50% completeness + 50% documentation = Integration Agent grade
+---

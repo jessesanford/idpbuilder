@@ -1,0 +1,421 @@
+# Orchestrator - ERROR_RECOVERY State Checkpoint
+
+## When to Save State
+
+Save checkpoint at these critical recovery points:
+
+1. **Error Detection and Classification**
+   - Initial error identified and categorized
+   - Recovery strategy determined
+   - Target recovery time established
+
+2. **Pre-Recovery State Preservation**
+   - All current states backed up
+   - Working directories preserved
+   - Agent states captured
+   - Git state documented
+
+3. **Recovery Step Milestones**
+   - Each major recovery step completed
+   - Agent spawning for recovery assistance
+   - Validation checkpoints passed
+
+4. **Recovery Completion**
+   - Error resolved and validated
+   - Normal operations ready to resume
+   - Prevention measures implemented
+
+## Required Data to Preserve
+
+```yaml
+error_recovery_checkpoint:
+  # State identification
+  state: "ERROR_RECOVERY"
+  checkpoint_timestamp: "2025-08-23T16:30:15Z"
+  
+  # Error details
+  error_context:
+    error_id: "ERR-2025-08-23-001"
+    detected_at: "2025-08-23T16:15:30Z"
+    error_type: "SIZE_LIMIT_VIOLATION"
+    severity: "CRITICAL"
+    affected_scope:
+      phase: 1
+      wave: 2
+      efforts: ["effort2-controller"]
+      agents: ["sw-engineer-effort2"]
+    
+  # Original state backup (CRITICAL for rollback)
+  original_state_backup:
+    orchestrator_state_snapshot: |
+      # Complete orchestrator-state.yaml content at error time
+    working_directories:
+      - path: "/workspaces/efforts/phase1/wave2/effort2-controller"
+        branch: "phase1/wave2/effort2-controller"
+        git_status: |
+          # Git status output
+        uncommitted_changes: |
+          # Git diff --cached + git diff
+        last_commit: "abc123def456"
+    
+    agent_checkpoints:
+      - agent: "sw-engineer-effort2"
+        last_checkpoint: "/path/to/checkpoint.yaml"
+        current_task: "implementing tenant controller"
+        progress_percentage: 75
+        
+  # Recovery execution
+  recovery_strategy:
+    name: "IMMEDIATE_SPLIT"
+    target_completion_time: "2025-08-23T16:45:30Z"  # 30min target
+    total_steps: 5
+    
+  recovery_progress:
+    current_step: 3
+    steps_completed:
+      - step: 1
+        action: "EMERGENCY_STOP"
+        status: "COMPLETED"
+        completed_at: "2025-08-23T16:16:00Z"
+        validation: "All agents stopped successfully"
+        
+      - step: 2
+        action: "STATE_PRESERVATION"
+        status: "COMPLETED"
+        completed_at: "2025-08-23T16:18:30Z"
+        validation: "All states backed up and verified"
+        
+      - step: 3
+        action: "SPAWN_CODE_REVIEWER_ANALYSIS"
+        status: "IN_PROGRESS"
+        started_at: "2025-08-23T16:20:00Z"
+        assigned_to: "code-reviewer"
+        expected_completion: "2025-08-23T16:35:00Z"
+        
+    pending_steps:
+      - step: 4
+        action: "EXECUTE_SPLIT_PLAN"
+        depends_on: "step_3"
+        estimated_duration: "10min"
+        
+      - step: 5
+        action: "VALIDATE_RECOVERY"
+        depends_on: "step_4"
+        estimated_duration: "5min"
+        
+  # Performance tracking
+  performance_metrics:
+    recovery_started: "2025-08-23T16:15:30Z"
+    target_time_minutes: 30
+    elapsed_time_minutes: 14.75
+    on_track: true
+    estimated_completion: "2025-08-23T16:42:30Z"  # Ahead of schedule
+    
+  # Spawned agent tracking
+  spawned_agents:
+    - agent: "code-reviewer"
+      spawned_at: "2025-08-23T16:20:00Z"
+      purpose: "Analyze size violation and create split plan"
+      working_dir: "/workspaces/efforts/phase1/wave2/effort2-controller"
+      status: "ACTIVE"
+      expected_deliverable: "SPLIT-PLAN.md"
+      
+  # Validation checkpoints
+  validation_results:
+    - checkpoint: "STATE_PRESERVATION"
+      validated_at: "2025-08-23T16:19:00Z"
+      result: "PASS"
+      details: "All states successfully backed up"
+      
+    - checkpoint: "AGENT_COMMUNICATION"
+      validated_at: "2025-08-23T16:21:00Z"
+      result: "PASS"
+      details: "Code reviewer agent responsive and working"
+```
+
+## Recovery Protocol
+
+### Context Recovery After Interruption
+
+```python
+def recover_error_recovery_state(checkpoint_data):
+    """Recover error recovery state from checkpoint"""
+    
+    print("🔄 RECOVERING ERROR RECOVERY STATE")
+    
+    error_context = checkpoint_data['error_context']
+    recovery_progress = checkpoint_data['recovery_progress']
+    
+    print(f"Original Error: {error_context['error_type']} ({error_context['severity']})")
+    print(f"Recovery Progress: Step {recovery_progress['current_step']} of {checkpoint_data['recovery_strategy']['total_steps']}")
+    
+    # Verify original state backup integrity
+    backup_integrity = verify_state_backup_integrity(
+        checkpoint_data['original_state_backup']
+    )
+    
+    if not backup_integrity['valid']:
+        return {
+            'recovery_possible': False,
+            'reason': 'State backup corrupted',
+            'action': 'ESCALATE_TO_HUMAN'
+        }
+    
+    # Check current status of in-progress steps
+    current_status = check_current_recovery_status(recovery_progress)
+    
+    # Determine what needs to be resumed
+    resume_actions = determine_resume_actions(
+        recovery_progress, current_status
+    )
+    
+    return {
+        'recovery_possible': True,
+        'error_context': error_context,
+        'current_step': recovery_progress['current_step'],
+        'resume_actions': resume_actions,
+        'time_remaining': calculate_remaining_time(checkpoint_data),
+        'backup_verified': True
+    }
+
+def verify_state_backup_integrity(backup_data):
+    """Verify that state backup is intact and usable"""
+    
+    checks = {
+        'orchestrator_state': backup_data.get('orchestrator_state_snapshot') is not None,
+        'working_directories': len(backup_data.get('working_directories', [])) > 0,
+        'agent_checkpoints': len(backup_data.get('agent_checkpoints', [])) > 0
+    }
+    
+    # Verify file existence
+    for wd in backup_data.get('working_directories', []):
+        if not os.path.exists(wd['path']):
+            checks[f"wd_exists_{wd['path']}"] = False
+        else:
+            checks[f"wd_exists_{wd['path']}"] = True
+    
+    all_valid = all(checks.values())
+    
+    return {
+        'valid': all_valid,
+        'checks': checks,
+        'missing_components': [k for k, v in checks.items() if not v]
+    }
+
+def determine_resume_actions(progress, current_status):
+    """Determine what actions need to be taken to resume recovery"""
+    
+    current_step = progress['current_step']
+    completed_steps = [s['step'] for s in progress['steps_completed']]
+    
+    resume_actions = []
+    
+    # Check if current step needs to be restarted
+    in_progress_steps = [s for s in progress.get('steps_in_progress', [])
+                        if s['step'] == current_step]
+    
+    if in_progress_steps:
+        step_data = in_progress_steps[0]
+        if step_data['status'] == 'IN_PROGRESS':
+            # Verify if agent is still working
+            if step_data.get('assigned_to'):
+                agent_status = check_agent_status(step_data['assigned_to'])
+                if agent_status == 'FAILED' or agent_status == 'UNRESPONSIVE':
+                    resume_actions.append({
+                        'type': 'RESTART_STEP',
+                        'step': current_step,
+                        'reason': f'Agent {step_data["assigned_to"]} is {agent_status}'
+                    })
+                else:
+                    resume_actions.append({
+                        'type': 'CONTINUE_STEP',
+                        'step': current_step,
+                        'agent': step_data['assigned_to']
+                    })
+    
+    # Check if we need to rollback due to time constraints
+    time_data = calculate_remaining_time({'recovery_progress': progress})
+    if time_data['time_remaining_minutes'] < 5:
+        resume_actions.append({
+            'type': 'CONSIDER_ROLLBACK',
+            'reason': 'Insufficient time remaining for completion'
+        })
+    
+    return resume_actions
+```
+
+### Rollback Protocol
+
+```python
+def execute_emergency_rollback(checkpoint_data):
+    """Execute rollback to pre-error state if recovery fails"""
+    
+    print("🚨 EXECUTING EMERGENCY ROLLBACK")
+    
+    backup = checkpoint_data['original_state_backup']
+    
+    rollback_steps = [
+        {'action': 'STOP_ALL_RECOVERY_AGENTS', 'critical': True},
+        {'action': 'RESTORE_WORKING_DIRECTORIES', 'critical': True},
+        {'action': 'RESTORE_GIT_STATE', 'critical': True},
+        {'action': 'RESTORE_ORCHESTRATOR_STATE', 'critical': True},
+        {'action': 'RESTART_ORIGINAL_AGENTS', 'critical': False},
+        {'action': 'VALIDATE_ROLLBACK', 'critical': True}
+    ]
+    
+    rollback_results = []
+    
+    for step in rollback_steps:
+        try:
+            result = execute_rollback_step(step, backup)
+            rollback_results.append({
+                'step': step['action'],
+                'status': 'SUCCESS',
+                'result': result
+            })
+        except Exception as e:
+            rollback_results.append({
+                'step': step['action'],
+                'status': 'FAILED',
+                'error': str(e)
+            })
+            
+            # If critical step fails, escalate immediately
+            if step['critical']:
+                print(f"❌ CRITICAL ROLLBACK FAILURE: {step['action']}")
+                print(f"Error: {str(e)}")
+                return {
+                    'rollback_status': 'CRITICAL_FAILURE',
+                    'failed_step': step['action'],
+                    'action': 'IMMEDIATE_HUMAN_INTERVENTION'
+                }
+    
+    # Validate complete rollback
+    validation_result = validate_rollback_complete(backup, rollback_results)
+    
+    if validation_result['valid']:
+        return {
+            'rollback_status': 'SUCCESS',
+            'restored_state': validation_result['state'],
+            'action': 'RESUME_NORMAL_OPERATIONS'
+        }
+    else:
+        return {
+            'rollback_status': 'PARTIAL_FAILURE',
+            'issues': validation_result['issues'],
+            'action': 'MANUAL_RESTORATION_REQUIRED'
+        }
+```
+
+## State Persistence
+
+Save recovery checkpoint to multiple locations:
+
+```bash
+# Primary location
+CHECKPOINT_DIR="/workspaces/software-factory-2.0-template/checkpoints/active"
+ERROR_ID=$(date +%s)
+CHECKPOINT_FILE="$CHECKPOINT_DIR/orchestrator-error-recovery-${ERROR_ID}.yaml"
+
+# Backup location (critical for recovery scenarios)
+BACKUP_DIR="/workspaces/software-factory-2.0-template/checkpoints/recovery-backup"
+mkdir -p "$BACKUP_DIR"
+BACKUP_FILE="$BACKUP_DIR/error-recovery-latest.yaml"
+
+# Emergency backup (in case filesystem issues)
+EMERGENCY_BACKUP="/tmp/error-recovery-emergency-${ERROR_ID}.yaml"
+
+# Save to all locations
+cp "$CHECKPOINT_FILE" "$BACKUP_FILE"
+cp "$CHECKPOINT_FILE" "$EMERGENCY_BACKUP"
+
+# Commit to git immediately (critical)
+cd /workspaces/software-factory-2.0-template
+git add checkpoints/
+git commit -m "checkpoint: ERROR_RECOVERY state - ${ERROR_TYPE} recovery in progress"
+git push --force-with-lease  # Ensure backup even if conflicts
+```
+
+## Monitoring Recovery Health
+
+```python
+def monitor_recovery_health(checkpoint_data):
+    """Monitor recovery progress and detect issues"""
+    
+    health_indicators = {
+        'time_progress': calculate_time_utilization(checkpoint_data),
+        'step_completion_rate': calculate_step_velocity(checkpoint_data),
+        'agent_responsiveness': check_spawned_agent_health(checkpoint_data),
+        'resource_availability': check_system_resources(),
+        'external_dependencies': check_external_services()
+    }
+    
+    # Calculate overall health score
+    health_score = calculate_health_score(health_indicators)
+    
+    # Update checkpoint with health data
+    checkpoint_data['health_monitoring'] = {
+        'last_check': datetime.now().isoformat(),
+        'indicators': health_indicators,
+        'health_score': health_score,
+        'alerts': generate_health_alerts(health_indicators)
+    }
+    
+    return health_score
+
+def generate_health_alerts(indicators):
+    """Generate alerts based on health indicators"""
+    
+    alerts = []
+    
+    if indicators['time_progress']['utilization'] > 0.8:
+        alerts.append({
+            'type': 'TIME_WARNING',
+            'message': 'Recovery time utilization >80%',
+            'urgency': 'HIGH'
+        })
+    
+    if indicators['agent_responsiveness']['responsive_percentage'] < 90:
+        alerts.append({
+            'type': 'AGENT_WARNING',
+            'message': 'Some recovery agents unresponsive',
+            'urgency': 'MEDIUM'
+        })
+    
+    if indicators['resource_availability']['memory_usage'] > 0.9:
+        alerts.append({
+            'type': 'RESOURCE_WARNING',
+            'message': 'System memory usage >90%',
+            'urgency': 'HIGH'
+        })
+    
+    return alerts
+```
+
+## Checkpoint Cleanup
+
+```python
+def cleanup_recovery_checkpoints():
+    """Clean up old recovery checkpoints"""
+    
+    checkpoint_dir = "/workspaces/software-factory-2.0-template/checkpoints/active"
+    
+    # Keep last 5 recovery checkpoints
+    recovery_files = sorted([
+        f for f in os.listdir(checkpoint_dir)
+        if f.startswith('orchestrator-error-recovery-')
+    ], key=lambda f: os.path.getmtime(os.path.join(checkpoint_dir, f)), reverse=True)
+    
+    # Remove old files (but keep emergency backups longer)
+    for old_file in recovery_files[5:]:
+        file_path = os.path.join(checkpoint_dir, old_file)
+        
+        # Only remove if >24 hours old and not emergency backup
+        if (time.time() - os.path.getmtime(file_path)) > 86400:
+            if 'emergency' not in old_file:
+                os.remove(file_path)
+                print(f"Cleaned up old recovery checkpoint: {old_file}")
+```
+
+## Critical Recovery Points
+

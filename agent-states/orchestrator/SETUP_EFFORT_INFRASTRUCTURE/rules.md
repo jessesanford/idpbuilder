@@ -1,0 +1,510 @@
+# Orchestrator - SETUP_EFFORT_INFRASTRUCTURE State Rules
+
+## 🔴🔴🔴 STOP! STATE RULE READING IS ABSOLUTELY FIRST! 🔴🔴🔴
+
+**YOU HAVE ENTERED SETUP_EFFORT_INFRASTRUCTURE STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
+
+## 🔴🔴🔴 R290 VERIFICATION REQUIREMENT 🔴🔴🔴
+
+**R290 ENFORCEMENT: CREATE VERIFICATION MARKER AFTER READING**
+
+After reading and acknowledging all state rules, you MUST create a verification marker:
+
+```bash
+# MANDATORY: Create verification marker after reading rules
+touch .state_rules_read_orchestrator_SETUP_EFFORT_INFRASTRUCTURE
+echo "$(date +%s) - Rules read and acknowledged for SETUP_EFFORT_INFRASTRUCTURE" > .state_rules_read_orchestrator_SETUP_EFFORT_INFRASTRUCTURE
+```
+
+**FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**
+
+The system will check for this marker. No marker = Immediate failure.
+
+### ❌ DO NOT DO ANY SETUP_EFFORT_INFRASTRUCTURE WORK UNTIL RULES ARE READ:
+- ❌ Start create effort directories
+- ❌ Start set up branches
+- ❌ Start initialize effort tracking
+- ❌ Start configure worktrees
+- ❌ Update state files
+- ❌ Continue to next state
+- ❌ Think about what to do in this state
+
+### ✅ YOU MUST IMMEDIATELY:
+
+## 🔴🔴🔴 MANDATORY STATE RULE READING AND ACKNOWLEDGMENT 🔴🔴🔴
+
+### ⚠️⚠️⚠️ YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. **I AM WATCHING YOUR TOOL CALLS FOR READ OPERATIONS** *YOU WILL FAIL* IF YOU DO NOT MAKE A READ FILE CALL FOR EACH RULE FILE IN PRIMARY DIRECTIVES!!! ⚠️⚠️⚠️
+
+**AFTER READING, YOU MUST ACKNOWLEDGE ALL THE STATE RULES AND STATE THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION.**
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+
+1. **Fake Acknowledgment Without Reading**:
+   ```
+   ❌ WRONG: "I acknowledge R151, R208, R053..."
+   (No Read tool calls detected = AUTOMATIC FAILURE)
+   ```
+
+2. **Bulk Acknowledgment**:
+   ```
+   ❌ WRONG: "I acknowledge all SETUP_EFFORT_INFRASTRUCTURE rules"
+   (YOU Must READ AND ACKNOWLEDGE EACH rule individually)
+   ```
+
+3. **Silent Reading**:
+   ```
+   ❌ WRONG: [Reads rules but doesn't acknowledge]
+   "Now I've read the rules, let me start work..."
+   (MUST explicitly acknowledge EACH rule)
+   ```
+
+4. **Reading From Memory**:
+   ```
+   ❌ WRONG: "I know R208 requires CD before spawn..."
+   (Must READ from file, not recall from memory)
+   ```
+
+5. **Skipping Rules in PRIMARY DIRECTIVES**:
+   ```
+   ❌ WRONG: Reading only some rules from the list
+   (ALL rules in PRIMARY DIRECTIVES are MANDATORY)
+   ```
+
+### ✅ CORRECT PATTERN FOR SETUP_EFFORT_INFRASTRUCTURE:
+```
+1. READ: $CLAUDE_PROJECT_DIR/rule-library/[first-rule-file].md
+2. "I acknowledge [Rule#] - [Rule Name]: [Brief description]"
+3. READ: $CLAUDE_PROJECT_DIR/rule-library/[second-rule-file].md  
+4. "I acknowledge [Rule#] - [Rule Name]: [Brief description]"
+[Continue for EVERY rule in PRIMARY DIRECTIVES...]
+5. "Ready to execute SETUP_EFFORT_INFRASTRUCTURE work"
+```
+
+### 🚨 NO WORK UNTIL ACKNOWLEDGMENT COMPLETE 🚨
+**You may NOT begin ANY SETUP_EFFORT_INFRASTRUCTURE work until:**
+1. ✅ ALL rules in PRIMARY DIRECTIVES have been READ
+2. ✅ ALL rules have been individually ACKNOWLEDGED
+3. ✅ You have stated readiness to execute SETUP_EFFORT_INFRASTRUCTURE work
+1. **READ** every rule file listed in PRIMARY DIRECTIVES below
+2. **ACKNOWLEDGE** each rule individually with number and description
+3. **ONLY THEN** proceed with SETUP_EFFORT_INFRASTRUCTURE work
+
+### 🚨 FAILURE TO READ STATE RULES FIRST = IMMEDIATE EXIT 🚨
+**If you do ANY SETUP_EFFORT_INFRASTRUCTURE work before reading and acknowledging rules:**
+- **STOP ALL WORK IMMEDIATELY**
+- **EXIT WITH FAILURE STATUS**
+- **YOU HAVE VIOLATED STATE COMPLIANCE**
+
+**THE SYSTEM IS MONITORING YOUR READ TOOL CALLS!**
+
+## 📋 PRIMARY DIRECTIVES FOR SETUP_EFFORT_INFRASTRUCTURE
+
+**YOU MUST READ EACH RULE LISTED HERE. YOUR READ TOOL CALLS ARE BEING MONITORED.**
+
+### State-Specific Rules (NOT in orchestrator.md):
+1. **R191** - Target Repository Configuration
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R191-target-repo-config.md`
+   - Criticality: BLOCKING - Must load config before proceeding
+   
+2. **R176** - Workspace Isolation  
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R176-workspace-isolation.md`
+   - Criticality: BLOCKING - Ensure complete workspace isolation
+
+3. **R271** - Single-Branch Full Checkout Protocol
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R271-single-branch-full-checkout.md`
+   - Criticality: SUPREME LAW - Full single-branch checkout required
+
+4. **R308** - Incremental Branching Strategy
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R308-incremental-branching-strategy.md`
+   - Criticality: SUPREME LAW - Core tenant of trunk-based development
+
+**Note**: R234, R208, R221, R287, R288 are already in your orchestrator.md Supreme Laws section.
+
+## 📋 RULE SUMMARY FOR SETUP_EFFORT_INFRASTRUCTURE STATE
+
+### Rules Enforced in This State:
+- R234: Mandatory State Traversal [SUPREME LAW - NO SKIPPING!]
+- R208: CD Before Spawn [SUPREME LAW - Always CD first]
+- R221: Bash Directory Reset [SUPREME LAW - CD in every command]
+- R191: Target Repository Configuration [BLOCKING - Must load config]
+- R176: Effort Infrastructure Setup [BLOCKING - Create all directories]
+- R271: Full Checkouts Only [SUPREME LAW - No sparse checkouts]
+- R308: Incremental Branching [SUPREME LAW - Build on previous work]
+- R287: TODO Save Triggers [BLOCKING - Save within 30s]
+- R288: State File Update and Commit [SUPREME LAW - Update on transition]
+
+### Critical Requirements:
+1. Load target-repo-config.yaml FIRST - Penalty: -100%
+2. Determine INCREMENTAL base branch per R308 - Penalty: -100%
+3. Create ALL effort directories - Penalty: -50%
+4. Clone FULL repos (no sparse) - Penalty: -100%
+5. Clone from CORRECT incremental base - Penalty: -100%
+6. Push all branches to remote - Penalty: -30%
+7. Must transition to ANALYZE_CODE_REVIEWER_PARALLELIZATION - Penalty: -100%
+
+### Success Criteria:
+- ✅ Target config loaded and validated
+- ✅ All effort directories created under /efforts/
+- ✅ All repos are FULL clones (R271)
+- ✅ All branches pushed with tracking
+- ✅ work-log.md files initialized
+
+### Failure Triggers:
+- ❌ Skip to SPAWN_AGENTS = -100% R234 VIOLATION
+- ❌ Clone wrong repository = AUTOMATIC FAILURE
+- ❌ Sparse checkout detected = R271 VIOLATION
+- ❌ Missing target-repo-config.yaml = Cannot proceed
+
+## 🚨 SETUP_EFFORT_INFRASTRUCTURE IS A VERB - CREATE INFRASTRUCTURE NOW! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING SETUP_EFFORT_INFRASTRUCTURE
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Start creating effort directories NOW using prepare_effort_for_agent()
+2. Initialize Git branches for each effort immediately
+3. Set up remote tracking for all branches without delay
+4. Check TodoWrite for pending infrastructure tasks
+5. Create standard subdirectories (src/, tests/, docs/) immediately
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in SETUP_EFFORT_INFRASTRUCTURE" [stops]
+- ❌ "Successfully entered SETUP_EFFORT_INFRASTRUCTURE state" [waits]
+- ❌ "Ready to set up infrastructure" [pauses]
+- ❌ "I'm in infrastructure setup state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering SETUP_EFFORT_INFRASTRUCTURE, creating E3.1.1 directory now..."
+- ✅ "Setting up infrastructure, cloning repo for E3.1.1..."
+- ✅ "SETUP_EFFORT_INFRASTRUCTURE: Creating branch for E3.1.1..."
+
+## State Context
+You are setting up infrastructure for all efforts in the wave BEFORE spawning code reviewers to create effort plans - DO IT NOW!
+
+## 🔴🔴🔴 SUPREME LAW R234 - MANDATORY STATE TRAVERSAL 🔴🔴🔴
+
+**THIS IS THE HIGHEST LAW - SUPERSEDES ALL OTHER RULES!**
+
+### MANDATORY NEXT STATE: ANALYZE_CODE_REVIEWER_PARALLELIZATION
+
+**YOU MUST FOLLOW THIS EXACT SEQUENCE:**
+```
+SETUP_EFFORT_INFRASTRUCTURE (YOU ARE HERE)
+    ↓ (CANNOT SKIP - MANDATORY)
+ANALYZE_CODE_REVIEWER_PARALLELIZATION
+    ↓ (CANNOT SKIP - MANDATORY)
+SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+    ↓ (CANNOT SKIP - MANDATORY)
+WAITING_FOR_EFFORT_PLANS
+    ↓ (CANNOT SKIP - MANDATORY)
+ANALYZE_IMPLEMENTATION_PARALLELIZATION
+    ↓ (CANNOT SKIP - MANDATORY)
+SPAWN_AGENTS
+```
+
+**❌❌❌ FORBIDDEN TRANSITIONS (AUTOMATIC -100% FAILURE):**
+- ❌ SETUP_EFFORT_INFRASTRUCTURE → SPAWN_AGENTS (skipping analysis)
+- ❌ SETUP_EFFORT_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (skipping analysis)
+- ❌ ANY attempt to "optimize" by skipping states
+
+**ACKNOWLEDGMENT REQUIRED:**
+"I acknowledge R234: I MUST transition to ANALYZE_CODE_REVIEWER_PARALLELIZATION next, not skip ahead."
+
+## 🔴🔴🔴 CRITICAL: LOAD TARGET CONFIG FIRST (R191) 🔴🔴🔴
+
+### BEFORE ANY INFRASTRUCTURE SETUP, YOU MUST:
+```bash
+# MANDATORY FIRST ACTION IN THIS STATE
+echo "🔴 R191: Loading target repository configuration..."
+
+# Check if already loaded
+if [ -z "$TARGET_REPO_URL" ]; then
+    echo "⚠️ Target config not loaded, loading now..."
+    
+    if [ ! -f "$SF_ROOT/target-repo-config.yaml" ]; then
+        echo "🔴🔴🔴 CRITICAL: target-repo-config.yaml NOT FOUND!"
+        echo "Cannot set up infrastructure without knowing WHAT to clone!"
+        exit 191
+    fi
+    
+    # Load and validate config
+    TARGET_REPO_URL=$(yq '.target_repository.url' "$SF_ROOT/target-repo-config.yaml")
+    BASE_BRANCH=$(yq '.target_repository.base_branch' "$SF_ROOT/target-repo-config.yaml")
+    PROJECT_PREFIX=$(yq '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml")
+    
+    if [ -z "$TARGET_REPO_URL" ] || [ "$TARGET_REPO_URL" = "null" ]; then
+        echo "🔴 ERROR: No target repository URL in config!"
+        exit 191
+    fi
+    
+    export TARGET_REPO_URL
+    export BASE_BRANCH
+    export PROJECT_PREFIX
+fi
+
+echo "✅ Target repository: $TARGET_REPO_URL"
+echo "✅ This is what will be CLONED into efforts/"
+echo "⚠️ NEVER create code in the Software Factory repo itself!"
+```
+
+### UNDERSTAND THE TWO REPOSITORIES:
+1. **Software Factory Repo** = Where you are now (rules, agents, state)
+2. **Target Repo** = What you clone from config (actual project code)
+
+**VIOLATIONS THAT CAUSE FAILURE:**
+- Cloning the SF repo into efforts/ = WRONG REPO
+- Creating code in SF repo = WRONG LOCATION
+- Not having target-repo-config.yaml = CANNOT PROCEED
+
+## 🔴🔴🔴 MANDATORY: Infrastructure BEFORE Planning 🔴🔴🔴
+
+**THIS IS THE CORRECT SEQUENCE:**
+1. Architect creates Wave Architecture Plan
+2. Code Reviewer creates Wave Implementation Plan
+3. **Orchestrator sets up ALL effort infrastructure** ← YOU ARE HERE
+4. Code Reviewers create individual Effort Implementation Plans
+5. SW Engineers implement
+
+
+## Infrastructure Setup Protocol (R271 SUPREME LAW - Full Checkouts)
+
+```bash
+# MANDATORY: Use prepare_effort_for_agent() for EACH effort
+prepare_effort_for_agent() {
+    local PHASE=$1 WAVE=$2 EFFORT=$3
+    
+    echo "═══════════════════════════════════════════════════════"
+    echo "🔧 SETTING UP INFRASTRUCTURE FOR: $EFFORT"
+    echo "═══════════════════════════════════════════════════════"
+    
+    # 1. THINK - Determine the appropriate base branch
+    echo "🧠 THINKING: What base branch should $EFFORT be based on?"
+    
+    # Check dependencies in orchestrator-state.yaml
+    DEPENDENCIES=$(yq ".efforts_planned.\"$EFFORT\".depends_on[]" "$SF_ROOT/orchestrator-state.yaml" 2>/dev/null)
+    
+    if [ -z "$DEPENDENCIES" ] || [ "$DEPENDENCIES" = "null" ]; then
+        # No dependencies - use default base branch
+        BASE_BRANCH=$(yq '.target_repository.base_branch' "$SF_ROOT/target-repo-config.yaml")
+        if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
+            BASE_BRANCH="main"  # Fallback to main
+        fi
+        echo "📌 Decision: Using base branch '$BASE_BRANCH' (no dependencies)"
+    else
+        # Has dependencies - check if dependency branch exists
+        FIRST_DEP=$(echo "$DEPENDENCIES" | head -n1)
+        DEP_BRANCH=$(yq ".efforts_completed.\"$FIRST_DEP\".branch" "$SF_ROOT/orchestrator-state.yaml" 2>/dev/null)
+        if [ -n "$DEP_BRANCH" ] && [ "$DEP_BRANCH" != "null" ]; then
+            BASE_BRANCH="$DEP_BRANCH"
+            echo "📌 Decision: Using branch '$BASE_BRANCH' from dependency $FIRST_DEP"
+        else
+            BASE_BRANCH=$(yq '.target_repository.base_branch' "$SF_ROOT/target-repo-config.yaml")
+            echo "📌 Decision: Using default '$BASE_BRANCH' (dependency not ready)"
+        fi
+    fi
+    
+    # 2. Create effort directory under /efforts/ root
+    EFFORT_DIR="/efforts/phase${PHASE}/wave${WAVE}/${EFFORT}"
+    mkdir -p "$(dirname "$EFFORT_DIR")"
+    
+    # 3. SINGLE-BRANCH FULL CLONE (R271 Supreme Law)
+    echo "📦 Creating FULL clone from branch: $BASE_BRANCH"
+    
+    # CRITICAL: Get target repo URL from config (NOT the SF repo!)
+    TARGET_REPO_URL=$(yq '.target_repository.url' "$SF_ROOT/target-repo-config.yaml")
+    
+    if [ -z "$TARGET_REPO_URL" ] || [ "$TARGET_REPO_URL" = "null" ]; then
+        echo "🔴🔴🔴 R191 VIOLATION: No target repository URL!"
+        echo "Cannot clone without target-repo-config.yaml!"
+        exit 191
+    fi
+    
+    echo "🎯 Cloning TARGET repository: $TARGET_REPO_URL"
+    echo "⚠️ This is NOT the Software Factory repo!"
+    
+    git clone \
+        --single-branch \
+        --branch "$BASE_BRANCH" \
+        "$TARGET_REPO_URL" \
+        "$EFFORT_DIR"
+    
+    if [ $? -ne 0 ]; then
+        echo "❌ Clone failed! Check if base branch '$BASE_BRANCH' exists"
+        exit 1
+    fi
+    
+    cd "$EFFORT_DIR"
+    
+    # 4. Create and push effort branch (WITH PROJECT PREFIX!)
+    PROJECT_PREFIX=$(yq '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml")
+    if [ -n "$PROJECT_PREFIX" ] && [ "$PROJECT_PREFIX" != "null" ]; then
+        BRANCH="${PROJECT_PREFIX}/phase${PHASE}/wave${WAVE}/${EFFORT}"
+    else
+        BRANCH="phase${PHASE}/wave${WAVE}/${EFFORT}"
+    fi
+    
+    echo "🌿 Creating effort branch: $BRANCH"
+    git checkout -b "$BRANCH"
+    git push -u origin "$BRANCH"
+    
+    # 5. Create work-log.md with base branch documentation
+    echo "# Work Log for $EFFORT" > work-log.md
+    echo "" >> work-log.md
+    echo "## Infrastructure Details" >> work-log.md
+    echo "- **Branch**: $BRANCH" >> work-log.md
+    echo "- **Base Branch**: $BASE_BRANCH" >> work-log.md
+    echo "- **Clone Type**: FULL (R271 compliance)" >> work-log.md
+    echo "- **Created**: $(date)" >> work-log.md
+    echo "" >> work-log.md
+    echo "## Base Branch Selection Rationale" >> work-log.md
+    if [ -z "$DEPENDENCIES" ] || [ "$DEPENDENCIES" = "null" ]; then
+        echo "No dependencies - using repository default base branch" >> work-log.md
+    else
+        echo "Based on dependency: $DEPENDENCIES" >> work-log.md
+    fi
+    
+    # 6. Verify FULL workspace (R271 compliance check)
+    echo "🔍 Verifying full checkout..."
+    if [ -f ".git/info/sparse-checkout" ]; then
+        echo "🔴🔴🔴 SUPREME LAW VIOLATION: Sparse checkout detected!"
+        exit 1
+    fi
+    
+    # Show that we have the full codebase
+    echo "✅ Full codebase available:"
+    ls -la | head -10
+    echo "   ... (showing first 10 entries)"
+    
+    echo "✅ Infrastructure ready for $EFFORT with FULL code from $BASE_BRANCH"
+    cd "$SF_ROOT"  # Return to root
+}
+```
+
+## Example: Setting Up Wave Infrastructure
+
+```bash
+# Read wave plan to get effort list
+WAVE_PLAN="phase-plans/PHASE-1-WAVE-1-IMPLEMENTATION-PLAN.md"
+EFFORTS=$(grep "^## Effort" "$WAVE_PLAN" | sed 's/## Effort [0-9]*: //')
+
+# Setup infrastructure for ALL efforts
+for effort in $EFFORTS; do
+    prepare_effort_for_agent 1 1 "$effort"
+done
+
+echo "✅ All effort infrastructure ready"
+echo "📋 Ready to spawn Code Reviewers for effort planning"
+```
+
+## State Transition
+
+After ALL infrastructure is ready:
+1. Update orchestrator-state.yaml with effort directories
+2. Verify all branches pushed to remote
+3. **MANDATORY: Transition to ANALYZE_CODE_REVIEWER_PARALLELIZATION (R234)**
+   - DO NOT skip to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+   - DO NOT skip to SPAWN_AGENTS
+   - MUST follow the mandatory sequence!
+
+### TODO PERSISTENCE CHECKPOINT (R287-R287)
+```bash
+# Before state transition - MANDATORY SAVE
+echo "💾 R287: Saving TODOs before state transition..."
+save_todos "SETUP_EFFORT_INFRASTRUCTURE complete"
+
+# R287: Commit within 60 seconds
+cd $CLAUDE_PROJECT_DIR
+git add todos/*.todo
+git commit -m "todo: orchestrator - infrastructure setup complete"
+git push
+echo "✅ TODOs persisted before transition"
+```
+
+## 🚨🚨🚨 R209 - EFFORT DIRECTORY ISOLATION PROTOCOL (MISSION CRITICAL!)
+**Source:** rule-library/R209-effort-directory-isolation-protocol.md  
+**Criticality:** MISSION CRITICAL - SW Engineers MUST stay in effort directories  
+
+### MUST INJECT METADATA AND PUSH TO REMOTE!
+
+After Code Reviewer creates IMPLEMENTATION-PLAN.md, YOU MUST ADD DIRECTORY/BRANCH METADATA AND PUSH:
+
+```bash
+# 🚨 MANDATORY: Call this AFTER Code Reviewer creates plan, BEFORE spawning SW Engineer! 🚨
+inject_r209_metadata() {
+    local EFFORT_NAME="$1"
+    local PHASE="$2"
+    local WAVE="$3"
+    local IMPL_PLAN="efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}/IMPLEMENTATION-PLAN.md"
+    
+    echo "🔧 [R209] Injecting metadata for effort: $EFFORT_NAME"
+    
+    # Check if plan exists
+    if [ ! -f "$IMPL_PLAN" ]; then
+        echo "⚠️ ERROR: Implementation plan not found at: $IMPL_PLAN"
+        return 1
+    fi
+    
+    # Source branch naming helpers
+    source utilities/branch-naming-helpers.sh
+    
+    # Get properly formatted branch name with project prefix
+    EFFORT_BRANCH=$(get_effort_branch_name "$PHASE" "$WAVE" "$EFFORT_NAME")
+    
+    # Add metadata header
+    cat > /tmp/r209_metadata.md << EOF
+<!-- ⚠️ EFFORT INFRASTRUCTURE METADATA (R209) ⚠️ -->
+**EFFORT_NAME**: ${EFFORT_NAME}
+**PHASE**: ${PHASE}
+**WAVE**: ${WAVE}
+**WORKING_DIRECTORY**: $(pwd)/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}
+**BRANCH**: ${EFFORT_BRANCH}
+**REMOTE**: origin/${EFFORT_BRANCH}
+**ISOLATION_BOUNDARY**: efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}
+
+⚠️ **SW ENGINEER: YOU MUST STAY IN THIS DIRECTORY!** ⚠️
+ALL work happens in: efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}
+ALL code goes in: efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}/pkg/
+NEVER leave this directory during implementation!
+<!-- END METADATA -->
+
+EOF
+    
+    # Prepend to plan
+    cat /tmp/r209_metadata.md "$IMPL_PLAN" > /tmp/updated_plan.md
+    mv /tmp/updated_plan.md "$IMPL_PLAN"
+    echo "✅ R209: Metadata injected"
+    
+    # 🔴 CRITICAL: Push to remote!
+    ORCH_DIR=$(pwd)
+    cd "efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+    
+    git add IMPLEMENTATION-PLAN.md
+    git commit -m "feat: inject R209 metadata into implementation plan"
+    
+    if git push; then
+        echo "✅ Plan with R209 metadata pushed to remote"
+    else
+        git push -u origin "$(git branch --show-current)"
+    fi
+    
+    cd "$ORCH_DIR"
+}
+```
+
+### MANDATORY WORKFLOW:
+1. Code Reviewer creates IMPLEMENTATION-PLAN.md
+2. **WAIT FOR COMPLETION**
+3. **INJECT R209 METADATA** (orchestrator does this)
+4. **PUSH TO REMOTE**
+5. Then spawn SW Engineer
+
+**Note:** This metadata injection typically happens in WAITING_FOR_EFFORT_PLANS state, but the infrastructure must be ready in SETUP_EFFORT_INFRASTRUCTURE.
+
+## Common Mistakes to Avoid
+
+❌ **WRONG:** Spawning Code Reviewers before creating directories
+❌ **WRONG:** Forgetting project prefix in branch names
+❌ **WRONG:** Not pushing branches to remote
+❌ **WRONG:** Creating infrastructure one-by-one as needed
+❌ **WRONG:** Not injecting R209 metadata before spawning SW Engineers
+
+✅ **CORRECT:** Create ALL infrastructure first, inject metadata, then spawn agents

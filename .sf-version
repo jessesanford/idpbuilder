@@ -1,0 +1,7 @@
+version: 2.0
+upgraded_at: 20250902-160850
+upgraded_from: /home/vscode/software-factory-template
+template_commit: 45aef5fe629a4b6b3a8bcb2a454fd84356ff7742
+template_branch: main
+template_remote: https://github.com/jessesanford/software-factory-template.git
+upgrade_date: 2025-09-02T16:08:50Z

@@ -1,0 +1,16 @@
+# Code Reviewer TODOs - Trigger: WAVE_MERGE_PLAN_COMPLETE
+# State: INTEGRATION_PLANNING
+# Effort: phase1/wave2/integration-workspace
+# Timestamp: 2025-09-01T15:30:00Z
+
+## Completed Tasks
+- [x] Create WAVE-MERGE-PLAN.md with merge instructions
+- [x] Analyze branch dependencies and merge order
+- [x] Document conflict resolution strategy
+- [x] Include verification steps
+
+## Merge Plan Summary
+- E1.2.1 (certificate-validation-pipeline): Merge FIRST (older base)
+- E1.2.2 (fallback-strategies): Merge SECOND (newer base)
+- No file conflicts detected between efforts
+- Total expected lines: 1,175

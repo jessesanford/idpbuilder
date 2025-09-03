@@ -1,0 +1,41 @@
+# Orchestrator - SPAWN_CODE_REVIEWER_WAVE_IMPL State Rules
+
+## 🚨 SPAWN_CODE_REVIEWER_WAVE_IMPL IS A VERB - START SPAWNING CODE REVIEWER IMMEDIATELY! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING SPAWN_CODE_REVIEWER_WAVE_IMPL
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Spawn Code Reviewer to translate Wave architecture NOW
+2. Include wave architecture plan in spawn
+3. Check TodoWrite for pending items and process them
+4. Request wave implementation plan immediately
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in SPAWN_CODE_REVIEWER_WAVE_IMPL" [stops]
+- ❌ "Successfully entered SPAWN_CODE_REVIEWER_WAVE_IMPL state" [waits]
+- ❌ "Ready to start spawning code reviewer" [pauses]
+- ❌ "I'm in SPAWN_CODE_REVIEWER_WAVE_IMPL state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering SPAWN_CODE_REVIEWER_WAVE_IMPL, Spawn Code Reviewer to translate Wave architecture NOW..."
+- ✅ "START SPAWNING CODE REVIEWER, include wave architecture plan in spawn..."
+- ✅ "SPAWN_CODE_REVIEWER_WAVE_IMPL: Request wave implementation plan immediately..."
+
+## State Context
+This is the SPAWN_CODE_REVIEWER_WAVE_IMPL state for the orchestrator.
+
+## Acknowledgment Required
+Thank you for reading the rules file for the SPAWN_CODE_REVIEWER_WAVE_IMPL state.
+
+**IMPORTANT**: Please report that you have successfully read the SPAWN_CODE_REVIEWER_WAVE_IMPL rules file.
+
+Say: "✅ Successfully read SPAWN_CODE_REVIEWER_WAVE_IMPL rules for orchestrator"
+
+## State-Specific Rules
+No additional state-specific rules are defined for this state at this time.
+
+## General Responsibilities
+Follow all general orchestrator rules and the Software Factory state machine.
+
+## Next Steps
+Proceed with the standard workflow for the SPAWN_CODE_REVIEWER_WAVE_IMPL state as defined in the state machine.
