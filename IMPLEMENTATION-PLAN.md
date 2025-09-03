@@ -1,359 +1,340 @@
-# Certificate Validation Pipeline Implementation Plan
+# SPLIT-PLAN-004: Complete Test Suite and Integration
 
-**Effort ID**: E1.2.1  
-**Effort Name**: certificate-validation-pipeline  
-**Phase**: 1 - Certificate Infrastructure  
-**Wave**: 2 - Certificate Validation & Fallback  
-**Created By**: Code Reviewer (code-reviewer)  
-**Date Created**: 2025-08-31  
-**Assigned To**: SW Engineer 1  
+## Split 004 of 4: Remaining Tests and Full Integration
+**Planner**: Code Reviewer code-reviewer (same for ALL splits)
+**Parent Effort**: go-containerregistry-image-builder
+**Target Size**: ~635 lines (well under 800 limit)
 
-## =¨ CRITICAL EFFORT METADATA (FROM WAVE PLAN)
-**Branch**: `idpbuidler-oci-go-cr/phase1/wave2/certificate-validation-pipeline`
-**Can Parallelize**: Yes
-**Parallel With**: E1.2.2 (fallback-strategies)
-**Size Estimate**: ~400 lines
-**Dependencies**: E1.1.1 (kind-certificate-extraction), E1.1.2 (registry-tls-trust-integration)
-
-<!--   ORCHESTRATOR METADATA PLACEHOLDER - DO NOT REMOVE   -->
+<!-- ORCHESTRATOR METADATA PLACEHOLDER - DO NOT REMOVE -->
 <!-- The orchestrator will add infrastructure metadata below: -->
 <!-- WORKING_DIRECTORY, BRANCH, REMOTE, BASE_BRANCH, etc. -->
 <!-- SW Engineers MUST read this metadata to navigate to the correct directory -->
 <!-- END PLACEHOLDER -->
 
-## =Ë Effort Overview
+## Boundaries (CRITICAL: All splits MUST reference SAME effort!)
 
-### Description
-This effort implements a comprehensive certificate validation pipeline that validates X.509 certificate chains, checks expiry dates with warnings for soon-to-expire certificates, and verifies hostname matching including wildcard support. It provides clear diagnostics for troubleshooting certificate issues, a critical component for the self-signed certificate handling in the IDPBuilder OCI MVP.
+- **Previous Split**: Split 003 of phase2/wave1/go-containerregistry-image-builder
+  - Path: efforts/phase2/wave1/go-containerregistry-image-builder/split-003/
+  - Branch: idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-003
+  - Summary: Implemented tarball operations and tests up to line 350
+  
+- **This Split**: Split 004 of phase2/wave1/go-containerregistry-image-builder (FINAL)
+  - Path: efforts/phase2/wave1/go-containerregistry-image-builder/split-004/
+  - Branch: idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-004
+  
+- **Next Split**: None (this is the final split)
 
-### Size Estimate
-- **Estimated Lines**: 400 (well within limit)
-- **Confidence Level**: High
-- **Split Risk**: Low
+## Files in This Split (EXCLUSIVE - no overlap)
 
-### Dependencies
-- **Requires**: 
-  - E1.1.1 (kind-certificate-extraction) - Provides extracted certificates to validate
-  - E1.1.2 (registry-tls-trust-integration) - Uses trust store for chain validation
-- **Blocks**: 
-  - E2.1.2 (gitea-registry-client) - Needs validation before push operations
-- **External**: 
-  - Standard library crypto/x509 for certificate operations
-  - Standard library time for expiry calculations
+1. **pkg/builder/builder_test.go** (lines 351-674) (~324 lines)
+   - Remainder of test file
+   - Advanced test scenarios
+   - Integration tests
+   - Performance tests
+   
+2. **pkg/builder/testdata/** (~25 lines)
+   - Dockerfile samples
+   - Test content files
+   - Configuration samples
+   - Mock data
 
-## <¯ Requirements
-
-### Functional Requirements
-- [ ] Validate complete X.509 certificate chains against system and custom trust stores
-- [ ] Check certificate expiry with configurable warning threshold (default 30 days)
-- [ ] Verify hostname matches certificate CN/SAN including wildcard support
-- [ ] Generate comprehensive diagnostics for all validation failures
-- [ ] Support both self-signed and CA-signed certificates
-
-### Non-Functional Requirements
-- [ ] Performance: Validation must complete in <100ms for typical certificates
-- [ ] Security: Never bypass validation without explicit user consent
-- [ ] Maintainability: Clear separation of validation concerns
-- [ ] Scalability: Support validation of multiple certificates concurrently
-
-### Acceptance Criteria
-- [ ] All unit tests passing
-- [ ] Test coverage e 80%
-- [ ] Code review approved
-- [ ] Size d 800 lines (measured with line-counter.sh)
-- [ ] No critical TODOs
-- [ ] Documentation complete
-
-## =Á Implementation Details
-
-### Files to Create
-| File Path | Purpose | Estimated Lines |
-|-----------|---------|-----------------|
-| `pkg/certs/validator.go` | Main validation logic and CertValidator interface | 180 |
-| `pkg/certs/diagnostics.go` | Diagnostic generation and formatting | 80 |
-| `pkg/certs/validator_test.go` | Comprehensive test suite | 120 |
-| `pkg/certs/testdata/certs.go` | Test certificate fixtures | 20 |
-| **Total** | | 400 |
-
-### Files to Modify
-None - this is a new component that will be integrated by consumers.
-
-### Key Components
-
-#### Component 1: CertValidator Interface
-**Purpose**: Define the contract for certificate validation operations  
-**Location**: `pkg/certs/validator.go`  
-**Lines**: ~40  
-
-```go
-// CertValidator provides comprehensive X.509 certificate validation
-type CertValidator interface {
-    // ValidateChain verifies the certificate chain against trusted roots
-    ValidateChain(cert *x509.Certificate) error
-    
-    // CheckExpiry checks if certificate is expired or expiring soon
-    // Returns remaining validity duration and any warnings
-    CheckExpiry(cert *x509.Certificate) (*time.Duration, error)
-    
-    // VerifyHostname checks if the certificate is valid for the given hostname
-    VerifyHostname(cert *x509.Certificate, hostname string) error
-    
-    // GenerateDiagnostics creates a detailed diagnostic report for the certificate
-    GenerateDiagnostics(cert *x509.Certificate) (*CertDiagnostics, error)
-}
-
-// CertDiagnostics contains detailed information about certificate validation
-type CertDiagnostics struct {
-    Subject         string
-    Issuer          string
-    SerialNumber    string
-    NotBefore       time.Time
-    NotAfter        time.Time
-    DNSNames        []string
-    IPAddresses     []net.IP
-    ValidationErrors []ValidationError
-    Warnings        []string
-}
-
-// ValidationError represents a specific validation failure
-type ValidationError struct {
-    Type    string // "chain", "expiry", "hostname", etc.
-    Message string
-    Detail  string
-}
-```
-
-#### Component 2: DefaultValidator Implementation
-**Purpose**: Concrete implementation of CertValidator with integration to trust store  
-**Location**: `pkg/certs/validator.go`  
-**Lines**: ~140  
-
-```go
-// DefaultValidator implements CertValidator with configurable options
-type DefaultValidator struct {
-    trustStore      *TrustStoreManager // From E1.1.2
-    expiryWarning   time.Duration      // Default 30 days
-    systemRoots     *x509.CertPool     // System CA certificates
-    customRoots     *x509.CertPool     // Custom CA certificates from trust store
-}
-
-// NewValidator creates a validator with trust store integration
-func NewValidator(trustStore *TrustStoreManager) (*DefaultValidator, error) {
-    // Load system roots
-    // Initialize custom roots from trust store
-    // Set default expiry warning
-    return validator, nil
-}
-
-// ValidateChain implementation with detailed error reporting
-func (v *DefaultValidator) ValidateChain(cert *x509.Certificate) error {
-    // Build verification options
-    // Try system roots first
-    // Fall back to custom roots
-    // Return detailed error on failure
-}
-
-// CheckExpiry with configurable warning threshold
-func (v *DefaultValidator) CheckExpiry(cert *x509.Certificate) (*time.Duration, error) {
-    // Calculate time until expiry
-    // Check if expired
-    // Check if within warning threshold
-    // Return duration and any warnings
-}
-
-// VerifyHostname with wildcard support
-func (v *DefaultValidator) VerifyHostname(cert *x509.Certificate, hostname string) error {
-    // Use x509.VerifyHostname
-    // Provide clear error messages
-    // List valid hostnames in error
-}
-```
-
-#### Component 3: Diagnostic Generator
-**Purpose**: Generate human-readable diagnostic reports for troubleshooting  
-**Location**: `pkg/certs/diagnostics.go`  
-**Lines**: ~80  
-
-```go
-// GenerateDiagnostics creates comprehensive diagnostic report
-func (v *DefaultValidator) GenerateDiagnostics(cert *x509.Certificate) (*CertDiagnostics, error) {
-    diag := &CertDiagnostics{
-        Subject:      cert.Subject.String(),
-        Issuer:       cert.Issuer.String(),
-        SerialNumber: cert.SerialNumber.String(),
-        NotBefore:    cert.NotBefore,
-        NotAfter:     cert.NotAfter,
-        DNSNames:     cert.DNSNames,
-        IPAddresses:  cert.IPAddresses,
-    }
-    
-    // Run all validations and collect errors
-    // Add warnings for soon-to-expire
-    // Format for human readability
-    
-    return diag, nil
-}
-
-// FormatDiagnostics returns human-readable diagnostic output
-func FormatDiagnostics(diag *CertDiagnostics) string {
-    // Format as clear, structured text
-    // Include all relevant details
-    // Highlight errors and warnings
-}
-```
-
-## >ê Testing Strategy
-
-### Unit Tests Required
-- [ ] Test file: `pkg/certs/validator_test.go`
-- [ ] Coverage target: 80%
-- [ ] Test cases:
-  - [ ] Valid certificate chain validation
-  - [ ] Self-signed certificate validation
-  - [ ] Expired certificate detection
-  - [ ] Soon-to-expire warning (< 30 days)
-  - [ ] Hostname match validation
-  - [ ] Wildcard certificate matching
-  - [ ] Hostname mismatch error
-  - [ ] Chain validation with missing intermediate
-  - [ ] Diagnostic generation for various scenarios
-
-### Test Fixtures
-```go
-// pkg/certs/testdata/certs.go
-// Generate test certificates for various scenarios:
-// - Valid certificate
-// - Expired certificate  
-// - Self-signed certificate
-// - Certificate with wildcard CN
-// - Certificate with SAN entries
-// - Certificate expiring in 15 days
-```
-
-### Integration Tests
-- [ ] Integration with trust store from E1.1.2
-- [ ] Validation of real Gitea certificates from E1.1.1
-- [ ] End-to-end validation pipeline
-
-## = Integration Points
-
-### With E1.1.1 (kind-certificate-extraction)
-- Receive extracted certificates for validation
-- Use KindCertExtractor.ExtractGiteaCert() output as input
-
-### With E1.1.2 (registry-tls-trust-integration)  
-- Use TrustStoreManager for custom CA certificates
-- Integrate with trust store for chain validation
-
-### With E1.2.2 (fallback-strategies)
-- Provide validation errors for fallback handler
-- Generate diagnostics for fallback recommendations
-
-### With Future E2.1.2 (gitea-registry-client)
-- Called before any registry push operation
-- Validation errors trigger fallback strategies
-
-## =Ê Size Management Strategy
-
-### Measurement Protocol
-```bash
-# Measure using project line counter (R200 compliance)
-cd /home/vscode/workspaces/idpbuilder-oci-go-cr/efforts/phase1/wave2/certificate-validation-pipeline
-$PROJECT_ROOT/tools/line-counter.sh
-
-# Check points:
-# - After validator.go implementation (~180 lines)
-# - After diagnostics.go implementation (~260 lines)  
-# - After tests implementation (~380 lines)
-# - Final measurement (~400 lines)
-```
-
-### Split Prevention
-- Core validation logic kept concise (~180 lines)
-- Diagnostics separated to own file (~80 lines)
-- Test fixtures minimal (~20 lines)
-- Total well under 800 line limit with 400 line buffer
-
-## =€ Implementation Sequence
-
-1. **Define Interfaces and Types** (30 min)
-   - Create CertValidator interface
-   - Define CertDiagnostics struct
-   - Define ValidationError type
-
-2. **Implement Core Validation** (2 hours)
-   - ValidateChain with trust store integration
-   - CheckExpiry with warning threshold
-   - VerifyHostname with wildcard support
-
-3. **Add Diagnostic Generation** (1 hour)
-   - GenerateDiagnostics method
-   - FormatDiagnostics helper
-   - Error collection and formatting
-
-4. **Create Test Suite** (2 hours)
-   - Generate test certificates
-   - Unit tests for all methods
-   - Integration test with trust store
-
-5. **Documentation** (30 min)
-   - Code comments
+3. **Integration and documentation** (~286 lines)
+   - Integration test scenarios
    - Package documentation
-   - Usage examples
+   - README updates
+   - Example usage code
 
-## =Ý Notes for SW Engineer
+**Total Estimated**: ~635 lines
 
-### Critical Considerations
-1. **Trust Store Integration**: Must use TrustStoreManager from E1.1.2 for custom roots
-2. **Clear Error Messages**: Each validation failure must have actionable error message
-3. **Expiry Warning**: Default to 30 days but make configurable
-4. **Wildcard Support**: Use standard x509.VerifyHostname which handles wildcards
-5. **Diagnostic Output**: Should be human-readable and help troubleshooting
+## Functionality Scope
 
-### Example Usage
+### Core Responsibilities
+1. Complete the comprehensive test suite
+2. Add integration test scenarios
+3. Provide test data and fixtures
+4. Ensure full code coverage
+5. Add package documentation
+6. Verify end-to-end functionality
+
+### Key Components to Implement
 ```go
-// Create validator with trust store
-trustStore := getTrustStoreFromE112()
-validator, err := NewValidator(trustStore)
-
-// Validate a certificate
-cert := getCertificateFromE111()
-if err := validator.ValidateChain(cert); err != nil {
-    // Generate diagnostics for troubleshooting
-    diag, _ := validator.GenerateDiagnostics(cert)
-    fmt.Println(FormatDiagnostics(diag))
-    return err
-}
-
-// Check expiry
-duration, err := validator.CheckExpiry(cert)
-if err != nil {
-    log.Warnf("Certificate expiring soon: %v", duration)
-}
-
-// Verify hostname
-if err := validator.VerifyHostname(cert, "gitea.local"); err != nil {
-    return fmt.Errorf("hostname verification failed: %w", err)
-}
+- Advanced builder tests (lines 351-674)
+- Multi-stage build tests
+- Registry interaction tests
+- Performance benchmarks
+- Test fixtures and data
+- Documentation and examples
 ```
 
-### Dependencies to Import
-```go
-import (
-    "crypto/x509"
-    "fmt"
-    "net"
-    "time"
-    
-    // From other efforts
-    "github.com/idpbuilder/idpbuilder-oci-go-cr/pkg/certs" // TrustStoreManager from E1.1.2
-)
+## Dependencies
+
+### From Previous Splits
+- **Split 001**: All configuration types
+- **Split 002**: Builder and layer implementations
+- **Split 003**: Tarball operations, first part of tests
+
+### This Split Completes
+- Full test coverage for the entire package
+- Integration verification
+- Documentation and examples
+
+## Implementation Instructions
+
+### Step 1: Environment Setup
+```bash
+# Navigate to split directory
+cd efforts/phase2/wave1/go-containerregistry-image-builder/split-004/
+
+# Verify branch
+git branch --show-current  # Should show split-004 branch
+
+# Merge all previous splits
+git merge origin/idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-003
 ```
 
-##  Review Checklist
-- [ ] All functional requirements addressed
-- [ ] Size within 400 line estimate
-- [ ] Test coverage plan adequate
-- [ ] Integration points clear
-- [ ] Dependencies properly identified
-- [ ] Implementation sequence logical
+### Step 2: Complete builder_test.go (Lines 351-674)
+```bash
+# Continue the test file from line 351
+# Edit pkg/builder/builder_test.go
+```
+
+Add remaining tests:
+```go
+// Starting from line 351...
+func TestMultiStageBuild(t *testing.T)
+func TestRegistryPush(t *testing.T)
+func TestRegistryPull(t *testing.T)
+func TestBuildCache(t *testing.T)
+func TestConcurrentBuilds(t *testing.T)
+func TestLargeImageBuild(t *testing.T)
+func TestBuildFromDockerfile(t *testing.T)
+func TestLayerReuse(t *testing.T)
+func TestPlatformSpecificBuild(t *testing.T)
+// ... continue to line 674
+```
+
+### Step 3: Create Test Data
+```bash
+# Create testdata directory and files
+mkdir -p pkg/builder/testdata
+mkdir -p pkg/builder/testdata/content
+
+# Create sample Dockerfile
+cat > pkg/builder/testdata/Dockerfile << 'EOF'
+FROM alpine:latest
+RUN apk add --no-cache curl
+COPY content/ /app/
+WORKDIR /app
+CMD ["./run.sh"]
+EOF
+
+# Create test content files
+echo "test application content" > pkg/builder/testdata/content/app.txt
+cat > pkg/builder/testdata/content/config.yaml << 'EOF'
+version: 1.0
+settings:
+  debug: true
+  port: 8080
+EOF
+```
+
+### Step 4: Add Integration Tests
+```bash
+# Create integration test file
+touch pkg/builder/integration_test.go
+```
+
+Implement:
+- End-to-end build scenarios
+- Real registry interaction tests (with mocks)
+- Multi-architecture builds
+- Cache efficiency tests
+- Performance benchmarks
+
+### Step 5: Add Documentation
+```bash
+# Update or create package documentation
+cat > pkg/builder/doc.go << 'EOF'
+// Package builder provides functionality for building OCI container images
+// using the go-containerregistry library.
+//
+// The builder supports:
+// - Creating images from scratch
+// - Adding layers from tarballs
+// - Multi-stage builds
+// - Registry push/pull operations
+// - Layer caching for efficiency
+//
+// Example usage:
+//
+//   cfg := &BuildConfig{
+//       Registry: "docker.io",
+//       Repository: "myapp",
+//       Tag: "latest",
+//   }
+//   
+//   b := NewBuilder(cfg)
+//   img, err := b.Build(ctx)
+//   if err != nil {
+//       log.Fatal(err)
+//   }
+//
+package builder
+EOF
+```
+
+### Step 6: Add Examples
+```bash
+# Create example file
+touch pkg/builder/example_test.go
+```
+
+Add example functions:
+```go
+func ExampleBuilder_Build()
+func ExampleCreateTarball()
+func ExampleBuilder_Push()
+```
+
+### Step 7: Verify Full Integration
+```bash
+# Run all tests
+go test ./pkg/builder/... -v -cover
+
+# Ensure coverage is >80%
+go test ./pkg/builder/... -coverprofile=coverage.out
+go tool cover -html=coverage.out
+
+# Run benchmarks
+go test ./pkg/builder/... -bench=.
+
+# Check for race conditions
+go test ./pkg/builder/... -race
+```
+
+### Step 8: Final Size Measurement
+```bash
+# Measure the complete implementation
+PROJECT_ROOT=$(pwd)
+while [ "$PROJECT_ROOT" != "/" ]; do 
+    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then break; fi
+    PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
+done
+
+# Check this split's addition
+$PROJECT_ROOT/tools/line-counter.sh -b idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-003 -c $(git branch --show-current)
+
+# Should show ~635 new lines
+```
+
+### Step 9: Commit Final Implementation
+```bash
+# Add all remaining files
+git add pkg/builder/
+git add -A
+
+# Final commit
+git commit -m "feat(split-004): complete test suite and integration
+
+- Complete builder_test.go (lines 351-674)
+- Add comprehensive test data and fixtures
+- Include integration tests and benchmarks
+- Add package documentation and examples
+- Achieve >80% test coverage
+
+Part 4 of 4 in go-containerregistry-image-builder effort
+FINAL SPLIT - Ready for integration"
+
+# Push
+git push origin $(git branch --show-current)
+```
+
+## Success Criteria
+
+1. âœ… All tests complete and passing
+2. âœ… Test coverage >80% for entire package
+3. âœ… Integration tests validate end-to-end
+4. âœ… Benchmarks show acceptable performance
+5. âœ… Documentation comprehensive
+6. âœ… Examples clear and runnable
+7. âœ… Total lines under 700 for this split
+8. âœ… Full effort ready for merge
+
+## Testing Requirements
+
+### Remaining Tests Must Cover:
+- Multi-stage build scenarios
+- Registry operations (with mocks)
+- Concurrent build operations
+- Large image handling
+- Cache effectiveness
+- Platform-specific builds
+- Error recovery scenarios
+- Performance characteristics
+
+### Quality Metrics:
+- Coverage: >80% overall
+- No race conditions
+- All benchmarks pass
+- Examples compile and run
+- Documentation builds correctly
+
+### Final Validation:
+```bash
+# Run full test suite
+go test ./... -v -cover -race
+
+# Verify examples
+go test ./pkg/builder/... -run Example
+
+# Check lint
+golangci-lint run ./...
+```
+
+## Review Checklist
+
+Before marking complete:
+- [ ] All 4 splits integrate cleanly
+- [ ] Total implementation is 2585 lines (Â±50)
+- [ ] Tests achieve >80% coverage
+- [ ] No functionality lost from original
+- [ ] Documentation complete
+- [ ] Examples working
+- [ ] Performance acceptable
+- [ ] Ready for production use
+
+## Notes for SW Engineer
+
+- This is the final split - ensure everything integrates
+- Focus on comprehensive test coverage
+- Document any known limitations
+- Ensure examples demonstrate key features
+- Run full regression testing
+- Verify no functionality was lost in splitting
+- Prepare summary for review
+
+## Final Integration Notes
+
+### After This Split Completes:
+1. All 4 splits should be reviewed
+2. Branches should be merged sequentially:
+   - split-001 â†’ main effort branch
+   - split-002 â†’ main effort branch
+   - split-003 â†’ main effort branch
+   - split-004 â†’ main effort branch
+3. Final effort branch ready for phase integration
+
+### Verification Steps:
+1. Full package compiles
+2. All tests pass
+3. Coverage meets requirements
+4. Line count within limits
+5. Documentation complete
+6. No regressions from original
+
+### Success Indicators:
+- Clean merge of all splits
+- No conflicts between splits
+- Functionality preserved
+- Performance maintained
+- Quality metrics met
