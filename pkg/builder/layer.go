@@ -215,16 +215,22 @@ func (lf *LayerFactory) prepareFileEntries(files []FileEntry, opts LayerOptions)
 
 // createLayerFromEntries creates a layer from prepared file entries.
 func (lf *LayerFactory) createLayerFromEntries(ctx context.Context, entries []FileEntry, opts LayerOptions) (v1.Layer, error) {
-	// For now, create a simple empty layer
-	// In the full implementation, this would create a proper tar archive
-	// with all the file entries
+	// Now using full tarball implementation from split-002b
+	tarballOpts := TarballOptions{
+		TimestampPolicy: lf.TimestampPolicy,
+		PreserveOwner:   opts.PreserveOwner,
+		DefaultMode:     opts.DefaultMode,
+	}
 	
-	// This is a simplified implementation for split-002a
-	// Full tarball generation will be in split-002b
+	if tarballOpts.DefaultMode == 0 {
+		tarballOpts.DefaultMode = lf.PermissionMode
+	}
+
+	writer := NewTarballWriter(tarballOpts)
 	
-	layer, err := lf.CreateEmptyLayer()
+	layer, err := writer.CreateLayerFromFiles(ctx, entries)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create base layer: %w", err)
+		return nil, fmt.Errorf("failed to create layer from files: %w", err)
 	}
 
 	return layer, nil

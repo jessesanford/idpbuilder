@@ -91,20 +91,10 @@ func WithDefaultBuildOptions(opts *BuildOptions) BuilderOption {
 	}
 }
 
-// Build creates a container image - stub implementation for Split 001.
+// Build creates a container image - now implemented in Split 002b.
 func (b *SimpleBuilder) Build(ctx context.Context, contextDir string, opts BuildOptions) (v1.Image, error) {
-	if ctx == nil {
-		return nil, fmt.Errorf("context cannot be nil")
-	}
-	if contextDir == "" {
-		return nil, fmt.Errorf("context directory cannot be empty")
-	}
-	
-	// Basic validation - detailed validation will be done by config factory
-	if !b.featureFlags[FeatureTarballExport] {
-		return nil, fmt.Errorf("tarball export not enabled - implementation in Split 002")
-	}
-	return nil, fmt.Errorf("Build method not implemented in Split 001 - completed in Split 002")
+	// Delegate to the full implementation
+	return b.BuildFromContext(ctx, contextDir, opts)
 }
 
 // GetSupportedFeatures returns a list of supported features.
