@@ -339,3 +339,68 @@ func TestSimpleBuilder_GetDefaultBuildOptions(t *testing.T) {
 		t.Error("GetDefaultBuildOptions should return different objects")
 	}
 }
+
+func TestSimpleBuilder_SetBuildOption(t *testing.T) {
+	builder, err := NewBuilder()
+	if err != nil {
+		t.Fatalf("NewBuilder() error = %v", err)
+	}
+	
+	simpleBuilder := builder.(*SimpleBuilder)
+	
+	// Test setting working directory
+	err = simpleBuilder.SetBuildOption("working_dir", "/test")
+	if err != nil {
+		t.Errorf("SetBuildOption() error = %v", err)
+	}
+	
+	value, err := simpleBuilder.GetBuildOption("working_dir")
+	if err != nil {
+		t.Errorf("GetBuildOption() error = %v", err)
+	}
+	if value != "/test" {
+		t.Errorf("Expected working_dir '/test', got '%s'", value)
+	}
+	
+	// Test setting user
+	err = simpleBuilder.SetBuildOption("user", "testuser")
+	if err != nil {
+		t.Errorf("SetBuildOption() error = %v", err)
+	}
+	
+	// Test invalid option
+	err = simpleBuilder.SetBuildOption("invalid", "value")
+	if err == nil {
+		t.Error("SetBuildOption with invalid key should return error")
+	}
+	
+	// Test invalid type
+	err = simpleBuilder.SetBuildOption("working_dir", 123)
+	if err == nil {
+		t.Error("SetBuildOption with invalid type should return error")
+	}
+}
+
+func TestSimpleBuilder_GetBuildOption(t *testing.T) {
+	builder, err := NewBuilder()
+	if err != nil {
+		t.Fatalf("NewBuilder() error = %v", err)
+	}
+	
+	simpleBuilder := builder.(*SimpleBuilder)
+	
+	// Test getting platform
+	value, err := simpleBuilder.GetBuildOption("platform")
+	if err != nil {
+		t.Errorf("GetBuildOption() error = %v", err)
+	}
+	if value == nil {
+		t.Error("Expected platform to be set")
+	}
+	
+	// Test invalid option
+	_, err = simpleBuilder.GetBuildOption("invalid")
+	if err == nil {
+		t.Error("GetBuildOption with invalid key should return error")
+	}
+}

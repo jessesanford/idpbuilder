@@ -110,6 +110,113 @@ func (bo *BuildOptions) AddEnvironment(key, value string) {
 	bo.Environment[key] = value
 }
 
+// AddBuildArg adds a build argument to the build options.
+func (bo *BuildOptions) AddBuildArg(key, value string) {
+	if bo.BuildArgs == nil {
+		bo.BuildArgs = make(map[string]string)
+	}
+	bo.BuildArgs[key] = value
+}
+
+// AddTag adds a tag to the build options.
+func (bo *BuildOptions) AddTag(tag string) error {
+	if err := validateTag(tag); err != nil {
+		return fmt.Errorf("invalid tag %q: %w", tag, err)
+	}
+	if bo.Tags == nil {
+		bo.Tags = make([]string, 0)
+	}
+	bo.Tags = append(bo.Tags, tag)
+	return nil
+}
+
+// AddExposedPort adds an exposed port to the build options.
+func (bo *BuildOptions) AddExposedPort(port string) error {
+	if err := validatePort(port); err != nil {
+		return fmt.Errorf("invalid port %q: %w", port, err)
+	}
+	if bo.ExposedPorts == nil {
+		bo.ExposedPorts = make([]string, 0)
+	}
+	bo.ExposedPorts = append(bo.ExposedPorts, port)
+	return nil
+}
+
+// SetPlatform sets the target platform for the build.
+func (bo *BuildOptions) SetPlatform(os, arch string) {
+	if bo.Platform == nil {
+		bo.Platform = &v1.Platform{}
+	}
+	bo.Platform.OS = os
+	bo.Platform.Architecture = arch
+}
+
+// Clone creates a deep copy of the BuildOptions.
+func (bo *BuildOptions) Clone() *BuildOptions {
+	clone := &BuildOptions{
+		WorkingDir:  bo.WorkingDir,
+		User:        bo.User,
+		ContextPath: bo.ContextPath,
+	}
+	
+	// Deep copy platform
+	if bo.Platform != nil {
+		clone.Platform = &v1.Platform{
+			Architecture: bo.Platform.Architecture,
+			OS:           bo.Platform.OS,
+			Variant:      bo.Platform.Variant,
+			OSFeatures:   bo.Platform.OSFeatures,
+			OSVersion:    bo.Platform.OSVersion,
+		}
+	}
+	
+	// Deep copy maps
+	if bo.Labels != nil {
+		clone.Labels = make(map[string]string)
+		for k, v := range bo.Labels {
+			clone.Labels[k] = v
+		}
+	}
+	if bo.Environment != nil {
+		clone.Environment = make(map[string]string)
+		for k, v := range bo.Environment {
+			clone.Environment[k] = v
+		}
+	}
+	if bo.BuildArgs != nil {
+		clone.BuildArgs = make(map[string]string)
+		for k, v := range bo.BuildArgs {
+			clone.BuildArgs[k] = v
+		}
+	}
+	if bo.FeatureFlags != nil {
+		clone.FeatureFlags = make(map[string]bool)
+		for k, v := range bo.FeatureFlags {
+			clone.FeatureFlags[k] = v
+		}
+	}
+	
+	// Deep copy slices
+	if bo.Tags != nil {
+		clone.Tags = make([]string, len(bo.Tags))
+		copy(clone.Tags, bo.Tags)
+	}
+	if bo.Entrypoint != nil {
+		clone.Entrypoint = make([]string, len(bo.Entrypoint))
+		copy(clone.Entrypoint, bo.Entrypoint)
+	}
+	if bo.Cmd != nil {
+		clone.Cmd = make([]string, len(bo.Cmd))
+		copy(clone.Cmd, bo.Cmd)
+	}
+	if bo.ExposedPorts != nil {
+		clone.ExposedPorts = make([]string, len(bo.ExposedPorts))
+		copy(clone.ExposedPorts, bo.ExposedPorts)
+	}
+	
+	return clone
+}
+
 // validateTag validates that a tag follows Docker tag naming conventions.
 func validateTag(tag string) error {
 	if tag == "" {
@@ -141,4 +248,28 @@ func validatePort(port string) error {
 		return fmt.Errorf("protocol must be tcp or udp, got: %s", protocol)
 	}
 	return nil
+}
+
+// GetAllLabels returns a copy of all labels.
+func (bo *BuildOptions) GetAllLabels() map[string]string {
+	if bo.Labels == nil {
+		return make(map[string]string)
+	}
+	result := make(map[string]string)
+	for k, v := range bo.Labels {
+		result[k] = v
+	}
+	return result
+}
+
+// GetAllEnvironment returns a copy of all environment variables.
+func (bo *BuildOptions) GetAllEnvironment() map[string]string {
+	if bo.Environment == nil {
+		return make(map[string]string)
+	}
+	result := make(map[string]string)
+	for k, v := range bo.Environment {
+		result[k] = v
+	}
+	return result
 }
