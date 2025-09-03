@@ -13,46 +13,33 @@ import (
 type BuildConfig struct {
 	// ContextPath is the path to the build context directory
 	ContextPath string `json:"context_path" yaml:"context_path"`
-
 	// Dockerfile is the path to the Dockerfile, relative to ContextPath
 	Dockerfile string `json:"dockerfile" yaml:"dockerfile"`
-
 	// Tags is a list of tags to apply to the built image
 	Tags []string `json:"tags" yaml:"tags"`
-
 	// Platform specifies the target platform for the image
 	Platform PlatformConfig `json:"platform" yaml:"platform"`
-
 	// Registry contains registry-specific configuration
 	Registry RegistryConfig `json:"registry" yaml:"registry"`
-
 	// BuildArgs contains build-time arguments
 	BuildArgs map[string]string `json:"build_args" yaml:"build_args"`
-
 	// Labels contains metadata labels to apply to the image
 	Labels map[string]string `json:"labels" yaml:"labels"`
-
 	// Target specifies the target stage in a multi-stage Dockerfile
 	Target string `json:"target,omitempty" yaml:"target,omitempty"`
-
 	// NoCache disables layer caching during build
 	NoCache bool `json:"no_cache" yaml:"no_cache"`
-
 	// Pull forces pulling of base images even if present locally
 	Pull bool `json:"pull" yaml:"pull"`
-
 	// Remove removes intermediate containers after successful build
 	Remove bool `json:"remove" yaml:"remove"`
-
 	// Squash squashes all layers into a single layer (experimental)
 	Squash bool `json:"squash" yaml:"squash"`
 
 	// BuildTimeout specifies the maximum time allowed for the build
 	BuildTimeout time.Duration `json:"build_timeout" yaml:"build_timeout"`
-
 	// Memory limit for build containers (in bytes)
 	MemoryLimit int64 `json:"memory_limit" yaml:"memory_limit"`
-
 	// CPULimit specifies CPU limit for build containers
 	CPULimit float64 `json:"cpu_limit" yaml:"cpu_limit"`
 }
@@ -61,16 +48,12 @@ type BuildConfig struct {
 type PlatformConfig struct {
 	// OS specifies the target operating system (e.g., "linux", "windows")
 	OS string `json:"os" yaml:"os"`
-
 	// Architecture specifies the target architecture (e.g., "amd64", "arm64")
 	Architecture string `json:"architecture" yaml:"architecture"`
-
 	// Variant specifies the architecture variant (e.g., "v7" for arm)
 	Variant string `json:"variant,omitempty" yaml:"variant,omitempty"`
-
 	// OSVersion specifies the OS version for Windows images
 	OSVersion string `json:"os_version,omitempty" yaml:"os_version,omitempty"`
-
 	// OSFeatures specifies OS features required by the image
 	OSFeatures []string `json:"os_features,omitempty" yaml:"os_features,omitempty"`
 }
@@ -79,22 +62,16 @@ type PlatformConfig struct {
 type RegistryConfig struct {
 	// Hostname is the registry hostname (e.g., "registry.example.com")
 	Hostname string `json:"hostname" yaml:"hostname"`
-
 	// Username for registry authentication
 	Username string `json:"username,omitempty" yaml:"username,omitempty"`
-
 	// Password for registry authentication
 	Password string `json:"password,omitempty" yaml:"password,omitempty"`
-
 	// Token for token-based authentication
 	Token string `json:"token,omitempty" yaml:"token,omitempty"`
-
 	// RegistryToken for registry-specific token authentication
 	RegistryToken string `json:"registry_token,omitempty" yaml:"registry_token,omitempty"`
-
 	// Insecure allows insecure registry connections
 	Insecure bool `json:"insecure" yaml:"insecure"`
-
 	// PlainHTTP forces the use of HTTP instead of HTTPS
 	PlainHTTP bool `json:"plain_http" yaml:"plain_http"`
 
