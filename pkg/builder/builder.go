@@ -140,6 +140,20 @@ func (b *SimpleBuilder) GetDefaultBuildOptions() *BuildOptions {
 		}
 	}
 	
+	// Deep copy maps
+	if b.buildOptions.BuildArgs != nil {
+		opts.BuildArgs = make(map[string]string)
+		for k, v := range b.buildOptions.BuildArgs {
+			opts.BuildArgs[k] = v
+		}
+	}
+	if b.buildOptions.FeatureFlags != nil {
+		opts.FeatureFlags = make(map[string]bool)
+		for k, v := range b.buildOptions.FeatureFlags {
+			opts.FeatureFlags[k] = v
+		}
+	}
+	
 	// Deep copy slices
 	if b.buildOptions.Tags != nil {
 		opts.Tags = make([]string, len(b.buildOptions.Tags))
@@ -153,8 +167,64 @@ func (b *SimpleBuilder) GetDefaultBuildOptions() *BuildOptions {
 		opts.Cmd = make([]string, len(b.buildOptions.Cmd))
 		copy(opts.Cmd, b.buildOptions.Cmd)
 	}
+	if b.buildOptions.ExposedPorts != nil {
+		opts.ExposedPorts = make([]string, len(b.buildOptions.ExposedPorts))
+		copy(opts.ExposedPorts, b.buildOptions.ExposedPorts)
+	}
 	
 	return &opts
+}
+
+// SetBuildOption allows setting individual build options on the builder.
+func (b *SimpleBuilder) SetBuildOption(key string, value interface{}) error {
+	if b.buildOptions == nil {
+		b.buildOptions = NewBuildOptions()
+	}
+	
+	switch key {
+	case "working_dir":
+		if workDir, ok := value.(string); ok {
+			b.buildOptions.WorkingDir = workDir
+		} else {
+			return fmt.Errorf("working_dir must be a string")
+		}
+	case "user":
+		if user, ok := value.(string); ok {
+			b.buildOptions.User = user
+		} else {
+			return fmt.Errorf("user must be a string")
+		}
+	case "context_path":
+		if contextPath, ok := value.(string); ok {
+			b.buildOptions.ContextPath = contextPath
+		} else {
+			return fmt.Errorf("context_path must be a string")
+		}
+	default:
+		return fmt.Errorf("unsupported build option: %s", key)
+	}
+	
+	return nil
+}
+
+// GetBuildOption retrieves a build option value by key.
+func (b *SimpleBuilder) GetBuildOption(key string) (interface{}, error) {
+	if b.buildOptions == nil {
+		return nil, fmt.Errorf("build options not initialized")
+	}
+	
+	switch key {
+	case "working_dir":
+		return b.buildOptions.WorkingDir, nil
+	case "user":
+		return b.buildOptions.User, nil
+	case "context_path":
+		return b.buildOptions.ContextPath, nil
+	case "platform":
+		return b.buildOptions.Platform, nil
+	default:
+		return nil, fmt.Errorf("unsupported build option: %s", key)
+	}
 }
 
 // ValidateContext validates the build context directory.
@@ -192,6 +262,25 @@ func (b *SimpleBuilder) MergeBuildOptions(opts BuildOptions) (*BuildOptions, err
 			defaults.Environment[k] = v
 		}
 	}
+	if len(opts.ExposedPorts) > 0 {
+		defaults.ExposedPorts = opts.ExposedPorts
+	}
+	if len(opts.BuildArgs) > 0 {
+		if defaults.BuildArgs == nil {
+			defaults.BuildArgs = make(map[string]string)
+		}
+		for k, v := range opts.BuildArgs {
+			defaults.BuildArgs[k] = v
+		}
+	}
+	if len(opts.FeatureFlags) > 0 {
+		if defaults.FeatureFlags == nil {
+			defaults.FeatureFlags = make(map[string]bool)
+		}
+		for k, v := range opts.FeatureFlags {
+			defaults.FeatureFlags[k] = v
+		}
+	}
 	if opts.WorkingDir != "" {
 		defaults.WorkingDir = opts.WorkingDir
 	}
@@ -203,6 +292,9 @@ func (b *SimpleBuilder) MergeBuildOptions(opts BuildOptions) (*BuildOptions, err
 	}
 	if opts.User != "" {
 		defaults.User = opts.User
+	}
+	if opts.ContextPath != "" {
+		defaults.ContextPath = opts.ContextPath
 	}
 	
 	return defaults, nil
