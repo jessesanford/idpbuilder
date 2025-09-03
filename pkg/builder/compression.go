@@ -2,7 +2,6 @@ package builder
 
 // CompressionType represents the type of compression to use.
 type CompressionType int
-
 const (
 	// NoCompression indicates no compression
 	NoCompression CompressionType = iota
@@ -13,7 +12,6 @@ const (
 	// XzCompression indicates xz compression
 	XzCompression
 )
-
 // String returns the string representation of the compression type.
 func (ct CompressionType) String() string {
 	switch ct {
