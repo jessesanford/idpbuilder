@@ -143,18 +143,15 @@ func (cf *ConfigFactory) SetBaseConfig(config *v1.Config) {
 
 // mergeLabels combines default labels with build option labels.
 func (cf *ConfigFactory) mergeLabels(optLabels map[string]string) map[string]string {
-	result := make(map[string]string)
-
+	result := make(map[string]string, len(cf.DefaultLabels)+len(optLabels))
 	// Add default labels first
 	for k, v := range cf.DefaultLabels {
 		result[k] = v
 	}
-
 	// Override with option labels
 	for k, v := range optLabels {
 		result[k] = v
 	}
-
 	return result
 }
 

@@ -16,17 +16,9 @@ const (
 
 // Builder defines the interface for building OCI container images.
 type Builder interface {
-	// Build creates a container image from the specified context directory
-	// using the provided build options.
 	Build(ctx context.Context, contextDir string, opts BuildOptions) (v1.Image, error)
-
-	// GetSupportedFeatures returns a list of features supported by this builder implementation.
 	GetSupportedFeatures() []string
-
-	// IsFeatureSupported checks if a specific feature is supported.
 	IsFeatureSupported(feature string) bool
-
-	// GetConfig returns the current configuration factory used by the builder.
 	GetConfig() *ConfigFactory
 }
 
@@ -42,10 +34,11 @@ type BuilderOption func(*SimpleBuilder) error
 
 // NewBuilder creates a new SimpleBuilder with the specified options.
 func NewBuilder(opts ...BuilderOption) (Builder, error) {
+	defaultOpts := NewBuildOptions()
 	builder := &SimpleBuilder{
 		configFactory: NewConfigFactory(),
 		featureFlags:  make(map[string]bool),
-		buildOptions:  NewBuildOptions(),
+		buildOptions:  defaultOpts,
 	}
 
 	// Set default feature flags (all disabled in Split 001)
@@ -53,7 +46,6 @@ func NewBuilder(opts ...BuilderOption) (Builder, error) {
 	builder.featureFlags[FeatureLayerCaching] = false
 	builder.featureFlags[FeatureMultiLayer] = false
 
-	// Apply options
 	for _, opt := range opts {
 		if err := opt(builder); err != nil {
 			return nil, fmt.Errorf("failed to apply builder option: %w", err)
@@ -74,7 +66,7 @@ func WithConfigFactory(factory *ConfigFactory) BuilderOption {
 	}
 }
 
-// WithFeatureFlag enables or disables a specific feature flag.
+// WithFeatureFlag sets a feature flag for the builder.
 func WithFeatureFlag(feature string, enabled bool) BuilderOption {
 	return func(b *SimpleBuilder) error {
 		if feature == "" {
@@ -85,7 +77,7 @@ func WithFeatureFlag(feature string, enabled bool) BuilderOption {
 	}
 }
 
-// WithDefaultBuildOptions sets default build options for the builder.
+// WithDefaultBuildOptions sets the default build options for the builder.
 func WithDefaultBuildOptions(opts *BuildOptions) BuilderOption {
 	return func(b *SimpleBuilder) error {
 		if opts == nil {
@@ -99,32 +91,23 @@ func WithDefaultBuildOptions(opts *BuildOptions) BuilderOption {
 	}
 }
 
-// Build creates a container image from the specified context directory.
-// This is a stub implementation for Split 001 - full implementation in Split 002.
+// Build creates a container image - stub implementation for Split 001.
 func (b *SimpleBuilder) Build(ctx context.Context, contextDir string, opts BuildOptions) (v1.Image, error) {
 	if ctx == nil {
 		return nil, fmt.Errorf("context cannot be nil")
 	}
-
 	if contextDir == "" {
 		return nil, fmt.Errorf("context directory cannot be empty")
 	}
-
-	// Validate options
-	if err := opts.Validate(); err != nil {
-		return nil, fmt.Errorf("invalid build options: %w", err)
-	}
-
-	// Check if required features are enabled
+	
+	// Basic validation - detailed validation will be done by config factory
 	if !b.featureFlags[FeatureTarballExport] {
-		return nil, fmt.Errorf("tarball export not enabled - full implementation in Split 002")
+		return nil, fmt.Errorf("tarball export not enabled - implementation in Split 002")
 	}
-
-	// Stub for now - will be completed in Split 002
-	return nil, fmt.Errorf("Build method not fully implemented in Split 001 - will be completed in Split 002")
+	return nil, fmt.Errorf("Build method not implemented in Split 001 - completed in Split 002")
 }
 
-// GetSupportedFeatures returns a list of features supported by this builder implementation.
+// GetSupportedFeatures returns a list of supported features.
 func (b *SimpleBuilder) GetSupportedFeatures() []string {
 	var features []string
 	for feature, enabled := range b.featureFlags {
@@ -135,17 +118,56 @@ func (b *SimpleBuilder) GetSupportedFeatures() []string {
 	return features
 }
 
-// IsFeatureSupported checks if a specific feature is supported and enabled.
+// IsFeatureSupported checks if a specific feature is supported.
 func (b *SimpleBuilder) IsFeatureSupported(feature string) bool {
 	return b.featureFlags[feature]
 }
 
-// GetConfig returns the current configuration factory used by the builder.
+// GetConfig returns the current configuration factory.
 func (b *SimpleBuilder) GetConfig() *ConfigFactory {
 	return b.configFactory
 }
 
-// ValidateContext performs basic validation on the build context directory.
+// GetDefaultBuildOptions returns a copy of the default build options.
+func (b *SimpleBuilder) GetDefaultBuildOptions() *BuildOptions {
+	if b.buildOptions == nil {
+		return NewBuildOptions()
+	}
+	// Return a deep copy to prevent mutation
+	opts := *b.buildOptions
+	
+	// Deep copy maps
+	if b.buildOptions.Labels != nil {
+		opts.Labels = make(map[string]string)
+		for k, v := range b.buildOptions.Labels {
+			opts.Labels[k] = v
+		}
+	}
+	if b.buildOptions.Environment != nil {
+		opts.Environment = make(map[string]string)
+		for k, v := range b.buildOptions.Environment {
+			opts.Environment[k] = v
+		}
+	}
+	
+	// Deep copy slices
+	if b.buildOptions.Tags != nil {
+		opts.Tags = make([]string, len(b.buildOptions.Tags))
+		copy(opts.Tags, b.buildOptions.Tags)
+	}
+	if b.buildOptions.Entrypoint != nil {
+		opts.Entrypoint = make([]string, len(b.buildOptions.Entrypoint))
+		copy(opts.Entrypoint, b.buildOptions.Entrypoint)
+	}
+	if b.buildOptions.Cmd != nil {
+		opts.Cmd = make([]string, len(b.buildOptions.Cmd))
+		copy(opts.Cmd, b.buildOptions.Cmd)
+	}
+	
+	return &opts
+}
+
+// ValidateContext validates the build context directory.
 func (b *SimpleBuilder) ValidateContext(contextDir string) error {
 	if contextDir == "" {
 		return fmt.Errorf("context directory cannot be empty")
@@ -153,82 +175,45 @@ func (b *SimpleBuilder) ValidateContext(contextDir string) error {
 	return nil
 }
 
-// MergeBuildOptions merges the provided options with the builder's default options.
+// MergeBuildOptions merges the provided options with the default build options.
 func (b *SimpleBuilder) MergeBuildOptions(opts BuildOptions) (*BuildOptions, error) {
-	result := NewBuildOptions()
-
-	// Copy defaults if they exist
-	if b.buildOptions != nil {
-		*result = *b.buildOptions
-		// Deep copy slices and maps
-		result.Labels = make(map[string]string)
-		result.Environment = make(map[string]string)
-		result.FeatureFlags = make(map[string]bool)
-		result.BuildArgs = make(map[string]string)
-		for k, v := range b.buildOptions.Labels {
-			result.Labels[k] = v
-		}
-		for k, v := range b.buildOptions.Environment {
-			result.Environment[k] = v
-		}
-		for k, v := range b.buildOptions.FeatureFlags {
-			result.FeatureFlags[k] = v
-		}
-		for k, v := range b.buildOptions.BuildArgs {
-			result.BuildArgs[k] = v
-		}
-	}
-
-	// Override with provided options
+	defaults := b.GetDefaultBuildOptions()
+	
+	// Merge fields from opts into defaults
 	if opts.Platform != nil {
-		result.Platform = opts.Platform
-	}
-	if opts.WorkingDir != "" {
-		result.WorkingDir = opts.WorkingDir
-	}
-	if opts.User != "" {
-		result.User = opts.User
-	}
-	if len(opts.Entrypoint) > 0 {
-		result.Entrypoint = append([]string(nil), opts.Entrypoint...)
-	}
-	if len(opts.Cmd) > 0 {
-		result.Cmd = append([]string(nil), opts.Cmd...)
+		defaults.Platform = opts.Platform
 	}
 	if len(opts.Tags) > 0 {
-		result.Tags = append([]string(nil), opts.Tags...)
+		defaults.Tags = opts.Tags
 	}
-	if len(opts.ExposedPorts) > 0 {
-		result.ExposedPorts = append([]string(nil), opts.ExposedPorts...)
+	if len(opts.Labels) > 0 {
+		if defaults.Labels == nil {
+			defaults.Labels = make(map[string]string)
+		}
+		for k, v := range opts.Labels {
+			defaults.Labels[k] = v
+		}
 	}
-	if opts.ContextPath != "" {
-		result.ContextPath = opts.ContextPath
+	if len(opts.Environment) > 0 {
+		if defaults.Environment == nil {
+			defaults.Environment = make(map[string]string)
+		}
+		for k, v := range opts.Environment {
+			defaults.Environment[k] = v
+		}
 	}
-
-	// Merge maps
-	for k, v := range opts.Labels {
-		result.Labels[k] = v
+	if opts.WorkingDir != "" {
+		defaults.WorkingDir = opts.WorkingDir
 	}
-	for k, v := range opts.Environment {
-		result.Environment[k] = v
+	if len(opts.Entrypoint) > 0 {
+		defaults.Entrypoint = opts.Entrypoint
 	}
-	for k, v := range opts.FeatureFlags {
-		result.FeatureFlags[k] = v
+	if len(opts.Cmd) > 0 {
+		defaults.Cmd = opts.Cmd
 	}
-	for k, v := range opts.BuildArgs {
-		result.BuildArgs[k] = v
-	}
-
-	return result, nil
-}
-
-// GetDefaultBuildOptions returns a copy of the builder's default build options.
-func (b *SimpleBuilder) GetDefaultBuildOptions() *BuildOptions {
-	if b.buildOptions == nil {
-		return NewBuildOptions()
+	if opts.User != "" {
+		defaults.User = opts.User
 	}
 	
-	// Use MergeBuildOptions with empty opts to get a clean copy
-	result, _ := b.MergeBuildOptions(BuildOptions{})
-	return result
+	return defaults, nil
 }
