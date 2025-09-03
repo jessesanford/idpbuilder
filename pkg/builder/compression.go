@@ -1,5 +1,4 @@
 package builder
-
 // CompressionType represents the type of compression to use.
 type CompressionType int
 const (
