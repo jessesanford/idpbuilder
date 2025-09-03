@@ -1,0 +1,21 @@
+build:
+  base_image: "alpine:latest"
+  platform:
+    architecture: "amd64"
+    os: "linux"
+  labels:
+    maintainer: "test@example.com"
+    version: "1.0.0"
+  working_dir: "/app"
+  environment:
+    APP_ENV: "test"
+    DEBUG: "true"
+  ports:
+    - "8080"
+    - "9090"
+  user: "appuser"
+
+test:
+  registry: "localhost:5000"
+  timeout: "300s"
+  retry_count: 3
