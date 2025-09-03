@@ -1,833 +1,230 @@
-# MVP Implementation Plan: IDPBuilder OCI Management
-## Solving the Gitea Self-Signed Certificate Problem
+# SPLIT-002 RE-SPLIT PLAN (UPDATED)
 
-**Project Name**: idpbuilder-oci-mvp  
-**Timeline**: 2 weeks (10 business days)  
-**Start Date**: TBD  
-**Primary Goal**: Enable reliable image push to Gitea with self-signed certificates  
-**Success Metric**: Zero certificate errors during normal operation  
+## Problem Statement
+- **Current Split-002 Size**: 1188 lines (388 lines OVER 800 limit)
+- **Target**: Re-split into TWO sub-splits, each under 600 lines (safety margin)
+- **Created**: 2025-09-03 06:45:00
+- **Updated**: 2025-09-03 14:30:00
+- **Planner**: Code Reviewer Agent (ERROR_RECOVERY state)
 
-## Executive Summary
+## Current Implementation Analysis
 
-This MVP implementation plan focuses exclusively on solving the self-signed certificate problem that prevents reliable OCI image operations with the builtin Gitea instance. By prioritizing certificate handling and basic build/push functionality, we can deliver immediate value in 2 weeks.
+### File Breakdown (Total: 2987 lines including tests)
+```
+Production Code (1799 lines):
+- doc.go: 45 lines (package documentation)
+- options.go: 143 lines (build options)
+- builder.go: 205 lines (builder interface)
+- builder_impl.go: 228 lines (builder implementation)
+- config.go: 274 lines (configuration)
+- layer.go: 402 lines (layer creation)
+- tarball.go: 490 lines (tarball generation)
 
-## 📊 Project Statistics
-
-| Metric | Value |
-|--------|-------|
-| **Total Phases** | 2 |
-| **Total Weeks** | 2 |
-| **Total Efforts** | 8 |
-| **Estimated Lines** | ~2,000 |
-| **Team Size** | 4 agents |
-| **Parallel Capacity** | 3 concurrent efforts |
-| **Phase 1 Efforts** | 4 (Certificate Infrastructure - Week 1) |
-| **Phase 2 Efforts** | 4 (Build & Push Implementation - Week 2) |
-| **Average Lines/Effort** | ~250 |
-
-## 🏗️ Technology Stack
-
-### Core Technologies
-- **Language**: Go 1.21+
-- **Framework**: Cobra CLI Framework
-- **Container Build**: go-containerregistry
-- **Testing**: Go testing package, Testify, Ginkgo
-
-### Infrastructure
-- **Container**: go-containerregistry (daemonless)
-- **Orchestration**: Kind (Kubernetes in Docker)
-- **CI/CD**: GitHub Actions
-- **Registry**: Gitea OCI Registry
-
-### Dependencies
-```yaml
-critical_dependencies:
-  - name: github.com/google/go-containerregistry
-    version: v0.19.0
-    purpose: OCI image assembly and registry operations
-  
-  - name: github.com/spf13/cobra
-    version: v1.8.1
-    purpose: CLI command structure
-  
-  - name: github.com/spf13/viper
-    version: v1.19.0
-    purpose: Configuration management
-    
-  - name: k8s.io/client-go
-    version: v0.31.0
-    purpose: Kubernetes client for Kind cluster access
-    
-  - name: k8s.io/apimachinery
-    version: v0.31.0
-    purpose: Kubernetes API machinery
-  
-optional_dependencies:
-  - name: github.com/sirupsen/logrus
-    version: v1.9.3
-    purpose: Structured logging
-    
-test_dependencies:
-  - name: github.com/stretchr/testify
-    version: v1.9.0
-    purpose: Test assertions and mocking
-    
-  - name: github.com/golang/mock
-    version: v1.6.0
-    purpose: Mock generation for testing
+Test Code (1188 lines):
+- options_test.go: 204 lines
+- config_test.go: 404 lines
+- builder_test.go: 592 lines
 ```
 
-## 🔧 Configuration
-
-```yaml
-# Software Factory 2.0 Configuration
-software_factory:
-  version: "2.0"
-  mode: "MVP"
-  rules:
-    max_lines_per_effort: 800
-    warning_threshold: 700
-    split_threshold: 600  # Proactively split if approaching
-    enforce_splits: true
-    review_required: true
-    test_coverage_minimum: 80
-
-test_coverage:
-  phase_1: 80%  # Certificate Infrastructure phase
-  phase_2: 80%  # Build & Push Implementation phase
-
-orchestrator:
-  spawn_mode: "sequential"
-  validation: "continuous"
-  integration: "wave-based"
-  max_parallel_efforts: 3
-  max_parallel_agents: 3
-  allow_parallel_waves: true
-
-agents:
-  sw_engineer:
-    count: 3
-    review_before_commit: true
-  code_reviewer:
-    validation: "immediate"
-  architect:
-    gates:
-      - "wave_complete"
-      - "phase_complete"
-
-review_requirements:
-  code_review: mandatory
-  architect_review: mandatory  
-  security_review: optional
-  performance_review: mandatory
-
-grading_thresholds:
-  parallel_spawn_delta: 5.0  # seconds
-  review_first_pass: 80     # percent
-  test_coverage_min: 70
-  integration_success: 95   # percent
-
-project:
-  name: "idpbuilder-oci-mvp"
-  phases: 2  # Phase 1: Certificate, Phase 2: Build & Push
-  waves: 4
-  efforts: 7  # Was 8, but integration-testing is process not effort
-  estimated_lines: 2000
-  
-phase_distribution:
-  phase_1: "50%"  # Certificate Infrastructure (1,000 lines)
-  phase_2: "50%"  # Build & Push Implementation (1,000 lines)
-  
-success_metrics:
-  primary: "Zero certificate errors"
-  test_coverage: "80%"
-  effort_compliance: "100% < 800 lines"
-```
-
-## 📋 Phase Overview
-
-### Phase Distribution
-```
-Phase 1: Certificate Infrastructure  (50% - ~1,000 lines - Week 1)
-Phase 2: Build & Push Implementation (50% - ~1,000 lines - Week 2)
-```
-
-### Phase Structure
-```mermaid
-graph LR
-    P1[Phase 1: Certificate Infrastructure] --> P2[Phase 2: Build & Push Implementation]
-    P1 --> C[Certificate Handling Core]
-    P2 --> B[Basic Build/Push with Certs]
-```
-
-Note: This MVP is structured as 2 focused phases to maintain clear separation between certificate infrastructure and build/push functionality.
-
-## MVP Scope
-
-### In Scope (MUST deliver)
-✅ Certificate extraction from Kind cluster  
-✅ go-containerregistry TLS trust configuration  
-✅ Basic single-layer image assembly (no Dockerfile parsing)  
-✅ Push to Gitea with proper certificate handling  
-✅ CLI commands: build, push  
-✅ --insecure flag for testing  
-✅ Error messages that clearly identify cert issues  
-
-### Out of Scope (POST-MVP)
-❌ Multi-stage Dockerfiles  
-❌ Build arguments and secrets  
-❌ Batch operations  
-❌ Controller integration  
-❌ Advanced caching  
-❌ Pretty CLI output  
-❌ Comprehensive documentation  
-
-## Detailed Implementation Plan
-
-## Phase 1: Certificate Infrastructure (Days 1-5)
-
-### Wave 1: Certificate Management Core (Days 1-2)
-**Goal**: Extract and manage certificates from Kind/Gitea
-
-#### Effort 1.1.1: Kind Certificate Extraction (Day 1)
-**Size**: ~500 lines  
-**Owner**: SW Engineer 1  
-
-```go
-// pkg/certs/extractor.go
-package certs
-
-// Core functionality:
-// 1. Detect Kind cluster
-// 2. Extract Gitea pod
-// 3. Copy certificate from pod
-// 4. Save to local trust store
-
-type KindCertExtractor interface {
-    ExtractGiteaCert(ctx context.Context) (*x509.Certificate, error)
-    GetClusterName() (string, error)
-    ValidateCertificate(cert *x509.Certificate) error
-}
-```
-
-**Key Implementation Points**:
-- Use kubectl to access Kind cluster
-- Copy cert from `/data/gitea/https/cert.pem` in Gitea pod
-- Handle missing cluster/pod gracefully
-- Store in `~/.idpbuilder/certs/gitea.pem`
-
-**Test Requirements**:
-- Mock kubectl commands
-- Test missing cluster scenario
-- Test invalid certificate handling
-- Test storage permissions
-
-#### Effort 1.1.2: Registry TLS Trust Integration (Day 2)
-**Size**: ~600 lines  
-**Owner**: SW Engineer 2  
-
-```go
-// pkg/certs/trust.go
-package certs
-
-// Core functionality:
-// 1. Load custom CA into x509.CertPool
-// 2. Configure ggcr remote transport with TLS
-// 3. Handle cert rotation
-// 4. Provide --insecure override
-
-type TrustStoreManager interface {
-    AddCertificate(registry string, cert *x509.Certificate) error
-    RemoveCertificate(registry string) error
-    SetInsecureRegistry(registry string, insecure bool) error
-    GetTrustedCerts(registry string) ([]*x509.Certificate, error)
-}
-```
-
-**Key Implementation Points**:
-- Maintain CA file at `~/.idpbuilder/certs/gitea.pem`
-- Load CA into `tls.Config.RootCAs` for ggcr `remote.Option`
-- Support cert rotation by reloading CA at operation time
-- Clear error messages for permission issues
-
-**Test Requirements**:
-- Test CA pool loading from PEM
-- Test permission handling
-- Test cert rotation
-- Test insecure mode
-
-### Wave 2: Certificate Validation & Fallback (Days 3-5)
-**Goal**: Robust certificate handling with clear diagnostics
-
-#### Effort 1.2.1: Certificate Validation Pipeline (Day 3)
-**Size**: ~400 lines  
-**Owner**: SW Engineer 1  
-
-```go
-// pkg/certs/validator.go
-package certs
-
-// Core functionality:
-// 1. Validate cert chain
-// 2. Check expiry
-// 3. Verify hostname match
-// 4. Provide clear diagnostics
-
-type CertValidator interface {
-    ValidateChain(cert *x509.Certificate) error
-    CheckExpiry(cert *x509.Certificate) (*time.Duration, error)
-    VerifyHostname(cert *x509.Certificate, hostname string) error
-    GenerateDiagnostics() (*CertDiagnostics, error)
-}
-```
-
-**Key Implementation Points**:
-- Clear error messages for each failure type
-- Warning for soon-to-expire certs (< 30 days)
-- Support wildcard certificates
-- Diagnostic output for troubleshooting
-
-**Test Requirements**:
-- Test expired certificates
-- Test hostname mismatches
-- Test chain validation
-- Test diagnostic output
-
-#### Effort 1.2.2: Fallback Strategies (Days 4-5)
-**Size**: ~400 lines  
-**Owner**: SW Engineer 2  
-
-```go
-// pkg/certs/fallback.go
-package certs
-
-// Core functionality:
-// 1. Auto-detect cert problems
-// 2. Suggest solutions
-// 3. Implement --insecure flag
-// 4. Log security decisions
-
-type FallbackHandler interface {
-    HandleCertError(err error) (*FallbackStrategy, error)
-    ApplyInsecureMode(config *BuildConfig) error
-    LogSecurityDecision(decision string, reason string)
-    GetRecommendations(err error) []string
-}
-```
-
-**Key Implementation Points**:
-- Never silently ignore cert errors
-- Require explicit --insecure flag
-- Log all security bypasses
-- Provide fix recommendations
-
-**Test Requirements**:
-- Test fallback trigger conditions
-- Test recommendation generation
-- Test security logging
-- Test --insecure flag behavior
-
-## Phase 2: Build & Push Implementation (Days 6-10)
-
-### Wave 1: Core Build & Push (Days 6-7)
-**Goal**: Basic image assembly and registry push
-
-#### Effort 2.1.1: go-containerregistry Image Builder (Day 6)
-**Size**: ~600 lines  
-**Owner**: SW Engineer 3  
-
-```go
-// pkg/build/builder.go
-package build
-
-// Core functionality:
-// 1. Create single-layer from context directory
-// 2. Generate minimal image config
-// 3. Write OCI image tarball to local cache
-// 4. Tag resulting image
-
-type Builder interface {
-    BuildImage(contextPath string, tag string) error
-    ListImages() ([]Image, error)
-    RemoveImage(id string) error
-    TagImage(source string, target string) error
-}
-```
-
-**Key Implementation Points**:
-- Use `ggcr` packages: `v1/mutate`, `tarball`, `name`, `remote`
-- Create a single tar layer from `contextPath` (basic exclusions)
-- Store image as OCI tarball at `~/.idpbuilder/images/<tag>.tar`
-- Clear progress output
-
-**Test Requirements**:
-- Test successful image assembly
-- Test failure on invalid context path
-- Test context handling (exclusions)
-- Test tagging
-
-#### Effort 2.1.2: Gitea Registry Client (Day 7)
-**Size**: ~600 lines  
-**Owner**: SW Engineer 1  
-
-```go
-// pkg/registry/gitea.go
-package registry
-
-// Core functionality:
-// 1. Authenticate with Gitea
-// 2. Push image with cert handling
-// 3. List repository contents
-// 4. Handle push errors
-
-type GiteaRegistry interface {
-    Authenticate(username, password string) error
-    Push(image string, tag string) error
-    List(repository string) ([]string, error)
-    Delete(image string, tag string) error
-}
-```
-
-**Key Implementation Points**:
-- Use certs from Phase 1 via ggcr `remote.WithTransport`
-- Clear error messages for auth failures
-- Retry logic for transient failures
-- Progress reporting during push
-
-**Test Requirements**:
-- Test authentication
-- Test successful push
-- Test cert integration
-- Test error handling
-
-### Wave 2: CLI Integration (Days 8-9)
-**Goal**: User-friendly CLI commands
-
-#### Effort 2.2.1: CLI Commands (Days 8-9)
-**Size**: ~500 lines  
-**Owner**: SW Engineer 2  
-
-```go
-// cmd/build.go
-// cmd/push.go
-package cmd
-
-// Commands:
-// idpbuilder build --context ./app --tag myapp:latest
-// idpbuilder push myapp:latest
-// idpbuilder push --insecure myapp:latest
-
-var buildCmd = &cobra.Command{
-    Use:   "build",
-    Short: "Assemble OCI image from context",
-    Long:  "Assemble a single-layer OCI image from a directory using go-containerregistry; certificate handling applies during push",
-    Run:   runBuild,
-}
-
-var pushCmd = &cobra.Command{
-    Use:   "push",
-    Short: "Push image to Gitea registry",
-    Long:  "Push a container image to the builtin Gitea registry with certificate support",
-    Run:   runPush,
-}
-```
-
-**Key Implementation Points**:
-- Clear help text
-- Sensible defaults
-- --insecure flag on push only
-- Progress feedback
-
-**Test Requirements**:
-- Test command parsing
-- Test flag handling
-- Test error output
-- Test help text
-
-## Note: Integration Testing
-
-Integration testing is part of the Software Factory process, not a separate effort. Tests are executed during the INTEGRATION state when efforts are merged. The original plan incorrectly listed this as Effort 2.2.2, but this has been corrected.
-
-## Software Factory 2.0 Agents
-
-### Agent Overview and Authority
-
-The Software Factory 2.0 utilizes specialized agents with distinct roles, authorities, and grading criteria. Each agent operates within strict boundaries and is evaluated on specific performance metrics.
-
-### 1. Orchestrator Agent (@agent-orchestrator)
-
-**Role**: Central coordination and state management  
-**Authority**: Can spawn other agents, manage state transitions, enforce gates  
-**Restriction**: NEVER writes code (immediate grading failure if violated)  
-
-**Primary Responsibilities**:
-- Coordinate all implementation work across phases and waves
-- Spawn specialized agents for specific tasks
-- Manage orchestrator-state.yaml file
-- Enforce phase and wave boundaries
-- Track progress and effort status
-- Handle state machine transitions
-
-**Validation Gates**:
-- Wave completion gate (all efforts < 800 lines)
-- Phase transition gate (all waves integrated)
-- Integration readiness gate (architect approval)
-- Split enforcement gate (> 800 lines triggers split)
-
-**Grading Criteria**:
-- ❌ FAIL: Writing any code directly
-- ❌ FAIL: Missing wave completion gates
-- ❌ FAIL: Allowing > 800 line efforts
-- ❌ FAIL: Proceeding without architect approval
-- ✅ PASS: 100% delegation to appropriate agents
-- ✅ PASS: Correct state machine transitions
-- ✅ PASS: Proper gate enforcement
-
-### 2. SW Engineer Agent (@agent-sw-engineer)
-
-**Role**: Implementation of assigned efforts  
-**Authority**: Can write code, create tests, update work logs  
-**Restriction**: Must stay within assigned effort boundaries  
-
-**Primary Responsibilities**:
-- Implement code according to IMPLEMENTATION-PLAN.md
-- Write unit and integration tests
-- Maintain work-log.md with progress updates
-- Measure lines frequently (every 200 lines)
-- Stop immediately if approaching 800 lines
-- Fix issues identified by Code Reviewer
-
-**Validation Requirements**:
-- Continuous line count measurement using designated tools
-- Test coverage minimum 80%
-- All tests must pass before marking complete
-- Work log must be updated with each significant change
-- Must use proper git branch for effort
-
-**Grading Criteria**:
-- ❌ FAIL: Exceeding 800 lines in any effort
-- ❌ FAIL: Test coverage below 70%
-- ❌ FAIL: Working in wrong directory/branch
-- ❌ FAIL: Not updating work logs
-- ✅ PASS: All efforts < 800 lines
-- ✅ PASS: Test coverage > 80%
-- ✅ PASS: Clean code following patterns
-
-### 3. Code Reviewer Agent (@agent-code-reviewer)
-
-**Role**: Planning efforts and validating implementations  
-**Authority**: Can approve/reject code, create split plans, enforce standards  
-**Restriction**: Cannot modify implementation code directly  
-
-**Primary Responsibilities**:
-- Create IMPLEMENTATION-PLAN.md for efforts
-- Review all code before commit
-- Measure effort size with designated tools
-- Plan and orchestrate splits when > 800 lines
-- Validate test coverage
-- Ensure pattern compliance
-- Create work-log.md from template
-
-**Validation Gates**:
-- Size validation (must be < 800 lines)
-- Test coverage validation (must meet requirements)
-- Pattern compliance check
-- Security review
-- Performance impact assessment
-
-**Grading Criteria**:
-- ❌ FAIL: Approving > 800 line efforts
-- ❌ FAIL: Missing critical bugs
-- ❌ FAIL: Incorrect split planning
-- ❌ FAIL: Not measuring with proper tools
-- ✅ PASS: All reviews accurate
-- ✅ PASS: Effective split strategies
-- ✅ PASS: Pattern compliance enforced
-
-### 4. Architect Agent (@agent-architect)
-
-**Role**: System-wide architectural review and decision authority  
-**Authority**: Can issue STOP decisions that halt all work  
-**Restriction**: Cannot make implementation changes  
-
-**Primary Responsibilities**:
-- Review wave completions for architectural integrity
-- Assess phase readiness before transitions
-- Evaluate system integration
-- Make PROCEED/CHANGES_REQUIRED/STOP decisions
-- Validate security architecture
-- Assess performance implications
-- Ensure pattern consistency across system
-
-**Review Types**:
-- **Wave Review**: After each wave completion
-- **Phase Assessment**: Before phase transitions
-- **Integration Review**: System-wide coherence check
-- **Architecture Audit**: Deep pattern analysis
-
-**Decision Framework**:
-```
-PROCEED: All patterns correct, integration works, performance acceptable
-CHANGES_REQUIRED: Minor issues that can be fixed
-STOP: Fundamental architecture violations requiring redesign
-```
-
-**Grading Criteria**:
-- ❌ FAIL: False positive STOP decision
-- ❌ FAIL: Missing critical architecture issue
-- ❌ FAIL: Wrong trajectory assessment
-- ❌ FAIL: Unclear guidance causing failures
-- ✅ PASS: Accurate architecture assessments
-- ✅ PASS: Clear actionable feedback
-- ✅ PASS: Appropriate use of STOP authority
-
-### 5. Integration Agent (@agent-integration)
-
-**Role**: Merge effort branches and create integration branches  
-**Authority**: Can create and merge branches, resolve conflicts  
-**Restriction**: Cannot modify functional code (only merge operations)  
-
-**Primary Responsibilities**:
-- Create wave integration branches
-- Merge all effort branches from a wave
-- Resolve merge conflicts
-- Create phase integration branches
-- Validate integration success
-- Ensure clean merges to main
-- Maintain integration branch hygiene
-
-**Integration Gates**:
-- All effort branches must be reviewed and approved
-- All tests must pass on effort branches
-- Wave integration must be architect-approved
-- Phase integration requires full test suite pass
-- Main branch protection rules enforced
-
-**Grading Criteria**:
-- ❌ FAIL: Breaking integration branches
-- ❌ FAIL: Lost code during merges
-- ❌ FAIL: Incorrect merge order
-- ❌ FAIL: Pushing broken code to main
-- ✅ PASS: Clean integration branches
-- ✅ PASS: All conflicts properly resolved
-- ✅ PASS: Maintaining branch history
-
-### Agent Interaction Protocol
-
-#### Spawn Sequence
-```
-Orchestrator → Code Reviewer (planning)
-            → SW Engineer (implementation)
-            → Code Reviewer (validation)
-            → Integration Agent (merging)
-            → Architect (review)
-```
-
-#### Communication Rules
-1. Agents communicate via files and git operations
-2. No direct agent-to-agent communication
-3. Orchestrator manages all agent spawning
-4. State transitions recorded in orchestrator-state.yaml
-5. All decisions documented in appropriate logs
-
-### Critical Gates and Enforcement
-
-#### Wave Completion Gate
-Before proceeding to next wave:
-- ✅ All efforts reviewed and < 800 lines
-- ✅ All tests passing with required coverage
-- ✅ Wave integration branch created
-- ✅ Architect review completed
-- ✅ State file updated
-
-#### Phase Transition Gate
-Before starting new phase:
-- ✅ All waves in phase integrated
-- ✅ Phase integration branch created
-- ✅ Architect phase assessment complete
-- ✅ No OFF_TRACK status from architect
-- ✅ All documentation updated
-
-#### Size Enforcement Gate
-When any effort exceeds 800 lines:
-- 🛑 STOP all implementation immediately
-- 📊 Measure with designated tool for breakdown
-- 📋 Create split plan with logical groupings
-- ✂️ Execute splits sequentially (never parallel)
-- 🔄 Each split gets full review cycle
-
-### Grading Metrics Summary
-
-**Overall System Success Requires**:
-- 100% of efforts < 800 lines (measured with official tool)
-- 100% of efforts reviewed and approved
-- 100% test coverage requirements met
-- Zero false positive STOP decisions
-- Zero code written by Orchestrator
-- All phase dependencies respected
-- Clean integration at all levels
-
-## Resource Allocation
-
-### Team Structure
-- **Orchestrator**: 1 (coordinates all work)
-- **SW Engineers**: 3 (can be spawned as needed)
-- **Code Reviewer**: 1 (reviews all code)
-- **Architect**: 1 (system-wide authority)
-- **Integration Agent**: 1 (manages branches)
-
-### Review Points
-- Every effort completion: Code review
-- Every wave completion: Architecture review
-- Every phase completion: Phase assessment
-- Before main merge: Final integration review
-
-## Success Criteria
-
-### Primary Success Definition
-**SUCCESS** means delivering a **fully functional, buildable idpbuilder binary** that:
-1. ✅ **Compiles successfully** into an executable binary (`go build` produces `idpbuilder`)
-2. ✅ **`idpbuilder build` command works** - assembles an OCI image tarball from a context directory
-3. ✅ **`idpbuilder push` command works** - pushes images to Gitea registry
-4. ✅ **Certificate handling works automatically** - no manual cert configuration needed
-5. ✅ **Zero certificate errors during normal operation** - the core problem is SOLVED
-
-### Must Pass (Critical Requirements)
-1. ✅ **Buildable Binary**: `go build ./cmd/idpbuilder` produces working executable
-2. ✅ **Working `build` Command**: Can assemble OCI image tarballs from context directories without errors
-3. ✅ **Working `push` Command**: Can push to Gitea without certificate failures
-4. ✅ **Automatic Certificate Extraction**: Detects and extracts Gitea certs from Kind
-5. ✅ **Certificate Trust Configuration**: Configures go-containerregistry transport to trust Gitea's self-signed cert
-6. ✅ **--insecure Flag**: Fallback option works when explicitly requested
-7. ✅ **Clear Error Messages**: Certificate problems are clearly identified
-8. ✅ **Cross-platform**: Works on Linux and Mac
-
-### Should Pass (Quality Requirements)
-1. ⭕ **Test Coverage**: 80% coverage on all code
-2. ⭕ **Build Performance**: Completes in < 2 minutes
-3. ⭕ **Push Performance**: Completes in < 1 minute  
-4. ⭕ **Certificate Rotation**: Handles cert updates gracefully
-5. ⭕ **Integration Tests**: Full end-to-end tests pass
-6. ⭕ **Documentation**: README with clear usage instructions
-
-### Nice to Have (Future Enhancements)
-1. ➖ Windows support
-2. ➖ Multiple registry support
-3. ➖ Build cache optimization
-4. ➖ Progress bars and pretty output
-5. ➖ Verbose debugging mode
-
-### Validation Checklist
-The MVP is complete when a user can:
-- [ ] Install the idpbuilder binary
-- [ ] Run `idpbuilder create --with-gitea` successfully
-- [ ] Run `idpbuilder build --context ./app --tag myapp:v1` successfully
-- [ ] Run `idpbuilder push myapp:v1` successfully
-- [ ] Confirm NO certificate errors occurred
-- [ ] Confirm the image is visible in Gitea registry
+## Re-Split Strategy
+
+### Split-002a: Core Layer and Configuration (~573 lines)
+**Purpose**: Foundational layer creation and configuration management
+**Dependencies**: Split-001 (interfaces and base types)
+**Branch**: `idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-002a`
+
+**Files to Include**:
+1. **doc.go** (45 lines) - Package documentation
+2. **config.go** (218 lines) - Full configuration factory implementation
+3. **layer.go** (310 lines) - Complete layer factory implementation
+   **TOTAL**: 573 lines ✅ SAFELY UNDER 600
+
+**No Reduction Needed**:
+- These three files form a cohesive unit
+- Total is already under 600 lines
+- No need to split functionality
+
+**Test Files**:
+- config_test.go (partial - basic tests only)
+- Basic layer tests (new file)
+
+### Split-002b: Builder Implementation and Tarball (~615 lines)
+**Purpose**: Complete builder implementation with tarball generation
+**Dependencies**: Split-002a (layer and config)
+**Branch**: `idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-002b`
+
+**Files to Include**:
+1. **tarball.go** (408 lines) - Full tarball writer implementation
+2. **builder.go** (174 lines) - Builder interface and SimpleBuilder
+3. **options.go** (124 lines) - Build options
+   **TOTAL**: 706 lines ⚠️ Close to 700 soft limit but acceptable
+
+**Alternative if 706 is too high**:
+1. **tarball.go** (408 lines) - Tarball writer only
+2. **builder_impl.go** (198 lines) - Builder implementation only
+   **TOTAL**: 606 lines ✅ SAFER OPTION
+
+**Recommended**: Use the 606-line alternative for safety
+
+**Test Files**:
+- options_test.go (204 lines)
+- builder_test.go (partial - core tests)
+- tarball tests (new file)
+
+## Implementation Instructions
+
+### Phase 1: Split-002a Implementation
+1. **Setup Infrastructure**:
+   ```bash
+   cd efforts/phase2/wave1/go-containerregistry-image-builder-SPLIT-002
+   git checkout -b idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-002a
+   ```
+
+2. **Implement Core Files**:
+   - Start with doc.go (package documentation)
+   - Implement config.go with validation
+   - Create simplified layer.go (core functionality only)
+   - Write basic tests for configuration
+
+3. **Size Verification**:
+   ```bash
+   PROJECT_ROOT=/home/vscode/workspaces/idpbuilder-oci-go-cr
+   $PROJECT_ROOT/tools/line-counter.sh -b idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder--split-001 -c [current-branch]
+   ```
+
+4. **Target Metrics**:
+   - Production code: ~400 lines
+   - Test code: ~150 lines
+   - Total: ~550 lines
+
+### Phase 2: Split-002b Implementation
+1. **Setup Infrastructure**:
+   ```bash
+   cd efforts/phase2/wave1/go-containerregistry-image-builder-SPLIT-002
+   git checkout -b idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-002b
+   ```
+
+2. **Implement Builder Components**:
+   - Import types from split-002a
+   - Implement options.go
+   - Complete builder.go and builder_impl.go
+   - Implement simplified tarball.go
+   - Write comprehensive tests
+
+3. **Size Verification**:
+   ```bash
+   PROJECT_ROOT=/home/vscode/workspaces/idpbuilder-oci-go-cr
+   $PROJECT_ROOT/tools/line-counter.sh -b idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder-split-002a -c [current-branch]
+   ```
+
+4. **Target Metrics**:
+   - Production code: ~400 lines
+   - Test code: ~150 lines
+   - Total: ~550 lines
+
+## Dependency Management
+
+### Split-002a Dependencies:
+- **External**: Split-001 (interfaces, base types)
+- **Provides**: Configuration types, layer creation API
+- **Compilation**: Must compile independently
+
+### Split-002b Dependencies:
+- **External**: Split-001, Split-002a
+- **Provides**: Complete builder implementation
+- **Compilation**: Requires split-002a types
 
 ## Risk Mitigation
 
-### Risk 1: Kind Certificate Extraction Fails
-**Mitigation**: Implement manual cert import as fallback
+### Size Control Measures:
+1. **Continuous Monitoring**: Check size every 100 lines
+2. **Early Warning**: Stop at 500 lines to review
+3. **Hard Stop**: Absolute limit at 650 lines (safety margin)
+
+### Code Organization:
+1. **Minimize Duplication**: Share common utilities
+2. **Clean Interfaces**: Well-defined boundaries between splits
+3. **Test Strategy**: Focus on integration tests in split-002b
+
+## Verification Checklist
+
+### Split-002a Validation:
+- [ ] Size under 600 lines (with margin)
+- [ ] Compiles independently
+- [ ] Tests pass
+- [ ] Provides clean API for split-002b
+
+### Split-002b Validation:
+- [ ] Size under 600 lines (with margin)
+- [ ] Integrates with split-002a
+- [ ] Complete builder functionality
+- [ ] All tests pass
+
+## Integration Strategy
+
+After both sub-splits complete:
+1. Merge split-002a to integration branch
+2. Merge split-002b to integration branch
+3. Verify combined functionality
+4. Continue with split-003 as originally planned
+
+## Notes for SW Engineer
+
+**CRITICAL**: The existing split-002 implementation MUST be refactored into these two sub-splits. Key considerations:
+
+1. **File Location**: Files should be created in the split's root directory (not pkg/builder/)
+2. **Import Paths**: Use relative imports between splits
+3. **Test Coverage**: Maintain existing test coverage across both splits
+4. **Incremental Development**: Split-002a must be complete before starting split-002b
+
+**Line Counting**: Always use the project's line counter tool:
 ```bash
-idpbuilder cert import --file /path/to/cert.pem
+PROJECT_ROOT=/home/vscode/workspaces/idpbuilder-oci-go-cr
+BASE_BRANCH="[appropriate-base]"
+CURRENT_BRANCH=$(git branch --show-current)
+$PROJECT_ROOT/tools/line-counter.sh -b $BASE_BRANCH -c $CURRENT_BRANCH
 ```
 
-### Risk 2: Custom CA file permissions for TLS trust
-**Mitigation**: Store CA at `~/.idpbuilder/certs/gitea.pem`, ensure readable by the process, and load via `tls.Config.RootCAs`; provide `--insecure` fallback only when explicitly requested
+## Remaining Files Disposition
 
-### Risk 3: Gitea API Changes
-**Mitigation**: Test against multiple Gitea versions, use stable API endpoints
+**Files NOT included in 002a or 002b**:
+- **builder.go** (174 lines) - IF using safer 606-line option for 002b
+- **options.go** (124 lines) - IF using safer 606-line option for 002b
+- **All test files** (builder_test.go, config_test.go, options_test.go)
 
-## Testing Strategy
+**These will go to Split-003 or a new Split-002c for tests**
 
-### Unit Tests (Per Effort)
-- Minimum 80% coverage
-- Mock external dependencies
-- Test error conditions
-- Test edge cases
+## Critical Implementation Order
 
-### Integration Tests (End of Each Phase)
-- Real Kind cluster
-- Real Gitea instance
-- Real certificates
-- Full workflow validation
+1. **STOP** all work on current oversized split-002
+2. **CREATE** split-002a infrastructure first
+3. **IMPLEMENT** split-002a completely (573 lines)
+4. **CREATE** split-002b infrastructure
+5. **IMPLEMENT** split-002b with safer option (606 lines)
+6. **DEFER** remaining files to future splits
 
-### Manual Testing Checklist
-- [ ] Fresh install works
-- [ ] Cert extraction successful
-- [ ] Build completes without errors
-- [ ] Push succeeds with proper cert
-- [ ] --insecure flag works
-- [ ] Error messages are clear
-- [ ] Cert rotation handled
+## Success Criteria
 
-## Rollout Plan
+1. **Split-002a**: ≤ 600 lines (actual: 573), compiles, tests pass
+2. **Split-002b**: ≤ 650 lines (actual: 606 with safer option), full functionality
+3. **Combined**: Core builder functionality operational
+4. **No Regression**: Integration with split-001 still works
+5. **Size Compliance**: BOTH splits stay well under 800-line hard limit
+## Split-002A Implementation Requirements
 
-### Week 1 Deliverable
-- Working certificate extraction
-- Registry TLS trust integration
-- Certificate validation
-- Manual testing successful
+This is split-002a of the resplit from the oversized split-002 (1188 lines).
 
-### Week 2 Deliverable
-- Build command working
-- Push command working
-- Integration tests passing
-- README with quick start
+### Scope: Layer & Configuration (573 lines target)
 
-### Post-MVP Roadmap
-1. **Month 1**: Multi-stage Dockerfiles, build args
-2. **Month 2**: Batch operations, caching
-3. **Month 3**: Controller integration
-4. **Month 4**: Full documentation, UX polish
+Implement ONLY these files:
+- layer.go (310 lines) - Layer creation functionality
+- config.go (218 lines) - Configuration management
+- doc.go (45 lines) - Package documentation
 
-## Definition of Done
+Total: 573 lines (well under 800 limit)
 
-### MVP Complete When:
-1. ✅ Can extract cert from Kind/Gitea
-2. ✅ Can assemble OCI image from a context directory
-3. ✅ Can push to Gitea without cert errors
-4. ✅ --insecure flag works as fallback
-5. ✅ Integration tests pass
-6. ✅ Basic README exists
+### DO NOT IMPLEMENT:
+- tarball.go (reserved for split-002b)
+- builder_impl.go (reserved for split-002b)  
+- test files (deferred to later splits)
 
-## Quick Start (Post-Implementation)
-
-```bash
-# 1. Install idpbuilder with OCI support
-go install github.com/jessesanford/idpbuilder@mvp
-
-# 2. Start IDPBuilder with Gitea
-idpbuilder create --with-gitea
-
-# 3. Assemble an image (certs handled automatically during push!)
-idpbuilder build --context ./app --tag myapp:v1
-
-# 4. Push to Gitea (no cert errors!)
-idpbuilder push myapp:v1
-
-# That's it! No manual certificate configuration needed!
-```
-
-## 📊 Implementation Summary
-
-**Total Implementation Size**: ~2,000 lines (excludes generated code, tests, docs)  
-**Total Efforts**: 8 (all < 800 lines each)  
-**Total Phases**: 2 (Phase 1: Certificate Infrastructure, Phase 2: Build & Push)  
-**Total Waves**: 4 (2 waves per phase)  
-**Effort Distribution**:
-- Phase 1 (Certificate Infrastructure): 4 efforts (~1,000 lines) - Week 1
-- Phase 2 (Build & Push Implementation): 4 efforts (~1,000 lines) - Week 2
-
-**Lines per Effort**: Average ~250 lines (well within 800-line limit)
-
----
-
-**Document Version**: 1.2  
-**Framework**: Software Factory 2.0 (MVP Variant)  
-**Created**: 2025-08-28  
-**Updated**: 2025-08-28  
-
-**Remember**: This MVP is laser-focused on solving the certificate problem. Everything else is deferred.

@@ -3,7 +3,6 @@ package builder
 import (
 	"context"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -17,8 +16,7 @@ import (
 
 // LayerFactory handles creation and configuration of OCI image layers.
 type LayerFactory struct {
-	BaseImage     v1.Image
-	CompressionAlgorithm v1.LayerCompression
+	BaseImage       v1.Image
 	TimestampPolicy TimestampPolicy
 	PermissionMode  os.FileMode
 }
@@ -47,21 +45,19 @@ type FileEntry struct {
 
 // LayerOptions configures layer creation behavior.
 type LayerOptions struct {
-	Files           []FileEntry          `json:"files,omitempty"`
-	WorkingDir      string              `json:"working_dir,omitempty"`
-	Compression     v1.LayerCompression `json:"compression,omitempty"`
-	TimestampPolicy TimestampPolicy     `json:"timestamp_policy,omitempty"`
-	PreserveOwner   bool                `json:"preserve_owner,omitempty"`
-	DefaultMode     os.FileMode         `json:"default_mode,omitempty"`
+	Files           []FileEntry     `json:"files,omitempty"`
+	WorkingDir      string          `json:"working_dir,omitempty"`
+	TimestampPolicy TimestampPolicy `json:"timestamp_policy,omitempty"`
+	PreserveOwner   bool            `json:"preserve_owner,omitempty"`
+	DefaultMode     os.FileMode     `json:"default_mode,omitempty"`
 }
 
 // NewLayerFactory creates a new LayerFactory with sensible defaults.
 func NewLayerFactory() *LayerFactory {
 	return &LayerFactory{
-		BaseImage:            empty.Image,
-		CompressionAlgorithm: v1.GzipCompression,
-		TimestampPolicy:      TimestampEpoch,
-		PermissionMode:       0644,
+		BaseImage:       empty.Image,
+		TimestampPolicy: TimestampEpoch,
+		PermissionMode:  0644,
 	}
 }
 
@@ -148,10 +144,6 @@ func (lf *LayerFactory) SetBaseImage(image v1.Image) {
 	lf.BaseImage = image
 }
 
-// SetCompressionAlgorithm sets the compression algorithm for new layers.
-func (lf *LayerFactory) SetCompressionAlgorithm(algorithm v1.LayerCompression) {
-	lf.CompressionAlgorithm = algorithm
-}
 
 // SetTimestampPolicy sets the timestamp policy for files in layers.
 func (lf *LayerFactory) SetTimestampPolicy(policy TimestampPolicy) {
