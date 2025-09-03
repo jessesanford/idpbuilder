@@ -10,15 +10,9 @@ require (
 	github.com/docker/docker v28.2.2+incompatible
 	github.com/go-git/go-billy/v5 v5.5.0
 	github.com/go-git/go-git/v5 v5.12.0
-<<<<<<< HEAD
-	github.com/go-logr/logr v1.4.2
-	github.com/google/go-cmp v0.6.0
-	github.com/google/go-containerregistry v0.19.0
-=======
 	github.com/go-logr/logr v1.4.3
 	github.com/google/go-cmp v0.7.0
 	github.com/google/go-containerregistry v0.20.6
->>>>>>> sf-repo/idpbuilder-oci-go-cr/phase2/wave1/gitea-registry-client
 	github.com/google/go-github/v61 v61.0.0
 	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
@@ -45,14 +39,9 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
-<<<<<<< HEAD
-	github.com/containerd/log v0.1.0 // indirect
-	github.com/containerd/stargz-snapshotter/estargz v0.14.3 // indirect
-=======
 	github.com/containerd/errdefs v1.0.0 // indirect
 	github.com/containerd/errdefs/pkg v0.3.0 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.16.3 // indirect
->>>>>>> sf-repo/idpbuilder-oci-go-cr/phase2/wave1/gitea-registry-client
 	github.com/cyphar/filepath-securejoin v0.2.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/davidmz/go-pageant v1.0.2 // indirect
@@ -90,11 +79,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
-<<<<<<< HEAD
-	github.com/klauspost/compress v1.16.5 // indirect
-=======
 	github.com/klauspost/compress v1.18.0 // indirect
->>>>>>> sf-repo/idpbuilder-oci-go-cr/phase2/wave1/gitea-registry-client
 	github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -122,11 +107,7 @@ require (
 	github.com/skeema/knownhosts v1.2.2 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
-<<<<<<< HEAD
-	github.com/vbatts/tar-split v0.11.3 // indirect
-=======
 	github.com/vbatts/tar-split v0.12.1 // indirect
->>>>>>> sf-repo/idpbuilder-oci-go-cr/phase2/wave1/gitea-registry-client
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/xlab/treeprint v1.2.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
