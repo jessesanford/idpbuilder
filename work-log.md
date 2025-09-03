@@ -172,3 +172,36 @@ Result: SUCCESS - Pending commit
 
 ### Validation 2: Compilation Check after split-002a
 Build Status: 
+
+
+### Operation 3: Merge split-002b (611 lines)
+Command: git merge sf-repo/idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder--split-002b --no-ff -m 'feat(E2.1.1): Merge split-002b - Tarball generation and streaming (611 lines)'
+Timestamp: 2025-09-03 16:35:36 UTC
+Result: SUCCESS - Merge commit $(git rev-parse --short HEAD)
+
+### Validation 3: Compilation Check after split-002b
+Build Status: 
+
+
+### Operation 4: Merge split-003a (223 lines)
+Command: git merge sf-repo/idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder--split-003a --no-ff -m 'feat(E2.1.1): Merge split-003a - Build utilities core (223 lines)'
+Timestamp: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Timestamp: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Result: SUCCESS - Merge commit $(git rev-parse --short HEAD)
+
+### Validation 4: Compilation Check after split-003a
+Build Status: 
+
+
+### Operation 5: Merge split-003b (581 lines)
+Command: git merge sf-repo/idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder--split-003b --no-ff -m 'feat(E2.1.1): Merge split-003b - Minimal TLS/Certificate handler (581 lines)'
+Timestamp: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Result: SUCCESS - Merge commit $(git rev-parse --short HEAD)
+
+### Validation 5: Compilation Check after split-003b
+Build Status: 
+
+
+### Operation 6: Merge gitea-registry-client (689 lines)
+Command: git merge sf-repo/idpbuilder-oci-go-cr/phase2/wave1/gitea-registry-client --no-ff -m 'feat(E2.1.2): Merge gitea-registry-client - Registry client implementation (689 lines)'
+Timestamp: $(date '+%Y-%m-%d %H:%M:%S %Z')
