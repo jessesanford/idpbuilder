@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cnoe-io/idpbuilder/pkg/logger"
 	"github.com/go-logr/logr"
 	"k8s.io/klog/v2"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -26,7 +25,8 @@ func SetLogger() error {
 		return err
 	}
 
-	slogger := slog.New(logger.NewHandler(os.Stderr, logger.Options{Level: l, Colored: ColoredOutput}))
+	// Create slog handlers directly without using the custom logger package
+	slogger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: l}))
 	kslogger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: getKlogLevel(l)}))
 	logger := logr.FromSlogHandler(slogger.Handler())
 	klogger := logr.FromSlogHandler(kslogger.Handler())
