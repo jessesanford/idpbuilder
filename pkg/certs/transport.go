@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/v1/remote"
@@ -22,11 +23,20 @@ func DefaultTransportConfig() *TransportConfig {
 
 // ConfigureTransport creates a remote.Option with proper TLS configuration for a registry
 func (m *trustStoreManager) ConfigureTransport(registry string) (remote.Option, error) {
+	// Check if certificate management is enabled via feature flag
+	if os.Getenv("ENABLE_CERT_MANAGEMENT") != "true" {
+		return nil, fmt.Errorf("certificate management is disabled - set ENABLE_CERT_MANAGEMENT=true to enable")
+	}
 	return m.ConfigureTransportWithConfig(registry, DefaultTransportConfig())
 }
 
 // ConfigureTransportWithConfig creates a remote.Option with custom transport configuration
 func (m *trustStoreManager) ConfigureTransportWithConfig(registry string, config *TransportConfig) (remote.Option, error) {
+	// Check if certificate management is enabled via feature flag
+	if os.Getenv("ENABLE_CERT_MANAGEMENT") != "true" {
+		return nil, fmt.Errorf("certificate management is disabled - set ENABLE_CERT_MANAGEMENT=true to enable")
+	}
+
 	if registry == "" {
 		return nil, fmt.Errorf("registry name cannot be empty")
 	}
@@ -87,11 +97,20 @@ func (m *trustStoreManager) ConfigureAuthenticatedTransport(registry string, aut
 
 // CreateHTTPClient creates an HTTP client with proper TLS configuration
 func (m *trustStoreManager) CreateHTTPClient(registry string) (*http.Client, error) {
+	// Check if certificate management is enabled via feature flag
+	if os.Getenv("ENABLE_CERT_MANAGEMENT") != "true" {
+		return nil, fmt.Errorf("certificate management is disabled - set ENABLE_CERT_MANAGEMENT=true to enable")
+	}
 	return m.CreateHTTPClientWithConfig(registry, DefaultTransportConfig())
 }
 
 // CreateHTTPClientWithConfig creates an HTTP client with custom configuration
 func (m *trustStoreManager) CreateHTTPClientWithConfig(registry string, config *TransportConfig) (*http.Client, error) {
+	// Check if certificate management is enabled via feature flag
+	if os.Getenv("ENABLE_CERT_MANAGEMENT") != "true" {
+		return nil, fmt.Errorf("certificate management is disabled - set ENABLE_CERT_MANAGEMENT=true to enable")
+	}
+
 	if registry == "" {
 		return nil, fmt.Errorf("registry name cannot be empty")
 	}
