@@ -2,7 +2,6 @@ package builder
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -114,10 +113,10 @@ func (f *ConfigFactory) validateConfig(config *v1.ConfigFile) error {
 		return fmt.Errorf("working directory must be an absolute path: %s", config.Config.WorkingDir)
 	}
 	
-	// Validate exposed ports format
+	// Basic port validation
 	for port := range config.Config.ExposedPorts {
-		if err := validatePortFormat(port); err != nil {
-			return fmt.Errorf("invalid exposed port format %s: %w", port, err)
+		if !strings.Contains(port, "/") {
+			return fmt.Errorf("invalid exposed port format: %s", port)
 		}
 	}
 	
@@ -128,111 +127,14 @@ func (f *ConfigFactory) validateConfig(config *v1.ConfigFile) error {
 		}
 	}
 	
-	// Validate user format (can be numeric UID or username)
-	if config.Config.User != "" {
-		if err := validateUserFormat(config.Config.User); err != nil {
-			return fmt.Errorf("invalid user format %s: %w", config.Config.User, err)
-		}
+	// Basic user format validation
+	if config.Config.User != "" && strings.Count(config.Config.User, ":") > 1 {
+		return fmt.Errorf("invalid user format: %s", config.Config.User)
 	}
 	
 	return nil
 }
 
-// validatePortFormat validates that a port specification follows the correct format.
-// Valid formats: "port/protocol" (e.g., "80/tcp", "443/tcp", "53/udp")
-func validatePortFormat(port string) error {
-	parts := strings.Split(port, "/")
-	if len(parts) != 2 {
-		return fmt.Errorf("port must be in format 'port/protocol'")
-	}
-	
-	// Validate port number
-	portNum, err := strconv.Atoi(parts[0])
-	if err != nil {
-		return fmt.Errorf("invalid port number: %s", parts[0])
-	}
-	
-	if portNum < 1 || portNum > 65535 {
-		return fmt.Errorf("port number must be between 1 and 65535: %d", portNum)
-	}
-	
-	// Validate protocol
-	protocol := strings.ToLower(parts[1])
-	if protocol != "tcp" && protocol != "udp" {
-		return fmt.Errorf("protocol must be 'tcp' or 'udp': %s", protocol)
-	}
-	
-	return nil
-}
-
-// validateUserFormat validates the user specification format.
-// Valid formats: numeric UID, username, UID:GID, username:group
-func validateUserFormat(user string) error {
-	if user == "" {
-		return nil // Empty is valid (defaults to root)
-	}
-	
-	// Handle user:group format
-	parts := strings.Split(user, ":")
-	if len(parts) > 2 {
-		return fmt.Errorf("user specification can have at most one colon")
-	}
-	
-	// Validate user part
-	userPart := parts[0]
-	if userPart == "" {
-		return fmt.Errorf("user part cannot be empty")
-	}
-	
-	// Check if it's a numeric UID
-	if _, err := strconv.Atoi(userPart); err != nil {
-		// Not numeric, validate as username
-		if !isValidUsername(userPart) {
-			return fmt.Errorf("invalid username format")
-		}
-	}
-	
-	// Validate group part if present
-	if len(parts) == 2 {
-		groupPart := parts[1]
-		if groupPart == "" {
-			return fmt.Errorf("group part cannot be empty")
-		}
-		
-		// Check if it's a numeric GID
-		if _, err := strconv.Atoi(groupPart); err != nil {
-			// Not numeric, validate as group name
-			if !isValidUsername(groupPart) { // Same rules as username
-				return fmt.Errorf("invalid group name format")
-			}
-		}
-	}
-	
-	return nil
-}
-
-// isValidUsername validates that a string is a valid Unix username.
-// This is a basic validation - actual validation depends on the target system.
-func isValidUsername(name string) bool {
-	if len(name) == 0 || len(name) > 32 {
-		return false
-	}
-	
-	// Must start with letter or underscore
-	if !(name[0] >= 'a' && name[0] <= 'z') && !(name[0] >= 'A' && name[0] <= 'Z') && name[0] != '_' {
-		return false
-	}
-	
-	// Can contain letters, numbers, underscores, hyphens
-	for _, char := range name[1:] {
-		if !((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || 
-			 (char >= '0' && char <= '9') || char == '_' || char == '-') {
-			return false
-		}
-	}
-	
-	return true
-}
 
 // DefaultLabels returns a set of recommended OCI labels.
 // These provide useful metadata for image management.
