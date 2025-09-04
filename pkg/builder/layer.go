@@ -201,60 +201,14 @@ func (f *LayerFactory) WithTimestampPreservation(preserve bool) *LayerFactory {
 	return f
 }
 
-// GetLayerInfo returns information about a layer.
-// This is useful for debugging and validation.
-func GetLayerInfo(layer v1.Layer) (LayerInfo, error) {
-	digest, err := layer.Digest()
-	if err != nil {
-		return LayerInfo{}, fmt.Errorf("failed to get layer digest: %w", err)
-	}
-	
-	size, err := layer.Size()
-	if err != nil {
-		return LayerInfo{}, fmt.Errorf("failed to get layer size: %w", err)
-	}
-	
-	diffID, err := layer.DiffID()
-	if err != nil {
-		return LayerInfo{}, fmt.Errorf("failed to get layer diff ID: %w", err)
-	}
-	
-	mediaType, err := layer.MediaType()
-	if err != nil {
-		return LayerInfo{}, fmt.Errorf("failed to get layer media type: %w", err)
-	}
-	
-	return LayerInfo{
-		Digest:    digest,
-		Size:      size,
-		DiffID:    diffID,
-		MediaType: string(mediaType),
-	}, nil
-}
-
-// LayerInfo contains metadata about an OCI layer.
-type LayerInfo struct {
-	Digest    v1.Hash             `json:"digest"`
-	Size      int64               `json:"size"`
-	DiffID    v1.Hash             `json:"diffId"`
-	MediaType string              `json:"mediaType"`
-}
-
-// isExecutable checks if a file has execute permissions.
-// This is used to preserve executable bits in the tar archive.
+// Simple helper functions for basic file operations
 func isExecutable(info os.FileInfo) bool {
-	if info.Mode()&0111 != 0 {
-		return true
-	}
-	return false
+	return info.Mode()&0111 != 0
 }
 
-// getFileOwnership returns the UID and GID of a file.
-// This works on Unix-like systems but gracefully handles other platforms.
 func getFileOwnership(info os.FileInfo) (int, int) {
 	if stat, ok := info.Sys().(*syscall.Stat_t); ok {
 		return int(stat.Uid), int(stat.Gid)
 	}
-	// Default to root if we can't determine ownership
 	return 0, 0
 }
