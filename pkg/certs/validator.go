@@ -4,6 +4,7 @@ package certs
 import (
 	"crypto/x509"
 	"fmt"
+	"os"
 	"time"
 )
 
@@ -17,6 +18,11 @@ type DefaultValidator struct {
 
 // NewValidator creates a validator with trust store integration
 func NewValidator(trustStore TrustStoreManager) (*DefaultValidator, error) {
+	// Check if certificate management is enabled via feature flag
+	if os.Getenv("ENABLE_CERT_MANAGEMENT") != "true" {
+		return nil, fmt.Errorf("certificate management is disabled - set ENABLE_CERT_MANAGEMENT=true to enable")
+	}
+
 	if trustStore == nil {
 		return nil, fmt.Errorf("trust store manager cannot be nil")
 	}
