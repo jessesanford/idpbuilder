@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -94,9 +95,10 @@ func runBuild(cmd *cobra.Command, args []string) error {
 	}
 
 	// Create logger
-	log := logger.New()
+	log := logger.NewDefault()
 	if buildOpts.Quiet {
-		log = &quietLogger{}
+		// Create a logger that outputs to a discard writer
+		log = logger.New(io.Discard)
 	}
 
 	// Create build options
@@ -225,7 +227,7 @@ func isFeatureEnabled() bool {
 	return os.Getenv("ENABLE_CLI_TOOLS") == "true"
 }
 
-// quietLogger is a logger that suppresses output
+// quietLogger is a logger that suppresses output (for testing)
 type quietLogger struct{}
 
 func (q *quietLogger) Debug(msg string, args ...interface{}) {}

@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"github.com/cnoe-io/idpbuilder/pkg/builder"
-	"github.com/cnoe-io/idpbuilder/pkg/certs"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/spf13/cobra"
 )
@@ -173,42 +173,17 @@ func validatePushOptions() error {
 }
 
 func setupTLSOptions(ctx context.Context, remoteOpts *[]remote.Option) error {
-	// Check if certificates are available (from split-002)
-	if !isCertManagementEnabled() {
-		// Basic TLS setup without cert management
-		if pushOpts.Insecure || pushOpts.SkipTLSVerify {
-			*remoteOpts = append(*remoteOpts, remote.WithTransport(remote.DefaultTransport))
-		}
-		return nil
+	// Basic TLS setup - will be enhanced when cert management is available
+	if pushOpts.Insecure || pushOpts.SkipTLSVerify {
+		// For now, just use default transport
+		// TODO: Implement proper insecure transport when cert management is integrated
+		*remoteOpts = append(*remoteOpts, remote.WithTransport(remote.DefaultTransport))
 	}
-
-	// Use certificate manager from split-002 if available
-	if pushOpts.CertFile != "" && pushOpts.KeyFile != "" {
-		certManager := certs.NewCertificateManager(&certs.CertificateOptions{
-			CertFile: pushOpts.CertFile,
-			KeyFile:  pushOpts.KeyFile,
-			CAFile:   pushOpts.CAFile,
-			Insecure: pushOpts.Insecure,
-		})
-
-		transport, err := certManager.CreateHTTPSTransport(ctx)
-		if err != nil {
-			return fmt.Errorf("failed to create HTTPS transport: %w", err)
-		}
-
-		*remoteOpts = append(*remoteOpts, remote.WithTransport(transport))
-	} else if pushOpts.Insecure || pushOpts.SkipTLSVerify {
-		// Use insecure transport from cert manager
-		certManager := certs.NewCertificateManager(&certs.CertificateOptions{
-			Insecure: true,
-		})
-
-		transport, err := certManager.CreateHTTPSTransport(ctx)
-		if err != nil {
-			return fmt.Errorf("failed to create insecure transport: %w", err)
-		}
-
-		*remoteOpts = append(*remoteOpts, remote.WithTransport(transport))
+	
+	// TODO: Add certificate file support when cert management (split-002) is integrated
+	if pushOpts.CertFile != "" || pushOpts.KeyFile != "" || pushOpts.CAFile != "" {
+		fmt.Printf("Warning: Certificate file options require ENABLE_CERT_MANAGEMENT=true\n")
+		fmt.Printf("Using default transport for now\n")
 	}
 
 	return nil

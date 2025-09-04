@@ -53,7 +53,7 @@ func NewCLIFallbackManager(opts *FallbackOptions) *CLIFallbackManager {
 	}
 
 	return &CLIFallbackManager{
-		logger:          logger.New(),
+		logger:          logger.NewDefault(),
 		maxRetries:      3,
 		retryDelay:      2 * time.Second,
 		fallbackOptions: opts,
