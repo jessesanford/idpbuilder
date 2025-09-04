@@ -12,8 +12,11 @@ import (
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1/empty"
 	"github.com/google/go-containerregistry/pkg/v1/mutate"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
+	"github.com/google/go-containerregistry/pkg/v1/types"
+	"github.com/google/go-containerregistry/pkg/name"
 )
 
 // TarballManager handles tarball operations for container images
@@ -172,13 +175,14 @@ func (tm *TarballManager) CreateImageFromTarball(ctx context.Context, tarballPat
 		return nil, fmt.Errorf("failed to create layer from tarball: %w", err)
 	}
 
-	// Create base image
-	img := mutate.MediaType(mutate.ConfigFile(mutate.Config(empty.Image, *config), &v1.ConfigFile{
-		Architecture: config.Architecture,
-		OS:           config.OS,
-		Config:       *config,
-		Created:      v1.Time{Time: time.Now()},
-	}), types.DockerManifestSchema2)
+	// Create base image with config
+	img, err := mutate.Config(empty.Image, *config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set image config: %w", err)
+	}
+
+	// Set media type
+	img = mutate.MediaType(img, types.DockerManifestSchema2)
 
 	// Add layer to image
 	img, err = mutate.AppendLayers(img, layer)
@@ -211,12 +215,20 @@ func (tm *TarballManager) SaveImageToTarball(ctx context.Context, img v1.Image, 
 	}
 	defer file.Close()
 
-	// Create tag map
-	tagMap := map[string]v1.Image{}
+	// Create tag to reference mapping
+	var ref name.Tag
 	if tag != "" {
-		tagMap[tag] = img
+		ref, err = name.NewTag(tag)
 	} else {
-		tagMap["latest"] = img
+		ref, err = name.NewTag("latest")
+	}
+	if err != nil {
+		return fmt.Errorf("failed to create tag reference: %w", err)
+	}
+
+	// Create tag map with proper types
+	tagMap := map[name.Tag]v1.Image{
+		ref: img,
 	}
 
 	// Write image to tarball
@@ -244,8 +256,10 @@ func (tm *TarballManager) LoadImageFromTarball(ctx context.Context, path string,
 	}
 	defer file.Close()
 
-	// Load image from tarball
-	img, err := tarball.ImageFromTar(file)
+	// Load image from tarball using the opener approach
+	img, err := tarball.Image(func() (io.ReadCloser, error) {
+		return os.Open(path)
+	}, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load image from tarball: %w", err)
 	}
