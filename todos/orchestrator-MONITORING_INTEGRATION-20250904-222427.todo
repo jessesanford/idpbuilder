@@ -1,0 +1,9 @@
+[
+  {"content": "Verify Phase 2 Wave 1 integration completion", "status": "completed"},
+  {"content": "Run build and test verification on integration branch", "status": "completed"},
+  {"content": "Spawn Architect for Wave 1 review", "status": "in_progress"},
+  {"content": "Check for Phase 2 Wave 2 plan", "status": "pending"},
+  {"content": "Spawn agents for Phase 2 Wave 2 if needed", "status": "pending"},
+  {"content": "Update orchestrator state to WAVE_COMPLETE", "status": "pending"},
+  {"content": "Save TODO state before state transition", "status": "pending"}
+]
