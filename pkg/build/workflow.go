@@ -9,7 +9,6 @@ import (
 
 	"github.com/cnoe-io/idpbuilder/pkg/builder"
 	"github.com/cnoe-io/idpbuilder/pkg/logger"
-	v1 "github.com/google/go-containerregistry/pkg/v1"
 )
 
 // BuildWorkflow manages the complete build process
@@ -48,7 +47,7 @@ func NewBuildWorkflow(buildCtx *BuildContext) (*BuildWorkflow, error) {
 
 	return &BuildWorkflow{
 		context:   buildCtx,
-		logger:    logger.New(),
+		logger:    logger.NewDefault(),
 		startTime: time.Now(),
 	}, nil
 }
@@ -245,7 +244,12 @@ func (wf *BuildWorkflow) buildLayers(ctx context.Context) error {
 		return fmt.Errorf("failed to get layer info: %w", err)
 	}
 
-	wf.context.Layers = []LayerInfo{*layerInfo}
+	// Convert builder.LayerInfo to our local LayerInfo type
+	localLayerInfo := LayerInfo{
+		Digest: layerInfo.Digest,
+		Size:   layerInfo.Size,
+	}
+	wf.context.Layers = []LayerInfo{localLayerInfo}
 	return nil
 }
 
