@@ -2,7 +2,6 @@ package builder
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1"
@@ -64,7 +63,7 @@ func (w *TarballWriter) Write(img v1.Image, outputPath string, ref string) error
 	}
 	
 	// Write the tarball
-	if err := tarball.WriteToFile(outputPath, tagMap); err != nil {
+	if err := tarball.MultiWriteToFile(outputPath, tagMap); err != nil {
 		return fmt.Errorf("failed to write tarball: %w", err)
 	}
 	
@@ -88,7 +87,7 @@ func (w *TarballWriter) WriteMultiple(images map[string]v1.Image, outputPath str
 	}
 	
 	// Write the tarball
-	if err := tarball.WriteToFile(outputPath, tagMap); err != nil {
+	if err := tarball.MultiWriteToFile(outputPath, tagMap); err != nil {
 		return fmt.Errorf("failed to write multi-image tarball: %w", err)
 	}
 	
