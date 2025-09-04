@@ -14,47 +14,10 @@ import (
 	"time"
 )
 
-// createTestCertificate creates a test certificate for testing purposes
-func createTestCertificate(dnsNames []string, expiry time.Time) (*x509.Certificate, error) {
-	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
-	if err != nil {
-		return nil, err
-	}
-
-	template := x509.Certificate{
-		SerialNumber: big.NewInt(1),
-		Subject: pkix.Name{
-			Organization:  []string{"Test Org"},
-			Country:       []string{"US"},
-			Province:      []string{""},
-			Locality:      []string{"Test City"},
-			StreetAddress: []string{""},
-			PostalCode:    []string{""},
-		},
-		NotBefore:             time.Now(),
-		NotAfter:              expiry,
-		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
-		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-		BasicConstraintsValid: true,
-		DNSNames:              dnsNames,
-	}
-
-	certDER, err := x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey)
-	if err != nil {
-		return nil, err
-	}
-
-	cert, err := x509.ParseCertificate(certDER)
-	if err != nil {
-		return nil, err
-	}
-
-	return cert, nil
-}
 
 // createTestCertificatePEM creates a test certificate in PEM format
 func createTestCertificatePEM(dnsNames []string, expiry time.Time) ([]byte, error) {
-	cert, err := createTestCertificate(dnsNames, expiry)
+	cert, err := createTestCertificateWithParams(dnsNames, expiry)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +47,7 @@ func TestValidateCertificate_ValidCert(t *testing.T) {
 	// Create a valid certificate
 	dnsNames := []string{"gitea.example.com"}
 	expiry := time.Now().Add(24 * time.Hour)
-	cert, err := createTestCertificate(dnsNames, expiry)
+	cert, err := createTestCertificateWithParams(dnsNames, expiry)
 	if err != nil {
 		t.Fatalf("Failed to create test certificate: %v", err)
 	}
@@ -113,7 +76,7 @@ func TestValidateCertificate_ExpiredCert(t *testing.T) {
 	// Create an expired certificate
 	dnsNames := []string{"gitea.example.com"}
 	expiry := time.Now().Add(-24 * time.Hour) // Expired 24 hours ago
-	cert, err := createTestCertificate(dnsNames, expiry)
+	cert, err := createTestCertificateWithParams(dnsNames, expiry)
 	if err != nil {
 		t.Fatalf("Failed to create test certificate: %v", err)
 	}
@@ -223,7 +186,7 @@ func TestSaveCertificate_Success(t *testing.T) {
 	// Create a valid certificate
 	dnsNames := []string{"gitea.example.com"}
 	expiry := time.Now().Add(24 * time.Hour)
-	cert, err := createTestCertificate(dnsNames, expiry)
+	cert, err := createTestCertificateWithParams(dnsNames, expiry)
 	if err != nil {
 		t.Fatalf("Failed to create test certificate: %v", err)
 	}
@@ -341,7 +304,7 @@ func TestGetCertificateInfo(t *testing.T) {
 	// Create a test certificate with specific attributes
 	dnsNames := []string{"gitea.example.com", "gitea.local"}
 	expiry := time.Now().Add(24 * time.Hour)
-	cert, err := createTestCertificate(dnsNames, expiry)
+	cert, err := createTestCertificateWithParams(dnsNames, expiry)
 	if err != nil {
 		t.Fatalf("Failed to create test certificate: %v", err)
 	}
@@ -411,7 +374,7 @@ func TestSaveCertificate_DirectoryCreation(t *testing.T) {
 	// Create a valid certificate
 	dnsNames := []string{"gitea.example.com"}
 	expiry := time.Now().Add(24 * time.Hour)
-	cert, err := createTestCertificate(dnsNames, expiry)
+	cert, err := createTestCertificateWithParams(dnsNames, expiry)
 	if err != nil {
 		t.Fatalf("Failed to create test certificate: %v", err)
 	}
