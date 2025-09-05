@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	"github.com/cnoe-io/idpbuilder/pkg/registry"
 	"github.com/cnoe-io/idpbuilder/pkg/cli"
 	"github.com/cnoe-io/idpbuilder/pkg/certs"
@@ -84,7 +86,13 @@ func runPush(cmd *cobra.Command, args []string) error {
 		
 		// Auto-configure for Gitea if using default registry
 		if strings.Contains(registryURL, "gitea.cnoe.localtest.me") {
-			extractor := certs.NewDefaultExtractor("idpbuilder")
+			// Detect cluster name dynamically
+			clusterName, err := detectKindClusterName()
+			if err != nil {
+				// Fallback to idpbuilder if detection fails
+				clusterName = "idpbuilder"
+			}
+			extractor := certs.NewDefaultExtractor(clusterName)
 			ctx := context.Background()
 			cert, err := extractor.ExtractGiteaCert(ctx)
 			if err != nil {
@@ -107,35 +115,67 @@ func runPush(cmd *cobra.Command, args []string) error {
 		clientOpts = append(clientOpts, registry.WithInsecure(true))
 	}
 
-	// Create registry client (will be used when image loading is implemented)
-	_, err := registry.NewGiteaClient(registryURL, username, password, trustStore, clientOpts...)
+	// Create registry client
+	client, err := registry.NewGiteaClient(registryURL, username, password, trustStore, clientOpts...)
 	if err != nil {
 		return fmt.Errorf("failed to create registry client: %w", err)
 	}
 
 	// Push the image
+	progress.UpdateMessage("Loading image from tarball")
+	
+	// For CLI usage, we expect the image to be provided as a tarball path
+	// This follows the pattern: idpbuilder build --output image.tar && idpbuilder push image.tar
+	tarballPath := image
+	if !strings.Contains(tarballPath, ".tar") {
+		return fmt.Errorf("image must be provided as a tarball path (*.tar). Use 'idpbuilder build --output %s.tar' first", image)
+	}
+	
+	// Load the OCI image from the tarball
+	img, err := tarball.ImageFromPath(tarballPath, nil)
+	if err != nil {
+		return fmt.Errorf("failed to load image from tarball: %w", err)
+	}
+	
 	progress.UpdateMessage("Pushing to registry")
 	
-	// Create push options (will be used when image loading is implemented)
-	_ = registry.PushOptions{
+	// Prepare push options
+	pushOpts := registry.PushOptions{
 		Options: registry.Options{
-			Timeout:  30 * time.Second,
 			Insecure: insecure,
+			Timeout:  30 * time.Second,
 		},
 	}
 	
-	// For now, we need to load the image. In a complete implementation, we would:
-	// 1. Check if image exists locally (daemon/tarball)
-	// 2. Load from the appropriate source  
-	// 3. Call: client.Push(context.Background(), loadedImage, image, pushOpts)
-	// Since this is a CLI-focused implementation and we don't have local image storage
-	// configured, we return a clear error message explaining the limitation
+	// Push the image
+	if err := client.Push(context.Background(), img, image, pushOpts); err != nil {
+		return fmt.Errorf("push failed: %w", err)
+	}
 	
-	// TODO: In production, this would load from:
-	//   - Local daemon (docker/containerd)
-	//   - OCI tarball created by build command
-	//   - Remote registry for re-tagging
+	fmt.Printf("Successfully pushed %s\n", image)
+	return nil
+}
+
+// detectKindClusterName dynamically detects the available Kind cluster name
+func detectKindClusterName() (string, error) {
+	cmd := exec.Command("kind", "get", "clusters")
+	output, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to get kind clusters: %w", err)
+	}
 	
-	progress.UpdateMessage("Image loading not implemented - this is a structural limitation")
-	return fmt.Errorf("image loading from local storage not yet implemented. Use 'idpbuilder build --output image.tar' then load the image to push")
+	clusters := strings.Split(strings.TrimSpace(string(output)), "\n")
+	if len(clusters) == 0 {
+		return "", fmt.Errorf("no kind clusters found")
+	}
+	
+	// Use first cluster or look for idpbuilder/localdev
+	for _, cluster := range clusters {
+		if cluster == "idpbuilder" || cluster == "localdev" {
+			return cluster, nil
+		}
+	}
+	
+	// Default to first available cluster
+	return clusters[0], nil
 }
