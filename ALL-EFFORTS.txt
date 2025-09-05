@@ -1,0 +1,7 @@
+idpbuilder-oci-go-cr/phase1/wave1/kind-certificate-extraction
+idpbuilder-oci-go-cr/phase1/wave1/registry-tls-trust-integration
+idpbuilder-oci-go-cr/phase1/wave2/certificate-validation-pipeline
+idpbuilder-oci-go-cr/phase1/wave2/fallback-strategies
+idpbuilder-oci-go-cr/phase2/wave1/go-containerregistry-image-builder
+idpbuilder-oci-go-cr/phase2/wave1/gitea-registry-client
+idpbuilder-oci-go-cr/phase2/wave2/cli-commands

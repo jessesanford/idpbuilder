@@ -1,0 +1,11 @@
+# github.com/cnoe-io/idpbuilder/pkg/certs
+pkg/certs/diagnostics.go:12:74: undefined: CertDiagnostics
+pkg/certs/diagnostics.go:17:11: undefined: CertDiagnostics
+pkg/certs/diagnostics.go:25:28: undefined: ValidationError
+pkg/certs/diagnostics.go:37:57: undefined: ValidationError
+pkg/certs/diagnostics.go:50:58: undefined: ValidationError
+pkg/certs/diagnostics.go:88:30: undefined: CertDiagnostics
+pkg/certs/diagnostics.go:177:91: undefined: CertDiagnostics
+pkg/certs/diagnostics.go:187:58: undefined: ValidationError
+# github.com/cnoe-io/idpbuilder/pkg/cmd/build
+pkg/cmd/build/build.go:104:2: undefined: progress
