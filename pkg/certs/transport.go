@@ -30,7 +30,7 @@ func (m *trustStoreManager) ConfigureTransportWithConfig(registry string, config
 	if registry == "" {
 		return nil, fmt.Errorf("registry name cannot be empty")
 	}
-	
+
 	if config == nil {
 		config = DefaultTransportConfig()
 	}
@@ -95,7 +95,7 @@ func (m *trustStoreManager) CreateHTTPClientWithConfig(registry string, config *
 	if registry == "" {
 		return nil, fmt.Errorf("registry name cannot be empty")
 	}
-	
+
 	if config == nil {
 		config = DefaultTransportConfig()
 	}
@@ -152,7 +152,7 @@ func (m *trustStoreManager) TestConnection(registry string) error {
 	// Test connection with a simple GET request to /v2/
 	// This is the standard registry API endpoint
 	url := fmt.Sprintf("https://%s/v2/", registry)
-	
+
 	resp, err := client.Get(url)
 	if err != nil {
 		if m.IsInsecure(registry) {
@@ -200,21 +200,21 @@ func (m *trustStoreManager) GetTLSConnectionInfo(registry string) (*ConnectionIn
 	// Extract TLS connection state
 	if resp.TLS == nil {
 		return &ConnectionInfo{
-			Registry:    registry,
-			IsSecure:    false,
-			IsInsecure:  m.IsInsecure(registry),
-			Error:       "No TLS connection state available",
+			Registry:   registry,
+			IsSecure:   false,
+			IsInsecure: m.IsInsecure(registry),
+			Error:      "No TLS connection state available",
 		}, nil
 	}
 
 	info := &ConnectionInfo{
-		Registry:         registry,
-		IsSecure:         true,
-		IsInsecure:       m.IsInsecure(registry),
-		TLSVersion:       tlsVersionString(resp.TLS.Version),
-		CipherSuite:      tls.CipherSuiteName(resp.TLS.CipherSuite),
-		ServerCerts:      resp.TLS.PeerCertificates,
-		VerifiedChains:   resp.TLS.VerifiedChains,
+		Registry:          registry,
+		IsSecure:          true,
+		IsInsecure:        m.IsInsecure(registry),
+		TLSVersion:        tlsVersionString(resp.TLS.Version),
+		CipherSuite:       tls.CipherSuiteName(resp.TLS.CipherSuite),
+		ServerCerts:       resp.TLS.PeerCertificates,
+		VerifiedChains:    resp.TLS.VerifiedChains,
 		HandshakeComplete: resp.TLS.HandshakeComplete,
 	}
 

@@ -150,7 +150,7 @@ func expandConfigPaths(config *Config) error {
 // expandPath expands environment variables in a path
 func expandPath(path string) (string, error) {
 	expanded := os.ExpandEnv(path)
-	
+
 	// Handle tilde expansion
 	if len(expanded) > 0 && expanded[0] == '~' {
 		home, err := os.UserHomeDir()

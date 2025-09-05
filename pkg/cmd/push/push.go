@@ -8,18 +8,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/cobra"
-	"github.com/google/go-containerregistry/pkg/v1/tarball"
-	"github.com/cnoe-io/idpbuilder/pkg/registry"
-	"github.com/cnoe-io/idpbuilder/pkg/cli"
 	"github.com/cnoe-io/idpbuilder/pkg/certs"
+	"github.com/cnoe-io/idpbuilder/pkg/cli"
+	"github.com/cnoe-io/idpbuilder/pkg/registry"
+	"github.com/google/go-containerregistry/pkg/v1/tarball"
+	"github.com/spf13/cobra"
 )
 
 // PushCmd is the push command
 var PushCmd = &cobra.Command{
 	Use:   "push IMAGE[:TAG]",
 	Short: "Push image to Gitea registry",
-	Long:  `Push a container image to the builtin Gitea registry with certificate support.
+	Long: `Push a container image to the builtin Gitea registry with certificate support.
 Automatically handles certificate trust configuration for secure connections.`,
 	Example: `  idpbuilder push myapp:v1
   idpbuilder push --insecure myapp:latest
@@ -72,18 +72,18 @@ func runPush(cmd *cobra.Command, args []string) error {
 	}
 
 	var trustStore certs.TrustStoreManager
-	
+
 	// Setup certificate trust (unless --insecure)
 	if !insecure {
 		progress.UpdateMessage("Configuring certificate trust")
-		
+
 		// Create trust store from Phase 1 certificate infrastructure
 		var err error
-		trustStore, err = certs.NewTrustStoreManager("")  // Use default directory
+		trustStore, err = certs.NewTrustStoreManager("") // Use default directory
 		if err != nil {
 			return fmt.Errorf("failed to create trust store: %w", err)
 		}
-		
+
 		// Auto-configure for Gitea if using default registry
 		if strings.Contains(registryURL, "gitea.cnoe.localtest.me") {
 			// Detect cluster name dynamically
@@ -98,7 +98,7 @@ func runPush(cmd *cobra.Command, args []string) error {
 			if err != nil {
 				return fmt.Errorf("certificate extraction failed: %w", err)
 			}
-			
+
 			if err := trustStore.AddCertificate("gitea.cnoe.localtest.me", cert); err != nil {
 				return fmt.Errorf("certificate setup failed: %w", err)
 			}
@@ -123,22 +123,22 @@ func runPush(cmd *cobra.Command, args []string) error {
 
 	// Push the image
 	progress.UpdateMessage("Loading image from tarball")
-	
+
 	// For CLI usage, we expect the image to be provided as a tarball path
 	// This follows the pattern: idpbuilder build --output image.tar && idpbuilder push image.tar
 	tarballPath := image
 	if !strings.Contains(tarballPath, ".tar") {
 		return fmt.Errorf("image must be provided as a tarball path (*.tar). Use 'idpbuilder build --output %s.tar' first", image)
 	}
-	
+
 	// Load the OCI image from the tarball
 	img, err := tarball.ImageFromPath(tarballPath, nil)
 	if err != nil {
 		return fmt.Errorf("failed to load image from tarball: %w", err)
 	}
-	
+
 	progress.UpdateMessage("Pushing to registry")
-	
+
 	// Prepare push options
 	pushOpts := registry.PushOptions{
 		Options: registry.Options{
@@ -146,12 +146,12 @@ func runPush(cmd *cobra.Command, args []string) error {
 			Timeout:  30 * time.Second,
 		},
 	}
-	
+
 	// Push the image
 	if err := client.Push(context.Background(), img, image, pushOpts); err != nil {
 		return fmt.Errorf("push failed: %w", err)
 	}
-	
+
 	fmt.Printf("Successfully pushed %s\n", image)
 	return nil
 }
@@ -163,19 +163,19 @@ func detectKindClusterName() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to get kind clusters: %w", err)
 	}
-	
+
 	clusters := strings.Split(strings.TrimSpace(string(output)), "\n")
 	if len(clusters) == 0 {
 		return "", fmt.Errorf("no kind clusters found")
 	}
-	
+
 	// Use first cluster or look for idpbuilder/localdev
 	for _, cluster := range clusters {
 		if cluster == "idpbuilder" || cluster == "localdev" {
 			return cluster, nil
 		}
 	}
-	
+
 	// Default to first available cluster
 	return clusters[0], nil
 }

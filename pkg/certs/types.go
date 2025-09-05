@@ -42,13 +42,13 @@ type CertificateInfo struct {
 type TransportConfig struct {
 	// Timeout for HTTP requests (default: 30 seconds)
 	Timeout time.Duration
-	
+
 	// MaxIdleConns controls the maximum number of idle connections
 	MaxIdleConns int
-	
+
 	// MaxIdleConnsPerHost controls the maximum idle connections per host
 	MaxIdleConnsPerHost int
-	
+
 	// IdleConnTimeout is the maximum amount of time an idle connection will remain idle
 	IdleConnTimeout time.Duration
 }
@@ -122,7 +122,7 @@ const (
 // ValidationInput contains the input data for certificate validation operations
 // This consolidates both basic validation and advanced certificate validation
 type ValidationInput struct {
-	Certificates []*x509.Certificate   // New field from certificate-validation-pipeline
+	Certificates []*x509.Certificate // New field from certificate-validation-pipeline
 	Registry     string
 	Operation    string
 	Error        error
@@ -143,15 +143,15 @@ type ValidationResult struct {
 // This consolidates fields from both fallback.go and recovery.go versions
 type RecoveryConfig struct {
 	// From recovery.go
-	EnableCertRefresh   bool
-	EnableTrustUpdate   bool
-	EnableChainRepair   bool
-	MaxAttempts         int
-	Timeout             time.Duration
+	EnableCertRefresh       bool
+	EnableTrustUpdate       bool
+	EnableChainRepair       bool
+	MaxAttempts             int
+	Timeout                 time.Duration
 	CircuitBreakerThreshold int
 	CircuitBreakerTimeout   time.Duration
-	
-	// From fallback.go (additional fields)  
+
+	// From fallback.go (additional fields)
 	AllowInsecure      bool
 	FallbackRegistries []string
 	RecoveryStrategies []string
@@ -161,16 +161,16 @@ type RecoveryConfig struct {
 // RecoveryResult contains the result of a recovery operation
 // This consolidates fields from both fallback.go and recovery.go versions
 type RecoveryResult struct {
-	Success          bool
-	Method           string    // From recovery.go (was 'Method')
-	Strategy         string    // From fallback.go (additional)
-	Actions          []string
-	NewConfig        interface{}
-	Message          string    // From recovery.go
-	FailureReason    string    // From fallback.go (additional)
-	RecoveredCerts   []*x509.Certificate // From fallback.go (additional)
-	SecurityDowngrade bool     // From fallback.go (additional)
-	NextRetryAfter   time.Duration // From fallback.go (additional)
+	Success           bool
+	Method            string // From recovery.go (was 'Method')
+	Strategy          string // From fallback.go (additional)
+	Actions           []string
+	NewConfig         interface{}
+	Message           string              // From recovery.go
+	FailureReason     string              // From fallback.go (additional)
+	RecoveredCerts    []*x509.Certificate // From fallback.go (additional)
+	SecurityDowngrade bool                // From fallback.go (additional)
+	NextRetryAfter    time.Duration       // From fallback.go (additional)
 }
 
 // FallbackStrategy defines the interface for certificate validation fallback strategies
@@ -186,13 +186,13 @@ type FallbackStrategy interface {
 type CertValidator interface {
 	// ValidateChain verifies the certificate chain against trusted roots
 	ValidateChain(cert *x509.Certificate) error
-	
+
 	// CheckExpiry checks if certificate is expired or expiring soon
 	CheckExpiry(cert *x509.Certificate) (*time.Duration, error)
-	
+
 	// VerifyHostname checks if the certificate is valid for the given hostname
 	VerifyHostname(cert *x509.Certificate, hostname string) error
-	
+
 	// GenerateDiagnostics creates a detailed diagnostic report for the certificate
 	GenerateDiagnostics(cert *x509.Certificate) (*CertDiagnostics, error)
 }
