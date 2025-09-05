@@ -10,6 +10,7 @@ import (
 
 	"github.com/cnoe-io/idpbuilder/pkg/certs"
 	"github.com/cnoe-io/idpbuilder/pkg/registry"
+	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	"github.com/spf13/cobra"
 )
 
@@ -32,6 +33,7 @@ func init() {
 	PushCmd.Flags().String("registry", "", "Registry URL (default: auto-detect)")
 	PushCmd.Flags().String("username", "", "Registry username (default: gitea_admin)")
 	PushCmd.Flags().String("password", "", "Registry password")
+	PushCmd.Flags().String("output", "", "Tarball path to load image from (default: derive from image name)")
 	PushCmd.Flags().Int("retry", 3, "Number of retry attempts")
 }
 
@@ -41,6 +43,7 @@ func runPush(cmd *cobra.Command, args []string) error {
 	registryURL, _ := cmd.Flags().GetString("registry")
 	username, _ := cmd.Flags().GetString("username")
 	password, _ := cmd.Flags().GetString("password")
+	output, _ := cmd.Flags().GetString("output")
 	retryCount, _ := cmd.Flags().GetInt("retry")
 
 	// Validate image name
@@ -115,37 +118,58 @@ func runPush(cmd *cobra.Command, args []string) error {
 		clientOpts = append(clientOpts, registry.WithInsecure(true))
 	}
 
-	// Create registry client (will be used when image loading is implemented)
-	_, err := registry.NewGiteaClient(registryURL, username, password, trustStore, clientOpts...)
+	// Create registry client
+	client, err := registry.NewGiteaClient(registryURL, username, password, trustStore, clientOpts...)
 	if err != nil {
 		return fmt.Errorf("failed to create registry client: %w", err)
 	}
 
-	// Push the image
-	// progress.UpdateMessage("Pushing to registry")
+	// Determine tarball path
+	tarballPath := output
+	if tarballPath == "" {
+		// Derive tarball path from image name
+		tarballPath = fmt.Sprintf("%s.tar", strings.ReplaceAll(image, ":", "-"))
+	}
 
-	// Create push options (will be used when image loading is implemented)
-	_ = registry.PushOptions{
+	// Check if tarball exists
+	fmt.Printf("Looking for image tarball: %s\n", tarballPath)
+	if _, err := os.Stat(tarballPath); os.IsNotExist(err) {
+		return fmt.Errorf("image tarball not found: %s (run 'idpbuilder build --output %s' first)", 
+			tarballPath, tarballPath)
+	}
+
+	// Load OCI image from tarball
+	fmt.Printf("Loading image from %s\n", tarballPath)
+	img, err := tarball.ImageFromPath(tarballPath, nil)
+	if err != nil {
+		return fmt.Errorf("failed to load image from tarball: %w", err)
+	}
+
+	// Get image digest for reporting
+	digest, err := img.Digest()
+	if err != nil {
+		return fmt.Errorf("failed to get image digest: %w", err)
+	}
+
+	// Push the image
+	fmt.Printf("Pushing %s to %s\n", image, registryURL)
+	
+	// Create push options
+	pushOpts := registry.PushOptions{
 		Options: registry.Options{
 			Timeout:  30 * time.Second,
 			Insecure: insecure,
 		},
 	}
 
-	// For now, we need to load the image. In a complete implementation, we would:
-	// 1. Check if image exists locally (daemon/tarball)
-	// 2. Load from the appropriate source
-	// 3. Call: client.Push(context.Background(), loadedImage, image, pushOpts)
-	// Since this is a CLI-focused implementation and we don't have local image storage
-	// configured, we return a clear error message explaining the limitation
+	if err := client.Push(context.Background(), img, image, pushOpts); err != nil {
+		return fmt.Errorf("push failed: %w", err)
+	}
 
-	// TODO: In production, this would load from:
-	//   - Local daemon (docker/containerd)
-	//   - OCI tarball created by build command
-	//   - Remote registry for re-tagging
-
-	// progress.UpdateMessage("Image loading not implemented - this is a structural limitation")
-	return fmt.Errorf("image loading from local storage not yet implemented. Use 'idpbuilder build --output image.tar' then load the image to push")
+	fmt.Printf("\n✅ Image pushed successfully: %s\n", image)
+	fmt.Printf("   Registry: %s\n", registryURL)
+	fmt.Printf("   Digest: %s\n", digest)
+	return nil
 }
 
 // detectKindClusterName detects the currently running Kind cluster name
