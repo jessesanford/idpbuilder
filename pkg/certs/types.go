@@ -27,13 +27,13 @@ type CertificateInfo struct {
 type TransportConfig struct {
 	// Timeout for HTTP requests (default: 30 seconds)
 	Timeout time.Duration
-	
+
 	// MaxIdleConns controls the maximum number of idle connections
 	MaxIdleConns int
-	
+
 	// MaxIdleConnsPerHost controls the maximum idle connections per host
 	MaxIdleConnsPerHost int
-	
+
 	// IdleConnTimeout is the maximum amount of time an idle connection will remain idle
 	IdleConnTimeout time.Duration
 }
@@ -100,7 +100,7 @@ type SecurityLevel int
 const (
 	SecurityNone SecurityLevel = iota
 	SecurityLow
-	SecurityMedium  
+	SecurityMedium
 	SecurityHigh
 )
 

@@ -1,0 +1,12 @@
+errors
+internal/oserror
+k8s.io/apimachinery/pkg/util/errors
+google.golang.org/protobuf/internal/errors
+k8s.io/apimachinery/pkg/api/errors
+github.com/pkg/errors
+github.com/go-errors/errors
+sigs.k8s.io/kustomize/kyaml/errors
+sigs.k8s.io/kustomize/kyaml/yaml/internal/k8sgen/pkg/util/errors
+github.com/ProtonMail/go-crypto/openpgp/errors
+sigs.k8s.io/kind/pkg/errors
+github.com/containerd/stargz-snapshotter/estargz/errorutil

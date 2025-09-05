@@ -17,14 +17,14 @@ func TestPushCmd(t *testing.T) {
 		assert.NotEmpty(t, PushCmd.Example)
 		assert.NotNil(t, PushCmd.RunE)
 		assert.NotNil(t, PushCmd.Args)
-		
+
 		// Test that exactly 1 argument is required
 		err := PushCmd.Args(PushCmd, []string{"test:latest"})
 		assert.NoError(t, err)
-		
+
 		err = PushCmd.Args(PushCmd, []string{})
 		assert.Error(t, err)
-		
+
 		err = PushCmd.Args(PushCmd, []string{"test:latest", "extra"})
 		assert.Error(t, err)
 	})
@@ -74,18 +74,18 @@ func TestRunPush(t *testing.T) {
 		err := runPush(cmd, []string{"myapp:v1"})
 		assert.Error(t, err) // Should fail - either on client creation or image loading
 		// The error could be about trust store (client creation) or image loading
-		assert.True(t, 
-			strings.Contains(err.Error(), "image loading") || 
-			strings.Contains(err.Error(), "trust store") ||
-			strings.Contains(err.Error(), "failed to create registry client"))
+		assert.True(t,
+			strings.Contains(err.Error(), "image loading") ||
+				strings.Contains(err.Error(), "trust store") ||
+				strings.Contains(err.Error(), "failed to create registry client"))
 
 		// Test without tag (should add :latest)
 		err = runPush(cmd, []string{"myapp"})
 		assert.Error(t, err) // Should fail - either on client creation or image loading
-		assert.True(t, 
-			strings.Contains(err.Error(), "image loading") || 
-			strings.Contains(err.Error(), "trust store") ||
-			strings.Contains(err.Error(), "failed to create registry client"))
+		assert.True(t,
+			strings.Contains(err.Error(), "image loading") ||
+				strings.Contains(err.Error(), "trust store") ||
+				strings.Contains(err.Error(), "failed to create registry client"))
 	})
 
 	t.Run("default registry configuration", func(t *testing.T) {
@@ -96,10 +96,10 @@ func TestRunPush(t *testing.T) {
 		err := runPush(cmd, []string{"test:latest"})
 		assert.Error(t, err)
 		// Error should indicate either trust store or image loading limitation
-		assert.True(t, 
-			strings.Contains(err.Error(), "image loading") || 
-			strings.Contains(err.Error(), "trust store") ||
-			strings.Contains(err.Error(), "failed to create registry client"))
+		assert.True(t,
+			strings.Contains(err.Error(), "image loading") ||
+				strings.Contains(err.Error(), "trust store") ||
+				strings.Contains(err.Error(), "failed to create registry client"))
 	})
 
 	t.Run("environment variable password", func(t *testing.T) {
@@ -111,10 +111,10 @@ func TestRunPush(t *testing.T) {
 		// For now, we verify the command structure is correct
 		err := runPush(cmd, []string{"test:latest"})
 		assert.Error(t, err)
-		assert.True(t, 
-			strings.Contains(err.Error(), "image loading") || 
-			strings.Contains(err.Error(), "trust store") ||
-			strings.Contains(err.Error(), "failed to create registry client"))
+		assert.True(t,
+			strings.Contains(err.Error(), "image loading") ||
+				strings.Contains(err.Error(), "trust store") ||
+				strings.Contains(err.Error(), "failed to create registry client"))
 	})
 
 	t.Run("certificate setup with secure connection", func(t *testing.T) {
@@ -179,10 +179,10 @@ func TestImageNameHandling(t *testing.T) {
 			err := runPush(cmd, []string{tt.input})
 			// All should fail with the same error (trust store or image loading)
 			assert.Error(t, err)
-			assert.True(t, 
-				strings.Contains(err.Error(), "image loading") || 
-				strings.Contains(err.Error(), "trust store") ||
-				strings.Contains(err.Error(), "failed to create registry client"))
+			assert.True(t,
+				strings.Contains(err.Error(), "image loading") ||
+					strings.Contains(err.Error(), "trust store") ||
+					strings.Contains(err.Error(), "failed to create registry client"))
 		})
 	}
 }
