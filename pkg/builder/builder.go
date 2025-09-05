@@ -20,9 +20,9 @@ type Builder interface {
 
 // SimpleBuilder implements the Builder interface.
 type SimpleBuilder struct {
-	platform     v1.Platform
-	featureFlags map[string]bool
-	layerFactory *LayerFactory
+	platform      v1.Platform
+	featureFlags  map[string]bool
+	layerFactory  *LayerFactory
 	configFactory *ConfigFactory
 	tarballWriter *TarballWriter
 }
@@ -36,12 +36,12 @@ func NewBuilder(opts BuildOptions) (*SimpleBuilder, error) {
 	if platform.Architecture == "" {
 		platform.Architecture = "amd64"
 	}
-	
+
 	featureFlags := opts.FeatureFlags
 	if featureFlags == nil {
 		featureFlags = make(map[string]bool)
 	}
-	
+
 	return &SimpleBuilder{
 		platform:      platform,
 		featureFlags:  featureFlags,
@@ -60,32 +60,32 @@ func (b *SimpleBuilder) Build(ctx context.Context, contextDir string, opts Build
 	if !info.IsDir() {
 		return nil, fmt.Errorf("context path is not a directory: %s", contextDir)
 	}
-	
+
 	// Check feature flags
 	if opts.FeatureFlags["multi-stage-build"] || opts.FeatureFlags["buildkit-frontend"] || opts.FeatureFlags["base-image-support"] {
 		return nil, fmt.Errorf("advanced features not yet implemented")
 	}
-	
+
 	layer, err := b.layerFactory.CreateLayer(contextDir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create layer: %w", err)
 	}
-	
+
 	image, err := mutate.AppendLayers(empty.Image, layer)
 	if err != nil {
 		return nil, fmt.Errorf("failed to add layer: %w", err)
 	}
-	
+
 	config, err := b.configFactory.GenerateConfig(opts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate config: %w", err)
 	}
-	
+
 	image, err = b.configFactory.ApplyConfig(image, config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to apply config: %w", err)
 	}
-	
+
 	return mutate.MediaType(image, "application/vnd.oci.image.manifest.v1+json"), nil
 }
 
@@ -95,15 +95,15 @@ func (b *SimpleBuilder) BuildTarball(ctx context.Context, contextDir string, out
 	if err != nil {
 		return fmt.Errorf("failed to build image: %w", err)
 	}
-	
+
 	if err := os.MkdirAll(filepath.Dir(output), 0755); err != nil {
 		return fmt.Errorf("failed to create output directory: %w", err)
 	}
-	
+
 	ref := "localhost/built-image:latest"
 	if opts.Labels["org.opencontainers.image.ref.name"] != "" {
 		ref = opts.Labels["org.opencontainers.image.ref.name"]
 	}
-	
+
 	return b.tarballWriter.Write(image, output, ref)
 }

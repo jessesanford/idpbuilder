@@ -51,11 +51,11 @@ func NewQuietProgress(initialMessage string) ProgressReporter {
 func (pb *ProgressBar) UpdateMessage(message string) {
 	pb.mu.Lock()
 	defer pb.mu.Unlock()
-	
+
 	if pb.finished {
 		return
 	}
-	
+
 	pb.message = message
 	pb.render()
 }
@@ -64,11 +64,11 @@ func (pb *ProgressBar) UpdateMessage(message string) {
 func (pb *ProgressBar) UpdateProgress(current, total int64) {
 	pb.mu.Lock()
 	defer pb.mu.Unlock()
-	
+
 	if pb.finished {
 		return
 	}
-	
+
 	pb.current = current
 	pb.total = total
 	pb.render()
@@ -78,14 +78,14 @@ func (pb *ProgressBar) UpdateProgress(current, total int64) {
 func (pb *ProgressBar) Finish() {
 	pb.mu.Lock()
 	defer pb.mu.Unlock()
-	
+
 	if pb.finished {
 		return
 	}
-	
+
 	pb.finished = true
 	elapsed := time.Since(pb.startTime)
-	
+
 	// Clear line and show final message
 	pb.clearLine()
 	fmt.Fprintf(pb.writer, "✓ %s (took %v)\n", pb.message, elapsed.Round(time.Millisecond))
@@ -95,35 +95,35 @@ func (pb *ProgressBar) Finish() {
 func (pb *ProgressBar) render() {
 	// Clear current line
 	pb.clearLine()
-	
+
 	// Show spinner
 	spinner := pb.spinnerChars[pb.spinnerIndex%len(pb.spinnerChars)]
 	pb.spinnerIndex++
-	
+
 	// Build progress line
 	line := fmt.Sprintf("%s %s", spinner, pb.message)
-	
+
 	// Add percentage if we have total
 	if pb.total > 0 {
 		percent := int((pb.current * 100) / pb.total)
 		line += fmt.Sprintf(" [%3d%%]", percent)
-		
+
 		// Add progress bar
 		barWidth := 20
 		filled := int((pb.current * int64(barWidth)) / pb.total)
 		bar := strings.Repeat("█", filled) + strings.Repeat("░", barWidth-filled)
 		line += fmt.Sprintf(" %s", bar)
-		
+
 		// Add size info if meaningful
 		if pb.total > 1024 {
 			line += fmt.Sprintf(" (%s/%s)", formatBytes(pb.current), formatBytes(pb.total))
 		}
 	}
-	
+
 	// Add elapsed time
 	elapsed := time.Since(pb.startTime)
 	line += fmt.Sprintf(" (%v)", elapsed.Round(time.Second))
-	
+
 	fmt.Fprint(pb.writer, line)
 }
 
@@ -138,13 +138,13 @@ func formatBytes(bytes int64) string {
 	if bytes < unit {
 		return fmt.Sprintf("%d B", bytes)
 	}
-	
+
 	div, exp := int64(unit), 0
 	for n := bytes / unit; n >= unit; n /= unit {
 		div *= unit
 		exp++
 	}
-	
+
 	units := []string{"KB", "MB", "GB", "TB"}
 	return fmt.Sprintf("%.1f %s", float64(bytes)/float64(div), units[exp])
 }
@@ -171,11 +171,11 @@ func (qp *QuietProgress) Finish() {
 
 // MultiProgress manages multiple concurrent progress bars
 type MultiProgress struct {
-	mu        sync.RWMutex
-	writer    io.Writer
-	bars      map[string]*ProgressBar
-	finished  map[string]bool
-	order     []string
+	mu       sync.RWMutex
+	writer   io.Writer
+	bars     map[string]*ProgressBar
+	finished map[string]bool
+	order    []string
 }
 
 // NewMultiProgress creates a new multi-progress manager
@@ -191,18 +191,18 @@ func NewMultiProgress() *MultiProgress {
 func (mp *MultiProgress) AddBar(name, message string) ProgressReporter {
 	mp.mu.Lock()
 	defer mp.mu.Unlock()
-	
+
 	bar := &ProgressBar{
 		writer:       mp.writer,
 		message:      message,
 		startTime:    time.Now(),
 		spinnerChars: []string{"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"},
 	}
-	
+
 	mp.bars[name] = bar
 	mp.finished[name] = false
 	mp.order = append(mp.order, name)
-	
+
 	return &MultiProgressBar{mp: mp, name: name}
 }
 
@@ -216,7 +216,7 @@ type MultiProgressBar struct {
 func (mpb *MultiProgressBar) UpdateMessage(message string) {
 	mpb.mp.mu.Lock()
 	defer mpb.mp.mu.Unlock()
-	
+
 	if bar, ok := mpb.mp.bars[mpb.name]; ok && !mpb.mp.finished[mpb.name] {
 		bar.message = message
 		mpb.mp.renderAll()
@@ -227,7 +227,7 @@ func (mpb *MultiProgressBar) UpdateMessage(message string) {
 func (mpb *MultiProgressBar) UpdateProgress(current, total int64) {
 	mpb.mp.mu.Lock()
 	defer mpb.mp.mu.Unlock()
-	
+
 	if bar, ok := mpb.mp.bars[mpb.name]; ok && !mpb.mp.finished[mpb.name] {
 		bar.current = current
 		bar.total = total
@@ -239,7 +239,7 @@ func (mpb *MultiProgressBar) UpdateProgress(current, total int64) {
 func (mpb *MultiProgressBar) Finish() {
 	mpb.mp.mu.Lock()
 	defer mpb.mp.mu.Unlock()
-	
+
 	mpb.mp.finished[mpb.name] = true
 	mpb.mp.renderAll()
 }
@@ -253,11 +253,11 @@ func (mp *MultiProgress) renderAll() {
 			activeCount++
 		}
 	}
-	
+
 	if activeCount > 1 {
 		fmt.Fprintf(mp.writer, "\033[%dA", activeCount-1)
 	}
-	
+
 	// Render each bar
 	for _, name := range mp.order {
 		if bar, ok := mp.bars[name]; ok {

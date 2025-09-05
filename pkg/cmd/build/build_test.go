@@ -21,7 +21,7 @@ func TestBuildCmd(t *testing.T) {
 		// Check that tag flag is marked as required
 		flag := BuildCmd.Flags().Lookup("tag")
 		require.NotNil(t, flag)
-		
+
 		// The flag should exist and have the right properties
 		assert.Equal(t, "", flag.DefValue)
 		assert.Equal(t, "Image tag (required)", flag.Usage)
@@ -54,12 +54,12 @@ func TestRunBuild(t *testing.T) {
 		// This would normally be tested by executing the command
 		// but since we're testing just the function, we'll focus on
 		// the command structure validation
-		
+
 		// The cobra framework handles required flag validation
 		// so we focus on testing that the flag is properly configured
 		cmd := BuildCmd
 		cmd.Flags().Set("context", ".")
-		
+
 		// Tag is required, so command should not validate without it
 		err := cmd.ValidateRequiredFlags()
 		assert.Error(t, err)
@@ -71,7 +71,7 @@ func TestRunBuild(t *testing.T) {
 		cmd := BuildCmd
 		cmd.Flags().Set("tag", "test:latest")
 		cmd.Flags().Set("context", "/nonexistent/directory")
-		
+
 		err := runBuild(cmd, []string{})
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "context directory not found")
@@ -83,7 +83,7 @@ func TestRunBuild(t *testing.T) {
 		cmd.Flags().Set("tag", "test:latest")
 		cmd.Flags().Set("context", ".")
 		cmd.Flags().Set("platform", "invalid-platform")
-		
+
 		err := runBuild(cmd, []string{})
 		assert.Error(t, err)
 		// The actual error message varies based on platform parsing implementation

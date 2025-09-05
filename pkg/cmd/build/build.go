@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cobra"
 	"github.com/cnoe-io/idpbuilder/pkg/builder"
 	"github.com/cnoe-io/idpbuilder/pkg/cli"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/spf13/cobra"
 )
 
 // BuildCmd is the build command
 var BuildCmd = &cobra.Command{
 	Use:   "build",
 	Short: "Assemble OCI image from context directory",
-	Long:  `Assemble a single-layer OCI image from a directory using go-containerregistry.
+	Long: `Assemble a single-layer OCI image from a directory using go-containerregistry.
 The image is stored locally as an OCI tarball.`,
 	Example: `  idpbuilder build --context ./app --tag myapp:v1
   idpbuilder build --context . --tag myimage:latest

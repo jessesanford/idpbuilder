@@ -39,65 +39,65 @@ func (f *LayerFactory) CreateLayer(contextDir string) (v1.Layer, error) {
 	if contextDir == "" {
 		return nil, fmt.Errorf("context directory cannot be empty")
 	}
-	
+
 	// Clean the path to ensure consistent handling
 	contextDir = filepath.Clean(contextDir)
-	
+
 	// Create tar archive in memory
 	var buf bytes.Buffer
 	tw := tar.NewWriter(&buf)
 	defer tw.Close()
-	
+
 	// Walk the directory tree and add files to tar
 	err := filepath.WalkDir(contextDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return fmt.Errorf("failed to access path %s: %w", path, err)
 		}
-		
+
 		// Skip the root directory itself
 		if path == contextDir {
 			return nil
 		}
-		
+
 		// Get file info for metadata
 		info, err := d.Info()
 		if err != nil {
 			return fmt.Errorf("failed to get info for %s: %w", path, err)
 		}
-		
+
 		// Calculate relative path within the context
 		relPath, err := filepath.Rel(contextDir, path)
 		if err != nil {
 			return fmt.Errorf("failed to calculate relative path for %s: %w", path, err)
 		}
-		
+
 		// Convert Windows paths to Unix paths for OCI compliance
 		tarPath := filepath.ToSlash(relPath)
-		
+
 		// Add file to tar archive
 		if err := f.addFileToTar(tw, path, tarPath, info); err != nil {
 			return fmt.Errorf("failed to add file %s to tar: %w", path, err)
 		}
-		
+
 		return nil
 	})
-	
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to walk context directory: %w", err)
 	}
-	
+
 	// Close tar writer to finalize archive
 	if err := tw.Close(); err != nil {
 		return nil, fmt.Errorf("failed to close tar writer: %w", err)
 	}
-	
+
 	// Create layer from tar archive
 	reader := bytes.NewReader(buf.Bytes())
 	layer, err := tarball.LayerFromReader(reader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create layer from tar: %w", err)
 	}
-	
+
 	return layer, nil
 }
 
@@ -109,10 +109,10 @@ func (f *LayerFactory) addFileToTar(tw *tar.Writer, srcPath, tarPath string, inf
 	if err != nil {
 		return fmt.Errorf("failed to create tar header: %w", err)
 	}
-	
+
 	// Set the name in the tar archive
 	header.Name = tarPath
-	
+
 	// Handle timestamps for reproducible builds
 	if !f.preserveTimestamps {
 		// Use a fixed timestamp for reproducible builds
@@ -121,7 +121,7 @@ func (f *LayerFactory) addFileToTar(tw *tar.Writer, srcPath, tarPath string, inf
 		header.AccessTime = fixedTime
 		header.ChangeTime = fixedTime
 	}
-	
+
 	// Handle permissions
 	if f.preservePermissions {
 		// Keep original permissions
@@ -134,7 +134,7 @@ func (f *LayerFactory) addFileToTar(tw *tar.Writer, srcPath, tarPath string, inf
 			header.Mode = 0644
 		}
 	}
-	
+
 	// Handle different file types
 	switch info.Mode() & os.ModeType {
 	case 0: // Regular file
@@ -142,50 +142,50 @@ func (f *LayerFactory) addFileToTar(tw *tar.Writer, srcPath, tarPath string, inf
 		if err := tw.WriteHeader(header); err != nil {
 			return fmt.Errorf("failed to write header for regular file: %w", err)
 		}
-		
+
 		// Open and copy file content
 		file, err := os.Open(srcPath)
 		if err != nil {
 			return fmt.Errorf("failed to open file for reading: %w", err)
 		}
 		defer file.Close()
-		
+
 		_, err = io.Copy(tw, file)
 		if err != nil {
 			return fmt.Errorf("failed to copy file content: %w", err)
 		}
-		
+
 	case os.ModeDir: // Directory
 		// Ensure directory path ends with slash for tar compliance
 		if !strings.HasSuffix(header.Name, "/") {
 			header.Name += "/"
 		}
 		header.Size = 0
-		
+
 		if err := tw.WriteHeader(header); err != nil {
 			return fmt.Errorf("failed to write header for directory: %w", err)
 		}
-		
+
 	case os.ModeSymlink: // Symbolic link
 		// Read link target
 		linkTarget, err := os.Readlink(srcPath)
 		if err != nil {
 			return fmt.Errorf("failed to read symlink target: %w", err)
 		}
-		
+
 		header.Linkname = linkTarget
 		header.Size = 0
-		
+
 		if err := tw.WriteHeader(header); err != nil {
 			return fmt.Errorf("failed to write header for symlink: %w", err)
 		}
-		
+
 	default:
 		// Skip special files (devices, named pipes, etc.)
 		// These are not commonly needed in container images
 		return nil
 	}
-	
+
 	return nil
 }
 
