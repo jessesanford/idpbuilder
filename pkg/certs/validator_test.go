@@ -2,11 +2,13 @@ package certs
 
 import (
 	"crypto/x509"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/cnoe-io/idpbuilder/pkg/certs/testdata"
+	"github.com/google/go-containerregistry/pkg/v1/remote"
 )
 
 // mockTrustStoreManager implements TrustStoreManager for testing
@@ -60,16 +62,16 @@ func (m *mockTrustStoreManager) IsInsecure(registry string) bool {
 
 func (m *mockTrustStoreManager) LoadFromDisk() error                        { return nil }
 func (m *mockTrustStoreManager) SaveToDisk(string, *x509.Certificate) error { return nil }
-func (m *mockTrustStoreManager) ConfigureTransport(registry string) (interface{}, error) {
+func (m *mockTrustStoreManager) ConfigureTransport(registry string) (remote.Option, error) {
 	return nil, nil
 }
-func (m *mockTrustStoreManager) ConfigureTransportWithConfig(registry string, config interface{}) (interface{}, error) {
+func (m *mockTrustStoreManager) ConfigureTransportWithConfig(registry string, config *TransportConfig) (remote.Option, error) {
 	return nil, nil
 }
-func (m *mockTrustStoreManager) CreateHTTPClient(registry string) (interface{}, error) {
+func (m *mockTrustStoreManager) CreateHTTPClient(registry string) (*http.Client, error) {
 	return nil, nil
 }
-func (m *mockTrustStoreManager) CreateHTTPClientWithConfig(registry string, config interface{}) (interface{}, error) {
+func (m *mockTrustStoreManager) CreateHTTPClientWithConfig(registry string, config *TransportConfig) (*http.Client, error) {
 	return nil, nil
 }
 
