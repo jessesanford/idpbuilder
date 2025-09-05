@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/cnoe-io/idpbuilder/pkg/cmd/build"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/create"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/delete"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/get"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/helpers"
+	"github.com/cnoe-io/idpbuilder/pkg/cmd/push"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/version"
 	"github.com/spf13/cobra"
 )
@@ -26,6 +28,8 @@ func init() {
 	rootCmd.AddCommand(get.GetCmd)
 	rootCmd.AddCommand(delete.DeleteCmd)
 	rootCmd.AddCommand(version.VersionCmd)
+	rootCmd.AddCommand(build.BuildCmd)
+	rootCmd.AddCommand(push.PushCmd)
 }
 
 func Execute(ctx context.Context) {
