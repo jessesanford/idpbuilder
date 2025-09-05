@@ -31,7 +31,7 @@ func TestTrustStoreManager_AddCertificate(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create a test certificate
-	cert := createTestCertificate(t)
+	cert := createTestCertificateForTesting(t)
 
 	err = manager.AddCertificate("test-registry", cert)
 	assert.NoError(t, err)
@@ -49,7 +49,7 @@ func TestTrustStoreManager_RemoveCertificate(t *testing.T) {
 	require.NoError(t, err)
 
 	registry := "test-registry"
-	cert := createTestCertificate(t)
+	cert := createTestCertificateForTesting(t)
 
 	// Add certificate first
 	err = manager.AddCertificate(registry, cert)
@@ -104,7 +104,7 @@ func TestTrustStoreManager_GetCertPool(t *testing.T) {
 	assert.NotNil(t, pool)
 
 	// Add a certificate and test again
-	cert := createTestCertificate(t)
+	cert := createTestCertificateForTesting(t)
 	err = manager.AddCertificate(registry, cert)
 	require.NoError(t, err)
 
@@ -139,7 +139,7 @@ func TestTrustStoreManager_ErrorHandling(t *testing.T) {
 	require.NoError(t, err)
 
 	// Test with empty registry name
-	err = manager.AddCertificate("", createTestCertificate(t))
+	err = manager.AddCertificate("", createTestCertificateForTesting(t))
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "registry name cannot be empty")
 
@@ -155,59 +155,21 @@ func TestTrustStoreManager_ErrorHandling(t *testing.T) {
 	assert.Contains(t, err.Error(), "has expired")
 }
 
-// createTestCertificate creates a test certificate for testing purposes
+// createTestCertificateForTesting creates a test certificate for testing purposes
 // This implementation is shared with E1.1.1 (kind-certificate-extraction)
 // and creates proper RSA certificates for realistic testing
-func createTestCertificate(t *testing.T) *x509.Certificate {
+func createTestCertificateForTesting(t *testing.T) *x509.Certificate {
 	// Use same approach as E1.1.1 but with default parameters for simple case
 	dnsNames := []string{"test.example.com"}
 	expiry := time.Now().Add(24 * time.Hour)
 
-	cert, err := createTestCertificateWithParams(dnsNames, expiry)
+	cert, err := createTestCertificate(dnsNames, expiry)
 	if err != nil {
 		t.Fatalf("Failed to create test certificate: %v", err)
 	}
 	return cert
 }
 
-// createTestCertificateWithParams creates a test certificate for testing purposes
-// This matches the implementation from E1.1.1 (kind-certificate-extraction)
-func createTestCertificateWithParams(dnsNames []string, expiry time.Time) (*x509.Certificate, error) {
-	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
-	if err != nil {
-		return nil, err
-	}
-
-	template := x509.Certificate{
-		SerialNumber: big.NewInt(1),
-		Subject: pkix.Name{
-			Organization:  []string{"Test Org"},
-			Country:       []string{"US"},
-			Province:      []string{""},
-			Locality:      []string{"Test City"},
-			StreetAddress: []string{""},
-			PostalCode:    []string{""},
-		},
-		NotBefore:             time.Now(),
-		NotAfter:              expiry,
-		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
-		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-		BasicConstraintsValid: true,
-		DNSNames:              dnsNames,
-	}
-
-	certDER, err := x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey)
-	if err != nil {
-		return nil, err
-	}
-
-	cert, err := x509.ParseCertificate(certDER)
-	if err != nil {
-		return nil, err
-	}
-
-	return cert, nil
-}
 
 // createExpiredCertificate creates an expired test certificate
 func createExpiredCertificate(t *testing.T) *x509.Certificate {
@@ -247,7 +209,7 @@ func TestTrustStoreManager_ConfigureTransport(t *testing.T) {
 		registry := "secure-registry.com"
 
 		// Add a certificate for the registry
-		cert := createTestCertificate(t)
+		cert := createTestCertificateForTesting(t)
 		err = manager.AddCertificate(registry, cert)
 		require.NoError(t, err)
 
@@ -371,7 +333,7 @@ func TestTrustStoreUtils_CertificateToPEM(t *testing.T) {
 	utils := NewTrustStoreUtils()
 
 	t.Run("CertificateToPEM_Valid", func(t *testing.T) {
-		cert := createTestCertificate(t)
+		cert := createTestCertificateForTesting(t)
 
 		pemData, err := utils.CertificateToPEM(cert)
 		assert.NoError(t, err)
@@ -391,7 +353,7 @@ func TestTrustStoreUtils_ValidateCertificate(t *testing.T) {
 	utils := NewTrustStoreUtils()
 
 	t.Run("ValidateCertificate_Valid", func(t *testing.T) {
-		cert := createTestCertificate(t)
+		cert := createTestCertificateForTesting(t)
 
 		err := utils.ValidateCertificate(cert)
 		assert.NoError(t, err)
@@ -419,7 +381,7 @@ func TestTrustStoreUtils_GetCertificateInfo(t *testing.T) {
 	utils := NewTrustStoreUtils()
 
 	t.Run("GetCertificateInfo_Valid", func(t *testing.T) {
-		cert := createTestCertificate(t)
+		cert := createTestCertificateForTesting(t)
 
 		info := utils.GetCertificateInfo(cert)
 		assert.NotNil(t, info)
