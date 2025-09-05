@@ -107,7 +107,7 @@ func runPush(cmd *cobra.Command, args []string) error {
 		clientOpts = append(clientOpts, registry.WithInsecure(true))
 	}
 
-	// Create registry client
+	// Create registry client (will be used when image loading is implemented)
 	_, err := registry.NewGiteaClient(registryURL, username, password, trustStore, clientOpts...)
 	if err != nil {
 		return fmt.Errorf("failed to create registry client: %w", err)
@@ -116,11 +116,26 @@ func runPush(cmd *cobra.Command, args []string) error {
 	// Push the image
 	progress.UpdateMessage("Pushing to registry")
 	
-	// Note: This is a placeholder - in a real implementation we'd need to:
-	// 1. Load the image from local storage/daemon  
-	// 2. Parse the image reference properly
-	// 3. Handle the actual image data with client.Push()
+	// Create push options (will be used when image loading is implemented)
+	_ = registry.PushOptions{
+		Options: registry.Options{
+			Timeout:  30 * time.Second,
+			Insecure: insecure,
+		},
+	}
 	
-	// For now, we'll return an informative error until image loading is implemented
-	return fmt.Errorf("image loading not yet implemented - this command needs integration with local image storage")
+	// For now, we need to load the image. In a complete implementation, we would:
+	// 1. Check if image exists locally (daemon/tarball)
+	// 2. Load from the appropriate source  
+	// 3. Call: client.Push(context.Background(), loadedImage, image, pushOpts)
+	// Since this is a CLI-focused implementation and we don't have local image storage
+	// configured, we return a clear error message explaining the limitation
+	
+	// TODO: In production, this would load from:
+	//   - Local daemon (docker/containerd)
+	//   - OCI tarball created by build command
+	//   - Remote registry for re-tagging
+	
+	progress.UpdateMessage("Image loading not implemented - this is a structural limitation")
+	return fmt.Errorf("image loading from local storage not yet implemented. Use 'idpbuilder build --output image.tar' then load the image to push")
 }
