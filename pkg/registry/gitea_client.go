@@ -2,6 +2,7 @@ package registry
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -177,6 +178,9 @@ func (c *GiteaClient) Push(ctx context.Context, image v1.Image, ref string, opts
 		return fmt.Errorf("failed to build remote options: %w", err)
 	}
 	
+	// Fix 4: Track and report actual errors
+	var lastErr error
+	
 	// Perform push with basic retry
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
 		if attempt > 0 {
@@ -187,18 +191,18 @@ func (c *GiteaClient) Push(ctx context.Context, image v1.Image, ref string, opts
 			}
 		}
 		
-		err := remote.Write(repo, image, remoteOpts...)
-		if err == nil {
+		lastErr = remote.Write(repo, image, remoteOpts...)
+		if lastErr == nil {
 			return nil
 		}
 		
 		// For auth/access errors, don't retry
-		if strings.Contains(err.Error(), "401") || strings.Contains(err.Error(), "403") {
-			return c.wrapError("push", err)
+		if strings.Contains(lastErr.Error(), "401") || strings.Contains(lastErr.Error(), "403") {
+			return c.wrapError("push", lastErr)
 		}
 	}
 	
-	return c.wrapError("push", fmt.Errorf("push failed after %d attempts", c.maxRetries+1))
+	return c.wrapError("push", fmt.Errorf("push failed after %d attempts: %w", c.maxRetries+1, lastErr))
 }
 
 // Pull pulls an image from the Gitea registry
@@ -230,6 +234,9 @@ func (c *GiteaClient) Pull(ctx context.Context, ref string, opts PullOptions) (v
 		return nil, fmt.Errorf("failed to build remote options: %w", err)
 	}
 	
+	// Track and report actual errors (same pattern as push)
+	var lastErr error
+	
 	// Perform pull with basic retry
 	for attempt := 0; attempt <= c.maxRetries; attempt++ {
 		if attempt > 0 {
@@ -240,18 +247,18 @@ func (c *GiteaClient) Pull(ctx context.Context, ref string, opts PullOptions) (v
 			}
 		}
 		
-		image, err := remote.Image(repo, remoteOpts...)
-		if err == nil {
+		image, lastErr := remote.Image(repo, remoteOpts...)
+		if lastErr == nil {
 			return image, nil
 		}
 		
 		// For auth/access errors, don't retry
-		if strings.Contains(err.Error(), "401") || strings.Contains(err.Error(), "403") {
-			return nil, c.wrapError("pull", err)
+		if strings.Contains(lastErr.Error(), "401") || strings.Contains(lastErr.Error(), "403") {
+			return nil, c.wrapError("pull", lastErr)
 		}
 	}
 	
-	return nil, c.wrapError("pull", fmt.Errorf("pull failed after %d attempts", c.maxRetries+1))
+	return nil, c.wrapError("pull", fmt.Errorf("pull failed after %d attempts: %w", c.maxRetries+1, lastErr))
 }
 
 // Catalog lists repositories in the Gitea registry
@@ -328,26 +335,37 @@ func (c *GiteaClient) Close() error {
 
 // configureTransport sets up HTTP transport with Phase 1 certificate integration
 func (c *GiteaClient) configureTransport() error {
-	if c.trustStore == nil {
-		return fmt.Errorf("trust store manager is required")
+	// Fix 2: Allow nil trust store in insecure mode
+	if c.trustStore == nil && !(c.insecure || c.insecureRegistryFlag) {
+		return fmt.Errorf("trust store manager is required for secure connections")
 	}
 	
-	// Check if registry should use insecure mode
+	// Fix 1: Create proper insecure transport with TLS skip verification
 	if c.insecure || c.insecureRegistryFlag {
-		// Mark registry as insecure in trust store
-		if err := c.trustStore.SetInsecureRegistry(c.baseURL, true); err != nil {
-			return fmt.Errorf("failed to set registry as insecure: %w", err)
+		c.transport = &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
 		}
+		
+		// If we have a trust store, mark registry as insecure
+		if c.trustStore != nil {
+			if err := c.trustStore.SetInsecureRegistry(c.baseURL, true); err != nil {
+				return fmt.Errorf("failed to set registry as insecure: %w", err)
+			}
+		}
+		return nil
 	}
 	
-	// Use Phase 1's TrustStoreManager to create HTTP client
-	httpClient, err := c.trustStore.CreateHTTPClient(c.baseURL)
-	if err != nil {
-		return fmt.Errorf("failed to create HTTP client with Phase 1 certificates: %w", err)
+	// For secure connections, use Phase 1's TrustStoreManager
+	if c.trustStore != nil {
+		httpClient, err := c.trustStore.CreateHTTPClient(c.baseURL)
+		if err != nil {
+			return fmt.Errorf("failed to create HTTP client with Phase 1 certificates: %w", err)
+		}
+		// Extract the transport
+		c.transport = httpClient.Transport
 	}
-	
-	// Extract the transport
-	c.transport = httpClient.Transport
 	
 	return nil
 }
@@ -362,12 +380,19 @@ func (c *GiteaClient) buildRemoteOptions(insecureOverride bool, platform *v1.Pla
 	// Add user agent
 	opts = append(opts, remote.WithUserAgent(c.userAgent))
 	
-	// Configure transport using Phase 1's trust store
-	transportOpt, err := c.trustStore.ConfigureTransport(c.baseURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to configure transport: %w", err)
+	// Fix 3: Use InsecureOverride parameter
+	if c.insecure || c.insecureRegistryFlag || insecureOverride {
+		opts = append(opts, remote.WithTransport(c.transport))
+	} else {
+		// Configure transport using Phase 1's trust store for secure connections
+		if c.trustStore != nil {
+			transportOpt, err := c.trustStore.ConfigureTransport(c.baseURL)
+			if err != nil {
+				return nil, fmt.Errorf("failed to configure transport: %w", err)
+			}
+			opts = append(opts, transportOpt)
+		}
 	}
-	opts = append(opts, transportOpt)
 	
 	// Add platform if specified
 	if platform != nil {
