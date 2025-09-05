@@ -328,26 +328,38 @@ func (c *GiteaClient) Close() error {
 
 // configureTransport sets up HTTP transport with Phase 1 certificate integration
 func (c *GiteaClient) configureTransport() error {
-	if c.trustStore == nil {
-		return fmt.Errorf("trust store manager is required")
+	// Allow nil trustStore in insecure mode
+	if c.trustStore == nil && !(c.insecure || c.insecureRegistryFlag) {
+		return fmt.Errorf("trust store manager is required for secure connections")
 	}
 
 	// Check if registry should use insecure mode
 	if c.insecure || c.insecureRegistryFlag {
-		// Mark registry as insecure in trust store
-		if err := c.trustStore.SetInsecureRegistry(c.baseURL, true); err != nil {
-			return fmt.Errorf("failed to set registry as insecure: %w", err)
+		if c.trustStore != nil {
+			// Mark registry as insecure in trust store if available
+			if err := c.trustStore.SetInsecureRegistry(c.baseURL, true); err != nil {
+				return fmt.Errorf("failed to set registry as insecure: %w", err)
+			}
+		}
+		// For insecure mode without trust store, use default transport
+		if c.trustStore == nil {
+			c.transport = http.DefaultTransport
+			return nil
 		}
 	}
 
-	// Use Phase 1's TrustStoreManager to create HTTP client
-	httpClient, err := c.trustStore.CreateHTTPClient(c.baseURL)
-	if err != nil {
-		return fmt.Errorf("failed to create HTTP client with Phase 1 certificates: %w", err)
+	// Use Phase 1's TrustStoreManager to create HTTP client (only if trustStore exists)
+	if c.trustStore != nil {
+		httpClient, err := c.trustStore.CreateHTTPClient(c.baseURL)
+		if err != nil {
+			return fmt.Errorf("failed to create HTTP client with Phase 1 certificates: %w", err)
+		}
+		// Extract the transport
+		c.transport = httpClient.Transport
+	} else {
+		// Fallback to default transport
+		c.transport = http.DefaultTransport
 	}
-
-	// Extract the transport
-	c.transport = httpClient.Transport
 
 	return nil
 }
@@ -362,12 +374,17 @@ func (c *GiteaClient) buildRemoteOptions(insecureOverride bool, platform *v1.Pla
 	// Add user agent
 	opts = append(opts, remote.WithUserAgent(c.userAgent))
 
-	// Configure transport using Phase 1's trust store
-	transportOpt, err := c.trustStore.ConfigureTransport(c.baseURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to configure transport: %w", err)
+	// Configure transport using Phase 1's trust store (if available)
+	if c.trustStore != nil {
+		transportOpt, err := c.trustStore.ConfigureTransport(c.baseURL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to configure transport: %w", err)
+		}
+		opts = append(opts, transportOpt)
+	} else if c.insecure || c.insecureRegistryFlag {
+		// For insecure mode without trust store, configure insecure transport
+		opts = append(opts, remote.WithTransport(c.transport))
 	}
-	opts = append(opts, transportOpt)
 
 	// Add platform if specified
 	if platform != nil {

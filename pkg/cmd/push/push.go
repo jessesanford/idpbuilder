@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -85,7 +86,13 @@ func runPush(cmd *cobra.Command, args []string) error {
 
 		// Auto-configure for Gitea if using default registry
 		if strings.Contains(registryURL, "gitea.cnoe.localtest.me") {
-			extractor := certs.NewDefaultExtractor("idpbuilder")
+			// Detect Kind cluster name dynamically
+			clusterName, err := detectKindClusterName()
+			if err != nil {
+				// Fall back to default
+				clusterName = "localdev"
+			}
+			extractor := certs.NewDefaultExtractor(clusterName)
 			ctx := context.Background()
 			cert, err := extractor.ExtractGiteaCert(ctx)
 			if err != nil {
@@ -139,4 +146,18 @@ func runPush(cmd *cobra.Command, args []string) error {
 
 	// progress.UpdateMessage("Image loading not implemented - this is a structural limitation")
 	return fmt.Errorf("image loading from local storage not yet implemented. Use 'idpbuilder build --output image.tar' then load the image to push")
+}
+
+// detectKindClusterName detects the currently running Kind cluster name
+func detectKindClusterName() (string, error) {
+	cmd := exec.Command("kind", "get", "clusters")
+	output, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+	clusters := strings.Split(strings.TrimSpace(string(output)), "\n")
+	if len(clusters) > 0 && clusters[0] != "" {
+		return clusters[0], nil
+	}
+	return "", fmt.Errorf("no kind clusters found")
 }
