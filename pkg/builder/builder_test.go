@@ -25,13 +25,13 @@ func TestBuild(t *testing.T) {
 	if err := os.WriteFile(testFile, []byte("test content"), 0644); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
-	
+
 	opts := DefaultBuildOptions()
 	builder, err := NewBuilder(opts)
 	if err != nil {
 		t.Fatalf("Failed to create builder: %v", err)
 	}
-	
+
 	ctx := context.Background()
 	image, err := builder.Build(ctx, tmpDir, opts)
 	if err != nil {
@@ -49,20 +49,20 @@ func TestBuildTarball(t *testing.T) {
 	if err := os.WriteFile(testFile, []byte("test content"), 0644); err != nil {
 		t.Fatalf("Failed to create test file: %v", err)
 	}
-	
+
 	outputPath := filepath.Join(tmpDir, "output.tar")
 	opts := DefaultBuildOptions()
 	builder, err := NewBuilder(opts)
 	if err != nil {
 		t.Fatalf("Failed to create builder: %v", err)
 	}
-	
+
 	ctx := context.Background()
 	err = builder.BuildTarball(ctx, tmpDir, outputPath, opts)
 	if err != nil {
 		t.Fatalf("BuildTarball failed: %v", err)
 	}
-	
+
 	// Verify output file exists
 	if _, err := os.Stat(outputPath); os.IsNotExist(err) {
 		t.Fatal("Output tarball file was not created")

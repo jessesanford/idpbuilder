@@ -15,15 +15,15 @@ func (v *DefaultValidator) GenerateDiagnostics(cert *x509.Certificate) (*CertDia
 	}
 
 	diag := &CertDiagnostics{
-		Subject:      cert.Subject.String(),
-		Issuer:       cert.Issuer.String(),
-		SerialNumber: cert.SerialNumber.String(),
-		NotBefore:    cert.NotBefore,
-		NotAfter:     cert.NotAfter,
-		DNSNames:     make([]string, len(cert.DNSNames)),
-		IPAddresses:  make([]net.IP, len(cert.IPAddresses)),
+		Subject:          cert.Subject.String(),
+		Issuer:           cert.Issuer.String(),
+		SerialNumber:     cert.SerialNumber.String(),
+		NotBefore:        cert.NotBefore,
+		NotAfter:         cert.NotAfter,
+		DNSNames:         make([]string, len(cert.DNSNames)),
+		IPAddresses:      make([]net.IP, len(cert.IPAddresses)),
 		ValidationErrors: make([]ValidationError, 0),
-		Warnings:     make([]string, 0),
+		Warnings:         make([]string, 0),
 	}
 
 	// Copy DNS names and IP addresses
@@ -31,7 +31,7 @@ func (v *DefaultValidator) GenerateDiagnostics(cert *x509.Certificate) (*CertDia
 	copy(diag.IPAddresses, cert.IPAddresses)
 
 	// Run all validations and collect errors and warnings
-	
+
 	// 1. Chain validation
 	if err := v.ValidateChain(cert); err != nil {
 		diag.ValidationErrors = append(diag.ValidationErrors, ValidationError{
@@ -58,7 +58,7 @@ func (v *DefaultValidator) GenerateDiagnostics(cert *x509.Certificate) (*CertDia
 		}
 	} else if duration != nil {
 		// Certificate is valid - add info about remaining time
-		diag.Warnings = append(diag.Warnings, fmt.Sprintf("Certificate expires in %v (%s)", 
+		diag.Warnings = append(diag.Warnings, fmt.Sprintf("Certificate expires in %v (%s)",
 			*duration, cert.NotAfter.Format(time.RFC3339)))
 	}
 
@@ -91,7 +91,7 @@ func FormatDiagnostics(diag *CertDiagnostics) string {
 	}
 
 	var sb strings.Builder
-	
+
 	// Header
 	sb.WriteString("Certificate Diagnostic Report\n")
 	sb.WriteString("============================\n\n")
@@ -101,7 +101,7 @@ func FormatDiagnostics(diag *CertDiagnostics) string {
 	sb.WriteString(fmt.Sprintf("  Subject: %s\n", diag.Subject))
 	sb.WriteString(fmt.Sprintf("  Issuer:  %s\n", diag.Issuer))
 	sb.WriteString(fmt.Sprintf("  Serial:  %s\n", diag.SerialNumber))
-	sb.WriteString(fmt.Sprintf("  Valid:   %s to %s\n", 
+	sb.WriteString(fmt.Sprintf("  Valid:   %s to %s\n",
 		diag.NotBefore.Format(time.RFC3339),
 		diag.NotAfter.Format(time.RFC3339)))
 

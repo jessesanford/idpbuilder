@@ -76,8 +76,8 @@ func (ic *InsecureConfig) ApplyInsecureFlag(flagValue bool, registryURL string) 
 			}
 			ic.WarningShown = true
 		}
-		
-		auditEntry := fmt.Sprintf("Insecure mode enabled at %v for registry: %s", 
+
+		auditEntry := fmt.Sprintf("Insecure mode enabled at %v for registry: %s",
 			time.Now().Format(time.RFC3339), registryURL)
 		ic.AuditLog = append(ic.AuditLog, auditEntry)
 		ic.logger.Printf("SECURITY WARNING: Insecure mode enabled for %s", registryURL)
@@ -98,7 +98,7 @@ func WrapTransportWithInsecure(transport http.RoundTripper, insecure bool) http.
 	if !insecure {
 		return transport
 	}
-	
+
 	switch t := transport.(type) {
 	case *http.Transport:
 		clonedTransport := t.Clone()
@@ -128,7 +128,7 @@ func (ic *InsecureConfig) IsInsecureModeEnabled() bool {
 
 // LogInsecureConnection logs when an insecure connection is established
 func (ic *InsecureConfig) LogInsecureConnection(registryURL string) {
-	auditEntry := fmt.Sprintf("Insecure connection established to %s at %v", 
+	auditEntry := fmt.Sprintf("Insecure connection established to %s at %v",
 		registryURL, time.Now().Format(time.RFC3339))
 	ic.AuditLog = append(ic.AuditLog, auditEntry)
 	ic.logger.Printf("INSECURE CONNECTION: %s", registryURL)
@@ -139,11 +139,11 @@ func (ic *InsecureConfig) ValidateInsecureUsage(registryURL string) error {
 	if !ic.Enabled {
 		return nil
 	}
-	
+
 	if registryURL == "" {
 		return fmt.Errorf("cannot validate insecure usage: registry URL is empty")
 	}
-	
+
 	// Warn about suspicious patterns
 	if containsProductionIndicators(registryURL) {
 		ic.logger.Printf("WARNING: Insecure mode with production-like registry: %s", registryURL)

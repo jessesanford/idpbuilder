@@ -2,11 +2,13 @@ package certs
 
 import (
 	"crypto/x509"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/cnoe-io/idpbuilder/pkg/certs/testdata"
+	"github.com/google/go-containerregistry/pkg/v1/remote"
 )
 
 // mockTrustStoreManager implements TrustStoreManager for testing
@@ -58,29 +60,37 @@ func (m *mockTrustStoreManager) IsInsecure(registry string) bool {
 	return m.insecure[registry]
 }
 
-func (m *mockTrustStoreManager) LoadFromDisk() error           { return nil }
+func (m *mockTrustStoreManager) LoadFromDisk() error                        { return nil }
 func (m *mockTrustStoreManager) SaveToDisk(string, *x509.Certificate) error { return nil }
-func (m *mockTrustStoreManager) ConfigureTransport(registry string) (interface{}, error) { return nil, nil }
-func (m *mockTrustStoreManager) ConfigureTransportWithConfig(registry string, config interface{}) (interface{}, error) { return nil, nil }
-func (m *mockTrustStoreManager) CreateHTTPClient(registry string) (interface{}, error) { return nil, nil }
-func (m *mockTrustStoreManager) CreateHTTPClientWithConfig(registry string, config interface{}) (interface{}, error) { return nil, nil }
+func (m *mockTrustStoreManager) ConfigureTransport(registry string) (remote.Option, error) {
+	return nil, nil
+}
+func (m *mockTrustStoreManager) ConfigureTransportWithConfig(registry string, config *TransportConfig) (remote.Option, error) {
+	return nil, nil
+}
+func (m *mockTrustStoreManager) CreateHTTPClient(registry string) (*http.Client, error) {
+	return nil, nil
+}
+func (m *mockTrustStoreManager) CreateHTTPClientWithConfig(registry string, config *TransportConfig) (*http.Client, error) {
+	return nil, nil
+}
 
 func TestNewValidator(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
-	
+
 	validator, err := NewValidator(mockTrustStore)
 	if err != nil {
 		t.Fatalf("NewValidator failed: %v", err)
 	}
-	
+
 	if validator == nil {
 		t.Fatal("Expected validator, got nil")
 	}
-	
+
 	if validator.trustStore != mockTrustStore {
 		t.Error("Trust store not set correctly")
 	}
-	
+
 	if validator.expiryWarning != 30*24*time.Hour {
 		t.Errorf("Expected default expiry warning of 30 days, got %v", validator.expiryWarning)
 	}
@@ -99,12 +109,12 @@ func TestNewValidator_NilTrustStore(t *testing.T) {
 func TestNewValidatorWithWarningThreshold(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	customThreshold := 7 * 24 * time.Hour // 7 days
-	
+
 	validator, err := NewValidatorWithWarningThreshold(mockTrustStore, customThreshold)
 	if err != nil {
 		t.Fatalf("NewValidatorWithWarningThreshold failed: %v", err)
 	}
-	
+
 	if validator.expiryWarning != customThreshold {
 		t.Errorf("Expected expiry warning of %v, got %v", customThreshold, validator.expiryWarning)
 	}
@@ -113,15 +123,15 @@ func TestNewValidatorWithWarningThreshold(t *testing.T) {
 func TestValidateChain_ValidCert(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	validCert, err := testdata.GenerateValidCert()
 	if err != nil {
 		t.Fatalf("Failed to generate valid cert: %v", err)
 	}
-	
+
 	// Add self-signed cert to trust store
 	mockTrustStore.AddCertificate("gitea.local", validCert)
-	
+
 	err = validator.ValidateChain(validCert)
 	if err != nil {
 		t.Errorf("ValidateChain failed for valid cert: %v", err)
@@ -131,7 +141,7 @@ func TestValidateChain_ValidCert(t *testing.T) {
 func TestValidateChain_NilCert(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	err := validator.ValidateChain(nil)
 	if err == nil {
 		t.Error("Expected error for nil certificate")
@@ -144,12 +154,12 @@ func TestValidateChain_NilCert(t *testing.T) {
 func TestCheckExpiry_ValidCert(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	validCert, err := testdata.GenerateValidCert()
 	if err != nil {
 		t.Fatalf("Failed to generate valid cert: %v", err)
 	}
-	
+
 	duration, err := validator.CheckExpiry(validCert)
 	if err != nil {
 		t.Errorf("CheckExpiry failed for valid cert: %v", err)
@@ -165,12 +175,12 @@ func TestCheckExpiry_ValidCert(t *testing.T) {
 func TestCheckExpiry_ExpiredCert(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	expiredCert, err := testdata.GenerateExpiredCert()
 	if err != nil {
 		t.Fatalf("Failed to generate expired cert: %v", err)
 	}
-	
+
 	duration, err := validator.CheckExpiry(expiredCert)
 	if err == nil {
 		t.Error("Expected error for expired certificate")
@@ -186,12 +196,12 @@ func TestCheckExpiry_ExpiredCert(t *testing.T) {
 func TestCheckExpiry_ExpiringSoonCert(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	expiringSoonCert, err := testdata.GenerateExpiringSoonCert()
 	if err != nil {
 		t.Fatalf("Failed to generate expiring soon cert: %v", err)
 	}
-	
+
 	duration, err := validator.CheckExpiry(expiringSoonCert)
 	if err == nil {
 		t.Error("Expected warning for expiring soon certificate")
@@ -207,12 +217,12 @@ func TestCheckExpiry_ExpiringSoonCert(t *testing.T) {
 func TestCheckExpiry_NotYetValidCert(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	notYetValidCert, err := testdata.GenerateNotYetValidCert()
 	if err != nil {
 		t.Fatalf("Failed to generate not yet valid cert: %v", err)
 	}
-	
+
 	duration, err := validator.CheckExpiry(notYetValidCert)
 	if err == nil {
 		t.Error("Expected error for not yet valid certificate")
@@ -228,7 +238,7 @@ func TestCheckExpiry_NotYetValidCert(t *testing.T) {
 func TestCheckExpiry_NilCert(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	duration, err := validator.CheckExpiry(nil)
 	if err == nil {
 		t.Error("Expected error for nil certificate")
@@ -241,18 +251,18 @@ func TestCheckExpiry_NilCert(t *testing.T) {
 func TestVerifyHostname_ValidMatch(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	validCert, err := testdata.GenerateValidCert()
 	if err != nil {
 		t.Fatalf("Failed to generate valid cert: %v", err)
 	}
-	
+
 	// Test exact match with SAN
 	err = validator.VerifyHostname(validCert, "gitea.local")
 	if err != nil {
 		t.Errorf("VerifyHostname failed for valid hostname: %v", err)
 	}
-	
+
 	// Test alternative SAN
 	err = validator.VerifyHostname(validCert, "registry.local")
 	if err != nil {
@@ -263,18 +273,18 @@ func TestVerifyHostname_ValidMatch(t *testing.T) {
 func TestVerifyHostname_WildcardMatch(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	wildcardCert, err := testdata.GenerateWildcardCert()
 	if err != nil {
 		t.Fatalf("Failed to generate wildcard cert: %v", err)
 	}
-	
+
 	// Test wildcard subdomain match
 	err = validator.VerifyHostname(wildcardCert, "api.example.local")
 	if err != nil {
 		t.Errorf("VerifyHostname failed for wildcard match: %v", err)
 	}
-	
+
 	// Test exact domain match
 	err = validator.VerifyHostname(wildcardCert, "example.local")
 	if err != nil {
@@ -285,12 +295,12 @@ func TestVerifyHostname_WildcardMatch(t *testing.T) {
 func TestVerifyHostname_NoMatch(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	validCert, err := testdata.GenerateValidCert()
 	if err != nil {
 		t.Fatalf("Failed to generate valid cert: %v", err)
 	}
-	
+
 	err = validator.VerifyHostname(validCert, "wrong.domain")
 	if err == nil {
 		t.Error("Expected error for hostname mismatch")
@@ -303,18 +313,18 @@ func TestVerifyHostname_NoMatch(t *testing.T) {
 func TestVerifyHostname_NilCertOrEmptyHostname(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	validCert, err := testdata.GenerateValidCert()
 	if err != nil {
 		t.Fatalf("Failed to generate valid cert: %v", err)
 	}
-	
+
 	// Test nil certificate
 	err = validator.VerifyHostname(nil, "test.local")
 	if err == nil || !strings.Contains(err.Error(), "certificate cannot be nil") {
 		t.Error("Expected 'certificate cannot be nil' error")
 	}
-	
+
 	// Test empty hostname
 	err = validator.VerifyHostname(validCert, "")
 	if err == nil || !strings.Contains(err.Error(), "hostname cannot be empty") {
@@ -325,33 +335,33 @@ func TestVerifyHostname_NilCertOrEmptyHostname(t *testing.T) {
 func TestGenerateDiagnostics_ValidCert(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	validCert, err := testdata.GenerateValidCert()
 	if err != nil {
 		t.Fatalf("Failed to generate valid cert: %v", err)
 	}
-	
+
 	diag, err := validator.GenerateDiagnostics(validCert)
 	if err != nil {
 		t.Fatalf("GenerateDiagnostics failed: %v", err)
 	}
-	
+
 	if diag == nil {
 		t.Fatal("Expected diagnostics, got nil")
 	}
-	
+
 	if diag.Subject == "" {
 		t.Error("Expected subject to be set")
 	}
-	
+
 	if diag.Issuer == "" {
 		t.Error("Expected issuer to be set")
 	}
-	
+
 	if len(diag.DNSNames) == 0 {
 		t.Error("Expected DNS names to be populated")
 	}
-	
+
 	// Should have warnings about self-signed certificate
 	foundSelfSignedWarning := false
 	for _, warning := range diag.Warnings {
@@ -368,17 +378,17 @@ func TestGenerateDiagnostics_ValidCert(t *testing.T) {
 func TestGenerateDiagnostics_ExpiredCert(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	expiredCert, err := testdata.GenerateExpiredCert()
 	if err != nil {
 		t.Fatalf("Failed to generate expired cert: %v", err)
 	}
-	
+
 	diag, err := validator.GenerateDiagnostics(expiredCert)
 	if err != nil {
 		t.Fatalf("GenerateDiagnostics failed: %v", err)
 	}
-	
+
 	// Should have an expiry validation error
 	foundExpiryError := false
 	for _, valErr := range diag.ValidationErrors {
@@ -395,23 +405,23 @@ func TestGenerateDiagnostics_ExpiredCert(t *testing.T) {
 func TestFormatDiagnostics(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	validCert, err := testdata.GenerateValidCert()
 	if err != nil {
 		t.Fatalf("Failed to generate valid cert: %v", err)
 	}
-	
+
 	diag, err := validator.GenerateDiagnostics(validCert)
 	if err != nil {
 		t.Fatalf("GenerateDiagnostics failed: %v", err)
 	}
-	
+
 	formatted := FormatDiagnostics(diag)
-	
+
 	if formatted == "" {
 		t.Error("Expected formatted output, got empty string")
 	}
-	
+
 	// Check for expected sections
 	expectedSections := []string{
 		"Certificate Diagnostic Report",
@@ -419,7 +429,7 @@ func TestFormatDiagnostics(t *testing.T) {
 		"Valid Hostnames:",
 		"Summary:",
 	}
-	
+
 	for _, section := range expectedSections {
 		if !strings.Contains(formatted, section) {
 			t.Errorf("Expected section '%s' in formatted output", section)
@@ -437,22 +447,22 @@ func TestFormatDiagnostics_NilDiagnostics(t *testing.T) {
 func TestValidateAndDiagnose(t *testing.T) {
 	mockTrustStore := newMockTrustStoreManager()
 	validator, _ := NewValidator(mockTrustStore)
-	
+
 	validCert, err := testdata.GenerateValidCert()
 	if err != nil {
 		t.Fatalf("Failed to generate valid cert: %v", err)
 	}
-	
+
 	// Test with valid hostname
 	diag, err := validator.ValidateAndDiagnose(validCert, "gitea.local")
 	if err != nil {
 		t.Fatalf("ValidateAndDiagnose failed: %v", err)
 	}
-	
+
 	if diag == nil {
 		t.Fatal("Expected diagnostics, got nil")
 	}
-	
+
 	// Should have hostname match warning
 	foundHostnameMatch := false
 	for _, warning := range diag.Warnings {
@@ -464,13 +474,13 @@ func TestValidateAndDiagnose(t *testing.T) {
 	if !foundHostnameMatch {
 		t.Error("Expected hostname match confirmation")
 	}
-	
+
 	// Test with invalid hostname
 	diag, err = validator.ValidateAndDiagnose(validCert, "wrong.domain")
 	if err != nil {
 		t.Fatalf("ValidateAndDiagnose failed: %v", err)
 	}
-	
+
 	// Should have hostname validation error
 	foundHostnameError := false
 	for _, valErr := range diag.ValidationErrors {

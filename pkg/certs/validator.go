@@ -44,7 +44,7 @@ func NewValidatorWithWarningThreshold(trustStore TrustStoreManager, warningThres
 	if err != nil {
 		return nil, err
 	}
-	
+
 	validator.expiryWarning = warningThreshold
 	return validator, nil
 }
@@ -93,16 +93,16 @@ func (v *DefaultValidator) CheckExpiry(cert *x509.Certificate) (*time.Duration, 
 	}
 
 	now := time.Now()
-	
+
 	// Check if certificate is already expired
 	if now.After(cert.NotAfter) {
-		return nil, fmt.Errorf("certificate expired on %s (expired %v ago)", 
+		return nil, fmt.Errorf("certificate expired on %s (expired %v ago)",
 			cert.NotAfter.Format(time.RFC3339), now.Sub(cert.NotAfter))
 	}
 
 	// Check if certificate is not yet valid
 	if now.Before(cert.NotBefore) {
-		return nil, fmt.Errorf("certificate not valid until %s (valid in %v)", 
+		return nil, fmt.Errorf("certificate not valid until %s (valid in %v)",
 			cert.NotBefore.Format(time.RFC3339), cert.NotBefore.Sub(now))
 	}
 
@@ -111,7 +111,7 @@ func (v *DefaultValidator) CheckExpiry(cert *x509.Certificate) (*time.Duration, 
 
 	// Check if within warning threshold
 	if remaining < v.expiryWarning {
-		return &remaining, fmt.Errorf("certificate expires soon on %s (in %v)", 
+		return &remaining, fmt.Errorf("certificate expires soon on %s (in %v)",
 			cert.NotAfter.Format(time.RFC3339), remaining)
 	}
 
@@ -135,12 +135,12 @@ func (v *DefaultValidator) VerifyHostname(cert *x509.Certificate, hostname strin
 
 	// Provide helpful error message with valid hostnames
 	validNames := make([]string, 0, len(cert.DNSNames)+1)
-	
+
 	// Add CN if it looks like a hostname
 	if cert.Subject.CommonName != "" {
 		validNames = append(validNames, cert.Subject.CommonName)
 	}
-	
+
 	// Add SAN DNS names
 	validNames = append(validNames, cert.DNSNames...)
 
@@ -157,12 +157,12 @@ func (v *DefaultValidator) extractHostnameFromCert(cert *x509.Certificate) strin
 	if len(cert.DNSNames) > 0 {
 		return cert.DNSNames[0]
 	}
-	
+
 	// Fall back to common name if it looks like a hostname
 	cn := cert.Subject.CommonName
 	if cn != "" {
 		return cn
 	}
-	
+
 	return ""
 }

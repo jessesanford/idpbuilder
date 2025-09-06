@@ -42,31 +42,31 @@ func (w *TarballWriter) Write(img v1.Image, outputPath string, ref string) error
 	if img == nil {
 		return fmt.Errorf("image cannot be nil")
 	}
-	
+
 	if outputPath == "" {
 		return fmt.Errorf("output path cannot be empty")
 	}
-	
+
 	if ref == "" {
 		return fmt.Errorf("image reference cannot be empty")
 	}
-	
+
 	// Parse the reference
 	tag, err := name.NewTag(ref, name.WeakValidation)
 	if err != nil {
 		return fmt.Errorf("invalid reference %s: %w", ref, err)
 	}
-	
+
 	// Create tag map for the image
 	tagMap := map[name.Tag]v1.Image{
 		tag: img,
 	}
-	
+
 	// Write the tarball
 	if err := tarball.MultiWriteToFile(outputPath, tagMap); err != nil {
 		return fmt.Errorf("failed to write tarball: %w", err)
 	}
-	
+
 	return nil
 }
 
@@ -75,7 +75,7 @@ func (w *TarballWriter) WriteMultiple(images map[string]v1.Image, outputPath str
 	if len(images) == 0 {
 		return fmt.Errorf("no images provided for export")
 	}
-	
+
 	// Build tag map
 	tagMap := make(map[name.Tag]v1.Image)
 	for ref, img := range images {
@@ -85,12 +85,12 @@ func (w *TarballWriter) WriteMultiple(images map[string]v1.Image, outputPath str
 		}
 		tagMap[tag] = img
 	}
-	
+
 	// Write the tarball
 	if err := tarball.MultiWriteToFile(outputPath, tagMap); err != nil {
 		return fmt.Errorf("failed to write multi-image tarball: %w", err)
 	}
-	
+
 	return nil
 }
 
