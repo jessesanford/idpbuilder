@@ -1,0 +1,186 @@
+# Software Factory 2.0 - Orchestrator State File
+# Generated: Sat Sep  6 16:32:00 UTC 2025
+# Rule: R281 - COMPLETE initial state with ALL phases/waves/efforts
+
+# Current execution state
+current_state: SPAWN_ARCHITECT_PHASE_PLANNING
+current_phase: 1
+current_wave: 1
+
+# Project configuration from IMPLEMENTATION-PLAN.md
+project:
+  name: idpbuilder-oci-mvp
+  description: "Enable reliable image push to Gitea with self-signed certificates"
+  total_phases: 2
+  total_waves: 4
+  total_efforts: 7
+  estimated_lines: 2000
+  target_repository:
+    url: "https://github.com/jessesanford/idpbuilder.git"
+    base_branch: "main"
+
+# Complete phase structure (R281 - ALL items required)
+phases:
+  - phase_number: 1
+    name: "Certificate Infrastructure"
+    description: "Extract and manage certificates from Kind/Gitea"
+    estimated_lines: 1000
+    status: "NOT_STARTED"
+    start_date: null
+    end_date: null
+    waves:
+      - wave_number: 1
+        name: "Certificate Management Core"
+        description: "Extract and manage certificates from Kind/Gitea"
+        status: "NOT_STARTED"
+        efforts:
+          - effort_id: "E1.1.1"
+            name: "Kind Certificate Extraction"
+            description: "Extract Gitea certificate from Kind cluster"
+            estimated_lines: 500
+            owner: "SW Engineer 1"
+            status: "NOT_STARTED"
+            work_branch: null
+            implementation_file_path: "pkg/certs/extractor.go"
+            test_file_path: "pkg/certs/extractor_test.go"
+            
+          - effort_id: "E1.1.2"
+            name: "Registry TLS Trust Integration"
+            description: "Configure go-containerregistry with custom CA"
+            estimated_lines: 600
+            owner: "SW Engineer 2"
+            status: "NOT_STARTED"
+            work_branch: null
+            implementation_file_path: "pkg/certs/trust.go"
+            test_file_path: "pkg/certs/trust_test.go"
+            
+      - wave_number: 2
+        name: "Certificate Validation & Fallback"
+        description: "Robust certificate handling with clear diagnostics"
+        status: "NOT_STARTED"
+        efforts:
+          - effort_id: "E1.2.1"
+            name: "Certificate Validation Pipeline"
+            description: "Validate cert chain, expiry, and hostname"
+            estimated_lines: 400
+            owner: "SW Engineer 1"
+            status: "NOT_STARTED"
+            work_branch: null
+            implementation_file_path: "pkg/certs/validator.go"
+            test_file_path: "pkg/certs/validator_test.go"
+            
+          - effort_id: "E1.2.2"
+            name: "Fallback Strategies"
+            description: "Auto-detect cert problems and implement --insecure"
+            estimated_lines: 400
+            owner: "SW Engineer 2"
+            status: "NOT_STARTED"
+            work_branch: null
+            implementation_file_path: "pkg/certs/fallback.go"
+            test_file_path: "pkg/certs/fallback_test.go"
+
+  - phase_number: 2
+    name: "Build & Push Implementation"
+    description: "Basic image assembly and registry push"
+    estimated_lines: 1000
+    status: "NOT_STARTED"
+    start_date: null
+    end_date: null
+    waves:
+      - wave_number: 1
+        name: "Core Build & Push"
+        description: "Basic image assembly and registry push"
+        status: "NOT_STARTED"
+        efforts:
+          - effort_id: "E2.1.1"
+            name: "go-containerregistry Image Builder"
+            description: "Create single-layer OCI image from context"
+            estimated_lines: 600
+            owner: "SW Engineer 3"
+            status: "NOT_STARTED"
+            work_branch: null
+            implementation_file_path: "pkg/build/builder.go"
+            test_file_path: "pkg/build/builder_test.go"
+            
+          - effort_id: "E2.1.2"
+            name: "Gitea Registry Client"
+            description: "Push image to Gitea with cert handling"
+            estimated_lines: 600
+            owner: "SW Engineer 1"
+            status: "NOT_STARTED"
+            work_branch: null
+            implementation_file_path: "pkg/registry/gitea.go"
+            test_file_path: "pkg/registry/gitea_test.go"
+            
+      - wave_number: 2
+        name: "CLI Integration"
+        description: "User-friendly CLI commands"
+        status: "NOT_STARTED"
+        efforts:
+          - effort_id: "E2.2.1"
+            name: "CLI Commands"
+            description: "Implement build and push CLI commands"
+            estimated_lines: 500
+            owner: "SW Engineer 2"
+            status: "NOT_STARTED"
+            work_branch: null
+            implementation_file_path: "cmd/build.go,cmd/push.go"
+            test_file_path: "cmd/build_test.go,cmd/push_test.go"
+
+# Agent spawn tracking (for R151 compliance)
+spawn_history: []
+
+# Integration tracking
+integrations:
+  wave_integrations: []
+  phase_integrations: []
+  project_integration: null
+
+# Validation gates
+gates:
+  wave_completion: []
+  phase_transition: []
+  size_enforcement: []
+  architecture_review: []
+
+# Error recovery tracking
+errors: []
+
+# State machine history
+state_history:
+  - timestamp: "2025-09-06T16:32:00Z"
+    from_state: null
+    to_state: "INIT"
+    trigger: "Initial creation"
+  - timestamp: "2025-09-06T16:32:00Z"
+    from_state: "INIT"
+    to_state: "SPAWN_ARCHITECT_PHASE_PLANNING"
+    trigger: "Ready to start planning"
+
+# Metrics for grading compliance
+metrics:
+  parallel_spawn_timings: []
+  effort_line_counts: []
+  review_pass_rates: []
+  test_coverage: []
+  integration_success_rate: null
+
+# Work logs and documentation
+documentation:
+  master_plan: "IMPLEMENTATION-PLAN.md"
+  phase_plans: []
+  wave_plans: []
+  effort_plans: []
+  work_logs: []
+
+# TODO persistence tracking (R287)
+todo_saves:
+  last_save: null
+  save_count: 0
+  recovery_count: 0
+
+# R322 compliance - State transition stops
+transition_stops:
+  - state: "INIT"
+    stopped_at: "2025-09-06T16:32:00Z"
+    waiting_for: "user_continuation"
