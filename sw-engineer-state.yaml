@@ -1,0 +1,63 @@
+# SW Engineer State File for gitea-registry-client BACKPORT_FIXES
+# Generated: 2025-09-06 04:09:13 UTC
+# Agent: sw-engineer
+# State: BACKPORT_FIXES
+
+status: BACKPORT_COMPLETE
+effort: gitea-registry-client
+phase: phase2
+wave: wave1
+current_state: BACKPORT_FIXES
+timestamp: 2025-09-06T04:13:00Z
+
+backport_fixes_applied:
+  - description: "Line 108 - Mock trust store condition fix"
+    file: "pkg/registry/gitea_client_test.go"
+    change: "Changed 'if m.shouldFailCreate {' to 'if m.shouldFailCreate || m.shouldFailConfig {'"
+    status: "APPLIED"
+
+  - description: "Line 348 - Push test error message fix"
+    file: "pkg/registry/gitea_client_test.go"
+    change: "Changed 'errContains: \"invalid_reference\",' to 'errContains: \"invalid reference\",' in TestGiteaClient_Push"
+    status: "APPLIED"
+
+  - description: "Line 420 - Pull test error message fix"  
+    file: "pkg/registry/gitea_client_test.go"
+    change: "Changed 'errContains: \"invalid_reference\",' to 'errContains: \"invalid reference\",' in TestGiteaClient_Pull"
+    status: "APPLIED"
+
+  - description: "Line 498 - Tags test error message fix"
+    file: "pkg/registry/gitea_client_test.go"
+    change: "Changed 'errContains: \"invalid_repository\",' to 'errContains: \"invalid repository\",' in TestGiteaClient_Tags"
+    status: "APPLIED"
+
+  - description: "Lines 290 & 295 - Trust store test expectations fix"
+    file: "pkg/registry/gitea_client_test.go"
+    change: "Changed 'expectedError: \"failed to configure transport\",' to 'expectedError: \"failed to create HTTP client\",' in TestNewGiteaClient_TrustStoreFailures"
+    status: "APPLIED"
+
+test_results:
+  status: "PASS"
+  total_tests: 17
+  passing_tests: 17
+  failing_tests: 0
+  test_duration: "11.221s"
+  verification: "All tests pass after applying backport fixes"
+
+summary: |
+  Successfully applied all 5 required backport fixes to pkg/registry/gitea_client_test.go:
+  1. Fixed mock trust store condition to include both shouldFailCreate and shouldFailConfig
+  2. Fixed error message format for invalid reference in Push tests (removed underscore)
+  3. Fixed error message format for invalid reference in Pull tests (removed underscore) 
+  4. Fixed error message format for invalid repository in Tags tests (removed underscore)
+  5. Fixed expected error message for trust store failures (changed to "failed to create HTTP client")
+  
+  All fixes were verified by running the test suite and confirming all tests pass.
+  
+completion_notes:
+  - All fixes from BACKPORT-INSTRUCTIONS.md have been applied
+  - Test suite runs successfully with 0 failures
+  - Code changes are minimal and focused on test assertion corrections
+  - No functional code changes were needed, only test assertion updates
+
+next_action: "SW Engineer task complete - all backport fixes applied and verified"
