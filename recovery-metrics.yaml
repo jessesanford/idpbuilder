@@ -1,0 +1,6 @@
+recovery_start: 1757191114
+recovery_start_iso: 2025-09-06T20:38:34+00:00
+severity: CRITICAL
+target_minutes: 30
+escalation_at_minutes: 15
+error_type: R291_BUILD_GATE_FAILURE

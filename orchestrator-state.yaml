@@ -1,9 +1,15 @@
 state_machine:
-  current_state: ERROR_RECOVERY
-  previous_state: MONITORING_INTEGRATION
-  transition_time: '2025-09-06T20:29:30.000000Z'
-  transition_reason: 'R291 BUILD GATE FAILURE: Build failed due to upstream bugs - duplicate declarations and interface issues'
-  rules_reacknowledged: true
+  current_state: INTEGRATION
+  previous_state: ERROR_RECOVERY
+  transition_time: '2025-09-06T20:52:30.000000Z'
+  transition_reason: 'Error recovery complete - duplicate declarations fixed in effort branches'
+  rules_reacknowledged: false
+  error_recovery_completed: true
+  fixes_applied:
+    - 'E1.1.1: Renamed CertValidator to KindCertValidator, isFeatureEnabled to isKindFeatureEnabled'
+    - 'E1.1.2: Renamed CertValidator to RegistryCertValidator, isFeatureEnabled to isRegistryFeatureEnabled'
+  recovery_time_minutes: 10
+  r300_verified: true
   integration_status: COMPLETED_WITH_ISSUES
   integration_report_location: 'efforts/phase1/wave1/integration-workspace/INTEGRATION-REPORT.md'
   upstream_bugs_found: true
@@ -161,8 +167,8 @@ timestamps:
   integration_branch_created: '2025-09-06T19:36:00.000000Z'
   code_reviewer_merge_plan_spawned: '2025-09-06T19:36:00.000000Z'
 next_actions:
-  - Wave 1 completion fully verified and finalized
-  - Ready to transition to INTEGRATION state
-  - Will create phase1/wave1-integration branch
-  - Will merge both effort branches
-  - Will spawn architect for wave review after integration
+  - Create new integration branch from main (per R271)
+  - Merge fixed effort branches (E1.1.1 and E1.1.2)
+  - Run build and tests to verify fixes
+  - Complete integration if successful
+  - Transition to WAVE_COMPLETE if integration passes

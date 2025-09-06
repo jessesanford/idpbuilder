@@ -1,0 +1,40 @@
+fix_assignments:
+  timestamp: "2025-09-06T20:40:00Z"
+  severity: CRITICAL
+  error_type: R291_BUILD_GATE_FAILURE
+  
+  E1.1.1_kind_cert_extraction:
+    assignee: sw-engineer-1
+    effort_directory: efforts/phase1/wave1/kind-cert-extraction
+    effort_branch: phase1/wave1/effort-kind-cert-extraction
+    fixes:
+      - file: pkg/certs/extractor.go
+        line: 160
+        issue: ValidationResult doesn't implement error interface
+        action: Add Error() method to ValidationResult type
+      - file: pkg/certs/extractor.go
+        line: 31
+        issue: CertValidator duplicate with E1.1.2
+        action: Rename to KindCertValidator
+      - file: pkg/certs/helpers.go
+        line: 34
+        issue: isFeatureEnabled duplicate with E1.1.2
+        action: Rename to isKindFeatureEnabled
+        
+  E1.1.2_registry_tls_trust:
+    assignee: sw-engineer-2
+    effort_directory: efforts/phase1/wave1/registry-tls-trust
+    effort_branch: phase1/wave1/effort-registry-tls-trust
+    fixes:
+      - file: pkg/certs/utilities.go
+        line: 229
+        issue: CertValidator duplicate with E1.1.1
+        action: Rename to RegistryCertValidator
+      - file: pkg/certs/trust.go
+        line: 260
+        issue: isFeatureEnabled duplicate with E1.1.1
+        action: Rename to isRegistryFeatureEnabled
+      - file: pkg/certs/utilities.go
+        lines: [233, 237]
+        issue: References to renamed CertValidator
+        action: Update all references to RegistryCertValidator
