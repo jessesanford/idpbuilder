@@ -6,8 +6,8 @@ state_machine:
   rules_reacknowledged: true
   recovery_note: Both E1.1.1 and E1.1.2 implemented and reviewed successfully
   next_state: INTEGRATION
-  next_state_reason: Need to create Wave 1 integration branch and spawn architect
-    for review
+  next_state_reason: Wave 1 completion verified - ready to create integration branch
+    and spawn architect
 project_info:
   name: idpbuilder-oci-mvp
   total_phases: 2
@@ -145,7 +145,7 @@ timestamps:
   wave_1_finalized: '2025-09-06T19:03:06.247302Z'
   last_state_update: '2025-09-06T19:03:06.247302Z'
 next_actions:
-- Wave 1 fully complete - all reviews passed
+- Wave 1 completion fully verified
 - Ready to transition to INTEGRATION state
-- Will create Wave 1 integration branch in INTEGRATION state
+- Will create phase1/wave1-integration branch
 - Will spawn architect for wave review after integration
