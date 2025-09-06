@@ -5,7 +5,7 @@
 
 current_phase: 1
 current_wave: 1
-current_state: INIT
+current_state: PLANNING
 
 project_info:
   name: "idpbuidler-oci-build-push"
