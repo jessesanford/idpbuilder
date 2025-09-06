@@ -19,7 +19,7 @@ target_repository:
 branch_naming:
   # Project prefix for all branches (lowercase kebab-case)
   # This will be prepended to all branch names with a slash
-  project_prefix: "idpbuidler-oci-build-push"
+  project_prefix: "idpbuilder-oci-build-push"
   
   # Format for effort branches
   # Variables: {prefix}, {phase}, {wave}, {effort_name}
