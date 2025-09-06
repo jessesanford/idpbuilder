@@ -1,0 +1,22 @@
+[
+  {
+    "content": "Verify merge plan exists and is valid",
+    "status": "completed",
+    "activeForm": "Verifying merge plan existence and validity"
+  },
+  {
+    "content": "Update orchestrator state file for transition to SPAWN_INTEGRATION_AGENT",
+    "status": "completed",
+    "activeForm": "Updating orchestrator state file for transition"
+  },
+  {
+    "content": "Commit state file changes per R288",
+    "status": "completed",
+    "activeForm": "Committing state file changes"
+  },
+  {
+    "content": "Stop and await continuation per R322",
+    "status": "in_progress",
+    "activeForm": "Stopping and awaiting continuation"
+  }
+]
