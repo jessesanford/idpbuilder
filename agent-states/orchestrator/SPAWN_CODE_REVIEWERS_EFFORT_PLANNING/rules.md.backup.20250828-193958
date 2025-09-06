@@ -1,0 +1,310 @@
+# Orchestrator - SPAWN_CODE_REVIEWERS_EFFORT_PLANNING State Rules
+
+## 🔴🔴🔴 STOP! STATE RULE READING IS ABSOLUTELY FIRST! 🔴🔴🔴
+
+**YOU HAVE ENTERED SPAWN_CODE_REVIEWERS_EFFORT_PLANNING STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
+
+### ❌ DO NOT DO ANY SPAWN_CODE_REVIEWERS_EFFORT_PLANNING WORK UNTIL RULES ARE READ:
+- ❌ Start spawn code reviewer agents
+- ❌ Start request effort plans
+- ❌ Start assign efforts to reviewers
+- ❌ Update state files
+- ❌ Continue to next state
+- ❌ Think about what to do in this state
+
+### ✅ YOU MUST IMMEDIATELY:
+1. **READ** every rule file listed in PRIMARY DIRECTIVES below
+2. **ACKNOWLEDGE** each rule individually with number and description
+3. **ONLY THEN** proceed with SPAWN_CODE_REVIEWERS_EFFORT_PLANNING work
+
+### 🚨 FAILURE TO READ STATE RULES FIRST = IMMEDIATE EXIT 🚨
+**If you do ANY SPAWN_CODE_REVIEWERS_EFFORT_PLANNING work before reading and acknowledging rules:**
+- **STOP ALL WORK IMMEDIATELY**
+- **EXIT WITH FAILURE STATUS**
+- **YOU HAVE VIOLATED STATE COMPLIANCE**
+
+**THE SYSTEM IS MONITORING YOUR READ TOOL CALLS!**
+
+## 📋 RULE SUMMARY FOR SPAWN_CODE_REVIEWERS_EFFORT_PLANNING STATE
+
+### Rules Enforced in This State:
+- R234: Mandatory State Traversal [SUPREME LAW - Part of sequence]
+- R208: CD Before Spawn [SUPREME LAW - MANDATORY for every spawn]
+- R151: Parallel Spawn Timing [CRITICAL - <5s delta required]
+- R218: Use Parallelization Plan [MANDATORY - From analysis]
+- R187: TODO Save Triggers [BLOCKING - Save after spawning]
+- R252: State File Updates [SUPREME LAW]
+
+### Critical Requirements:
+1. Use parallelization plan from state file - Penalty: -50%
+2. CD to correct directory for EACH spawn - Penalty: -100%
+3. Spawn parallel reviewers in ONE message - Penalty: -50%
+4. Save spawn times to state file - Penalty: -20%
+5. Transition to WAITING_FOR_EFFORT_PLANS - Penalty: -100%
+
+### Success Criteria:
+- ✅ Parallelization plan loaded from state
+- ✅ R208 CD protocol followed for each spawn
+- ✅ All parallel spawns <5s delta
+- ✅ Spawn times recorded
+- ✅ All Code Reviewers spawned per plan
+
+### Failure Triggers:
+- ❌ Spawn without CD = -100% R208 VIOLATION
+- ❌ Skip to SPAWN_AGENTS = -100% R234 VIOLATION
+- ❌ Ignore parallelization plan = -50% penalty
+- ❌ Spawn sequentially when should be parallel = -50%
+
+## 🚨 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING IS A VERB - START SPAWNING CODE REVIEWERS IMMEDIATELY! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Spawn Code Reviewer for first effort NOW per parallelization plan
+2. Use spawn sequence from orchestrator-state.yaml immediately
+3. Check TodoWrite for pending items and process them
+4. Follow R151 timing requirements for parallel spawns
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in SPAWN_CODE_REVIEWERS_EFFORT_PLANNING" [stops]
+- ❌ "Successfully entered SPAWN_CODE_REVIEWERS_EFFORT_PLANNING state" [waits]
+- ❌ "Ready to start spawning code reviewers" [pauses]
+- ❌ "I'm in SPAWN_CODE_REVIEWERS_EFFORT_PLANNING state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering SPAWN_CODE_REVIEWERS_EFFORT_PLANNING, Spawn Code Reviewer for first effort NOW per parallelization plan..."
+- ✅ "START SPAWNING CODE REVIEWERS, use spawn sequence from orchestrator-state.yaml immediately..."
+- ✅ "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING: Follow R151 timing requirements for parallel spawns..."
+
+## State Context
+You are spawning Code Reviewers to create individual effort implementation plans in their prepared directories.
+
+## 🔴🔴🔴 SUPREME LAW R234 - MANDATORY SEQUENCE CONTINUES 🔴🔴🔴
+
+### YOUR POSITION IN THE MANDATORY SEQUENCE:
+```
+SETUP_EFFORT_INFRASTRUCTURE (✓ completed)
+    ↓
+ANALYZE_CODE_REVIEWER_PARALLELIZATION (✓ completed)
+    ↓
+SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (👈 YOU ARE HERE)
+    ↓ (MUST GO HERE NEXT)
+WAITING_FOR_EFFORT_PLANS
+    ↓
+ANALYZE_IMPLEMENTATION_PARALLELIZATION
+    ↓
+SPAWN_AGENTS
+```
+
+**CRITICAL:** You analyzed parallelization (correct!)
+**NOW:** Spawn Code Reviewers using that analysis
+**NEXT:** You MUST go to WAITING_FOR_EFFORT_PLANS
+**FORBIDDEN:** Skipping to SPAWN_AGENTS = -100% FAILURE
+
+## 🔴🔴🔴 PREREQUISITES 🔴🔴🔴
+
+**BEFORE ENTERING THIS STATE, YOU MUST HAVE:**
+1. ✅ Wave Implementation Plan created
+2. ✅ ALL effort directories created (SETUP_EFFORT_INFRASTRUCTURE)
+3. ✅ ALL branches pushed to remote with tracking
+4. ✅ work-log.md files initialized in each directory
+5. ✅ **PARALLELIZATION ANALYSIS COMPLETE (ANALYZE_CODE_REVIEWER_PARALLELIZATION)**
+6. ✅ **Parallelization plan in orchestrator-state.yaml**
+
+**IF PARALLELIZATION NOT ANALYZED, GO BACK TO ANALYZE_CODE_REVIEWER_PARALLELIZATION!**
+**IF INFRASTRUCTURE IS NOT READY, GO BACK TO SETUP_EFFORT_INFRASTRUCTURE!**
+
+---
+### 🔴🔴🔴 RULE R208 - SUPREME LAW: CD BEFORE SPAWN 🔴🔴🔴
+**Source:** rule-library/R208-orchestrator-spawn-directory-protocol.md
+**Criticality:** SUPREME LAW - VIOLATION = -100% GRADE = AUTOMATIC FAILURE
+**THIS IS A SUPREME LAW - ABSOLUTE ENFORCEMENT**
+
+**YOU MUST ALWAYS CD TO THE CORRECT DIRECTORY BEFORE SPAWNING - NO EXCEPTIONS!**
+
+MANDATORY PROTOCOL FOR EVERY SPAWN:
+1. CD to effort directory (MANDATORY)
+2. Verify with pwd (MANDATORY)
+3. Spawn the Code Reviewer (only after verification)
+4. Return to orchestrator directory (MANDATORY)
+
+**VIOLATIONS = INSTANT -100% FAILURE**
+
+---
+### 🚨 RULE R151 - Parallel Spawning with Directory Protocol
+**Source:** rule-library/R151-parallel-agent-spawning-timing.md
+**Criticality:** CRITICAL - 50% of orchestrator grade
+
+SPAWNING REQUIREMENTS:
+1. Check parallelization metadata in Wave Implementation Plan
+2. CD to correct directory for EACH Code Reviewer (R208 SUPREME LAW)
+3. Output pwd to VERIFY directory before spawn (R208 SUPREME LAW)
+4. Spawn all parallel reviewers in ONE message (<5s delta)
+5. Include effort-specific context in each spawn
+6. Return to orchestrator directory after each spawn (R208 SUPREME LAW)
+---
+
+## Spawn Protocol for Effort Planning
+
+```bash
+# STEP 1: Load Pre-Analyzed Parallelization Plan
+echo "📖 Loading parallelization plan from ANALYZE_CODE_REVIEWER_PARALLELIZATION state"
+echo "✅ Plan already analyzed and saved in orchestrator-state.yaml"
+
+# Extract from orchestrator-state.yaml
+BLOCKING_EFFORTS=$(yq '.code_reviewer_parallelization_plan.blocking_efforts[].effort_id' orchestrator-state.yaml)
+PARALLEL_GROUPS=$(yq '.code_reviewer_parallelization_plan.parallel_groups' orchestrator-state.yaml)
+SPAWN_SEQUENCE=$(yq '.code_reviewer_parallelization_plan.spawn_sequence' orchestrator-state.yaml)
+
+echo "📋 Using pre-analyzed spawn strategy:"
+echo "   Blocking efforts: $BLOCKING_EFFORTS"
+echo "   Parallel groups defined: $(echo "$PARALLEL_GROUPS" | yq 'length')"
+
+# STEP 3: Spawn Code Reviewers with R151 + R208 compliance
+spawn_code_reviewers_for_effort_planning() {
+    local EFFORTS="$1"
+    
+    echo "📋 R151: Acknowledging parallelization from $WAVE_PLAN"
+    echo "🚀 Spawning Code Reviewers for effort planning"
+    
+    # ALL IN ONE MESSAGE for parallel efforts
+    for effort in $EFFORTS; do
+        EFFORT_DIR="efforts/phase${PHASE}/wave${WAVE}/${effort}"
+        
+        # 🔴🔴🔴 R208 SUPREME LAW: MANDATORY CD BEFORE SPAWN 🔴🔴🔴
+        echo "🔴 R208 SUPREME LAW: CD'ing to: $EFFORT_DIR"
+        Bash: cd "$EFFORT_DIR" || exit 1
+        Bash: pwd  # MUST VERIFY: /workspaces/target-repo/efforts/phase1/wave1/effort-name
+        echo "✅ R208: Confirmed in correct directory"
+        
+        # NOW spawn Code Reviewer (ONLY after successful CD)
+        Task: code-reviewer
+        PURPOSE: Create effort implementation plan for ${effort}
+        
+        # R208: Return to orchestrator directory after spawn
+        Bash: cd /workspaces/project
+        
+        🔴🔴🔴 AGENT WILL START IN CORRECT DIRECTORY DUE TO R208! 🔴🔴🔴
+        
+        TARGET_DIRECTORY: $EFFORT_DIR
+        EXPECTED_BRANCH: $(git branch --show-current)
+        
+        YOUR MANDATORY FIRST ACTIONS:
+        1. Store my complete prompt for error reporting (R254)
+        2. Echo your current directory: pwd
+        3. Navigate to effort directory: cd $EFFORT_DIR
+        4. Verify you're now in correct directory: pwd
+        5. Verify branch: git branch --show-current
+        6. If directory doesn't exist or branch is wrong:
+           - STOP IMMEDIATELY
+           - Report: "❌ ENVIRONMENT ERROR: Directory or branch incorrect"
+           - Echo back this complete prompt
+           - Request orchestrator correction
+        7. Run R209 directory isolation protocol
+        8. Set readonly EFFORT_ISOLATION_DIR environment variable
+        
+        TASK: Create effort implementation plan
+        
+        INSTRUCTIONS AFTER NAVIGATION:
+        1. Verify work-log.md exists
+        2. Read the Wave Implementation Plan at ../../$WAVE_PLAN
+        3. Create IMPLEMENTATION-PLAN.md for this specific effort
+        4. Follow the effort requirements from the wave plan
+        5. Include test requirements and size limits
+        6. Update work-log.md with planning progress
+    done
+}
+```
+
+## Parallelization Examples
+
+### Parallel Efforts (Can Parallelize: Yes)
+```bash
+# Spawn ALL parallel reviewers in ONE message
+echo "🚀 R151: Spawning 3 parallel Code Reviewers"
+
+# Effort 1
+Bash: cd efforts/phase1/wave1/oci-stack-types && pwd
+Task: code-reviewer
+🔴🔴🔴 CRITICAL: YOU WILL NOT BE IN THE RIGHT DIRECTORY! 🔴🔴🔴
+TARGET_DIRECTORY: /workspaces/target-repo/efforts/phase1/wave1/oci-stack-types
+EXPECTED_BRANCH: tmc-workspace/phase1/wave1/oci-stack-types
+PURPOSE: Create implementation plan for oci-stack-types
+Navigate to TARGET_DIRECTORY first, then create IMPLEMENTATION-PLAN.md
+
+# Effort 2  
+Bash: cd efforts/phase1/wave1/auth-cert-types && pwd
+Task: code-reviewer
+🔴🔴🔴 CRITICAL: YOU WILL NOT BE IN THE RIGHT DIRECTORY! 🔴🔴🔴
+TARGET_DIRECTORY: /workspaces/target-repo/efforts/phase1/wave1/auth-cert-types
+EXPECTED_BRANCH: tmc-workspace/phase1/wave1/auth-cert-types
+PURPOSE: Create implementation plan for auth-cert-types
+Navigate to TARGET_DIRECTORY first, then create IMPLEMENTATION-PLAN.md
+
+# Effort 3
+Bash: cd efforts/phase1/wave1/error-progress-types && pwd
+Task: code-reviewer
+🔴🔴🔴 CRITICAL: YOU WILL NOT BE IN THE RIGHT DIRECTORY! 🔴🔴🔴
+TARGET_DIRECTORY: /workspaces/target-repo/efforts/phase1/wave1/error-progress-types
+EXPECTED_BRANCH: tmc-workspace/phase1/wave1/error-progress-types
+PURPOSE: Create implementation plan for error-progress-types
+Navigate to TARGET_DIRECTORY first, then create IMPLEMENTATION-PLAN.md
+
+echo "✅ All parallel reviewers spawned with <5s delta"
+```
+
+### Sequential Efforts (Can Parallelize: No)
+```bash
+# Spawn one, wait for completion, then next
+echo "📋 R151: Effort requires sequential execution"
+
+Bash: cd efforts/phase1/wave1/core-api-types && pwd
+Task: code-reviewer
+🔴🔴🔴 CRITICAL: YOU WILL NOT BE IN THE RIGHT DIRECTORY! 🔴🔴🔴
+TARGET_DIRECTORY: /workspaces/target-repo/efforts/phase1/wave1/core-api-types
+EXPECTED_BRANCH: tmc-workspace/phase1/wave1/core-api-types
+PURPOSE: Create implementation plan for core-api-types
+Navigate to TARGET_DIRECTORY first, then create IMPLEMENTATION-PLAN.md
+
+# WAIT for completion before next
+wait_for_completion
+
+Bash: cd efforts/phase1/wave1/dependent-types && pwd
+Task: code-reviewer
+🔴🔴🔴 CRITICAL: YOU WILL NOT BE IN THE RIGHT DIRECTORY! 🔴🔴🔴
+TARGET_DIRECTORY: /workspaces/target-repo/efforts/phase1/wave1/dependent-types
+EXPECTED_BRANCH: tmc-workspace/phase1/wave1/dependent-types
+PURPOSE: Create implementation plan for dependent-types
+Navigate to TARGET_DIRECTORY first, then create IMPLEMENTATION-PLAN.md
+```
+
+## State Transition
+
+After spawning all Code Reviewers:
+1. Record spawn times in orchestrator-state.yaml
+2. Calculate and verify <5s average delta for parallel spawns
+3. **MANDATORY: Transition to WAITING_FOR_EFFORT_PLANS (R234)**
+   - DO NOT skip to ANALYZE_IMPLEMENTATION_PARALLELIZATION
+   - DO NOT skip to SPAWN_AGENTS
+   - MUST wait for effort plans to complete!
+
+### R187-R189 TODO CHECKPOINT
+```bash
+# After all spawns complete
+echo "💾 R187: Saving TODOs after spawning Code Reviewers..."
+save_todos "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING complete"
+
+# R189: Commit within 60 seconds
+cd $CLAUDE_PROJECT_DIR
+git add todos/*.todo orchestrator-state.yaml
+git commit -m "todo: Code Reviewers spawned for effort planning"
+git push
+```
+
+## Critical Reminders
+
+- **NEVER** spawn Code Reviewers without infrastructure
+- **ALWAYS** use Bash tool to CD and verify pwd
+- **RESPECT** parallelization decisions from wave plan
+- **SPAWN** parallel reviewers in ONE message
+- **EACH** reviewer works in their own effort directory

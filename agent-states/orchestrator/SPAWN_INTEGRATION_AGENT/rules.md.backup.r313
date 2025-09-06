@@ -1,0 +1,304 @@
+# Orchestrator - SPAWN_INTEGRATION_AGENT State Rules
+
+## 🔴🔴🔴 STOP! STATE RULE READING IS ABSOLUTELY FIRST! 🔴🔴🔴
+
+**YOU HAVE ENTERED SPAWN_INTEGRATION_AGENT STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
+
+## 🔴🔴🔴 R290 VERIFICATION REQUIREMENT 🔴🔴🔴
+
+**R290 ENFORCEMENT: CREATE VERIFICATION MARKER AFTER READING**
+
+After reading and acknowledging all state rules, you MUST create a verification marker:
+
+```bash
+# MANDATORY: Create verification marker after reading rules
+touch .state_rules_read_orchestrator_SPAWN_INTEGRATION_AGENT
+echo "$(date +%s) - Rules read and acknowledged for SPAWN_INTEGRATION_AGENT" > .state_rules_read_orchestrator_SPAWN_INTEGRATION_AGENT
+```
+
+**FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**
+
+The system will check for this marker. No marker = Immediate failure.
+
+### ❌ DO NOT DO ANY SPAWN_INTEGRATION_AGENT WORK UNTIL RULES ARE READ:
+- ❌ Start spawn integration specialist
+- ❌ Start coordinate merging
+- ❌ Start manage integration
+- ❌ Update state files
+- ❌ Continue to next state
+- ❌ Think about what to do in this state
+
+### ✅ YOU MUST IMMEDIATELY:
+
+## 🔴🔴🔴 MANDATORY STATE RULE READING AND ACKNOWLEDGMENT 🔴🔴🔴
+
+### ⚠️⚠️⚠️ YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. **I AM WATCHING YOUR TOOL CALLS FOR READ OPERATIONS** *YOU WILL FAIL* IF YOU DO NOT MAKE A READ FILE CALL FOR EACH RULE FILE IN PRIMARY DIRECTIVES!!! ⚠️⚠️⚠️
+
+**AFTER READING, YOU MUST ACKNOWLEDGE ALL THE STATE RULES AND STATE THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION.**
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+
+1. **Fake Acknowledgment Without Reading**:
+   ```
+   ❌ WRONG: "I acknowledge R151, R208, R053..."
+   (No Read tool calls detected = AUTOMATIC FAILURE)
+   ```
+
+2. **Bulk Acknowledgment**:
+   ```
+   ❌ WRONG: "I acknowledge all SPAWN_INTEGRATION_AGENT rules"
+   (YOU Must READ AND ACKNOWLEDGE EACH rule individually)
+   ```
+
+3. **Silent Reading**:
+   ```
+   ❌ WRONG: [Reads rules but doesn't acknowledge]
+   "Now I've read the rules, let me start work..."
+   (MUST explicitly acknowledge EACH rule)
+   ```
+
+4. **Reading From Memory**:
+   ```
+   ❌ WRONG: "I know R208 requires CD before spawn..."
+   (Must READ from file, not recall from memory)
+   ```
+
+5. **Skipping Rules in PRIMARY DIRECTIVES**:
+   ```
+   ❌ WRONG: Reading only some rules from the list
+   (ALL rules in PRIMARY DIRECTIVES are MANDATORY)
+   ```
+
+### ✅ CORRECT PATTERN FOR SPAWN_INTEGRATION_AGENT:
+```
+1. READ: $CLAUDE_PROJECT_DIR/rule-library/[first-rule-file].md
+2. "I acknowledge [Rule#] - [Rule Name]: [Brief description]"
+3. READ: $CLAUDE_PROJECT_DIR/rule-library/[second-rule-file].md  
+4. "I acknowledge [Rule#] - [Rule Name]: [Brief description]"
+[Continue for EVERY rule in PRIMARY DIRECTIVES...]
+5. "Ready to execute SPAWN_INTEGRATION_AGENT work"
+```
+
+### 🚨 NO WORK UNTIL ACKNOWLEDGMENT COMPLETE 🚨
+**You may NOT begin ANY SPAWN_INTEGRATION_AGENT work until:**
+1. ✅ ALL rules in PRIMARY DIRECTIVES have been READ
+2. ✅ ALL rules have been individually ACKNOWLEDGED
+3. ✅ You have stated readiness to execute SPAWN_INTEGRATION_AGENT work
+1. **READ** every rule file listed in PRIMARY DIRECTIVES below
+2. **ACKNOWLEDGE** each rule individually with number and description
+3. **ONLY THEN** proceed with SPAWN_INTEGRATION_AGENT work
+
+### 🚨 FAILURE TO READ STATE RULES FIRST = IMMEDIATE EXIT 🚨
+**If you do ANY SPAWN_INTEGRATION_AGENT work before reading and acknowledging rules:**
+- **STOP ALL WORK IMMEDIATELY**
+- **EXIT WITH FAILURE STATUS**
+- **YOU HAVE VIOLATED STATE COMPLIANCE**
+
+**THE SYSTEM IS MONITORING YOUR READ TOOL CALLS!**
+
+## 🔴🔴🔴 R208 SUPREME LAW: CD BEFORE SPAWN 🔴🔴🔴
+
+**YOU MUST CD TO INTEGRATION DIRECTORY BEFORE SPAWNING THE INTEGRATION AGENT!**
+- Violation = -100% GRADE = AUTOMATIC FAILURE
+- NO EXCEPTIONS, NO SHORTCUTS, NO WORKAROUNDS
+
+## State Definition
+The orchestrator spawns an Integration Agent to execute the merge plan created by Code Reviewer. The merge plan must already exist.
+
+## Required Actions
+
+### 1. Verify Merge Plan Exists
+```bash
+# Check that Code Reviewer completed the merge plan
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
+
+cd "$INTEGRATION_DIR"
+
+if [ ! -f "WAVE-MERGE-PLAN.md" ]; then
+    echo "❌ Cannot spawn Integration Agent - no merge plan!"
+    echo "🔍 Code Reviewer must complete WAVE-MERGE-PLAN.md first"
+    exit 1
+fi
+
+echo "✅ Found WAVE-MERGE-PLAN.md"
+
+# 🔴🔴🔴 R312 EXCEPTION: UNLOCK CONFIG FOR INTEGRATION 🔴🔴🔴
+echo ""
+echo "🔓 R312 EXCEPTION: Unlocking git config for INTEGRATION agent"
+echo "Integration agents NEED to pull from multiple branches"
+
+# Check if config is locked
+if [ ! -w .git/config ]; then
+    echo "📋 Config is currently locked (as expected for efforts)"
+    
+    # Store current permissions and ownership for audit
+    BEFORE_PERMS=$(stat -c %a .git/config 2>/dev/null || stat -f %A .git/config)
+    BEFORE_OWNER=$(stat -c %U:%G .git/config 2>/dev/null || stat -f %Su:%Sg .git/config)
+    
+    # Check current ownership
+    CURRENT_OWNER=$(stat -c %U:%G .git/config 2>/dev/null || stat -f %Su:%Sg .git/config)
+    
+    # Unlock for integration work - handle root ownership
+    if [ "$CURRENT_OWNER" = "root:root" ]; then
+        # Need sudo to change from root ownership
+        if command -v sudo >/dev/null 2>&1; then
+            echo "🔓 Restoring user ownership from root..."
+            sudo chown $(id -u):$(id -g) .git/config
+            sudo chmod 644 .git/config
+        else
+            echo "❌ ERROR: Config is root-owned but sudo not available!"
+            echo "Cannot unlock config for integration"
+            exit 312
+        fi
+    else
+        # Simple permission change
+        chmod 644 .git/config
+    fi
+    
+    # Verify unlock succeeded
+    if [ ! -w .git/config ]; then
+        echo "❌ ERROR: Failed to unlock config for integration!"
+        echo "Integration agent needs writable config to merge branches"
+        exit 312
+    fi
+    
+    # Create exception marker
+    cat > .git/R312_INTEGRATION_EXCEPTION << EOF
+Timestamp: $(date '+%Y-%m-%d %H:%M:%S')
+Unlocked by: orchestrator
+State: SPAWN_INTEGRATION_AGENT
+Phase: ${PHASE}
+Wave: ${WAVE}
+Previous ownership: $BEFORE_OWNER
+Current ownership: $(stat -c %U:%G .git/config 2>/dev/null || echo 'unknown')
+Previous permissions: $BEFORE_PERMS
+Current permissions: 644 (writable)
+Purpose: Integration requires ability to merge from multiple branches
+EOF
+    
+    echo "✅ R312 Exception Applied: Config unlocked for integration"
+    echo "   Owner: $BEFORE_OWNER → $(stat -c %U:%G .git/config 2>/dev/null || echo 'unknown')"
+    echo "   Permissions: $BEFORE_PERMS → 644"
+    echo "📝 Integration agent can now:"
+    echo "   ✅ Pull from multiple effort branches"
+    echo "   ✅ Create integration branches"
+    echo "   ✅ Merge efforts together"
+else
+    echo "✅ Config already writable (integration workspace)"
+fi
+
+# Quick validation of merge plan
+MERGE_COUNT=$(grep -c "git merge origin/" WAVE-MERGE-PLAN.md || echo "0")
+echo "📊 Merge plan contains $MERGE_COUNT merge operations"
+
+if [[ $MERGE_COUNT -eq 0 ]]; then
+    echo "⚠️ Warning: No merge commands found in plan!"
+fi
+```
+
+### 2. Spawn Integration Agent
+```bash
+# Prepare spawn command for Integration Agent
+CURRENT_BRANCH=$(git branch --show-current)
+
+cat > /tmp/integration-agent-task.md << EOF
+Execute integration merges for Phase ${PHASE} Wave ${WAVE}.
+
+CRITICAL REQUIREMENTS (R260):
+1. You are in INTEGRATION_DIR: ${INTEGRATION_DIR}
+2. IMMEDIATELY acknowledge and set INTEGRATION_DIR variable
+3. Verify you're in the correct directory
+4. Read and follow WAVE-MERGE-PLAN.md EXACTLY
+5. Execute merges in specified order
+6. Handle conflicts as directed in plan
+7. Run tests after each merge
+8. Document everything in work-log.md
+
+GRADING CRITERIA (R267):
+- 50% Completeness of Integration
+- 50% Meticulous Tracking and Documentation
+
+Your working directory: ${INTEGRATION_DIR}
+Current branch: ${CURRENT_BRANCH}
+Merge plan to follow: WAVE-MERGE-PLAN.md
+
+You are spawned into state: INIT
+EOF
+
+# 🔴🔴🔴 R208 SUPREME LAW: CD BEFORE SPAWN 🔴🔴🔴
+echo "🔴 R208 SUPREME LAW: CD'ing to integration directory"
+cd "$INTEGRATION_DIR" || {
+    echo "❌ R208 VIOLATION: Failed to CD to $INTEGRATION_DIR"
+    echo "❌ GRADE: -100% (AUTOMATIC FAILURE)"
+    exit 1
+}
+
+echo "📍 R208 PWD VERIFICATION: $(pwd)"  # MUST show integration directory
+echo "✅ R208: Confirmed in correct directory for Integration Agent spawn"
+
+echo "🚀 Spawning Integration Agent for merge execution..."
+
+/spawn integration-agent INIT "$(cat /tmp/integration-agent-task.md)"
+
+# R208: Return to orchestrator directory after spawn
+cd /workspaces/project
+echo "📍 R208: Returned to orchestrator directory"
+```
+
+### 3. Update State Tracking
+```yaml
+# Update orchestrator-state.yaml
+integration_status:
+  phase: ${PHASE}
+  wave: ${WAVE}
+  merge_plan_ready: true
+  integration_agent_spawned: true
+  integration_started_at: "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  waiting_for: "integration-agent-completion"
+```
+
+## 🔴🔴🔴 MANDATORY MEASUREMENT RULE - R304 🔴🔴🔴
+
+### R304: Mandatory Line Counter Tool Enforcement
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R304-mandatory-line-counter-enforcement.md`
+**Criticality**: BLOCKING - Manual counting = AUTOMATIC -100% FAILURE
+
+**ABSOLUTE REQUIREMENTS:**
+- ✅ MUST use `$CLAUDE_PROJECT_DIR/tools/line-counter.sh` for ALL line counting
+- ❌ NEVER use `wc -l` or any manual counting method
+- ❌ NEVER count lines any other way - this is a -100% automatic failure
+- ✅ MUST specify both -b (base branch) and -c (current branch) parameters
+- ✅ Base branch MUST be phase integration branch (NOT "main")
+
+**Failure to use the line counter tool = AUTOMATIC -100% GRADE**
+
+## Critical Requirements
+
+### R260 Compliance - INTEGRATION_DIR Acknowledgment
+The Integration Agent MUST:
+1. Acknowledge the INTEGRATION_DIR immediately upon startup
+2. Set INTEGRATION_DIR environment variable
+3. Verify current directory matches INTEGRATION_DIR
+4. Exit with error if in wrong directory
+
+### Working Directory Setup
+**CRITICAL**: The orchestrator MUST cd into INTEGRATION_DIR before spawning!
+```bash
+cd "$INTEGRATION_DIR"  # MANDATORY before spawn
+```
+
+## Transition Rules
+- Immediate transition to: MONITORING_INTEGRATION
+- Cannot transition if: No merge plan exists
+- Must be in integration directory when spawning
+
+## Success Criteria
+- Merge plan verified to exist
+- Integration Agent spawned with INTEGRATION_DIR
+- Working directory set correctly
+- Clear grading criteria communicated
+- State tracking updated
+
+

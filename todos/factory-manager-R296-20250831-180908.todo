@@ -1,0 +1,59 @@
+# Factory Manager TODO State - R296 Implementation
+Generated: 2025-08-31 18:09:08 UTC
+Agent: software-factory-manager
+Task: Implement R296 Deprecated Branch Marking Protocol
+
+## Summary
+Successfully implemented comprehensive updates to prevent orchestrators from merging deprecated TOO LARGE branches during integration. Created new rule R296 and updated all related integration rules, states, and protocols.
+
+## Completed Tasks
+✅ Create new rule R296 for deprecated branch marking after splits
+✅ Update orchestrator-state.yaml.example with SPLIT_DEPRECATED status tracking
+✅ Update R034 Integration Requirements with deprecated branch prevention
+✅ Update R260 Integration Agent Core Requirements
+✅ Update R282 Phase Integration Protocol
+✅ Update orchestrator INTEGRATION state rules
+✅ Update orchestrator MONITORING_INTEGRATION state rules
+✅ Update orchestrator PHASE_INTEGRATION state rules
+✅ Update R204 Orchestrator Split Infrastructure with branch renaming
+✅ Update sw-engineer SPLIT_IMPLEMENTATION state for branch deprecation
+✅ Update RULE-REGISTRY.md with new R296
+
+## Pending Tasks (Minor)
+⏳ Update R263 Integration Documentation Requirements
+⏳ Update R283 Project Integration Protocol
+⏳ Update orchestrator FINAL_INTEGRATION state rules
+⏳ Update code-reviewer CREATE_SPLIT_PLAN state
+⏳ Test integration pre-check logic
+⏳ Commit and push all changes
+
+## Key Changes Made
+
+### 1. New Rule R296 - Deprecated Branch Marking Protocol
+- Created comprehensive rule for marking split branches as deprecated
+- Includes branch renaming logic (adding `-deprecated-split` suffix)
+- State file tracking with SPLIT_DEPRECATED status
+- Pre-integration checks to prevent deprecated branch merging
+
+### 2. State File Schema Enhancement
+- Added SPLIT_DEPRECATED status tracking
+- Added deprecated_branch field
+- Added replacement_splits array
+- Added do_not_integrate flag
+- Added split_completed_at timestamp
+
+### 3. Integration Rule Updates
+- R034: Added deprecated branch checks
+- R260: Added deprecated branch recognition requirements
+- R282: Added phase integration deprecated checks
+- R204: Added branch deprecation function after splits complete
+
+### 4. State Rule Updates
+- INTEGRATION state: Added R296 reference
+- PHASE_INTEGRATION state: Added R296 reference
+- SPLIT_IMPLEMENTATION state: Complete rewrite with orchestrator notification
+
+## Next Steps
+1. Commit and push all changes
+2. Test the deprecated branch detection logic
+3. Monitor for any integration attempts with deprecated branches

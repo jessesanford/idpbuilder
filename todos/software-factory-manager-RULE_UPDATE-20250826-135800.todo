@@ -1,0 +1,20 @@
+# TODO State at 2025-08-26 13:58:00
+# Agent: software-factory-manager
+# State: RULE_UPDATE
+# Context: Created all missing rule files, now updating references
+
+## Completed (1)
+- [x] Created all missing rule files (R002, R003, R006-R009, R152, R153, R158)
+
+## In Progress (1)
+- [ ] Update references in agent files from CRITICAL to rule-library
+
+## Pending (2)
+- [ ] Update references in state-specific rule files
+- [ ] Update RULE-REGISTRY.md with new rules
+
+## Context Notes
+- Created 9 new rule files with complete enforcement details
+- All rules now have proper criticality, grading impact, and examples
+- Need to update all references to point to rule-library instead of CRITICAL
+- Rules cover: acknowledgment, grading, orchestrator code, size limits, monitoring, integration, speed, review quality, architecture compliance

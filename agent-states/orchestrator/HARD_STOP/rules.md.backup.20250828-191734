@@ -1,0 +1,109 @@
+# Orchestrator - HARD_STOP State Rules
+
+## ⚠️⚠️⚠️ MANDATORY RULE READING AND ACKNOWLEDGMENT ⚠️⚠️⚠️
+
+**YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. YOUR READ TOOL CALLS ARE BEING MONITORED.**
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+1. Fake acknowledgment without reading
+2. Bulk acknowledgment
+3. Reading from memory
+
+### ✅ CORRECT PATTERN:
+1. READ each rule file
+2. Acknowledge individually with rule number and description
+
+## 📋 PRIMARY DIRECTIVES FOR HARD_STOP STATE
+
+### 🔴🔴🔴 R021 - Orchestrator Never Stops (EXCEPTION FOR TERMINAL STATES)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R021-orchestrator-never-stops.md`
+**Criticality**: SUPREME LAW - But HARD_STOP is an allowed terminal state
+**Summary**: HARD_STOP is the only state where stopping is permitted
+
+### ⚠️⚠️⚠️ R019 - Error Recovery Protocol
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R019-error-recovery.md`  
+**Criticality**: CRITICAL - Document failure for recovery
+**Summary**: Preserve state for forensic analysis and recovery
+
+### 🚨🚨🚨 R252 - Mandatory State File Updates
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R252-mandatory-state-file-updates.md`
+**Criticality**: BLOCKING - Must update state file even in failure
+**Summary**: Record HARD_STOP state with error details
+
+### 🚨🚨🚨 R253 - Mandatory State File Commit Push
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R253-mandatory-state-file-commit-push.md`
+**Criticality**: BLOCKING - Commit failure state
+**Summary**: Push HARD_STOP state for recovery visibility
+
+## 🛑 HARD_STOP IS A TERMINAL STATE - FINAL ACTIONS ONLY! 🛑
+
+### TERMINAL STATE - STOPPING IS ALLOWED HERE
+
+**THIS IS A TERMINAL STATE:**
+1. Log critical failure reason
+2. Complete final logging and cleanup
+3. Exit gracefully
+
+**TERMINAL STATES ARE THE ONLY STATES WHERE STOPPING IS PERMITTED**
+
+## State Context
+Terminal state - execution ends here.
+
+Critical failure detected. System cannot continue without intervention.
+
+## Triggers for HARD_STOP
+- Missing critical configuration files
+- Corrupted state file
+- Unrecoverable git errors
+- Critical rule violations (e.g., orchestrator tried to write code)
+- System resource failures
+
+## Required Actions
+1. **DOCUMENT THE FAILURE**
+   - Error type and message
+   - State when error occurred
+   - Last successful action
+   - Timestamp
+
+2. **SAVE STATE**
+   ```bash
+   # Create error report
+   echo "HARD_STOP at $(date)" > hard_stop_report.md
+   echo "Error: $ERROR_MESSAGE" >> hard_stop_report.md
+   echo "State: $CURRENT_STATE" >> hard_stop_report.md
+   ```
+
+3. **NOTIFY USER**
+   - Clear error message
+   - Recovery suggestions
+   - Required manual interventions
+
+## Recovery Protocol
+1. User must manually fix the issue
+2. Clear the HARD_STOP flag in orchestrator-state.yaml
+3. Set appropriate recovery state
+4. Restart orchestrator
+
+## DO NOT
+- Attempt automatic recovery
+- Continue with partial state
+- Hide or suppress the error
+
+## Terminal State Exception to R021
+
+**IMPORTANT**: HARD_STOP is the ONLY exception to R021 (Never Stop). This is a legitimate terminal state where the orchestrator is ALLOWED to stop execution.
+
+### State File Update Before Stopping
+```yaml
+orchestrator_state:
+  current_state: "HARD_STOP"
+  previous_state: "[STATE WHERE FAILURE OCCURRED]"
+  error_details:
+    timestamp: "[ISO-8601]"
+    error_type: "[CRITICAL_VIOLATION|SYSTEM_FAILURE|UNRECOVERABLE_ERROR]"
+    error_message: "[DETAILED ERROR MESSAGE]"
+    recovery_required: true
+    manual_intervention_needed: true
+```
+
+This is a terminal state - requires manual intervention to exit.

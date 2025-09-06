@@ -1,0 +1,895 @@
+# SW Engineer - TEST_WRITING State Checkpoint
+
+## When to Save State
+
+Save checkpoint at these critical test development milestones:
+
+1. **Coverage Milestones**
+   - Every 10% coverage increase achieved
+   - When coverage targets are met
+   - Before major test refactoring
+
+2. **Test Suite Completion Points**
+   - Complete test category finished (unit, integration, edge cases)
+   - All tests for a component completed
+   - Test quality validation passed
+
+3. **Size Management Checkpoints**
+   - When test code approaches size limits
+   - Before test optimization or refactoring
+   - After significant test line additions
+
+4. **Quality Gate Achievements**
+   - Test quality scores reach acceptable levels
+   - All tests passing consistently
+   - Test maintainability metrics met
+
+## Required Data to Preserve
+
+```yaml
+test_writing_checkpoint:
+  # State identification
+  state: "TEST_WRITING"
+  effort_id: "effort2-controller"
+  branch: "phase1/wave2/effort2-controller"
+  working_dir: "/workspaces/efforts/phase1/wave2/effort2-controller"
+  checkpoint_timestamp: "2025-08-23T17:15:45Z"
+  
+  # Test writing session context
+  test_session:
+    session_id: "test_session_20250823_171545"
+    started_at: "2025-08-23T15:30:00Z"
+    current_checkpoint_at: "2025-08-23T17:15:45Z"
+    duration_so_far_hours: 1.75
+    estimated_remaining_hours: 0.5
+    
+    session_focus: "Unit tests for controller reconciliation logic"
+    trigger_reason: "Insufficient test coverage for code review"
+    coverage_target: 87.0
+    
+  # Coverage progress tracking
+  coverage_progress:
+    coverage_before_session: 68.5
+    coverage_at_checkpoint: 84.2
+    coverage_increase_this_session: 15.7
+    coverage_target: 87.0
+    coverage_gap_remaining: 2.8
+    
+    coverage_by_package:
+      - package: "pkg/controllers"
+        coverage_before: 72.1
+        coverage_current: 88.5
+        coverage_target: 90.0
+        lines_covered: 312
+        lines_total: 353
+        
+      - package: "pkg/api/v1"
+        coverage_before: 85.2
+        coverage_current: 89.1
+        coverage_target: 85.0
+        lines_covered: 159
+        lines_total: 178
+        
+      - package: "pkg/webhooks"
+        coverage_before: 45.8
+        coverage_current: 67.3
+        coverage_target: 85.0
+        lines_covered: 91
+        lines_total: 135
+        
+    coverage_measurement:
+      tool_used: "go test -coverprofile=coverage.out ./..."
+      last_measurement_at: "2025-08-23T17:10:00Z"
+      measurement_command: "go test -v -race -coverprofile=coverage.out -covermode=atomic ./..."
+      coverage_file: "coverage.out"
+      html_report_generated: true
+      html_report_path: "coverage.html"
+      
+  # Test development progress
+  test_development:
+    test_files_created:
+      - file: "pkg/controllers/resource_controller_test.go"
+        created_at: "2025-08-23T15:45:00Z"
+        lines_added: 245
+        test_cases_added: 12
+        categories: ["unit_tests", "reconciliation_logic"]
+        
+      - file: "pkg/api/v1/resource_types_test.go"
+        created_at: "2025-08-23T16:30:00Z"
+        lines_added: 89
+        test_cases_added: 6
+        categories: ["validation_tests", "api_types"]
+        
+      - file: "pkg/webhooks/admission_test.go"
+        created_at: "2025-08-23T17:00:00Z"
+        lines_added: 134
+        test_cases_added: 8
+        categories: ["integration_tests", "webhooks"]
+        
+    test_categories_progress:
+      unit_tests:
+        planned_test_cases: 20
+        completed_test_cases: 18
+        completion_percentage: 90
+        estimated_remaining_lines: 25
+        
+      integration_tests:
+        planned_test_cases: 8
+        completed_test_cases: 6
+        completion_percentage: 75
+        estimated_remaining_lines: 45
+        
+      edge_case_tests:
+        planned_test_cases: 12
+        completed_test_cases: 8
+        completion_percentage: 67
+        estimated_remaining_lines: 60
+        
+      error_path_tests:
+        planned_test_cases: 10
+        completed_test_cases: 7
+        completion_percentage: 70
+        estimated_remaining_lines: 35
+        
+    test_quality_metrics:
+      total_test_functions: 32
+      total_test_cases: 126  # Including table-driven sub-cases
+      total_assertions: 284
+      assertion_per_test_ratio: 2.25
+      
+      table_driven_tests: 18
+      table_driven_percentage: 56.25
+      
+      mock_usage: 24
+      integration_test_count: 6
+      performance_test_count: 2
+      
+      avg_test_function_lines: 14.6
+      max_test_function_lines: 42
+      test_helper_functions: 8
+      
+      test_quality_score: 89.2
+      
+  # Size impact analysis
+  size_impact:
+    total_effort_size_before: 742
+    test_lines_added_this_session: 468
+    total_effort_size_after: 1210
+    size_limit: 800
+    size_violation: true
+    
+    size_breakdown:
+      implementation_lines: 742
+      test_lines: 468
+      test_to_impl_ratio: 63.1
+      
+    size_management_status: "VIOLATION"
+    size_concern_level: "CRITICAL"
+    
+    size_optimization_analysis:
+      verbose_tests_identified: 4
+      potential_test_reduction: 85
+      helper_function_opportunities: 6
+      estimated_optimized_size: 1125  # Still over limit
+      
+  # Test execution results
+  test_execution:
+    last_test_run: "2025-08-23T17:12:00Z"
+    test_command: "go test -v ./..."
+    
+    test_results:
+      tests_total: 32
+      tests_passed: 31
+      tests_failed: 1
+      tests_skipped: 0
+      
+    failing_tests:
+      - test_name: "TestResourceController_Reconcile_ErrorHandling"
+        failure_reason: "Expected error not returned in timeout scenario"
+        file: "pkg/controllers/resource_controller_test.go"
+        line: 187
+        failure_output: "Expected 'context deadline exceeded' but got nil"
+        
+    test_performance:
+      total_execution_time: "2.34s"
+      slowest_test: "TestResourceController_Integration_FullLifecycle"
+      slowest_time: "0.89s"
+      average_test_time: "0.073s"
+      
+  # Test quality assessment
+  quality_assessment:
+    coverage_quality: "EXCELLENT"  # 84.2% coverage achieved
+    test_structure_quality: "GOOD"  # Well-organized, mostly table-driven
+    assertion_quality: "EXCELLENT"  # Specific assertions, good ratio
+    test_independence: "GOOD"       # Tests run independently
+    error_coverage: "ACCEPTABLE"    # Most error paths covered
+    edge_case_coverage: "ACCEPTABLE" # Major edge cases covered
+    
+    quality_issues_identified:
+      - issue: "One failing test needs attention"
+        severity: "HIGH"
+        file: "resource_controller_test.go"
+        
+      - issue: "Some tests are verbose and could be optimized"
+        severity: "MEDIUM"
+        affected_files: ["admission_test.go", "resource_controller_test.go"]
+        
+      - issue: "Missing performance benchmark tests"
+        severity: "LOW"
+        recommendation: "Add benchmark tests for critical paths"
+        
+    improvement_recommendations:
+      - "Fix failing error handling test"
+      - "Optimize verbose test cases to reduce line count"
+      - "Extract common test setup into helper functions"
+      - "Add benchmark tests for reconciliation performance"
+      
+  # Decision analysis
+  decision_analysis:
+    analysis_performed_at: "2025-08-23T17:15:45Z"
+    
+    current_situation:
+      coverage_target_nearly_met: true  # 84.2% vs 87% target
+      test_quality_acceptable: true     # 89.2 score
+      size_violation_critical: true     # 1210 > 800 lines
+      failing_tests_present: true       # 1 failing test
+      
+    decision_factors:
+      coverage_gap: 2.8  # Small gap remaining
+      size_overflow: 410  # Significant overflow
+      test_optimization_potential: 85  # Lines that could be reduced
+      implementation_functionality_complete: true
+      
+    options_analysis:
+      continue_testing:
+        viable: false
+        reason: "Size violation makes continuation impossible"
+        
+      optimize_tests_first:
+        viable: true
+        reason: "Could reduce size below limit while maintaining coverage"
+        estimated_size_after_optimization: 1125
+        still_over_limit: true
+        
+      transition_to_split:
+        viable: true
+        reason: "Guaranteed solution but loses test coverage work"
+        risk: "Would need to redo tests after split"
+        
+      fix_and_optimize:
+        viable: true
+        reason: "Address failing test and optimize simultaneously"
+        estimated_optimized_size: 1100
+        coverage_impact: "Minimal loss expected"
+        
+    final_decision:
+      next_state: "FIX_ISSUES"
+      primary_reason: "Fix failing test and optimize test size simultaneously"
+      confidence: 80
+      
+      decision_rationale:
+        - "Size violation (1210/800 lines) requires immediate attention"
+        - "One failing test needs fix before proceeding"
+        - "Test optimization can potentially reduce size by ~85 lines"
+        - "Coverage target nearly achieved (84.2% vs 87%)"
+        - "Combined fix and optimization approach most efficient"
+        
+      immediate_actions:
+        - "Fix failing TestResourceController_Reconcile_ErrorHandling test"
+        - "Optimize verbose test cases in admission_test.go and resource_controller_test.go"
+        - "Extract common test setup into reusable helper functions"
+        - "Re-measure size after optimization"
+        - "If still over limit, prepare for effort split"
+        
+      success_criteria:
+        - "All tests passing (fix the 1 failing test)"
+        - "Effort size reduced to ≤800 lines through test optimization"
+        - "Test coverage maintained at ≥84% (minimal acceptable reduction)"
+        - "Test quality score maintained ≥85"
+        
+      fallback_plan:
+        - "If optimization insufficient (<800 lines), transition to SPLIT_WORK"
+        - "If test fixes break more tests, revert and split effort"
+        - "If optimization significantly reduces coverage, accept current state and split"
+        
+  # Work log status
+  work_log:
+    log_file: "/workspaces/efforts/phase1/wave2/effort2-controller/work-log.md"
+    last_updated: "2025-08-23T17:15:00Z"
+    
+    latest_entries:
+      - timestamp: "2025-08-23T17:15"
+        entry: |
+          ## [2025-08-23 17:15] TEST WRITING CHECKPOINT - SIZE VIOLATION
+          **Session Duration**: 1.75 hours
+          **Coverage Progress**: 68.5% → 84.2% (+15.7%)
+          **Status**: SIZE VIOLATION - 1210/800 lines
+          
+          ### Test Development Completed
+          - ✅ Controller reconciliation unit tests (18/20 test cases)
+          - ✅ API validation tests (6 scenarios)  
+          - ✅ Webhook integration tests (6/8 test cases)
+          - ❌ 1 failing test: error handling timeout scenario
+          
+          ### Size Impact Analysis
+          - Implementation: 742 lines
+          - Tests added: 468 lines
+          - Total: 1210 lines (VIOLATION)
+          - Optimization potential: ~85 lines
+          
+          ### Next Actions
+          - Fix failing error handling test
+          - Optimize verbose test cases
+          - Extract common test helpers
+          - Re-measure size compliance
+          
+          ### Quality Metrics
+          - Test quality score: 89.2/100
+          - Coverage: 84.2% (target: 87%)
+          - Tests passing: 31/32 (96.9%)
+          
+  # Performance metrics
+  session_performance:
+    coverage_velocity: 8.97  # 15.7% / 1.75 hours
+    test_development_velocity: 267  # 468 lines / 1.75 hours
+    test_case_velocity: 18.3  # 32 test functions / 1.75 hours
+    
+    efficiency_metrics:
+      lines_per_coverage_percent: 29.8  # 468 lines / 15.7%
+      lines_per_test_case: 14.6
+      assertions_per_test: 2.25
+      
+    quality_efficiency:
+      test_quality_score: 89.2
+      test_success_rate: 96.9  # 31/32 tests passing
+      coverage_quality: 84.2
+      
+  # Risk assessment
+  risk_assessment:
+    current_risk_level: "HIGH"
+    
+    identified_risks:
+      - risk: "SIZE_LIMIT_VIOLATION"
+        probability: "CERTAIN"
+        impact: "CRITICAL"
+        current_status: "ACTIVE"
+        mitigation: "Test optimization and potential effort split"
+        
+      - risk: "FAILING_TEST_BLOCKS_PROGRESS"
+        probability: "HIGH"
+        impact: "MEDIUM"
+        current_status: "ACTIVE"
+        mitigation: "Debug and fix error handling test"
+        
+      - risk: "OPTIMIZATION_REDUCES_COVERAGE"
+        probability: "MEDIUM"
+        impact: "MEDIUM"
+        current_status: "POTENTIAL"
+        mitigation: "Careful optimization to preserve coverage"
+        
+      - risk: "EFFORT_SPLIT_LOSES_TEST_WORK"
+        probability: "LOW"
+        impact: "HIGH"
+        current_status: "CONTINGENCY"
+        mitigation: "Optimize first, split only if necessary"
+        
+    contingency_plans:
+      - trigger: "Test optimization saves <200 lines"
+        action: "Transition to SPLIT_WORK immediately"
+        reason: "Insufficient optimization to reach compliance"
+        
+      - trigger: "Test fixes introduce more failures"
+        action: "Revert changes and transition to SPLIT_WORK"
+        reason: "Test stability more important than optimization"
+        
+      - trigger: "Coverage drops below 80% during optimization"
+        action: "Accept current state and transition to SPLIT_WORK"
+        reason: "Maintain minimum coverage quality"
+        
+  # Next session planning
+  next_session:
+    planned_state: "FIX_ISSUES"
+    primary_focus: "Fix failing test and optimize test code size"
+    estimated_duration_hours: 1.0
+    
+    planned_activities:
+      - activity: "Debug and fix failing error handling test"
+        estimated_duration_minutes: 30
+        priority: "HIGH"
+        
+      - activity: "Optimize verbose test cases"
+        estimated_duration_minutes: 45
+        target_files: ["admission_test.go", "resource_controller_test.go"]
+        estimated_line_reduction: 60
+        
+      - activity: "Extract common test helpers"
+        estimated_duration_minutes: 15
+        estimated_line_reduction: 25
+        
+      - activity: "Re-measure size and coverage"
+        estimated_duration_minutes: 5
+        validation_step: true
+        
+    success_metrics:
+      - "All tests passing (0 failures)"
+      - "Effort size ≤800 lines"
+      - "Test coverage ≥82% (minimal acceptable reduction)"
+      - "Test quality score ≥85"
+      
+    transition_criteria:
+      - "If size compliant after optimization: → IMPLEMENTATION"
+      - "If still over size limit: → SPLIT_WORK"  
+      - "If major test issues emerge: → TEST_WRITING (continue fixing)"
+```
+
+## Recovery Protocol
+
+### Context Recovery After Interruption
+
+```python
+def recover_test_writing_state(checkpoint_data):
+    """Recover test writing state from checkpoint"""
+    
+    print("🔄 RECOVERING TEST_WRITING STATE")
+    
+    effort_info = checkpoint_data.get('effort_id', 'unknown')
+    session = checkpoint_data.get('test_session', {})
+    coverage = checkpoint_data.get('coverage_progress', {})
+    
+    print(f"Effort: {effort_info}")
+    print(f"Test Session: {session.get('session_focus', 'Unknown focus')}")
+    print(f"Coverage Progress: {coverage.get('coverage_at_checkpoint', 0):.1f}% (target: {coverage.get('coverage_target', 0):.1f}%)")
+    print(f"Size Status: {checkpoint_data.get('size_impact', {}).get('total_effort_size_after', 0)}/800 lines")
+    
+    # Verify test state is still consistent
+    test_verification = verify_test_state_consistency(checkpoint_data)
+    
+    # Check for changes since checkpoint
+    changes_detected = detect_test_changes_since_checkpoint(checkpoint_data)
+    
+    # Determine recovery actions
+    recovery_actions = determine_test_writing_recovery_actions(
+        checkpoint_data, test_verification, changes_detected
+    )
+    
+    return {
+        'effort_id': effort_info,
+        'coverage_current': coverage.get('coverage_at_checkpoint', 0),
+        'coverage_target': coverage.get('coverage_target', 0),
+        'size_status': checkpoint_data.get('size_impact', {}).get('size_management_status', 'UNKNOWN'),
+        'test_verification': test_verification,
+        'changes_since_checkpoint': changes_detected,
+        'recovery_actions': recovery_actions,
+        'recovery_needed': len(recovery_actions) > 0
+    }
+
+def verify_test_state_consistency(checkpoint_data):
+    """Verify current test state matches checkpoint"""
+    
+    working_dir = checkpoint_data.get('working_dir', '')
+    
+    verification_results = {
+        'consistent': True,
+        'issues_detected': []
+    }
+    
+    if not os.path.exists(working_dir):
+        verification_results['consistent'] = False
+        verification_results['issues_detected'].append('Working directory not found')
+        return verification_results
+    
+    try:
+        # Verify test files still exist
+        test_files = checkpoint_data.get('test_development', {}).get('test_files_created', [])
+        for test_file_info in test_files:
+            file_path = os.path.join(working_dir, test_file_info['file'])
+            if not os.path.exists(file_path):
+                verification_results['consistent'] = False
+                verification_results['issues_detected'].append(f'Test file missing: {test_file_info["file"]}')
+        
+        # Re-run tests to verify they still work
+        test_result = subprocess.run([
+            'go', 'test', '-v', './...'
+        ], cwd=working_dir, capture_output=True, text=True)
+        
+        if test_result.returncode != 0:
+            verification_results['consistent'] = False
+            verification_results['issues_detected'].append('Tests are failing after recovery')
+            verification_results['test_failures'] = test_result.stderr
+        else:
+            # Parse test results
+            checkpoint_passed = checkpoint_data.get('test_execution', {}).get('tests_passed', 0)
+            checkpoint_total = checkpoint_data.get('test_execution', {}).get('tests_total', 0)
+            
+            # Simple heuristic - if test count has changed significantly, flag it
+            current_test_lines = test_result.stdout.count('=== RUN')
+            if abs(current_test_lines - checkpoint_total) > 2:
+                verification_results['consistent'] = False
+                verification_results['issues_detected'].append(
+                    f'Test count changed significantly: {current_test_lines} vs checkpoint {checkpoint_total}'
+                )
+        
+        # Re-measure coverage if possible
+        coverage_result = subprocess.run([
+            'go', 'test', '-coverprofile=coverage_recovery.out', './...'
+        ], cwd=working_dir, capture_output=True, text=True)
+        
+        if coverage_result.returncode == 0:
+            coverage_output = subprocess.run([
+                'go', 'tool', 'cover', '-func=coverage_recovery.out'
+            ], cwd=working_dir, capture_output=True, text=True)
+            
+            if coverage_output.returncode == 0:
+                # Extract total coverage
+                lines = coverage_output.stdout.strip().split('\n')
+                if lines:
+                    last_line = lines[-1]
+                    parts = last_line.split()
+                    if len(parts) >= 3:
+                        current_coverage = float(parts[2].strip('%'))
+                        checkpoint_coverage = checkpoint_data.get('coverage_progress', {}).get('coverage_at_checkpoint', 0)
+                        
+                        # Allow small variance
+                        if abs(current_coverage - checkpoint_coverage) > 2.0:
+                            verification_results['consistent'] = False
+                            verification_results['issues_detected'].append(
+                                f'Coverage changed significantly: {current_coverage:.1f}% vs checkpoint {checkpoint_coverage:.1f}%'
+                            )
+                        
+                        verification_results['current_coverage'] = current_coverage
+                        verification_results['checkpoint_coverage'] = checkpoint_coverage
+    
+    except Exception as e:
+        verification_results['consistent'] = False
+        verification_results['issues_detected'].append(f'Verification error: {str(e)}')
+    
+    return verification_results
+
+def detect_test_changes_since_checkpoint(checkpoint_data):
+    """Detect changes to test files since checkpoint"""
+    
+    checkpoint_time = datetime.fromisoformat(checkpoint_data['checkpoint_timestamp'])
+    working_dir = checkpoint_data.get('working_dir', '')
+    
+    changes = {
+        'modified_test_files': [],
+        'new_test_files': [],
+        'deleted_test_files': [],
+        'other_changes': []
+    }
+    
+    if not os.path.exists(working_dir):
+        return changes
+    
+    try:
+        # Get list of current test files
+        current_test_files = []
+        for root, dirs, files in os.walk(working_dir):
+            for file in files:
+                if file.endswith('_test.go'):
+                    rel_path = os.path.relpath(os.path.join(root, file), working_dir)
+                    current_test_files.append(rel_path)
+        
+        # Compare with checkpoint test files
+        checkpoint_test_files = [
+            tf['file'] for tf in checkpoint_data.get('test_development', {}).get('test_files_created', [])
+        ]
+        
+        # Find new files
+        new_files = set(current_test_files) - set(checkpoint_test_files)
+        changes['new_test_files'] = list(new_files)
+        
+        # Find deleted files
+        deleted_files = set(checkpoint_test_files) - set(current_test_files)
+        changes['deleted_test_files'] = list(deleted_files)
+        
+        # Check modification times for existing files
+        for test_file in checkpoint_test_files:
+            file_path = os.path.join(working_dir, test_file)
+            if os.path.exists(file_path):
+                if os.path.getmtime(file_path) > checkpoint_time.timestamp():
+                    changes['modified_test_files'].append({
+                        'file': test_file,
+                        'modified_at': datetime.fromtimestamp(os.path.getmtime(file_path)).isoformat()
+                    })
+        
+        # Check for other relevant changes
+        relevant_files = ['go.mod', 'go.sum']
+        for rel_file in relevant_files:
+            file_path = os.path.join(working_dir, rel_file)
+            if os.path.exists(file_path):
+                if os.path.getmtime(file_path) > checkpoint_time.timestamp():
+                    changes['other_changes'].append({
+                        'file': rel_file,
+                        'modified_at': datetime.fromtimestamp(os.path.getmtime(file_path)).isoformat()
+                    })
+    
+    except Exception as e:
+        changes['error'] = str(e)
+    
+    return changes
+
+def determine_test_writing_recovery_actions(checkpoint, verification, changes):
+    """Determine recovery actions for test writing state"""
+    
+    recovery_actions = []
+    
+    # Handle verification issues
+    if not verification['consistent']:
+        for issue in verification['issues_detected']:
+            if 'directory not found' in issue.lower():
+                recovery_actions.append({
+                    'type': 'RESTORE_WORKSPACE',
+                    'description': issue,
+                    'priority': 'CRITICAL'
+                })
+            elif 'test file missing' in issue.lower():
+                recovery_actions.append({
+                    'type': 'RESTORE_TEST_FILES',
+                    'description': issue,
+                    'priority': 'HIGH'
+                })
+            elif 'tests are failing' in issue.lower():
+                recovery_actions.append({
+                    'type': 'FIX_TEST_FAILURES',
+                    'description': issue,
+                    'priority': 'HIGH',
+                    'details': verification.get('test_failures', '')
+                })
+            elif 'coverage changed' in issue.lower():
+                recovery_actions.append({
+                    'type': 'REVALIDATE_COVERAGE',
+                    'description': issue,
+                    'priority': 'MEDIUM'
+                })
+    
+    # Handle detected changes
+    if changes['new_test_files']:
+        recovery_actions.append({
+            'type': 'VALIDATE_NEW_TESTS',
+            'description': f'Validate {len(changes["new_test_files"])} new test files',
+            'priority': 'MEDIUM',
+            'details': changes['new_test_files']
+        })
+    
+    if changes['deleted_test_files']:
+        recovery_actions.append({
+            'type': 'INVESTIGATE_DELETED_TESTS',
+            'description': f'Investigate {len(changes["deleted_test_files"])} deleted test files',
+            'priority': 'HIGH',
+            'details': changes['deleted_test_files']
+        })
+    
+    if changes['modified_test_files']:
+        recovery_actions.append({
+            'type': 'REVIEW_TEST_MODIFICATIONS',
+            'description': f'Review {len(changes["modified_test_files"])} modified test files',
+            'priority': 'MEDIUM',
+            'details': changes['modified_test_files']
+        })
+    
+    # Check decision validity
+    decision = checkpoint.get('decision_analysis', {}).get('final_decision', {})
+    if decision and verification.get('current_coverage'):
+        current_coverage = verification['current_coverage']
+        checkpoint_coverage = checkpoint.get('coverage_progress', {}).get('coverage_at_checkpoint', 0)
+        
+        # If coverage significantly changed, decision might need re-evaluation
+        if abs(current_coverage - checkpoint_coverage) > 3.0:
+            recovery_actions.append({
+                'type': 'REVALIDATE_DECISION',
+                'description': f'Coverage changed from {checkpoint_coverage:.1f}% to {current_coverage:.1f}%',
+                'priority': 'MEDIUM'
+            })
+    
+    return recovery_actions
+```
+
+### Test Writing Re-validation
+
+```python
+def revalidate_test_writing_progress(checkpoint_data):
+    """Re-validate test writing progress after recovery"""
+    
+    print("🔍 RE-VALIDATING TEST WRITING PROGRESS")
+    
+    working_dir = checkpoint_data.get('working_dir', '')
+    
+    # Re-run tests
+    test_status = execute_test_suite(working_dir)
+    
+    # Re-measure coverage
+    coverage_status = measure_current_test_coverage(working_dir)
+    
+    # Re-assess size impact
+    size_status = measure_test_size_impact(working_dir)
+    
+    # Compare with checkpoint
+    comparison = compare_with_checkpoint_test_state(
+        checkpoint_data, test_status, coverage_status, size_status
+    )
+    
+    # Determine if test writing can continue
+    can_continue = (
+        test_status['all_passing'] and
+        coverage_status['valid'] and
+        size_status['manageable'] and
+        comparison['acceptable']
+    )
+    
+    return {
+        'revalidation_timestamp': datetime.now().isoformat(),
+        'can_continue_test_writing': can_continue,
+        'test_status': test_status,
+        'coverage_status': coverage_status,
+        'size_status': size_status,
+        'checkpoint_comparison': comparison,
+        'action_required': 'CONTINUE' if can_continue else 'ADDRESS_ISSUES'
+    }
+
+def execute_test_suite(working_dir):
+    """Execute complete test suite and analyze results"""
+    
+    try:
+        result = subprocess.run([
+            'go', 'test', '-v', './...'
+        ], cwd=working_dir, capture_output=True, text=True)
+        
+        # Parse test results
+        output_lines = result.stdout.split('\n')
+        
+        tests_run = 0
+        tests_passed = 0
+        tests_failed = 0
+        failing_tests = []
+        
+        for line in output_lines:
+            if '=== RUN' in line:
+                tests_run += 1
+            elif '--- PASS:' in line:
+                tests_passed += 1
+            elif '--- FAIL:' in line:
+                tests_failed += 1
+                test_name = line.split(':')[1].strip()
+                failing_tests.append(test_name)
+        
+        return {
+            'all_passing': result.returncode == 0,
+            'tests_run': tests_run,
+            'tests_passed': tests_passed,
+            'tests_failed': tests_failed,
+            'failing_tests': failing_tests,
+            'output': result.stdout,
+            'errors': result.stderr if result.stderr else None
+        }
+        
+    except Exception as e:
+        return {
+            'all_passing': False,
+            'error': str(e),
+            'tests_run': 0
+        }
+
+def measure_current_test_coverage(working_dir):
+    """Measure current test coverage"""
+    
+    try:
+        # Run tests with coverage
+        result = subprocess.run([
+            'go', 'test', '-coverprofile=coverage_check.out', './...'
+        ], cwd=working_dir, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            return {'valid': False, 'error': 'Coverage measurement failed'}
+        
+        # Get coverage percentage
+        coverage_result = subprocess.run([
+            'go', 'tool', 'cover', '-func=coverage_check.out'
+        ], cwd=working_dir, capture_output=True, text=True)
+        
+        if coverage_result.returncode != 0:
+            return {'valid': False, 'error': 'Coverage parsing failed'}
+        
+        lines = coverage_result.stdout.strip().split('\n')
+        if lines:
+            last_line = lines[-1]
+            parts = last_line.split()
+            if len(parts) >= 3:
+                coverage = float(parts[2].strip('%'))
+                return {
+                    'valid': True,
+                    'coverage_percentage': coverage,
+                    'measurement_output': coverage_result.stdout
+                }
+        
+        return {'valid': False, 'error': 'Could not parse coverage output'}
+        
+    except Exception as e:
+        return {'valid': False, 'error': str(e)}
+```
+
+## State Persistence
+
+Save test writing checkpoint with comprehensive test context:
+
+```bash
+# Primary checkpoint location
+CHECKPOINT_DIR="/workspaces/software-factory-2.0-template/checkpoints/active"
+EFFORT_ID="effort2-controller"
+CHECKPOINT_FILE="$CHECKPOINT_DIR/sw-engineer-test-writing-${EFFORT_ID}-$(date +%Y%m%d-%H%M%S).yaml"
+
+# Test-specific backup (critical for coverage tracking)
+BACKUP_DIR="/workspaces/software-factory-2.0-template/checkpoints/test-sessions"
+mkdir -p "$BACKUP_DIR"
+BACKUP_FILE="$BACKUP_DIR/test-session-${EFFORT_ID}-latest.yaml"
+
+# Coverage tracking archive
+ARCHIVE_DIR="/workspaces/software-factory-2.0-template/checkpoints/coverage-history"
+mkdir -p "$ARCHIVE_DIR"
+COVERAGE_FILE="$ARCHIVE_DIR/coverage-${EFFORT_ID}-$(date +%Y%m%d-%H%M%S).yaml"
+
+# Save checkpoint and coverage data
+cp "$CHECKPOINT_FILE" "$BACKUP_FILE"
+cp "$CHECKPOINT_FILE" "$COVERAGE_FILE"
+
+# Save coverage reports
+cp coverage.out "${EFFORT_PATH}/coverage-$(date +%Y%m%d-%H%M%S).out"
+cp coverage.html "${EFFORT_PATH}/coverage-report.html"
+
+# Update work log with test progress
+echo "- [$(date '+%Y-%m-%d %H:%M')] TEST PROGRESS: ${COVERAGE_CURRENT}% coverage (+${COVERAGE_INCREASE}%) - ${TEST_STATUS}" >> work-log.md
+
+# Commit test development
+git add .
+git commit -m "test: coverage ${COVERAGE_CURRENT}% (+${COVERAGE_INCREASE}%) - ${TESTS_WRITTEN} tests added"
+git push
+```
+
+## Health Monitoring
+
+```python
+def monitor_test_writing_health():
+    """Monitor test writing process health indicators"""
+    
+    health_indicators = {
+        'coverage_velocity': assess_coverage_progress_rate(),
+        'test_quality': evaluate_test_code_quality(),
+        'size_management': track_test_size_impact(),
+        'test_reliability': measure_test_stability()
+    }
+    
+    overall_health = calculate_test_writing_health(health_indicators)
+    
+    if overall_health['status'] != 'HEALTHY':
+        print(f"⚠️ TEST WRITING HEALTH: {overall_health['status']}")
+        for concern in overall_health['concerns']:
+            print(f"  - {concern}")
+    
+    return overall_health
+```
+
+## Critical Recovery Points
+
+┌─────────────────────────────────────────────────────────────────┐
+│ CRITICAL TEST WRITING RECOVERY SCENARIOS                       │
+├─────────────────────────────────────────────────────────────────┤
+│ 1. Test Suite Failure:                                        │
+│    - Previously passing tests now fail after recovery         │
+│    - Test environment or dependencies changed                 │
+│    - Test files corrupted or missing                          │
+│                                                                 │
+│ 2. Coverage Measurement Issues:                                │
+│    - Coverage tools not working or unavailable                │
+│    - Coverage data inconsistent with checkpoint               │
+│    - Coverage significantly dropped unexpectedly              │
+│                                                                 │
+│ 3. Size Violation During Testing:                             │
+│    - Test code caused effort to exceed size limits           │
+│    - Need to optimize tests or split effort                  │
+│    - Test optimization reduces coverage unacceptably         │
+│                                                                 │
+│ 4. Test Development Environment Issues:                        │
+│    - Go test environment not working                         │
+│    - Dependencies missing or incompatible                    │
+│    - Build system issues preventing test execution           │
+└─────────────────────────────────────────────────────────────────┘

@@ -1,0 +1,47 @@
+# Software Factory Manager - Plan Location Change
+Date: 2025-09-04
+Status: COMPLETED
+
+## Summary
+Implemented comprehensive change to store all effort and split plans inside working copies in .software-factory/ subdirectories, rather than in the root directory.
+
+## Changes Made:
+
+### 1. Code Reviewer States
+- ✅ EFFORT_PLAN_CREATION: Now saves to .software-factory/phaseX/waveY/effort-name/
+- ✅ CREATE_SPLIT_PLAN: Now saves split plans in .software-factory/phaseX/waveY/effort-split-XXX/
+
+### 2. SW Engineer States  
+- ✅ INIT: Checks .software-factory/ first, fallback to legacy locations
+- ✅ IMPLEMENTATION: Looks for plans in .software-factory/ with backward compatibility
+- ✅ SPLIT_IMPLEMENTATION: Searches new location first, then old locations
+
+### 3. Orchestrator States
+- ✅ SETUP_EFFORT_INFRASTRUCTURE: Creates .software-factory/ directory structure
+
+### 4. Documentation Updates
+- ✅ R303: Updated to document new effort plan locations
+- ✅ Templates: Added storage location comments to plan templates
+
+## New Structure:
+```
+effort-directory/
+├── .software-factory/
+│   └── phaseX/
+│       └── waveY/
+│           ├── effort-name/
+│           │   └── IMPLEMENTATION-PLAN-YYYYMMDD-HHMMSS.md
+│           └── effort-name-split-XXX/
+│               └── SPLIT-PLAN-YYYYMMDD-HHMMSS.md
+└── src/  (actual code)
+```
+
+## Backward Compatibility:
+All changes include fallback logic to check old locations if plans not found in new .software-factory/ structure.
+
+## Benefits:
+1. Keeps plans organized within working copies
+2. Clear hierarchy matching phase/wave/effort structure  
+3. Prevents clutter in root directories
+4. Timestamps prevent collisions (R301)
+5. SW Engineers know exactly where to look

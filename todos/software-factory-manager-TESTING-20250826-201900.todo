@@ -1,0 +1,27 @@
+# SOFTWARE FACTORY MANAGER TODOs - TESTING COMPACTION
+# Generated: 2025-08-26 20:19:00 UTC
+# Transcript: Current session testing hook fixes
+
+## COMPLETED (1 item)
+✓ Fix PreToolUse hook to read JSON from stdin
+
+## IN PROGRESS (1 item)
+→ Test compaction recovery with updated hooks
+
+## PENDING (5 items)
+- Validate transcript-based agent identification
+- Document hook JSON payload format  
+- Create rule for hook error handling
+- Update R187-R190 with transcript-based recovery
+- Test CLAUDE_PROJECT_DIR in different contexts
+
+## CONTEXT
+- Fixed PreToolUse hook to properly extract JSON from stdin
+- Both PreCompact and PreToolUse now use same JSON extraction logic
+- Testing compaction recovery with transcript-based identification
+- CLAUDE_PROJECT_DIR points to /workspaces not project directory
+
+## NOTES
+- PreToolUse hook should now fire on every tool use
+- Transcript ID ensures agent-specific recovery
+- Multiple agents can run without interference

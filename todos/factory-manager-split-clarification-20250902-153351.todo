@@ -1,0 +1,45 @@
+# SOFTWARE FACTORY MANAGER - SPLIT INFRASTRUCTURE CLARIFICATION
+# Completed: $(date)
+
+## COMPLETED TASKS:
+✅ Check and update orchestrator MONITOR state for split infrastructure creation
+✅ Add explicit split infrastructure creation to orchestrator when splits detected  
+✅ Update R204 to emphasize orchestrator responsibility more clearly
+✅ Create SPAWN_ENGINEERS_FOR_SPLITS state rules (handled in existing states)
+✅ Update orchestrator.md with split infrastructure section
+✅ Add split infrastructure verification script updates
+✅ Update state machine for split infrastructure flow
+✅ Commit and push all changes
+
+## KEY CLARIFICATIONS MADE:
+
+### 1. R204 - Orchestrator Split Infrastructure Rule
+- Title updated: "ORCHESTRATOR (Not SW Engineer!) Must Create Complete Split Infrastructure"
+- Added clear "WHO DOES WHAT" section
+- Emphasized orchestrator responsibility throughout
+
+### 2. MONITOR State Rules
+- Added "ORCHESTRATOR CREATES SPLIT INFRASTRUCTURE (R204)" section
+- Included complete function for creating split infrastructure
+- Clarified flow: Code Reviewer plans → Orchestrator infrastructure → SW Engineer implements
+
+### 3. Orchestrator.md Agent Config
+- Added "Split Infrastructure Creation (R204)" as section 4
+- Listed what orchestrator MUST and MUST NOT do
+- Included split infrastructure checklist
+
+### 4. State Machine
+- Added "Split Infrastructure Flow" section before Phase 1
+- Clear 8-step process with role assignments
+- Explicit "WHO DOES WHAT" summary
+
+### 5. Verification Script
+- Added header comment clarifying orchestrator responsibility
+- Already had proper checks for .git directories and structure
+
+## IMPACT:
+This clarification ensures that:
+- Orchestrators know THEY create split infrastructure
+- SW Engineers know to WAIT for infrastructure
+- Code Reviewers only create documentation/plans
+- No confusion about responsibilities per R204

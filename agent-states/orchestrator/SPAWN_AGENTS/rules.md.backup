@@ -1,0 +1,147 @@
+# Orchestrator - SPAWN_AGENTS State Rules
+
+## State Context
+You are spawning agents to work on efforts in parallel or sequence based on dependencies.
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R052.0.0 - Agent Spawning Protocol                        │
+│ Source: rule-library/RULE-REGISTRY.md#R052                     │
+├─────────────────────────────────────────────────────────────────┤
+│ SPAWNING REQUIREMENTS:                                         │
+│ 1. Provide complete context to each agent                     │
+│ 2. Include all startup requirements                           │
+│ 3. Specify deliverables clearly                               │
+│ 4. Set size limits explicitly                                 │
+│ 5. Record spawn timestamp for grading                         │
+└─────────────────────────────────────────────────────────────────┘
+
+## Parallel Spawning
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R151.0.0 - Parallel Spawn Timing                          │
+│ Source: rule-library/RULE-REGISTRY.md#R151                     │
+├─────────────────────────────────────────────────────────────────┤
+│ CRITICAL GRADING METRIC:                                       │
+│                                                                 │
+│ When spawning parallel agents:                                │
+│ 1. Send ALL spawn commands in ONE message                     │
+│ 2. Use multiple tool invocations in same message              │
+│ 3. Record timestamp from each agent                           │
+│ 4. Calculate average delta                                    │
+│ 5. MUST achieve <5s average or FAIL                          │
+│                                                                 │
+│ ❌ WRONG: Spawn, wait for response, spawn next               │
+│ ✅ RIGHT: Spawn all at once with multiple tool calls         │
+└─────────────────────────────────────────────────────────────────┘
+
+## Spawn Message Template
+
+```markdown
+Task @agent-sw-engineer:
+PURPOSE: Implement {effort_id} - {effort_name}
+WORKING_DIR: /workspaces/efforts/phase{X}/wave{Y}/effort{Z}-{name}
+BRANCH: phase{X}/wave{Y}/effort{Z}-{name}
+
+REQUIREMENTS:
+- Follow IMPLEMENTATION-PLAN.md exactly
+- Size limit: {limit} lines
+- Test coverage: {X}% minimum
+- Update work-log.md every checkpoint
+
+STARTUP REQUIREMENTS:
+1. Print: "AGENT STARTUP: $(date '+%Y-%m-%d %H:%M:%S %Z')"
+2. Verify pwd matches WORKING_DIR
+3. Verify branch matches BRANCH
+4. Acknowledge rules R054, R007, R013, R060, R017, R152
+
+DELIVERABLES:
+- Implementation complete
+- Tests passing at required coverage
+- Size under limit
+- Work log updated
+- Code committed and pushed
+```
+
+## Parallelization Matrix
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R053.0.0 - Parallelization Decisions                      │
+│ Source: rule-library/RULE-REGISTRY.md#R053                     │
+├─────────────────────────────────────────────────────────────────┤
+│ CAN PARALLELIZE:                                               │
+│ - Independent efforts in same wave                            │
+│ - No shared dependencies                                      │
+│ - Different code areas                                        │
+│ - Sufficient resources                                        │
+│                                                                 │
+│ MUST SERIALIZE:                                               │
+│ - Dependent efforts                                           │
+│ - Shared file modifications                                    │
+│ - ALL splits (never parallel)                                 │
+│ - Resource-constrained operations                             │
+└─────────────────────────────────────────────────────────────────┘
+
+## Recording Spawn Times
+
+```yaml
+# Update in orchestrator-state.yaml
+parallel_spawn_records:
+  wave{X}_group{Y}:
+    spawned_at: "2025-08-23T14:30:45Z"
+    agents:
+      - name: "sw-engineer-effort1"
+        timestamp: "2025-08-23T14:30:47Z"
+      - name: "sw-engineer-effort2"
+        timestamp: "2025-08-23T14:30:49Z"
+      - name: "sw-engineer-effort3"
+        timestamp: "2025-08-23T14:30:51Z"
+    deltas: [2, 2]
+    average_delta: 2.0
+    grade: "PASS"
+```
+
+## Common Spawn Patterns
+
+### Pattern 1: Wave Start (All Planning)
+```
+Spawn all Code Reviewers for planning → Wait → Spawn all SW Engineers
+```
+
+### Pattern 2: Post-Implementation (All Reviews)
+```
+Spawn all Code Reviewers for review → Process decisions → Handle splits/fixes
+```
+
+### Pattern 3: Mixed Dependencies
+```
+Spawn independent efforts → Monitor → Spawn dependent efforts as prerequisites complete
+```
+
+## Grading Calculation
+
+```python
+def calculate_spawn_grade(timestamps):
+    if len(timestamps) < 2:
+        return "PASS"  # Single spawn
+    
+    deltas = []
+    for i in range(1, len(timestamps)):
+        delta = (timestamps[i] - timestamps[i-1]).total_seconds()
+        deltas.append(delta)
+    
+    avg = sum(deltas) / len(deltas)
+    grade = "PASS" if avg < 5.0 else "FAIL"
+    
+    print(f"Spawn Grade: {grade}")
+    print(f"Average Delta: {avg:.2f}s (target: <5s)")
+    
+    return grade
+```
+
+## State Transition
+
+After spawning all required agents:
+1. Update orchestrator-state.yaml with spawn records
+2. Calculate and record grade
+3. Transition to MONITOR state
+4. Begin monitoring agent progress

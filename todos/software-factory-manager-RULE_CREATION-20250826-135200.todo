@@ -1,0 +1,23 @@
+# TODO State at 2025-08-26 13:52:00
+# Agent: software-factory-manager
+# State: RULE_CREATION
+# Context: Creating missing rules and moving from CRITICAL folder to rule-library
+
+## Completed (3)
+- [x] Created R002 - Agent Acknowledgment Protocol
+- [x] Created R003 - Performance Grading System
+- [x] Created R006 - Orchestrator Never Writes Code
+- [x] Created R007 - Size Limit Compliance (800 lines)
+
+## In Progress (1)
+- [ ] Creating remaining missing rules (R008, R009, R152, R153, R158)
+
+## Pending (2)
+- [ ] Update all references in agent files from CRITICAL to rule-library
+- [ ] Update all references in state-specific rule files
+
+## Context Notes
+- Found rules defined in 🚨-CRITICAL folder not in rule-library
+- Creating proper rule files with full details and enforcement
+- R151 already exists, others need creation
+- Need R008 (Monitoring), R009 (Integration), R152, R153, R158

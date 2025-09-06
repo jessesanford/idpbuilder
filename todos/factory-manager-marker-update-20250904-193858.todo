@@ -1,0 +1,25 @@
+# Marker File Update - Completed Tasks
+
+## Completed:
+1. ✅ Searched for all marker file patterns in the codebase
+2. ✅ Identified state verification markers (.state_rules_read_*)
+3. ✅ Identified completion signal files (actually uses state file updates, not files)
+4. ✅ Updated IMPLEMENTATION-PLAN locations to new structure
+5. ✅ Updated CODE-REVIEW-REPORT locations to new structure
+6. ✅ Verified SPLIT-PLAN already uses new structure
+7. ✅ Updated detection patterns for backward compatibility
+8. ✅ Created comprehensive documentation (docs/MARKER-FILE-STRUCTURE.md)
+9. ✅ Tested backward compatibility approach with symlinks
+10. ✅ Committed and pushed all changes to planning-file-reorg branch
+
+## Key Changes Made:
+- Updated Code Reviewer EFFORT_PLANNING to create plans in .software-factory/ structure
+- Updated Orchestrator MONITOR to instruct reviewers to use new structure
+- Updated Orchestrator WAITING_FOR_EFFORT_PLANS to check both locations
+- Created documentation explaining the new structure and migration strategy
+- Added utility scripts for potential future use
+
+## Backward Compatibility:
+- All new files use timestamped names in .software-factory/ directories
+- Symlinks created to legacy locations for compatibility
+- Detection patterns check new location first, then fall back to legacy

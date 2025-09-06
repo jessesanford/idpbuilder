@@ -1,0 +1,622 @@
+# Code Reviewer - SPLIT_PLANNING State Grading
+
+## Critical Performance Metrics
+
+---
+### 🚨 RULE  - 
+**Source:** 
+**Criticality:** CRITICAL - Major impact on grading
+
+PRIMARY METRIC: Split Strategy Effectiveness
+Measurement: Quality and viability of split plan
+Target: 100% of splits <800 lines, functional integrity kept
+Grade: EXCELLENT/GOOD/PASS/FAIL
+Weight: 80% of overall split planning grade
+Consequence: Poor splits cause implementation failures
+---
+
+## Grading Rubric
+
+| Metric | Excellent | Good | Acceptable | FAIL |
+|--------|-----------|------|------------|------|
+| Size Compliance per Split | 100% <800 lines | 100% <800 lines | 100% <800 lines | Any >800 lines |
+| Functional Integrity | 100% preserved | 95% preserved | 90% preserved | <90% |
+| Integration Complexity | Low complexity | Medium complexity | High but manageable | Unmanageable |
+| KCP Pattern Preservation | 100% preserved | 95% preserved | 90% preserved | <90% |
+| Split Execution Feasibility | Highly feasible | Feasible | Marginally feasible | Not feasible |
+
+## Real-Time Scoring
+
+```python
+class SplitPlanningGrader:
+    def __init__(self):
+        self.planning_weights = {
+            'size_compliance': 0.35,
+            'functional_integrity': 0.25,
+            'integration_feasibility': 0.20,
+            'kcp_preservation': 0.15,
+            'execution_viability': 0.05
+        }
+        
+    def grade_split_planning(self, planning_data):
+        """Grade a split planning cycle"""
+        
+        # Size compliance assessment (CRITICAL)
+        size_compliance = self.assess_split_size_compliance(planning_data)
+        
+        # Functional integrity preservation
+        functional_integrity = self.assess_functional_integrity_preservation(planning_data)
+        
+        # Integration feasibility
+        integration_feasibility = self.assess_integration_feasibility(planning_data)
+        
+        # KCP pattern preservation
+        kcp_preservation = self.assess_kcp_pattern_preservation(planning_data)
+        
+        # Execution viability
+        execution_viability = self.assess_execution_viability(planning_data)
+        
+        overall = self.calculate_overall_split_planning_grade(
+            size_compliance, functional_integrity, integration_feasibility,
+            kcp_preservation, execution_viability
+        )
+        
+        return {
+            'size_compliance': size_compliance,
+            'functional_integrity': functional_integrity,
+            'integration_feasibility': integration_feasibility,
+            'kcp_preservation': kcp_preservation,
+            'execution_viability': execution_viability,
+            'overall': overall,
+            'timestamp': datetime.now().isoformat()
+        }
+    
+    def assess_split_size_compliance(self, planning_data):
+        """Assess whether all planned splits comply with size limits"""
+        
+        split_plan = planning_data.get('split_strategy', {})
+        splits = split_plan.get('splits', [])
+        
+        if not splits:
+            return {
+                'compliant_splits': 0,
+                'total_splits': 0,
+                'compliance_rate': 0,
+                'grade': 'FAIL',
+                'score': 0,
+                'issues': ['No splits defined in plan']
+            }
+        
+        compliance_results = []
+        oversized_splits = []
+        
+        for split in splits:
+            estimated_size = split.get('estimated_lines', 0)
+            split_compliant = estimated_size <= 800
+            
+            compliance_results.append({
+                'split_id': split.get('id', 'unknown'),
+                'estimated_lines': estimated_size,
+                'compliant': split_compliant,
+                'margin': 800 - estimated_size
+            })
+            
+            if not split_compliant:
+                oversized_splits.append({
+                    'split_id': split.get('id', 'unknown'),
+                    'size': estimated_size,
+                    'overage': estimated_size - 800
+                })
+        
+        compliant_count = sum(1 for result in compliance_results if result['compliant'])
+        compliance_rate = (compliant_count / len(splits)) * 100
+        
+        # Size compliance is binary - ALL splits must comply
+        if compliance_rate == 100:
+            grade = 'EXCELLENT'
+            score = 100
+        else:
+            grade = 'FAIL'
+            score = 0  # Any oversized split is critical failure
+        
+        return {
+            'compliant_splits': compliant_count,
+            'total_splits': len(splits),
+            'compliance_rate': compliance_rate,
+            'compliance_results': compliance_results,
+            'oversized_splits': oversized_splits,
+            'grade': grade,
+            'score': score,
+            'critical_failure': len(oversized_splits) > 0
+        }
+    
+    def assess_functional_integrity_preservation(self, planning_data):
+        """Assess how well split plan preserves functional integrity"""
+        
+        integrity_analysis = planning_data.get('functional_integrity_analysis', {})
+        split_strategy = planning_data.get('split_strategy', {})
+        
+        integrity_factors = {
+            'data_flow_preserved': self.evaluate_data_flow_preservation(integrity_analysis),
+            'api_contracts_maintained': self.evaluate_api_contract_preservation(integrity_analysis),
+            'error_handling_complete': self.evaluate_error_handling_completeness(integrity_analysis),
+            'interface_design_quality': self.evaluate_interface_design_quality(split_strategy),
+            'dependency_management': self.evaluate_dependency_management(split_strategy)
+        }
+        
+        # Calculate weighted integrity score
+        integrity_weights = {
+            'data_flow_preserved': 0.3,
+            'api_contracts_maintained': 0.25,
+            'interface_design_quality': 0.2,
+            'dependency_management': 0.15,
+            'error_handling_complete': 0.1
+        }
+        
+        weighted_score = sum(
+            integrity_factors[factor] * integrity_weights[factor]
+            for factor in integrity_factors
+        )
+        
+        # Check for critical integrity issues
+        critical_issues = []
+        if integrity_factors['data_flow_preserved'] < 90:
+            critical_issues.append('Data flow broken across splits')
+        if integrity_factors['api_contracts_maintained'] < 90:
+            critical_issues.append('API contracts not properly maintained')
+        if integrity_factors['interface_design_quality'] < 80:
+            critical_issues.append('Interface design insufficient')
+        
+        if critical_issues:
+            grade = 'FAIL'
+            final_score = 0
+        elif weighted_score >= 95:
+            grade = 'EXCELLENT'
+            final_score = weighted_score
+        elif weighted_score >= 90:
+            grade = 'GOOD'
+            final_score = weighted_score
+        elif weighted_score >= 80:
+            grade = 'PASS'
+            final_score = weighted_score
+        else:
+            grade = 'FAIL'
+            final_score = 0
+        
+        return {
+            'integrity_factors': integrity_factors,
+            'weighted_score': weighted_score,
+            'final_score': final_score,
+            'critical_issues': critical_issues,
+            'grade': grade
+        }
+    
+    def assess_integration_feasibility(self, planning_data):
+        """Assess feasibility of integrating planned splits"""
+        
+        integration_analysis = planning_data.get('integration_analysis', {})
+        split_strategy = planning_data.get('split_strategy', {})
+        
+        feasibility_factors = {
+            'interface_complexity': self.evaluate_interface_complexity(split_strategy),
+            'dependency_chain_length': self.evaluate_dependency_chain_complexity(split_strategy),
+            'integration_points_count': self.evaluate_integration_points(split_strategy),
+            'circular_dependencies': self.check_circular_dependencies(split_strategy),
+            'integration_testing_complexity': self.evaluate_integration_testing_complexity(integration_analysis)
+        }
+        
+        # Calculate feasibility score (lower complexity = higher feasibility)
+        complexity_penalties = {
+            'interface_complexity': feasibility_factors['interface_complexity'] * 0.3,
+            'dependency_chain_length': feasibility_factors['dependency_chain_length'] * 0.25,
+            'integration_points_count': feasibility_factors['integration_points_count'] * 0.2,
+            'integration_testing_complexity': feasibility_factors['integration_testing_complexity'] * 0.15,
+            'circular_dependencies': feasibility_factors['circular_dependencies'] * 0.1
+        }
+        
+        total_complexity = sum(complexity_penalties.values())
+        feasibility_score = max(0, 100 - total_complexity)
+        
+        # Check for blocking feasibility issues
+        blocking_issues = []
+        if feasibility_factors['circular_dependencies'] > 0:
+            blocking_issues.append('Circular dependencies detected')
+        if feasibility_factors['interface_complexity'] > 80:
+            blocking_issues.append('Interface complexity too high')
+        if feasibility_factors['dependency_chain_length'] > 75:
+            blocking_issues.append('Dependency chain too complex')
+        
+        if blocking_issues:
+            grade = 'FAIL'
+            final_score = 0
+        elif feasibility_score >= 85:
+            grade = 'EXCELLENT'
+            final_score = feasibility_score
+        elif feasibility_score >= 70:
+            grade = 'GOOD' 
+            final_score = feasibility_score
+        elif feasibility_score >= 60:
+            grade = 'PASS'
+            final_score = feasibility_score
+        else:
+            grade = 'FAIL'
+            final_score = 0
+        
+        return {
+            'feasibility_factors': feasibility_factors,
+            'complexity_penalties': complexity_penalties,
+            'total_complexity': total_complexity,
+            'feasibility_score': feasibility_score,
+            'final_score': final_score,
+            'blocking_issues': blocking_issues,
+            'grade': grade
+        }
+    
+    def assess_kcp_pattern_preservation(self, planning_data):
+        """Assess how well KCP patterns are preserved across splits"""
+        
+        kcp_analysis = planning_data.get('kcp_compliance_analysis', {})
+        split_strategy = planning_data.get('split_strategy', {})
+        
+        kcp_preservation_factors = {
+            'multi_tenancy_preserved': self.evaluate_multi_tenancy_preservation(kcp_analysis, split_strategy),
+            'api_export_integration_intact': self.evaluate_api_export_preservation(kcp_analysis, split_strategy),
+            'logical_cluster_context_flow': self.evaluate_logical_cluster_context_preservation(kcp_analysis),
+            'workspace_isolation_maintained': self.evaluate_workspace_isolation_preservation(kcp_analysis),
+            'syncer_compatibility_preserved': self.evaluate_syncer_compatibility_preservation(kcp_analysis)
+        }
+        
+        # Weight KCP factors by criticality
+        kcp_weights = {
+            'multi_tenancy_preserved': 0.3,
+            'logical_cluster_context_flow': 0.25,
+            'workspace_isolation_maintained': 0.2,
+            'api_export_integration_intact': 0.15,
+            'syncer_compatibility_preserved': 0.1
+        }
+        
+        weighted_kcp_score = sum(
+            kcp_preservation_factors[factor] * kcp_weights[factor]
+            for factor in kcp_preservation_factors
+        )
+        
+        # Check for critical KCP issues
+        critical_kcp_issues = []
+        if kcp_preservation_factors['multi_tenancy_preserved'] < 90:
+            critical_kcp_issues.append('Multi-tenancy not preserved across splits')
+        if kcp_preservation_factors['logical_cluster_context_flow'] < 90:
+            critical_kcp_issues.append('Logical cluster context flow broken')
+        if kcp_preservation_factors['workspace_isolation_maintained'] < 90:
+            critical_kcp_issues.append('Workspace isolation compromised')
+        
+        if critical_kcp_issues:
+            grade = 'FAIL'
+            final_score = 0
+        elif weighted_kcp_score >= 95:
+            grade = 'EXCELLENT'
+            final_score = weighted_kcp_score
+        elif weighted_kcp_score >= 90:
+            grade = 'GOOD'
+            final_score = weighted_kcp_score
+        elif weighted_kcp_score >= 85:
+            grade = 'PASS'
+            final_score = weighted_kcp_score
+        else:
+            grade = 'FAIL'
+            final_score = 0
+        
+        return {
+            'kcp_factors': kcp_preservation_factors,
+            'weighted_score': weighted_kcp_score,
+            'final_score': final_score,
+            'critical_issues': critical_kcp_issues,
+            'grade': grade
+        }
+    
+    def assess_execution_viability(self, planning_data):
+        """Assess viability of executing the split plan"""
+        
+        execution_plan = planning_data.get('execution_plan', {})
+        
+        viability_factors = {
+            'plan_completeness': self.evaluate_execution_plan_completeness(execution_plan),
+            'timeline_realism': self.evaluate_timeline_realism(execution_plan),
+            'resource_requirements': self.evaluate_resource_requirements(execution_plan),
+            'risk_mitigation_quality': self.evaluate_risk_mitigation_quality(execution_plan),
+            'validation_strategy_adequacy': self.evaluate_validation_strategy(execution_plan)
+        }
+        
+        average_viability = sum(viability_factors.values()) / len(viability_factors)
+        
+        # Assess execution risks
+        execution_risks = identify_execution_risks(execution_plan)
+        risk_penalty = len(execution_risks) * 5  # 5 points per risk
+        
+        final_viability_score = max(0, average_viability - risk_penalty)
+        
+        if final_viability_score >= 90:
+            grade = 'EXCELLENT'
+        elif final_viability_score >= 80:
+            grade = 'GOOD'
+        elif final_viability_score >= 70:
+            grade = 'PASS'
+        else:
+            grade = 'FAIL'
+        
+        return {
+            'viability_factors': viability_factors,
+            'average_viability': average_viability,
+            'execution_risks': execution_risks,
+            'risk_penalty': risk_penalty,
+            'final_score': final_viability_score,
+            'grade': grade
+        }
+    
+    def calculate_overall_split_planning_grade(self, size, integrity, integration, kcp, execution):
+        """Calculate weighted overall split planning grade"""
+        
+        # Use weights defined in __init__
+        weighted_score = (
+            size['score'] * self.planning_weights['size_compliance'] +
+            integrity['final_score'] * self.planning_weights['functional_integrity'] +
+            integration['final_score'] * self.planning_weights['integration_feasibility'] +
+            kcp['final_score'] * self.planning_weights['kcp_preservation'] +
+            execution['final_score'] * self.planning_weights['execution_viability']
+        )
+        
+        # Critical failure conditions override everything
+        critical_failures = []
+        if size['critical_failure']:
+            critical_failures.append('Size compliance failure - splits exceed 800 lines')
+        if integrity['grade'] == 'FAIL':
+            critical_failures.append('Functional integrity not preserved')
+        if integration['grade'] == 'FAIL':
+            critical_failures.append('Integration not feasible')
+        if kcp['grade'] == 'FAIL':
+            critical_failures.append('KCP patterns not preserved')
+        
+        # Determine final grade
+        if critical_failures:
+            overall_grade = 'FAIL'
+        elif weighted_score >= 90:
+            overall_grade = 'EXCELLENT'
+        elif weighted_score >= 80:
+            overall_grade = 'GOOD'
+        elif weighted_score >= 70:
+            overall_grade = 'PASS'
+        else:
+            overall_grade = 'FAIL'
+        
+        return {
+            'weighted_score': weighted_score,
+            'grade': overall_grade,
+            'critical_failures': critical_failures,
+            'plan_ready_for_execution': overall_grade in ['EXCELLENT', 'GOOD', 'PASS']
+        }
+    
+    def evaluate_interface_complexity(self, split_strategy):
+        """Evaluate complexity of interfaces between splits"""
+        
+        splits = split_strategy.get('splits', [])
+        total_interfaces = 0
+        complex_interfaces = 0
+        
+        for split in splits:
+            provided = split.get('interfaces_provided', [])
+            required = split.get('interfaces_required', [])
+            
+            total_interfaces += len(provided) + len(required)
+            
+            # Consider interfaces complex if they involve multiple data types or async operations
+            for interface in provided + required:
+                if self.is_complex_interface(interface):
+                    complex_interfaces += 1
+        
+        if total_interfaces == 0:
+            return 0  # No interfaces = low complexity
+        
+        complexity_percentage = (complex_interfaces / total_interfaces) * 100
+        return complexity_percentage
+    
+    def evaluate_dependency_chain_complexity(self, split_strategy):
+        """Evaluate complexity of dependency chains between splits"""
+        
+        splits = split_strategy.get('splits', [])
+        dependency_graph = build_dependency_graph(splits)
+        
+        # Calculate metrics
+        max_chain_length = find_longest_dependency_chain(dependency_graph)
+        total_dependencies = count_total_dependencies(dependency_graph)
+        
+        # Complexity increases with chain length and total dependencies
+        chain_complexity = min(100, max_chain_length * 15)  # Max chain length of ~6-7 = high complexity
+        dependency_density = min(100, (total_dependencies / len(splits)) * 20)  # >5 deps per split = high
+        
+        overall_complexity = (chain_complexity + dependency_density) / 2
+        return overall_complexity
+```
+
+## Performance Tracking
+
+```yaml
+# Update orchestrator-state.yaml  
+grading:
+  CODE_REVIEWER_SPLIT_PLANNING:
+    latest:
+      timestamp: "2025-08-23T20:15:00Z"
+      original_effort: "phase1-wave2-effort3-webhooks"
+      original_size: 1247
+      splits_planned: 3
+      size_compliance: 100
+      functional_integrity: 89
+      integration_feasibility: 82
+      kcp_preservation: 91
+      execution_viability: 85
+      overall: "GOOD"
+      
+    history:
+      - {timestamp: "...", effort: "effort2-controllers", grade: "EXCELLENT", splits: 2}
+      - {timestamp: "...", effort: "effort4-apis", grade: "GOOD", splits: 3}
+      
+    cumulative:
+      split_plans_created: 5
+      excellent: 2
+      good: 2
+      pass: 1
+      fail: 0
+      avg_splits_per_plan: 2.8
+      avg_size_compliance: 100
+      avg_integration_feasibility: 84.2
+      successful_executions: 4  # Plans that were successfully executed
+```
+
+## Warning Triggers
+
+---
+### 🚨 RULE  - 
+**Source:** 
+**Criticality:** CRITICAL - Major impact on grading
+
+SPLIT PLANNING PERFORMANCE WARNINGS
+Any Split >800 Lines:
+❌ CRITICAL: Split plan invalid
+❌ Oversized splits: {list}
+❌ Plan must be revised before execution
+
+Functional Integrity <90%:
+⚠️⚠️ WARNING: Split may break functionality
+⚠️⚠️ Integration: {score}% (target: >90%)
+⚠️⚠️ Review split boundaries and interfaces
+
+Integration Feasibility <70%:
+🚨 CRITICAL: Integration too complex
+🚨 Feasibility: {score}% (minimum: 70%)
+🚨 Simplify split strategy or reconsider approach
+
+KCP Preservation <85%:
+❌ CRITICAL: KCP patterns compromised
+❌ Multi-tenancy or isolation broken across splits
+❌ Plan must be revised for KCP compliance
+---
+
+## Performance Optimization
+
+```python
+def optimize_split_planning_performance():
+    """Guidelines for excellent split planning grades"""
+    
+    optimization_strategies = {
+        'size_compliance_optimization': [
+            'Target 700 lines per split (100-line buffer)',
+            'Account for interface overhead in size estimates',
+            'Plan for potential expansion during implementation',
+            'Use historical data to improve size estimation accuracy'
+        ],
+        
+        'functional_integrity_optimization': [
+            'Design clean, well-defined interfaces between splits',
+            'Minimize data passing between splits',
+            'Preserve single responsibility principle in each split',
+            'Plan comprehensive integration testing'
+        ],
+        
+        'integration_feasibility_optimization': [
+            'Minimize the number of integration points',
+            'Avoid circular dependencies completely',
+            'Design asynchronous interfaces where possible',
+            'Plan for graceful error handling across splits'
+        ],
+        
+        'kcp_preservation_optimization': [
+            'Ensure logical cluster context flows through all splits',
+            'Maintain workspace isolation at split boundaries',
+            'Preserve APIExport integration patterns',
+            'Test multi-tenancy across split integration points'
+        ]
+    }
+    
+    return optimization_strategies
+```
+
+## Automated Split Validation
+
+```python
+class SplitPlanValidator:
+    def __init__(self):
+        self.validation_rules = self.load_split_validation_rules()
+        
+    def validate_split_plan_quality(self, split_data):
+        """Run automated validation of split plan quality"""
+        
+        validation_results = {
+            'size_validation': self.validate_all_split_sizes(split_data),
+            'interface_validation': self.validate_interface_design(split_data),
+            'dependency_validation': self.validate_dependency_structure(split_data),
+            'kcp_validation': self.validate_kcp_compliance(split_data)
+        }
+        
+        overall_quality = self.calculate_split_plan_quality_score(validation_results)
+        
+        return {
+            'validation_results': validation_results,
+            'overall_quality': overall_quality,
+            'blocking_issues': self.identify_blocking_split_issues(validation_results),
+            'recommendations': self.generate_split_improvement_recommendations(validation_results)
+        }
+    
+    def validate_all_split_sizes(self, split_data):
+        """Validate that all planned splits meet size requirements"""
+        
+        splits = split_data.get('splits', [])
+        size_validation = {
+            'all_compliant': True,
+            'split_sizes': [],
+            'violations': []
+        }
+        
+        for split in splits:
+            estimated_size = split.get('estimated_lines', 0)
+            compliant = estimated_size <= 800
+            
+            size_validation['split_sizes'].append({
+                'split_id': split.get('id'),
+                'estimated_lines': estimated_size,
+                'compliant': compliant
+            })
+            
+            if not compliant:
+                size_validation['all_compliant'] = False
+                size_validation['violations'].append({
+                    'split_id': split.get('id'),
+                    'size': estimated_size,
+                    'overage': estimated_size - 800
+                })
+        
+        return size_validation
+```
+
+## Real-Time Grade Dashboard
+
+```python
+def generate_split_planning_dashboard():
+    """Generate real-time split planning performance dashboard"""
+    
+    current_planning = get_current_split_planning_data()
+    grader = SplitPlanningGrader()
+    grade_data = grader.grade_split_planning(current_planning)
+    
+    dashboard = {
+        'current_grade': grade_data,
+        'size_compliance_trend': get_size_compliance_trend(),
+        'integration_complexity_trend': get_integration_complexity_trend(),
+        'successful_execution_rate': get_split_execution_success_rate()
+    }
+    
+    print("📊 SPLIT PLANNING PERFORMANCE DASHBOARD")
+    print(f"Current Grade: {grade_data['overall']['grade']}")
+    print(f"Size Compliance: {'✅' if grade_data['size_compliance']['score'] == 100 else '❌'} {grade_data['size_compliance']['compliance_rate']:.1f}%")
+    print(f"Functional Integrity: {grade_data['functional_integrity']['final_score']:.1f}%")
+    print(f"Integration Feasibility: {grade_data['integration_feasibility']['final_score']:.1f}%")
+    print(f"KCP Preservation: {grade_data['kcp_preservation']['final_score']:.1f}%")
+    
+    return dashboard

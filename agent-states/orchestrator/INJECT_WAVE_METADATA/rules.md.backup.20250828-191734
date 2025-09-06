@@ -1,0 +1,124 @@
+# Orchestrator - INJECT_WAVE_METADATA State Rules
+
+## ⚠️⚠️⚠️ MANDATORY RULE READING AND ACKNOWLEDGMENT ⚠️⚠️⚠️
+
+**YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. YOUR READ TOOL CALLS ARE BEING MONITORED.**
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+1. Fake acknowledgment without reading
+2. Bulk acknowledgment
+3. Reading from memory
+
+### ✅ CORRECT PATTERN:
+1. READ each rule file
+2. Acknowledge individually with rule number and description
+
+## 📋 PRIMARY DIRECTIVES FOR INJECT_WAVE_METADATA STATE
+
+### 🚨🚨🚨 R213 - Wave and Effort Metadata Injection
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R213-wave-and-effort-metadata-protocol.md`
+**Criticality**: BLOCKING - Must inject metadata before spawning
+**Summary**: Inject parallelization metadata into wave implementation plans
+
+### 🔴🔴🔴 R234 - Mandatory State Traversal (SUPREME LAW #1)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal-supreme-law.md`
+**Criticality**: SUPREME LAW - Violation = -100% automatic failure
+**Summary**: Must traverse all states in sequence, no skipping allowed
+
+### 🔴🔴🔴 R252 - Mandatory State File Updates (SUPREME LAW #10)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R252-mandatory-state-file-updates.md`
+**Criticality**: SUPREME LAW - Update on every transition
+**Summary**: Update orchestrator-state.yaml on all state changes
+
+### 🚨🚨🚨 R253 - Mandatory State File Commit Push
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R253-mandatory-state-file-commit-push.md`
+**Criticality**: BLOCKING - Push within 60 seconds
+**Summary**: Commit and push state file immediately after updates
+
+### 🔴🔴🔴 R232 - TodoWrite Pending Items Override (SUPREME LAW #9)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R232-todowrite-pending-items-override.md`
+**Criticality**: SUPREME LAW - Pending items are COMMANDS
+**Summary**: Any pending TODO items must be executed immediately
+
+## 🚨 INJECT_WAVE_METADATA IS A VERB - START INJECTING METADATA IMMEDIATELY! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING INJECT_WAVE_METADATA
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Open wave implementation plan for editing NOW
+2. Insert R213 parallelization metadata immediately
+3. Check TodoWrite for pending items and process them
+4. Save and validate metadata without delay
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in INJECT_WAVE_METADATA" [stops]
+- ❌ "Successfully entered INJECT_WAVE_METADATA state" [waits]
+- ❌ "Ready to start injecting metadata" [pauses]
+- ❌ "I'm in INJECT_WAVE_METADATA state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering INJECT_WAVE_METADATA, opening wave implementation plan for editing NOW..."
+- ✅ "START INJECTING METADATA per R213, inserting parallelization metadata immediately..."
+- ✅ "INJECT_WAVE_METADATA: Saving and validating metadata without delay..."
+
+## State Context
+This state is responsible for injecting R213 parallelization metadata into wave implementation plans before any agent spawning occurs.
+
+## R213 Metadata Injection Protocol
+
+**CRITICAL**: This metadata MUST be injected BEFORE spawning Code Reviewers or SW Engineers!
+
+```bash
+# Example metadata to inject into wave plan:
+EFFORT_METADATA:
+  effort_id: "E3.1.1"
+  name: "sync-engine-foundation"
+  can_parallelize: false
+  blocks: ["E3.1.2", "E3.1.3", "E3.1.4", "E3.1.5"]
+  dependencies: []
+  estimated_lines: 600
+  assigned_to: "sw-engineer-1"
+  working_directory: "/efforts/phase3/wave1/sync-engine-foundation"
+  branch: "phase3/wave1/sync-engine-foundation"
+```
+
+## Critical Requirements
+
+1. **READ** the wave implementation plan with Read tool
+2. **IDENTIFY** all efforts in the wave
+3. **INJECT** parallelization metadata for EACH effort
+4. **SAVE** the updated plan
+5. **VERIFY** metadata is present before proceeding
+6. **TRANSITION** to next state in mandatory sequence
+
+## State Transitions
+
+- **FROM**: Previous state in mandatory sequence
+- **TO**: Next state per R234 mandatory traversal
+- **CANNOT SKIP**: This state is part of mandatory sequence
+
+## Validation Before Transition
+
+```bash
+validate_metadata_injection() {
+    echo "🔍 Validating R213 metadata injection..."
+    
+    # Check each effort has metadata
+    for effort in efforts/phase${PHASE}/wave${WAVE}/*/; do
+        if ! grep -q "can_parallelize:" "${effort}/IMPLEMENTATION-PLAN.md"; then
+            echo "❌ FATAL: Missing parallelization metadata in ${effort}"
+            exit 213
+        fi
+    done
+    
+    echo "✅ All efforts have R213 metadata"
+}
+```
+
+## Next Steps
+
+After successfully injecting metadata:
+1. Update orchestrator-state.yaml (R252)
+2. Commit and push changes (R253)
+3. Check TodoWrite for pending items (R232)
+4. Transition to next mandatory state (R234)

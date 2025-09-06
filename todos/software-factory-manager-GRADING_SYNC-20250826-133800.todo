@@ -1,0 +1,24 @@
+# TODO State at 2025-08-26 13:38:00
+# Agent: software-factory-manager
+# State: GRADING_SYNC
+# Context: Synchronized grading criteria between CLAUDE.md and orchestrator.md
+
+## Completed (6)
+- [x] Check agent state-specific rule files for duplicative content
+- [x] Identify and remove duplicative content in CLAUDE.md  
+- [x] Add prominent TODO persistence rules to CLAUDE.md
+- [x] Compare grading criteria between CLAUDE.md and orchestrator.md
+- [x] Synchronize grading criteria across both files
+- [x] Fix typos in CLAUDE.md grading section
+
+## In Progress (0)
+
+## Pending (0)
+
+## Context Notes
+- Found significant mismatch between grading criteria
+- orchestrator.md had simplified metrics with wrong weightings
+- Updated orchestrator.md to match comprehensive CLAUDE.md criteria
+- Fixed typos: "Reviwer" → "Reviewer", "imit" → "emit", "THIER" → "THEIR"
+- Both files now have consistent 5-category grading with same percentages
+- Added failure conditions to orchestrator.md

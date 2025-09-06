@@ -1,0 +1,24 @@
+# Software Factory Manager TODO State
+Date: 2025-09-02 06:21:00 UTC
+Agent: software-factory-manager
+Task: Enforce PARAMOUNT Independent Mergeability Requirement
+
+## Completed Tasks
+✅ Create R307 - Independent Branch Mergeability rule (PARAMOUNT)
+✅ Update R220 and R221 to emphasize feature flags for incomplete features
+✅ Update all split planning rules for independence
+✅ Update integration protocols for trunk-based development
+✅ Update implementation planning templates
+✅ Update code review criteria for independence verification
+✅ Create TRUNK-BASED-DEVELOPMENT-REQUIREMENTS.md
+✅ Create INDEPENDENT-MERGEABILITY-EXAMPLES.md
+✅ Update all agent configurations for independence awareness
+✅ Update testing requirements for partial implementations
+✅ Create comprehensive feature flag strategy document
+
+## Pending Tasks
+⏳ Update state machine for independence validation
+🚀 Commit and push all changes (IN PROGRESS)
+
+## Summary
+Successfully enforced the PARAMOUNT requirement for independent branch mergeability across the entire Software Factory system. Created R307 as the paramount rule, updated all relevant rules and templates, created comprehensive documentation and examples, and updated all agent configurations to be aware of this critical requirement.

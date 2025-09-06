@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Fix outdated line-counter.sh -b syntax in SOFTWARE-FACTORY-STATE-MACHINE.md",
+    "status": "completed",
+    "activeForm": "Fixing outdated line-counter.sh -b syntax in SOFTWARE-FACTORY-STATE-MACHINE.md"
+  },
+  {
+    "content": "Fix outdated line-counter.sh -b syntax in agent-states files",
+    "status": "in_progress",
+    "activeForm": "Fixing outdated line-counter.sh -b syntax in agent-states files"
+  },
+  {
+    "content": "Fix outdated line-counter.sh -b syntax in rule-library files",
+    "status": "pending",
+    "activeForm": "Fixing outdated line-counter.sh -b syntax in rule-library files"
+  },
+  {
+    "content": "Fix outdated line-counter.sh -b syntax in .claude/agents files",
+    "status": "pending",
+    "activeForm": "Fixing outdated line-counter.sh -b syntax in .claude/agents files"
+  },
+  {
+    "content": "Check for any remaining old tool references",
+    "status": "pending",
+    "activeForm": "Checking for any remaining old tool references"
+  },
+  {
+    "content": "Verify all changes and commit",
+    "status": "pending",
+    "activeForm": "Verifying all changes and committing"
+  }
+]

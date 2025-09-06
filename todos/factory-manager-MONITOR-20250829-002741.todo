@@ -1,0 +1,34 @@
+# Software Factory Manager - Code Review Gap Fix
+Date: 2025-08-29 00:45:00 UTC
+State: MONITOR Fix Implementation
+
+## Completed Tasks:
+✅ Analyzed the critical gap: Code Reviewers never spawned for implementation review
+✅ Updated MONITOR state rules to detect implementation completion and spawn reviewers
+✅ Updated R222 to clarify orchestrator responsibilities for spawning reviewers
+✅ Added transition logic from MONITOR to spawn Code Reviewers
+✅ Updated state machine to reflect the review spawning flow
+✅ Created spawn command template for Code Reviewers
+
+## Critical Changes Made:
+
+### 1. MONITOR State Rules Enhanced
+- Added mandatory section for spawning Code Reviewers when implementation completes
+- Added detection logic for implementation_status: COMPLETE without review
+- Added immediate spawn command template
+- Updated state transitions to include SPAWN_CODE_REVIEWER flow
+
+### 2. R222 Rule Enhanced
+- Added ORCHESTRATOR RESPONSIBILITIES section
+- Clarified that reviews don't happen automatically
+- Specified when to spawn Code Reviewers
+- Emphasized -100% grading penalty for not spawning reviewers
+
+### 3. State Machine Updated
+- Added explicit MONITOR → SPAWN_CODE_REVIEWER transition
+- Clarified the full implementation-review-fix loop
+- Updated mermaid diagram to show review spawning
+
+## Impact:
+This fixes a CRITICAL gap where code would be integrated without any review,
+violating R222 and causing -100% grading failure.

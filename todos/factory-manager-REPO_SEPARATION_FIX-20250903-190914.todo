@@ -1,0 +1,60 @@
+# SOFTWARE FACTORY MANAGER TODO STATE
+# Agent: factory-manager  
+# State: REPO_SEPARATION_FIX
+# Timestamp: 20250903-190914
+# Trigger: Mid-work checkpoint per R287
+
+## Current Progress
+
+### ✅ COMPLETED TASKS:
+1. Scanned all agent state directories to understand structure
+2. Checked orchestrator planning-related states for R251/R309 references
+3. Checked code-reviewer planning-related states for R251/R309 references
+4. Checked sw-engineer implementation states for R251/R309 references
+5. Fixed CREATE_NEXT_SPLIT_INFRASTRUCTURE - Added R251/R309
+6. Fixed SPAWN_AGENTS - Added R251/R309
+7. Fixed SPAWN_CODE_REVIEWERS_EFFORT_PLANNING - Added R251/R309
+8. Fixed SW-Engineer IMPLEMENTATION - Added R251/R309
+9. Fixed SW-Engineer SPLIT_IMPLEMENTATION - Added R251/R309
+10. Fixed Code-Reviewer EFFORT_PLAN_CREATION - Added R251/R309
+11. Fixed Code-Reviewer CREATE_SPLIT_PLAN - Added R251/R309
+12. Fixed SPAWN_ENGINEERS_FOR_FIXES - Added R251/R309
+
+### 🔄 IN PROGRESS:
+- Checking other critical orchestrator spawn states
+
+### 📋 PENDING TASKS:
+1. Check and fix SPAWN_CODE_REVIEWERS_FOR_REVIEW
+2. Check and fix SPAWN_INTEGRATION_AGENT
+3. Check and fix INTEGRATION state
+4. Check and fix PHASE_INTEGRATION state
+5. Check and fix FINAL_INTEGRATION state
+6. Create comprehensive report of findings and fixes
+7. Commit and push all changes
+
+## Summary of Findings
+
+### Critical Discovery:
+Only SETUP_EFFORT_INFRASTRUCTURE had R251/R309 references originally.
+All other planning/infrastructure/spawning states were missing these PARAMOUNT rules.
+
+### States Fixed So Far:
+- orchestrator/CREATE_NEXT_SPLIT_INFRASTRUCTURE ✅
+- orchestrator/SPAWN_AGENTS ✅
+- orchestrator/SPAWN_CODE_REVIEWERS_EFFORT_PLANNING ✅
+- orchestrator/SPAWN_ENGINEERS_FOR_FIXES ✅
+- sw-engineer/IMPLEMENTATION ✅
+- sw-engineer/SPLIT_IMPLEMENTATION ✅
+- code-reviewer/EFFORT_PLAN_CREATION ✅
+- code-reviewer/CREATE_SPLIT_PLAN ✅
+
+### States Still Need Checking:
+- orchestrator/SPAWN_CODE_REVIEWERS_FOR_REVIEW
+- orchestrator/SPAWN_INTEGRATION_AGENT
+- orchestrator/INTEGRATION
+- orchestrator/PHASE_INTEGRATION
+- orchestrator/FINAL_INTEGRATION
+- Other integration-related states
+
+## Notes
+This is a CRITICAL fix preventing agents from creating effort branches in the Software Factory repository, which would be catastrophic (-100% failure).

@@ -1,0 +1,27 @@
+# Orchestrator State for idpbuidler-oci-build-push
+# Generated: Sat Sep  6 14:09:01 UTC 2025
+
+current_phase: 0
+current_wave: 0
+current_state: INIT
+
+project_info:
+  name: "idpbuidler-oci-build-push"
+  description: "A feature addition to the idpbuilder cli that allows it to build and push images to from the local file system to the idpbuilder internal gitea at gitea.cnoe.localtest.me and accept the self signed certs that gitea is using while running on the local idpbuilder cluster. This way users don''t have to modify their docker daemons to push to the internal gitea server because of cert validation errors."
+  start_date: "2025-09-06"
+  
+phases_planned: 3
+waves_per_phase: []
+
+efforts_completed: []
+efforts_in_progress: []
+efforts_planned: []
+
+integration_branches: []
+
+grading_history:
+  parallel_spawn_average: 0.0
+  review_first_try_rate: 0.0
+  integration_success_rate: 0.0
+  
+last_checkpoint: "2025-09-06T14:09:01+00:00"
