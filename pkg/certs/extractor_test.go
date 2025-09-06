@@ -177,7 +177,7 @@ func TestValidateCertificate_NoGiteaIdentity(t *testing.T) {
 	// Create a certificate without Gitea identity
 	dnsNames := []string{"example.com", "test.com"}
 	expiry := time.Now().Add(24 * time.Hour)
-	
+
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		t.Fatalf("Failed to generate key: %v", err)
@@ -470,7 +470,7 @@ func TestValidateCertificate_GiteaInCommonName(t *testing.T) {
 
 	extractor := NewDefaultExtractor("test")
 	err = extractor.ValidateCertificate(cert)
-	
+
 	if err != nil {
 		t.Errorf("Expected certificate with gitea in CN to be valid, got error: %v", err)
 	}

@@ -11,16 +11,16 @@ import (
 type Client interface {
 	// Push pushes an image to the registry
 	Push(ctx context.Context, image v1.Image, ref string, opts PushOptions) error
-	
+
 	// Pull pulls an image from the registry
 	Pull(ctx context.Context, ref string, opts PullOptions) (v1.Image, error)
-	
+
 	// Catalog lists repositories in the registry
 	Catalog(ctx context.Context) ([]string, error)
-	
+
 	// Tags lists tags for a repository
 	Tags(ctx context.Context, repository string) ([]string, error)
-	
+
 	// Close cleans up resources used by the client
 	Close() error
 }
@@ -46,16 +46,16 @@ type PullOptions struct {
 type RegistryInfo struct {
 	// URL is the base URL of the registry
 	URL string
-	
+
 	// Version is the registry API version
 	Version string
-	
+
 	// Features contains supported registry features
 	Features []string
-	
+
 	// TLSEnabled indicates if TLS is configured
 	TLSEnabled bool
-	
+
 	// AuthRequired indicates if authentication is required
 	AuthRequired bool
 }
@@ -64,22 +64,22 @@ type RegistryInfo struct {
 type ImageInfo struct {
 	// Repository is the image repository name
 	Repository string
-	
+
 	// Tag is the image tag
 	Tag string
-	
+
 	// Digest is the image digest
 	Digest string
-	
+
 	// Size is the total size in bytes
 	Size int64
-	
+
 	// CreatedAt is when the image was created
 	CreatedAt time.Time
-	
+
 	// Architecture is the target architecture
 	Architecture string
-	
+
 	// OS is the target operating system
 	OS string
 }

@@ -18,11 +18,11 @@ func LogCertificateChain(certs []*x509.Certificate, logger *log.Logger) {
 	for i, cert := range certs {
 		logger.Printf("Certificate %d: Subject=%s, Issuer=%s", i+1, cert.Subject, cert.Issuer)
 		logger.Printf("  Valid: %s to %s", cert.NotBefore.Format("2006-01-02"), cert.NotAfter.Format("2006-01-02"))
-		
+
 		if len(cert.DNSNames) > 0 {
 			logger.Printf("  DNS Names: %s", strings.Join(cert.DNSNames, ", "))
 		}
-		
+
 		if len(cert.IPAddresses) > 0 {
 			ips := make([]string, len(cert.IPAddresses))
 			for j, ip := range cert.IPAddresses {
@@ -30,11 +30,11 @@ func LogCertificateChain(certs []*x509.Certificate, logger *log.Logger) {
 			}
 			logger.Printf("  IP Addresses: %s", strings.Join(ips, ", "))
 		}
-		
+
 		if cert.IsCA {
 			logger.Printf("  Type: Certificate Authority")
 		}
-		
+
 		if cert.Subject.String() == cert.Issuer.String() {
 			logger.Printf("  Note: Self-signed certificate")
 		}
@@ -50,7 +50,7 @@ func LogValidationError(err error, cert *x509.Certificate, logger *log.Logger) {
 	logger.Printf("Certificate Validation Error: %v", err)
 	if cert != nil {
 		logger.Printf("  Subject: %s", cert.Subject)
-		logger.Printf("  Valid: %s to %s", 
+		logger.Printf("  Valid: %s to %s",
 			cert.NotBefore.Format("2006-01-02"), cert.NotAfter.Format("2006-01-02"))
 		if len(cert.DNSNames) > 0 {
 			logger.Printf("  Valid Hostnames: %s", strings.Join(cert.DNSNames, ", "))
@@ -68,7 +68,7 @@ func LogCertificateProblem(problem *CertProblem, logger *log.Logger) {
 	if problem.Error != nil {
 		logger.Printf("  Original Error: %v", problem.Error)
 	}
-	
+
 	// Log key problem details
 	for key, value := range problem.Details {
 		switch v := value.(type) {
@@ -100,12 +100,12 @@ func LogRegistryConnection(registryURL string, insecure bool, success bool, err 
 	if !success {
 		status = "FAILED"
 	}
-	
+
 	securityMode := "SECURE"
 	if insecure {
 		securityMode = "INSECURE"
 	}
-	
+
 	logger.Printf("Registry Connection [%s/%s]: %s", status, securityMode, registryURL)
 	if err != nil {
 		logger.Printf("  Error: %v", err)

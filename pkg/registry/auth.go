@@ -15,13 +15,13 @@ func configureAuth(username, password string) authn.Authenticator {
 	if username == "" && password == "" {
 		return authn.Anonymous
 	}
-	
+
 	// Validate credentials
 	if err := validateCredentials(username, password); err != nil {
 		// Log warning but don't fail - fall back to anonymous
 		return authn.Anonymous
 	}
-	
+
 	return &authn.Basic{
 		Username: username,
 		Password: password,
@@ -33,7 +33,7 @@ func GetAuthToken(username, password string) string {
 	if username == "" && password == "" {
 		return ""
 	}
-	
+
 	auth := fmt.Sprintf("%s:%s", username, password)
 	return base64.StdEncoding.EncodeToString([]byte(auth))
 }
@@ -46,7 +46,7 @@ func validateCredentials(username, password string) error {
 	if password == "" {
 		return fmt.Errorf("password cannot be empty")
 	}
-	
+
 	// Additional validation rules
 	if len(username) < 2 {
 		return fmt.Errorf("username must be at least 2 characters")
@@ -54,12 +54,12 @@ func validateCredentials(username, password string) error {
 	if len(password) < 4 {
 		return fmt.Errorf("password must be at least 4 characters")
 	}
-	
+
 	// Check for invalid characters
 	if strings.Contains(username, ":") {
 		return fmt.Errorf("username cannot contain colon character")
 	}
-	
+
 	return nil
 }
 
@@ -68,7 +68,7 @@ func LoadCredentialsFromEnv() (username, password string) {
 	// Standard Docker registry environment variables
 	username = os.Getenv("REGISTRY_USERNAME")
 	password = os.Getenv("REGISTRY_PASSWORD")
-	
+
 	// Gitea-specific environment variables
 	if username == "" {
 		username = os.Getenv("GITEA_USERNAME")
@@ -76,7 +76,7 @@ func LoadCredentialsFromEnv() (username, password string) {
 	if password == "" {
 		password = os.Getenv("GITEA_PASSWORD")
 	}
-	
+
 	// IDPBuilder-specific environment variables
 	if username == "" {
 		username = os.Getenv("IDPBUILDER_REGISTRY_USERNAME")
@@ -84,15 +84,15 @@ func LoadCredentialsFromEnv() (username, password string) {
 	if password == "" {
 		password = os.Getenv("IDPBUILDER_REGISTRY_PASSWORD")
 	}
-	
+
 	return username, password
 }
 
 // AuthConfig holds authentication configuration
 type AuthConfig struct {
-	Username string
-	Password string
-	Token    string
+	Username  string
+	Password  string
+	Token     string
 	Anonymous bool
 }
 
@@ -102,15 +102,15 @@ func NewAuthConfig(username, password string) *AuthConfig {
 		Username: username,
 		Password: password,
 	}
-	
+
 	// Determine if anonymous
 	config.Anonymous = (username == "" && password == "")
-	
+
 	// Generate token if credentials provided
 	if !config.Anonymous {
 		config.Token = GetAuthToken(username, password)
 	}
-	
+
 	return config
 }
 
@@ -119,7 +119,7 @@ func (a *AuthConfig) ToAuthenticator() authn.Authenticator {
 	if a.Anonymous {
 		return authn.Anonymous
 	}
-	
+
 	return &authn.Basic{
 		Username: a.Username,
 		Password: a.Password,
@@ -131,7 +131,7 @@ func (a *AuthConfig) Validate() error {
 	if a.Anonymous {
 		return nil // Anonymous is always valid
 	}
-	
+
 	return validateCredentials(a.Username, a.Password)
 }
 

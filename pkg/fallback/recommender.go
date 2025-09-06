@@ -19,10 +19,10 @@ type Recommendation struct {
 type Recommender interface {
 	// Recommend generates prioritized solutions for a detected certificate problem
 	Recommend(problem *CertProblem) ([]*Recommendation, error)
-	
+
 	// FormatRecommendations creates user-friendly output for display
 	FormatRecommendations(recs []*Recommendation) string
-	
+
 	// GetQuickFix returns the highest priority recommendation for immediate action
 	GetQuickFix(problem *CertProblem) (*Recommendation, error)
 }
@@ -51,26 +51,26 @@ func (r *DefaultRecommender) Recommend(problem *CertProblem) ([]*Recommendation,
 
 	switch problem.Type {
 	case ProblemSelfSigned:
-		return r.getRecommendations([]string{"Use --insecure for dev", "Add cert to trust store"}, 
+		return r.getRecommendations([]string{"Use --insecure for dev", "Add cert to trust store"},
 			[]string{"idpbuilder <command> --insecure", "openssl s_client -connect " + r.extractHost() + ":443"})
 	case ProblemExpired:
-		return r.getRecommendations([]string{"Renew certificate", "Use --insecure temporarily"}, 
+		return r.getRecommendations([]string{"Renew certificate", "Use --insecure temporarily"},
 			[]string{"# Contact administrator", "idpbuilder <command> --insecure"})
 	case ProblemNotYetValid:
-		return r.getRecommendations([]string{"Check system clock", "Verify cert dates"}, 
+		return r.getRecommendations([]string{"Check system clock", "Verify cert dates"},
 			[]string{"sudo ntpdate -s time.nist.gov", "openssl x509 -noout -dates"})
 	case ProblemHostnameMismatch:
 		validHosts := ""
 		if hosts, ok := problem.Details["valid_hostnames"].([]string); ok && len(hosts) > 0 {
 			validHosts = strings.Join(hosts, ", ")
 		}
-		return r.getRecommendations([]string{"Use correct hostname", "Update certificate"}, 
+		return r.getRecommendations([]string{"Use correct hostname", "Update certificate"},
 			[]string{"# Use: " + validHosts, "# Request new cert with correct SANs"})
 	case ProblemUntrustedCA:
-		return r.getRecommendations([]string{"Import CA certificate", "Verify cert chain"}, 
+		return r.getRecommendations([]string{"Import CA certificate", "Verify cert chain"},
 			[]string{"# Add CA to trust store", "openssl s_client -connect " + r.extractHost() + ":443 -showcerts"})
 	default:
-		return r.getRecommendations([]string{"Inspect certificate manually", "Enable debug logging"}, 
+		return r.getRecommendations([]string{"Inspect certificate manually", "Enable debug logging"},
 			[]string{"openssl x509 -text -noout", "# Add debug flags"})
 	}
 }
@@ -83,13 +83,13 @@ func (r *DefaultRecommender) getRecommendations(titles []string, commands []stri
 		if i < len(commands) {
 			cmd = commands[i]
 		}
-		
+
 		// Add --insecure option for development if applicable
 		risks := []string{"Check documentation for full details"}
 		if strings.Contains(cmd, "--insecure") && r.environment != "development" {
 			risks = []string{"NOT for production use", "Security vulnerability"}
 		}
-		
+
 		recs = append(recs, &Recommendation{
 			Priority:    i + 1,
 			Title:       title,
@@ -125,11 +125,11 @@ func (r *DefaultRecommender) FormatRecommendations(recs []*Recommendation) strin
 	for i, rec := range recs {
 		sb.WriteString(fmt.Sprintf("%d. %s\n", i+1, rec.Title))
 		sb.WriteString("   " + rec.Explanation + "\n")
-		
+
 		if rec.Command != "" {
 			sb.WriteString("   Command: " + rec.Command + "\n")
 		}
-		
+
 		if len(rec.Risks) > 0 {
 			sb.WriteString("   Risks: " + strings.Join(rec.Risks, ", ") + "\n")
 		}
@@ -143,14 +143,14 @@ func (r *DefaultRecommender) extractHost() string {
 	if r.registryURL == "" {
 		return "registry.example.com"
 	}
-	
+
 	url := r.registryURL
 	if strings.HasPrefix(url, "https://") {
 		url = url[8:]
 	} else if strings.HasPrefix(url, "http://") {
 		url = url[7:]
 	}
-	
+
 	if idx := strings.Index(url, "/"); idx > 0 {
 		url = url[:idx]
 	}
