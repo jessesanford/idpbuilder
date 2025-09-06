@@ -1,10 +1,10 @@
 state_machine:
-  current_state: MONITORING_INTEGRATION
-  previous_state: SPAWN_INTEGRATION_AGENT
-  transition_time: '2025-09-06T20:24:45.000000Z'
-  transition_reason: Integration Agent spawned and completed merge execution successfully
+  current_state: ERROR_RECOVERY
+  previous_state: MONITORING_INTEGRATION
+  transition_time: '2025-09-06T20:29:30.000000Z'
+  transition_reason: 'R291 BUILD GATE FAILURE: Build failed due to upstream bugs - duplicate declarations and interface issues'
   rules_reacknowledged: true
-  integration_status: COMPLETED
+  integration_status: COMPLETED_WITH_ISSUES
   integration_report_location: 'efforts/phase1/wave1/integration-workspace/INTEGRATION-REPORT.md'
   upstream_bugs_found: true
   upstream_bugs: |
@@ -12,7 +12,13 @@ state_machine:
     - Duplicate type: CertValidator in utilities.go:229 and extractor.go:31
     - Interface issue: ValidationResult doesn't implement error interface
   integration_score: '95/100'
-  next_action: Monitor integration results and decide on fixes vs Wave 2
+  r291_gate_status:
+    build: FAILED
+    test: NOT_EXECUTED
+    demo: NOT_RUN
+    integration: COMPLETED_WITH_ISSUES
+  error_recovery_reason: 'Build failed with duplicate function/type declarations between E1.1.1 and E1.1.2'
+  next_action: Fix duplicate declarations and interface issues in effort code before re-integration
 project_info:
   name: idpbuilder-oci-mvp
   total_phases: 2
