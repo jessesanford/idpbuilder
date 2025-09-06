@@ -1,13 +1,12 @@
 state_machine:
-  current_state: INTEGRATION
-  previous_state: WAVE_COMPLETE
-  transition_time: '2025-09-06T19:23:06.000000Z'
-  transition_reason: Wave 1 complete with all reviews passed, ready for integration
+  current_state: SPAWN_CODE_REVIEWER_MERGE_PLAN
+  previous_state: INTEGRATION
+  transition_time: '2025-09-06T19:36:00.000000Z'
+  transition_reason: Integration infrastructure setup complete, Code Reviewer spawned for merge plan
   rules_reacknowledged: true
   recovery_note: Both E1.1.1 and E1.1.2 implemented, reviewed, and directories verified
-  next_state: INTEGRATION
-  next_state_reason: Wave 1 complete - ready to create integration branch and merge
-    efforts
+  next_state: WAITING_FOR_MERGE_PLAN
+  next_state_reason: Waiting for Code Reviewer to complete merge plan before spawning Integration Agent
 project_info:
   name: idpbuilder-oci-mvp
   total_phases: 2
@@ -122,7 +121,8 @@ efforts_pending:
   - E2.1.1-go-containerregistry-image-builder
   - E2.1.2-gitea-registry-client
   - E2.2.1-cli-commands
-integration_branches: []
+integration_branches:
+  - idpbuilder-oci-build-push/phase1/wave1-integration
 waves_completed:
   - phase1/wave1
 phases_completed: []
@@ -146,6 +146,8 @@ timestamps:
   wave_complete_verified: '2025-09-06T19:09:42.000000Z'
   last_state_update: '2025-09-06T19:23:07.000000Z'
   wave_complete_to_integration: '2025-09-06T19:23:07.000000Z'
+  integration_branch_created: '2025-09-06T19:36:00.000000Z'
+  code_reviewer_merge_plan_spawned: '2025-09-06T19:36:00.000000Z'
 next_actions:
   - Wave 1 completion fully verified and finalized
   - Ready to transition to INTEGRATION state
