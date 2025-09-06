@@ -1,0 +1,177 @@
+# Orchestrator State File - Software Factory 2.0
+# Generated per R281: Complete initial state file requirement
+# Created: 2025-09-06
+
+state_machine:
+  current_state: INIT
+  previous_state: null
+  transition_time: "2025-09-06T16:31:00Z"
+  transition_reason: "Initial state file creation per R281"
+  rules_reacknowledged: true
+  r288_violations: 0
+
+project_metadata:
+  name: "idpbuilder-oci-mvp"
+  version: "software-factory-2.0"
+  phases_total: 2
+  waves_total: 4
+  efforts_total: 7
+  estimated_lines: 2000
+  target_repository: "https://github.com/jessesanford/idpbuilder.git"
+
+current_phase: 1
+current_wave: 1
+
+phases:
+  - phase_id: 1
+    phase_name: "Certificate Infrastructure"
+    description: "Extract and manage certificates from Kind/Gitea"
+    status: pending
+    timeline: "Week 1"
+    estimated_lines: 1000
+    waves:
+      - wave_id: 1
+        wave_name: "Certificate Management Core"
+        description: "Extract and manage certificates from Kind/Gitea"
+        status: pending
+        timeline: "Days 1-2"
+        efforts:
+          - effort_id: 1
+            effort_name: "Kind Certificate Extraction"
+            description: "Extract Gitea certificate from Kind cluster"
+            assigned_agent: null
+            branch_name: null
+            status: pending
+            estimated_lines: 500
+            actual_lines: 0
+            review_cycles: 0
+            split_count: 0
+            
+          - effort_id: 2
+            effort_name: "Registry TLS Trust Integration"
+            description: "Configure go-containerregistry with custom CA"
+            assigned_agent: null
+            branch_name: null
+            status: pending
+            estimated_lines: 600
+            actual_lines: 0
+            review_cycles: 0
+            split_count: 0
+            
+      - wave_id: 2
+        wave_name: "Certificate Validation & Fallback"
+        description: "Robust certificate handling with clear diagnostics"
+        status: pending
+        timeline: "Days 3-5"
+        efforts:
+          - effort_id: 1
+            effort_name: "Certificate Validation Pipeline"
+            description: "Validate cert chain, expiry, hostname"
+            assigned_agent: null
+            branch_name: null
+            status: pending
+            estimated_lines: 400
+            actual_lines: 0
+            review_cycles: 0
+            split_count: 0
+            
+          - effort_id: 2
+            effort_name: "Fallback Strategies"
+            description: "Auto-detect cert problems and suggest solutions"
+            assigned_agent: null
+            branch_name: null
+            status: pending
+            estimated_lines: 400
+            actual_lines: 0
+            review_cycles: 0
+            split_count: 0
+
+  - phase_id: 2
+    phase_name: "Build & Push Implementation"
+    description: "Basic image assembly and registry push"
+    status: pending
+    timeline: "Week 2"
+    estimated_lines: 1000
+    waves:
+      - wave_id: 1
+        wave_name: "Core Build & Push"
+        description: "Basic image assembly and registry push"
+        status: pending
+        timeline: "Days 6-7"
+        efforts:
+          - effort_id: 1
+            effort_name: "go-containerregistry Image Builder"
+            description: "Create single-layer OCI images from context"
+            assigned_agent: null
+            branch_name: null
+            status: pending
+            estimated_lines: 600
+            actual_lines: 0
+            review_cycles: 0
+            split_count: 0
+            
+          - effort_id: 2
+            effort_name: "Gitea Registry Client"
+            description: "Push images to Gitea with cert handling"
+            assigned_agent: null
+            branch_name: null
+            status: pending
+            estimated_lines: 600
+            actual_lines: 0
+            review_cycles: 0
+            split_count: 0
+            
+      - wave_id: 2
+        wave_name: "CLI Integration"
+        description: "User-friendly CLI commands"
+        status: pending
+        timeline: "Days 8-9"
+        efforts:
+          - effort_id: 1
+            effort_name: "CLI Commands"
+            description: "Implement build and push commands"
+            assigned_agent: null
+            branch_name: null
+            status: pending
+            estimated_lines: 500
+            actual_lines: 0
+            review_cycles: 0
+            split_count: 0
+
+efforts_in_progress: []
+efforts_completed: []
+efforts_blocked: []
+
+integration_status:
+  wave_integrations: []
+  phase_integrations: []
+  project_integration: null
+
+validation_results:
+  last_validation: null
+  test_coverage: null
+  build_status: null
+  artifact_location: null
+
+orchestrator_metrics:
+  total_spawns: 0
+  average_spawn_delta: null
+  state_transitions: 1
+  violations_detected: 0
+  backports_required: 0
+  
+grading_status:
+  parallel_spawn_compliance: pending
+  size_compliance: pending
+  review_compliance: pending
+  test_coverage_compliance: pending
+  build_artifact_compliance: pending
+  
+compliance_checks:
+  r006_no_code_written: true
+  r319_no_measurements: true
+  r320_no_stubs_allowed: true
+  r321_immediate_backport: true
+  r322_stop_at_transitions: true
+  r323_build_artifact: pending
+  r283_project_integration: pending
