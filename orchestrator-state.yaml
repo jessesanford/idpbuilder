@@ -1,8 +1,10 @@
 # Orchestrator State for idpbuidler-oci-build-push
 # Generated: Sat Sep  6 14:09:01 UTC 2025
+# Updated: 2025-09-06T15:00:00+00:00
+# R281: COMPLETE state file with ALL phases/waves/efforts
 
-current_phase: 0
-current_wave: 0
+current_phase: 1
+current_wave: 1
 current_state: INIT
 
 project_info:
@@ -10,12 +12,82 @@ project_info:
   description: "A feature addition to the idpbuilder cli that allows it to build and push images to from the local file system to the idpbuilder internal gitea at gitea.cnoe.localtest.me and accept the self signed certs that gitea is using while running on the local idpbuilder cluster. This way users don''t have to modify their docker daemons to push to the internal gitea server because of cert validation errors."
   start_date: "2025-09-06"
   
-phases_planned: 3
-waves_per_phase: []
+phases_planned: 2
+waves_per_phase: [2, 2]  # Phase 1: 2 waves, Phase 2: 2 waves
+
+# Phase 1: Certificate Infrastructure
+phase1:
+  name: "Certificate Infrastructure"
+  status: "NOT_STARTED"
+  waves:
+    wave1:
+      name: "Certificate Management Core"
+      status: "NOT_STARTED"
+      efforts:
+        - name: "kind-certificate-extraction"
+          description: "Kind Certificate Extraction"
+          estimated_size: 500
+          status: "NOT_STARTED"
+          owner: "SW Engineer 1"
+        - name: "registry-tls-trust-integration"
+          description: "Registry TLS Trust Integration"
+          estimated_size: 600
+          status: "NOT_STARTED"
+          owner: "SW Engineer 2"
+    wave2:
+      name: "Certificate Validation & Fallback"
+      status: "NOT_STARTED"
+      efforts:
+        - name: "certificate-validation-pipeline"
+          description: "Certificate Validation Pipeline"
+          estimated_size: 400
+          status: "NOT_STARTED"
+          owner: "SW Engineer 1"
+        - name: "fallback-strategies"
+          description: "Fallback Strategies"
+          estimated_size: 400
+          status: "NOT_STARTED"
+          owner: "SW Engineer 2"
+
+# Phase 2: Build & Push Implementation  
+phase2:
+  name: "Build & Push Implementation"
+  status: "NOT_STARTED"
+  waves:
+    wave1:
+      name: "Core Build & Push"
+      status: "NOT_STARTED"
+      efforts:
+        - name: "go-containerregistry-image-builder"
+          description: "go-containerregistry Image Builder"
+          estimated_size: 600
+          status: "NOT_STARTED"
+          owner: "SW Engineer 3"
+        - name: "gitea-registry-client"
+          description: "Gitea Registry Client"
+          estimated_size: 600
+          status: "NOT_STARTED"
+          owner: "SW Engineer 1"
+    wave2:
+      name: "CLI Integration"
+      status: "NOT_STARTED"
+      efforts:
+        - name: "cli-commands"
+          description: "CLI Commands"
+          estimated_size: 500
+          status: "NOT_STARTED"
+          owner: "SW Engineer 2"
 
 efforts_completed: []
 efforts_in_progress: []
-efforts_planned: []
+efforts_planned:
+  - "phase1/wave1/kind-certificate-extraction"
+  - "phase1/wave1/registry-tls-trust-integration"
+  - "phase1/wave2/certificate-validation-pipeline"
+  - "phase1/wave2/fallback-strategies"
+  - "phase2/wave1/go-containerregistry-image-builder"
+  - "phase2/wave1/gitea-registry-client"
+  - "phase2/wave2/cli-commands"
 
 integration_branches: []
 
@@ -24,4 +96,4 @@ grading_history:
   review_first_try_rate: 0.0
   integration_success_rate: 0.0
   
-last_checkpoint: "2025-09-06T14:09:01+00:00"
+last_checkpoint: "2025-09-06T15:00:00+00:00"
