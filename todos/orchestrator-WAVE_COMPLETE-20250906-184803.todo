@@ -1,0 +1,8 @@
+[
+  {"content": "Verify Wave 1 completion status", "status": "completed", "activeForm": "Verifying Wave 1 completion status"},
+  {"content": "Update orchestrator-state.yaml to WAVE_COMPLETE", "status": "completed", "activeForm": "Updating orchestrator-state.yaml to WAVE_COMPLETE"},
+  {"content": "Save TODO state before transition (R287)", "status": "completed", "activeForm": "Saving TODO state before transition"},
+  {"content": "Commit state file changes (R288)", "status": "pending", "activeForm": "Committing state file changes"},
+  {"content": "Push state changes to remote", "status": "pending", "activeForm": "Pushing state changes to remote"},
+  {"content": "Create transition summary and stop (R322)", "status": "pending", "activeForm": "Creating transition summary and stopping"}
+]
