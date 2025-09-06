@@ -1,0 +1,37 @@
+[
+  {
+    "content": "Monitor Wave 1 implementation status",
+    "status": "completed",
+    "activeForm": "Monitoring Wave 1 implementation status"
+  },
+  {
+    "content": "Verify Wave 1 effort implementations are complete",
+    "status": "completed",
+    "activeForm": "Verifying Wave 1 effort implementations are complete"
+  },
+  {
+    "content": "Spawn Code Reviewers for Wave 1 effort reviews",
+    "status": "completed",
+    "activeForm": "Spawning Code Reviewers for Wave 1 effort reviews"
+  },
+  {
+    "content": "Handle critical violations in kind-cert-extraction",
+    "status": "pending",
+    "activeForm": "Handling critical violations in kind-cert-extraction"
+  },
+  {
+    "content": "Handle minor fixes for registry-tls-trust",
+    "status": "pending",
+    "activeForm": "Handling minor fixes for registry-tls-trust"
+  },
+  {
+    "content": "Update state to ERROR_RECOVERY",
+    "status": "completed",
+    "activeForm": "Updating state to ERROR_RECOVERY"
+  },
+  {
+    "content": "Save TODOs and commit state changes (R287/R288)",
+    "status": "in_progress",
+    "activeForm": "Saving TODOs and committing state changes"
+  }
+]

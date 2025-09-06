@@ -1,10 +1,10 @@
 state_machine:
-  current_state: "MONITOR_IMPLEMENTATION"
-  previous_state: "SPAWN_AGENTS"
-  transition_time: "2025-09-06T17:35:00Z"
-  transition_reason: "SW Engineers completed Wave 1 implementation"
-  rules_reacknowledged: true
-  recovery_note: "Both Wave 1 efforts implemented successfully"
+  current_state: "ERROR_RECOVERY"
+  previous_state: "MONITOR_IMPLEMENTATION"
+  transition_time: "2025-09-06T18:06:00Z"
+  transition_reason: "Critical size violations in kind-cert-extraction (11,876 lines - 14.8x over limit)"
+  rules_reacknowledged: false
+  recovery_note: "kind-cert-extraction needs complete restart; registry-tls-trust needs minor fixes"
 
 project_info:
   name: "idpbuilder-oci-mvp"
@@ -31,15 +31,17 @@ phase_structure:
           - name: "E1.1.1-kind-certificate-extraction"
             description: "Extract certificates from Kind/Gitea"
             estimated_lines: 500
-            actual_lines: 673
-            status: "IMPLEMENTED"
+            actual_lines: 11876
+            status: "CRITICAL_VIOLATION_NEEDS_RESTART"
+            review_status: "FAILED - 14.8x over limit, workspace contamination"
             assignee: "sw-engineer-1"
             directory: "efforts/phase1/wave1/kind-cert-extraction"
           - name: "E1.1.2-registry-tls-trust-integration"
             description: "Configure go-containerregistry TLS trust"
             estimated_lines: 600
-            actual_lines: 572
-            status: "IMPLEMENTED"
+            actual_lines: 710
+            status: "NEEDS_FIXES"
+            review_status: "MINOR_FIXES - Over soft limit but within hard limit"
             assignee: "sw-engineer-2"
             directory: "efforts/phase1/wave1/registry-tls-trust"
       wave_2:
@@ -137,7 +139,8 @@ timestamps:
   wave_1_implementation_complete: "2025-09-06T17:50:00Z"
 
 next_actions:
-  - "Wave 1 implementation completed by SW Engineers"
-  - "Next: Spawn Code Reviewers for effort review"
-  - "Next: Monitor code review progress"
-  - "Next: Handle any review feedback"
+  - "CRITICAL: kind-cert-extraction has 11,876 lines - needs complete restart"
+  - "Delete contaminated kind-cert-extraction directory and recreate"
+  - "Spawn SW Engineer to reimplement kind-cert-extraction with proper isolation"
+  - "Spawn SW Engineer to fix minor issues in registry-tls-trust"
+  - "Monitor fixes and re-review when complete"
