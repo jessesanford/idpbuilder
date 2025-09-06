@@ -1,193 +1,137 @@
-# Software Factory 2.0 - Orchestrator State File
-# Generated: Sat Sep  6 16:32:00 UTC 2025
-# Rule: R281 - COMPLETE initial state with ALL phases/waves/efforts
+state_machine:
+  current_state: "SPAWN_CODE_REVIEWER_WAVE_IMPL"
+  previous_state: "AWAIT_PHASE_PLAN"
+  transition_time: "2025-09-06T17:12:30Z"
+  transition_reason: "Recovered from state loss - Architect completed Phase 1 planning"
+  rules_reacknowledged: true
+  recovery_note: "State file recreated after deletion - recovered from git history and phase plan"
 
-# Current execution state
-current_state: AWAIT_PHASE_PLAN
-current_phase: 1
-current_wave: 1
-
-# Project configuration from IMPLEMENTATION-PLAN.md
-project:
-  name: idpbuilder-oci-mvp
-  description: "Enable reliable image push to Gitea with self-signed certificates"
+project_info:
+  name: "idpbuilder-oci-mvp"
   total_phases: 2
   total_waves: 4
   total_efforts: 7
   estimated_lines: 2000
-  target_repository:
-    url: "https://github.com/jessesanford/idpbuilder.git"
-    base_branch: "main"
+  target_repository: "https://github.com/jessesanford/idpbuilder.git"
+  base_branch: "main"
 
-# Complete phase structure (R281 - ALL items required)
-phases:
-  - phase_number: 1
+phase_structure:
+  phase_1:
     name: "Certificate Infrastructure"
-    description: "Extract and manage certificates from Kind/Gitea"
-    estimated_lines: 1000
-    status: "NOT_STARTED"
-    start_date: null
-    end_date: null
+    status: "IN_PROGRESS"
+    estimated_lines: 1900
+    target_completion: "Week 1"
     waves:
-      - wave_number: 1
+      wave_1:
         name: "Certificate Management Core"
-        description: "Extract and manage certificates from Kind/Gitea"
-        status: "NOT_STARTED"
+        status: "PENDING"
+        can_parallelize: true
+        max_parallel: 2
         efforts:
-          - effort_id: "E1.1.1"
-            name: "Kind Certificate Extraction"
-            description: "Extract Gitea certificate from Kind cluster"
+          - name: "E1.1.1-kind-certificate-extraction"
+            description: "Extract certificates from Kind/Gitea"
             estimated_lines: 500
-            owner: "SW Engineer 1"
-            status: "NOT_STARTED"
-            work_branch: null
-            implementation_file_path: "pkg/certs/extractor.go"
-            test_file_path: "pkg/certs/extractor_test.go"
-            
-          - effort_id: "E1.1.2"
-            name: "Registry TLS Trust Integration"
-            description: "Configure go-containerregistry with custom CA"
+            status: "PENDING"
+            assignee: "TBD"
+            directory: "efforts/phase1/wave1/kind-cert-extraction"
+          - name: "E1.1.2-registry-tls-trust-integration"
+            description: "Configure go-containerregistry TLS trust"
             estimated_lines: 600
-            owner: "SW Engineer 2"
-            status: "NOT_STARTED"
-            work_branch: null
-            implementation_file_path: "pkg/certs/trust.go"
-            test_file_path: "pkg/certs/trust_test.go"
-            
-      - wave_number: 2
+            status: "PENDING"
+            assignee: "TBD"
+            directory: "efforts/phase1/wave1/registry-tls-trust"
+      wave_2:
         name: "Certificate Validation & Fallback"
-        description: "Robust certificate handling with clear diagnostics"
-        status: "NOT_STARTED"
+        status: "PENDING"
+        can_parallelize: true
+        max_parallel: 2
+        depends_on: ["wave_1"]
         efforts:
-          - effort_id: "E1.2.1"
-            name: "Certificate Validation Pipeline"
-            description: "Validate cert chain, expiry, and hostname"
+          - name: "E1.2.1-certificate-validation-pipeline"
+            description: "Validate cert chains and provide diagnostics"
             estimated_lines: 400
-            owner: "SW Engineer 1"
-            status: "NOT_STARTED"
-            work_branch: null
-            implementation_file_path: "pkg/certs/validator.go"
-            test_file_path: "pkg/certs/validator_test.go"
-            
-          - effort_id: "E1.2.2"
-            name: "Fallback Strategies"
-            description: "Auto-detect cert problems and implement --insecure"
+            status: "PENDING"
+            assignee: "TBD"
+            directory: "efforts/phase1/wave2/cert-validation"
+          - name: "E1.2.2-fallback-strategies"
+            description: "Implement fallback handling and --insecure flag"
             estimated_lines: 400
-            owner: "SW Engineer 2"
-            status: "NOT_STARTED"
-            work_branch: null
-            implementation_file_path: "pkg/certs/fallback.go"
-            test_file_path: "pkg/certs/fallback_test.go"
+            status: "PENDING"
+            assignee: "TBD"
+            directory: "efforts/phase1/wave2/fallback-strategies"
 
-  - phase_number: 2
+  phase_2:
     name: "Build & Push Implementation"
-    description: "Basic image assembly and registry push"
-    estimated_lines: 1000
-    status: "NOT_STARTED"
-    start_date: null
-    end_date: null
+    status: "PENDING"
+    estimated_lines: 1700
+    target_completion: "Week 2"
+    depends_on: ["phase_1"]
     waves:
-      - wave_number: 1
+      wave_1:
         name: "Core Build & Push"
-        description: "Basic image assembly and registry push"
-        status: "NOT_STARTED"
+        status: "PENDING"
+        can_parallelize: true
+        max_parallel: 2
         efforts:
-          - effort_id: "E2.1.1"
-            name: "go-containerregistry Image Builder"
-            description: "Create single-layer OCI image from context"
+          - name: "E2.1.1-go-containerregistry-image-builder"
+            description: "Basic image assembly using go-containerregistry"
             estimated_lines: 600
-            owner: "SW Engineer 3"
-            status: "NOT_STARTED"
-            work_branch: null
-            implementation_file_path: "pkg/build/builder.go"
-            test_file_path: "pkg/build/builder_test.go"
-            
-          - effort_id: "E2.1.2"
-            name: "Gitea Registry Client"
-            description: "Push image to Gitea with cert handling"
+            status: "PENDING"
+            assignee: "TBD"
+            directory: "efforts/phase2/wave1/image-builder"
+          - name: "E2.1.2-gitea-registry-client"
+            description: "Push images to Gitea with cert handling"
             estimated_lines: 600
-            owner: "SW Engineer 1"
-            status: "NOT_STARTED"
-            work_branch: null
-            implementation_file_path: "pkg/registry/gitea.go"
-            test_file_path: "pkg/registry/gitea_test.go"
-            
-      - wave_number: 2
+            status: "PENDING"
+            assignee: "TBD"
+            directory: "efforts/phase2/wave1/gitea-client"
+      wave_2:
         name: "CLI Integration"
-        description: "User-friendly CLI commands"
-        status: "NOT_STARTED"
+        status: "PENDING"
+        can_parallelize: false
+        max_parallel: 1
+        depends_on: ["wave_1"]
         efforts:
-          - effort_id: "E2.2.1"
-            name: "CLI Commands"
-            description: "Implement build and push CLI commands"
+          - name: "E2.2.1-cli-commands"
+            description: "Build and push CLI commands"
             estimated_lines: 500
-            owner: "SW Engineer 2"
-            status: "NOT_STARTED"
-            work_branch: null
-            implementation_file_path: "cmd/build.go,cmd/push.go"
-            test_file_path: "cmd/build_test.go,cmd/push_test.go"
+            status: "PENDING"
+            assignee: "TBD"
+            directory: "efforts/phase2/wave2/cli-commands"
 
-# Agent spawn tracking (for R151 compliance)
-spawn_history: []
+current_phase: 1
+current_wave: 1
+current_effort: null
 
-# Integration tracking
-integrations:
-  wave_integrations: []
-  phase_integrations: []
-  project_integration: null
+efforts_in_progress: []
+efforts_completed: []
+efforts_pending:
+  - "E1.1.1-kind-certificate-extraction"
+  - "E1.1.2-registry-tls-trust-integration"
+  - "E1.2.1-certificate-validation-pipeline"
+  - "E1.2.2-fallback-strategies"
+  - "E2.1.1-go-containerregistry-image-builder"
+  - "E2.1.2-gitea-registry-client"
+  - "E2.2.1-cli-commands"
 
-# Validation gates
-gates:
-  wave_completion: []
-  phase_transition: []
-  size_enforcement: []
-  architecture_review: []
+integration_branches: []
+waves_completed: []
+phases_completed: []
 
-# Error recovery tracking
-errors: []
+software_factory_compliance:
+  r281_all_phases_included: true
+  r288_immediate_commits: true
+  r322_stops_at_transitions: true
+  r287_todo_persistence: true
+  r151_parallel_spawning: false
 
-# State machine history
-state_history:
-  - timestamp: "2025-09-06T16:32:00Z"
-    from_state: null
-    to_state: "INIT"
-    trigger: "Initial creation"
-  - timestamp: "2025-09-06T16:32:00Z"
-    from_state: "INIT"
-    to_state: "SPAWN_ARCHITECT_PHASE_PLANNING"
-    trigger: "Ready to start planning"
-  - timestamp: "2025-09-06T16:41:00Z"
-    from_state: "SPAWN_ARCHITECT_PHASE_PLANNING"
-    to_state: "AWAIT_PHASE_PLAN"
-    trigger: "Architect spawned for Phase 1 planning"
+timestamps:
+  orchestrator_start: "2025-09-06T17:11:37Z"
+  state_file_created: "2025-09-06T17:12:30Z"
+  last_todo_save: null
+  last_state_commit: null
 
-# Metrics for grading compliance
-metrics:
-  parallel_spawn_timings: []
-  effort_line_counts: []
-  review_pass_rates: []
-  test_coverage: []
-  integration_success_rate: null
-
-# Work logs and documentation
-documentation:
-  master_plan: "IMPLEMENTATION-PLAN.md"
-  phase_plans: []
-  wave_plans: []
-  effort_plans: []
-  work_logs: []
-
-# TODO persistence tracking (R287)
-todo_saves:
-  last_save: null
-  save_count: 0
-  recovery_count: 0
-
-# R322 compliance - State transition stops
-transition_stops:
-  - state: "INIT"
-    stopped_at: "2025-09-06T16:32:00Z"
-    waiting_for: "user_continuation"
-  - state: "SPAWN_ARCHITECT_PHASE_PLANNING"
-    stopped_at: "2025-09-06T16:41:00Z"
-    waiting_for: "user_continuation"
+next_actions:
+  - "Spawn Code Reviewer to create Wave 1 implementation plan"
+  - "Setup effort infrastructure for Wave 1"
+  - "Analyze parallelization strategy for Wave 1"
