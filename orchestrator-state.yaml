@@ -3,7 +3,7 @@
 # Rule: R281 - COMPLETE initial state with ALL phases/waves/efforts
 
 # Current execution state
-current_state: SPAWN_ARCHITECT_PHASE_PLANNING
+current_state: AWAIT_PHASE_PLAN
 current_phase: 1
 current_wave: 1
 
@@ -156,6 +156,10 @@ state_history:
     from_state: "INIT"
     to_state: "SPAWN_ARCHITECT_PHASE_PLANNING"
     trigger: "Ready to start planning"
+  - timestamp: "2025-09-06T16:41:00Z"
+    from_state: "SPAWN_ARCHITECT_PHASE_PLANNING"
+    to_state: "AWAIT_PHASE_PLAN"
+    trigger: "Architect spawned for Phase 1 planning"
 
 # Metrics for grading compliance
 metrics:
@@ -183,4 +187,7 @@ todo_saves:
 transition_stops:
   - state: "INIT"
     stopped_at: "2025-09-06T16:32:00Z"
+    waiting_for: "user_continuation"
+  - state: "SPAWN_ARCHITECT_PHASE_PLANNING"
+    stopped_at: "2025-09-06T16:41:00Z"
     waiting_for: "user_continuation"
