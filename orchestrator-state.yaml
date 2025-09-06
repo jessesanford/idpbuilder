@@ -1,12 +1,12 @@
 state_machine:
-  current_state: SPAWN_CODE_REVIEWER_MERGE_PLAN
-  previous_state: INTEGRATION
-  transition_time: '2025-09-06T19:36:00.000000Z'
-  transition_reason: Integration infrastructure setup complete, Code Reviewer spawned for merge plan
+  current_state: WAITING_FOR_MERGE_PLAN
+  previous_state: SPAWN_CODE_REVIEWER_MERGE_PLAN
+  transition_time: '2025-09-06T20:15:00.000000Z'
+  transition_reason: Code Reviewer spawned at 19:36:00, now waiting for merge plan completion
   rules_reacknowledged: true
-  recovery_note: Both E1.1.1 and E1.1.2 implemented, reviewed, and directories verified
-  next_state: WAITING_FOR_MERGE_PLAN
-  next_state_reason: Waiting for Code Reviewer to complete merge plan before spawning Integration Agent
+  recovery_note: Code Reviewer working on WAVE-MERGE-PLAN.md for Phase 1 Wave 1
+  next_state: SPAWN_INTEGRATION_AGENT
+  next_state_reason: After merge plan completed, will spawn Integration Agent to execute merges
 project_info:
   name: idpbuilder-oci-mvp
   total_phases: 2
