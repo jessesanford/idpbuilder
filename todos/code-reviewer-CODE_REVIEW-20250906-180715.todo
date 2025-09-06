@@ -1,0 +1,20 @@
+# Code Reviewer TODOs - Trigger: REVIEW_COMPLETE
+# State: CODE_REVIEW
+# Effort: kind-cert-extraction
+# Timestamp: 2025-09-06T18:06:00Z
+
+## Completed Tasks
+✅ Review effort structure and files
+✅ Check implementation plan
+✅ Measure code size with line-counter.sh
+✅ Review code quality and patterns
+✅ Check for stub implementations (R320)
+✅ Verify test coverage
+✅ Create CODE-REVIEW-REPORT.md (timestamped per R301)
+
+## Review Findings
+- CRITICAL: 11,876 lines (14.8x over 800 limit)
+- Entire idpbuilder codebase copied into effort
+- Workspace isolation completely violated
+- Decision: NEEDS_SPLIT (actually needs complete restart)
+- Report created: CODE-REVIEW-REPORT-kind-cert-extraction-20250906-180553.md
