@@ -92,8 +92,8 @@ stateDiagram-v2
     %% Standard Flow
     INIT --> WAVE_START: Orchestrator begins wave
     WAVE_START --> SPAWN_AGENTS: With plans ready
-    SPAWN_AGENTS --> MONITOR: Agents working
-    %% MONITOR state now split into specialized monitoring states
+    SPAWN_AGENTS --> MONITOR_IMPLEMENTATION: Agents working
+    %% MONITOR state deprecated - using specialized monitoring states
     MONITOR_IMPLEMENTATION --> SPAWN_CODE_REVIEWERS_FOR_REVIEW: Implementation complete
     SPAWN_CODE_REVIEWERS_FOR_REVIEW --> MONITOR_REVIEWS: Monitor review progress
     MONITOR_REVIEWS --> CREATE_NEXT_SPLIT_INFRASTRUCTURE: Split plan exists, need infrastructure
@@ -294,8 +294,8 @@ PRODUCTION_READY_VALIDATION → BUILD_VALIDATION → [FIX_BUILD_ISSUES if needed
 
 **After fixes are reviewed and approved (from MONITORING_FIX_PROGRESS flow):**
 1. **MONITORING_FIX_PROGRESS** → **SPAWN_CODE_REVIEWERS_FOR_REVIEW** (review fixes)
-2. **SPAWN_CODE_REVIEWERS_FOR_REVIEW** → **MONITOR** (monitor reviews)
-3. **MONITOR** → **WAVE_COMPLETE** (reviews pass)
+2. **SPAWN_CODE_REVIEWERS_FOR_REVIEW** → **MONITOR_REVIEWS** (monitor reviews)
+3. **MONITOR_REVIEWS** → **WAVE_COMPLETE** (reviews pass)
 4. **WAVE_COMPLETE** → **INTEGRATION** (RE-RUN FULL INTEGRATION)
 5. **INTEGRATION** → **MONITORING_INTEGRATION** (monitor new attempt)
 
@@ -312,7 +312,7 @@ PRODUCTION_READY_VALIDATION → BUILD_VALIDATION → [FIX_BUILD_ISSUES if needed
 
 **CRITICAL R232 & R233 ENFORCEMENT**: 
 
-**R232 - MONITOR State Requirements**: Before ANY transition from MONITOR state, the orchestrator MUST:
+**R232 - MONITOR State Requirements**: Before ANY transition from MONITOR_* states, the orchestrator MUST:
 1. Check TodoWrite for pending items
 2. Process ALL pending items IMMEDIATELY
 3. NO "I will..." statements - only "I am..." with action
@@ -324,7 +324,7 @@ PRODUCTION_READY_VALIDATION → BUILD_VALIDATION → [FIX_BUILD_ISSUES if needed
 3. States are VERBS to execute, not places to rest
 4. Even "waiting" states must actively poll, not passively wait
 
-**CRITICAL**: The transition from `MONITOR` to `WAVE_COMPLETE` is BLOCKED unless:
+**CRITICAL**: The transition from `MONITOR_REVIEWS` to `WAVE_COMPLETE` is BLOCKED unless:
 1. ALL implementations are COMPLETE
 2. ALL Code Reviews have been SPAWNED for completed implementations
 3. ALL Code Reviews have PASSED (no REJECTED or FAILED states)
@@ -334,7 +334,7 @@ PRODUCTION_READY_VALIDATION → BUILD_VALIDATION → [FIX_BUILD_ISSUES if needed
 
 **The Implementation-Review Flow:**
 1. SW Engineer completes implementation → sets implementation_status: COMPLETE
-2. **ORCHESTRATOR IN MONITOR DETECTS THIS → MUST SPAWN CODE REVIEWER**
+2. **ORCHESTRATOR IN MONITOR_IMPLEMENTATION DETECTS THIS → MUST SPAWN CODE REVIEWER**
 3. Code Reviewer reviews the implementation
 4. If PASSED → effort marked complete with review_status: PASSED
 5. If FAILED → Orchestrator spawns SW Engineer to FIX_ISSUES
@@ -348,18 +348,18 @@ If any review fails or cannot be run:
 3. SW Engineer completes fixes → implementation_status: COMPLETE again
 4. **ORCHESTRATOR DETECTS AND SPAWNS CODE REVIEWER AGAIN**
 5. Code Reviewer re-runs the review
-6. If review passes → back to MONITOR → check all efforts
+6. If review passes → back to MONITOR_REVIEWS → check all efforts
 7. If review fails → back to step 1 (FIX_ISSUES)
 8. This cycle continues until ALL reviews pass
 9. Only then can transition to WAVE_COMPLETE occur
 
 **The Review-Fix Loop:**
 ```
-MONITOR detects implementation COMPLETE → SPAWN_CODE_REVIEWER → CODE_REVIEW
+MONITOR_IMPLEMENTATION detects implementation COMPLETE → SPAWN_CODE_REVIEWERS_FOR_REVIEW → CODE_REVIEW
     ↓ (if fails)
-SPAWN_FIX_AGENT → FIX_ISSUES → implementation COMPLETE
-    ↓ (detected in MONITOR)
-SPAWN_CODE_REVIEWER → CODE_REVIEW (re-run)
+SPAWN_ENGINEERS_FOR_FIXES → FIX_ISSUES → implementation COMPLETE
+    ↓ (detected in MONITOR_IMPLEMENTATION)
+SPAWN_CODE_REVIEWERS_FOR_REVIEW → CODE_REVIEW (re-run)
 ```
 
 ## Split Infrastructure Flow
@@ -441,7 +441,6 @@ The orchestrator coordinates all work and manages the overall flow.
 - **WAITING_FOR_ARCHITECTURE_PLAN** - Waiting for architect to complete architecture plan
 - **WAITING_FOR_IMPLEMENTATION_PLAN** - Waiting for code reviewer to complete implementation plan
 - **INJECT_WAVE_METADATA** - Injecting R213 wave metadata into plans
-- **MONITOR** - (DEPRECATED - Split into specialized states) Monitoring agent progress
 - **MONITOR_IMPLEMENTATION** - Actively monitoring SW Engineers implementing features
 - **MONITOR_REVIEWS** - Actively monitoring Code Reviewers performing reviews and handling split needs
 - **MONITOR_FIXES** - Actively monitoring SW Engineers fixing review issues or build failures
@@ -521,11 +520,16 @@ ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (
 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → WAITING_FOR_EFFORT_PLANS (R234 MANDATORY)
 WAITING_FOR_EFFORT_PLANS → ANALYZE_IMPLEMENTATION_PARALLELIZATION (R234 MANDATORY)
 ANALYZE_IMPLEMENTATION_PARALLELIZATION → SPAWN_AGENTS (R234 MANDATORY SEQUENCE COMPLETE)
-SPAWN_AGENTS → MONITOR
-MONITOR → CREATE_NEXT_SPLIT_INFRASTRUCTURE (split plan exists, need next split)
+SPAWN_AGENTS → MONITOR_IMPLEMENTATION
+MONITOR_IMPLEMENTATION → SPAWN_CODE_REVIEWERS_FOR_REVIEW (implementation complete)
+SPAWN_CODE_REVIEWERS_FOR_REVIEW → MONITOR_REVIEWS (monitor review progress)
+MONITOR_REVIEWS → CREATE_NEXT_SPLIT_INFRASTRUCTURE (split plan exists, need next split)
+MONITOR_REVIEWS → SPAWN_ENGINEERS_FOR_FIXES (review failed, fixes needed)
+MONITOR_REVIEWS → WAVE_COMPLETE (ALL reviews passed)
 CREATE_NEXT_SPLIT_INFRASTRUCTURE → SPAWN_AGENTS (infrastructure ready for next split)
-MONITOR → WAVE_COMPLETE (ONLY if ALL code reviews pass - R222)
-MONITOR → ERROR_RECOVERY (if any review fails or effort blocked)
+MONITOR_FIXES → SPAWN_CODE_REVIEWERS_FOR_REVIEW (fixes complete, re-review needed)
+MONITOR_FIXES → IMMEDIATE_BACKPORT_REQUIRED (R321 - Integration fixes need backporting)
+SPAWN_ENGINEERS_FOR_FIXES → MONITOR_FIXES (monitor fix progress)
 WAVE_COMPLETE → INTEGRATION
 INTEGRATION → SPAWN_CODE_REVIEWER_MERGE_PLAN
 SPAWN_CODE_REVIEWER_MERGE_PLAN → WAITING_FOR_MERGE_PLAN
@@ -543,7 +547,7 @@ DISTRIBUTE_FIX_PLANS → SPAWN_ENGINEERS_FOR_FIXES
 SPAWN_ENGINEERS_FOR_FIXES → MONITORING_FIX_PROGRESS
 MONITORING_FIX_PROGRESS → SPAWN_CODE_REVIEWERS_FOR_REVIEW (fixes complete)
 MONITORING_FIX_PROGRESS → ERROR_RECOVERY (timeout)
-SPAWN_CODE_REVIEWERS_FOR_REVIEW → MONITOR (re-enter review cycle)
+SPAWN_CODE_REVIEWERS_FOR_REVIEW → MONITOR_REVIEWS (re-enter review cycle)
 WAVE_REVIEW → WAVE_START (next wave, not last)
 WAVE_REVIEW → PHASE_INTEGRATION (last wave of phase - R285)
 SPAWN_ARCHITECT_PHASE_ASSESSMENT → WAITING_FOR_PHASE_ASSESSMENT
@@ -708,7 +712,7 @@ ARCHITECTURE_VALIDATION → DECISION
 ```bash
 # Orchestrator
 "WAVE_COMPLETE" → "INTEGRATION"  # Valid
-"MONITOR" → "WAVE_COMPLETE"      # Valid
+"MONITOR_REVIEWS" → "WAVE_COMPLETE"      # Valid
 "ERROR_RECOVERY" → "SPAWN_AGENTS" # Valid (retry)
 "INTEGRATION" → "WAVE_REVIEW"     # Valid
 "WAVE_REVIEW" → "PHASE_INTEGRATION" # Valid (last wave - R285)
@@ -744,7 +748,7 @@ ARCHITECTURE_VALIDATION → DECISION
 ```bash
 # WRONG - State doesn't exist
 "WAVE_COMPLETE" → "WAITING_FOR_COFFEE"  # No such state!
-"MONITOR" → "HAVING_LUNCH"        # Not a real state!
+"MONITOR_IMPLEMENTATION" → "HAVING_LUNCH"        # Not a real state!
 "IMPLEMENTATION" → "DEBUGGING"    # Debugging isn't a state!
 
 # WRONG - Wrong agent type
@@ -758,7 +762,7 @@ ARCHITECTURE_VALIDATION → DECISION
 "INTERGRATION" → "WAVE_REVIEW"    # Typo in INTEGRATION!
 
 # WRONG - Made up state
-"MONITOR" → "THINKING_ABOUT_IT"   # Not a real state!
+"MONITOR_REVIEWS" → "THINKING_ABOUT_IT"   # Not a real state!
 "CODE_REVIEW" → "COFFEE_BREAK"    # No breaks in state machine!
 "WAVE_START" → "PROCRASTINATING"  # No procrastination state!
 

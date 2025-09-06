@@ -176,7 +176,7 @@ Initial state when orchestrator starts. Primary purpose is to:
 
 ## State Transitions
 - If orchestrator-state.yaml exists with current_state → Resume from that state
-- If no state file → Create COMPLETE initial state (R281), then go to PLANNING
+- If no state file → Create COMPLETE initial state (R281), then go to SPAWN_ARCHITECT_PHASE_PLANNING
 - If state file incomplete → IMMEDIATE FAILURE (-100%)
 - If config missing → HARD_STOP
 

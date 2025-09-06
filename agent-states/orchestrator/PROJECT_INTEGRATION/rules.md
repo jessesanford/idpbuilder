@@ -82,6 +82,21 @@ echo "$(date +%s) - Rules read and acknowledged for PROJECT_INTEGRATION" > .stat
 **Criticality**: BLOCKING - Must use target repository
 **Summary**: Integration happens in target repository, NOT software-factory
 
+### 🚨🚨🚨 R321 - Immediate Backport During Integration Protocol [BLOCKING]
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R321-immediate-backport-during-integration.md`
+**Criticality**: BLOCKING - Fixes found during integration must be backported immediately
+**Summary**: When integration issues are found, must stop and backport fixes to original branches
+
+### 🚨🚨🚨 R280 - Main Branch Protection Protocol [BLOCKING]
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R280-main-branch-protection-protocol.md`
+**Criticality**: BLOCKING - Direct commits to main/master are forbidden
+**Summary**: All changes must go through PR process with proper reviews
+
+### 🚨🚨🚨 R307 - Branch Mergeability Check [BLOCKING]
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R307-branch-mergeability-check.md`
+**Criticality**: BLOCKING - Must verify branches are mergeable before attempting
+**Summary**: Check for conflicts and mergeability before integration operations
+
 ## 🚨 PROJECT_INTEGRATION IS A VERB - SET UP INFRASTRUCTURE NOW! 🚨
 
 ### IMMEDIATE ACTIONS UPON ENTERING PROJECT_INTEGRATION

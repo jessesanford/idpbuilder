@@ -238,6 +238,16 @@ The system will check for this marker. No marker = Immediate failure.
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R271-single-branch-full-checkout.md`
    - Criticality: SUPREME LAW - Full single-branch checkout required
 
+9. **🚨🚨🚨 R216** - Bash Execution Syntax Protocol (BLOCKING)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R216-bash-execution-syntax-protocol.md`
+   - Criticality: BLOCKING - Incorrect syntax causes failures
+   - Summary: Use parentheses for subshells, proper variable syntax
+
+10. **🚨🚨🚨 R235** - Pre-flight Verification Checklist (BLOCKING)
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R235-pre-flight-verification-checklist.md`
+    - Criticality: BLOCKING - Must verify environment before setup
+    - Summary: Check directories, permissions, branches before infrastructure setup
+
 **Note**: R234, R208, R221, R287, R288 are already in your orchestrator.md Supreme Laws section.
 
 ## 📋 RULE SUMMARY FOR SETUP_EFFORT_INFRASTRUCTURE STATE

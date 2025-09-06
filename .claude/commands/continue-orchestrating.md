@@ -308,28 +308,42 @@ case "$CURRENT_STATE" in
         echo "Starting new orchestration"
         ACTION: Read master plan
         ACTION: Initialize Phase 1
-        NEXT_STATE: "PLANNING"
+        NEXT_STATE: "WAVE_START"
         ;;
         
-    "PLANNING")
-        echo "Planning phase/wave/efforts"
-        ACTION: Create phase plan if needed
-        ACTION: Plan wave efforts
-        NEXT_STATE: "SPAWN_AGENTS"
+    "WAVE_START")
+        echo "Starting new wave"
+        ACTION: Set up wave infrastructure if needed
+        ACTION: Prepare for effort planning
+        NEXT_STATE: "SETUP_EFFORT_INFRASTRUCTURE"
         ;;
         
     "SPAWN_AGENTS")
         echo "Spawning agents for efforts"
         ACTION: Spawn Code Reviewer for planning
         ACTION: Spawn SW Engineer for implementation
-        NEXT_STATE: "MONITOR"
+        NEXT_STATE: "MONITOR_IMPLEMENTATION"
         ;;
         
-    "MONITOR")
-        echo "Monitoring agent progress"
-        ACTION: Check effort status
-        ACTION: Track size compliance
-        NEXT_STATE: "WAVE_COMPLETE" or "ERROR_RECOVERY"
+    "MONITOR_IMPLEMENTATION")
+        echo "Monitoring SW Engineer implementation"
+        ACTION: Check implementation status
+        ACTION: Spawn reviewers when ready
+        NEXT_STATE: "SPAWN_CODE_REVIEWERS_FOR_REVIEW"
+        ;;
+        
+    "MONITOR_REVIEWS")
+        echo "Monitoring Code Reviewer progress"
+        ACTION: Check review status
+        ACTION: Handle splits if needed
+        NEXT_STATE: "WAVE_COMPLETE" or "SPAWN_ENGINEERS_FOR_FIXES"
+        ;;
+        
+    "MONITOR_FIXES")
+        echo "Monitoring fix progress"
+        ACTION: Check fix implementation
+        ACTION: Prepare for re-review
+        NEXT_STATE: "SPAWN_CODE_REVIEWERS_FOR_REVIEW"
         ;;
         
     "WAVE_COMPLETE")

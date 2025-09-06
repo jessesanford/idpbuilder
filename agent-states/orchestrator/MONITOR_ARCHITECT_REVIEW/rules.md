@@ -1,4 +1,4 @@
-# Orchestrator - SPAWN_CODE_REVIEWER_PROJECT_VALIDATION State Rules
+# Orchestrator - MONITOR_ARCHITECT_REVIEW State Rules
 
 ## 🛑🛑🛑 R322 MANDATORY STOP BEFORE STATE TRANSITIONS 🛑🛑🛑
 
@@ -37,31 +37,33 @@ Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
 
 ---
 
-## 🛑🛑🛑 R313 MANDATORY STOP AFTER SPAWNING AGENTS 🛑🛑🛑
+## Primary Rules
 
-**SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
-
-You MUST STOP IMMEDIATELY after spawning the Code Reviewer.
+### 🚨🚨🚨 R319 - Orchestrator NEVER Measures or Assesses Code (BLOCKING)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R319-orchestrator-never-measures-or-assesses.md`
+**Criticality**: BLOCKING - Orchestrator coordinates, never analyzes
+**Summary**: Orchestrator must delegate all code analysis to appropriate agents
 
 ## State Context
 
 **Purpose:**
-Spawn Code Reviewer to perform comprehensive validation of the integrated project, ensuring all phases work together correctly.
+Monitor Architect review progress.
 
 ## Primary Actions
 
-1. **Spawn Code Reviewer** with PROJECT_VALIDATION directive
-2. **Provide Context**:
-   - Project integration branch location
-   - List of all integrated phases
-   - Validation requirements per R271-R275
-3. **Request Validation**:
-   - Functional correctness across phases
-   - No inter-phase conflicts
-   - Production readiness
-4. **Update State File** and **STOP per R313**
+1. Check for assessment reports
+2. Parse recommendations
+3. Update tracking
 
-## Valid State Transitions
+## State Transitions
 
-- **SUCCESS** → WAITING_FOR_PROJECT_VALIDATION (reviewer spawned)
-- **FAILURE** → ERROR_RECOVERY (spawn failed)
+- **SUCCESS** → PHASE_COMPLETE or WAVE_COMPLETE
+- **FAILURE** → ERROR_RECOVERY
+
+## Success Criteria
+
+Before transitioning:
+1. ✅ State work completed
+2. ✅ State file updated
+3. ✅ TODOs saved and committed
+4. ✅ Clear continuation instructions provided

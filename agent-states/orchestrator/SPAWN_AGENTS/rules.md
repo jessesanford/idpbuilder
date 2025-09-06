@@ -193,6 +193,16 @@ The system will check for this marker. No marker = Immediate failure.
     - File: `$CLAUDE_PROJECT_DIR/rule-library/R255-POST-AGENT-WORK-VERIFICATION.md`
     - Criticality: BLOCKING - Verify correct locations after completion
 
+11. **🚨🚨🚨 R216** - Bash Execution Syntax Protocol (BLOCKING)
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R216-bash-execution-syntax-protocol.md`
+    - Criticality: BLOCKING - Incorrect syntax causes failures
+    - Summary: Use parentheses for subshells, proper variable syntax
+    
+12. **🚨🚨🚨 R235** - Pre-flight Verification Checklist (BLOCKING)
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R235-pre-flight-verification-checklist.md`
+    - Criticality: BLOCKING - Must verify environment before spawning
+    - Summary: Check directories, permissions, branches before agent spawn
+
 **Note**: R208 (CD before spawn), R221 (bash reset) are already in orchestrator.md Supreme Laws.
 
 ## 🔴🔴🔴 MANDATORY SPAWN DIRECTORY VERIFICATION PROTOCOL 🔴🔴🔴

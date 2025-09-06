@@ -126,6 +126,21 @@ CREATE_NEXT_SPLIT_INFRASTRUCTURE = You ARE ACTIVELY creating the infrastructure 
 **Criticality**: SUPREME LAW - Update on every transition
 **Summary**: Update orchestrator-state.yaml with split progress
 
+### 🚨🚨🚨 R221 - Bash Reset Protocol (BLOCKING)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R221-bash-reset-protocol.md`
+**Criticality**: BLOCKING - Must reset bash state between operations
+**Summary**: Reset variables and state when creating new split infrastructure
+
+### 🚨🚨🚨 R216 - Bash Execution Syntax Protocol (BLOCKING)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R216-bash-execution-syntax-protocol.md`
+**Criticality**: BLOCKING - Incorrect syntax causes failures
+**Summary**: Use parentheses for subshells, proper variable syntax
+
+### 🚨🚨🚨 R235 - Pre-flight Verification Checklist (BLOCKING)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R235-pre-flight-verification-checklist.md`
+**Criticality**: BLOCKING - Must verify environment before setup
+**Summary**: Check directories, permissions, branches before split infrastructure
+
 ## 🚨🚨🚨 IMMEDIATE ACTIONS UPON ENTERING STATE 🚨🚨🚨
 
 **THE INSTANT YOU ENTER THIS STATE, DO THIS:**

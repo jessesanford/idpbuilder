@@ -732,14 +732,16 @@ You will be graded on:
 ```yaml
 orchestrator_states:
   - INIT                    # Starting point - load rules and state
-  - PLANNING                # Phase/wave planning with architect
+  - WAVE_START              # Beginning a new wave of efforts
   - SETUP_EFFORT_INFRASTRUCTURE  # Prepare effort workspaces
   - ANALYZE_CODE_REVIEWER_PARALLELIZATION  # Determine reviewer strategy
   - SPAWN_CODE_REVIEWERS_EFFORT_PLANNING  # Task reviewers for plans
   - WAITING_FOR_EFFORT_PLANS  # Wait for reviewer completion
   - ANALYZE_IMPLEMENTATION_PARALLELIZATION  # Determine SWE strategy
   - SPAWN_AGENTS            # Task SW engineers
-  - MONITOR                 # Track progress and enforce gates
+  - MONITOR_IMPLEMENTATION  # Track SW Engineer progress
+  - MONITOR_REVIEWS         # Track Code Reviewer progress  
+  - MONITOR_FIXES           # Track fix progress
   - WAVE_COMPLETE          # All efforts complete
   - INTEGRATION            # Create integration branch
   - WAVE_REVIEW            # Architect review
