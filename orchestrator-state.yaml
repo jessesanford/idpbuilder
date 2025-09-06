@@ -1,23 +1,18 @@
 state_machine:
-  current_state: WAITING_FOR_MERGE_PLAN
-  previous_state: SPAWN_CODE_REVIEWER_MERGE_PLAN
-  transition_time: '2025-09-06T20:15:00.000000Z'
-  transition_reason: Code Reviewer spawned at 19:36:00, now waiting for merge plan completion
+  current_state: MONITORING_INTEGRATION
+  previous_state: SPAWN_INTEGRATION_AGENT
+  transition_time: '2025-09-06T20:24:45.000000Z'
+  transition_reason: Integration Agent spawned and completed merge execution successfully
   rules_reacknowledged: true
-  recovery_note: MERGE PLAN COMPLETED - Found at 19:44:00, validated per R269
-  next_state: SPAWN_INTEGRATION_AGENT
-  next_state_reason: Merge plan validated and ready - will spawn Integration Agent to execute merges
-  merge_plan_found: '2025-09-06T19:44:00.000000Z'
-  merge_plan_location: './WAVE-MERGE-PLAN.md'
-  merge_plan_validation: PASSED
-  ready_for_transition: true
-  transition_checkpoint: '2025-09-06T20:23:30.000000Z'
-  transition_notes: |
-    - Merge plan confirmed at ./WAVE-MERGE-PLAN.md
-    - Integration branch exists: idpbuilder-oci-build-push/phase1/wave1-integration
-    - Ready to spawn Integration Agent to execute merge plan
-    - R322 STOP: Stopping before transition to SPAWN_INTEGRATION_AGENT
-    - Next action: Await user continuation to proceed with agent spawn
+  integration_status: COMPLETED
+  integration_report_location: 'efforts/phase1/wave1/integration-workspace/INTEGRATION-REPORT.md'
+  upstream_bugs_found: true
+  upstream_bugs: |
+    - Duplicate function: isFeatureEnabled in trust.go:260 and helpers.go:34
+    - Duplicate type: CertValidator in utilities.go:229 and extractor.go:31
+    - Interface issue: ValidationResult doesn't implement error interface
+  integration_score: '95/100'
+  next_action: Monitor integration results and decide on fixes vs Wave 2
 project_info:
   name: idpbuilder-oci-mvp
   total_phases: 2
