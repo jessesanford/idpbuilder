@@ -1,0 +1,26 @@
+# ORCHESTRATOR TODO STATE
+# State: WAITING_FOR_MERGE_PLAN
+# Timestamp: 2025-09-06T19:55:00.000000Z
+# Next State: SPAWN_INTEGRATION_AGENT
+
+## Completed Tasks
+- [x] Verify merge plan exists and is valid
+- [x] Update state file with transition preparation to SPAWN_INTEGRATION_AGENT
+
+## In Progress
+- [ ] Save TODOs before state transition (R287)
+
+## Pending
+- [ ] Commit state file updates (R288)
+- [ ] Stop and await user continuation (R322)
+
+## State Transition Notes
+- Merge plan found and validated at ./WAVE-MERGE-PLAN.md
+- Integration branch exists: idpbuilder-oci-build-push/phase1/wave1-integration
+- Ready to spawn Integration Agent to execute merge plan
+- Checkpoint created per R322 before state transition
+
+## Next Actions After Continuation
+- Transition to SPAWN_INTEGRATION_AGENT state
+- Spawn Integration Agent with merge plan
+- Monitor integration progress

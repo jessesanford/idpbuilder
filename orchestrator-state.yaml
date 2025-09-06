@@ -10,6 +10,13 @@ state_machine:
   merge_plan_found: '2025-09-06T19:44:00.000000Z'
   merge_plan_location: './WAVE-MERGE-PLAN.md'
   merge_plan_validation: PASSED
+  ready_for_transition: true
+  transition_checkpoint: '2025-09-06T19:54:15.000000Z'
+  transition_notes: |
+    - Merge plan validated with 8 effort references
+    - Integration branch already created: idpbuilder-oci-build-push/phase1/wave1-integration
+    - Ready to spawn Integration Agent to execute merge plan
+    - Stopping per R322 before state transition
 project_info:
   name: idpbuilder-oci-mvp
   total_phases: 2
