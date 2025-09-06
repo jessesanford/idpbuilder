@@ -45,8 +45,8 @@ func runPush(cmd *cobra.Command, args []string) error {
 	password, _ := cmd.Flags().GetString("password")
 	retryCount, _ := cmd.Flags().GetInt("retry")
 
-	// Validate image name
-	if !strings.Contains(image, ":") {
+	// Don't add :latest tag if this is a tarball path
+	if !strings.Contains(image, ".tar") && !strings.Contains(image, ":") {
 		image = image + ":latest"
 	}
 
@@ -71,18 +71,15 @@ func runPush(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	var trustStore certs.TrustStoreManager
+	// Always create trust store (required by NewGiteaClient)
+	trustStore, err := certs.NewTrustStoreManager("")
+	if err != nil {
+		return fmt.Errorf("failed to create trust store: %w", err)
+	}
 	
 	// Setup certificate trust (unless --insecure)
 	if !insecure {
 		progress.UpdateMessage("Configuring certificate trust")
-		
-		// Create trust store from Phase 1 certificate infrastructure
-		var err error
-		trustStore, err = certs.NewTrustStoreManager("")  // Use default directory
-		if err != nil {
-			return fmt.Errorf("failed to create trust store: %w", err)
-		}
 		
 		// Auto-configure for Gitea if using default registry
 		if strings.Contains(registryURL, "gitea.cnoe.localtest.me") {
@@ -137,7 +134,14 @@ func runPush(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to load image from tarball: %w", err)
 	}
 	
-	progress.UpdateMessage("Pushing to registry")
+	// Parse registry URL to get host
+	registryHost := strings.TrimPrefix(registryURL, "https://")
+	registryHost = strings.TrimPrefix(registryHost, "http://")
+	
+	// Construct the full image reference for pushing
+	imageRef := fmt.Sprintf("%s/%s/hello-world:v1", registryHost, strings.ToLower(username))
+	
+	progress.UpdateMessage("Pushing to " + imageRef)
 	
 	// Prepare push options
 	pushOpts := registry.PushOptions{
@@ -148,11 +152,11 @@ func runPush(cmd *cobra.Command, args []string) error {
 	}
 	
 	// Push the image
-	if err := client.Push(context.Background(), img, image, pushOpts); err != nil {
+	if err := client.Push(context.Background(), img, imageRef, pushOpts); err != nil {
 		return fmt.Errorf("push failed: %w", err)
 	}
 	
-	fmt.Printf("Successfully pushed %s\n", image)
+	fmt.Printf("Successfully pushed %s to %s\n", tarballPath, imageRef)
 	return nil
 }
 

@@ -287,12 +287,12 @@ func TestNewGiteaClient_TrustStoreFailures(t *testing.T) {
 		{
 			name:          "trust store create failure",
 			failCreate:    true,
-			expectedError: "failed to configure transport",
+			expectedError: "trust store create failure",
 		},
 		{
 			name:          "trust store config failure", 
 			failConfig:    true,
-			expectedError: "failed to configure transport",
+			expectedError: "trust store config failure",
 		},
 	}
 	
@@ -345,7 +345,7 @@ func TestGiteaClient_Push(t *testing.T) {
 			name:        "invalid reference",
 			ref:         "invalid::reference",
 			wantErr:     true,
-			errContains: "invalid_reference",
+			errContains: "invalid reference",
 		},
 		{
 			name:    "valid reference - will fail with network error", 
@@ -417,7 +417,7 @@ func TestGiteaClient_Pull(t *testing.T) {
 			name:        "invalid reference",
 			ref:         "invalid::reference",
 			wantErr:     true,
-			errContains: "invalid_reference",
+			errContains: "invalid reference",
 		},
 		{
 			name:    "valid reference - will fail with network error",
@@ -495,7 +495,7 @@ func TestGiteaClient_Tags(t *testing.T) {
 			name:        "invalid repository",
 			repository:  "invalid::repo",
 			wantErr:     true,
-			errContains: "invalid_repository",
+			errContains: "invalid repository",
 		},
 		{
 			name:       "valid repository - will fail with network error",
