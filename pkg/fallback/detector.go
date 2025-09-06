@@ -26,21 +26,21 @@ const (
 
 // CertProblem contains detailed information about a certificate validation issue
 type CertProblem struct {
-	Type        ProblemType                // The specific problem identified
-	Certificate *x509.Certificate          // The problematic certificate
-	Error       error                      // Original validation error
-	Details     map[string]interface{}     // Additional context
-	Suggestions []string                   // Quick fix suggestions
+	Type        ProblemType            // The specific problem identified
+	Certificate *x509.Certificate      // The problematic certificate
+	Error       error                  // Original validation error
+	Details     map[string]interface{} // Additional context
+	Suggestions []string               // Quick fix suggestions
 }
 
 // ProblemDetector analyzes certificate validation errors and identifies specific issues
 type ProblemDetector interface {
 	// DetectProblem analyzes a validation error and identifies the specific problem type
 	DetectProblem(validationErr error, cert *x509.Certificate) (*CertProblem, error)
-	
+
 	// AnalyzeCertChain provides comprehensive analysis of certificate chain issues
 	AnalyzeCertChain(certs []*x509.Certificate) ([]*CertProblem, error)
-	
+
 	// DetectFromDiagnostics analyzes problems from CertDiagnostics output
 	DetectFromDiagnostics(diag *certs.CertDiagnostics) ([]*CertProblem, error)
 }
@@ -62,7 +62,7 @@ func (d *DefaultDetector) DetectProblem(validationErr error, cert *x509.Certific
 	if validationErr == nil {
 		return nil, nil // No error, no problem
 	}
-	
+
 	if cert == nil {
 		return nil, fmt.Errorf("certificate cannot be nil")
 	}
@@ -83,19 +83,19 @@ func (d *DefaultDetector) DetectProblem(validationErr error, cert *x509.Certific
 		problem.Type = ProblemExpired
 		problem.Details["expired_on"] = cert.NotAfter
 		problem.Suggestions = append(problem.Suggestions, "Renew the certificate", "Use --insecure flag for testing")
-		
+
 	case strings.Contains(errStrLower, "certificate is not valid until") || strings.Contains(errStrLower, "not yet valid"):
 		problem.Type = ProblemNotYetValid
 		problem.Details["valid_from"] = cert.NotBefore
 		problem.Suggestions = append(problem.Suggestions, "Check system clock synchronization")
-		
+
 	case strings.Contains(errStrLower, "certificate signed by unknown authority") || strings.Contains(errStrLower, "unknown authority"):
 		// Could be self-signed or untrusted CA
 		if cert.Subject.String() == cert.Issuer.String() {
 			problem.Type = ProblemSelfSigned
 			problem.Details["issuer"] = cert.Issuer.String()
-			problem.Suggestions = append(problem.Suggestions, 
-				"Add certificate to trust store", 
+			problem.Suggestions = append(problem.Suggestions,
+				"Add certificate to trust store",
 				"Use --insecure flag for development",
 				"Import the CA certificate")
 		} else {
@@ -106,23 +106,23 @@ func (d *DefaultDetector) DetectProblem(validationErr error, cert *x509.Certific
 				"Add intermediate CA certificates",
 				"Use --insecure flag for testing")
 		}
-		
+
 	case strings.Contains(errStrLower, "hostname") && (strings.Contains(errStrLower, "doesn't match") || strings.Contains(errStrLower, "does not match")):
 		problem.Type = ProblemHostnameMismatch
 		problem.Details["valid_hostnames"] = cert.DNSNames
 		problem.Details["common_name"] = cert.Subject.CommonName
-		
+
 		// Extract requested hostname from error if possible
 		hostnameRegex := regexp.MustCompile(`hostname ['\"]?([^'\"]+)['\"]?`)
 		if matches := hostnameRegex.FindStringSubmatch(errStr); len(matches) > 1 {
 			problem.Details["requested_hostname"] = matches[1]
 		}
-		
+
 		problem.Suggestions = append(problem.Suggestions,
 			"Use the correct hostname from certificate",
 			"Update certificate with correct Subject Alternative Names",
 			"Add hostname to /etc/hosts for testing")
-			
+
 	default:
 		problem.Type = ProblemUnknown
 		problem.Details["error_type"] = fmt.Sprintf("%T", validationErr)
@@ -173,8 +173,8 @@ func (d *DefaultDetector) DetectFromDiagnostics(diag *certs.CertDiagnostics) ([]
 	// Convert each ValidationError from diagnostics to a CertProblem
 	for _, valErr := range diag.ValidationErrors {
 		problem := &CertProblem{
-			Error:   fmt.Errorf("%s: %s", valErr.Message, valErr.Detail),
-			Details: make(map[string]interface{}),
+			Error:       fmt.Errorf("%s: %s", valErr.Message, valErr.Detail),
+			Details:     make(map[string]interface{}),
 			Suggestions: make([]string, 0),
 		}
 
@@ -236,7 +236,7 @@ func (cp *CertProblem) GetProblemSummary() string {
 // GetDetailedDescription provides comprehensive information about the problem
 func (cp *CertProblem) GetDetailedDescription() string {
 	summary := cp.GetProblemSummary()
-	
+
 	switch cp.Type {
 	case ProblemSelfSigned:
 		if issuer, ok := cp.Details["issuer"].(string); ok {
@@ -254,6 +254,6 @@ func (cp *CertProblem) GetDetailedDescription() string {
 			return fmt.Sprintf("%s. Certificate Common Name: %s", summary, cn)
 		}
 	}
-	
+
 	return summary
 }

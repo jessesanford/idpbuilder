@@ -13,7 +13,6 @@ import (
 
 // Types are now consolidated in types.go - using those definitions
 
-
 // NewTrustStoreUtils creates a new instance of trust store utilities
 func NewTrustStoreUtils() *TrustStoreUtils {
 	return &TrustStoreUtils{}
@@ -37,7 +36,7 @@ func (u *TrustStoreUtils) LoadCertificateFromPEM(pemData []byte) (*x509.Certific
 // LoadCertificatesFromPEM loads multiple certificates from PEM-encoded data
 func (u *TrustStoreUtils) LoadCertificatesFromPEM(pemData []byte) ([]*x509.Certificate, error) {
 	var certs []*x509.Certificate
-	
+
 	for len(pemData) > 0 {
 		block, rest := pem.Decode(pemData)
 		if block == nil {
@@ -149,7 +148,7 @@ func (u *TrustStoreUtils) DiscoverCertificateFiles(dir string) ([]string, error)
 	}
 
 	var certFiles []string
-	
+
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
