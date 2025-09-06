@@ -151,33 +151,74 @@ echo "Type: $(file "$ARTIFACT")"
 
 ## 🔴🔴🔴 CRITICAL: LINE COUNTING ENFORCEMENT 🔴🔴🔴
 
-### ⚠️⚠️⚠️ MANDATORY TOOL USAGE - VIOLATIONS = -100% FAILURE ⚠️⚠️⚠️
+### ⚠️⚠️⚠️ MANDATORY: USE ONLY LINE-COUNTER.SH - NO EXCEPTIONS! ⚠️⚠️⚠️
 
-**YOU MUST USE line-counter.sh - IT AUTO-DETECTS THE CORRECT BASE:**
+**🔴🔴🔴 ABSOLUTE REQUIREMENT: ONLY LINE-COUNTER.SH IS VALID! 🔴🔴🔴**
 
+**YOU MUST USE THE LINE COUNTER TOOL - NO OTHER METHOD IS ALLOWED!**
+- ✅ **MANDATORY**: Use `${PROJECT_ROOT}/tools/line-counter.sh`
+- ✅ **AUTO-DETECTION**: Tool automatically finds correct base branch
+- ✅ **NO PARAMETERS**: Never use `-b` - tool handles everything
+- ✅ **VERIFIED OUTPUT**: Look for "🎯 Detected base:" in output
+
+### THE ONLY CORRECT WAY TO MEASURE:
 ```bash
-# ✅✅✅ CORRECT - TOOL AUTO-DETECTS BASE BRANCH:
-PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do 
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break; 
-    PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
-done
-$PROJECT_ROOT/tools/line-counter.sh  # Auto-detects current branch and base!
-# Or specify branch to measure:
-$PROJECT_ROOT/tools/line-counter.sh phase1/wave1/effort-name
+# STEP 1: Navigate to effort directory (MANDATORY)
+cd /path/to/effort/directory
+pwd  # Verify you're in the right place
 
-# ❌❌❌ AUTOMATIC -100% FAILURES:
-wc -l *.go                                    # Manual counting = -100% FAILURE!
-find . -name "*.go" | xargs wc -l             # Manual counting = -100% FAILURE!
-$PROJECT_ROOT/tools/line-counter.sh -b main   # OLD SYNTAX - tool updated!
+# STEP 2: Ensure code is committed (MANDATORY)
+git status  # Must show "nothing to commit"
+# If not clean:
+git add -A && git commit -m "feat: ready for measurement" && git push
+
+# STEP 3: Find project root (MANDATORY)
+PROJECT_ROOT=$(pwd)
+while [ "$PROJECT_ROOT" != "/" ]; do 
+    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
+    PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
+done
+echo "Project root: $PROJECT_ROOT"
+
+# STEP 4: RUN THE TOOL - THIS IS THE ONLY VALID MEASUREMENT!
+$PROJECT_ROOT/tools/line-counter.sh
+
+# Tool output will show:
+# 🎯 Detected base: [automatically determined]
+# 📦 Analyzing branch: [current branch]
+# ✅ Total non-generated lines: [THE ONLY NUMBER THAT MATTERS]
 ```
 
-**CRITICAL FACTS:**
-- Manual counting = AUTOMATIC -100% GRADE
-- Tool automatically detects correct base branch
-- Shows detected base in output (e.g., "🎯 Detected base: phase1-integration")
-- You MUST document the exact command and output in your review
+### ❌❌❌ THESE ARE IMMEDIATE -100% FAILURES:
+```bash
+# WRONG - Manual counting = -100% FAILURE
+wc -l *.go                           # NEVER DO THIS!
+find . -name "*.go" | xargs wc -l    # NEVER DO THIS!
+cloc .                               # NEVER DO THIS!
+git diff --stat                      # NEVER DO THIS!
 
-**See: rule-library/R198-line-counter-usage.md for full details**
+# WRONG - Old syntax = -100% FAILURE  
+$PROJECT_ROOT/tools/line-counter.sh -b main  # NO -b PARAMETER!
+
+# WRONG - Wrong base = -100% FAILURE
+git diff main --stat                 # WRONG BASE!
+git diff origin/main --stat          # WRONG BASE!
+```
+
+### CRITICAL FACTS YOU MUST UNDERSTAND:
+1. **ONLY line-counter.sh counts are valid** - Period. No exceptions.
+2. **Tool auto-detects the correct base** - Don't try to be clever
+3. **Manual counting = AUTOMATIC FAILURE** - You will get -100%
+4. **The tool output is the ONLY truth** - Nothing else matters
+5. **11,876 lines means you counted wrong** - Use the tool!
+
+### WHY THIS MATTERS:
+- Manual counting against wrong base: Shows 11,876 lines (ALL code)
+- Correct tool usage: Shows ~500 lines (ONLY your changes)
+- The difference: Unnecessary splits and wasted effort
+
+**See: rule-library/R324-mandatory-line-counter-auto-detection.md**
+**Violation = -100% IMMEDIATE FAILURE**
 
 ## 🚨 CRITICAL: Bash Execution Guidelines 🚨
 **RULE R216**: Bash execution syntax rules (rule-library/R216-bash-execution-syntax.md)
@@ -888,27 +929,34 @@ Bash: cd $EFFORT_DIR && [ ! -d "./pkg" ] && echo "❌ NO PKG DIR" || echo "✅ P
 Bash: cd $EFFORT_DIR && [[ $(pwd) != *"/efforts/"* ]] && echo "❌ WRONG DIR" && exit 1 || echo "✅ In effort dir"
 ```
 
-### Size Measurement (CRITICAL - R221 APPLIES!)
+### Size Measurement (CRITICAL - AUTO-DETECTION MANDATORY!)
 ```bash
-# 🔴 R221: Store your effort directory first!
-EFFORT_DIR="/path/to/your/effort"  # From instructions or metadata
+# 🔴🔴🔴 UPDATED PROCEDURE - AUTO-DETECTION IS KEY! 🔴🔴🔴
 
-# Find project root and line counter tool
-# R221: Must CD first!
-Bash: cd $EFFORT_DIR && PROJECT_ROOT=$(pwd)
-Bash: cd $EFFORT_DIR && while [ "$PROJECT_ROOT" != "/" ]; do
-    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then 
-        break; 
-    fi
+# Step 1: Store your effort directory (from instructions/metadata)
+EFFORT_DIR="/path/to/your/effort"  # You MUST be in the actual effort repo!
+
+# Step 2: Navigate to the effort directory (R221 compliance)
+Bash: cd $EFFORT_DIR && pwd  # Confirm you're in the right place
+
+# Step 3: Find the project root (where orchestrator-state.yaml lives)
+Bash: cd $EFFORT_DIR && PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do
+    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
-done
-LINE_COUNTER="$PROJECT_ROOT/tools/line-counter.sh"
+done && echo "Project root: $PROJECT_ROOT"
 
-# ALWAYS run from effort directory with NO PARAMETERS
-cd /path/to/effort/directory  # Be IN the effort directory
-$LINE_COUNTER  # NO PARAMETERS - it auto-detects the branch!
+# Step 4: RUN THE TOOL - NO PARAMETERS NEEDED!
+Bash: cd $EFFORT_DIR && $PROJECT_ROOT/tools/line-counter.sh
 
-# The tool auto-detects branch and shows details automatically
+# The tool will output:
+# 🎯 Detected base: [automatically determined base branch]
+# 📦 Analyzing branch: [current branch]
+# ✅ Total non-generated lines: [count]
+
+# NEVER DO THIS:
+# ❌ $PROJECT_ROOT/tools/line-counter.sh -b main  # WRONG! No -b parameter!
+# ❌ git diff main --stat  # WRONG! Wrong base branch!
+# ❌ wc -l *.go  # WRONG! Manual counting forbidden!
 
 # Size decision logic:
 if size < 700:

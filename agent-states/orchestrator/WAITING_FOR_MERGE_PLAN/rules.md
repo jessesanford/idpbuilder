@@ -127,14 +127,33 @@ Actively monitor Code Reviewer creating wave merge plan. Check for completion an
 
 ## Transition Rules
 
+### 🔴🔴🔴 CRITICAL: Update State BEFORE Stopping! 🔴🔴🔴
+Per R322, you MUST update `current_state` to the next state BEFORE stopping:
+
+```bash
+# When merge plan is validated and ready to transition:
+echo "📝 Updating state file for transition..."
+yq -i '.current_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.yaml
+yq -i '.previous_state = "WAITING_FOR_MERGE_PLAN"' orchestrator-state.yaml
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+yq -i '.wave_integration.merge_plan = "integration-workspace/WAVE-MERGE-PLAN.md"' orchestrator-state.yaml
+git add orchestrator-state.yaml
+git commit -m "state: transition from WAITING_FOR_MERGE_PLAN to SPAWN_INTEGRATION_AGENT"
+git push
+
+# THEN stop per R322
+echo "🛑 Stopping before SPAWN_INTEGRATION_AGENT state (per R322)"
+```
+
 ### Valid Next States
-- **SPAWN_INTEGRATION_AGENT** - Merge plan created and validated
-- **ERROR_RECOVERY** - Timeout or Code Reviewer blocked
+- **SPAWN_INTEGRATION_AGENT** - Merge plan created and validated (UPDATE STATE FIRST!)
+- **ERROR_RECOVERY** - Timeout or Code Reviewer blocked (UPDATE STATE FIRST!)
 
 ### Invalid Transitions
 - ❌ Skipping to MONITORING_INTEGRATION without spawn
 - ❌ Going back to spawn states
 - ❌ Transitioning without merge plan
+- ❌ Stopping without updating current_state (CAUSES LOOPS!)
 
 ## Common Violations to Avoid
 

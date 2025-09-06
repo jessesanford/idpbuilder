@@ -260,3 +260,4 @@
 - R321.0.0 - Immediate Backport During Integration | 🔴🔴🔴 SUPREME LAW | ALL fixes during integration MUST be immediately backported to source branches (-100% for violations)
 - R322.0.0 - Mandatory Stop Before State Transitions | 🔴🔴🔴 SUPREME LAW | MUST stop after completing state work and wait for /continue-orchestrating (-100% for auto-transition)
 - R323.0.0 - Mandatory Final Artifact Build | 🚨🚨🚨 BLOCKING | NO project can be SUCCESS without built deliverable artifact (-50% to -100% penalty)
+- R324.0.0 - State File Update Before Stop | 🔴🔴🔴 SUPREME LAW | MUST update current_state to new state BEFORE stopping to prevent infinite loops (-100% for violations)

@@ -198,6 +198,12 @@ yq eval ".state_transition_history += [{\"from\": \"MONITORING_INTEGRATION\", \"
 git add orchestrator-state.yaml
 git commit -m "state: MONITORING_INTEGRATION → $UPDATE_STATE - $UPDATE_REASON"
 git push
+
+# 🛑 STOP per R322 - State has been updated, now stop!
+echo "🛑 Stopping before $UPDATE_STATE state (per R322)"
+echo "State file updated to: $UPDATE_STATE"
+echo "When restarted with /continue-orchestrating, will continue from $UPDATE_STATE"
+# EXIT HERE - DO NOT CONTINUE
 ```
 
 ## Valid Transitions

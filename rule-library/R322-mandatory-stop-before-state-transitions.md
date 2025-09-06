@@ -25,8 +25,21 @@ Before stopping, the orchestrator MUST:
 - ✅ Verify all state requirements are met
 - ✅ Update state files with completed work
 
-### 2. Stop and Summarize Protocol
+### 2. State Update BEFORE Stop Protocol
 When ready to transition, the orchestrator MUST:
+
+#### 🔴🔴🔴 CRITICAL: UPDATE current_state FIRST! 🔴🔴🔴
+```bash
+# MANDATORY: Update state file BEFORE stopping
+yq -i ".current_state = \"NEXT_STATE\"" orchestrator-state.yaml
+yq -i ".previous_state = \"CURRENT_STATE\"" orchestrator-state.yaml
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+git add orchestrator-state.yaml
+git commit -m "state: transition from CURRENT_STATE to NEXT_STATE"
+git push
+```
+
+#### THEN Stop and Summarize:
 ```markdown
 ## 🛑 STATE TRANSITION CHECKPOINT: [CURRENT_STATE] → [NEXT_STATE]
 
@@ -36,17 +49,18 @@ When ready to transition, the orchestrator MUST:
 - [Any issues or blockers encountered]
 
 ### 📊 Current Status:
-- Current State: [STATE]
-- Next State: [NEXT_STATE]
+- Current State: [NEXT_STATE] ← UPDATED IN FILE!
+- Previous State: [CURRENT_STATE]
 - TODOs Completed: [X/Y]
 - State Files: Updated and committed ✅
 
 ### 📝 State Persistence:
 - TODOs saved to: todos/orchestrator-[STATE]-[timestamp].todo
+- State file updated with NEW state: [NEXT_STATE]
 - State file committed: [commit hash]
 
-### ⏸️ STOPPED - Awaiting User Continuation
-Ready to transition to [NEXT_STATE]. Please use the appropriate continuation command.
+### ⏸️ STOPPED - Ready to Continue in [NEXT_STATE]
+When restarted, will continue from [NEXT_STATE]. Please use the appropriate continuation command.
 ```
 
 ### 3. Save and Commit Requirements
@@ -91,11 +105,19 @@ This rule SUPERSEDES and REPLACES:
 
 ## Examples
 
-### ✅ CORRECT: Stop at transition
+### ✅ CORRECT: Update state THEN stop
+```bash
+# First, update the state file
+echo "Updating state file for transition..."
+yq -i '.current_state = "MONITOR"' orchestrator-state.yaml
+yq -i '.previous_state = "SPAWN_AGENTS"' orchestrator-state.yaml
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+git add orchestrator-state.yaml
+git commit -m "state: transition from SPAWN_AGENTS to MONITOR"
+git push
 ```
-Completing SPAWN_AGENTS state work...
-All agents spawned successfully.
 
+```
 ## 🛑 STATE TRANSITION CHECKPOINT: SPAWN_AGENTS → MONITOR
 
 ### ✅ Current State Work Completed:
@@ -104,15 +126,30 @@ All agents spawned successfully.
 - Timestamps verified within 5s window
 
 ### 📊 Current Status:
-- Current State: SPAWN_AGENTS
-- Next State: MONITOR
+- Current State: MONITOR (UPDATED IN FILE!)
+- Previous State: SPAWN_AGENTS
 - TODOs Completed: 5/5
-- State Files: Updated and committed ✅
+- State Files: Updated with new state and committed ✅
 
-### ⏸️ STOPPED - Awaiting User Continuation
+### ⏸️ STOPPED - Ready to Continue in MONITOR
+When restarted, will continue from MONITOR state.
 ```
 
-### ❌ WRONG: Automatic transition
+### ❌ WRONG: Stop without updating state (CAUSES LOOPS!)
+```
+Completing SPAWN_AGENTS state work...
+All agents spawned successfully.
+
+## 🛑 STATE TRANSITION CHECKPOINT: SPAWN_AGENTS → MONITOR
+- Current State: SPAWN_AGENTS  # WRONG - File still says SPAWN_AGENTS!
+- Next State: MONITOR
+STOPPED - Awaiting continuation
+
+# PROBLEM: When restarted, orchestrator reads current_state: SPAWN_AGENTS
+# and repeats SPAWN_AGENTS work forever!
+```
+
+### ❌ WRONG: Automatic transition without stop
 ```
 Completing SPAWN_AGENTS state work...
 All agents spawned successfully.
@@ -120,6 +157,7 @@ Transitioning to MONITOR state...  # WRONG - No stop!
 ```
 
 ## Related Rules
+- **R324** - State File Update Before Stop (CRITICAL - prevents loops!)
 - **R287** - TODO Persistence Requirements (still required)
 - **R288** - State File Update Requirements (still required)
 - **R234** - Mandatory State Traversal (still required)

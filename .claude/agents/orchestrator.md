@@ -57,21 +57,106 @@ After reading bootstrap rules, follow R203:
 
 ## 📁 VALID ORCHESTRATOR STATES
 
-Per SOFTWARE-FACTORY-STATE-MACHINE.md, valid states are:
-- INIT
-- SPAWN_ARCHITECT_PHASE_PLANNING
-- AWAIT_PHASE_PLAN
-- SPAWN_ARCHITECT_WAVE_PLANNING
-- AWAIT_WAVE_PLAN
-- WAVE_START
-- SPAWN_AGENTS
-- MONITOR
-- WAVE_COMPLETE
-- INTEGRATION
-- ERROR_RECOVERY
-- COMPLETION
+Per SOFTWARE-FACTORY-STATE-MACHINE.md, the complete list of valid states:
 
-**NOTE**: PLANNING is NOT a valid orchestrator state!
+### Core Flow States
+- INIT - Initial state, loading configuration
+- WAVE_START - Beginning a new wave of efforts
+- WAVE_COMPLETE - All efforts completed AND all reviews passed
+- PHASE_COMPLETE - Phase assessment passed, handling phase-level integration
+- SUCCESS - Successful completion (terminal)
+- HARD_STOP - Critical failure (terminal)
+- ERROR_RECOVERY - Handling errors and issues
+
+### Architecture & Planning States
+- SPAWN_ARCHITECT_PHASE_PLANNING - Request architect to create phase architecture
+- SPAWN_ARCHITECT_WAVE_PLANNING - Request architect to create wave architecture
+- SPAWN_ARCHITECT_PHASE_ASSESSMENT - Request architect to assess complete phase
+- WAITING_FOR_ARCHITECTURE_PLAN - Waiting for architect to complete architecture plan
+- WAITING_FOR_PHASE_ASSESSMENT - Waiting for architect phase assessment decision
+
+### Implementation Planning States
+- SPAWN_CODE_REVIEWER_PHASE_IMPL - Request code reviewer to create phase implementation
+- SPAWN_CODE_REVIEWER_WAVE_IMPL - Request code reviewer to create wave implementation
+- WAITING_FOR_IMPLEMENTATION_PLAN - Waiting for code reviewer to complete implementation plan
+- INJECT_WAVE_METADATA - Injecting R213 wave metadata into plans
+
+### Effort Setup States
+- SETUP_EFFORT_INFRASTRUCTURE - Creating effort directories, branches, and remote tracking
+- ANALYZE_CODE_REVIEWER_PARALLELIZATION - Analyzing wave plan for Code Reviewer spawn strategy (MANDATORY)
+- SPAWN_CODE_REVIEWERS_EFFORT_PLANNING - Spawning code reviewers to create effort plans
+- WAITING_FOR_EFFORT_PLANS - Waiting for code reviewers to complete effort plans
+- ANALYZE_IMPLEMENTATION_PARALLELIZATION - Analyzing effort plans for SW Engineer spawn strategy (MANDATORY)
+
+### Implementation & Monitoring States
+- SPAWN_AGENTS - Spawning SW engineers for implementation
+- MONITOR_IMPLEMENTATION - Actively monitoring SW Engineers implementing features
+- SPAWN_CODE_REVIEWERS_FOR_REVIEW - Spawning Code Reviewers to review fixed code
+- MONITOR_REVIEWS - Actively monitoring Code Reviewers performing reviews
+- SPAWN_ENGINEERS_FOR_FIXES - Spawning SW Engineers to implement fixes
+- MONITOR_FIXES - Actively monitoring SW Engineers fixing review issues
+
+### Split Management States
+- CREATE_NEXT_SPLIT_INFRASTRUCTURE - Creating infrastructure for the next split in sequence
+
+### Integration States
+- INTEGRATION - Setting up integration infrastructure
+- SPAWN_CODE_REVIEWER_MERGE_PLAN - Spawning Code Reviewer to create merge plan
+- WAITING_FOR_MERGE_PLAN - Waiting for Code Reviewer merge plan completion
+- SPAWN_INTEGRATION_AGENT - Spawning Integration Agent to execute merges
+- MONITORING_INTEGRATION - Monitoring Integration Agent progress
+
+### Phase Integration States
+- PHASE_INTEGRATION - Setting up phase integration infrastructure
+- SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN - Spawning Code Reviewer for phase merge plan
+- WAITING_FOR_PHASE_MERGE_PLAN - Waiting for Code Reviewer phase merge plan
+- SPAWN_INTEGRATION_AGENT_PHASE - Spawning Integration Agent for phase merges
+- MONITORING_PHASE_INTEGRATION - Monitoring Integration Agent phase progress
+- PHASE_INTEGRATION_FEEDBACK_REVIEW - Analyzing phase integration failures
+- SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN - Spawning Code Reviewer for phase-level fix plans
+- WAITING_FOR_PHASE_FIX_PLANS - Waiting for phase-level fix plans
+
+### Project Integration States
+- PROJECT_INTEGRATION - Setting up project-level integration for all phases
+- SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN - Spawning Code Reviewer to create project merge plan
+- WAITING_FOR_PROJECT_MERGE_PLAN - Waiting for Code Reviewer project merge plan
+- SPAWN_INTEGRATION_AGENT_PROJECT - Spawning Integration Agent to merge all phases
+- MONITORING_PROJECT_INTEGRATION - Monitoring project-level integration progress
+- SPAWN_CODE_REVIEWER_PROJECT_VALIDATION - Spawning Code Reviewer for project validation
+- WAITING_FOR_PROJECT_VALIDATION - Waiting for project validation results
+
+### Testing & Validation States
+- CREATE_INTEGRATION_TESTING - Creating integration-testing branch from project integration
+- INTEGRATION_TESTING - Final validation in integration-testing branch
+- PRODUCTION_READY_VALIDATION - Validating software is production-ready
+- BUILD_VALIDATION - Final build and deployment verification
+- PR_PLAN_CREATION - Generating MASTER-PR-PLAN.md for human PRs
+
+### Fix & Recovery States
+- INTEGRATION_FEEDBACK_REVIEW - Analyzing integration failure reports
+- SPAWN_CODE_REVIEWER_FIX_PLAN - Spawning Code Reviewer to create fix plans
+- WAITING_FOR_FIX_PLANS - Waiting for Code Reviewer to complete fix plans
+- DISTRIBUTE_FIX_PLANS - Distributing fix plans to effort directories
+- MONITORING_FIX_PROGRESS - Monitoring engineers implementing fixes
+- IMMEDIATE_BACKPORT_REQUIRED - R321 enforcement: fixing source branches immediately
+- SPAWN_CODE_REVIEWER_BACKPORT_PLAN - Spawn Code Reviewer to create backport plan
+- WAITING_FOR_BACKPORT_PLAN - Waiting for Code Reviewer to complete backport plan
+- SPAWN_SW_ENGINEER_BACKPORT_FIXES - Spawn SW Engineers to implement backport fixes
+- MONITORING_BACKPORT_PROGRESS - Monitor SW Engineers implementing backports
+
+### Build Failure States
+- FIX_BUILD_ISSUES - (DEPRECATED - Split into specialized states)
+- ANALYZE_BUILD_FAILURES - Orchestrator analyzing build errors
+- COORDINATE_BUILD_FIXES - Orchestrator distributing fix work to SW Engineers
+
+### Other States
+- WAVE_REVIEW - Architect reviewing wave
+- BACKPORT_FIXES - (FULLY DEPRECATED - DO NOT USE)
+
+**CRITICAL NOTES**: 
+- PLANNING is NOT a valid orchestrator state!
+- MONITOR without suffix is DEPRECATED - use MONITOR_IMPLEMENTATION, MONITOR_REVIEWS, MONITOR_FIXES
+- AWAIT_* patterns are INVALID - use WAITING_FOR_* instead
 
 ## 🔴 CRITICAL REMINDERS
 

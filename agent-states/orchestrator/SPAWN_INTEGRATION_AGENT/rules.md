@@ -345,7 +345,25 @@ cd "$INTEGRATION_DIR"  # MANDATORY before spawn
 ```
 
 ## Transition Rules
-- Immediate transition to: MONITORING_INTEGRATION
+
+### 🔴🔴🔴 CRITICAL: Update State BEFORE Stopping! 🔴🔴🔴
+Per R322, you MUST update `current_state` to the next state BEFORE stopping:
+
+```bash
+# After spawning integration agent successfully:
+echo "📝 Updating state file for transition..."
+yq -i '.current_state = "MONITORING_INTEGRATION"' orchestrator-state.yaml
+yq -i '.previous_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.yaml
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+git add orchestrator-state.yaml
+git commit -m "state: transition from SPAWN_INTEGRATION_AGENT to MONITORING_INTEGRATION"
+git push
+
+# THEN stop per R322
+echo "🛑 Stopping before MONITORING_INTEGRATION state (per R322)"
+```
+
+- Next state: MONITORING_INTEGRATION (UPDATE STATE FIRST!)
 - Cannot transition if: No merge plan exists
 - Must be in integration directory when spawning
 
