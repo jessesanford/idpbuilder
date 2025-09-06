@@ -3,6 +3,19 @@
 ## State Context
 You are creating a split inventory and individual split plans for an implementation that exceeds the 800-line limit. The splits must be logical, buildable, and testable.
 
+## 🔴🔴🔴 CRITICAL: VERIFY MEASUREMENT WAS CORRECT! 🔴🔴🔴
+
+**BEFORE CREATING SPLITS, CONFIRM THE SIZE VIOLATION IS REAL:**
+1. **Was line-counter.sh used?** If not, STOP and remeasure!
+2. **Did it auto-detect base?** Look for "🎯 Detected base:" in output
+3. **Is the count realistic?** 11,876 lines for a ~500 line effort = WRONG!
+4. **If measurement was manual** (wc -l, git diff, etc.) = INVALID, REMEASURE!
+
+**COMMON MISTAKE TO AVOID:**
+- Manual counting against main: Shows ALL code (11,876 lines)
+- Correct tool usage: Shows ONLY changes (~500 lines)
+- **If you see inflated numbers, STOP and use line-counter.sh properly!**
+
 ---
 
 ## 🔴🔴🔴 CRITICAL: Split Plan Creation Requirements 🔴🔴🔴

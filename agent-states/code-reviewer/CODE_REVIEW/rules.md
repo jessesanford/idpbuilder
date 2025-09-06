@@ -67,18 +67,18 @@ CODE REVIEW PROTOCOL:
 ❌ WRONG: "Following R319 restriction, I won't measure code"
 ✅ RIGHT: "R319 doesn't apply to me. I MUST measure code size!"
 
-### ⚠️⚠️⚠️ CRITICAL: USE LINE-COUNTER.SH WITH AUTOMATIC BASE DETECTION ⚠️⚠️⚠️
+### ⚠️⚠️⚠️ CRITICAL: LINE-COUNTER.SH AUTO-DETECTS BASE - NO PARAMETERS! ⚠️⚠️⚠️
 
-**VIOLATION = -100% IMMEDIATE FAILURE**
+**🔴🔴🔴 TOOL UPDATE: AUTO-DETECTION IS NOW MANDATORY! 🔴🔴🔴**
 
-### MANDATORY STEPS:
+### THE TOOL IS SMART - IT KNOWS THE CORRECT BASE:
 1. **ALWAYS use ${PROJECT_ROOT}/tools/line-counter.sh** - NO EXCEPTIONS
-2. **Tool automatically detects correct base branch** - NO -b parameter needed!
-3. **NEVER do manual counting** - AUTOMATIC FAILURE (-100%)
-4. **Base detection prevents wrong base errors** - No more main vs integration mistakes!
-5. **NEVER count test/doc files separately** - tool handles this
+2. **NO PARAMETERS NEEDED** - Tool auto-detects EVERYTHING!
+3. **NEVER specify -b parameter** - That's OLD/WRONG syntax!
+4. **NEVER do manual counting** - AUTOMATIC FAILURE (-100%)
+5. **Tool shows detected base** - Look for "🎯 Detected base:" in output
 
-### CORRECT USAGE:
+### CORRECT USAGE (UPDATED FOR AUTO-DETECTION):
 ```bash
 # STEP 1: Navigate to effort directory (IT'S A SEPARATE GIT REPO!)
 cd /path/to/effort/directory
@@ -92,88 +92,75 @@ git add -A
 git commit -m "feat: implementation ready for measurement"
 git push  # REQUIRED - tool uses git diff which needs commits!
 
-# STEP 3: Get ACTUAL BRANCH NAMES (not directory names!)
-CURRENT_BRANCH=$(git branch --show-current)
-echo "Current branch: $CURRENT_BRANCH"  # e.g., phase2-wave1-gcr-image-builder
-
-# STEP 4: Find the BASE branch IN THIS REPOSITORY
-git branch -a | grep -E "integration|main"
-# Use what exists, e.g., phase2/integration or main
-BASE_BRANCH="phase2/integration"  # NOT always "main"!
-
-# STEP 5: Find project root (where orchestrator-state.yaml lives)
+# STEP 3: Find project root (where orchestrator-state.yaml lives)
 PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do 
     [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break; 
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
 done
+echo "Project root: $PROJECT_ROOT"
 
-# STEP 6: Run the tool - it auto-detects the base!
-$PROJECT_ROOT/tools/line-counter.sh $CURRENT_BRANCH
-# Or even simpler - let it auto-detect current branch:
+# STEP 4: RUN THE TOOL - NO PARAMETERS AT ALL!
 $PROJECT_ROOT/tools/line-counter.sh
+# That's it! The tool does EVERYTHING automatically!
+
+# Tool output will show:
+# 🎯 Detected base: phase1/integration (or appropriate base)
+# 📦 Analyzing branch: phase1/wave1/my-effort  
+# ✅ Total non-generated lines: 487
 ```
 
-### 🔴🔴🔴 CRITICAL: Directory Names vs Branch Names 🔴🔴🔴
+### 🔴🔴🔴 CRITICAL: Just Let The Tool Work! 🔴🔴🔴
 
-**THE FATAL MISTAKE:**
+**THE RIGHT WAY:**
 ```bash
-# ❌❌❌ OLD TOOL - Error-prone manual base selection:
+# ✅✅✅ CORRECT - Just run the tool, it figures out everything:
 cd efforts/phase2/wave1/go-containerregistry-image-builder
-# Tool auto-detects correct base branch - no parameters needed
-../../tools/line-counter.sh  # Automatically uses correct base!
+../../tools/line-counter.sh  # Tool auto-detects current branch AND base!
 
-# ✅✅✅ NEW TOOL - Automatic correct base detection:
-cd efforts/phase2/wave1/go-containerregistry-image-builder
-BRANCH=$(git branch --show-current)  # Gets: phase2-wave1-gcr-image-builder
-../../tools/line-counter.sh "$BRANCH"  # Tool auto-detects: base = phase2/integration
-# Or even simpler:
-../../tools/line-counter.sh  # Auto-detects current branch AND base!
+# Output will show:
+# 🎯 Detected base: phase2/integration
+# 📦 Analyzing branch: phase2/wave1/go-containerregistry-image-builder
+# ✅ Total non-generated lines: [actual count]
+
+# ❌❌❌ WRONG - Don't try to be clever:
+../../tools/line-counter.sh -b main  # WRONG! No -b parameter!
+git diff main --stat  # WRONG! Wrong base, counts everything!
+wc -l *.go  # WRONG! Manual counting forbidden!
 ```
 
-### BASE BRANCH IDENTIFICATION:
+### THE TOOL HANDLES ALL BASE DETECTION AUTOMATICALLY:
 
-#### FOR REGULAR EFFORTS:
 ```bash
-# Check orchestrator-state.yaml for current_phase_integration.branch
-cat orchestrator-state.yaml | grep "current_phase_integration" -A 5
-# OR use the phase integration branch naming pattern:
-# phase[N]/integration or phase[N]/integration-[timestamp]
-```
+# 🔴🔴🔴 YOU DON'T NEED TO FIGURE OUT BASES! 🔴🔴🔴
 
-#### FOR SPLITS (CRITICAL DIFFERENCE!):
-```bash
-# 🔴🔴🔴 SPLITS USE SEQUENTIAL BRANCHING - NOT INTEGRATION! 🔴🔴🔴
-CURRENT_BRANCH=$(git branch --show-current)
+# The tool KNOWS how to handle:
+# 1. Regular efforts -> uses phase/wave integration as base
+# 2. Split-001 -> uses original effort branch as base
+# 3. Split-002+ -> uses previous split as base
+# 4. Integration branches -> uses main as base
 
-if [[ "$CURRENT_BRANCH" =~ split-([0-9]{3}) ]]; then
-    SPLIT_NUM="${BASH_REMATCH[1]}"
-    SPLIT_NUM_INT=$((10#$SPLIT_NUM))
-    
-    if [[ $SPLIT_NUM_INT -eq 1 ]]; then
-        # split-001 measures against original too-large branch
-        BASE="<original-branch-name>"
-    else
-        # split-N measures against split-(N-1)
-        PREV_NUM=$((SPLIT_NUM_INT - 1))
-        BASE=$(printf "split-%03d" $PREV_NUM)
-    fi
-    echo "📊 Split detected! Measuring against: $BASE"
-else
-    # Regular effort - use phase integration
-    BASE="phase${PHASE}/integration"
-    echo "📊 Regular effort! Measuring against: $BASE"
-fi
+# Just run:
+$PROJECT_ROOT/tools/line-counter.sh
 
-# ❌❌❌ NEVER measure splits against main or phase integration!
-# That would include ALL previous splits' work!
+# Examples of what the tool auto-detects:
+# For effort: phase1/wave1/my-effort
+#   🎯 Detected base: main (if phase 1)
+#   🎯 Detected base: phase1/integration (if later wave)
+
+# For split: phase1/wave1/my-effort--split-002
+#   🎯 Detected base: phase1/wave1/my-effort--split-001
+
+# YOU DON'T CALCULATE - THE TOOL DOES!
 ```
 
 ### FORBIDDEN ACTIONS:
-- ❌ Manual line counting (wc -l, etc.)
-- ❌ Using "main" as base for effort measurements
-- ❌ Counting test files separately
-- ❌ Counting documentation files
-- ❌ Using old tool locations (/workspaces/kcp-shared-tools/)
+- ❌ Manual line counting (wc -l, etc.) = -100% FAILURE
+- ❌ Using git diff with manual base = -100% FAILURE
+- ❌ Specifying -b parameter to line-counter.sh = -100% FAILURE
+- ❌ Counting test files separately = -100% FAILURE
+- ❌ Counting documentation files = -100% FAILURE
+- ❌ Using old tool locations (/workspaces/kcp-shared-tools/) = -100% FAILURE
+- ❌ NOT using line-counter.sh = -100% FAILURE
 
 ## Size Compliance Validation
 

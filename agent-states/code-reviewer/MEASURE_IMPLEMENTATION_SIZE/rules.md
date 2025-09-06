@@ -25,18 +25,24 @@ You are measuring the size of a completed implementation to determine if it meet
 
 **FAILURE TO MEASURE = -100% IMMEDIATE FAILURE**
 
-### ⚠️⚠️⚠️ CRITICAL: USE LINE-COUNTER.SH WITH AUTOMATIC BASE DETECTION ⚠️⚠️⚠️
+### ⚠️⚠️⚠️ CRITICAL: LINE-COUNTER.SH AUTO-DETECTS BASE - NO PARAMETERS! ⚠️⚠️⚠️
 
-**VIOLATION = -100% IMMEDIATE FAILURE**
+**🔴🔴🔴 TOOL UPDATE: AUTO-DETECTION IS NOW MANDATORY! 🔴🔴🔴**
 
-### MANDATORY STEPS:
+### THE TOOL IS SMART - IT KNOWS THE CORRECT BASE:
 1. **ALWAYS use ${PROJECT_ROOT}/tools/line-counter.sh** - NO EXCEPTIONS
-2. **Tool automatically detects correct base branch** - NO -b parameter needed!
-3. **NEVER do manual counting** - AUTOMATIC FAILURE (-100%)
-4. **Base detection prevents wrong base errors** - No more main vs integration mistakes!
-5. **NEVER count test/doc files separately** - tool handles this
+2. **NO PARAMETERS NEEDED** - Tool auto-detects EVERYTHING!
+3. **NEVER specify -b parameter** - That's OLD/WRONG syntax!
+4. **NEVER do manual counting** - AUTOMATIC FAILURE (-100%)
+5. **Tool shows detected base** - Look for "🎯 Detected base:" in output
 
-### CORRECT USAGE:
+### HOW IT WORKS:
+- **For efforts**: Detects phase/wave pattern, uses correct integration branch
+- **For splits**: Knows to measure split-001 vs original, split-002 vs split-001
+- **For integrations**: Knows to measure against main
+- **Shows its work**: Output includes "🎯 Detected base: [branch]"
+
+### CORRECT USAGE (UPDATED FOR AUTO-DETECTION):
 ```bash
 # STEP 1: Navigate to effort directory (IT'S A SEPARATE GIT REPO!)
 cd /path/to/effort/directory
@@ -50,59 +56,61 @@ git add -A
 git commit -m "feat: implementation ready for measurement"
 git push  # REQUIRED - tool uses git diff which needs commits!
 
-# STEP 3: Get ACTUAL BRANCH NAMES (not directory names!)
-CURRENT_BRANCH=$(git branch --show-current)
-echo "Current branch: $CURRENT_BRANCH"  # e.g., phase2-wave1-gcr-image-builder
-
-# STEP 4: Find project root (where orchestrator-state.yaml lives)
+# STEP 3: Find project root (where orchestrator-state.yaml lives)
 PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do 
     [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break; 
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
 done
+echo "Project root: $PROJECT_ROOT"
 
-# STEP 5: Run the tool - it auto-detects the base!
-$PROJECT_ROOT/tools/line-counter.sh $CURRENT_BRANCH
-# Or even simpler - let it auto-detect current branch:
+# STEP 4: RUN THE TOOL - NO PARAMETERS AT ALL!
 $PROJECT_ROOT/tools/line-counter.sh
+# That's it! The tool does EVERYTHING automatically!
+
+# Tool output will show:
+# 🎯 Detected base: phase1/integration (or appropriate base)
+# 📦 Analyzing branch: phase1/wave1/my-effort
+# ✅ Total non-generated lines: 487
 ```
 
-### 🔴🔴🔴 CRITICAL: Directory Names vs Branch Names 🔴🔴🔴
+### 🔴🔴🔴 CRITICAL: Just Let The Tool Auto-Detect! 🔴🔴🔴
 
-**THE FATAL MISTAKE:**
+**THE FATAL MISTAKES TO AVOID:**
 ```bash
-# ❌❌❌ WRONG - Using directory name as branch:
+# ❌❌❌ WRONG - Trying to specify base manually:
 cd efforts/phase2/wave1/go-containerregistry-image-builder
-./line-counter.sh go-containerregistry-image-builder  # WRONG!
+./line-counter.sh -b main  # WRONG! No -b parameter!
 
-# ✅✅✅ CORRECT - Using actual git branch:
+# ❌❌❌ WRONG - Using git diff with wrong base:
+git diff main --stat  # WRONG! This will count ALL code since main!
+
+# ❌❌❌ WRONG - Manual counting:
+find . -name "*.go" | xargs wc -l  # WRONG! Manual counting forbidden!
+
+# ✅✅✅ CORRECT - Just run the tool, no parameters:
 cd efforts/phase2/wave1/go-containerregistry-image-builder
-BRANCH=$(git branch --show-current)  # Gets: phase2-wave1-gcr-image-builder
-../../tools/line-counter.sh "$BRANCH"  # CORRECT!
+../../tools/line-counter.sh  # CORRECT! Tool auto-detects everything!
 ```
 
-### BASE BRANCH IDENTIFICATION FOR SPLITS:
+### THE TOOL HANDLES SPLITS AUTOMATICALLY:
 ```bash
-# 🔴🔴🔴 SPLITS USE SEQUENTIAL BRANCHING - NOT INTEGRATION! 🔴🔴🔴
-CURRENT_BRANCH=$(git branch --show-current)
+# 🔴🔴🔴 YOU DON'T NEED TO FIGURE OUT THE BASE! 🔴🔴🔴
 
-if [[ "$CURRENT_BRANCH" =~ split-([0-9]{3}) ]]; then
-    SPLIT_NUM="${BASH_REMATCH[1]}"
-    SPLIT_NUM_INT=$((10#$SPLIT_NUM))
-    
-    if [[ $SPLIT_NUM_INT -eq 1 ]]; then
-        # split-001 measures against original too-large branch
-        BASE="<original-branch-name>"
-    else
-        # split-N measures against split-(N-1)
-        PREV_NUM=$((SPLIT_NUM_INT - 1))
-        BASE=$(printf "split-%03d" $PREV_NUM)
-    fi
-    echo "📊 Split detected! Measuring against: $BASE"
-else
-    # Regular effort - use phase integration
-    BASE="phase${PHASE}/integration"
-    echo "📊 Regular effort! Measuring against: $BASE"
-fi
+# The tool AUTOMATICALLY detects split patterns and uses correct base:
+# - split-001: Measures against the original effort branch
+# - split-002: Measures against split-001
+# - split-003: Measures against split-002
+# etc.
+
+# Just run:
+$PROJECT_ROOT/tools/line-counter.sh
+
+# Tool output for splits will show:
+# 🎯 Detected base: phase1/wave1/my-effort (for split-001)
+# 🎯 Detected base: phase1/wave1/my-effort--split-001 (for split-002)
+# etc.
+
+# YOU DON'T NEED TO CALCULATE THIS - THE TOOL DOES IT!
 ```
 
 ## Size Compliance Decision Tree

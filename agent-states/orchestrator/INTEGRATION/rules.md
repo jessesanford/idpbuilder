@@ -38,6 +38,13 @@ Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
 ---
 
 
+## 🔴🔴🔴 CRITICAL: CHECK YOUR CURRENT STATE FIRST! 🔴🔴🔴
+
+**BEFORE ANYTHING ELSE, CHECK orchestrator-state.yaml:**
+- If `current_state: INTEGRATION` → You are ALREADY in INTEGRATION state!
+- If already in INTEGRATION → Skip to rule reading, then START INTEGRATION WORK IMMEDIATELY
+- Integration is a VERB - it means "DO INTEGRATION NOW"
+
 ## 🔴🔴🔴 STOP! STATE RULE READING IS ABSOLUTELY FIRST! 🔴🔴🔴
 
 **YOU HAVE ENTERED INTEGRATION STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
@@ -217,10 +224,17 @@ The system will check for this marker. No marker = Immediate failure.
 
 ## 🚨 INTEGRATION IS A VERB - SETUP INTEGRATION INFRASTRUCTURE NOW! 🚨
 
+### 🔴🔴🔴 CRITICAL: YOU ARE ALREADY IN INTEGRATION STATE! 🔴🔴🔴
+
+**If current_state = "INTEGRATION" in orchestrator-state.yaml, you MUST:**
+1. **IMMEDIATELY** start creating integration infrastructure
+2. **NO ANNOUNCEMENTS** - just start working
+3. **NO WAITING** - integration work begins NOW
+
 ### IMMEDIATE ACTIONS UPON ENTERING INTEGRATION
 
-**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
-1. Create integration working directory NOW
+**THE MOMENT YOU SEE current_state: INTEGRATION, YOU MUST:**
+1. Create integration working directory NOW (no delay)
 2. Create integration branch immediately
 3. Push integration branch to remote
 4. CD into integration directory
@@ -232,11 +246,13 @@ The system will check for this marker. No marker = Immediate failure.
 - ❌ "Successfully entered INTEGRATION state" [waits]
 - ❌ "Ready to start integrating" [pauses]
 - ❌ "I'm in INTEGRATION state" [does nothing]
+- ❌ "Preparing to setup integration..." [delays]
+- ❌ "I see we're in INTEGRATION state..." [announces]
 
 **REQUIRED - IMMEDIATE ACTION:**
-- ✅ "Entering INTEGRATION, creating integration infrastructure NOW..."
-- ✅ "START INTEGRATION SETUP, creating integration directory and branch..."
-- ✅ "INTEGRATION: Spawning Code Reviewer for merge plan creation..."
+- ✅ "INTEGRATION STATE: Creating integration infrastructure NOW..."
+- ✅ "Setting up integration workspace at /efforts/phase${X}/wave${Y}/integration-workspace..."
+- ✅ "Creating integration branch and spawning Code Reviewer for merge plan..."
 
 ## State Context
 You are the COORDINATOR of integration, not the executor. Your responsibilities:
@@ -416,6 +432,11 @@ CRITICAL REQUIREMENTS:
 4. Create WAVE-MERGE-PLAN.md with exact merge instructions
 5. DO NOT execute merges - only plan them!
 
+CRITICAL LOCATION REQUIREMENT:
+- CD to integration directory FIRST: cd ${INTEGRATION_DIR}
+- Create WAVE-MERGE-PLAN.md IN the integration directory
+- Full path for the file: ${INTEGRATION_DIR}/WAVE-MERGE-PLAN.md
+
 Integration Directory: ${INTEGRATION_DIR}
 Target Branch: ${INTEGRATION_BRANCH}
 EOF
@@ -454,6 +475,11 @@ Task: subagent_type="code-reviewer" \
       3. Exclude 'too-large' branches, include only splits
       4. Create WAVE-MERGE-PLAN.md with exact merge instructions
       5. DO NOT execute merges - only plan them!
+      
+      CRITICAL LOCATION REQUIREMENT:
+      - CD to integration directory FIRST: cd ${INTEGRATION_DIR}
+      - Create WAVE-MERGE-PLAN.md IN the integration directory
+      - Full path for the file: ${INTEGRATION_DIR}/WAVE-MERGE-PLAN.md
       
       Integration Directory: ${INTEGRATION_DIR}
       Target Branch: $(git branch --show-current)" \

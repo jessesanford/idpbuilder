@@ -19,6 +19,19 @@ Integration branches are TARGETS, not SOURCES! Never merge from an integration b
 ## State Context
 You are creating a comprehensive merge plan for wave integration. The orchestrator has already set up the integration infrastructure (directory and branch). Your role is to analyze what needs to be merged and create a detailed plan.
 
+## 🔴🔴🔴 CRITICAL: FIRST ACTION - CD TO INTEGRATION DIRECTORY 🔴🔴🔴
+
+**YOUR FIRST ACTION MUST BE:**
+```bash
+# The orchestrator will tell you the integration directory path
+# You MUST CD to this directory before creating WAVE-MERGE-PLAN.md
+cd [integration directory path from orchestrator]
+pwd  # Verify you are in the integration workspace
+```
+
+**NEVER create WAVE-MERGE-PLAN.md in the root directory!**
+**ALWAYS create it IN the integration workspace!**
+
 ## MERGE PLAN REQUIREMENTS
 
 ### 1. Analyze All Effort Branches
@@ -125,7 +138,20 @@ If E3.1.4 depends on E3.1.3:
 
 ### 4. Create WAVE-MERGE-PLAN.md
 
-**Location:** `${INTEGRATION_DIR}/WAVE-MERGE-PLAN.md`
+**CRITICAL LOCATION REQUIREMENT:**
+- **YOU MUST BE IN THE INTEGRATION DIRECTORY** (cd there first!)
+- **Create the file IN the current directory** (./WAVE-MERGE-PLAN.md)
+- **DO NOT create it in the root directory or anywhere else!**
+
+```bash
+# Verify you are in the integration workspace
+pwd  # Should show: /efforts/phase${PHASE}/wave${WAVE}/integration-workspace
+
+# Create the merge plan HERE
+cat > WAVE-MERGE-PLAN.md << 'EOF'
+[merge plan content]
+EOF
+```
 
 ```markdown
 # Wave ${WAVE} Merge Plan
@@ -273,14 +299,15 @@ From WAVE_MERGE_PLANNING state:
 
 ## Critical Success Criteria
 
-1. ✅ WAVE-MERGE-PLAN.md created in integration directory
-2. ✅ All effort branches analyzed and categorized
-3. ✅ Merge order determined based on dependencies
-4. ✅ NO integration branches used as sources
-5. ✅ Split branches handled correctly
-6. ✅ Clear instructions for Integration Agent
-7. ✅ Validation steps included
-8. ✅ Risk assessment documented
+1. ✅ CD'd to integration directory FIRST (verified with pwd)
+2. ✅ WAVE-MERGE-PLAN.md created IN the integration directory (not root!)
+3. ✅ All effort branches analyzed and categorized
+4. ✅ Merge order determined based on dependencies
+5. ✅ NO integration branches used as sources
+6. ✅ Split branches handled correctly
+7. ✅ Clear instructions for Integration Agent
+8. ✅ Validation steps included
+9. ✅ Risk assessment documented
 
 ## Common Mistakes to Avoid
 

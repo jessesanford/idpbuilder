@@ -183,7 +183,7 @@ echo "🌿 Integration branch: $CURRENT_BRANCH"
 
 ### 2. Spawn Code Reviewer for Merge Plan
 ```bash
-# Prepare spawn command for Code Reviewer
+# Prepare spawn command for Code Reviewer with actual paths
 cat > /tmp/code-reviewer-merge-plan-task.md << EOF
 Create WAVE MERGE PLAN for Phase ${PHASE} Wave ${WAVE} integration.
 
@@ -194,6 +194,11 @@ CRITICAL REQUIREMENTS (R269, R270):
 4. Create WAVE-MERGE-PLAN.md with exact merge instructions
 5. DO NOT execute merges - only plan them!
 6. Document expected conflicts and resolution strategies
+
+CRITICAL LOCATION REQUIREMENT:
+- CD to integration directory FIRST: cd ${INTEGRATION_DIR}
+- Create WAVE-MERGE-PLAN.md IN the integration directory
+- Full path for the file: ${INTEGRATION_DIR}/WAVE-MERGE-PLAN.md
 
 Integration Directory: ${INTEGRATION_DIR}
 Target Branch: ${CURRENT_BRANCH}

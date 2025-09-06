@@ -16,21 +16,25 @@
 - ❌ Spawn agents for the new state
 - ❌ Assume permission to continue
 
-### STOP PROTOCOL:
+### STOP PROTOCOL FOR WAVE_COMPLETE:
 ```markdown
-## 🛑 STATE TRANSITION CHECKPOINT: CURRENT_STATE → NEXT_STATE
+## 🛑 STATE TRANSITION CHECKPOINT: WAVE_COMPLETE → INTEGRATION
 
 ### ✅ Current State Work Completed:
-- [List completed work]
+- All efforts verified complete with passed reviews
+- Wave marked complete in orchestrator-state.yaml
+- current_state updated to "INTEGRATION"
+- State file committed and pushed
 
 ### 📊 Current Status:
-- Current State: CURRENT_STATE
-- Next State: NEXT_STATE
-- TODOs Completed: X/Y
-- State Files: Updated and committed ✅
+- Current State: INTEGRATION (already updated in file)
+- Previous State: WAVE_COMPLETE
+- Wave Status: Complete and validated
+- State Files: Updated to INTEGRATION and committed ✅
 
 ### ⏸️ STOPPED - Awaiting User Continuation
-Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
+State file already updated to INTEGRATION. When you run /continue-orchestrating, 
+integration work will begin immediately. Please use /continue-orchestrating.
 ```
 
 **STOP MEANS STOP - Exit and wait for /continue-orchestrating**
@@ -271,6 +275,15 @@ yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.efforts_count = $EFFORT_COUNT"
 yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.all_reviews_passed = true" orchestrator-state.yaml
 yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.size_compliant = true" orchestrator-state.yaml
 yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.integration_branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.yaml
+
+# 3. 🔴🔴🔴 CRITICAL: UPDATE STATE TO INTEGRATION BEFORE STOPPING! 🔴🔴🔴
+# Per state machine: WAVE_COMPLETE → INTEGRATION is the REQUIRED transition
+echo "📝 Updating current_state to INTEGRATION for next continuation..."
+yq -i ".current_state = \"INTEGRATION\"" orchestrator-state.yaml
+yq -i ".previous_state = \"WAVE_COMPLETE\"" orchestrator-state.yaml
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+yq -i ".transition_reason = \"Wave $WAVE complete, all reviews passed, ready for integration\"" orchestrator-state.yaml
+echo "✅ State updated to INTEGRATION - will execute integration work on next /continue-orchestrating"
 
 # R301 MANDATORY: Update current_wave_integration
 echo "📝 Updating current_wave_integration per R301..."
@@ -709,12 +722,22 @@ def validate_wave_quality_gates(wave_data):
 
 ## State Transitions
 
-From WAVE_COMPLETE state:
-- **ARCHITECT_REVIEW_REQUIRED** → WAVE_REVIEW (Spawn Architect)
-- **INTEGRATION_NEEDED** → INTEGRATION (Merge and validate)
-- **SPLITS_REQUIRED** → SPAWN_AGENTS (Code Reviewer for splits)
-- **NEXT_WAVE_READY** → WAVE_START (Continue with next wave)
-- **PHASE_COMPLETE** → WAVE_REVIEW (Phase-level architect review)
+### 🔴🔴🔴 CRITICAL: DEFAULT TRANSITION IS TO INTEGRATION! 🔴🔴🔴
+
+**UNLESS OTHERWISE DETERMINED, WAVE_COMPLETE ALWAYS TRANSITIONS TO INTEGRATION:**
+1. Update current_state to "INTEGRATION" in orchestrator-state.yaml
+2. Commit and push the state file
+3. STOP per R322 and wait for /continue-orchestrating
+4. When user continues, orchestrator will be in INTEGRATION state and execute integration work
+
+From WAVE_COMPLETE state, the STANDARD transition is:
+- **DEFAULT** → **INTEGRATION** (Always go here unless special conditions below)
+
+Special condition transitions (RARE):
+- **ARCHITECT_REVIEW_REQUIRED** → WAVE_REVIEW (Only if architect review explicitly needed)
+- **SPLITS_REQUIRED** → SPAWN_AGENTS (Only if size violations detected)
+- **NEXT_WAVE_READY** → WAVE_START (Only if skipping integration - VERY RARE)
+- **PHASE_COMPLETE** → WAVE_REVIEW (Only at end of phase)
 
 ## R322 VIOLATION DETECTION
 

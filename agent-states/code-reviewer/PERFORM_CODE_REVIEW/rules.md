@@ -3,6 +3,17 @@
 ## State Context
 You are performing a comprehensive code review of an implementation that has already been measured and confirmed to be within size limits (≤800 lines).
 
+## 🔴🔴🔴 CRITICAL: MEASUREMENT VERIFICATION 🔴🔴🔴
+
+**BEFORE ANY REVIEW, VERIFY SIZE WAS MEASURED CORRECTLY:**
+- ✅ Measurement MUST have used `line-counter.sh` tool
+- ✅ Tool MUST have auto-detected the base (no -b parameter)
+- ✅ Output MUST show "🎯 Detected base:" line
+- ❌ If measurement used manual counting (wc -l, git diff, etc.) = STOP AND REMEASURE
+- ❌ If shows 11,876 lines for ~500 line effort = WRONG BASE, REMEASURE!
+
+**If previous measurement was incorrect, YOU MUST remeasure using line-counter.sh!**
+
 ---
 
 ### 🚨🚨🚨 RULE R320 - No Stub Implementations (CRITICAL BLOCKER) 🚨🚨🚨
