@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
-    "previous_state": "MONITOR_IMPLEMENTATION",
-    "transition_time": "2025-09-07T19:48:30Z",
-    "transition_reason": "Split-002 completed, need to create infrastructure for split-003 (final split)",
+    "current_state": "SPAWN_AGENTS",
+    "previous_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+    "transition_time": "2025-09-07T19:58:00Z",
+    "transition_reason": "Split-003 infrastructure created, ready to spawn SW Engineer for final split",
     "rules_reacknowledged": true,
     "monitoring_complete": true,
     "monitoring_results": {
@@ -48,8 +48,8 @@
       "integration": "COMPLETED_SUCCESSFULLY"
     },
     "error_recovery_reason": "Build failed with duplicate function/type declarations between E1.1.1 and E1.1.2",
-    "next_action": "Create effort workspace and branch for cert-validation split-003",
-    "next_state": "SPAWN_AGENTS",
+    "next_action": "Spawn SW Engineer to implement cert-validation split-003 (Chain Validator and Tests)",
+    "next_state": "MONITOR_IMPLEMENTATION",
     "splits_required": true,
     "split_plan_exists": true,
     "split_plan_location": "efforts/phase1/wave2/cert-validation/SPLIT-PLAN.md",
@@ -368,13 +368,22 @@
           "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002",
           "base_branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001",
           "completed_at": "2025-09-07T17:49:00Z"
+        },
+        {
+          "number": 3,
+          "status": "INFRASTRUCTURE_READY",
+          "created_at": "2025-09-07T19:57:00Z",
+          "directory": "efforts/phase1/wave2/cert-validation-SPLIT-003",
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003",
+          "base_branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002"
         }
       ],
+      "current_split": 3,
       "status": "SPLIT_IN_PROGRESS",
       "split_plan_created": true,
       "split_plan_reviewed": true,
       "infrastructure_created": true,
-      "note": "Split-002 completed. Transitioning to CREATE_NEXT_SPLIT_INFRASTRUCTURE for split-003 (final split)."
+      "note": "Split-003 infrastructure created. Ready to spawn SW Engineer for final split implementation."
     }
   }
 }
