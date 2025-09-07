@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Read and acknowledge all state rules per R290",
+    "status": "completed",
+    "activeForm": "Reading and acknowledging all state rules per R290"
+  },
+  {
+    "content": "Create R290 verification marker after rule acknowledgment",
+    "status": "completed",
+    "activeForm": "Creating R290 verification marker after rule acknowledgment"
+  },
+  {
+    "content": "Spawn Code Reviewer for E1.2.1 final review (all splits complete)",
+    "status": "completed",
+    "activeForm": "Spawning Code Reviewer for E1.2.1 final review"
+  },
+  {
+    "content": "Update orchestrator-state.yaml with spawn results",
+    "status": "completed",
+    "activeForm": "Updating orchestrator-state.yaml with spawn results"
+  },
+  {
+    "content": "Save TODOs per R287 before state transition",
+    "status": "completed",
+    "activeForm": "Saving TODOs per R287 before state transition"
+  },
+  {
+    "content": "Stop at state transition checkpoint per R322",
+    "status": "pending",
+    "activeForm": "Stopping at state transition checkpoint per R322"
+  }
+]

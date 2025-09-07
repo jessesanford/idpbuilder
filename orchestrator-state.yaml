@@ -1,10 +1,10 @@
 {
   "state_machine": {
-    "current_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
-    "previous_state": "MONITOR_IMPLEMENTATION",
-    "transition_time": "2025-09-07T20:24:15Z",
-    "transition_reason": "All splits for E1.2.1 completed. E1.2.2 completed. Ready for final review of complete split implementation.",
-    "rules_reacknowledged": false,
+    "current_state": "SPAWN_ENGINEERS_FOR_FIXES",
+    "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+    "transition_time": "2025-09-07T20:45:30Z",
+    "transition_reason": "E1.2.1 final review completed - NEEDS_FIXES. R320 violations (TODOs), test compilation failures, and size issues found.",
+    "rules_reacknowledged": true,
     "monitoring_complete": true,
     "monitoring_results": {
       "E1.2.1": {
@@ -52,7 +52,7 @@
     "error_recovery_reason": "Build failed with duplicate function/type declarations between E1.1.1 and E1.1.2",
     "next_action": "Spawn SW Engineers to fix test compilation issues in E1.2.1",
     "next_state": "SPAWN_ENGINEERS_FOR_FIXES",
-    "code_review_completed_time": "2025-09-07T20:31:00Z",
+    "code_review_completed_time": "2025-09-07T20:45:23Z",
     "code_review_results": {
       "E1.2.1": {
         "verdict": "NEEDS_FIXES",
@@ -60,12 +60,15 @@
         "build_status": "SUCCESS",
         "test_status": "COMPILATION_FAILURE",
         "issues_found": [
+          "R320 VIOLATION: TODO comments found in kind_client.go (zero-tolerance policy)",
           "Duplicate createTestCertificate function in helpers_test.go:164 and trust_test.go:16",
           "Undefined isFeatureEnabled function referenced in tests",
-          "Undefined NewCertValidator function referenced in tests"
+          "Undefined NewCertValidator function referenced in tests",
+          "Split-001 shows 1564 lines exceeding 800-line limit"
         ],
-        "fix_time_estimate": "1-2 hours",
-        "integration_readiness": "85%"
+        "fix_time_estimate": "2-3 hours",
+        "integration_readiness": "70%",
+        "final_review_report": "efforts/phase1/wave2/cert-validation/CODE-REVIEW-REPORT-FINAL-20250907-204523.md"
       },
       "E1.2.2": {
         "verdict": "ALREADY_PASSED",
