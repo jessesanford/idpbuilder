@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
-    "previous_state": "SPAWN_ENGINEERS_FOR_FIXES",
-    "transition_time": "2025-09-07T21:36:48Z",
-    "transition_reason": "E1.2.1 fixes completed by SW Engineer. Ready for final review post-fixes.",
+    "current_state": "SPAWN_ENGINEERS_FOR_FIXES",
+    "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+    "transition_time": "2025-09-07T21:28:30Z",
+    "transition_reason": "E1.2.1 final review FAILED - Split-001 has 1564 lines. Must subdivide into 2-3 sub-splits under 800 lines each.",
     "rules_reacknowledged": true,
     "monitoring_complete": true,
     "fix_monitoring_complete": true,
@@ -53,8 +53,8 @@
       "integration": "COMPLETED_SUCCESSFULLY"
     },
     "error_recovery_reason": "Build failed with duplicate function/type declarations between E1.1.1 and E1.1.2",
-    "next_action": "Spawn Code Reviewer for E1.2.1 final review post-fixes",
-    "next_state": "MONITOR_REVIEWS",
+    "next_action": "Spawn SW Engineer to subdivide Split-001 into compliant sub-splits",
+    "next_state": "MONITOR_FIXES",
     "code_review_completed_time": "2025-09-07T20:45:23Z",
     "code_review_results": {
       "E1.2.1": {
@@ -425,6 +425,23 @@
         - "Test compilation errors fixed - duplicate functions removed"
         - "Missing functions implemented - isFeatureEnabled and NewCertValidator"
         - "All splits building successfully"
-      fix_complete_flag: true
-      ready_for_review: true
+      fix_complete_flag: false
+      ready_for_review: false
+      split_001_needs_subdivision: true
+      final_review_failed_reason: "Split-001 has 1564 lines - nearly double the 800-line limit"
       command_file: "efforts/phase1/wave2/cert-validation/sw-engineer-fix-command.md"
+  final_review_results:
+    E1.2.1:
+      review_time: "2025-09-07T21:27:06Z"
+      verdict: "NEEDS_FIXES"
+      split_001_lines: 1564
+      split_002_lines: 460
+      split_003_lines: 536
+      blocking_issue: "Split-001 exceeds 800-line limit by 764 lines"
+      fixes_confirmed:
+        - "R320 compliance - NO TODO comments"
+        - "All functions properly defined"
+        - "Build succeeds"
+        - "All tests pass"
+      action_required: "Subdivide Split-001 into 2-3 sub-splits"
+      report_location: "efforts/phase1/wave2/cert-validation/CODE-REVIEW-REPORT-FINAL-20250907-212706.md"
