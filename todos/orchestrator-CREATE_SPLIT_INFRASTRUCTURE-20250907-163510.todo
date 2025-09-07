@@ -1,0 +1,33 @@
+# Orchestrator TODO State - RESET TO PRE-SPLIT
+# Generated: 2025-09-07 16:32:00 UTC
+# State: CREATE_SPLIT_INFRASTRUCTURE
+# Status: Split plan exists, infrastructure needed
+
+## ✅ Completed Tasks
+- All split directories removed (SPLIT-001, SPLIT-002, SPLIT-003)
+- All local split branches deleted
+- All remote split branches deleted
+- State reset to post-review, pre-infrastructure
+
+## 📋 Current State
+- E1.2.1 identified as needing splits (808 lines > 800 limit)
+- Split plan EXISTS at: efforts/phase1/wave2/cert-validation/SPLIT-PLAN.md
+- 3 splits planned:
+  - Split 001: Core Types & Errors (~200 lines)
+  - Split 002: Certificate Validator (~350 lines)
+  - Split 003: Chain Validator & Tests (~350 lines)
+- NO infrastructure created yet
+- NO split branches exist
+- Ready to create fresh split infrastructure
+
+## 🎯 Next Actions When Resumed
+1. Create infrastructure for split-001
+2. Spawn SW Engineer for split-001 implementation
+3. After split-001 complete, create infrastructure for split-002
+4. Continue sequentially through all 3 splits
+5. Ensure each split stays under 400 lines
+
+## 📝 Notes
+- Previous attempt had split-003 at 2038 lines (major violation)
+- Need to ensure SW Engineers only implement their specific split files
+- Must not duplicate code from previous splits

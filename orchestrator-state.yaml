@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "MONITOR_IMPLEMENTATION",
-    "previous_state": "SPAWN_AGENTS",
-    "transition_time": "2025-09-07T15:39:00Z",
-    "transition_reason": "SW Engineer spawned and completed E1.2.1 split-001 implementation",
+    "current_state": "CREATE_SPLIT_INFRASTRUCTURE",
+    "previous_state": "MONITOR_IMPLEMENTATION",
+    "transition_time": "2025-09-07T16:30:00Z",
+    "transition_reason": "E1.2.1 requires splitting - 808 lines exceeds 800 limit. Split plan exists, need to create infrastructure",
     "rules_reacknowledged": true,
     "monitoring_complete": true,
     "monitoring_results": {
@@ -11,7 +11,8 @@
         "status": "REQUIRES_SPLIT",
         "lines": 808,
         "split_plan_created": true,
-        "splits_required": 3
+        "splits_required": 3,
+        "infrastructure_status": "NOT_CREATED"
       },
       "E1.2.2": {
         "status": "REVIEW_PASSED",
@@ -47,18 +48,13 @@
       "integration": "COMPLETED_SUCCESSFULLY"
     },
     "error_recovery_reason": "Build failed with duplicate function/type declarations between E1.1.1 and E1.1.2",
-    "next_action": "CRITICAL: Split-003 violated 800-line limit (2038 lines). Need to resplit or refactor",
-    "next_state": "MONITOR_IMPLEMENTATION",
-    "split_001_completed": true,
-    "split_001_lines": 348,
-    "split_001_completion_time": "2025-09-07T15:39:00Z",
-    "split_002_completed": true,
-    "split_002_lines": 372,
-    "split_002_completion_time": "2025-09-07T16:08:00Z",
-    "split_003_completed": true,
-    "split_003_lines": 2038,
-    "split_003_completion_time": "2025-09-07T16:12:00Z",
-    "split_003_violation": "EXCEEDED_800_LINE_HARD_LIMIT"
+    "next_action": "Create split infrastructure for E1.2.1 splits (3 splits planned)",
+    "next_state": "CREATE_SPLIT_INFRASTRUCTURE",
+    "splits_required": true,
+    "split_plan_exists": true,
+    "split_plan_location": "efforts/phase1/wave2/cert-validation/SPLIT-PLAN.md",
+    "splits_planned": 3,
+    "split_infrastructure_created": false
   },
   "sw_engineer_parallelization_plan": {
     "wave": 2,
@@ -202,7 +198,7 @@
               "name": "E1.2.1-certificate-validation-pipeline",
               "description": "Validate cert chains and provide diagnostics",
               "estimated_lines": 400,
-              "status": "SIZE_LIMIT_EXCEEDED",
+              "status": "SPLIT_PLAN_READY",
               "assignee": "code-reviewer-1",
               "directory": "efforts/phase1/wave2/cert-validation",
               "implementation_plan": "IMPLEMENTATION-PLAN-20250907-064701.md",
@@ -352,41 +348,14 @@
   },
   "split_tracking": {
     "cert-validation": {
-      "current_split": 3,
+      "current_split": 0,
       "total_splits": 3,
-      "splits": [
-        {
-          "number": 1,
-          "status": "COMPLETED",
-          "created_at": "2025-09-07T15:33:00Z",
-          "completed_at": "2025-09-07T15:39:00Z",
-          "directory": "efforts/phase1/wave2/cert-validation-SPLIT-001",
-          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001",
-          "lines": 348
-        },
-        {
-          "number": 2,
-          "status": "COMPLETED",
-          "created_at": "2025-09-07T15:56:00Z",
-          "completed_at": "2025-09-07T16:08:00Z",
-          "directory": "efforts/phase1/wave2/cert-validation-SPLIT-002",
-          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002",
-          "lines": 372
-        },
-        {
-          "number": 3,
-          "status": "COMPLETED_WITH_SIZE_VIOLATION",
-          "created_at": "2025-09-07T16:10:00Z",
-          "completed_at": "2025-09-07T16:12:00Z",
-          "directory": "efforts/phase1/wave2/cert-validation-SPLIT-003",
-          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003",
-          "lines": 2038,
-          "violation": "EXCEEDED_800_LINE_LIMIT",
-          "target_lines": 400
-        }
-      ],
-      "total_lines": 2758,
-      "status": "SIZE_VIOLATION_NEEDS_RESPLIT"
+      "splits": [],
+      "status": "SPLIT_PLAN_READY_INFRASTRUCTURE_NEEDED",
+      "split_plan_created": true,
+      "split_plan_reviewed": true,
+      "infrastructure_created": false,
+      "note": "Split plan exists in efforts/phase1/wave2/cert-validation/SPLIT-PLAN.md. Need to create infrastructure for 3 splits."
     }
   }
 }
