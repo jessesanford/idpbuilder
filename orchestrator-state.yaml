@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "CREATE_SPLIT_INFRASTRUCTURE",
-    "previous_state": "MONITOR_IMPLEMENTATION",
-    "transition_time": "2025-09-07T16:30:00Z",
-    "transition_reason": "E1.2.1 requires splitting - 808 lines exceeds 800 limit. Split plan exists, need to create infrastructure",
+    "current_state": "SPAWN_AGENTS",
+    "previous_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+    "transition_time": "2025-09-07T16:44:00Z",
+    "transition_reason": "Split-001 infrastructure ready, ready to spawn SW Engineer for implementation",
     "rules_reacknowledged": true,
     "monitoring_complete": true,
     "monitoring_results": {
@@ -348,14 +348,23 @@
   },
   "split_tracking": {
     "cert-validation": {
-      "current_split": 0,
+      "current_split": 1,
       "total_splits": 3,
-      "splits": [],
-      "status": "SPLIT_PLAN_READY_INFRASTRUCTURE_NEEDED",
+      "splits": [
+        {
+          "number": 1,
+          "status": "INFRASTRUCTURE_READY",
+          "created_at": "2025-09-07T16:43:00Z",
+          "directory": "efforts/phase1/wave2/cert-validation-SPLIT-001",
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001",
+          "base_branch": "idpbuilder-oci-build-push/phase1/wave1/integration"
+        }
+      ],
+      "status": "SPLIT_IN_PROGRESS",
       "split_plan_created": true,
       "split_plan_reviewed": true,
-      "infrastructure_created": false,
-      "note": "Split plan exists in efforts/phase1/wave2/cert-validation/SPLIT-PLAN.md. Need to create infrastructure for 3 splits."
+      "infrastructure_created": true,
+      "note": "Split-001 infrastructure ready. 2 more splits remaining."
     }
   }
 }
