@@ -1,0 +1,22 @@
+# ORCHESTRATOR TODO LIST - WAITING_FOR_EFFORT_PLANS STATE
+# Generated: $(date)
+# State: WAITING_FOR_EFFORT_PLANS -> ANALYZE_IMPLEMENTATION_PARALLELIZATION
+
+## COMPLETED:
+[✓] Actively check effort plan status for E1.2.1 and E1.2.2
+[✓] Verify plans exist with correct format and location (R255)
+[✓] Update orchestrator-state.yaml when all plans complete
+[✓] Save TODOs before state transition (R287)
+
+## PENDING:
+[ ] Transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION when ready
+
+## RESULTS:
+- E1.2.1 cert-validation plan: COMPLETE ✅
+  Location: efforts/phase1/wave2/cert-validation/IMPLEMENTATION-PLAN-20250907-064701.md
+- E1.2.2 fallback-strategies plan: COMPLETE ✅
+  Location: efforts/phase1/wave2/fallback-strategies/IMPLEMENTATION-PLAN-20250907-064500.md
+
+## NEXT STATE:
+- ANALYZE_IMPLEMENTATION_PARALLELIZATION (R234 mandatory sequence)
+- Analyze effort plans to determine SW Engineer parallelization strategy
