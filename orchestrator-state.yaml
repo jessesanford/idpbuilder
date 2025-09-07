@@ -1,274 +1,358 @@
-state_machine:
-  current_state: CREATE_NEXT_SPLIT_INFRASTRUCTURE
-  previous_state: MONITOR_IMPLEMENTATION
-  transition_time: '2025-09-07T15:26:00.000000Z'
-  transition_reason: E1.2.1 requires splitting (808 lines), E1.2.2 passed review (660 lines)
-  rules_reacknowledged: true
-  monitoring_complete: true
-  monitoring_results:
-    E1.2.1:
-      status: REQUIRES_SPLIT
-      lines: 808
-      split_plan_created: true
-      splits_required: 3
-    E1.2.2:
-      status: REVIEW_PASSED
-      lines: 660
-      review_verdict: ACCEPTED
-  parallelization_analysis_complete: true
-  parallelization_analysis_time: '2025-09-07T08:24:00.000000Z'
-  effort_plans_complete: true
-  effort_plans_verified: true
-  effort_plans_completed_time: '2025-09-07T07:05:00.000000Z'
-  code_reviewers_spawned: true
-  code_reviewers_spawn_time: '2025-09-07T06:43:36.000000Z'
-  error_recovery_completed: true
-  fixes_applied:
-  - 'E1.1.1: Renamed CertValidator to KindCertValidator, isFeatureEnabled to isKindFeatureEnabled'
-  - 'E1.1.2: Renamed CertValidator to RegistryCertValidator, isFeatureEnabled to isRegistryFeatureEnabled'
-  recovery_time_minutes: 10
-  r300_verified: true
-  integration_status: COMPLETED_SUCCESSFULLY
-  integration_report_location: efforts/phase1/wave1/integration-workspace/INTEGRATION-REPORT.md
-  upstream_bugs_found: true
-  upstream_bugs: '- Docker API incompatibility in pkg/kind/cluster_test.go:232 (documented
-    per R266)
-
-    '
-  integration_score: 100/100
-  integration_completed_time: '2025-09-06T22:27:00.000000Z'
-  integration_branch: idpbuilder-oci-build-push/phase1/wave1/integration
-  r291_gate_status:
-    build: PARTIAL_SUCCESS
-    test: PASS
-    demo: DOCUMENTED
-    integration: COMPLETED_SUCCESSFULLY
-  error_recovery_reason: Build failed with duplicate function/type declarations between
-    E1.1.1 and E1.1.2
-  next_action: Spawn SW Engineers in parallel for both E1.2.1 and E1.2.2
-  next_state: SPAWN_AGENTS
-sw_engineer_parallelization_plan:
-  wave: 2
-  phase: 1
-  analysis_timestamp: '2025-09-07T08:24:00.000000Z'
-  blocking_implementations: []
-  parallel_groups:
-    group_1:
-      can_start_immediately: true
-      efforts:
-      - effort_id: E1.2.1
-        name: cert-validation
-        directory: efforts/phase1/wave2/cert-validation
-        implementation_plan: efforts/phase1/wave2/cert-validation/IMPLEMENTATION-PLAN-20250907-064701.md
-        estimated_lines: 400
-        dependencies:
-        - E1.1.1
-        - E1.1.2
-      - effort_id: E1.2.2
-        name: fallback-strategies
-        directory: efforts/phase1/wave2/fallback-strategies
-        implementation_plan: efforts/phase1/wave2/fallback-strategies/IMPLEMENTATION-PLAN-20250907-064500.md
-        estimated_lines: 700
-        dependencies:
-        - E1.1.1
-        - E1.1.2
-  spawn_sequence:
-  - step: 1
-    action: spawn_parallel
-    agent_type: sw-engineer
-    efforts:
-    - E1.2.1
-    - E1.2.2
-    r151_requirement: All in ONE message with <5s delta
-    expected_duration: 6-8 hours
-    note: Both efforts can run fully in parallel - no blocking dependencies
-  decision_rationale:
-  - Both efforts have 'Can Parallelize: Yes' in their plans
-  - No inter-dependencies between E1.2.1 and E1.2.2
-  - Wave 1 dependencies (E1.1.1, E1.1.2) are already complete
-  - Parallel execution will optimize implementation time
-  r219_dependency_analysis:
-    E1.2.1:
-      depends_on:
-      - E1.1.1 - KindCertExtractor
-      - E1.1.2 - TrustStoreManager
-      provides:
-      - CertificateValidator interface
-      - Chain validation
-      - Diagnostics
-    E1.2.2:
-      depends_on:
-      - E1.1.1 - Certificate retrieval
-      - E1.1.2 - TrustStoreManager
-      provides:
-      - FallbackManager
-      - Insecure mode handler
-      - Retry logic
-project_info:
-  name: idpbuilder-oci-mvp
-  total_phases: 2
-  total_waves: 4
-  total_efforts: 7
-  estimated_lines: 2000
-  target_repository: https://github.com/jessesanford/idpbuilder.git
-  base_branch: main
-phase_structure:
-  phase_1:
-    name: Certificate Infrastructure
-    status: IN_PROGRESS
-    estimated_lines: 1900
-    target_completion: Week 1
-    waves:
-      wave_1:
-        name: Certificate Management Core
-        status: COMPLETE
-        can_parallelize: true
-        max_parallel: 2
-        efforts:
-        - name: E1.1.1-kind-certificate-extraction
-          description: Extract certificates from Kind/Gitea
-          estimated_lines: 500
-          actual_lines: 678
-          status: IMPLEMENTED
-          review_status: ACCEPTED
-          assignee: sw-engineer-1
-          directory: efforts/phase1/wave1/kind-cert-extraction
-        - name: E1.1.2-registry-tls-trust-integration
-          description: Configure go-containerregistry TLS trust
-          estimated_lines: 600
-          actual_lines: 714
-          status: IMPLEMENTED
-          review_status: APPROVED_WITH_WARNINGS
-          assignee: sw-engineer-2
-          directory: efforts/phase1/wave1/registry-tls-trust
-        completion_time: '2025-09-06T19:03:06.247302Z'
-        all_reviews_passed: true
-        size_compliant: true
-        ready_for_integration: true
-      wave_2:
-        name: Certificate Validation & Fallback
-        status: PENDING
-        can_parallelize: true
-        max_parallel: 2
-        depends_on:
-        - wave_1
-        efforts:
-        - name: E1.2.1-certificate-validation-pipeline
-          description: Validate cert chains and provide diagnostics
-          estimated_lines: 400
-          status: SIZE_LIMIT_EXCEEDED
-          assignee: code-reviewer-1
-          directory: efforts/phase1/wave2/cert-validation
-          implementation_plan: IMPLEMENTATION-PLAN-20250907-064701.md
-          plan_verified: true
-          actual_lines: 808
-        - name: E1.2.2-fallback-strategies
-          description: Implement fallback handling and --insecure flag
-          estimated_lines: 400
-          status: COMPLETED
-          assignee: code-reviewer-2
-          directory: efforts/phase1/wave2/fallback-strategies
-          implementation_plan: IMPLEMENTATION-PLAN-20250907-064500.md
-          plan_verified: true
-          actual_lines: 96
-  phase_2:
-    name: Build & Push Implementation
-    status: PENDING
-    estimated_lines: 1700
-    target_completion: Week 2
-    depends_on:
-    - phase_1
-    waves:
-      wave_1:
-        name: Core Build & Push
-        status: PENDING
-        can_parallelize: true
-        max_parallel: 2
-        efforts:
-        - name: E2.1.1-go-containerregistry-image-builder
-          description: Basic image assembly using go-containerregistry
-          estimated_lines: 600
-          status: PENDING
-          assignee: TBD
-          directory: efforts/phase2/wave1/image-builder
-        - name: E2.1.2-gitea-registry-client
-          description: Push images to Gitea with cert handling
-          estimated_lines: 600
-          status: PENDING
-          assignee: TBD
-          directory: efforts/phase2/wave1/gitea-client
-      wave_2:
-        name: CLI Integration
-        status: PENDING
-        can_parallelize: false
-        max_parallel: 1
-        depends_on:
-        - wave_1
-        efforts:
-        - name: E2.2.1-cli-commands
-          description: Build and push CLI commands
-          estimated_lines: 500
-          status: PENDING
-          assignee: TBD
-          directory: efforts/phase2/wave2/cli-commands
-current_phase: 1
-current_wave: 2
-current_effort: null
-efforts_in_progress:
-- E1.2.1-certificate-validation-pipeline
-efforts_completed:
-- E1.1.1-kind-certificate-extraction
-- E1.1.2-registry-tls-trust-integration
-- E1.2.2-fallback-strategies
-efforts_pending:
-- E1.2.1-certificate-validation-pipeline
-- E1.2.2-fallback-strategies
-- E2.1.1-go-containerregistry-image-builder
-- E2.1.2-gitea-registry-client
-- E2.2.1-cli-commands
-integration_branches:
-- idpbuilder-oci-build-push/phase1/wave1-integration
-waves_completed:
-- phase1/wave1
-phases_completed: []
-software_factory_compliance:
-  r281_all_phases_included: true
-  r288_immediate_commits: true
-  r322_stops_at_transitions: true
-  r287_todo_persistence: true
-  r151_parallel_spawning: true
-timestamps:
-  orchestrator_start: '2025-09-06T17:11:37Z'
-  state_file_created: '2025-09-06T17:12:30Z'
-  last_todo_save: '2025-09-06T17:35:00Z'
-  last_state_commit: '2025-09-06T17:35:00Z'
-  code_reviewer_spawn: '2025-09-06T17:16:52Z'
-  sw_engineers_spawn: '2025-09-06T17:35:00Z'
-  wave_1_implementation_complete: '2025-09-06T17:50:00Z'
-  wave_1_reviews_complete: '2025-09-06T18:42:00Z'
-  wave_1_complete: '2025-09-06T18:53:09Z'
-  wave_1_finalized: '2025-09-06T19:09:42.000000Z'
-  wave_complete_verified: '2025-09-06T19:09:42.000000Z'
-  last_state_update: '2025-09-06T19:23:07.000000Z'
-  wave_complete_to_integration: '2025-09-06T19:23:07.000000Z'
-  integration_branch_created: '2025-09-06T19:36:00.000000Z'
-  code_reviewer_merge_plan_spawned: '2025-09-06T19:36:00.000000Z'
-  sw_engineers_wave2_spawn: '2025-09-07T12:58:05.535354Z'
-next_actions:
-- Spawn Code Reviewer to create E1.2.1 certificate validation pipeline effort plan
-- Spawn Code Reviewer to create E1.2.2 fallback strategies effort plan
-- Wait for effort plans to be completed
-- Continue with SETUP_EFFORT_INFRASTRUCTURE after plans ready
-current_review:
-  type: WAVE_INTEGRATION
-  phase: 1
-  wave: 1
-  requested_at: '2025-09-07T06:23:42.375042Z'
-  integration_branch: idpbuilder-oci-build-push/phase1/wave1/integration
-  status: APPROVED
-  completed_at: '2025-09-07T06:29:48.536563Z'
-  decision: PROCEED_NEXT_WAVE
-wave_review:
-  report_file: wave-reviews/phase1/wave1/PHASE-1-WAVE-1-REVIEW-REPORT.md
-  decision: PROCEED_NEXT_WAVE
-  reviewed_at: '2025-09-07T06:29:48.536535Z'
+{
+  "state_machine": {
+    "current_state": "SPAWN_AGENTS",
+    "previous_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+    "transition_time": "2025-09-07T15:34:00Z",
+    "transition_reason": "Split-001 infrastructure ready for E1.2.1",
+    "rules_reacknowledged": true,
+    "monitoring_complete": true,
+    "monitoring_results": {
+      "E1.2.1": {
+        "status": "REQUIRES_SPLIT",
+        "lines": 808,
+        "split_plan_created": true,
+        "splits_required": 3
+      },
+      "E1.2.2": {
+        "status": "REVIEW_PASSED",
+        "lines": 660,
+        "review_verdict": "ACCEPTED"
+      }
+    },
+    "parallelization_analysis_complete": true,
+    "parallelization_analysis_time": "2025-09-07T08:24:00.000000Z",
+    "effort_plans_complete": true,
+    "effort_plans_verified": true,
+    "effort_plans_completed_time": "2025-09-07T07:05:00.000000Z",
+    "code_reviewers_spawned": true,
+    "code_reviewers_spawn_time": "2025-09-07T06:43:36.000000Z",
+    "error_recovery_completed": true,
+    "fixes_applied": [
+      "E1.1.1: Renamed CertValidator to KindCertValidator, isFeatureEnabled to isKindFeatureEnabled",
+      "E1.1.2: Renamed CertValidator to RegistryCertValidator, isFeatureEnabled to isRegistryFeatureEnabled"
+    ],
+    "recovery_time_minutes": 10,
+    "r300_verified": true,
+    "integration_status": "COMPLETED_SUCCESSFULLY",
+    "integration_report_location": "efforts/phase1/wave1/integration-workspace/INTEGRATION-REPORT.md",
+    "upstream_bugs_found": true,
+    "upstream_bugs": "- Docker API incompatibility in pkg/kind/cluster_test.go:232 (documented per R266)\n",
+    "integration_score": "100/100",
+    "integration_completed_time": "2025-09-06T22:27:00.000000Z",
+    "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+    "r291_gate_status": {
+      "build": "PARTIAL_SUCCESS",
+      "test": "PASS",
+      "demo": "DOCUMENTED",
+      "integration": "COMPLETED_SUCCESSFULLY"
+    },
+    "error_recovery_reason": "Build failed with duplicate function/type declarations between E1.1.1 and E1.1.2",
+    "next_action": "Spawn SW Engineer to implement E1.2.1 split-001",
+    "next_state": "MONITOR_IMPLEMENTATION"
+  },
+  "sw_engineer_parallelization_plan": {
+    "wave": 2,
+    "phase": 1,
+    "analysis_timestamp": "2025-09-07T08:24:00.000000Z",
+    "blocking_implementations": [],
+    "parallel_groups": {
+      "group_1": {
+        "can_start_immediately": true,
+        "efforts": [
+          {
+            "effort_id": "E1.2.1",
+            "name": "cert-validation",
+            "directory": "efforts/phase1/wave2/cert-validation",
+            "implementation_plan": "efforts/phase1/wave2/cert-validation/IMPLEMENTATION-PLAN-20250907-064701.md",
+            "estimated_lines": 400,
+            "dependencies": [
+              "E1.1.1",
+              "E1.1.2"
+            ]
+          },
+          {
+            "effort_id": "E1.2.2",
+            "name": "fallback-strategies",
+            "directory": "efforts/phase1/wave2/fallback-strategies",
+            "implementation_plan": "efforts/phase1/wave2/fallback-strategies/IMPLEMENTATION-PLAN-20250907-064500.md",
+            "estimated_lines": 700,
+            "dependencies": [
+              "E1.1.1",
+              "E1.1.2"
+            ]
+          }
+        ]
+      }
+    },
+    "spawn_sequence": [
+      {
+        "step": 1,
+        "action": "spawn_parallel",
+        "agent_type": "sw-engineer",
+        "efforts": [
+          "E1.2.1",
+          "E1.2.2"
+        ],
+        "r151_requirement": "All in ONE message with <5s delta",
+        "expected_duration": "6-8 hours",
+        "note": "Both efforts can run fully in parallel - no blocking dependencies"
+      }
+    ],
+    "decision_rationale": [
+      {
+        "Both efforts have 'Can Parallelize": "Yes' in their plans"
+      },
+      "No inter-dependencies between E1.2.1 and E1.2.2",
+      "Wave 1 dependencies (E1.1.1, E1.1.2) are already complete",
+      "Parallel execution will optimize implementation time"
+    ],
+    "r219_dependency_analysis": {
+      "E1.2.1": {
+        "depends_on": [
+          "E1.1.1 - KindCertExtractor",
+          "E1.1.2 - TrustStoreManager"
+        ],
+        "provides": [
+          "CertificateValidator interface",
+          "Chain validation",
+          "Diagnostics"
+        ]
+      },
+      "E1.2.2": {
+        "depends_on": [
+          "E1.1.1 - Certificate retrieval",
+          "E1.1.2 - TrustStoreManager"
+        ],
+        "provides": [
+          "FallbackManager",
+          "Insecure mode handler",
+          "Retry logic"
+        ]
+      }
+    }
+  },
+  "project_info": {
+    "name": "idpbuilder-oci-mvp",
+    "total_phases": 2,
+    "total_waves": 4,
+    "total_efforts": 7,
+    "estimated_lines": 2000,
+    "target_repository": "https://github.com/jessesanford/idpbuilder.git",
+    "base_branch": "main"
+  },
+  "phase_structure": {
+    "phase_1": {
+      "name": "Certificate Infrastructure",
+      "status": "IN_PROGRESS",
+      "estimated_lines": 1900,
+      "target_completion": "Week 1",
+      "waves": {
+        "wave_1": {
+          "name": "Certificate Management Core",
+          "status": "COMPLETE",
+          "can_parallelize": true,
+          "max_parallel": 2,
+          "efforts": [
+            {
+              "name": "E1.1.1-kind-certificate-extraction",
+              "description": "Extract certificates from Kind/Gitea",
+              "estimated_lines": 500,
+              "actual_lines": 678,
+              "status": "IMPLEMENTED",
+              "review_status": "ACCEPTED",
+              "assignee": "sw-engineer-1",
+              "directory": "efforts/phase1/wave1/kind-cert-extraction"
+            },
+            {
+              "name": "E1.1.2-registry-tls-trust-integration",
+              "description": "Configure go-containerregistry TLS trust",
+              "estimated_lines": 600,
+              "actual_lines": 714,
+              "status": "IMPLEMENTED",
+              "review_status": "APPROVED_WITH_WARNINGS",
+              "assignee": "sw-engineer-2",
+              "directory": "efforts/phase1/wave1/registry-tls-trust"
+            }
+          ],
+          "completion_time": "2025-09-06T19:03:06.247302Z",
+          "all_reviews_passed": true,
+          "size_compliant": true,
+          "ready_for_integration": true
+        },
+        "wave_2": {
+          "name": "Certificate Validation & Fallback",
+          "status": "PENDING",
+          "can_parallelize": true,
+          "max_parallel": 2,
+          "depends_on": [
+            "wave_1"
+          ],
+          "efforts": [
+            {
+              "name": "E1.2.1-certificate-validation-pipeline",
+              "description": "Validate cert chains and provide diagnostics",
+              "estimated_lines": 400,
+              "status": "SIZE_LIMIT_EXCEEDED",
+              "assignee": "code-reviewer-1",
+              "directory": "efforts/phase1/wave2/cert-validation",
+              "implementation_plan": "IMPLEMENTATION-PLAN-20250907-064701.md",
+              "plan_verified": true,
+              "actual_lines": 808
+            },
+            {
+              "name": "E1.2.2-fallback-strategies",
+              "description": "Implement fallback handling and --insecure flag",
+              "estimated_lines": 400,
+              "status": "COMPLETED",
+              "assignee": "code-reviewer-2",
+              "directory": "efforts/phase1/wave2/fallback-strategies",
+              "implementation_plan": "IMPLEMENTATION-PLAN-20250907-064500.md",
+              "plan_verified": true,
+              "actual_lines": 96
+            }
+          ]
+        }
+      }
+    },
+    "phase_2": {
+      "name": "Build & Push Implementation",
+      "status": "PENDING",
+      "estimated_lines": 1700,
+      "target_completion": "Week 2",
+      "depends_on": [
+        "phase_1"
+      ],
+      "waves": {
+        "wave_1": {
+          "name": "Core Build & Push",
+          "status": "PENDING",
+          "can_parallelize": true,
+          "max_parallel": 2,
+          "efforts": [
+            {
+              "name": "E2.1.1-go-containerregistry-image-builder",
+              "description": "Basic image assembly using go-containerregistry",
+              "estimated_lines": 600,
+              "status": "PENDING",
+              "assignee": "TBD",
+              "directory": "efforts/phase2/wave1/image-builder"
+            },
+            {
+              "name": "E2.1.2-gitea-registry-client",
+              "description": "Push images to Gitea with cert handling",
+              "estimated_lines": 600,
+              "status": "PENDING",
+              "assignee": "TBD",
+              "directory": "efforts/phase2/wave1/gitea-client"
+            }
+          ]
+        },
+        "wave_2": {
+          "name": "CLI Integration",
+          "status": "PENDING",
+          "can_parallelize": false,
+          "max_parallel": 1,
+          "depends_on": [
+            "wave_1"
+          ],
+          "efforts": [
+            {
+              "name": "E2.2.1-cli-commands",
+              "description": "Build and push CLI commands",
+              "estimated_lines": 500,
+              "status": "PENDING",
+              "assignee": "TBD",
+              "directory": "efforts/phase2/wave2/cli-commands"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "current_phase": 1,
+  "current_wave": 2,
+  "current_effort": null,
+  "efforts_in_progress": [
+    "E1.2.1-certificate-validation-pipeline"
+  ],
+  "efforts_completed": [
+    "E1.1.1-kind-certificate-extraction",
+    "E1.1.2-registry-tls-trust-integration",
+    "E1.2.2-fallback-strategies"
+  ],
+  "efforts_pending": [
+    "E1.2.1-certificate-validation-pipeline",
+    "E1.2.2-fallback-strategies",
+    "E2.1.1-go-containerregistry-image-builder",
+    "E2.1.2-gitea-registry-client",
+    "E2.2.1-cli-commands"
+  ],
+  "integration_branches": [
+    "idpbuilder-oci-build-push/phase1/wave1-integration"
+  ],
+  "waves_completed": [
+    "phase1/wave1"
+  ],
+  "phases_completed": [],
+  "software_factory_compliance": {
+    "r281_all_phases_included": true,
+    "r288_immediate_commits": true,
+    "r322_stops_at_transitions": true,
+    "r287_todo_persistence": true,
+    "r151_parallel_spawning": true
+  },
+  "timestamps": {
+    "orchestrator_start": "2025-09-06T17:11:37Z",
+    "state_file_created": "2025-09-06T17:12:30Z",
+    "last_todo_save": "2025-09-06T17:35:00Z",
+    "last_state_commit": "2025-09-06T17:35:00Z",
+    "code_reviewer_spawn": "2025-09-06T17:16:52Z",
+    "sw_engineers_spawn": "2025-09-06T17:35:00Z",
+    "wave_1_implementation_complete": "2025-09-06T17:50:00Z",
+    "wave_1_reviews_complete": "2025-09-06T18:42:00Z",
+    "wave_1_complete": "2025-09-06T18:53:09Z",
+    "wave_1_finalized": "2025-09-06T19:09:42.000000Z",
+    "wave_complete_verified": "2025-09-06T19:09:42.000000Z",
+    "last_state_update": "2025-09-06T19:23:07.000000Z",
+    "wave_complete_to_integration": "2025-09-06T19:23:07.000000Z",
+    "integration_branch_created": "2025-09-06T19:36:00.000000Z",
+    "code_reviewer_merge_plan_spawned": "2025-09-06T19:36:00.000000Z",
+    "sw_engineers_wave2_spawn": "2025-09-07T12:58:05.535354Z"
+  },
+  "next_actions": [
+    "Spawn Code Reviewer to create E1.2.1 certificate validation pipeline effort plan",
+    "Spawn Code Reviewer to create E1.2.2 fallback strategies effort plan",
+    "Wait for effort plans to be completed",
+    "Continue with SETUP_EFFORT_INFRASTRUCTURE after plans ready"
+  ],
+  "current_review": {
+    "type": "WAVE_INTEGRATION",
+    "phase": 1,
+    "wave": 1,
+    "requested_at": "2025-09-07T06:23:42.375042Z",
+    "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+    "status": "APPROVED",
+    "completed_at": "2025-09-07T06:29:48.536563Z",
+    "decision": "PROCEED_NEXT_WAVE"
+  },
+  "wave_review": {
+    "report_file": "wave-reviews/phase1/wave1/PHASE-1-WAVE-1-REVIEW-REPORT.md",
+    "decision": "PROCEED_NEXT_WAVE",
+    "reviewed_at": "2025-09-07T06:29:48.536535Z"
+  },
+  "split_tracking": {
+    "cert-validation": {
+      "current_split": 1,
+      "total_splits": 3,
+      "splits": [
+        {
+          "number": 1,
+          "status": "INFRASTRUCTURE_READY",
+          "created_at": "2025-09-07T15:33:00Z",
+          "directory": "efforts/phase1/wave2/cert-validation-SPLIT-001",
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001"
+        }
+      ]
+    }
+  }
+}
