@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "MONITOR_IMPLEMENTATION",
-    "previous_state": "SPAWN_AGENTS",
-    "transition_time": "2025-09-07T16:57:59Z",
-    "transition_reason": "Split-001 SW Engineer spawned and completed implementation",
+    "current_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+    "previous_state": "MONITOR_IMPLEMENTATION",
+    "transition_time": "2025-09-07T17:05:30Z",
+    "transition_reason": "Split-001 completed, need to create infrastructure for split-002",
     "rules_reacknowledged": true,
     "monitoring_complete": true,
     "monitoring_results": {
@@ -48,8 +48,8 @@
       "integration": "COMPLETED_SUCCESSFULLY"
     },
     "error_recovery_reason": "Build failed with duplicate function/type declarations between E1.1.1 and E1.1.2",
-    "next_action": "Create split infrastructure for E1.2.1 splits (3 splits planned)",
-    "next_state": "CREATE_SPLIT_INFRASTRUCTURE",
+    "next_action": "Create effort workspace and branch for cert-validation split-002",
+    "next_state": "SPAWN_AGENTS",
     "splits_required": true,
     "split_plan_exists": true,
     "split_plan_location": "efforts/phase1/wave2/cert-validation/SPLIT-PLAN.md",
@@ -348,7 +348,7 @@
   },
   "split_tracking": {
     "cert-validation": {
-      "current_split": 1,
+      "current_split": 2,
       "total_splits": 3,
       "splits": [
         {
@@ -365,7 +365,7 @@
       "split_plan_created": true,
       "split_plan_reviewed": true,
       "infrastructure_created": true,
-      "note": "Split-001 infrastructure ready. 2 more splits remaining."
+      "note": "Split-001 completed. Ready to create infrastructure for split-002."
     }
   }
 }
