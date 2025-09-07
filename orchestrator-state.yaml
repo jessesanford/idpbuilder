@@ -50,8 +50,29 @@
       "integration": "COMPLETED_SUCCESSFULLY"
     },
     "error_recovery_reason": "Build failed with duplicate function/type declarations between E1.1.1 and E1.1.2",
-    "next_action": "Spawn Code Reviewer to validate complete split implementation",
-    "next_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+    "next_action": "Spawn SW Engineers to fix test compilation issues in E1.2.1",
+    "next_state": "SPAWN_ENGINEERS_FOR_FIXES",
+    "code_review_completed_time": "2025-09-07T20:31:00Z",
+    "code_review_results": {
+      "E1.2.1": {
+        "verdict": "NEEDS_FIXES",
+        "total_lines": 5013,
+        "build_status": "SUCCESS",
+        "test_status": "COMPILATION_FAILURE",
+        "issues_found": [
+          "Duplicate createTestCertificate function in helpers_test.go:164 and trust_test.go:16",
+          "Undefined isFeatureEnabled function referenced in tests",
+          "Undefined NewCertValidator function referenced in tests"
+        ],
+        "fix_time_estimate": "1-2 hours",
+        "integration_readiness": "85%"
+      },
+      "E1.2.2": {
+        "verdict": "ALREADY_PASSED",
+        "lines": 660,
+        "status": "No review needed - already accepted"
+      }
+    },
     "splits_required": true,
     "split_plan_exists": true,
     "split_plan_location": "efforts/phase1/wave2/cert-validation/SPLIT-PLAN.md",
