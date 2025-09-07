@@ -1,9 +1,9 @@
 state_machine:
-  current_state: WAVE_START
-  previous_state: WAVE_REVIEW
-  transition_time: '2025-09-07T06:31:45.000000Z'
-  transition_reason: Wave 1 review approved - starting Wave 2 implementation
-  rules_reacknowledged: false
+  current_state: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+  previous_state: WAVE_START
+  transition_time: '2025-09-07T06:39:00.000000Z'
+  transition_reason: Wave 2 effort plans not found - need to create effort plans before implementation
+  rules_reacknowledged: true
   error_recovery_completed: true
   fixes_applied:
   - 'E1.1.1: Renamed CertValidator to KindCertValidator, isFeatureEnabled to isKindFeatureEnabled'
@@ -27,8 +27,8 @@ state_machine:
     integration: COMPLETED_SUCCESSFULLY
   error_recovery_reason: Build failed with duplicate function/type declarations between
     E1.1.1 and E1.1.2
-  next_action: Start Wave 2 implementation
-  next_state: WAVE_START
+  next_action: Spawn Code Reviewers to create Wave 2 effort plans
+  next_state: WAITING_FOR_EFFORT_PLANS
 project_info:
   name: idpbuilder-oci-mvp
   total_phases: 2
@@ -171,11 +171,10 @@ timestamps:
   integration_branch_created: '2025-09-06T19:36:00.000000Z'
   code_reviewer_merge_plan_spawned: '2025-09-06T19:36:00.000000Z'
 next_actions:
-- Create new integration branch from main (per R271)
-- Merge fixed effort branches (E1.1.1 and E1.1.2)
-- Run build and tests to verify fixes
-- Complete integration if successful
-- Transition to WAVE_COMPLETE if integration passes
+- Spawn Code Reviewer to create E1.2.1 certificate validation pipeline effort plan
+- Spawn Code Reviewer to create E1.2.2 fallback strategies effort plan
+- Wait for effort plans to be completed
+- Continue with SETUP_EFFORT_INFRASTRUCTURE after plans ready
 current_review:
   type: WAVE_INTEGRATION
   phase: 1
