@@ -2,29 +2,33 @@ state_machine:
   current_state: WAVE_REVIEW
   previous_state: INTEGRATION
   transition_time: '2025-09-06T22:28:00.000000Z'
-  transition_reason: 'Integration completed successfully - ready for wave review'
+  transition_reason: Integration completed successfully - ready for wave review
   rules_reacknowledged: false
   error_recovery_completed: true
   fixes_applied:
-    - 'E1.1.1: Renamed CertValidator to KindCertValidator, isFeatureEnabled to isKindFeatureEnabled'
-    - 'E1.1.2: Renamed CertValidator to RegistryCertValidator, isFeatureEnabled to isRegistryFeatureEnabled'
+  - 'E1.1.1: Renamed CertValidator to KindCertValidator, isFeatureEnabled to isKindFeatureEnabled'
+  - 'E1.1.2: Renamed CertValidator to RegistryCertValidator, isFeatureEnabled to isRegistryFeatureEnabled'
   recovery_time_minutes: 10
   r300_verified: true
   integration_status: COMPLETED_SUCCESSFULLY
-  integration_report_location: 'efforts/phase1/wave1/integration-workspace/INTEGRATION-REPORT.md'
+  integration_report_location: efforts/phase1/wave1/integration-workspace/INTEGRATION-REPORT.md
   upstream_bugs_found: true
-  upstream_bugs: |
-    - Docker API incompatibility in pkg/kind/cluster_test.go:232 (documented per R266)
-  integration_score: '100/100'
+  upstream_bugs: '- Docker API incompatibility in pkg/kind/cluster_test.go:232 (documented
+    per R266)
+
+    '
+  integration_score: 100/100
   integration_completed_time: '2025-09-06T22:27:00.000000Z'
-  integration_branch: 'idpbuilder-oci-build-push/phase1/wave1/integration'
+  integration_branch: idpbuilder-oci-build-push/phase1/wave1/integration
   r291_gate_status:
     build: PARTIAL_SUCCESS
     test: PASS
     demo: DOCUMENTED
     integration: COMPLETED_SUCCESSFULLY
-  error_recovery_reason: 'Build failed with duplicate function/type declarations between E1.1.1 and E1.1.2'
-  next_action: Spawn architect for wave review per R258
+  error_recovery_reason: Build failed with duplicate function/type declarations between
+    E1.1.1 and E1.1.2
+  next_action: Start Wave 2 implementation
+  next_state: WAVE_START
 project_info:
   name: idpbuilder-oci-mvp
   total_phases: 2
@@ -46,22 +50,22 @@ phase_structure:
         can_parallelize: true
         max_parallel: 2
         efforts:
-          - name: E1.1.1-kind-certificate-extraction
-            description: Extract certificates from Kind/Gitea
-            estimated_lines: 500
-            actual_lines: 678
-            status: IMPLEMENTED
-            review_status: ACCEPTED
-            assignee: sw-engineer-1
-            directory: efforts/phase1/wave1/kind-cert-extraction
-          - name: E1.1.2-registry-tls-trust-integration
-            description: Configure go-containerregistry TLS trust
-            estimated_lines: 600
-            actual_lines: 714
-            status: IMPLEMENTED
-            review_status: APPROVED_WITH_WARNINGS
-            assignee: sw-engineer-2
-            directory: efforts/phase1/wave1/registry-tls-trust
+        - name: E1.1.1-kind-certificate-extraction
+          description: Extract certificates from Kind/Gitea
+          estimated_lines: 500
+          actual_lines: 678
+          status: IMPLEMENTED
+          review_status: ACCEPTED
+          assignee: sw-engineer-1
+          directory: efforts/phase1/wave1/kind-cert-extraction
+        - name: E1.1.2-registry-tls-trust-integration
+          description: Configure go-containerregistry TLS trust
+          estimated_lines: 600
+          actual_lines: 714
+          status: IMPLEMENTED
+          review_status: APPROVED_WITH_WARNINGS
+          assignee: sw-engineer-2
+          directory: efforts/phase1/wave1/registry-tls-trust
         completion_time: '2025-09-06T19:03:06.247302Z'
         all_reviews_passed: true
         size_compliant: true
@@ -72,27 +76,27 @@ phase_structure:
         can_parallelize: true
         max_parallel: 2
         depends_on:
-          - wave_1
+        - wave_1
         efforts:
-          - name: E1.2.1-certificate-validation-pipeline
-            description: Validate cert chains and provide diagnostics
-            estimated_lines: 400
-            status: PENDING
-            assignee: TBD
-            directory: efforts/phase1/wave2/cert-validation
-          - name: E1.2.2-fallback-strategies
-            description: Implement fallback handling and --insecure flag
-            estimated_lines: 400
-            status: PENDING
-            assignee: TBD
-            directory: efforts/phase1/wave2/fallback-strategies
+        - name: E1.2.1-certificate-validation-pipeline
+          description: Validate cert chains and provide diagnostics
+          estimated_lines: 400
+          status: PENDING
+          assignee: TBD
+          directory: efforts/phase1/wave2/cert-validation
+        - name: E1.2.2-fallback-strategies
+          description: Implement fallback handling and --insecure flag
+          estimated_lines: 400
+          status: PENDING
+          assignee: TBD
+          directory: efforts/phase1/wave2/fallback-strategies
   phase_2:
     name: Build & Push Implementation
     status: PENDING
     estimated_lines: 1700
     target_completion: Week 2
     depends_on:
-      - phase_1
+    - phase_1
     waves:
       wave_1:
         name: Core Build & Push
@@ -100,49 +104,49 @@ phase_structure:
         can_parallelize: true
         max_parallel: 2
         efforts:
-          - name: E2.1.1-go-containerregistry-image-builder
-            description: Basic image assembly using go-containerregistry
-            estimated_lines: 600
-            status: PENDING
-            assignee: TBD
-            directory: efforts/phase2/wave1/image-builder
-          - name: E2.1.2-gitea-registry-client
-            description: Push images to Gitea with cert handling
-            estimated_lines: 600
-            status: PENDING
-            assignee: TBD
-            directory: efforts/phase2/wave1/gitea-client
+        - name: E2.1.1-go-containerregistry-image-builder
+          description: Basic image assembly using go-containerregistry
+          estimated_lines: 600
+          status: PENDING
+          assignee: TBD
+          directory: efforts/phase2/wave1/image-builder
+        - name: E2.1.2-gitea-registry-client
+          description: Push images to Gitea with cert handling
+          estimated_lines: 600
+          status: PENDING
+          assignee: TBD
+          directory: efforts/phase2/wave1/gitea-client
       wave_2:
         name: CLI Integration
         status: PENDING
         can_parallelize: false
         max_parallel: 1
         depends_on:
-          - wave_1
+        - wave_1
         efforts:
-          - name: E2.2.1-cli-commands
-            description: Build and push CLI commands
-            estimated_lines: 500
-            status: PENDING
-            assignee: TBD
-            directory: efforts/phase2/wave2/cli-commands
+        - name: E2.2.1-cli-commands
+          description: Build and push CLI commands
+          estimated_lines: 500
+          status: PENDING
+          assignee: TBD
+          directory: efforts/phase2/wave2/cli-commands
 current_phase: 1
-current_wave: 1
+current_wave: 2
 current_effort: null
 efforts_in_progress: []
 efforts_completed:
-  - E1.1.1-kind-certificate-extraction
-  - E1.1.2-registry-tls-trust-integration
+- E1.1.1-kind-certificate-extraction
+- E1.1.2-registry-tls-trust-integration
 efforts_pending:
-  - E1.2.1-certificate-validation-pipeline
-  - E1.2.2-fallback-strategies
-  - E2.1.1-go-containerregistry-image-builder
-  - E2.1.2-gitea-registry-client
-  - E2.2.1-cli-commands
+- E1.2.1-certificate-validation-pipeline
+- E1.2.2-fallback-strategies
+- E2.1.1-go-containerregistry-image-builder
+- E2.1.2-gitea-registry-client
+- E2.2.1-cli-commands
 integration_branches:
-  - idpbuilder-oci-build-push/phase1/wave1-integration
+- idpbuilder-oci-build-push/phase1/wave1-integration
 waves_completed:
-  - phase1/wave1
+- phase1/wave1
 phases_completed: []
 software_factory_compliance:
   r281_all_phases_included: true
@@ -167,8 +171,21 @@ timestamps:
   integration_branch_created: '2025-09-06T19:36:00.000000Z'
   code_reviewer_merge_plan_spawned: '2025-09-06T19:36:00.000000Z'
 next_actions:
-  - Create new integration branch from main (per R271)
-  - Merge fixed effort branches (E1.1.1 and E1.1.2)
-  - Run build and tests to verify fixes
-  - Complete integration if successful
-  - Transition to WAVE_COMPLETE if integration passes
+- Create new integration branch from main (per R271)
+- Merge fixed effort branches (E1.1.1 and E1.1.2)
+- Run build and tests to verify fixes
+- Complete integration if successful
+- Transition to WAVE_COMPLETE if integration passes
+current_review:
+  type: WAVE_INTEGRATION
+  phase: 1
+  wave: 1
+  requested_at: '2025-09-07T06:23:42.375042Z'
+  integration_branch: idpbuilder-oci-build-push/phase1/wave1/integration
+  status: APPROVED
+  completed_at: '2025-09-07T06:29:48.536563Z'
+  decision: PROCEED_NEXT_WAVE
+wave_review:
+  report_file: wave-reviews/phase1/wave1/PHASE-1-WAVE-1-REVIEW-REPORT.md
+  decision: PROCEED_NEXT_WAVE
+  reviewed_at: '2025-09-07T06:29:48.536535Z'
