@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "MONITOR_IMPLEMENTATION",
-    "previous_state": "SPAWN_AGENTS",
-    "transition_time": "2025-09-07T17:49:30Z",
-    "transition_reason": "Split-002 SW engineer spawned and completed implementation",
+    "current_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+    "previous_state": "MONITOR_IMPLEMENTATION",
+    "transition_time": "2025-09-07T19:48:30Z",
+    "transition_reason": "Split-002 completed, need to create infrastructure for split-003 (final split)",
     "rules_reacknowledged": true,
     "monitoring_complete": true,
     "monitoring_results": {
@@ -48,7 +48,7 @@
       "integration": "COMPLETED_SUCCESSFULLY"
     },
     "error_recovery_reason": "Build failed with duplicate function/type declarations between E1.1.1 and E1.1.2",
-    "next_action": "Create effort workspace and branch for cert-validation split-002",
+    "next_action": "Create effort workspace and branch for cert-validation split-003",
     "next_state": "SPAWN_AGENTS",
     "splits_required": true,
     "split_plan_exists": true,
@@ -374,7 +374,7 @@
       "split_plan_created": true,
       "split_plan_reviewed": true,
       "infrastructure_created": true,
-      "note": "Split-002 completed. Need to create infrastructure for split-003 (final split)."
+      "note": "Split-002 completed. Transitioning to CREATE_NEXT_SPLIT_INFRASTRUCTURE for split-003 (final split)."
     }
   }
 }
