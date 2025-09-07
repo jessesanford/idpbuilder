@@ -4,6 +4,8 @@ state_machine:
   transition_time: '2025-09-07T07:40:00.000000Z'
   transition_reason: All effort plans complete and verified - ready to analyze parallelization strategy
   rules_reacknowledged: true
+  parallelization_analysis_complete: true
+  parallelization_analysis_time: '2025-09-07T08:24:00.000000Z'
   effort_plans_complete: true
   effort_plans_verified: true
   effort_plans_completed_time: '2025-09-07T07:05:00.000000Z'
@@ -32,8 +34,65 @@ state_machine:
     integration: COMPLETED_SUCCESSFULLY
   error_recovery_reason: Build failed with duplicate function/type declarations between
     E1.1.1 and E1.1.2
-  next_action: Analyze effort plans to determine SW Engineer parallelization strategy (R234 mandatory)
-  next_state: ANALYZE_IMPLEMENTATION_PARALLELIZATION
+  next_action: Spawn SW Engineers in parallel for both E1.2.1 and E1.2.2
+  next_state: SPAWN_AGENTS
+sw_engineer_parallelization_plan:
+  wave: 2
+  phase: 1
+  analysis_timestamp: '2025-09-07T08:24:00.000000Z'
+  blocking_implementations: []
+  parallel_groups:
+    group_1:
+      can_start_immediately: true
+      efforts:
+      - effort_id: E1.2.1
+        name: cert-validation
+        directory: efforts/phase1/wave2/cert-validation
+        implementation_plan: efforts/phase1/wave2/cert-validation/IMPLEMENTATION-PLAN-20250907-064701.md
+        estimated_lines: 400
+        dependencies:
+        - E1.1.1
+        - E1.1.2
+      - effort_id: E1.2.2
+        name: fallback-strategies
+        directory: efforts/phase1/wave2/fallback-strategies
+        implementation_plan: efforts/phase1/wave2/fallback-strategies/IMPLEMENTATION-PLAN-20250907-064500.md
+        estimated_lines: 700
+        dependencies:
+        - E1.1.1
+        - E1.1.2
+  spawn_sequence:
+  - step: 1
+    action: spawn_parallel
+    agent_type: sw-engineer
+    efforts:
+    - E1.2.1
+    - E1.2.2
+    r151_requirement: All in ONE message with <5s delta
+    expected_duration: 6-8 hours
+    note: Both efforts can run fully in parallel - no blocking dependencies
+  decision_rationale:
+  - Both efforts have 'Can Parallelize: Yes' in their plans
+  - No inter-dependencies between E1.2.1 and E1.2.2
+  - Wave 1 dependencies (E1.1.1, E1.1.2) are already complete
+  - Parallel execution will optimize implementation time
+  r219_dependency_analysis:
+    E1.2.1:
+      depends_on:
+      - E1.1.1 - KindCertExtractor
+      - E1.1.2 - TrustStoreManager
+      provides:
+      - CertificateValidator interface
+      - Chain validation
+      - Diagnostics
+    E1.2.2:
+      depends_on:
+      - E1.1.1 - Certificate retrieval
+      - E1.1.2 - TrustStoreManager
+      provides:
+      - FallbackManager
+      - Insecure mode handler
+      - Retry logic
 project_info:
   name: idpbuilder-oci-mvp
   total_phases: 2
