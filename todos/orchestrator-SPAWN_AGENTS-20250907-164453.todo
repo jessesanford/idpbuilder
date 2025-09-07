@@ -1,0 +1,22 @@
+## Orchestrator TODO State - SPAWN_AGENTS
+Generated: 2025-09-07 16:45:00
+
+### Completed Tasks:
+✅ Created split-001 infrastructure for E1.2.1 cert-validation
+✅ Cloned repository with base branch: idpbuilder-oci-build-push/phase1/wave1/integration
+✅ Set up branch: idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001
+✅ Applied R312 git config protection
+✅ Updated split tracking in orchestrator-state.yaml
+✅ Committed and pushed state file updates
+
+### Next Actions in SPAWN_AGENTS state:
+- [ ] Spawn SW Engineer for split-001 implementation
+- [ ] Monitor implementation progress
+- [ ] Check for size compliance during implementation
+- [ ] Spawn Code Reviewer after implementation complete
+
+### Split Status:
+- Split 1 of 3: Infrastructure ready
+- Directory: efforts/phase1/wave2/cert-validation-SPLIT-001
+- Branch: idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001
+- Status: Ready for implementation
