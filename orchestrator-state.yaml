@@ -1,9 +1,9 @@
 state_machine:
-  current_state: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
-  previous_state: WAVE_START
-  transition_time: '2025-09-07T06:39:00.000000Z'
-  transition_reason: Wave 2 effort plans not found - need to create effort plans before implementation
-  rules_reacknowledged: true
+  current_state: WAITING_FOR_EFFORT_PLANS
+  previous_state: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+  transition_time: '2025-09-07T06:52:00.000000Z'
+  transition_reason: Code Reviewers spawned successfully - waiting for effort plans to be completed
+  rules_reacknowledged: false
   code_reviewers_spawned: true
   code_reviewers_spawn_time: '2025-09-07T06:43:36.000000Z'
   error_recovery_completed: true
@@ -29,7 +29,7 @@ state_machine:
     integration: COMPLETED_SUCCESSFULLY
   error_recovery_reason: Build failed with duplicate function/type declarations between
     E1.1.1 and E1.1.2
-  next_action: Spawn Code Reviewers to create Wave 2 effort plans
+  next_action: Monitor Code Reviewers and wait for effort plans to be completed
   next_state: WAITING_FOR_EFFORT_PLANS
 project_info:
   name: idpbuilder-oci-mvp
