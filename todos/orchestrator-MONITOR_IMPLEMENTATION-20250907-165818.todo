@@ -1,0 +1,9 @@
+[
+  {"content": "Read and acknowledge all SPAWN_AGENTS state rules", "status": "completed"},
+  {"content": "Create R290 verification marker after rules acknowledgment", "status": "completed"},
+  {"content": "Verify split-001 infrastructure is ready", "status": "completed"},
+  {"content": "Spawn SW Engineer for E1.2.1 split-001 implementation", "status": "completed"},
+  {"content": "Update orchestrator-state.yaml with spawn information", "status": "completed"},
+  {"content": "Save TODOs and commit state per R287/R288", "status": "completed"},
+  {"content": "Stop per R322 and provide summary", "status": "in_progress"}
+]
