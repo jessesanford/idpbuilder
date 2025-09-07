@@ -1,0 +1,7 @@
+[
+  {"content": "Verify split-002 infrastructure exists and is ready", "status": "completed"},
+  {"content": "Spawn SW engineer for cert-validation split-002 implementation", "status": "completed"},
+  {"content": "Update state file to MONITOR_IMPLEMENTATION after spawning", "status": "completed"},
+  {"content": "Save TODOs and commit state per R287/R288", "status": "completed"},
+  {"content": "Stop and wait for continuation per R322", "status": "completed"}
+]
