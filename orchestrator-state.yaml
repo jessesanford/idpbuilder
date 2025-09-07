@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "PHASE_COMPLETE",
-    "previous_state": "WAVE_COMPLETE",
-    "transition_time": "2025-09-07T22:58:00Z",
-    "transition_reason": "Phase 1 complete - all waves finished, all efforts approved",
+    "current_state": "INIT",
+    "previous_state": "PHASE_COMPLETE",
+    "transition_time": "2025-09-07T23:20:00Z",
+    "transition_reason": "Phase 1 complete, transitioning to Phase 2 initialization",
     "rules_reacknowledged": true,
     "monitoring_complete": true,
     "fix_monitoring_complete": true,
@@ -314,8 +314,8 @@
       }
     }
   },
-  "current_phase": 1,
-  "current_wave": 2,
+  "current_phase": 2,
+  "current_wave": 1,
   "current_effort": null,
   "efforts_in_progress": [],
   "efforts_completed": [
@@ -339,6 +339,15 @@
     "phase1/wave2"
   ],
   "phases_completed": ["phase1"],
+  "phase1_completion": {
+    "completed_at": "2025-09-07T23:20:00Z",
+    "integration_branch": "idpbuilder-oci-build-push/phase1/integration",
+    "completion_report": "efforts/phase1/integration-workspace/PHASE-1-COMPLETION-REPORT.md",
+    "waves_completed": 2,
+    "efforts_completed": 4,
+    "test_status": "PASSED",
+    "ready_for_next_phase": true
+  },
   "software_factory_compliance": {
     "r281_all_phases_included": true,
     "r288_immediate_commits": true,
@@ -455,3 +464,4 @@
         - "All tests pass"
       action_required: "Subdivide Split-001 into 2-3 sub-splits"
       report_location: "efforts/phase1/wave2/cert-validation/CODE-REVIEW-REPORT-FINAL-20250907-212706.md"
+phase_metrics:
