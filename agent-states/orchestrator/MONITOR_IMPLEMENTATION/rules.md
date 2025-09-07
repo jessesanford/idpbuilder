@@ -204,6 +204,13 @@ Monitor SW Engineers actively implementing features:
 3. **TRANSITION** to SPAWN_CODE_REVIEWERS_FOR_REVIEW
 4. **DO NOT** wait for all implementations to complete
 
+**🔴🔴🔴 SPLIT IMPLEMENTATION SPECIAL CASE 🔴🔴🔴**
+When monitoring SPLIT implementations:
+- Each split completion MUST trigger immediate review
+- NEVER go directly to CREATE_NEXT_SPLIT_INFRASTRUCTURE
+- ALWAYS: Split complete → Spawn reviewer → Wait for review → THEN decide next action
+- Only create next split infrastructure if review passes AND more splits needed
+
 ### 3. Blocked Agent Detection
 Identify and escalate blocked implementations:
 - Agent hasn't committed in >30 minutes
@@ -243,8 +250,10 @@ When detecting implementation_status: COMPLETE:
 
 - ❌ NEVER run line-counter.sh yourself
 - ❌ NEVER count lines manually
-- ✅ ALWAYS spawn Code Reviewer for measurements
+- ❌ NEVER check if splits are within size limits
+- ✅ ALWAYS spawn Code Reviewer for ALL measurements
 - ✅ Code Reviewer will determine size compliance
+- ✅ Code Reviewer will verify split sizes
 
 ## Success Criteria
 - ✅ All SW Engineers tracked continuously

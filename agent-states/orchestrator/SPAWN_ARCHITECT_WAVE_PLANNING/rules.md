@@ -184,10 +184,6 @@ Say: "✅ Successfully read SPAWN_ARCHITECT_WAVE_PLANNING rules for orchestrator
 
 ## 🔴🔴🔴 MANDATORY MEASUREMENT RULE - R304 🔴🔴🔴
 
-### R304: Mandatory Line Counter Tool Enforcement
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R304-mandatory-line-counter-enforcement.md`
-**Criticality**: BLOCKING - Manual counting = AUTOMATIC -100% FAILURE
-
 **ABSOLUTE REQUIREMENTS:**
 - ✅ MUST use `$CLAUDE_PROJECT_DIR/tools/line-counter.sh` for ALL line counting
 - ❌ NEVER use `wc -l` or any manual counting method

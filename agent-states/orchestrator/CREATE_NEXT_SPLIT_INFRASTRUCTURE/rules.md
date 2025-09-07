@@ -38,6 +38,39 @@ Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
 ---
 
 
+## 🔴🔴🔴 CRITICAL: SPLITS MUST CHAIN SEQUENTIALLY! 🔴🔴🔴
+
+**SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
+
+### SPLIT CHAINING IS MANDATORY (R308):
+```
+Split-001: Based on phase/wave integration branch ✓
+Split-002: Based on Split-001 branch (NOT integration!) ✓
+Split-003: Based on Split-002 branch (NOT integration!) ✓
+```
+
+### ❌ CATASTROPHIC VIOLATION (What's happening NOW):
+```
+Split-001: Based on phase1/wave1-integration ✓
+Split-002: Based on phase1/wave1-integration ❌ WRONG!
+Split-003: Based on phase1/wave1-integration ❌ WRONG!
+Result: SPLITS LOSE EACH OTHER'S WORK!
+```
+
+### ✅ MANDATORY IMPLEMENTATION:
+```bash
+# For Split N+1, the base is ALWAYS Split N:
+if [ $SPLIT_NUM -eq 1 ]; then
+    BASE_BRANCH="phase1/wave1-integration"  # First split only
+else
+    BASE_BRANCH="phase1/wave1/effort-split-$(printf "%03d" $((SPLIT_NUM - 1)))"
+fi
+```
+
+**THIS IS NON-NEGOTIABLE - SPLITS BUILD ON EACH OTHER!**
+
+---
+
 ## 🔴🔴🔴 R290 ENFORCEMENT: READ THESE RULES FIRST! 🔴🔴🔴
 
 **SUPREME LAW #3 (R290): STATE RULES MUST BE READ BEFORE STATE ACTIONS**
@@ -73,6 +106,13 @@ echo "$(date +%s) - Rules read and acknowledged for CREATE_NEXT_SPLIT_INFRASTRUC
 ## State Context
 
 CREATE_NEXT_SPLIT_INFRASTRUCTURE = You ARE ACTIVELY creating the infrastructure for the NEXT split in sequence THIS INSTANT!
+
+**🔴🔴🔴 CRITICAL: This state should ONLY be entered AFTER: 🔴🔴🔴**
+1. Previous split implementation completed
+2. Code Reviewer reviewed the previous split
+3. Review passed AND more splits are needed
+
+**NEVER enter this state directly after split implementation without review!**
 
 ## 📋 PRIMARY DIRECTIVES FOR CREATE_NEXT_SPLIT_INFRASTRUCTURE STATE
 
@@ -162,15 +202,20 @@ echo "📊 Creating infrastructure for split-$(printf "%03d" $NEXT_SPLIT)"
 source "$CLAUDE_PROJECT_DIR/utilities/branch-naming-helpers.sh"
 
 # Step 3: Determine base branch for this split (DO NOW!)
+# 🔴🔴🔴 CRITICAL: SPLITS MUST CHAIN SEQUENTIALLY! 🔴🔴🔴
 if [ $NEXT_SPLIT -eq 1 ]; then
-    # First split: Use R308 incremental base
-    echo "🔴 R308: First split uses incremental base"
+    # First split ONLY: Use R308 incremental base
+    echo "🔴 R308: First split uses incremental base from wave/phase"
     BASE_BRANCH=$(determine_effort_base_branch $PHASE $WAVE)
+    echo "✅ Split-001 will be based on: $BASE_BRANCH"
 else
-    # Subsequent splits: Based on previous split
+    # 🔴 CRITICAL: All subsequent splits MUST be based on PREVIOUS split!
+    # NOT on the integration branch! This ensures each split builds on the last!
     PREV_SPLIT=$(printf "%03d" $CURRENT_SPLIT)
     BASE_BRANCH=$(get_split_branch_name "$EFFORT_NAME" "$PREV_SPLIT")
-    echo "📌 Basing split-$(printf "%03d" $NEXT_SPLIT) on: $BASE_BRANCH"
+    echo "🔴🔴🔴 SEQUENTIAL CHAINING: Split-$(printf "%03d" $NEXT_SPLIT) MUST be based on: $BASE_BRANCH"
+    echo "❌ NOT based on integration branch!"
+    echo "✅ YES based on previous split-$PREV_SPLIT!"
 fi
 
 # Step 4: Create the infrastructure (DO NOW!)
@@ -369,10 +414,53 @@ EOF
 ## State Transitions
 
 From CREATE_NEXT_SPLIT_INFRASTRUCTURE state:
-- **SPAWN_AGENTS** - Infrastructure ready, spawn SW Engineer for split
+- **SPAWN_AGENTS** - Infrastructure ready, spawn SW Engineer for split implementation
 - **ERROR_RECOVERY** - Infrastructure creation failed
 
+**HOW YOU GOT HERE (Valid paths only):**
+- MONITOR_REVIEWS → (detected split needed) → CREATE_NEXT_SPLIT_INFRASTRUCTURE
+- NEVER: MONITOR_IMPLEMENTATION → CREATE_NEXT_SPLIT_INFRASTRUCTURE (missing review!)
+
 ## Common Violations to Avoid
+
+### 🔴🔴🔴 CRITICAL VIOLATION: ALL SPLITS FROM SAME BASE 🔴🔴🔴
+
+#### ❌ CATASTROPHIC ERROR (What orchestrator is doing WRONG now):
+```bash
+# WRONG - All splits branch from integration, losing each other's work!
+git clone --branch phase1/wave1-integration ... split-001  ✓ (correct)
+git clone --branch phase1/wave1-integration ... split-002  ❌ WRONG!
+git clone --branch phase1/wave1-integration ... split-003  ❌ WRONG!
+
+# Result: Split-002 doesn't have Split-001's work!
+# Result: Split-003 doesn't have Split-001 OR Split-002's work!
+# THIS IS CAUSING THE BUG RIGHT NOW!
+```
+
+#### ✅ CORRECT SEQUENTIAL CHAINING:
+```bash
+# RIGHT - Each split builds on the previous one
+git clone --branch phase1/wave1-integration ... split-001  ✓
+git clone --branch phase1/wave1/effort-split-001 ... split-002  ✓
+git clone --branch phase1/wave1/effort-split-002 ... split-003  ✓
+
+# Result: Each split has ALL previous splits' work!
+```
+
+### Visual Diagram of the Problem:
+```
+❌ WRONG (Current Bug):
+phase1/wave1-integration
+    ├── split-001 (has: base code)
+    ├── split-002 (has: base code ONLY - missing split-001!)
+    └── split-003 (has: base code ONLY - missing split-001 & 002!)
+
+✅ CORRECT (How it should be):
+phase1/wave1-integration
+    └── split-001 (has: base code)
+        └── split-002 (has: base + split-001)
+            └── split-003 (has: base + split-001 + split-002)
+```
 
 ### ❌ Creating All Splits at Once
 ```bash
@@ -382,19 +470,14 @@ for split in $(seq 1 $TOTAL_SPLITS); do
 done
 ```
 
-### ❌ Wrong Base Branch
-```bash
-# WRONG - All splits from same base
-git checkout -b split-002 main  # Should be from split-001!
-```
-
 ### ✅ Correct Sequential Creation
 ```bash
 # RIGHT - One split at a time, correct base
 if [ $SPLIT_NUM -eq 1 ]; then
-    BASE=$(determine_effort_base_branch)  # R308 base
+    BASE=$(determine_effort_base_branch)  # R308 base for FIRST split only
 else
-    BASE="split-$(printf "%03d" $((SPLIT_NUM - 1)))"  # Previous split
+    # CRITICAL: Use PREVIOUS split as base!
+    BASE="phase${PHASE}/wave${WAVE}/${EFFORT_NAME}-split-$(printf "%03d" $((SPLIT_NUM - 1)))"
 fi
 create_single_split_infrastructure "$EFFORT" "$SPLIT_NUM" "$BASE"
 ```
@@ -429,8 +512,9 @@ update_split_tracking() {
 3. **First split uses R308 incremental base**
 4. **Update split tracking immediately**
 5. **Transition to SPAWN_AGENTS to implement the split**
-6. **Return to MONITOR after spawning**
-7. **MONITOR will detect completion and trigger next split**
+6. **After implementation: MUST spawn Code Reviewer for review**
+7. **Only create next split if review passes AND more splits needed**
+8. **Each split gets FULL review cycle - no shortcuts!**
 
 ## Grading Impact
 

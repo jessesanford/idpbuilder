@@ -77,10 +77,6 @@ echo "$(date +%s) - Rules read and acknowledged for MONITORING_BACKPORT_PROGRESS
    - Summary: MUST update orchestrator-state.yaml before EVERY state transition
    - **CRITICAL**: Commit and push state changes immediately
 
-4. **🚨🚨🚨 R304** - MANDATORY LINE COUNTER TOOL ENFORCEMENT (BLOCKING)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R304-mandatory-line-counter-enforcement.md`
-   - Criticality: BLOCKING - Manual counting = AUTOMATIC -100% FAILURE
-   - Summary: MUST use tools/line-counter.sh for ALL line counting
    - **CRITICAL**: NEVER use wc -l or manual counting
 
 ### State-Specific Rules:

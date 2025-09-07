@@ -137,15 +137,68 @@ Create phase1-integration (merge all P1 waves)
 P2W1 efforts START from phase1-integration
 ```
 
-## Split Branching (Sequential, Not Incremental)
+## Split Branching (Sequential Chaining - MANDATORY)
 
-**IMPORTANT**: Splits follow SEQUENTIAL branching, not incremental:
-- Original effort: From wave/phase integration
-- split-001: From SAME base as original
-- split-002: From split-001
-- split-003: From split-002
+**🔴🔴🔴 CRITICAL: Splits MUST chain sequentially! 🔴🔴🔴**
+
+### The Sequential Split Principle:
+```
+phase1/wave1-integration (or other R308 base)
+    └─→ split-001 (based on integration)
+            └─→ split-002 (based on split-001, NOT integration!)
+                    └─→ split-003 (based on split-002, NOT integration!)
+```
+
+### ✅ CORRECT Split Branching:
+- **split-001**: From wave/phase integration branch (R308 incremental base)
+- **split-002**: From split-001 branch (contains split-001's work)
+- **split-003**: From split-002 branch (contains split-001 + split-002's work)
+- **split-N**: From split-(N-1) branch (contains all previous splits' work)
+
+### ❌ WRONG (Current Bug Pattern):
+```
+phase1/wave1-integration
+    ├─→ split-001 (correct)
+    ├─→ split-002 (WRONG! Missing split-001's work!)
+    └─→ split-003 (WRONG! Missing split-001 & 002's work!)
+```
+
+### Why Sequential Chaining is MANDATORY:
+1. **Preserves Work**: Each split builds on previous splits
+2. **Prevents Conflicts**: Later splits see earlier splits' changes
+3. **Maintains Atomicity**: Each split is still independent but cumulative
+4. **Enables Clean Merge**: Final integration includes all splits in order
 
 This maintains split atomicity while building incrementally.
+
+### Implementation Example for Splits:
+```bash
+# Creating Split-001 (FIRST split)
+INTEGRATION_BASE="phase1/wave1-integration"  # From R308 determine_effort_base_branch
+git clone --branch "$INTEGRATION_BASE" "$REPO" "split-001-dir"
+cd "split-001-dir"
+git checkout -b "phase1/wave1/cert-validation-split-001"
+
+# Creating Split-002 (builds on split-001)
+PREVIOUS_SPLIT="phase1/wave1/cert-validation-split-001"  # NOT integration!
+git clone --branch "$PREVIOUS_SPLIT" "$REPO" "split-002-dir"
+cd "split-002-dir"
+git checkout -b "phase1/wave1/cert-validation-split-002"
+
+# Creating Split-003 (builds on split-002)
+PREVIOUS_SPLIT="phase1/wave1/cert-validation-split-002"  # NOT integration!
+git clone --branch "$PREVIOUS_SPLIT" "$REPO" "split-003-dir"
+cd "split-003-dir"
+git checkout -b "phase1/wave1/cert-validation-split-003"
+```
+
+**NEVER DO THIS (loses work between splits):**
+```bash
+# ❌ WRONG - All splits from same base!
+git clone --branch "phase1/wave1-integration" ... split-001
+git clone --branch "phase1/wave1-integration" ... split-002  # Missing split-001!
+git clone --branch "phase1/wave1-integration" ... split-003  # Missing 001 & 002!
+```
 
 ## Verification Protocol
 
