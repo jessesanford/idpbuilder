@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+    "current_state": "SPAWN_AGENTS",
     "previous_state": "MONITOR_IMPLEMENTATION",
     "transition_time": "2025-09-07T17:05:30Z",
-    "transition_reason": "Split-001 completed, need to create infrastructure for split-002",
+    "transition_reason": "Split-002 infrastructure created, ready to spawn SW engineer",
     "rules_reacknowledged": true,
     "monitoring_complete": true,
     "monitoring_results": {
@@ -359,13 +359,21 @@
           "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001",
           "base_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
           "completed_at": "2025-09-07T16:57:59Z"
+        },
+        {
+          "number": 2,
+          "status": "INFRASTRUCTURE_READY",
+          "created_at": "2025-09-07T17:32:00Z",
+          "directory": "efforts/phase1/wave2/cert-validation-SPLIT-002",
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002",
+          "base_branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001"
         }
       ],
       "status": "SPLIT_IN_PROGRESS",
       "split_plan_created": true,
       "split_plan_reviewed": true,
       "infrastructure_created": true,
-      "note": "Split-001 completed. Ready to create infrastructure for split-002."
+      "note": "Split-002 infrastructure created. Ready to spawn SW engineer for implementation."
     }
   }
 }
