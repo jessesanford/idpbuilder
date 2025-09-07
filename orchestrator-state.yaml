@@ -1,8 +1,9 @@
 state_machine:
-  current_state: SPAWN_AGENTS
-  previous_state: ANALYZE_IMPLEMENTATION_PARALLELIZATION
-  transition_time: '2025-09-07T09:05:00.000000Z'
-  transition_reason: Parallelization analysis complete - ready to spawn SW Engineers for E1.2.1 and E1.2.2 in parallel
+  current_state: MONITOR_IMPLEMENTATION
+  previous_state: SPAWN_AGENTS
+  transition_time: '2025-09-07T12:58:05.535327Z'
+  transition_reason: SW Engineers spawned for E1.2.1 and E1.2.2 - E1.2.1 exceeded
+    size limit, E1.2.2 completed
   rules_reacknowledged: true
   parallelization_analysis_complete: true
   parallelization_analysis_time: '2025-09-07T08:24:00.000000Z'
@@ -145,19 +146,21 @@ phase_structure:
         - name: E1.2.1-certificate-validation-pipeline
           description: Validate cert chains and provide diagnostics
           estimated_lines: 400
-          status: READY_FOR_IMPLEMENTATION
+          status: SIZE_LIMIT_EXCEEDED
           assignee: code-reviewer-1
           directory: efforts/phase1/wave2/cert-validation
           implementation_plan: IMPLEMENTATION-PLAN-20250907-064701.md
           plan_verified: true
+          actual_lines: 808
         - name: E1.2.2-fallback-strategies
           description: Implement fallback handling and --insecure flag
           estimated_lines: 400
-          status: READY_FOR_IMPLEMENTATION
+          status: COMPLETED
           assignee: code-reviewer-2
           directory: efforts/phase1/wave2/fallback-strategies
           implementation_plan: IMPLEMENTATION-PLAN-20250907-064500.md
           plan_verified: true
+          actual_lines: 96
   phase_2:
     name: Build & Push Implementation
     status: PENDING
@@ -201,10 +204,12 @@ phase_structure:
 current_phase: 1
 current_wave: 2
 current_effort: null
-efforts_in_progress: []
+efforts_in_progress:
+- E1.2.1-certificate-validation-pipeline
 efforts_completed:
 - E1.1.1-kind-certificate-extraction
 - E1.1.2-registry-tls-trust-integration
+- E1.2.2-fallback-strategies
 efforts_pending:
 - E1.2.1-certificate-validation-pipeline
 - E1.2.2-fallback-strategies
@@ -238,6 +243,7 @@ timestamps:
   wave_complete_to_integration: '2025-09-06T19:23:07.000000Z'
   integration_branch_created: '2025-09-06T19:36:00.000000Z'
   code_reviewer_merge_plan_spawned: '2025-09-06T19:36:00.000000Z'
+  sw_engineers_wave2_spawn: '2025-09-07T12:58:05.535354Z'
 next_actions:
 - Spawn Code Reviewer to create E1.2.1 certificate validation pipeline effort plan
 - Spawn Code Reviewer to create E1.2.2 fallback strategies effort plan
