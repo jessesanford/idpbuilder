@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
-    "previous_state": "MONITOR_IMPLEMENTATION",
-    "transition_time": "2025-09-08T16:53:07Z",
-    "transition_reason": "E2.1.2 needs split - resetting to create proper infrastructure",
+    "current_state": "SPAWN_AGENTS",
+    "previous_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+    "transition_time": "2025-09-08T17:11:00Z",
+    "transition_reason": "Split-001 infrastructure created, ready to spawn agents for implementation",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -152,7 +152,7 @@
         "ready_for_integration": true
       },
       "E2_1_2": {
-        "status": "SPLIT_PLAN_CREATED",
+        "status": "SPLIT_INFRASTRUCTURE_CREATED",
         "lines": 1200,
         "needs_split": true,
         "implementation_complete": true,
@@ -160,7 +160,20 @@
         "split_plan_location": "efforts/phase2/wave1/gitea-client/SPLIT-PLAN.md",
         "split_plan_created_time": "2025-09-08T16:11:25Z",
         "splits_required": 2,
-        "split_infrastructure_created": false
+        "split_infrastructure_created": true,
+        "current_split": 1,
+        "splits": [
+          {
+            "number": 1,
+            "status": "INFRASTRUCTURE_READY",
+            "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+            "base_branch": "idpbuilder-oci-build-push/phase1/integration",
+            "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-001",
+            "split_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-001/SPLIT-PLAN-001.md",
+            "created_at": "2025-09-08T17:10:00Z",
+            "estimated_lines": 635
+          }
+        ]
       }
     },
     "spawn_engineers_for_fixes_completed": "2025-09-08T05:00:31Z",
