@@ -118,7 +118,7 @@ find_project_prefix() {
     if [ -n "$config_file" ]; then
         # Check if yq is available
         if command -v yq &> /dev/null; then
-            prefix=$(yq eval '.branch_naming.project_prefix // ""' "$config_file" 2>/dev/null || echo "")
+            prefix=$(jq '.branch_naming.project_prefix // ""' "$config_file" 2>/dev/null || echo "")
             if [ -n "$prefix" ]; then
                 PROJECT_PREFIX="$prefix"
                 [ "$VERBOSE" = true ] && echo "✓ Found project prefix '$PROJECT_PREFIX' from config in $PREFIX_SOURCE"

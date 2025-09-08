@@ -1505,6 +1505,76 @@ recover_todos_after_compaction() {
 ### 🔴 REMEMBER: R221 APPLIES TO TODO OPERATIONS
 **ALL TODO operations must cd to EFFORT_DIR first!**
 
+## 🔴🔴🔴 MANDATORY: Completion Markers Are NOT Optional 🔴🔴🔴
+
+### CRITICAL REQUIREMENT - WORK IS NOT COMPLETE WITHOUT MARKERS
+
+**ALL SW ENGINEERS MUST CREATE COMPLETION MARKERS:**
+
+```bash
+# FOR STANDARD IMPLEMENTATION:
+create_implementation_complete_marker() {
+    cd $EFFORT_DIR  # R221: CD first!
+    echo "🔴 Creating MANDATORY completion marker..."
+    cat > IMPLEMENTATION-COMPLETE.marker << EOF
+Completed at: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Effort: $(basename $(pwd))
+Branch: $(git branch --show-current)
+Total lines: $(./tools/line-counter.sh | grep Total | awk '{print $NF}') lines
+Final commit: $(git log --oneline -1)
+Status: IMPLEMENTATION COMPLETE
+EOF
+    git add IMPLEMENTATION-COMPLETE.marker
+    git commit -m "marker: implementation complete - MANDATORY for orchestrator"
+    git push
+    echo "✅ IMPLEMENTATION-COMPLETE.marker created"
+}
+
+# FOR SPLIT IMPLEMENTATION:
+create_split_complete_marker() {
+    cd $EFFORT_DIR  # R221: CD first!
+    SPLIT_MARKER="SPLIT-${SPLIT_NUM}-COMPLETE.marker"
+    cat > "$SPLIT_MARKER" << EOF
+Split Number: ${SPLIT_NUM}
+Completed at: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Status: SPLIT ${SPLIT_NUM} COMPLETE
+EOF
+    git add "$SPLIT_MARKER"
+    git commit -m "marker: split ${SPLIT_NUM} complete"
+    git push
+}
+
+# FOR FIX COMPLETION:
+create_fix_complete_marker() {
+    cd $EFFORT_DIR  # R221: CD first!
+    cat > FIX-COMPLETE.marker << EOF
+Completed at: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Fixes applied: ${FIX_COUNT}
+Status: FIXES COMPLETE
+EOF
+    git add FIX-COMPLETE.marker
+    git commit -m "marker: fixes complete"
+    git push
+}
+```
+
+**ENFORCEMENT:**
+- ❌ WITHOUT marker = Orchestrator CANNOT detect completion
+- ❌ WITHOUT marker = Work is NOT considered complete
+- ❌ WITHOUT marker = GRADING FAILURE for incomplete work
+- ✅ WITH marker = Clear, unambiguous completion signal
+- ✅ WITH marker = Orchestrator can proceed immediately
+
+**VALIDATION BEFORE STOPPING:**
+```bash
+# MANDATORY check before exiting
+if [ ! -f "*-COMPLETE.marker" ]; then
+    echo "🔴 ERROR: No completion marker found!"
+    echo "CANNOT stop without creating appropriate marker!"
+    exit 1
+fi
+```
+
 ## 🎯 BOUNDARIES (WHAT YOU CANNOT DO)
 
 ### FORBIDDEN ACTIONS
@@ -1514,6 +1584,7 @@ recover_todos_after_compaction() {
 - ❌ Work in wrong directory/branch
 - ❌ Continue after size limit exceeded
 - ❌ Make architectural changes without approval
+- ❌ Stop work without creating completion marker
 
 ### REQUIRED BEHAVIORS
 - ✅ Follow implementation plan exactly
@@ -1522,6 +1593,7 @@ recover_todos_after_compaction() {
 - ✅ Write tests per requirements
 - ✅ Commit work atomically
 - ✅ Stop at size limit
+- ✅ Create completion marker when done
 
 ## 📊 SUCCESS CRITERIA
 

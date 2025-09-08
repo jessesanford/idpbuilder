@@ -888,6 +888,54 @@ VIOLATIONS:
 - ❌ Multiple active fix plans causing confusion
 ---
 
+## 🔴🔴🔴 MANDATORY: Create FIX-COMPLETE Marker 🔴🔴🔴
+
+### CRITICAL REQUIREMENT - FIXES ARE NOT COMPLETE WITHOUT THIS
+
+**When all fixes are complete, you MUST create a completion marker:**
+
+```bash
+# MANDATORY when fixes are complete:
+echo "🔴 Creating MANDATORY FIX-COMPLETE marker..."
+touch FIX-COMPLETE.marker
+cat > FIX-COMPLETE.marker << EOF
+Completed at: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Effort: $(basename $(pwd))
+Branch: $(git branch --show-current)
+Fixes applied: [List number of fixes]
+Tests passing: [Yes/No with count]
+Build status: [Success/Failure]
+Final commit: $(git log --oneline -1)
+Status: FIXES COMPLETE
+EOF
+
+# MUST add, commit and push
+git add FIX-COMPLETE.marker
+git commit -m "marker: fixes complete - MANDATORY for orchestrator monitoring"
+git push
+
+echo "✅ FIX-COMPLETE.marker created and pushed"
+echo "📋 Orchestrator can now detect fix completion"
+```
+
+**THIS IS NOT OPTIONAL:**
+- ❌ WITHOUT marker = Orchestrator cannot detect fix completion
+- ❌ WITHOUT marker = Fixes are NOT considered complete
+- ❌ WITHOUT marker = Grading penalty for incomplete work
+- ✅ WITH marker = Clear signal fixes are done
+- ✅ WITH marker = Orchestrator can proceed with next steps
+
+### Validation Before Stopping:
+```bash
+# MANDATORY check before considering fixes complete
+if [ ! -f FIX-COMPLETE.marker ]; then
+    echo "🔴 ERROR: Cannot stop without creating FIX-COMPLETE.marker"
+    echo "Fixes are NOT complete without marker!"
+    exit 1
+fi
+echo "✅ Completion marker exists - fixes are complete"
+```
+
 ## Clarity About Which Plan to Follow (R295)
 
 ---

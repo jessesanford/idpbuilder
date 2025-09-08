@@ -531,7 +531,25 @@ if [ "$LINES" -gt 800 ]; then
 fi
 ```
 
-### 4. Commit and Push
+### 4. Create Individual Split Completion Marker (MANDATORY)
+```bash
+# 🔴🔴🔴 MANDATORY: Create split completion marker 🔴🔴🔴
+echo "📋 Creating MANDATORY split completion marker..."
+SPLIT_MARKER="SPLIT-${SPLIT_NUM}-COMPLETE.marker"
+cat > "$SPLIT_MARKER" << EOF
+Split Number: ${SPLIT_NUM}
+Completed at: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Effort: ${EFFORT_NAME}
+Branch: $(git branch --show-current)
+Total lines: $(./tools/line-counter.sh | grep Total | awk '{print $NF}') lines
+Final commit: $(git log --oneline -1)
+Status: SPLIT ${SPLIT_NUM} COMPLETE
+EOF
+
+echo "✅ Split completion marker created: $SPLIT_MARKER"
+```
+
+### 5. Commit and Push
 ```bash
 # 🔴🔴🔴 R326: FINAL CHECK BEFORE COMMIT 🔴🔴🔴
 echo "🔴 R326: Final check for split subdirectories..."
@@ -552,10 +570,20 @@ for dir in pkg cmd tests docs; do
     fi
 done
 
-# Commit with clear message
+# Commit with clear message INCLUDING THE MARKER
 git add -A
-git commit -m "feat: implement split-${SPLIT_NUM} - ${DESCRIPTION}"
+git add "$SPLIT_MARKER"
+git commit -m "feat: implement split-${SPLIT_NUM} - ${DESCRIPTION}
+
+Includes mandatory SPLIT-${SPLIT_NUM}-COMPLETE.marker for orchestrator monitoring"
 git push
+
+# Validation check
+if [ ! -f "$SPLIT_MARKER" ]; then
+    echo "🔴 ERROR: Split marker not created! Work is NOT complete!"
+    exit 1
+fi
+echo "✅ Split ${SPLIT_NUM} complete with marker"
 ```
 
 ## State Transitions

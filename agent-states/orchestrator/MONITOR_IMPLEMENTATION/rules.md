@@ -144,22 +144,57 @@ for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
 done
 
 # Step 2: Check for completed implementations (DO NOW!)
-echo "🔍 Checking for completed implementations..."
+echo "🔍 Checking for MANDATORY completion markers..."
 for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
     IMPL_STATUS=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status' orchestrator-state.json)
     
     if [ "$IMPL_STATUS" != "COMPLETE" ]; then
-        # Check for completion markers
-        if [ -f "/efforts/phase${PHASE}/wave${WAVE}/${effort}/IMPLEMENTATION-COMPLETE.marker" ]; then
-            echo "✅ Implementation complete for $effort!"
+        # 🔴 CRITICAL: Check for MANDATORY completion markers
+        EFFORT_DIR="/efforts/phase${PHASE}/wave${WAVE}/${effort}"
+        
+        # Check for standard implementation completion marker
+        if [ -f "${EFFORT_DIR}/IMPLEMENTATION-COMPLETE.marker" ]; then
+            echo "✅ Found IMPLEMENTATION-COMPLETE.marker for $effort!"
+            cat "${EFFORT_DIR}/IMPLEMENTATION-COMPLETE.marker"
             # Update state file
             jq '.efforts_in_progress[] |= select(.name == \"$effort\") |= .implementation_status = \"COMPLETE\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
             
             echo "🚨 CRITICAL: Implementation complete - must spawn Code Reviewer!"
             echo "➡️ Transitioning to SPAWN_CODE_REVIEWERS_FOR_REVIEW"
+            
+        # Check for split completion markers
+        elif ls ${EFFORT_DIR}/SPLIT-*-COMPLETE.marker 2>/dev/null | grep -q .; then
+            SPLIT_MARKER=$(ls ${EFFORT_DIR}/SPLIT-*-COMPLETE.marker | tail -1)
+            echo "✅ Found split completion marker: $(basename $SPLIT_MARKER)"
+            cat "$SPLIT_MARKER"
+            echo "🚨 Split complete - must spawn Code Reviewer for this split!"
+            
+        # Check for fix completion marker
+        elif [ -f "${EFFORT_DIR}/FIX-COMPLETE.marker" ]; then
+            echo "✅ Found FIX-COMPLETE.marker for $effort!"
+            cat "${EFFORT_DIR}/FIX-COMPLETE.marker"
+            echo "🚨 Fixes complete - must verify and update status!"
+            
+        else
+            echo "⏳ No completion marker for $effort - implementation still in progress"
+            # Check if work is actually happening
+            LAST_COMMIT=$(cd "$EFFORT_DIR" 2>/dev/null && git log --oneline -1 --format="%ar" 2>/dev/null)
+            echo "   Last commit: $LAST_COMMIT"
+            
+            # ⚠️ WARNING if no recent activity
+            if [[ "$LAST_COMMIT" == *"hour"* ]] || [[ "$LAST_COMMIT" == *"day"* ]]; then
+                echo "   ⚠️ WARNING: No recent commits - SW Engineer may be stuck!"
+            fi
         fi
     fi
 done
+
+echo ""
+echo "📋 REMINDER: SW Engineers MUST create completion markers:"
+echo "  - IMPLEMENTATION-COMPLETE.marker for standard implementation"
+echo "  - SPLIT-NNN-COMPLETE.marker for each split"
+echo "  - FIX-COMPLETE.marker for fixes"
+echo "  Without these markers, work is NOT considered complete!"
 
 # Step 3: Check for blocked implementations (DO NOW!)
 echo "🚧 Checking for blocked SW Engineers..."

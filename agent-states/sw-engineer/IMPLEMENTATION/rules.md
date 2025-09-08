@@ -904,6 +904,52 @@ git commit -m "fix: prevent infinite reconciliation loop in status updates
 - No size impact (refactoring existing code)"
 ```
 
+## 🔴🔴🔴 MANDATORY: Create IMPLEMENTATION-COMPLETE Marker 🔴🔴🔴
+
+### CRITICAL REQUIREMENT - CANNOT CONSIDER WORK COMPLETE WITHOUT THIS
+
+**When implementation is complete, you MUST create a completion marker:**
+
+```bash
+# MANDATORY when implementation is complete:
+echo "🔴 Creating MANDATORY IMPLEMENTATION-COMPLETE marker..."
+touch IMPLEMENTATION-COMPLETE.marker
+cat > IMPLEMENTATION-COMPLETE.marker << EOF
+Completed at: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Effort: $(basename $(pwd))
+Branch: $(git branch --show-current)
+Total lines: $(./tools/line-counter.sh | grep Total | awk '{print $NF}') lines
+Final commit: $(git log --oneline -1)
+Status: IMPLEMENTATION COMPLETE
+EOF
+
+# MUST add, commit and push
+git add IMPLEMENTATION-COMPLETE.marker
+git commit -m "marker: implementation complete - MANDATORY for orchestrator monitoring"
+git push
+
+echo "✅ IMPLEMENTATION-COMPLETE.marker created and pushed"
+echo "📋 Orchestrator can now detect completion"
+```
+
+**THIS IS NOT OPTIONAL:**
+- ❌ WITHOUT marker = Orchestrator cannot detect completion
+- ❌ WITHOUT marker = Work is NOT considered complete
+- ❌ WITHOUT marker = Grading penalty for incomplete work
+- ✅ WITH marker = Clear signal work is done
+- ✅ WITH marker = Orchestrator can proceed with next steps
+
+### Validation Before Stopping:
+```bash
+# MANDATORY check before considering work complete
+if [ ! -f IMPLEMENTATION-COMPLETE.marker ]; then
+    echo "🔴 ERROR: Cannot stop without creating IMPLEMENTATION-COMPLETE.marker"
+    echo "Implementation is NOT complete without marker!"
+    exit 1
+fi
+echo "✅ Completion marker exists - implementation is complete"
+```
+
 ## State Transitions
 
 From IMPLEMENTATION state:
