@@ -37,7 +37,7 @@ SPAWN → ASSIGN_EFFORT → WORK → COMPLETE → TERMINATE
 ```bash
 # ❌❌❌ WRONG - Reusing agents across efforts
 spawn_agent_once() {
-    Task: sw-engineer
+    Task: software-engineer
     echo "Work on effort 1 in efforts/phase1/wave1/api-types"
     echo "Now work on effort 2 in efforts/phase1/wave1/controllers"  # WRONG!
     echo "Now work on effort 3 in efforts/phase1/wave1/webhooks"    # WRONG!
@@ -47,21 +47,21 @@ spawn_agent_once() {
 spawn_agents_correctly() {
     # Effort 1: API Types
     prepare_effort_for_agent 1 1 "api-types"
-    Task: sw-engineer
+    Task: software-engineer
     Working directory: efforts/phase1/wave1/api-types
     Your ONLY task: Implement API types per plan
     When complete, you terminate. You work on NO other efforts.
     
     # Effort 2: Controllers (NEW AGENT)
     prepare_effort_for_agent 1 1 "controllers"
-    Task: sw-engineer  # NEW INSTANCE
+    Task: software-engineer  # NEW INSTANCE
     Working directory: efforts/phase1/wave1/controllers
     Your ONLY task: Implement controllers per plan
     When complete, you terminate. You work on NO other efforts.
     
     # Effort 3: Webhooks (NEW AGENT)
     prepare_effort_for_agent 1 1 "webhooks"
-    Task: sw-engineer  # NEW INSTANCE
+    Task: software-engineer  # NEW INSTANCE
     Working directory: efforts/phase1/wave1/webhooks
     Your ONLY task: Implement webhooks per plan
     When complete, you terminate. You work on NO other efforts.
@@ -83,20 +83,20 @@ identify_parallel_efforts() {
     
     # Agent 1
     prepare_effort_for_agent 1 1 "api-types"
-    Task: sw-engineer
+    Task: software-engineer
     Working directory: efforts/phase1/wave1/api-types
     You work ONLY on api-types. One effort only.
     
     # Agent 2 (DIFFERENT INSTANCE, PARALLEL)
     prepare_effort_for_agent 1 1 "controllers"
-    Task: sw-engineer
+    Task: software-engineer
     Working directory: efforts/phase1/wave1/controllers
     You work ONLY on controllers. One effort only.
     
     # Wait for api-types completion, then:
     # Agent 3 (NEW INSTANCE)
     prepare_effort_for_agent 1 1 "webhooks"
-    Task: sw-engineer
+    Task: software-engineer
     Working directory: efforts/phase1/wave1/webhooks
     You work ONLY on webhooks. One effort only.
 }
@@ -190,7 +190,7 @@ complete_effort_and_terminate() {
 ### ❌ Sequential Reuse
 ```bash
 # WRONG - Same agent doing multiple efforts in sequence
-Task: sw-engineer
+Task: software-engineer
 for effort in api-types controllers webhooks; do
     cd efforts/phase1/wave1/$effort
     implement_effort $effort
@@ -217,25 +217,25 @@ cd ../webhooks && implement_based_on_controllers
 ```bash
 # Effort 1
 prepare_effort_for_agent 1 1 "api-types"
-Task: sw-engineer  # Instance 1
+Task: software-engineer  # Instance 1
 # ... agent completes and terminates
 
 # Effort 2 (after effort 1 completes)
 prepare_effort_for_agent 1 1 "controllers"
-Task: sw-engineer  # Instance 2 (NEW)
+Task: software-engineer  # Instance 2 (NEW)
 # ... agent completes and terminates
 ```
 
 ### ✅ Proper Parallel Spawning
 ```bash
 # Spawn multiple agents AT ONCE for parallel efforts
-Task: sw-engineer  # Instance 1
+Task: software-engineer  # Instance 1
 Working directory: efforts/phase1/wave1/api-types
 
-Task: sw-engineer  # Instance 2
+Task: software-engineer  # Instance 2
 Working directory: efforts/phase1/wave1/controllers
 
-Task: sw-engineer  # Instance 3
+Task: software-engineer  # Instance 3
 Working directory: efforts/phase1/wave1/validators
 ```
 

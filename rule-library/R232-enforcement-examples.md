@@ -135,7 +135,7 @@ ORCHESTRATOR RESPONSE:
    
 3. Spawning SW Engineer for first split:
    
-   Task: @sw-engineer
+   Task: @software-engineer
    Working directory: /efforts/E3.2/split1
    [Implementation instructions...]
    

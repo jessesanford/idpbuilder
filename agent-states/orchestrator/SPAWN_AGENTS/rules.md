@@ -194,12 +194,12 @@ The system will check for this marker. No marker = Immediate failure.
     - Criticality: BLOCKING - Verify correct locations after completion
 
 11. **🚨🚨🚨 R216** - Bash Execution Syntax Protocol (BLOCKING)
-    - File: `$CLAUDE_PROJECT_DIR/rule-library/R216-bash-execution-syntax-protocol.md`
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R216-bash-execution-syntax.md`
     - Criticality: BLOCKING - Incorrect syntax causes failures
     - Summary: Use parentheses for subshells, proper variable syntax
     
 12. **🚨🚨🚨 R235** - Pre-flight Verification Checklist (BLOCKING)
-    - File: `$CLAUDE_PROJECT_DIR/rule-library/R235-pre-flight-verification-checklist.md`
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R235-MANDATORY-PREFLIGHT-VERIFICATION-SUPREME-LAW.md`
     - Criticality: BLOCKING - Must verify environment before spawning
     - Summary: Check directories, permissions, branches before agent spawn
 
@@ -339,7 +339,7 @@ exit 0  # MANDATORY EXIT PER R322
 
 ```markdown
 # SPAWN SW ENGINEER WITH MANDATORY CLARITY (R295):
-Task sw-engineer:
+Task software-engineer:
 PURPOSE: Implement {effort_id} - {effort_name}
 
 🔴🔴🔴 CRITICAL STATE INFORMATION (R295):
@@ -414,11 +414,11 @@ parallel_spawn_records:
   wave{X}_group{Y}:
     spawned_at: "2025-08-23T14:30:45Z"
     agents:
-      - name: "sw-engineer-effort1"
+      - name: "software-engineer-effort1"
         timestamp: "2025-08-23T14:30:47Z"
-      - name: "sw-engineer-effort2"
+      - name: "software-engineer-effort2"
         timestamp: "2025-08-23T14:30:49Z"
-      - name: "sw-engineer-effort3"
+      - name: "software-engineer-effort3"
         timestamp: "2025-08-23T14:30:51Z"
     deltas: [2, 2]
     average_delta: 2.0
@@ -472,3 +472,37 @@ If you find yourself:
 - Continuing after completing state work
 
 **STOP IMMEDIATELY - You are violating R322!**
+
+## 🚨🚨🚨 STATE TRANSITION PROTOCOL (R324/R325) 🚨🚨🚨
+
+**AFTER ALL AGENTS ARE SPAWNED, YOU MUST UPDATE current_state BEFORE STOPPING!**
+
+```bash
+# 🔴🔴🔴 MANDATORY: Execute this AFTER all spawns complete! 🔴🔴🔴
+
+echo "✅ All SW Engineers spawned successfully"
+
+# CRITICAL: Update state file FIRST (R324 requirement)
+echo "🔴 R324: Updating current_state to prevent infinite loop..."
+yq -i '.current_state = "MONITOR_IMPLEMENTATION"' orchestrator-state.yaml
+yq -i '.previous_state = "SPAWN_AGENTS"' orchestrator-state.yaml
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+
+# Verify the update
+echo "✅ State updated to:"
+grep "current_state:" orchestrator-state.yaml
+
+# Commit and push IMMEDIATELY
+git add orchestrator-state.yaml
+git commit -m "state: transition to MONITOR_IMPLEMENTATION from SPAWN_AGENTS (R324)"
+git push
+
+# NOW stop per R322
+echo "🛑 STATE TRANSITION CHECKPOINT: SPAWN_AGENTS → MONITOR_IMPLEMENTATION"
+echo "📊 State file updated to: MONITOR_IMPLEMENTATION ✅"
+echo "⏸️ STOPPED - Ready to continue in MONITOR_IMPLEMENTATION"
+echo "When restarted, will monitor agent progress"
+# EXIT HERE
+```
+
+**⚠️ FAILURE TO UPDATE current_state = INFINITE LOOP BUG! ⚠️**

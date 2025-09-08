@@ -99,7 +99,7 @@ Maximum retry attempts to prevent infinite loops:
 # CORRECT: Orchestrator spawns engineer
 spawn_fix_engineer() {
     local effort="$1"
-    echo "@agent-sw-engineer Fix integration issues in $effort"
+    echo "@agent-software-engineer Fix integration issues in $effort"
     # Create command file
     # Spawn engineer
     # Monitor progress

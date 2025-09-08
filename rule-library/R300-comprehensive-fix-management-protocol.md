@@ -53,7 +53,7 @@ git commit -m "fix: patch integration"  # ❌ LOSES FIX!
 # Orchestrator MUST:
 spawn_sw_engineer_for_fixes() {
     echo "🔍 Detected fixes needed in ${EFFORT_NAME}"
-    echo "@agent-sw-engineer Fix issues in effort branch ${EFFORT_NAME}"
+    echo "@agent-software-engineer Fix issues in effort branch ${EFFORT_NAME}"
     # Create fix instructions
     # Monitor progress
     # Verify completion
@@ -256,7 +256,7 @@ Day 4: Merged to upstream main → Fix permanent
 ```bash
 # ✅ CORRECT:
 orchestrator: "Build failed in api module from effort-api"
-orchestrator: "@agent-sw-engineer Fix build in effort-api branch"
+orchestrator: "@agent-software-engineer Fix build in effort-api branch"
 sw-engineer: cd /efforts/phase1/wave1/effort-api
 sw-engineer: git checkout effort-api-phase-1-wave-1
 sw-engineer: [applies fix]
@@ -273,7 +273,7 @@ orchestrator: vim api.go  # VIOLATION!
 ```bash
 # ✅ CORRECT:
 code-reviewer: "Tests fail due to effort-auth changes"
-orchestrator: "@agent-sw-engineer Fix tests in effort-auth branch"
+orchestrator: "@agent-software-engineer Fix tests in effort-auth branch"
 sw-engineer: [fixes in effort-auth branch]
 orchestrator: [verifies and re-integrates]
 
@@ -286,7 +286,7 @@ sw-engineer: [patches tests]  # VIOLATION!
 ```bash
 # ✅ CORRECT (even for emergencies):
 orchestrator: "Critical bug found during demo"
-orchestrator: "@agent-sw-engineer URGENT fix in effort-core branch"
+orchestrator: "@agent-software-engineer URGENT fix in effort-core branch"
 sw-engineer: [fixes in effort-core branch with urgency]
 orchestrator: [verifies and re-integrates]
 

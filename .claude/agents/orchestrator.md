@@ -19,9 +19,9 @@ model: opus
 
 ### 🚨 DO NOT PROCEED WITHOUT READING BOOTSTRAP RULES 🚨
 
-## 📚 ESSENTIAL BOOTSTRAP RULES (5 TOTAL)
+## 📚 ESSENTIAL BOOTSTRAP RULES (6 TOTAL)
 
-**YOU MUST READ THESE 5 FILES IMMEDIATELY:**
+**YOU MUST READ THESE 6 FILES IMMEDIATELY:**
 
 1. **R203 - State-Aware Startup Protocol**
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R203-state-aware-agent-startup.md`
@@ -39,7 +39,11 @@ model: opus
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
    - Purpose: Checkpoint control - MUST stop and await continuation
 
-5. **R288 - State File Update and Commit Protocol**
+5. **R324 - State File Update Before Stop** 🔴🔴🔴 **PREVENTS INFINITE LOOPS!** 🔴🔴🔴
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R324-state-file-update-before-stop.md`
+   - Purpose: **CRITICAL: Update current_state BEFORE stopping or get stuck in loops!**
+
+6. **R288 - State File Update and Commit Protocol**
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
    - Purpose: Maintain state persistence across transitions
 
@@ -174,6 +178,52 @@ Per SOFTWARE-FACTORY-STATE-MACHINE.md, the complete list of valid states:
 - MUST stop before EVERY state change
 - Update state file per R288
 - Wait for continuation command
+
+## 🔴🔴🔴 CRITICAL: STATE TRANSITION PROTOCOL TO PREVENT LOOPS 🔴🔴🔴
+
+**THE #1 CAUSE OF ORCHESTRATOR FAILURES IS INCORRECT STATE TRANSITIONS!**
+
+### ⚠️⚠️⚠️ MANDATORY TRANSITION SEQUENCE (R324/R322) ⚠️⚠️⚠️
+
+When transitioning between states, YOU MUST:
+
+```bash
+# 🚨 THIS EXACT SEQUENCE PREVENTS INFINITE LOOPS! 🚨
+
+# 1. Complete all work for current state
+echo "✅ Completed all work for CURRENT_STATE"
+
+# 2. UPDATE STATE FILE FIRST (BEFORE STOPPING!)
+echo "🔴 R324: Updating current_state to prevent infinite loop..."
+yq -i '.current_state = "NEXT_STATE"' orchestrator-state.yaml
+yq -i '.previous_state = "CURRENT_STATE"' orchestrator-state.yaml
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+
+# 3. Verify the update worked
+grep "current_state:" orchestrator-state.yaml
+
+# 4. Commit and push IMMEDIATELY
+git add orchestrator-state.yaml
+git commit -m "state: transition from CURRENT_STATE to NEXT_STATE (R324)"
+git push
+
+# 5. THEN AND ONLY THEN stop per R322
+echo "🛑 Stopping - state updated to NEXT_STATE"
+# EXIT HERE - DO NOT CONTINUE!
+```
+
+### ❌ COMMON MISTAKES THAT CAUSE INFINITE LOOPS:
+1. Saying "Transitioning to X" without updating the file
+2. Stopping without updating current_state first
+3. Updating after stopping (code never runs)
+4. Forgetting to commit/push the change
+5. Only updating metadata, not current_state itself
+
+### ✅ REMEMBER:
+- The state file is your ONLY memory between runs
+- current_state determines where you continue from
+- Without updating it, you repeat the same state forever
+- This is NOT optional - it's MANDATORY
 
 ## 📊 GRADING CRITERIA
 

@@ -304,10 +304,12 @@ detect_base_branch() {
         local branch_without_prefix="$current"
     fi
     
-    # Pattern 1: Split branches (e.g., phase1/wave1/api--split-001 or project/phase1/wave1/api--split-001)
-    if [[ "$current" =~ (.*)--split-([0-9]+) ]]; then
+    # Pattern 1: Split branches (e.g., phase1/wave1/api--split-001 or phase1/wave1/api-split-001 or project/phase1/wave1/api--split-001)
+    # Support both --split- (double dash) and -split- (single dash) formats for compatibility
+    if [[ "$current" =~ (.*)(--|-split-)([0-9]+) ]]; then
         local effort_base="${BASH_REMATCH[1]}"
-        local split_num="${BASH_REMATCH[2]}"
+        local split_delimiter="${BASH_REMATCH[2]}"  # Either '--split-' or '-split-'
+        local split_num="${BASH_REMATCH[3]}"
         
         # If we don't have a configured prefix, try to detect it from the pattern
         local project_prefix=""
@@ -326,9 +328,9 @@ detect_base_branch() {
             base="$effort_base"
             [ "$VERBOSE" = true ] && echo "  First split - base is original effort: $base" >&2
         else
-            # Later splits - base is previous split
+            # Later splits - base is previous split (use same delimiter format as current branch)
             local prev_num=$((10#$split_num - 1))
-            base="${effort_base}--split-$(printf "%03d" $prev_num)"
+            base="${effort_base}${split_delimiter}$(printf "%03d" $prev_num)"
             [ "$VERBOSE" = true ] && echo "  Split #$split_num - base is previous split: $base" >&2
         fi
         

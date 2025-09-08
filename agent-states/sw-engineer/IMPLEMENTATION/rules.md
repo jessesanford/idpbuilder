@@ -57,10 +57,12 @@ echo "📋 EXTRACTING SCOPE BOUNDARIES FROM EFFORT PLAN..."
 echo "================================================"
 
 # Extract DO NOT IMPLEMENT list
-grep -A 15 "DO NOT IMPLEMENT\|SCOPE BOUNDARIES" EFFORT-IMPLEMENTATION-PLAN.md
+# Use the plan file found during INIT (stored in IMPLEMENTATION_PLAN env var)
+PLAN_FILE="${IMPLEMENTATION_PLAN:-IMPLEMENTATION-PLAN.md}"
+grep -A 15 "DO NOT IMPLEMENT\|SCOPE BOUNDARIES" "$PLAN_FILE"
 
 # Count specified functions
-FUNC_COUNT=$(grep -c "Function.*lines" EFFORT-IMPLEMENTATION-PLAN.md)
+FUNC_COUNT=$(grep -c "Function.*lines" "$PLAN_FILE")
 echo "✅ Functions to implement: EXACTLY $FUNC_COUNT"
 
 # Acknowledge scope
@@ -76,7 +78,7 @@ echo "  ❌ Will NOT over-engineer or 'complete' the feature"
 # After each component, verify scope adherence
 CHECK_SCOPE() {
     ACTUAL_FUNCS=$(grep -c "^func [A-Z]" *.go 2>/dev/null || echo 0)
-    EXPECTED_FUNCS=$(grep -c "Function.*~.*lines" EFFORT-IMPLEMENTATION-PLAN.md)
+    EXPECTED_FUNCS=$(grep -c "Function.*~.*lines" "$PLAN_FILE")
     
     if [ "$ACTUAL_FUNCS" -gt "$EXPECTED_FUNCS" ]; then
         echo "❌ SCOPE VIOLATION: $ACTUAL_FUNCS functions > $EXPECTED_FUNCS expected!"

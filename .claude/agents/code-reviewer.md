@@ -198,7 +198,7 @@ cloc .                               # NEVER DO THIS!
 git diff --stat                      # NEVER DO THIS!
 
 # WRONG - Old syntax = -100% FAILURE  
-$PROJECT_ROOT/tools/line-counter.sh -b main  # NO -b PARAMETER!
+$PROJECT_ROOT/tools/line-counter.sh -b main  # NEVER USE -b PARAMETER!
 
 # WRONG - Wrong base = -100% FAILURE
 git diff main --stat                 # WRONG BASE!

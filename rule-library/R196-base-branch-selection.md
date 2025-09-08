@@ -103,7 +103,7 @@ echo "✅ Clone ready: $EFFORT_DIR on branch $BRANCH_NAME (base: $BASE_BRANCH)"
 cd - > /dev/null
 
 # Step 7: NOW spawn agent with pre-created workspace
-# Task: sw-engineer
+# Task: software-engineer
 # Working directory: efforts/phase1/wave1/api-types
 # Branch: phase1/wave1/api-types (already created and pushed)
 ```

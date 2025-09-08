@@ -42,11 +42,11 @@ done
 ```markdown
 MUST spawn all agents in SINGLE message:
 
-Task: sw-engineer
+Task: software-engineer
 Working directory: efforts/phase1/wave1/effort1
 [Instructions]
 
-Task: sw-engineer  
+Task: software-engineer  
 Working directory: efforts/phase1/wave1/effort2
 [Instructions]
 

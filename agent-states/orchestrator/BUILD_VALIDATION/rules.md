@@ -243,7 +243,7 @@ if grep -q "Status: FAILED" "$VALIDATION_REPORT"; then
     for effort in $EFFORTS_NEEDING_FIXES; do
         echo "🚀 Spawning SW Engineer to fix build issues in $effort"
         
-        Task: subagent_type="sw-engineer" \
+        Task: subagent_type="software-engineer" \
               state="FIX_BUILD_ISSUES" \
               prompt="Fix build issues identified in BUILD-VALIDATION-REPORT.md. Apply fixes and ensure build succeeds." \
               workspace="/efforts/$effort" \

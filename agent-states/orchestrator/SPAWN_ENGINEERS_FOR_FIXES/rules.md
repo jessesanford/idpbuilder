@@ -299,7 +299,7 @@ IGNORE: Any files named *-COMPLETED-*.md (these are from previous fix cycles)
 EOF
 
     # Spawn the engineer
-    echo "@agent-sw-engineer Please execute the fix task in: $COMMAND_FILE"
+    echo "@agent-software-engineer Please execute the fix task in: $COMMAND_FILE"
     echo "  Working directory: $EFFORT_DIR"
     
     # Record spawn

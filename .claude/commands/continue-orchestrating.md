@@ -223,12 +223,12 @@ OTHER GRADING CRITERIA:
 # This is a GRADING FAILURE - 20% workspace isolation lost
 
 # ✅ CORRECT - ALWAYS DO THIS:
-Task: sw-engineer
+Task: software-engineer
 Working directory: efforts/phase1/wave1/core-types  # MANDATORY!
 Instructions: Create ALL code in efforts/phase1/wave1/core-types/pkg/
 
 # ❌ WRONG - IMMEDIATE FAILURE:
-Task: sw-engineer
+Task: software-engineer
 # No working directory = VIOLATION = GRADING FAILURE
 ```
 ---
@@ -466,7 +466,7 @@ echo "Spawning parallel agents with prepared workspaces..."
 START_TIME=$(date +%s)
 
 # Send ALL spawn commands in ONE message WITH WORKING DIRECTORIES
-Task: sw-engineer
+Task: software-engineer
 Working directory: efforts/phase1/wave2/effort1  # MANDATORY!
 Instructions: 
 - Implement Effort E1.2.1
@@ -474,7 +474,7 @@ Instructions:
 - NEVER create code in main /pkg/
 - Verify pwd shows efforts directory before starting
 
-Task: sw-engineer  
+Task: software-engineer  
 Working directory: efforts/phase1/wave2/effort2  # MANDATORY!
 Instructions:
 - Implement Effort E1.2.2
@@ -482,7 +482,7 @@ Instructions:
 - NEVER create code in main /pkg/
 - Verify pwd shows efforts directory before starting
 
-Task: sw-engineer
+Task: software-engineer
 Working directory: efforts/phase1/wave2/effort3  # MANDATORY!
 Instructions:
 - Implement Effort E1.2.3

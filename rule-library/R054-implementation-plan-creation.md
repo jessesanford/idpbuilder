@@ -203,15 +203,27 @@ describe('{ComponentName}', () => {
 5. **IDENTIFY** split points
 
 ### After Plan Creation
-1. **SAVE** as IMPLEMENTATION-PLAN-YYYYMMDD-HHMMSS.md in effort directory
+1. **SAVE** in .software-factory subdirectory structure per R303
    ```bash
+   # Determine phase, wave, and effort name from context
+   PHASE="1"  # Example
+   WAVE="2"   # Example
+   EFFORT_NAME="buildah-builder-interface"  # Example
+   
+   # Create the .software-factory directory structure
+   PLAN_DIR=".software-factory/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+   mkdir -p "$PLAN_DIR"
+   
    # Generate timestamped filename
    TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-   PLAN_FILE="IMPLEMENTATION-PLAN-${TIMESTAMP}.md"
+   PLAN_FILE="$PLAN_DIR/IMPLEMENTATION-PLAN-${TIMESTAMP}.md"
+   
+   echo "📁 Creating plan at: $PLAN_FILE"
    ```
 2. **VALIDATE** plan completeness
 3. **COMMIT** to git repository
-4. **REPORT** completion to orchestrator with exact filename
+4. **REPORT** completion to orchestrator with exact path
+5. **UPDATE** orchestrator-state.yaml with plan location (if possible)
 
 ## Common Violations
 
@@ -276,22 +288,36 @@ When SW Engineers need to read an implementation plan:
 ```bash
 # Find the most recent implementation plan
 get_latest_implementation_plan() {
-    # Check for new timestamped format first
+    # Check new .software-factory location first (per R303)
+    if [ -d ".software-factory" ]; then
+        LATEST_PLAN=$(find .software-factory -name "IMPLEMENTATION-PLAN-*.md" -type f | sort -r | head -1)
+        if [ -n "$LATEST_PLAN" ]; then
+            echo "✅ Found plan in .software-factory structure: $LATEST_PLAN"
+            cat "$LATEST_PLAN"
+            return 0
+        fi
+    fi
+    
+    # Fallback to root directory for backward compatibility
     LATEST_PLAN=$(ls -t IMPLEMENTATION-PLAN-*.md 2>/dev/null | head -n1)
-    
-    # Fallback to old format if no timestamped versions exist
-    if [ -z "$LATEST_PLAN" ] && [ -f "IMPLEMENTATION-PLAN.md" ]; then
-        LATEST_PLAN="IMPLEMENTATION-PLAN.md"
-        echo "⚠️ Using legacy plan format: $LATEST_PLAN"
+    if [ -n "$LATEST_PLAN" ]; then
+        echo "⚠️ Found plan in legacy location: $LATEST_PLAN"
+        cat "$LATEST_PLAN"
+        return 0
     fi
     
-    if [ -z "$LATEST_PLAN" ]; then
-        echo "❌ ERROR: No implementation plan found!"
-        exit 1
+    # Final fallback to old format
+    if [ -f "IMPLEMENTATION-PLAN.md" ]; then
+        echo "⚠️ Using legacy plan format: IMPLEMENTATION-PLAN.md"
+        cat "IMPLEMENTATION-PLAN.md"
+        return 0
     fi
     
-    echo "✅ Using implementation plan: $LATEST_PLAN"
-    cat "$LATEST_PLAN"
+    echo "❌ ERROR: No implementation plan found!"
+    echo "   Checked: .software-factory/phase*/wave*/*/IMPLEMENTATION-PLAN-*.md"
+    echo "   Checked: ./IMPLEMENTATION-PLAN-*.md"
+    echo "   Checked: ./IMPLEMENTATION-PLAN.md"
+    exit 1
 }
 ```
 

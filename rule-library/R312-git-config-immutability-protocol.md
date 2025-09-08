@@ -401,7 +401,7 @@ prepare_effort_for_agent 2 1 "E2.1.1"
 # .git/config now has 444 permissions
 
 # 3. SW Engineer is spawned
-/spawn sw-engineer --effort E2.1.1
+/spawn software-engineer --effort E2.1.1
 
 # 4. SW Engineer validates lock in pre-flight
 validate_r312_config_lock  # Must pass or exit

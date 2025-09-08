@@ -278,3 +278,36 @@ If you find yourself:
 - Continuing after completing state work
 
 **STOP IMMEDIATELY - You are violating R322!**
+
+## 🚨🚨🚨 STATE TRANSITION PROTOCOL (R324/R325) 🚨🚨🚨
+
+**AFTER ALL IMPLEMENTATIONS COMPLETE, UPDATE current_state BEFORE STOPPING!**
+
+```bash
+# 🔴🔴🔴 MANDATORY: Execute when all SW Engineers complete! 🔴🔴🔴
+
+echo "✅ All SW Engineers have completed implementation"
+
+# CRITICAL: Update state file FIRST (R324 requirement)
+echo "🔴 R324: Updating current_state to prevent infinite loop..."
+yq -i ".current_state = \"SPAWN_CODE_REVIEWERS_FOR_REVIEW\"" orchestrator-state.yaml
+yq -i ".previous_state = \"MONITOR_IMPLEMENTATION\"" orchestrator-state.yaml
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%%H:%%M:%%SZ)\"" orchestrator-state.yaml
+
+# Verify the update
+echo "✅ State updated to:"
+grep "current_state:" orchestrator-state.yaml
+
+# Commit and push IMMEDIATELY
+git add orchestrator-state.yaml
+git commit -m "state: transition to SPAWN_CODE_REVIEWERS_FOR_REVIEW (R324)"
+git push
+
+# NOW stop per R322
+echo "🛑 STATE TRANSITION: MONITOR_IMPLEMENTATION → SPAWN_CODE_REVIEWERS_FOR_REVIEW"
+echo "📊 State file updated to: SPAWN_CODE_REVIEWERS_FOR_REVIEW ✅"
+echo "⏸️ STOPPED - Ready to spawn code reviewers"
+# EXIT HERE
+```
+
+**⚠️ FAILURE TO UPDATE = INFINITE MONITORING LOOP! ⚠️**

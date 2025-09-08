@@ -35,30 +35,52 @@ Without this, the orchestrator will be stuck in infinite loops, repeatedly execu
 
 ## Mandatory Implementation Pattern
 
-### 🔴🔴🔴 THIS EXACT SEQUENCE IS REQUIRED 🔴🔴🔴
+### 🔴🔴🔴 THIS EXACT SEQUENCE IS REQUIRED - NO EXCEPTIONS! 🔴🔴🔴
+
+**⚠️⚠️⚠️ THE #1 CAUSE OF ORCHESTRATOR BUGS IS FORGETTING THIS! ⚠️⚠️⚠️**
 
 ```bash
+# 🚨🚨🚨 COPY THIS EXACT PATTERN - REPLACE ONLY THE STATE NAMES! 🚨🚨🚨
+
 # Step 1: Complete all work for current state
 echo "✅ Completed all work for CURRENT_STATE"
 
-# Step 2: UPDATE STATE FILE FIRST (BEFORE STOPPING!)
-echo "📝 Updating state file for transition..."
-yq -i '.current_state = "NEXT_STATE"' orchestrator-state.yaml
-yq -i '.previous_state = "CURRENT_STATE"' orchestrator-state.yaml
+# Step 2: CRITICAL - UPDATE STATE FILE FIRST (BEFORE STOPPING!)
+# ⚠️ WITHOUT THIS, YOU GET INFINITE LOOPS! ⚠️
+echo "🔴🔴🔴 R324 CRITICAL: Updating current_state to prevent infinite loop..."
+
+# REPLACE THESE WITH YOUR ACTUAL STATE NAMES:
+NEXT_STATE="SPAWN_AGENTS"  # <-- Replace with your actual next state
+CURRENT_STATE="ANALYZE_IMPLEMENTATION_PARALLELIZATION"  # <-- Replace with current
+
+# DO NOT MODIFY THIS SEQUENCE:
+yq -i ".current_state = \"$NEXT_STATE\"" orchestrator-state.yaml
+yq -i ".previous_state = \"$CURRENT_STATE\"" orchestrator-state.yaml
 yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
 
-# Step 3: Commit and push the state change
+# Step 3: VERIFY the update (CRITICAL for debugging)
+echo "✅ Verification - current_state is now:"
+grep "current_state:" orchestrator-state.yaml
+
+# Step 4: Commit and push the state change IMMEDIATELY
 git add orchestrator-state.yaml
-git commit -m "state: transition from CURRENT_STATE to NEXT_STATE"
+git commit -m "state: transition from $CURRENT_STATE to $NEXT_STATE (R324/R322)"
 git push
 
-# Step 4: NOW stop per R322
-echo "🛑 STATE TRANSITION CHECKPOINT: CURRENT_STATE → NEXT_STATE"
-echo "📊 State file updated to: NEXT_STATE"
-echo "⏸️ STOPPED - Ready to continue in NEXT_STATE"
-echo "When restarted, will continue from NEXT_STATE"
-# EXIT HERE
+# Step 5: NOW stop per R322 (state is safely updated)
+echo "🛑 STATE TRANSITION CHECKPOINT: $CURRENT_STATE → $NEXT_STATE"
+echo "📊 State file updated to: $NEXT_STATE ✅"
+echo "⏸️ STOPPED - Ready to continue in $NEXT_STATE"
+echo "When restarted, will continue from $NEXT_STATE (verified in file)"
+# EXIT HERE - DO NOT CONTINUE!
 ```
+
+### ⚠️ COMMON MISTAKES THAT CAUSE LOOPS:
+1. ❌ Saying "Transitioning to X" without updating the file
+2. ❌ Updating the file AFTER stopping (code never runs)
+3. ❌ Forgetting to commit/push (state lost on restart)
+4. ❌ Only updating metadata fields, not current_state
+5. ❌ Thinking a comment is enough (the FILE must change!)
 
 ## Common State Transitions That MUST Follow This Pattern
 

@@ -28,16 +28,38 @@ Before stopping, the orchestrator MUST:
 ### 2. State Update BEFORE Stop Protocol
 When ready to transition, the orchestrator MUST:
 
-#### 🔴🔴🔴 CRITICAL: UPDATE current_state FIRST! 🔴🔴🔴
+#### 🔴🔴🔴 CRITICAL: UPDATE current_state FIRST OR GET STUCK IN INFINITE LOOP! 🔴🔴🔴
+
+**⚠️⚠️⚠️ WARNING: FAILURE TO UPDATE current_state = INFINITE LOOP BUG! ⚠️⚠️⚠️**
+
+The orchestrator WILL be stuck repeating the same state work forever if you don't update current_state!
+
 ```bash
-# MANDATORY: Update state file BEFORE stopping
-yq -i ".current_state = \"NEXT_STATE\"" orchestrator-state.yaml
-yq -i ".previous_state = \"CURRENT_STATE\"" orchestrator-state.yaml
+# 🚨🚨🚨 MANDATORY SEQUENCE - DO NOT SKIP ANY STEP! 🚨🚨🚨
+# STEP 1: Determine your next state
+NEXT_STATE="[YOUR_NEXT_STATE_HERE]"  # e.g., "MONITOR", "SPAWN_AGENTS", etc.
+CURRENT_STATE="[YOUR_CURRENT_STATE]"  # What state you're leaving
+
+# STEP 2: UPDATE THE STATE FILE (THIS IS THE CRITICAL PART!)
+echo "📝 CRITICAL: Updating current_state to prevent infinite loop..."
+yq -i ".current_state = \"$NEXT_STATE\"" orchestrator-state.yaml
+yq -i ".previous_state = \"$CURRENT_STATE\"" orchestrator-state.yaml
 yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+
+# STEP 3: Verify the update worked
+echo "✅ State file updated:"
+grep "current_state:" orchestrator-state.yaml
+
+# STEP 4: Commit and push IMMEDIATELY
 git add orchestrator-state.yaml
-git commit -m "state: transition from CURRENT_STATE to NEXT_STATE"
+git commit -m "state: transition from $CURRENT_STATE to $NEXT_STATE (R324 compliance)"
 git push
+
+# STEP 5: NOW you can stop (state is safely persisted)
+echo "✅ State transition persisted - safe to stop"
 ```
+
+**SEE ALSO: R324 - State File Update Before Stop (PREVENTS INFINITE LOOPS)**
 
 #### THEN Stop and Summarize:
 ```markdown

@@ -38,8 +38,8 @@ Say: "✅ Successfully read SPLIT_REVIEW rules for code-reviewer"
 - ✅ MUST use `$CLAUDE_PROJECT_DIR/tools/line-counter.sh` for ALL line counting
 - ❌ NEVER use `wc -l` or any manual counting method
 - ❌ NEVER count lines any other way - this is a -100% automatic failure
-- ✅ MUST specify both -b (base branch) and -c (current branch) parameters
-- 🔴🔴🔴 **CRITICAL FOR SPLITS**: Base branch MUST be the IMMEDIATE PREDECESSOR split!
+- ✅ **TOOL AUTO-DETECTS BASE** - No parameters needed, just run the tool!
+- 🔴🔴🔴 **CRITICAL FOR SPLITS**: Tool automatically detects correct predecessor!
 
 **Failure to use the line counter tool = AUTOMATIC -100% GRADE**
 **Failure to measure at all (thinking R319 applies) = AUTOMATIC -100% GRADE**

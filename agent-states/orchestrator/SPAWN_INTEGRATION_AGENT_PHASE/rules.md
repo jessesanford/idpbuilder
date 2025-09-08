@@ -81,7 +81,7 @@ Spawn Integration Agent (SW Engineer in integration mode) to execute the phase m
    # Spawn SW Engineer as Integration Agent
    cd phase-X-integration/
    
-   /spawn @agent-sw-engineer PHASE_INTEGRATION_EXECUTION \
+   /spawn @agent-software-engineer PHASE_INTEGRATION_EXECUTION \
      --merge-plan "PHASE-MERGE-PLAN.md" \
      --target-branch "phase-X-integration" \
      --wave-branches "wave-X-1,wave-X-2,..." \

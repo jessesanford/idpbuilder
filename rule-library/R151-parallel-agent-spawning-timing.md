@@ -168,7 +168,7 @@ Step 4: Confirm correct directory
    echo "✅ Confirmed in correct directory via Bash tool output"
    
 Step 5: NOW spawn the agent
-   Task: sw-engineer
+   Task: software-engineer
    Working directory: efforts/phase1/wave1/oci-stack-types
 ```
 
@@ -352,11 +352,11 @@ spawn_parallel_agents "3 4 5"  # Where did this come from?
 ```bash
 # WRONG - No pwd verification, can't prove correct directory
 cd efforts/phase1/wave1/effort1
-Task: sw-engineer  # But are we really in effort1?
+Task: software-engineer  # But are we really in effort1?
 
 # WRONG - Just claiming without proving
 echo "Spawning in correct directory"
-Task: sw-engineer  # No pwd output = no proof!
+Task: software-engineer  # No pwd output = no proof!
 ```
 
 ### ✅ Correct Implementation
@@ -370,17 +370,17 @@ echo "🚀 R151 + R208: Spawning 3 agents in ONE message with VERIFIED directori
 echo "🗂️ CD'ing to: efforts/phase1/wave1/effort3"
 cd efforts/phase1/wave1/effort3
 echo "📍 pwd verification: $(pwd)"  # Shows: /workspace/target-repo/efforts/phase1/wave1/effort3
-Task: sw-engineer
+Task: software-engineer
 
 echo "🗂️ CD'ing to: efforts/phase1/wave1/effort4"
 cd efforts/phase1/wave1/effort4
 echo "📍 pwd verification: $(pwd)"  # Shows: /workspace/target-repo/efforts/phase1/wave1/effort4
-Task: sw-engineer
+Task: software-engineer
 
 echo "🗂️ CD'ing to: efforts/phase1/wave1/effort5"
 cd efforts/phase1/wave1/effort5
 echo "📍 pwd verification: $(pwd)"  # Shows: /workspace/target-repo/efforts/phase1/wave1/effort5
-Task: sw-engineer
+Task: software-engineer
 
 echo "✅ R151: Average spawn delta: 500ms (PASS)"
 echo "✅ R208: All directories verified with pwd (PASS)"

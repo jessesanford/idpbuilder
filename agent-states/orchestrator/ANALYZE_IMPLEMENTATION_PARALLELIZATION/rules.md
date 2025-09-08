@@ -346,9 +346,43 @@ echo "💾 Saving SW Engineer parallelization plan to orchestrator-state.yaml...
 After completing implementation parallelization analysis:
 1. Save implementation strategy to orchestrator-state.yaml
 2. Display state machine visualization (R230)
-3. Transition to SPAWN_AGENTS
+3. **🔴🔴🔴 R324/R325 CRITICAL: Update current_state BEFORE stopping! 🔴🔴🔴**
 4. Re-acknowledge critical rules (R217)
 5. Use the saved strategy to spawn SW Engineers correctly
+
+### 🚨🚨🚨 MANDATORY STATE TRANSITION PROTOCOL (R324/R325) 🚨🚨🚨
+
+**YOU MUST UPDATE current_state TO "SPAWN_AGENTS" BEFORE STOPPING!**
+
+```bash
+# 🔴🔴🔴 COPY THIS EXACTLY - THIS PREVENTS INFINITE LOOPS! 🔴🔴🔴
+
+echo "✅ Implementation parallelization analysis complete"
+
+# CRITICAL: Update state file FIRST (R324 requirement)
+echo "🔴 R324: Updating current_state to prevent infinite loop..."
+yq -i '.current_state = "SPAWN_AGENTS"' orchestrator-state.yaml
+yq -i '.previous_state = "ANALYZE_IMPLEMENTATION_PARALLELIZATION"' orchestrator-state.yaml
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+
+# Verify the update
+echo "✅ State updated to:"
+grep "current_state:" orchestrator-state.yaml
+
+# Commit and push IMMEDIATELY
+git add orchestrator-state.yaml
+git commit -m "state: transition to SPAWN_AGENTS from ANALYZE_IMPLEMENTATION_PARALLELIZATION (R324)"
+git push
+
+# NOW stop per R322
+echo "🛑 STATE TRANSITION CHECKPOINT: ANALYZE_IMPLEMENTATION_PARALLELIZATION → SPAWN_AGENTS"
+echo "📊 State file updated to: SPAWN_AGENTS ✅"
+echo "⏸️ STOPPED - Ready to continue in SPAWN_AGENTS"
+echo "When restarted, will execute SPAWN_AGENTS state"
+# EXIT HERE
+```
+
+**⚠️ FAILURE TO UPDATE current_state = INFINITE LOOP BUG! ⚠️**
 
 ## Validation Checks Before State Transition
 
@@ -498,9 +532,19 @@ yq eval '.sw_engineer_parallelization_plan = ...' orchestrator-state.yaml
 # 6. Acknowledge decision
 echo "✅ SW ENGINEER SPAWN STRATEGY COMMITTED"
 
-# 7. Validate and transition
+# 7. Validate and transition with R324 protocol
 validate_implementation_parallelization
-echo "Transitioning to SPAWN_AGENTS"
+
+# 8. R324 CRITICAL: Update state BEFORE stopping
+echo "🔴 R324: Updating current_state to SPAWN_AGENTS..."
+yq -i '.current_state = "SPAWN_AGENTS"' orchestrator-state.yaml
+yq -i '.previous_state = "ANALYZE_IMPLEMENTATION_PARALLELIZATION"' orchestrator-state.yaml
+git add orchestrator-state.yaml
+git commit -m "state: transition to SPAWN_AGENTS (R324)"
+git push
+
+# 9. NOW stop per R322
+echo "🛑 Stopping - state updated to SPAWN_AGENTS"
 ```
 
 ## Integration with Other Rules

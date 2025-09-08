@@ -279,7 +279,7 @@ for effort in "${EFFORTS_NEEDING_BACKPORT[@]}"; do
     
     # Create spawn command
     cat > /tmp/spawn-sw-engineer-${effort}.md << 'EOF'
-@agent-sw-engineer
+@agent-software-engineer
 
 ## BACKPORT_FIXES Assignment
 

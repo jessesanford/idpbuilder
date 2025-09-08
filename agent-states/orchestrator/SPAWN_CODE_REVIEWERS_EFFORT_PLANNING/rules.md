@@ -291,6 +291,33 @@ SPAWNING REQUIREMENTS:
 5. Include effort-specific context in each spawn
 6. Return to orchestrator directory after each spawn (R208 SUPREME LAW)
 
+## 🔴🔴🔴 CRITICAL: Effort Plan Storage Instructions 🔴🔴🔴
+
+### MANDATORY: Instruct Code Reviewers About Plan Location
+
+When spawning Code Reviewers, you MUST explicitly tell them:
+```markdown
+**CRITICAL INSTRUCTION FOR EFFORT PLAN STORAGE:**
+Per R303 and your EFFORT_PLAN_CREATION state rules, you MUST save the effort plan in:
+`.software-factory/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}/IMPLEMENTATION-PLAN-YYYYMMDD-HHMMSS.md`
+
+DO NOT save in the root directory. The orchestrator will look for plans in the .software-factory subdirectory structure.
+```
+
+### Example Spawn Message:
+```bash
+cd /efforts/phase1/wave2/buildah-builder-interface
+pwd  # Verify directory per R208
+
+@agent-code-reviewer Please create the implementation plan for buildah-builder-interface.
+Phase: 1, Wave: 2
+
+**CRITICAL**: Save your plan at:
+.software-factory/phase1/wave2/buildah-builder-interface/IMPLEMENTATION-PLAN-[TIMESTAMP].md
+
+The orchestrator will look for your plan in this exact location.
+```
+
 ## R322 VIOLATION DETECTION
 
 If you find yourself:

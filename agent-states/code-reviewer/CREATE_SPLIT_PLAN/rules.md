@@ -87,6 +87,17 @@ Outcome: 450 lines as planned = SUCCESS
 - **Split Sequential**: Splits branch from each other sequentially
 - **The Base**: Original effort's base is determined by R308
 
+### 🔴🔴🔴 CRITICAL: Determining the Original Effort's Base 🔴🔴🔴
+**THE FIRST SPLIT MUST USE THE SAME BASE AS THE ORIGINAL EFFORT!**
+
+To find what base the original too-large effort was using:
+1. **Check the effort's phase and wave** (e.g., phase2/wave1)
+2. **Apply R308 logic**:
+   - If first wave of phase: base = previous phase integration (e.g., phase1-integration)
+   - If first phase: base = main
+   - Otherwise: base = previous wave integration (e.g., phase2/wave0-integration)
+3. **The line-counter tool auto-detects this!** Just verify its output shows the right base
+
 ### The Mandatory Pattern:
 ```
 Original effort base (per R308): phase1-wave2-integration (example)

@@ -31,7 +31,7 @@ handle_splits_wrong() {
     
     # WRONG! Spawning different agents for each split
     for split in 1 2 3; do
-        Task: sw-engineer  # NEW agent each time = WRONG!
+        Task: software-engineer  # NEW agent each time = WRONG!
         Working directory: efforts/phase1/wave1/${effort}-split-${split}
         Implement split ${split}
     done
@@ -51,7 +51,7 @@ handle_splits_correct() {
     echo "═══════════════════════════════════════════════════════"
     
     # Spawn ONE agent to handle ALL splits sequentially
-    Task: sw-engineer
+    Task: software-engineer
     Working directory: efforts/phase1/wave1/${effort}
     
     CRITICAL SPLIT IMPLEMENTATION INSTRUCTIONS:
@@ -199,8 +199,8 @@ integrate_splits() {
 ### ❌ Spawning Multiple Agents
 ```bash
 # NEVER DO THIS for splits!
-Task: sw-engineer for split-001
-Task: sw-engineer for split-002  # Different agent = WRONG!
+Task: software-engineer for split-001
+Task: software-engineer for split-002  # Different agent = WRONG!
 ```
 
 ### ❌ Parallel Split Execution

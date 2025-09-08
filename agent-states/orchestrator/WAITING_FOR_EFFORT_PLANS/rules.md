@@ -228,15 +228,22 @@ check_effort_plan_status() {
     
     echo "📊 Checking effort plan status..."
     
-    # Check each effort directory for IMPLEMENTATION-PLAN.md
+    # Check each effort directory for plans in correct location
     for effort_dir in efforts/phase${PHASE}/wave${WAVE}/*/; do
         EFFORT=$(basename "$effort_dir")
-        PLAN_FILE="$effort_dir/IMPLEMENTATION-PLAN.md"
+        # Check correct location per R303 and code-reviewer EFFORT_PLAN_CREATION state
+        PLAN_LOCATION="$effort_dir/.software-factory/phase${PHASE}/wave${WAVE}/${EFFORT}"
         
-        if [ -f "$PLAN_FILE" ]; then
-            echo "✅ $EFFORT: Plan complete"
+        # Check new location first (timestamped plans)
+        if [ -n "$(ls "$PLAN_LOCATION/IMPLEMENTATION-PLAN-"*.md 2>/dev/null)" ]; then
+            LATEST_PLAN=$(ls -t "$PLAN_LOCATION/IMPLEMENTATION-PLAN-"*.md | head -1)
+            echo "✅ $EFFORT: Plan complete at $(basename "$LATEST_PLAN")"
+        # Fallback to legacy location
+        elif [ -f "$effort_dir/IMPLEMENTATION-PLAN.md" ]; then
+            echo "✅ $EFFORT: Plan complete (legacy location)"
         else
             echo "⏳ $EFFORT: Plan in progress"
+            echo "   Expecting: $PLAN_LOCATION/IMPLEMENTATION-PLAN-*.md"
             ALL_COMPLETE=false
         fi
     done
@@ -258,14 +265,23 @@ Before transitioning to SPAWN_AGENTS, verify:
 1. **All Plans Exist:**
    ```bash
    for effort_dir in efforts/phase${PHASE}/wave${WAVE}/*/; do
-       # Check new location first, then old location
        EFFORT_NAME=$(basename "$effort_dir")
-       if [ -n "$(ls "$effort_dir/.software-factory/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}/plans/IMPLEMENTATION-PLAN-"*.md 2>/dev/null)" ]; then
-           echo "✅ Found plan in new location for $EFFORT_NAME"
+       # Check correct location per R303 and code-reviewer EFFORT_PLAN_CREATION state
+       PLAN_LOCATION="$effort_dir/.software-factory/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+       
+       if [ -n "$(ls "$PLAN_LOCATION/IMPLEMENTATION-PLAN-"*.md 2>/dev/null)" ]; then
+           LATEST_PLAN=$(ls -t "$PLAN_LOCATION/IMPLEMENTATION-PLAN-"*.md | head -1)
+           echo "✅ Found plan for $EFFORT_NAME: $LATEST_PLAN"
+           # Update state file with exact path
+           yq eval ".effort_plan_paths.\"$EFFORT_NAME\" = \"$LATEST_PLAN\"" -i orchestrator-state.yaml
        elif [ -f "$effort_dir/IMPLEMENTATION-PLAN.md" ]; then
-           echo "✅ Found plan in legacy location for $EFFORT_NAME"
+           echo "⚠️ Found legacy plan for $EFFORT_NAME: IMPLEMENTATION-PLAN.md"
+           echo "   Consider migrating to .software-factory/ structure"
+           # Update state file with legacy path
+           yq eval ".effort_plan_paths.\"$EFFORT_NAME\" = \"$effort_dir/IMPLEMENTATION-PLAN.md\"" -i orchestrator-state.yaml
        else
            echo "❌ No plan found for $EFFORT_NAME"
+           echo "   Expected location: $PLAN_LOCATION/IMPLEMENTATION-PLAN-*.md"
            exit 1
        fi
    done

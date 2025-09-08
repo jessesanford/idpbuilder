@@ -270,7 +270,7 @@ if [ "$PARALLEL_EXECUTION" = true ]; then
         
         # Create spawn command
         cat > /tmp/spawn-sw-${EFFORT_NAME}.md << 'EOF'
-@agent-sw-engineer
+@agent-software-engineer
 
 ## BACKPORT IMPLEMENTATION ASSIGNMENT
 

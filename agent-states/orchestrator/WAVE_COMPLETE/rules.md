@@ -747,3 +747,40 @@ If you find yourself:
 - Continuing after completing state work
 
 **STOP IMMEDIATELY - You are violating R322!**
+
+
+## 🚨🚨🚨 STATE TRANSITION PROTOCOL (R324/R325) 🚨🚨🚨
+
+**AFTER COMPLETING WAVE, UPDATE current_state BEFORE STOPPING!**
+
+```bash
+# 🔴🔴🔴 MANDATORY: Execute after wave completion confirmed! 🔴🔴🔴
+
+echo "✅ Wave complete - all efforts finished and reviewed"
+
+# DEFAULT TRANSITION IS TO INTEGRATION (most common)
+NEXT_STATE="INTEGRATION"  # Change ONLY if special conditions apply
+
+# CRITICAL: Update state file FIRST (R324 requirement)
+echo "🔴 R324: Updating current_state to prevent infinite loop..."
+yq -i ".current_state = \"$NEXT_STATE\"" orchestrator-state.yaml
+yq -i ".previous_state = \"WAVE_COMPLETE\"" orchestrator-state.yaml
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%%H:%%M:%%SZ)\"" orchestrator-state.yaml
+
+# Verify the update
+echo "✅ State updated to:"
+grep "current_state:" orchestrator-state.yaml
+
+# Commit and push IMMEDIATELY
+git add orchestrator-state.yaml
+git commit -m "state: transition from WAVE_COMPLETE to $NEXT_STATE (R324)"
+git push
+
+# NOW stop per R322
+echo "🛑 STATE TRANSITION: WAVE_COMPLETE → $NEXT_STATE"
+echo "📊 State file updated to: $NEXT_STATE ✅"
+echo "⏸️ STOPPED - Ready to continue in $NEXT_STATE"
+# EXIT HERE
+```
+
+**⚠️ FAILURE TO UPDATE = STUCK IN WAVE_COMPLETE FOREVER! ⚠️**

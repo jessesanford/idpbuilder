@@ -485,7 +485,7 @@ merge_strategy:
 ### ❌ Spawning Before Infrastructure
 ```bash
 # WRONG - No infrastructure created
-Task: sw-engineer
+Task: software-engineer
 Implement split-001
 # Agent has nowhere to work!
 ```
