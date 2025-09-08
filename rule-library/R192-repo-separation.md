@@ -139,7 +139,7 @@ verify_sw_engineer_workspace() {
 │   ├── phase1-plan.md
 │   └── architecture.md
 ├── state/                                   # ✅ State in SF instance
-│   └── orchestrator-state.yaml
+│   └── orchestrator-state.json
 ├── todos/                                   # ✅ TODOs in SF instance
 │   └── orchestrator-WAVE_START-*.todo
 └── efforts/                                 # EFFORT WORKSPACES
@@ -177,7 +177,7 @@ cp ../../../../target-repo-config.yaml .
 ```bash
 # WRONG - State files in target
 cd /workspaces/idpbuilder-sw-factory/efforts/phase1/wave1/api-types
-echo "state: COMPLETE" > orchestrator-state.yaml
+echo "state: COMPLETE" > orchestrator-state.json
 # VIOLATION: State belongs in SF instance!
 ```
 

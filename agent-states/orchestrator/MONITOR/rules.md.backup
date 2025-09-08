@@ -31,7 +31,7 @@ You are monitoring spawned agents and tracking their progress toward completion.
 │ 4. Has not exceeded size limits                               │
 │ 5. Is following implementation plan                           │
 │                                                                 │
-│ Update orchestrator-state.yaml with findings                  │
+│ Update orchestrator-state.json with findings                  │
 └─────────────────────────────────────────────────────────────────┘
 
 ## Monitoring Implementation
@@ -182,7 +182,7 @@ class AgentMonitor:
 └─────────────────────────────────────────────────────────────────┘
 
 ```yaml
-# Dependency tracking in orchestrator-state.yaml
+# Dependency tracking in orchestrator-state.json
 dependency_monitoring:
   wave2_dependencies:
     effort1_api_types:
@@ -295,7 +295,7 @@ def check_intervention_triggers(monitoring_data):
 ## Status Reporting
 
 ```yaml
-# Real-time status in orchestrator-state.yaml
+# Real-time status in orchestrator-state.json
 monitoring_status:
   last_full_check: "2025-08-23T15:30:00Z"
   check_interval_minutes: 10

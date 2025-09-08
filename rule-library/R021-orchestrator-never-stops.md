@@ -98,13 +98,13 @@ The Software Factory 2.0 has COMPLETE context recovery systems that make stoppin
 #### 2. **State Machine Persistence (R288-R288)**
 ```bash
 # Your state is ALWAYS preserved:
-- orchestrator-state.yaml contains EVERYTHING
+- orchestrator-state.json contains EVERYTHING
 - Current state, phase, wave, efforts
 - All progress tracked continuously
 - Committed and pushed after EVERY change
 
 # After any compaction:
-1. Read orchestrator-state.yaml
+1. Read orchestrator-state.json
 2. Determine current_state
 3. Read state-specific rules
 4. Continue from exact same position
@@ -115,7 +115,7 @@ The Software Factory 2.0 has COMPLETE context recovery systems that make stoppin
 # If compaction happens:
 1. Check /tmp/compaction_marker.txt
 2. Load saved TODOs
-3. Read orchestrator-state.yaml
+3. Read orchestrator-state.json
 4. Read current state rules
 5. Continue working - NO PROGRESS LOST
 

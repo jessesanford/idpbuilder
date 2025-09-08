@@ -7,7 +7,7 @@ Actively monitor Code Reviewer creating phase merge plan for integrating all wav
 
 ### 🔴🔴🔴 RULE R322: MANDATORY STOP BEFORE STATE TRANSITION (SUPREME LAW)
 - **STOP** and save state before ANY transition
-- **READ** orchestrator-state.yaml to verify current state
+- **READ** orchestrator-state.json to verify current state
 - **VALIDATE** next state exists in SOFTWARE-FACTORY-STATE-MACHINE.md
 - **VIOLATION = IMMEDIATE FAILURE**
 
@@ -50,14 +50,14 @@ Actively monitor Code Reviewer creating phase merge plan for integrating all wav
 1. **Initial Check (IMMEDIATE)**
    ```bash
    # Verify Code Reviewer was spawned
-   grep "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN" orchestrator-state.yaml
-   grep "spawned_agents" orchestrator-state.yaml | tail -5
+   grep "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN" orchestrator-state.json
+   grep "spawned_agents" orchestrator-state.json | tail -5
    
    # Check phase integration directory exists
    ls -la phase-*-integration/
    
    # Verify all waves completed
-   grep "waves_completed" orchestrator-state.yaml
+   grep "waves_completed" orchestrator-state.json
    ```
 
 2. **Active Monitoring Loop**
@@ -111,7 +111,7 @@ Actively monitor Code Reviewer creating phase merge plan for integrating all wav
      
      # Verify all waves included
      WAVE_COUNT=$(grep -c "wave-.*-integration" "$PLAN_FILE")
-     EXPECTED_WAVES=$(grep "total_waves:" orchestrator-state.yaml | awk '{print $2}')
+     EXPECTED_WAVES=$(grep "total_waves:" orchestrator-state.json | awk '{print $2}')
      
      if [ "$WAVE_COUNT" -ne "$EXPECTED_WAVES" ]; then
        echo "✗ Plan missing waves: found $WAVE_COUNT, expected $EXPECTED_WAVES"
@@ -156,7 +156,7 @@ Actively monitor Code Reviewer creating phase merge plan for integrating all wav
 5. **Check for Timeout**
    ```bash
    # Get spawn timestamp
-   SPAWN_TIME=$(grep "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN" orchestrator-state.yaml -A 10 | \
+   SPAWN_TIME=$(grep "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN" orchestrator-state.json -A 10 | \
                 grep "timestamp" | tail -1 | cut -d'"' -f2)
    
    # Calculate elapsed time
@@ -257,8 +257,8 @@ echo "Entered at: $(date)"
 echo "===================="
 
 # Check context
-echo "Current phase: $(grep current_phase orchestrator-state.yaml | awk '{print $2}')"
-echo "Waves completed: $(grep -c "status: COMPLETE" orchestrator-state.yaml)"
+echo "Current phase: $(grep current_phase orchestrator-state.json | awk '{print $2}')"
+echo "Waves completed: $(grep -c "status: COMPLETE" orchestrator-state.json)"
 
 # Monitor with timeout
 timeout 1800 bash -c 'while [ ! -f phase-*/PHASE-MERGE-PLAN.md ]; do 

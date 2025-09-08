@@ -765,7 +765,7 @@ Test Quality Score <70:
 ## Performance State Tracking
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 grading:
   SW_ENGINEER:
     TEST_WRITING:

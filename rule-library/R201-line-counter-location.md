@@ -1,7 +1,7 @@
 # Rule R201: Line Counter Tool Location and Usage
 
 ## Rule Statement
-The line counter tool is located in the PROJECT ROOT's tools folder. Find the project root (where orchestrator-state.yaml lives), then use `tools/line-counter.sh` from there. The tool must be run WITH NO PARAMETERS from within the effort directory.
+The line counter tool is located in the PROJECT ROOT's tools folder. Find the project root (where orchestrator-state.json lives), then use `tools/line-counter.sh` from there. The tool must be run WITH NO PARAMETERS from within the effort directory.
 
 ## Criticality Level
 **BLOCKING** - Using wrong tool or wrong location causes measurement failures
@@ -15,7 +15,7 @@ The line counter tool is located in the PROJECT ROOT's tools folder. Find the pr
 
 ```
 Line Counter Location: ${PROJECT_ROOT}/tools/line-counter.sh
-Project Root: Where orchestrator-state.yaml exists
+Project Root: Where orchestrator-state.json exists
 NOT: /workspaces/kcp-shared-tools/ (outdated)
 NOT: ./tools/ relative paths (won't work from efforts)
 NOT: utilities/ folder (wrong folder)
@@ -29,11 +29,11 @@ Usage: NO PARAMETERS (auto-detects everything)
 ```bash
 # ✅✅✅ CORRECT - Find project root, then use utilities folder
 measure_effort_size() {
-    # Step 1: Find the project root (where orchestrator-state.yaml exists)
+    # Step 1: Find the project root (where orchestrator-state.json exists)
     # Start from current directory and search upward
     PROJECT_ROOT=$(pwd)
     while [ "$PROJECT_ROOT" != "/" ]; do
-        if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then
+        if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then
             echo "Found project root: $PROJECT_ROOT"
             break
         fi

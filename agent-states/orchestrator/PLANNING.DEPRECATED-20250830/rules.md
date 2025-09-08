@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -158,7 +158,7 @@ The system will check for this marker. No marker = Immediate failure.
 ### 🔴🔴🔴 R288 - State File Update and Commit Protocol (SUPREME LAW)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
 **Criticality**: SUPREME LAW - Update on every transition
-**Summary**: Update orchestrator-state.yaml on all state changes
+**Summary**: Update orchestrator-state.json on all state changes
 
 ### 🚨🚨🚨 R288 - State File Update and Commit Protocol
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`

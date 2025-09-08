@@ -6,7 +6,7 @@
 
 ## Rule Statement
 
-Architects MUST verify effort sizes by navigating to each effort directory and running the line counter with NO PARAMETERS. The tool is located at `${PROJECT_ROOT}/tools/line-counter.sh` where PROJECT_ROOT is the orchestrator's directory (containing `orchestrator-state.yaml`).
+Architects MUST verify effort sizes by navigating to each effort directory and running the line counter with NO PARAMETERS. The tool is located at `${PROJECT_ROOT}/tools/line-counter.sh` where PROJECT_ROOT is the orchestrator's directory (containing `orchestrator-state.json`).
 
 ## 🚨🚨🚨 CRITICAL: Architects Don't Pass Parameters! 🚨🚨🚨
 
@@ -35,7 +35,7 @@ git branch --show-current  # Should show effort branch
 # 3. Find the orchestrator's project root
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do
-    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then
+    if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then
         break
     fi
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
@@ -64,14 +64,14 @@ verify_wave_sizes() {
     echo "📊 ARCHITECT: Verifying sizes for Phase $PHASE Wave $WAVE"
     
     # Get list of efforts from state file
-    EFFORTS=$(yq ".waves.wave${WAVE}.efforts[]" $PROJECT_ROOT/orchestrator-state.yaml)
+    EFFORTS=$(yq ".waves.wave${WAVE}.efforts[]" $PROJECT_ROOT/orchestrator-state.json)
     
     for effort_name in $EFFORTS; do
         echo ""
         echo "🔍 Checking effort: $effort_name"
         
         # R297: CHECK SPLIT_COUNT FIRST!
-        SPLIT_COUNT=$(yq ".efforts_completed.\"${effort_name}\".split_count" $PROJECT_ROOT/orchestrator-state.yaml 2>/dev/null || echo "0")
+        SPLIT_COUNT=$(yq ".efforts_completed.\"${effort_name}\".split_count" $PROJECT_ROOT/orchestrator-state.json 2>/dev/null || echo "0")
         
         if [ "$SPLIT_COUNT" -gt 0 ]; then
             echo "   ✅ COMPLIANT: Already split into $SPLIT_COUNT parts"
@@ -145,7 +145,7 @@ $PROJECT_ROOT/tools/line-counter.sh  # NOTHING ELSE!
 $CLAUDE_PROJECT_DIR/tools/line-counter.sh  # Often undefined!
 
 # ✅ Find PROJECT_ROOT yourself
-PROJECT_ROOT=$(find /home -name "orchestrator-state.yaml" -type f 2>/dev/null | head -1 | xargs dirname)
+PROJECT_ROOT=$(find /home -name "orchestrator-state.json" -type f 2>/dev/null | head -1 | xargs dirname)
 $PROJECT_ROOT/tools/line-counter.sh
 ```
 
@@ -165,7 +165,7 @@ line-counter.sh  # This is the only tool
 ```bash
 # CAUSE: $CLAUDE_PROJECT_DIR is empty/unset
 # SOLUTION: Find project root manually
-PROJECT_ROOT=$(find /home -name "orchestrator-state.yaml" -type f 2>/dev/null | head -1 | xargs dirname)
+PROJECT_ROOT=$(find /home -name "orchestrator-state.json" -type f 2>/dev/null | head -1 | xargs dirname)
 ```
 
 ### Error: "Not in a git repository or cannot detect current branch"
@@ -197,7 +197,7 @@ This rule supports R076 by ensuring architects measure correctly:
 ```yaml
 wave_review_checklist:
   size_compliance:
-    - Check split_count in orchestrator-state.yaml (R297)
+    - Check split_count in orchestrator-state.json (R297)
     - If already split, mark as compliant
     - Otherwise, navigate to each effort directory
     - Run line counter with NO parameters
@@ -217,11 +217,11 @@ wave_review_checklist:
 
 ```bash
 # ONE-LINER for measuring an effort:
-cd /path/to/effort && $(find /home -name orchestrator-state.yaml -type f 2>/dev/null | head -1 | xargs dirname)/tools/line-counter.sh
+cd /path/to/effort && $(find /home -name orchestrator-state.json -type f 2>/dev/null | head -1 | xargs dirname)/tools/line-counter.sh
 
 # COMPLETE WORKFLOW:
 1. cd to effort directory
-2. Find project root with orchestrator-state.yaml
+2. Find project root with orchestrator-state.json
 3. Run $PROJECT_ROOT/tools/line-counter.sh (NO PARAMETERS!)
 4. Check output for "Total non-generated lines"
 5. Verify ≤800 lines

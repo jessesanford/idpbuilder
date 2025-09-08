@@ -104,19 +104,19 @@ validate_state_transition() {
 }
 
 # USAGE: Agents validate their OWN state transitions
-# R215: Only orchestrator updates orchestrator-state.yaml
+# R215: Only orchestrator updates orchestrator-state.json
 
 # For ORCHESTRATOR:
 validate_state_transition "WAVE_COMPLETE" "INTEGRATION" "orchestrator"
 if [ $? -eq 0 ]; then 
     # Orchestrator updates its own state
-    echo "current_state: INTEGRATION" >> orchestrator-state.yaml; 
+    echo "current_state: INTEGRATION" >> orchestrator-state.json; 
 fi
 
 # For OTHER AGENTS (SW Eng, Code Reviewer, Architect):
 validate_state_transition "INIT" "IMPLEMENTATION" "sw-engineer"
 if [ $? -eq 0 ]; then 
-    # Agent updates its INTERNAL state (NOT orchestrator-state.yaml!)
+    # Agent updates its INTERNAL state (NOT orchestrator-state.json!)
     echo "agent_state: IMPLEMENTATION" > agent-internal-state.yaml; 
     # Report to orchestrator via status file
     echo "status: IMPLEMENTATION" > agent-status.yaml; 
@@ -196,7 +196,7 @@ update_state_safely() {
     # Special handling for current_state field
     if [ "$FIELD" == "current_state" ]; then 
         # Get current state
-        CURRENT=$(grep "current_state:" orchestrator-state.yaml | awk '{print $2}'); 
+        CURRENT=$(grep "current_state:" orchestrator-state.json | awk '{print $2}'); 
         
         # Determine agent type from context
         AGENT_TYPE="orchestrator"  # Or detect from prompt/context
@@ -210,7 +210,7 @@ update_state_safely() {
     fi
     
     # Proceed with update
-    sed -i "s/^${FIELD}:.*/${FIELD}: ${NEW_VALUE}/" orchestrator-state.yaml
+    sed -i "s/^${FIELD}:.*/${FIELD}: ${NEW_VALUE}/" orchestrator-state.json
     echo "✅ Updated $FIELD to $NEW_VALUE"
 }
 ```
@@ -229,7 +229,7 @@ update_state "current_state" "WAVE_COMPELTE"  # Should be WAVE_COMPLETE
 ### ❌ Skipping Validation
 ```bash
 # WRONG - Direct update without validation
-echo "current_state: SOME_STATE" >> orchestrator-state.yaml
+echo "current_state: SOME_STATE" >> orchestrator-state.json
 ```
 
 ### ❌ Wrong Agent State

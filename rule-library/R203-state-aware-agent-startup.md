@@ -135,9 +135,9 @@ determine_code_reviewer_state() {
 
 # ORCHESTRATOR State Detection
 determine_orchestrator_state() {
-    if [ -f "orchestrator-state.yaml" ]; then
+    if [ -f "orchestrator-state.json" ]; then
         # Extract current_state from YAML
-        CURRENT_STATE=$(grep "current_state:" orchestrator-state.yaml | awk '{print $2}')
+        CURRENT_STATE=$(grep "current_state:" orchestrator-state.json | awk '{print $2}')
         echo "$CURRENT_STATE"
     else
         echo "INIT"
@@ -352,7 +352,7 @@ handle_state_transition() {
 ```yaml
 orchestrator_startup:
   core_config: ${SF_ROOT}/.claude/agents/orchestrator.md
-  state_file: ${SF_ROOT}/orchestrator-state.yaml
+  state_file: ${SF_ROOT}/orchestrator-state.json
   state_rules_pattern: ${SF_ROOT}/agent-states/orchestrator/${STATE}/rules.md
   examples:
     - ${SF_ROOT}/agent-states/orchestrator/INIT/rules.md

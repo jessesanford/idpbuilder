@@ -30,7 +30,7 @@ NO effort may EVER exceed 800 lines. Soft warning at 700 lines. Automatic split 
 
 ### 🚨 CRITICAL: Check Splits First (R297)
 **BEFORE measuring ANY effort, check if it was already split!**
-- Check `split_count` in orchestrator-state.yaml
+- Check `split_count` in orchestrator-state.json
 - If > 0: Effort is COMPLIANT (already split)
 - Measure ORIGINAL effort branches, NOT integration branches
 - Integration branches merge all splits (will exceed limits - EXPECTED)
@@ -253,7 +253,7 @@ split_1_branch: 450 lines  # ✅ Compliant
 split_2_branch: 454 lines  # ✅ Compliant
 integration_branch: 904 lines  # ✅ Still compliant (integration expected to exceed)
 
-# orchestrator-state.yaml shows:
+# orchestrator-state.json shows:
 efforts_completed:
   E1.1.2:
     split_count: 2  # This means it's compliant!

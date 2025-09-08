@@ -71,7 +71,7 @@ echo "   Checking for key patterns in R297..."
 
 PATTERNS=(
     "split_count"
-    "orchestrator-state.yaml"
+    "orchestrator-state.json"
     "[Oo]riginal effort branches"
     "NOT integration branches"
     "PRs come from effort branches"

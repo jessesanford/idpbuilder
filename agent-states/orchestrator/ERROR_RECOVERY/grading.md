@@ -311,7 +311,7 @@ class ErrorRecoveryGrader:
 ## Recovery Performance Tracking
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 grading:
   ERROR_RECOVERY:
     latest:

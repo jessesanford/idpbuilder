@@ -6,7 +6,7 @@
 
 ## Rule Statement
 
-Architects MUST check the orchestrator-state.yaml `split_count` field BEFORE measuring any effort size. If an effort has `split_count > 0`, it was already split and is compliant regardless of integration branch size. PRs come from original effort branches, NOT integration branches.
+Architects MUST check the orchestrator-state.json `split_count` field BEFORE measuring any effort size. If an effort has `split_count > 0`, it was already split and is compliant regardless of integration branch size. PRs come from original effort branches, NOT integration branches.
 
 ## 🔴🔴🔴 CRITICAL: Integration Size Is Irrelevant! 🔴🔴🔴
 
@@ -27,8 +27,8 @@ check_effort_splits() {
     
     echo "🔍 Checking if $effort_name was already split..."
     
-    # Check orchestrator-state.yaml for split_count
-    SPLIT_COUNT=$(yq ".efforts_completed.\"${effort_name}\".split_count" orchestrator-state.yaml 2>/dev/null || echo "0")
+    # Check orchestrator-state.json for split_count
+    SPLIT_COUNT=$(yq ".efforts_completed.\"${effort_name}\".split_count" orchestrator-state.json 2>/dev/null || echo "0")
     
     if [ "$SPLIT_COUNT" -gt 0 ]; then
         echo "✅ $effort_name was ALREADY SPLIT into $SPLIT_COUNT parts"
@@ -64,7 +64,7 @@ measure_original_effort_size() {
     # Find project root
     PROJECT_ROOT=$(pwd)
     while [ "$PROJECT_ROOT" != "/" ]; do
-        [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
+        [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break
         PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
     done
     
@@ -97,7 +97,7 @@ review_wave_efforts() {
     echo "═══════════════════════════════════════════════════════════════"
     
     # Get list of efforts from state file
-    EFFORTS=$(yq ".waves.wave${wave}.efforts[]" orchestrator-state.yaml)
+    EFFORTS=$(yq ".waves.wave${wave}.efforts[]" orchestrator-state.json)
     
     for effort in $EFFORTS; do
         echo ""
@@ -157,7 +157,7 @@ echo "This needs to be split again!"  # WRONG! Check split_count first!
 ### ALWAYS Check Split Count First
 ```bash
 # ✅ CORRECT - Check split_count before anything else
-SPLIT_COUNT=$(yq '.efforts_completed."E1.1.2".split_count' orchestrator-state.yaml)
+SPLIT_COUNT=$(yq '.efforts_completed."E1.1.2".split_count' orchestrator-state.json)
 if [ "$SPLIT_COUNT" -gt 0 ]; then
     echo "✅ E1.1.2 already split into $SPLIT_COUNT parts - COMPLIANT"
 fi
@@ -230,7 +230,7 @@ perfect_review:
 
 ```bash
 # For EVERY effort in review:
-1. CHECK: split_count in orchestrator-state.yaml
+1. CHECK: split_count in orchestrator-state.json
    - If > 0: Mark COMPLIANT, skip size check
    - If 0: Continue to step 2
 

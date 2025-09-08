@@ -198,7 +198,7 @@ merge_sequence:
 ```bash
 validate_merge_readiness() {
     local EFFORT=$1
-    local STATE_FILE="orchestrator-state.yaml"
+    local STATE_FILE="orchestrator-state.json"
     
     # Get dependencies for this effort
     DEPENDENCIES=$(yq ".efforts.\"$EFFORT\".dependencies[]" "$STATE_FILE" 2>/dev/null)
@@ -247,7 +247,7 @@ validate_merge_readiness() {
 ```bash
 generate_merge_order() {
     local WAVE=$1
-    local STATE_FILE="orchestrator-state.yaml"
+    local STATE_FILE="orchestrator-state.json"
     local MERGE_ORDER=()
     
     echo "Generating merge order for Wave $WAVE..."
@@ -288,7 +288,7 @@ generate_merge_order() {
 ```bash
 verify_split_sequence() {
     local EFFORT=$1
-    local STATE_FILE="orchestrator-state.yaml"
+    local STATE_FILE="orchestrator-state.json"
     
     SPLITS=$(yq ".split_tracking.\"$EFFORT\".split_branches[].branch" "$STATE_FILE")
     

@@ -109,7 +109,7 @@ Spawn Agents → Record → Stop → [Agents Work] → Restart Fresh → Process
 Agents spawned: 
   • sw-engineer-1 → EFFORT_001
   • sw-engineer-2 → EFFORT_002
-State saved to: orchestrator-state.yaml
+State saved to: orchestrator-state.json
 Next state: MONITOR
 
 To continue after agents complete:

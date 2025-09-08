@@ -56,7 +56,7 @@ deprecated_integrations:
 #### 2. State File Updates
 - Added `current_integration` field (single source of truth)
 - Added `deprecated_integrations` tracking
-- Updated `orchestrator-state.yaml.example` with new structure
+- Updated `orchestrator-state.json.example` with new structure
 - Migration path for existing systems
 
 #### 3. State Rule Updates
@@ -195,7 +195,7 @@ validate_using_current_integration $PHASE "$BRANCH_TO_USE" || exit 1
    - `/INTEGRATION-BRANCH-CONFUSION-FIX.md` (this file)
 
 2. **Updated**:
-   - `/orchestrator-state.yaml.example` - Added R301 structure
+   - `/orchestrator-state.json.example` - Added R301 structure
    - `/agent-states/orchestrator/PHASE_INTEGRATION/rules.md` - Uses R301
    - `/agent-states/orchestrator/SPAWN_ARCHITECT_PHASE_ASSESSMENT/rules.md` - Uses current_integration
 

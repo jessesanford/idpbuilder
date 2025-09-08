@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -191,7 +191,7 @@ create_project_integration_infrastructure() {
 - Base Branch: $DEFAULT_BRANCH
 
 ## Phase Integration Branches to Merge
-$(yq '.phases[].integration_branch' "$SF_INSTANCE_DIR/orchestrator-state.yaml")
+$(yq '.phases[].integration_branch' "$SF_INSTANCE_DIR/orchestrator-state.json")
 
 ## R283 Compliance
 - ✅ Isolated workspace created
@@ -206,7 +206,7 @@ EOF
         "workspace": "'$PROJECT_INTEGRATION_DIR'",
         "branch": "'$INTEGRATION_BRANCH'",
         "status": "INFRASTRUCTURE_READY"
-    }' orchestrator-state.yaml
+    }' orchestrator-state.json
     
     echo "✅ Project integration infrastructure ready"
 }

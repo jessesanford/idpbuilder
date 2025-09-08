@@ -189,9 +189,9 @@ verify_phase_assessment_report() {
     local SCORE=$(grep "^\*\*TOTAL SCORE\*\*" "$REPORT_FILE" | grep -o "[0-9]\+" | tail -1)
     
     # Update state file with report location
-    yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.yaml
-    yq -i ".phase_assessment.decision = \"$DECISION\"" orchestrator-state.yaml
-    yq -i ".phase_assessment.score = $SCORE" orchestrator-state.yaml
+    yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.json
+    yq -i ".phase_assessment.decision = \"$DECISION\"" orchestrator-state.json
+    yq -i ".phase_assessment.score = $SCORE" orchestrator-state.json
     
     echo "✅ Phase assessment report verified:"
     echo "  📄 Report: $REPORT_FILE"
@@ -288,7 +288,7 @@ done
 # Check for orphaned assessments (report without completion)
 grep -l "PHASE_COMPLETE" phase-assessments/*/PHASE-*-ASSESSMENT-REPORT.md | while read report; do
     phase=$(basename "$report" | grep -o "[0-9]*")
-    if ! grep -q "phase_${phase}_complete: true" orchestrator-state.yaml; then
+    if ! grep -q "phase_${phase}_complete: true" orchestrator-state.json; then
         echo "⚠️ WARNING: Phase $phase has report but not marked complete"
     fi
 done

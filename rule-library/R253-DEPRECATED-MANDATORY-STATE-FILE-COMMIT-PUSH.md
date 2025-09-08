@@ -10,7 +10,7 @@ Please refer to R288 for current state file update and commit requirements.
 
 ## THE ABSOLUTE LAW:
 
-**EVERY SINGLE EDIT TO orchestrator-state.yaml MUST BE IMMEDIATELY COMMITTED AND PUSHED!**
+**EVERY SINGLE EDIT TO orchestrator-state.json MUST BE IMMEDIATELY COMMITTED AND PUSHED!**
 
 **NO EXCEPTIONS! NO DEFERRALS! NO "BATCH LATER"! NO "BUT FIRST"!**
 
@@ -28,12 +28,12 @@ Please refer to R288 for current state file update and commit requirements.
 ## MANDATORY PROTOCOL:
 
 ```bash
-# EVERY TIME YOU EDIT orchestrator-state.yaml, YOU MUST:
+# EVERY TIME YOU EDIT orchestrator-state.json, YOU MUST:
 commit_and_push_state() {
     local CHANGE_DESCRIPTION="$1"
     
     # 1. IMMEDIATELY stage the file
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     
     # 2. IMMEDIATELY commit with descriptive message
     git commit -m "state: $CHANGE_DESCRIPTION [R253]"
@@ -61,20 +61,20 @@ commit_and_push_state() {
 ### ✅ CORRECT - Immediate Commit/Push:
 ```bash
 # Update state
-yq -i '.current_state = "WAVE_COMPLETE"' orchestrator-state.yaml
-git add orchestrator-state.yaml
+yq -i '.current_state = "WAVE_COMPLETE"' orchestrator-state.json
+git add orchestrator-state.json
 git commit -m "state: transition to WAVE_COMPLETE [R253]"
 git push
 
 # Update wave completion
-yq -i '.waves_completed.phase1.wave1.status = "COMPLETE"' orchestrator-state.yaml
-git add orchestrator-state.yaml
+yq -i '.waves_completed.phase1.wave1.status = "COMPLETE"' orchestrator-state.json
+git add orchestrator-state.json
 git commit -m "state: mark phase1/wave1 complete [R253]"
 git push
 
 # Update effort tracking
-yq -i '.efforts_in_progress.effort1.status = "REVIEWING"' orchestrator-state.yaml
-git add orchestrator-state.yaml
+yq -i '.efforts_in_progress.effort1.status = "REVIEWING"' orchestrator-state.json
+git add orchestrator-state.json
 git commit -m "state: effort1 now in review [R253]"
 git push
 ```
@@ -82,21 +82,21 @@ git push
 ### ❌ WRONG - Deferred or Batch Commits:
 ```bash
 # ❌❌❌ NEVER DO THIS:
-yq -i '.current_state = "WAVE_COMPLETE"' orchestrator-state.yaml
-yq -i '.waves_completed.phase1.wave1.status = "COMPLETE"' orchestrator-state.yaml
+yq -i '.current_state = "WAVE_COMPLETE"' orchestrator-state.json
+yq -i '.waves_completed.phase1.wave1.status = "COMPLETE"' orchestrator-state.json
 # ... do other work ...
-git add orchestrator-state.yaml  # TOO LATE! VIOLATION!
+git add orchestrator-state.json  # TOO LATE! VIOLATION!
 git commit -m "state: various updates"  # BATCH = FAIL!
 
 # ❌❌❌ NEVER DO THIS:
-yq -i '.current_state = "INTEGRATION"' orchestrator-state.yaml
+yq -i '.current_state = "INTEGRATION"' orchestrator-state.json
 echo "I'll commit this after I finish integration"  # NO! VIOLATION!
 
 # ❌❌❌ NEVER DO THIS:
 for i in 1 2 3; do
-    yq -i ".effort$i.status = 'complete'" orchestrator-state.yaml
+    yq -i ".effort$i.status = 'complete'" orchestrator-state.json
 done
-git add orchestrator-state.yaml  # BATCHING = VIOLATION!
+git add orchestrator-state.json  # BATCHING = VIOLATION!
 ```
 
 ## INTEGRATION WITH OTHER FUNCTIONS:
@@ -111,10 +111,10 @@ update_orchestrator_state() {
     local REASON="${3:-update}"
     
     # 1. Make the edit
-    yq -i ".${KEY} = \"${VALUE}\"" orchestrator-state.yaml
+    yq -i ".${KEY} = \"${VALUE}\"" orchestrator-state.json
     
     # 2. IMMEDIATELY commit and push (R253)
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: ${KEY}=${VALUE} - ${REASON} [R253]"
     git push
     
@@ -131,14 +131,14 @@ mark_wave_complete() {
     local WAVE="$2"
     
     # Multiple edits, multiple commits (R253)
-    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-    git add orchestrator-state.yaml && git commit -m "state: wave${WAVE} completion time [R253]" && git push
+    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+    git add orchestrator-state.json && git commit -m "state: wave${WAVE} completion time [R253]" && git push
     
-    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"" orchestrator-state.yaml
-    git add orchestrator-state.yaml && git commit -m "state: wave${WAVE} status COMPLETE [R253]" && git push
+    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"" orchestrator-state.json
+    git add orchestrator-state.json && git commit -m "state: wave${WAVE} status COMPLETE [R253]" && git push
     
-    yq -i ".current_wave_complete = true" orchestrator-state.yaml
-    git add orchestrator-state.yaml && git commit -m "state: current wave marked complete [R253]" && git push
+    yq -i ".current_wave_complete = true" orchestrator-state.json
+    git add orchestrator-state.json && git commit -m "state: current wave marked complete [R253]" && git push
 }
 ```
 
@@ -158,7 +158,7 @@ Examples:
 ## FREQUENCY REQUIREMENT:
 
 **EVERY SINGLE EDIT** means:
-- After EVERY yq command that touches orchestrator-state.yaml
+- After EVERY yq command that touches orchestrator-state.json
 - After EVERY state transition
 - After EVERY status update
 - After EVERY effort tracking change
@@ -178,8 +178,8 @@ If you realize you've violated R253:
 3. **PUSH** immediately
 4. **LOG** the violation in the state file itself:
    ```bash
-   yq -i ".r253_violations += 1" orchestrator-state.yaml
-   git add orchestrator-state.yaml
+   yq -i ".r253_violations += 1" orchestrator-state.json
+   git add orchestrator-state.json
    git commit -m "state: R253 violation logged [R253]"
    git push
    ```
@@ -191,7 +191,7 @@ If you realize you've violated R253:
 - Batch commits of multiple state changes
 - State file with uncommitted changes for >30 seconds
 - Missing [R253] tag in state commit messages
-- Any "git status" showing modified orchestrator-state.yaml
+- Any "git status" showing modified orchestrator-state.json
 
 **GRADING PENALTIES:**
 - First violation: -20% on state management score
@@ -204,14 +204,14 @@ If you realize you've violated R253:
 # Check for R253 compliance
 check_r253_compliance() {
     # Check for uncommitted changes
-    if git status --porcelain | grep -q "orchestrator-state.yaml"; then
+    if git status --porcelain | grep -q "orchestrator-state.json"; then
         echo "❌❌❌ R253 VIOLATION: Uncommitted state changes detected!"
         echo "COMMIT AND PUSH IMMEDIATELY!"
         return 253
     fi
     
     # Check recent commits for R253 tag
-    local RECENT=$(git log --oneline -n 10 | grep "orchestrator-state.yaml")
+    local RECENT=$(git log --oneline -n 10 | grep "orchestrator-state.json")
     if ! echo "$RECENT" | grep -q "\[R253\]"; then
         echo "⚠️ Warning: Recent state commits missing [R253] tag"
     fi

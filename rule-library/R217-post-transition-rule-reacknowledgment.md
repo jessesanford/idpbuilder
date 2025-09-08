@@ -172,7 +172,7 @@ perform_state_transition() {
     fi
     
     # STEP 2: Update state file
-    sed -i "s/current_state:.*/current_state: $NEW_STATE/" orchestrator-state.yaml
+    sed -i "s/current_state:.*/current_state: $NEW_STATE/" orchestrator-state.json
     echo "✓ State updated: $CURRENT_STATE → $NEW_STATE"
     
     # STEP 3: 🎯 VISUALIZE STATE POSITION (R230) 🎯

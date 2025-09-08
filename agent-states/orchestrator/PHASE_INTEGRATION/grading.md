@@ -28,7 +28,7 @@ Total Score =
 ### Evidence Required
 ```bash
 # Check first action timestamp
-ENTRY_TIME=$(yq '.transition_time' orchestrator-state.yaml)
+ENTRY_TIME=$(yq '.transition_time' orchestrator-state.json)
 FIRST_ACTION=$(git log --format="%ai" -1 | head -1)
 DELAY=$(time_diff "$ENTRY_TIME" "$FIRST_ACTION")
 ```
@@ -132,7 +132,7 @@ git log --oneline --graph -10
 ## 6. State Tracking (5%)
 
 ### Measurement Points
-- orchestrator-state.yaml updated correctly
+- orchestrator-state.json updated correctly
 - Phase integration branch recorded
 - Error recovery status updated
 
@@ -145,7 +145,7 @@ git log --oneline --graph -10
 
 ### Evidence Required
 ```yaml
-# orchestrator-state.yaml should contain:
+# orchestrator-state.json should contain:
 phase_integration_branches:
   - phase: 3
     branch: "phase3-post-fixes-integration-20250827-143000"

@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -273,12 +273,12 @@ Before transitioning to SPAWN_AGENTS, verify:
            LATEST_PLAN=$(ls -t "$PLAN_LOCATION/IMPLEMENTATION-PLAN-"*.md | head -1)
            echo "✅ Found plan for $EFFORT_NAME: $LATEST_PLAN"
            # Update state file with exact path
-           yq eval ".effort_plan_paths.\"$EFFORT_NAME\" = \"$LATEST_PLAN\"" -i orchestrator-state.yaml
+           yq eval ".effort_plan_paths.\"$EFFORT_NAME\" = \"$LATEST_PLAN\"" -i orchestrator-state.json
        elif [ -f "$effort_dir/IMPLEMENTATION-PLAN.md" ]; then
            echo "⚠️ Found legacy plan for $EFFORT_NAME: IMPLEMENTATION-PLAN.md"
            echo "   Consider migrating to .software-factory/ structure"
            # Update state file with legacy path
-           yq eval ".effort_plan_paths.\"$EFFORT_NAME\" = \"$effort_dir/IMPLEMENTATION-PLAN.md\"" -i orchestrator-state.yaml
+           yq eval ".effort_plan_paths.\"$EFFORT_NAME\" = \"$effort_dir/IMPLEMENTATION-PLAN.md\"" -i orchestrator-state.json
        else
            echo "❌ No plan found for $EFFORT_NAME"
            echo "   Expected location: $PLAN_LOCATION/IMPLEMENTATION-PLAN-*.md"
@@ -304,7 +304,7 @@ Before transitioning to SPAWN_AGENTS, verify:
 ## State Transition
 
 Once ALL effort plans are complete:
-1. Update orchestrator-state.yaml
+1. Update orchestrator-state.json
 2. Record effort plan locations
 3. **MANDATORY: Transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION (R234)**
    - DO NOT skip directly to SPAWN_AGENTS
@@ -336,7 +336,7 @@ save_todos "All effort plans complete"
 
 # R287: Commit within 60 seconds
 cd $CLAUDE_PROJECT_DIR
-git add todos/*.todo orchestrator-state.yaml
+git add todos/*.todo orchestrator-state.json
 git commit -m "todo: effort plans complete, ready for analysis"
 git push
 ```

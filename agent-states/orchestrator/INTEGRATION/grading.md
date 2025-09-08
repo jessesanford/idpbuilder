@@ -234,7 +234,7 @@ class IntegrationGrader:
 ## Integration Metrics Tracking
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 grading:
   INTEGRATION:
     latest:

@@ -510,7 +510,7 @@ The Software Factory 2.0 utilizes specialized agents with distinct roles, author
 **Primary Responsibilities**:
 - Coordinate all implementation work across phases and waves
 - Spawn specialized agents for specific tasks (per R151 timing)
-- Manage orchestrator-state.yaml file (per R288)
+- Manage orchestrator-state.json file (per R288)
 - Enforce phase and wave boundaries
 - Track progress via agent reports (not direct measurement)
 - Handle state machine transitions with mandatory stops (R322)
@@ -710,7 +710,7 @@ INIT → WAVE_START → SETUP_EFFORT_INFRASTRUCTURE
 1. Agents communicate via files and git operations
 2. No direct agent-to-agent communication
 3. Orchestrator manages all agent spawning
-4. State transitions recorded in orchestrator-state.yaml
+4. State transitions recorded in orchestrator-state.json
 5. All decisions documented in appropriate logs
 
 ### Critical Gates and Enforcement

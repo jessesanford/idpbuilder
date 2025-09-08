@@ -26,7 +26,7 @@ You are creating a phase-level merge plan after ERROR_RECOVERY has created fix b
 #!/bin/bash
 # Find all branches for phase integration
 
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
 echo "📊 Analyzing branches for Phase $PHASE integration..."
 
 # A. Original effort branches from all waves
@@ -54,7 +54,7 @@ done
 
 # B. ERROR_RECOVERY fix branches
 echo "=== FIX BRANCHES ==="
-FIX_BRANCHES=$(yq '.error_recovery_fixes[].branch' orchestrator-state.yaml)
+FIX_BRANCHES=$(yq '.error_recovery_fixes[].branch' orchestrator-state.json)
 if [ -n "$FIX_BRANCHES" ]; then
     for branch in $FIX_BRANCHES; do
         echo "  ✅ $branch (ERROR_RECOVERY fix)"

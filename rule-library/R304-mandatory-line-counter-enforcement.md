@@ -143,7 +143,7 @@ BASE_BRANCH="phase1/integration"  # Use what exists in THIS repo
 ```bash
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do
-    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then
+    if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then
         break
     fi
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")

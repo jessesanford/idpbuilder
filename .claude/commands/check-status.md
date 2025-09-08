@@ -62,7 +62,7 @@ echo "🎯 STATE MACHINE ANALYSIS:"
 echo "=================================="
 
 # Read orchestrator state if available
-STATE_FILE="./agent-configs/[project]/orchestrator-state.yaml"
+STATE_FILE="./agent-configs/[project]/orchestrator-state.json"
 if [[ -f "$STATE_FILE" ]]; then
     echo "📄 Orchestrator State File: EXISTS"
     echo "Current State: $(grep '^current_state:' "$STATE_FILE" 2>/dev/null | cut -d':' -f2 | tr -d ' ')"
@@ -324,7 +324,7 @@ if [[ ! -f "$STATE_FILE" ]]; then
     RECOMMENDATIONS="$RECOMMENDATIONS
 🔥 CRITICAL: Missing orchestrator state file
    → Use /reset-state (Level 2) to reinitialize state machine
-   → Or manually create orchestrator-state.yaml"
+   → Or manually create orchestrator-state.json"
 fi
 
 if [[ ! -d "$TODO_DIR" ]] || [[ $(ls -1 "$TODO_DIR"/*.todo 2>/dev/null | wc -l) -eq 0 ]]; then
@@ -392,7 +392,7 @@ if [[ -f "$STATE_FILE" ]]; then
     esac
 else
     echo "🏗️  No state file - Fresh initialization needed"
-    echo "   → Use: /reset-state (Level 2) or manually create orchestrator-state.yaml"
+    echo "   → Use: /reset-state (Level 2) or manually create orchestrator-state.json"
     echo "   → Begin with orchestrator agent using /continue-orchestrating"
 fi
 

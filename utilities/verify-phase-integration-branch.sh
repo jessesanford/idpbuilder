@@ -11,16 +11,16 @@ source "${SCRIPT_DIR}/state-file-update-functions.sh" 2>/dev/null || true
 echo "🔍 Verifying Phase Integration Branch (R259 Compliance)"
 echo "========================================================="
 
-# Check if orchestrator-state.yaml exists
-if [ ! -f "orchestrator-state.yaml" ]; then
-    echo "❌ No orchestrator-state.yaml found"
+# Check if orchestrator-state.json exists
+if [ ! -f "orchestrator-state.json" ]; then
+    echo "❌ No orchestrator-state.json found"
     exit 1
 fi
 
 # Get current phase
-CURRENT_PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-CURRENT_STATE=$(yq '.current_state' orchestrator-state.yaml)
-PREVIOUS_STATE=$(yq '.previous_state' orchestrator-state.yaml)
+CURRENT_PHASE=$(yq '.current_phase' orchestrator-state.json)
+CURRENT_STATE=$(yq '.current_state' orchestrator-state.json)
+PREVIOUS_STATE=$(yq '.previous_state' orchestrator-state.json)
 
 echo "📊 Current Status:"
 echo "  - Phase: ${CURRENT_PHASE}"
@@ -50,11 +50,11 @@ verify_phase_integration_branch() {
         fi
         
         # Check if recorded in state file
-        local RECORDED=$(yq ".phase_integration_branches[] | select(.phase == $PHASE).branch" orchestrator-state.yaml)
+        local RECORDED=$(yq ".phase_integration_branches[] | select(.phase == $PHASE).branch" orchestrator-state.json)
         if [ -n "$RECORDED" ]; then
             echo "✅ Branch recorded in state file: $RECORDED"
         else
-            echo "⚠️ Warning: Branch not recorded in orchestrator-state.yaml"
+            echo "⚠️ Warning: Branch not recorded in orchestrator-state.json"
         fi
         
         return 0
@@ -76,7 +76,7 @@ check_if_integration_required() {
     local PHASE=$1
     
     # Check if we're coming from ERROR_RECOVERY with phase fixes
-    local ERROR_RECOVERY_TYPE=$(yq '.error_recovery_reason' orchestrator-state.yaml)
+    local ERROR_RECOVERY_TYPE=$(yq '.error_recovery_reason' orchestrator-state.json)
     
     if [ "$ERROR_RECOVERY_TYPE" = "PHASE_ASSESSMENT_NEEDS_WORK" ]; then
         echo "⚠️ Phase assessment fixes detected - integration branch REQUIRED (R259)"
@@ -116,7 +116,7 @@ if check_if_integration_required $CURRENT_PHASE; then
         echo "5. Only then transition to SPAWN_ARCHITECT_PHASE_ASSESSMENT"
         echo ""
         echo "Command to fix:"
-        echo "  yq -i '.current_state = \"PHASE_INTEGRATION\"' orchestrator-state.yaml"
+        echo "  yq -i '.current_state = \"PHASE_INTEGRATION\"' orchestrator-state.json"
         exit 1
     fi
 else

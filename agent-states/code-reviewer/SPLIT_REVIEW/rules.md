@@ -55,20 +55,38 @@ Say: "✅ Successfully read SPLIT_REVIEW rules for code-reviewer"
 - **split-003**: Measures against split-002 (NOT main, NOT split-001!)
 - **split-N**: Measures against split-(N-1)
 
-### AUTOMATIC SPLIT MEASUREMENT (TOOL HANDLES IT!):
+### 🚨🚨🚨 MANDATORY: CONSULT SPLIT PLAN FOR BASE BRANCH 🚨🚨🚨
+
+**NEVER AUTO-DETECT BASE FOR SPLITS - ALWAYS READ THE PLAN:**
 ```bash
-# ✅ NEW TOOL - Automatically detects correct base:
+# FIRST: Find and read the split plan
+SPLIT_PLAN=$(ls SPLIT-PLAN-*.md 2>/dev/null | head -1)
+if [ -z "$SPLIT_PLAN" ]; then
+    echo "❌ CRITICAL: No SPLIT-PLAN.md found!"
+    echo "Cannot proceed without knowing correct base branch"
+    exit 1
+fi
+
+# Extract base branch from split plan
+echo "📖 Reading split plan: $SPLIT_PLAN"
+BASE_BRANCH=$(grep -A2 "Split 1:" "$SPLIT_PLAN" | grep "Base Branch:" | cut -d: -f2- | xargs)
+echo "✅ Base branch from plan: $BASE_BRANCH"
+
+# THEN measure using the documented base
+./tools/line-counter.sh -b "$BASE_BRANCH" phase1/wave1/effort--split-001
+```
+
+### AUTOMATIC SPLIT MEASUREMENT (ONLY AFTER VERIFYING BASE):
+```bash
+# ✅ CORRECT: First verify base from plan, then measure
+SPLIT_PLAN="SPLIT-PLAN-gitea-client.md"
+BASE_FROM_PLAN=$(grep -A2 "Split 1:" "$SPLIT_PLAN" | grep "Base Branch:" | cut -d: -f2- | xargs)
+echo "📋 Split plan specifies base: $BASE_FROM_PLAN"
+
 ./tools/line-counter.sh phase1/wave1/effort--split-001
-# Tool output: 🎯 Detected base: phase1/wave1/effort (original branch)
-# Result: 300 lines (just split-001's incremental work)
-
-./tools/line-counter.sh phase1/wave1/effort--split-002
-# Tool output: 🎯 Detected base: phase1/wave1/effort--split-001
-# Result: 250 lines (just split-002's incremental work)
-
-./tools/line-counter.sh phase1/wave1/effort--split-003
-# Tool output: 🎯 Detected base: phase1/wave1/effort--split-002
-# Result: 280 lines (just split-003's incremental work)
+# Tool MAY auto-detect, but VERIFY it matches plan!
+# If tool says different base than plan, USE PLAN's BASE:
+./tools/line-counter.sh -b "$BASE_FROM_PLAN" phase1/wave1/effort--split-001
 ```
 
 ### OLD TOOL PROBLEMS (NOW FIXED!):

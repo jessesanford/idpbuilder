@@ -297,7 +297,7 @@ detect_agent_type() {
     
     # Try to detect from available files
     if [ -z "$agent_type" ]; then
-        if [ -f "./orchestrator-state.yaml" ]; then
+        if [ -f "./orchestrator-state.json" ]; then
             agent_type="orchestrator"
         elif [ -f "./IMPLEMENTATION-PLAN.md" ]; then
             agent_type="sw-engineer"
@@ -475,15 +475,15 @@ recover_orchestrator_context() {
     print_instruction "ORCHESTRATOR CONTEXT RECOVERY:"
     echo
     echo "MANDATORY files to read with Read tool:"
-    echo "  1. orchestrator-state.yaml (if exists)"
+    echo "  1. orchestrator-state.json (if exists)"
     echo "  2. SOFTWARE-FACTORY-STATE-MACHINE.md"
     echo "  3. Current phase-specific plan files"
     echo
     echo "Check these locations:"
     
     local required_files=(
-        "./orchestrator-state.yaml"
-        "../orchestrator-state.yaml"
+        "./orchestrator-state.json"
+        "../orchestrator-state.json"
         "$FACTORY_ROOT/state-machines/orchestrator.md"
     )
     
@@ -582,15 +582,15 @@ recover_architect_context() {
     print_instruction "ARCHITECT CONTEXT RECOVERY:"
     echo
     echo "MANDATORY files to read with Read tool:"
-    echo "  1. orchestrator-state.yaml"
+    echo "  1. orchestrator-state.json"
     echo "  2. WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md"
     echo "  3. Integration branch status"
     echo
     echo "Check these locations:"
     
     local required_files=(
-        "./orchestrator-state.yaml"
-        "../orchestrator-state.yaml"
+        "./orchestrator-state.json"
+        "../orchestrator-state.json"
         "./WAVE-REVIEW.md"
         "./PHASE-ASSESSMENT.md"
         "$FACTORY_ROOT/rule-library/agents/architect/"
@@ -723,7 +723,7 @@ provide_orchestrator_guidance() {
     echo "As the Orchestrator, your next steps should be:"
     echo
     echo "🎯 IMMEDIATE PRIORITIES:"
-    echo "  - Review orchestrator-state.yaml for current wave/phase"
+    echo "  - Review orchestrator-state.json for current wave/phase"
     echo "  - Check efforts_in_progress for any blocking issues"
     echo "  - Identify if any integration branches need creation"
     echo "  - Determine if architect reviews are pending"

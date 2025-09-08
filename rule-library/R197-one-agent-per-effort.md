@@ -142,7 +142,7 @@ prevent_effort_switching() {
 
 ### Orchestrator State Tracking
 ```yaml
-# orchestrator-state.yaml
+# orchestrator-state.json
 efforts_in_progress:
   phase1_wave1_api_types:
     agent_id: "sw-eng-instance-001"  # Unique instance ID

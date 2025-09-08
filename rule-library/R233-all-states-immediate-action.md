@@ -31,7 +31,7 @@ Every state name is a VERB or ACTION. When you enter a state, you MUST immediate
 **IMMEDIATE ACTION:** Load state file, check current phase/wave, verify environment
 ```bash
 # MUST DO IMMEDIATELY:
-cat orchestrator-state.yaml
+cat orchestrator-state.json
 pwd && git branch --show-current
 ls -la efforts/
 ```
@@ -75,7 +75,7 @@ echo "Analyzing dependencies between efforts..."
 ```bash
 # MUST DO IMMEDIATELY:
 echo "Checking agent availability..."
-yq '.agents_available' orchestrator-state.yaml
+yq '.agents_available' orchestrator-state.json
 ```
 
 ### SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
@@ -199,7 +199,7 @@ echo "Requesting architect review of Wave ${WAVE}..."
 ```bash
 # MUST DO IMMEDIATELY:
 echo "ERROR DETECTED - Diagnosing..."
-yq '.last_error' orchestrator-state.yaml
+yq '.last_error' orchestrator-state.json
 ```
 
 ### SUCCESS (TERMINAL STATE)

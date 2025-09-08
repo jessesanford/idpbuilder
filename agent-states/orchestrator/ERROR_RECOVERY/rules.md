@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -177,7 +177,7 @@ The system will check for this marker. No marker = Immediate failure.
    - Wave review identified critical issues
    - Quality gates not met
 
-**YOUR FIRST ACTION:** Check orchestrator-state.yaml for `error_recovery.reason` to understand why you're here!
+**YOUR FIRST ACTION:** Check orchestrator-state.json for `error_recovery.reason` to understand why you're here!
 
 ## 📋 PRIMARY DIRECTIVES FOR ERROR_RECOVERY STATE
 

@@ -1322,7 +1322,7 @@ While these efforts can be implemented in parallel, they share some common types
 # From project root, use the line counter tool
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do 
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
+    [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
 done
 

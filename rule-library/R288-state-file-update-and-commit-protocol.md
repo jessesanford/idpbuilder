@@ -5,7 +5,7 @@
 ## THE ABSOLUTE DUAL REQUIREMENT:
 
 **EVERY state transition MUST:**
-1. **UPDATE** orchestrator-state.yaml IMMEDIATELY (within 30 seconds)
+1. **UPDATE** orchestrator-state.json IMMEDIATELY (within 30 seconds)
 2. **COMMIT AND PUSH** EVERY SINGLE EDIT IMMEDIATELY (within 60 seconds)
 
 **NO EXCEPTIONS. NO DEFERRALS. NO BATCHING. NO "LATER".**
@@ -26,7 +26,7 @@ perform_state_transition() {
     validate_state_transition "$OLD_STATE" "$NEW_STATE"
     
     # Step 2: 🔴 UPDATE STATE FILE IMMEDIATELY 🔴
-    # Use text_editor tool with str_replace to update orchestrator-state.yaml:
+    # Use text_editor tool with str_replace to update orchestrator-state.json:
     # - Replace current_state value with NEW_STATE
     # - Replace previous_state value with OLD_STATE  
     # - Replace transition_time with current UTC timestamp
@@ -34,7 +34,7 @@ perform_state_transition() {
     # Agents should use multiple str_replace commands to update each field
     
     # Step 3: 🔴 COMMIT AND PUSH IMMEDIATELY 🔴
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: ${OLD_STATE} → ${NEW_STATE} - ${REASON} [R288]"
     git push
     
@@ -102,12 +102,12 @@ update_and_commit_state() {
     local REASON="${3:-update}"
     
     # 1. Make the edit
-    # Use text_editor tool with str_replace to update orchestrator-state.yaml:
+    # Use text_editor tool with str_replace to update orchestrator-state.json:
     # - Replace the KEY's current value with VALUE
     # Example: str_replace to change KEY: old_value to KEY: new_value
     
     # 2. IMMEDIATELY commit and push
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: ${KEY}=${VALUE} - ${REASON} [R288]"
     git push
     
@@ -124,18 +124,18 @@ update_and_commit_state() {
 ### ❌ FORBIDDEN PATTERNS:
 ```bash
 # ❌ NO: Deferred commit
-# Use text_editor tool with str_replace to update orchestrator-state.yaml:
+# Use text_editor tool with str_replace to update orchestrator-state.json:
 # Replace current_state: "old_value" with current_state: "INTEGRATION"
 do_other_work()  # VIOLATION! Must commit first!
 
 # ❌ NO: Batch updates
-# Use text_editor tool with str_replace to update orchestrator-state.yaml:
+# Use text_editor tool with str_replace to update orchestrator-state.json:
 # - Replace current_state value with "WAVE_COMPLETE"
 # - Replace wave1.status value with "COMPLETE"
-git add orchestrator-state.yaml  # VIOLATION! Each edit needs commit!
+git add orchestrator-state.json  # VIOLATION! Each edit needs commit!
 
 # ❌ NO: Missing push
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: update"
 # No push = VIOLATION!
 ```
@@ -143,9 +143,9 @@ git commit -m "state: update"
 ### ✅ REQUIRED PATTERN:
 ```bash
 # ✅ YES: Immediate update, commit, push
-# Use text_editor tool with str_replace to update orchestrator-state.yaml:
+# Use text_editor tool with str_replace to update orchestrator-state.json:
 # Replace current_state: "old_value" with current_state: "INTEGRATION"
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: transition to INTEGRATION [R288]"
 git push
 
@@ -159,13 +159,13 @@ update_and_commit_state "wave1.status" "COMPLETE" "wave finished"
 ```bash
 check_r288_compliance() {
     # Check for uncommitted state changes
-    if git status --porcelain | grep -q "orchestrator-state.yaml"; then
+    if git status --porcelain | grep -q "orchestrator-state.json"; then
         echo "❌❌❌ R288 VIOLATION: Uncommitted state changes!"
         return 288
     fi
     
     # Check timestamp freshness
-    # Use text_editor tool with view command to read orchestrator-state.yaml:
+    # Use text_editor tool with view command to read orchestrator-state.json:
     # Find the state_machine.transition_time field
     local TIMESTAMP="<value from state_machine.transition_time>"
     local NOW=$(date +%s)
@@ -204,9 +204,9 @@ If you detect a violation:
 3. **PUSH** immediately
 4. **LOG** violation in state file:
    ```bash
-   # Use text_editor tool to increment r288_violations in orchestrator-state.yaml:
+   # Use text_editor tool to increment r288_violations in orchestrator-state.json:
    # First view to get current value, then str_replace with incremented value
-   git add orchestrator-state.yaml
+   git add orchestrator-state.json
    git commit -m "state: R288 violation logged [R288]"
    git push
    ```

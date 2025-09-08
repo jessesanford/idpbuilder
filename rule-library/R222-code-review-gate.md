@@ -46,16 +46,16 @@ Before ANY transition to WAVE_COMPLETE state:
 echo "🔍 R222: Verifying ALL reviews passed..."
 ALL_PASSED=true
 
-# Use text_editor tool with view command to read orchestrator-state.yaml:
+# Use text_editor tool with view command to read orchestrator-state.json:
 # Find the efforts_in_progress array
 for effort in <efforts_in_progress array>; do
     # Check review status
-    # Use text_editor tool with view command to read orchestrator-state.yaml:
+    # Use text_editor tool with view command to read orchestrator-state.json:
     # Find effort in efforts_completed array and get its review_status
     REVIEW_STATUS="<review_status for this effort>"
     
     # Check size compliance
-    # Use text_editor tool with view command to read orchestrator-state.yaml:
+    # Use text_editor tool with view command to read orchestrator-state.json:
     # Find effort in efforts_completed array and get its lines_changed
     SIZE_LINES="<lines_changed for this effort>"
     
@@ -161,7 +161,7 @@ Attempting transition with ANY failure = -100% penalty"
 
 ## IMPLEMENTATION NOTES
 
-1. **Review Status Source of Truth**: orchestrator-state.yaml
+1. **Review Status Source of Truth**: orchestrator-state.json
 2. **Size Measurement Tool**: $CLAUDE_PROJECT_DIR/tools/line-counter.sh
 3. **Review Reports Location**: review-reports/[wave]/[effort]/
 4. **State Machine Authority**: SOFTWARE-FACTORY-STATE-MACHINE.md

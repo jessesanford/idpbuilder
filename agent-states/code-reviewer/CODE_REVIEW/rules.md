@@ -92,9 +92,9 @@ git add -A
 git commit -m "feat: implementation ready for measurement"
 git push  # REQUIRED - tool uses git diff which needs commits!
 
-# STEP 3: Find project root (where orchestrator-state.yaml lives)
+# STEP 3: Find project root (where orchestrator-state.json lives)
 PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do 
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break; 
+    [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break; 
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
 done
 echo "Project root: $PROJECT_ROOT"

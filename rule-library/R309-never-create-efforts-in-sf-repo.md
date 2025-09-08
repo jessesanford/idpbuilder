@@ -13,7 +13,7 @@
 1. **SOFTWARE FACTORY REPO** (Where you are now)
    - Path: `/home/vscode/software-factory-template/` or similar
    - Contains: Rules, agents, state files, orchestration
-   - Has: `.claude/`, `rule-library/`, `orchestrator-state.yaml`
+   - Has: `.claude/`, `rule-library/`, `orchestrator-state.json`
    - Purpose: PLANNING AND ORCHESTRATION ONLY
    - **NEVER CREATE CODE HERE!**
 
@@ -135,7 +135,7 @@ monitor_sf_repo_pollution() {
 software-factory-template/          # SF REPO (orchestration)
 ├── .claude/                       # Agent configs
 ├── rule-library/                  # Rules
-├── orchestrator-state.yaml        # State tracking
+├── orchestrator-state.json        # State tracking
 ├── target-repo-config.yaml        # Points to TARGET
 └── efforts/                       # Clone TARGET here
     └── phase1/
@@ -241,7 +241,7 @@ echo "✅ Pollution cleaned, efforts in correct location"
 ---
 
 **REMEMBER:** 
-- SF REPO = PLANNING ONLY (where orchestrator-state.yaml lives)
+- SF REPO = PLANNING ONLY (where orchestrator-state.json lives)
 - TARGET REPO = CODE ONLY (what gets cloned to efforts/)
 - NEVER MIX THEM UP!
 - VIOLATION = -100% AUTOMATIC FAILURE!

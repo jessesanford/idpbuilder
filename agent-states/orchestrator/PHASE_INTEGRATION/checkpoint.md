@@ -93,7 +93,7 @@ def create_phase_integration_checkpoint(checkpoint_type="state_entry"):
     """Create checkpoint for PHASE_INTEGRATION state"""
     
     # Read current state
-    state_data = read_yaml('orchestrator-state.yaml')
+    state_data = read_yaml('orchestrator-state.json')
     phase = state_data['current_phase']
     
     checkpoint = {

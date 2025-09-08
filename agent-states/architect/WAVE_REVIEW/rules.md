@@ -60,7 +60,7 @@ MANDATE: Verify ALL efforts in this wave branched from correct incremental base:
 - Phase 2+ Wave 1: Should branch from previous phase integration
 
 VERIFICATION STEPS:
-1. Check orchestrator-state.yaml for current_phase and current_wave
+1. Check orchestrator-state.json for current_phase and current_wave
 2. Determine expected base branch using R308 logic
 3. For each effort, verify it includes previous wave's commits
 4. Confirm no efforts branched from stale main when should use integration
@@ -73,7 +73,7 @@ VERIFICATION STEPS:
 **Source:** rule-library/R297-architect-split-detection-protocol.md
 **Criticality:** BLOCKING - Must check splits BEFORE measuring integration
 
-MANDATE: Check split_count in orchestrator-state.yaml BEFORE measuring any effort.
+MANDATE: Check split_count in orchestrator-state.json BEFORE measuring any effort.
 If split_count > 0, the effort was already split and is COMPLIANT.
 Integration branches merge all splits (will exceed limits - EXPECTED).
 Measure ORIGINAL effort branches, NOT integration branches.
@@ -142,10 +142,10 @@ ENFORCEMENT:
 # For EACH effort in the wave:
 cd /path/to/efforts/phase2/wave2/effort-name
 
-# Find project root (where orchestrator-state.yaml lives):
+# Find project root (where orchestrator-state.json lives):
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
+    [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
 done
 
@@ -189,8 +189,8 @@ WAVE-LEVEL VALIDATION:
 **🔴 STEP-BY-STEP INSTRUCTIONS:**
 ```bash
 # Step 1: Get phase and wave numbers
-PHASE=1  # From orchestrator-state.yaml
-WAVE=2   # From orchestrator-state.yaml
+PHASE=1  # From orchestrator-state.json
+WAVE=2   # From orchestrator-state.json
 
 # Step 2: CREATE DIRECTORY STRUCTURE (MANDATORY!)
 mkdir -p wave-reviews/phase${PHASE}/wave${WAVE}
@@ -286,11 +286,11 @@ WAVE_REVIEW → [Assessment Complete] → Decision State
 
 **Size Assessment Process** (Per R297 and R022):
 1. **CHECK SPLIT_COUNT FIRST** (R297):
-   - Read `split_count` from orchestrator-state.yaml
+   - Read `split_count` from orchestrator-state.json
    - If > 0: Mark as COMPLIANT, skip size measurement
    - If 0: Continue to measure original branch
 2. Navigate TO each effort directory (cd /efforts/phase*/wave*/[effort-name])
-3. Find project root: `while [ "$PWD" != "/" ]; do [ -f orchestrator-state.yaml ] && break; cd ..; done`
+3. Find project root: `while [ "$PWD" != "/" ]; do [ -f orchestrator-state.json ] && break; cd ..; done`
 4. Run line counter with NO PARAMETERS: `$PROJECT_ROOT/tools/line-counter.sh`
 5. Document results in assessment report  
 6. Flag any efforts >800 lines for splitting

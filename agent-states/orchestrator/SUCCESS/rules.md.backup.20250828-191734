@@ -34,7 +34,7 @@ Project or phase successfully completed. All waves integrated, all tests passing
 
 ## Final Actions
 1. Create phase completion report
-2. Update orchestrator-state.yaml with completion timestamp
+2. Update orchestrator-state.json with completion timestamp
 3. Document metrics (efforts completed, lines of code, test coverage)
 4. Archive state for phase
 5. Prepare for next phase or project completion

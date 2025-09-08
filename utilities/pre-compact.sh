@@ -170,7 +170,7 @@ detect_agent_identity() {
     fi
     
     # Check for agent-specific files
-    if [ -f "./orchestrator-state.yaml" ]; then
+    if [ -f "./orchestrator-state.json" ]; then
         agent_type="orchestrator"
     elif [ -f "./IMPLEMENTATION-PLAN.md" ]; then
         agent_type="sw-engineer"
@@ -252,8 +252,8 @@ preserve_state_machine_context() {
     
     # Look for state machine indicators
     local state_files=(
-        "./orchestrator-state.yaml"
-        "../orchestrator-state.yaml"
+        "./orchestrator-state.json"
+        "../orchestrator-state.json"
         "./state.json"
         "./current-state.md"
     )
@@ -288,8 +288,8 @@ preserve_state_machine_context() {
 preserve_orchestrator_context() {
     log "INFO" "Preserving orchestrator-specific context..."
     
-    if [ -f "./orchestrator-state.yaml" ]; then
-        echo "ORCHESTRATOR_STATE_FILE=\"./orchestrator-state.yaml\"" >> "$MARKER_FILE"
+    if [ -f "./orchestrator-state.json" ]; then
+        echo "ORCHESTRATOR_STATE_FILE=\"./orchestrator-state.json\"" >> "$MARKER_FILE"
     fi
     
     # Check for wave/phase context
@@ -365,7 +365,7 @@ EOF
     
     # Add important files that exist
     local important_files=(
-        "./orchestrator-state.yaml"
+        "./orchestrator-state.json"
         "./IMPLEMENTATION-PLAN.md"
         "./work-log.md"
         "./REVIEW-FEEDBACK.md"

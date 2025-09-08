@@ -99,7 +99,7 @@ ACTION: Create PHASE-{X}-IMPLEMENTATION-PLAN.md
 VALIDATE: All architectural requirements preserved
 
 # Update orchestrator state:
-UPDATE: orchestrator-state.yaml phase_implementation_plans section
+UPDATE: orchestrator-state.json phase_implementation_plans section
 ```
 
 ### STATE: WAVE_IMPLEMENTATION_PLANNING (From Architecture)
@@ -116,7 +116,7 @@ ACTION: Create PHASE-{X}-WAVE-{Y}-IMPLEMENTATION-PLAN.md
 VALIDATE: Architecture alignment maintained
 
 # Update orchestrator state:
-UPDATE: orchestrator-state.yaml wave_implementation_plans section
+UPDATE: orchestrator-state.json wave_implementation_plans section
 ```
 
 ### STATE: EFFORT_PLANNING (Creating Implementation Plans)

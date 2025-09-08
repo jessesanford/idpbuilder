@@ -19,15 +19,15 @@ This command performs a controlled reset of the Software Factory state machine.
 ```bash
 # Before resetting, MUST verify state is actually corrupted:
 echo "🔍 DIAGNOSING STATE CORRUPTION:"
-echo "1. Is orchestrator-state.yaml readable and valid?"
+echo "1. Is orchestrator-state.json readable and valid?"
 echo "2. Are TODO files recoverable?"
 echo "3. Are current branches in valid state?"
 echo "4. Is work in progress that can be salvaged?"
 
 # Read current state if possible
-if [[ -f "./agent-configs/[project]/orchestrator-state.yaml" ]]; then
+if [[ -f "./agent-configs/[project]/orchestrator-state.json" ]]; then
     echo "📄 CURRENT STATE FILE EXISTS - Review before resetting:"
-    cat "./agent-configs/[project]/orchestrator-state.yaml"
+    cat "./agent-configs/[project]/orchestrator-state.json"
     echo ""
     echo "❓ Are you sure state is corrupted and cannot be repaired?"
     echo "❓ Consider using context recovery instead of full reset"
@@ -44,7 +44,7 @@ echo "💾 CREATING STATE BACKUP TO: $BACKUP_DIR"
 
 # Backup critical files
 cp -r "./agent-configs/[project]/todos/" "$BACKUP_DIR/todos-backup/" 2>/dev/null
-cp "./agent-configs/[project]/orchestrator-state.yaml" "$BACKUP_DIR/" 2>/dev/null
+cp "./agent-configs/[project]/orchestrator-state.json" "$BACKUP_DIR/" 2>/dev/null
 cp "./agent-configs/[project]/"*-STATE*.md "$BACKUP_DIR/" 2>/dev/null
 cp "./agent-configs/[project]/CURRENT-"*.md "$BACKUP_DIR/" 2>/dev/null
 
@@ -94,7 +94,7 @@ echo "🔄 PERFORMING LEVEL 2 RESET: STATE-MACHINE"
 echo "🎯 Resetting state machine to INIT..."
 
 # Reset orchestrator state
-cat > "./agent-configs/[project]/orchestrator-state.yaml" << 'EOF'
+cat > "./agent-configs/[project]/orchestrator-state.json" << 'EOF'
 # Software Factory 2.0 Orchestrator State
 # Reset to INIT state on $(date)
 
@@ -178,9 +178,9 @@ ls -la "./agent-configs/[project]/" | head -10
 
 # Verify state file
 echo "📄 Checking state file..."
-if [[ -f "./agent-configs/[project]/orchestrator-state.yaml" ]]; then
+if [[ -f "./agent-configs/[project]/orchestrator-state.json" ]]; then
     echo "✅ State file exists"
-    head -10 "./agent-configs/[project]/orchestrator-state.yaml"
+    head -10 "./agent-configs/[project]/orchestrator-state.json"
 else
     echo "❌ State file missing - may need manual creation"
 fi
@@ -203,7 +203,7 @@ echo "4. ✅ Verify environment and identity"
 echo "5. ✅ Load appropriate expertise modules"
 echo ""
 echo "Orchestrator must:"
-echo "1. ✅ Read reset state from orchestrator-state.yaml"
+echo "1. ✅ Read reset state from orchestrator-state.json"
 echo "2. ✅ Begin fresh planning cycle"
 echo "3. ✅ Re-establish phase and wave structure"
 echo "4. ✅ Update grading checkpoints"
@@ -218,7 +218,7 @@ RECOVERY_FROM="$BACKUP_DIR"
 
 echo "🔄 PARTIAL RECOVERY OPTIONS:"
 echo "1. Recover TODO state: cp $RECOVERY_FROM/todos-backup/* ./agent-configs/[project]/todos/"
-echo "2. Recover state file: cp $RECOVERY_FROM/orchestrator-state.yaml ./agent-configs/[project]/"
+echo "2. Recover state file: cp $RECOVERY_FROM/orchestrator-state.json ./agent-configs/[project]/"
 echo "3. Recover current files: cp $RECOVERY_FROM/CURRENT-*.md ./agent-configs/[project]/"
 echo "4. Check git branches: cat $RECOVERY_FROM/git-branches.txt"
 echo "5. Review recent commits: cat $RECOVERY_FROM/git-recent-commits.txt"

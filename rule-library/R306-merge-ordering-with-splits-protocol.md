@@ -58,16 +58,16 @@ validate_merge_readiness() {
     local effort=$(echo "$branch" | sed 's/-split-[0-9]*//')
     
     # Get dependencies
-    DEPS=$(yq ".efforts.\"$effort\".dependencies[]" orchestrator-state.yaml)
+    DEPS=$(yq ".efforts.\"$effort\".dependencies[]" orchestrator-state.json)
     
     for dep in $DEPS; do
         # Check split tracking
-        SPLIT_COUNT=$(yq ".split_tracking.\"$dep\".split_count // 0" orchestrator-state.yaml)
+        SPLIT_COUNT=$(yq ".split_tracking.\"$dep\".split_count // 0" orchestrator-state.json)
         
         if [ "$SPLIT_COUNT" -gt 0 ]; then
             # Verify ALL splits merged
             for i in $(seq 1 $SPLIT_COUNT); do
-                SPLIT_STATUS=$(yq ".split_tracking.\"$dep\".split_branches[$((i-1))].status" orchestrator-state.yaml)
+                SPLIT_STATUS=$(yq ".split_tracking.\"$dep\".split_branches[$((i-1))].status" orchestrator-state.json)
                 if [ "$SPLIT_STATUS" != "INTEGRATED" ]; then
                     echo "❌ BLOCKED: Cannot merge $branch"
                     echo "   Dependency $dep split $i not integrated"
@@ -198,11 +198,11 @@ validate_merge_plan_ordering() {
         EFFORT=$(echo "$branch" | sed 's/-split-[0-9]*//')
         
         # Check dependencies
-        DEPS=$(yq ".efforts.\"$EFFORT\".dependencies[]" orchestrator-state.yaml)
+        DEPS=$(yq ".efforts.\"$EFFORT\".dependencies[]" orchestrator-state.json)
         
         for dep in $DEPS; do
             # Check if dependency is complete
-            SPLIT_COUNT=$(yq ".split_tracking.\"$dep\".split_count // 0" orchestrator-state.yaml)
+            SPLIT_COUNT=$(yq ".split_tracking.\"$dep\".split_count // 0" orchestrator-state.json)
             
             if [ "$SPLIT_COUNT" -gt 0 ]; then
                 # Check all splits are in MERGED

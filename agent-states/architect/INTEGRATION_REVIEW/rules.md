@@ -7,7 +7,7 @@
 **Source:** rule-library/R297-architect-split-detection-protocol.md
 **Criticality:** BLOCKING - Must check splits BEFORE measuring integration
 
-MANDATE: Check split_count in orchestrator-state.yaml BEFORE measuring any effort.
+MANDATE: Check split_count in orchestrator-state.json BEFORE measuring any effort.
 If split_count > 0, the effort was already split and is COMPLIANT.
 Integration branches merge all splits (will exceed limits - EXPECTED).
 Measure ORIGINAL effort branches, NOT integration branches.

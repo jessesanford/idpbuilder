@@ -51,7 +51,7 @@ model: opus
 
 After reading bootstrap rules, follow R203:
 
-1. **CHECK** if `orchestrator-state.yaml` exists
+1. **CHECK** if `orchestrator-state.json` exists
 2. **READ** current_state field if exists
 3. **DEFAULT** to INIT if no state file
 4. **LOAD** state-specific rules from:
@@ -179,6 +179,61 @@ Per SOFTWARE-FACTORY-STATE-MACHINE.md, the complete list of valid states:
 - Update state file per R288
 - Wait for continuation command
 
+## 📁 DIRECTORY NAVIGATION BEST PRACTICES
+
+### 🔴🔴🔴 CRITICAL: AVOID DIRECTORY CONFUSION 🔴🔴🔴
+
+**THE #1 CAUSE OF ORCHESTRATOR FILE-NOT-FOUND ERRORS IS BAD DIRECTORY NAVIGATION!**
+
+### ❌ COMMON MISTAKES TO AVOID:
+```bash
+# ❌ WRONG: Using cd then forgetting bash resets
+cd efforts/phase2/wave1/gitea-client-SPLIT-002
+git branch --show-current  # FAILS - bash reset to original dir!
+
+# ❌ WRONG: Relative paths without context
+cat SPLIT-PLAN-002.md  # Where are we? Unknown!
+
+# ❌ WRONG: Assuming current directory
+ls *.md  # Which directory? Could be anywhere!
+```
+
+### ✅ CORRECT PATTERNS:
+```bash
+# ✅ CORRECT: Commands in same line with cd
+cd efforts/phase2/wave1/gitea-client-SPLIT-002 && git branch --show-current
+
+# ✅ BETTER: Use absolute paths
+SPLIT_DIR="/home/vscode/software-factory-template/efforts/phase2/wave1/gitea-client-SPLIT-002"
+git -C "$SPLIT_DIR" branch --show-current
+
+# ✅ BEST: Store paths in variables
+SF_ROOT="/home/vscode/software-factory-template"
+EFFORT_DIR="${SF_ROOT}/efforts/phase2/wave1/gitea-client"
+cat "${EFFORT_DIR}/SPLIT-PLAN-002.md"
+```
+
+### 📋 NAVIGATION RULES:
+1. **ALWAYS use absolute paths** when possible
+2. **Store paths in variables** for reuse
+3. **Use git -C** instead of cd for git commands
+4. **Chain commands with &&** when you must cd
+5. **Verify pwd** before assuming location
+
+### 🔍 FINDING SPLIT PLANS:
+```bash
+# ✅ BEST: Read from state file (after implementing path tracking)
+SPLIT_PLAN=$(yq '.split_tracking.gitea-client.splits[1].split_plan_path' orchestrator-state.json)
+cat "$SPLIT_PLAN"
+
+# ✅ GOOD: Use absolute paths with pattern matching
+SF_ROOT="/home/vscode/software-factory-template"
+SPLIT_PLAN=$(ls -t "${SF_ROOT}/efforts/phase2/wave1/gitea-client-SPLIT-002"/SPLIT-PLAN-*.md | head -1)
+
+# ❌ BAD: Searching without context
+find . -name "SPLIT-PLAN*.md"  # Where is "."? Unknown!
+```
+
 ## 🔴🔴🔴 CRITICAL: STATE TRANSITION PROTOCOL TO PREVENT LOOPS 🔴🔴🔴
 
 **THE #1 CAUSE OF ORCHESTRATOR FAILURES IS INCORRECT STATE TRANSITIONS!**
@@ -195,15 +250,15 @@ echo "✅ Completed all work for CURRENT_STATE"
 
 # 2. UPDATE STATE FILE FIRST (BEFORE STOPPING!)
 echo "🔴 R324: Updating current_state to prevent infinite loop..."
-yq -i '.current_state = "NEXT_STATE"' orchestrator-state.yaml
-yq -i '.previous_state = "CURRENT_STATE"' orchestrator-state.yaml
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+yq -i '.current_state = "NEXT_STATE"' orchestrator-state.json
+yq -i '.previous_state = "CURRENT_STATE"' orchestrator-state.json
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
 
 # 3. Verify the update worked
-grep "current_state:" orchestrator-state.yaml
+grep "current_state:" orchestrator-state.json
 
 # 4. Commit and push IMMEDIATELY
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: transition from CURRENT_STATE to NEXT_STATE (R324)"
 git push
 

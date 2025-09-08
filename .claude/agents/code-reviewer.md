@@ -175,7 +175,7 @@ git add -A && git commit -m "feat: ready for measurement" && git push
 # STEP 3: Find project root (MANDATORY)
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do 
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
+    [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
 done
 echo "Project root: $PROJECT_ROOT"
@@ -807,7 +807,7 @@ CRITICAL: Only measure files YOU changed in this effort!
 # First find project root
 PROJECT_ROOT=$(pwd); 
 while [ "$PROJECT_ROOT" != "/" ]; do 
-    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then break; fi; 
+    if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then break; fi; 
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
 done
 
@@ -939,9 +939,9 @@ EFFORT_DIR="/path/to/your/effort"  # You MUST be in the actual effort repo!
 # Step 2: Navigate to the effort directory (R221 compliance)
 Bash: cd $EFFORT_DIR && pwd  # Confirm you're in the right place
 
-# Step 3: Find the project root (where orchestrator-state.yaml lives)
+# Step 3: Find the project root (where orchestrator-state.json lives)
 Bash: cd $EFFORT_DIR && PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
+    [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
 done && echo "Project root: $PROJECT_ROOT"
 
@@ -1074,7 +1074,7 @@ confirm_sole_reviewer() {
     # Find project root first
     PROJECT_ROOT=$(pwd); 
     while [ "$PROJECT_ROOT" != "/" ]; do 
-        if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then break; fi; 
+        if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then break; fi; 
         PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
     done; 
     

@@ -33,7 +33,7 @@ else
 fi
 
 # For Code Reviewer - check instructions
-# For Orchestrator - check orchestrator-state.yaml
+# For Orchestrator - check orchestrator-state.json
 # For Architect - check request type
 \`\`\`
 
@@ -100,7 +100,7 @@ STATE RULES ACKNOWLEDGED ([CURRENT_STATE]):
 # Find project root
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do
-    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then
+    if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then
         break
     fi
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")

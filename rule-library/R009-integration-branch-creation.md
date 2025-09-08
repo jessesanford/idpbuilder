@@ -40,14 +40,14 @@ verify_wave_complete() {
     echo "🔍 Verifying wave completion..."
     
     # Check all efforts completed
-    local pending=$(grep -c "state: in_progress" orchestrator-state.yaml)
+    local pending=$(grep -c "state: in_progress" orchestrator-state.json)
     if [ "$pending" -gt 0 ]; then
         echo "❌ Cannot integrate: $pending efforts still in progress"
         return 1
     fi
     
     # Check all reviews passed
-    local failed_reviews=$(grep -c "review: failed" orchestrator-state.yaml)
+    local failed_reviews=$(grep -c "review: failed" orchestrator-state.json)
     if [ "$failed_reviews" -gt 0 ]; then
         echo "❌ Cannot integrate: $failed_reviews failed reviews"
         return 1
@@ -117,8 +117,8 @@ update_integration_state() {
     local wave=$2
     local integration_branch="phase${phase}/wave${wave}-integration"
     
-    # Update orchestrator-state.yaml
-    cat >> orchestrator-state.yaml << EOF
+    # Update orchestrator-state.json
+    cat >> orchestrator-state.json << EOF
 
 integration_branches:
   - branch: "$integration_branch"
@@ -129,7 +129,7 @@ integration_branches:
     status: "ready_for_review"
 EOF
     
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: Created integration branch $integration_branch"
     git push
 }
@@ -183,7 +183,7 @@ post_integration_verification() {
     }
     
     # State updated
-    grep -q "$integration_branch" orchestrator-state.yaml || {
+    grep -q "$integration_branch" orchestrator-state.json || {
         echo "❌ State file not updated!"
         return 1
     }

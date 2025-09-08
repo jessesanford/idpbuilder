@@ -3,7 +3,7 @@ import sys
 from datetime import datetime
 
 # Read the current state
-with open('orchestrator-state.yaml', 'r') as f:
+with open('orchestrator-state.json', 'r') as f:
     state = yaml.safe_load(f)
 
 # Update wave_review section
@@ -26,7 +26,7 @@ state['state_machine']['next_action'] = 'Start Wave 2 implementation'
 state['current_wave'] = 2  # Moving to wave 2
 
 # Write back
-with open('orchestrator-state.yaml', 'w') as f:
+with open('orchestrator-state.json', 'w') as f:
     yaml.dump(state, f, default_flow_style=False, sort_keys=False)
     
 print("✅ State file updated successfully")

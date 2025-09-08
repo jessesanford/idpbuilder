@@ -191,7 +191,7 @@ audit_working_directory
 ## Integration with State Machine
 
 ```yaml
-# orchestrator-state.yaml should track
+# orchestrator-state.json should track
 current_directory: "/"  # Always root for orchestrator
 allowed_paths:
   - "/"

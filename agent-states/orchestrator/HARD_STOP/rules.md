@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -225,7 +225,7 @@ Critical failure detected. System cannot continue without intervention.
 
 ## Recovery Protocol
 1. User must manually fix the issue
-2. Clear the HARD_STOP flag in orchestrator-state.yaml
+2. Clear the HARD_STOP flag in orchestrator-state.json
 3. Set appropriate recovery state
 4. Restart orchestrator
 

@@ -132,7 +132,7 @@ Each agent has detailed state-specific rules in:
 
 **Core Files:**
 - `$CLAUDE_PROJECT_DIR/SOFTWARE-FACTORY-STATE-MACHINE.md` - State transitions
-- `$CLAUDE_PROJECT_DIR/orchestrator-state.yaml` - Example state file
+- `$CLAUDE_PROJECT_DIR/orchestrator-state.json` - Example state file
 - `$CLAUDE_PROJECT_DIR/.claude/agents/` - Agent configurations
 - `$CLAUDE_PROJECT_DIR/.claude/commands/` - Continuation commands
 - `$CLAUDE_PROJECT_DIR/rule-library/` - All rule definitions
@@ -142,7 +142,7 @@ Each agent has detailed state-specific rules in:
 - `$CLAUDE_PROJECT_DIR/utilities/` - Recovery scripts
 
 **Create for Your Project:**
-- `orchestrator-state.yaml` - Copy from .example
+- `orchestrator-state.json` - Copy from .example
 - `protocols/` - Project-specific protocols
 - `phase-plans/` - Phase planning documents
 - `PROJECT-IMPLEMENTATION-PLAN.md` - Master plan
@@ -224,7 +224,7 @@ WHEN effort exceeds limit, MUST:
 
 If you lose context and don't remember previous work:
 ```bash
-1. READ: $CLAUDE_PROJECT_DIR/orchestrator-state.yaml
+1. READ: $CLAUDE_PROJECT_DIR/orchestrator-state.json
 2. CHECK: current_phase, current_wave
 3. CHECK: efforts_in_progress for active work
 4. CHECK: efforts_completed to understand progress

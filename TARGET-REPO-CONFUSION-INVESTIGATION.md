@@ -14,7 +14,7 @@ The orchestrator confusion about which repository to clone stems from **clear do
 The Software Factory operates on a **strict two-repository model**:
 
 1. **SOFTWARE FACTORY INSTANCE** (Planning & Orchestration)
-   - Contains: orchestrator-state.yaml, .claude/, rule-library/, phase-plans/
+   - Contains: orchestrator-state.json, .claude/, rule-library/, phase-plans/
    - Purpose: Planning, configuration, state management, agent coordination
    - Location: The root directory where SF is installed
 

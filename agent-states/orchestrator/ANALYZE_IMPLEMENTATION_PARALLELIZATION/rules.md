@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -185,7 +185,7 @@ The system will check for this marker. No marker = Immediate failure.
 ### IMMEDIATE ACTIONS UPON ENTERING ANALYZE_IMPLEMENTATION_PARALLELIZATION
 
 **THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
-1. Check agent availability in orchestrator-state.yaml NOW
+1. Check agent availability in orchestrator-state.json NOW
 2. Parse effort implementation plans for dependencies immediately
 3. Check TodoWrite for pending items and process them
 4. Create implementation spawn sequence without delay
@@ -197,7 +197,7 @@ The system will check for this marker. No marker = Immediate failure.
 - ❌ "I'm in ANALYZE_IMPLEMENTATION_PARALLELIZATION state" [does nothing]
 
 **REQUIRED - IMMEDIATE ACTION:**
-- ✅ "Entering ANALYZE_IMPLEMENTATION_PARALLELIZATION, Check agent availability in orchestrator-state.yaml NOW..."
+- ✅ "Entering ANALYZE_IMPLEMENTATION_PARALLELIZATION, Check agent availability in orchestrator-state.json NOW..."
 - ✅ "START ANALYZING IMPLEMENTATION PARALLELIZATION, parse effort implementation plans for dependencies immediately..."
 - ✅ "ANALYZE_IMPLEMENTATION_PARALLELIZATION: Create implementation spawn sequence without delay..."
 
@@ -299,9 +299,9 @@ sw_engineer_parallelization_plan:
       expected_duration: "3-4 hours"
 EOF
 
-# STEP 4: Update orchestrator-state.yaml
+# STEP 4: Update orchestrator-state.json
 echo ""
-echo "💾 Saving SW Engineer parallelization plan to orchestrator-state.yaml..."
+echo "💾 Saving SW Engineer parallelization plan to orchestrator-state.json..."
 ```
 
 ## Mandatory Acknowledgment Output
@@ -336,7 +336,7 @@ echo "💾 Saving SW Engineer parallelization plan to orchestrator-state.yaml...
    Step 2: Spawn SW Engineers for E3.1.2-E3.1.5 TOGETHER (R151)
    
 ✅ Consistency verified with wave plan parallelization
-✅ This strategy is SAVED in orchestrator-state.yaml
+✅ This strategy is SAVED in orchestrator-state.json
 ✅ I WILL follow this strategy in SPAWN_AGENTS state
 ═══════════════════════════════════════════════════════════════
 ```
@@ -344,7 +344,7 @@ echo "💾 Saving SW Engineer parallelization plan to orchestrator-state.yaml...
 ## Post-State Actions
 
 After completing implementation parallelization analysis:
-1. Save implementation strategy to orchestrator-state.yaml
+1. Save implementation strategy to orchestrator-state.json
 2. Display state machine visualization (R230)
 3. **🔴🔴🔴 R324/R325 CRITICAL: Update current_state BEFORE stopping! 🔴🔴🔴**
 4. Re-acknowledge critical rules (R217)
@@ -361,16 +361,16 @@ echo "✅ Implementation parallelization analysis complete"
 
 # CRITICAL: Update state file FIRST (R324 requirement)
 echo "🔴 R324: Updating current_state to prevent infinite loop..."
-yq -i '.current_state = "SPAWN_AGENTS"' orchestrator-state.yaml
-yq -i '.previous_state = "ANALYZE_IMPLEMENTATION_PARALLELIZATION"' orchestrator-state.yaml
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+yq -i '.current_state = "SPAWN_AGENTS"' orchestrator-state.json
+yq -i '.previous_state = "ANALYZE_IMPLEMENTATION_PARALLELIZATION"' orchestrator-state.json
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
 
 # Verify the update
 echo "✅ State updated to:"
-grep "current_state:" orchestrator-state.yaml
+grep "current_state:" orchestrator-state.json
 
 # Commit and push IMMEDIATELY
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: transition to SPAWN_AGENTS from ANALYZE_IMPLEMENTATION_PARALLELIZATION (R324)"
 git push
 
@@ -401,15 +401,15 @@ validate_implementation_parallelization() {
     fi
     
     # CHECK 2: Is SW Engineer parallelization plan saved?
-    if ! grep -q "sw_engineer_parallelization_plan" orchestrator-state.yaml; then
-        echo "❌ FATAL: No SW Engineer parallelization plan in orchestrator-state.yaml!"
+    if ! grep -q "sw_engineer_parallelization_plan" orchestrator-state.json; then
+        echo "❌ FATAL: No SW Engineer parallelization plan in orchestrator-state.json!"
         echo "Cannot proceed to SPAWN_AGENTS!"
         exit 1
     fi
     
     # CHECK 3: Verify consistency with Code Reviewer parallelization
-    CR_BLOCKING=$(yq '.code_reviewer_parallelization_plan.blocking_efforts | length' orchestrator-state.yaml)
-    SW_BLOCKING=$(yq '.sw_engineer_parallelization_plan.blocking_implementations | length' orchestrator-state.yaml)
+    CR_BLOCKING=$(yq '.code_reviewer_parallelization_plan.blocking_efforts | length' orchestrator-state.json)
+    SW_BLOCKING=$(yq '.sw_engineer_parallelization_plan.blocking_implementations | length' orchestrator-state.json)
     
     if [ "$CR_BLOCKING" != "$SW_BLOCKING" ]; then
         echo "⚠️ WARNING: Mismatch between Code Reviewer and SW Engineer blocking counts"
@@ -418,7 +418,7 @@ validate_implementation_parallelization() {
     fi
     
     # CHECK 4: Verify spawn sequence exists
-    SEQUENCE_COUNT=$(yq '.sw_engineer_parallelization_plan.spawn_sequence | length' orchestrator-state.yaml)
+    SEQUENCE_COUNT=$(yq '.sw_engineer_parallelization_plan.spawn_sequence | length' orchestrator-state.json)
     echo "✅ SW Engineer spawn sequence has $SEQUENCE_COUNT steps"
     
     echo ""
@@ -458,7 +458,7 @@ verify_parallelization_consistency() {
 1. ✅ ALL effort IMPLEMENTATION-PLAN.md files have been READ
 2. ✅ Parallelization metadata extracted from each plan
 3. ✅ Consistency verified with wave plan
-4. ✅ SW Engineer parallelization plan saved to orchestrator-state.yaml
+4. ✅ SW Engineer parallelization plan saved to orchestrator-state.json
 5. ✅ Acknowledgment output has been displayed
 6. ✅ Validation checks have passed
 
@@ -526,8 +526,8 @@ echo "  4 parallel implementations (E3.1.2-E3.1.5)"
 # 4. Verify consistency
 verify_parallelization_consistency
 
-# 5. Save to orchestrator-state.yaml
-yq eval '.sw_engineer_parallelization_plan = ...' orchestrator-state.yaml
+# 5. Save to orchestrator-state.json
+yq eval '.sw_engineer_parallelization_plan = ...' orchestrator-state.json
 
 # 6. Acknowledge decision
 echo "✅ SW ENGINEER SPAWN STRATEGY COMMITTED"
@@ -537,9 +537,9 @@ validate_implementation_parallelization
 
 # 8. R324 CRITICAL: Update state BEFORE stopping
 echo "🔴 R324: Updating current_state to SPAWN_AGENTS..."
-yq -i '.current_state = "SPAWN_AGENTS"' orchestrator-state.yaml
-yq -i '.previous_state = "ANALYZE_IMPLEMENTATION_PARALLELIZATION"' orchestrator-state.yaml
-git add orchestrator-state.yaml
+yq -i '.current_state = "SPAWN_AGENTS"' orchestrator-state.json
+yq -i '.previous_state = "ANALYZE_IMPLEMENTATION_PARALLELIZATION"' orchestrator-state.json
+git add orchestrator-state.json
 git commit -m "state: transition to SPAWN_AGENTS (R324)"
 git push
 
@@ -573,7 +573,7 @@ save_todos "ANALYZE_IMPLEMENTATION_PARALLELIZATION complete"
 
 # R287: Commit within 60 seconds
 cd $CLAUDE_PROJECT_DIR
-git add todos/*.todo orchestrator-state.yaml
+git add todos/*.todo orchestrator-state.json
 git commit -m "todo: implementation parallelization analyzed"
 git push
 

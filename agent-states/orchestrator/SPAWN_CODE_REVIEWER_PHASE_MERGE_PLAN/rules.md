@@ -7,7 +7,7 @@ Spawn Code Reviewer agent to create a comprehensive merge plan for integrating a
 
 ### 🔴🔴🔴 RULE R322: MANDATORY STOP BEFORE STATE TRANSITION (SUPREME LAW)
 - **STOP** and save state before ANY transition
-- **READ** orchestrator-state.yaml to verify current state
+- **READ** orchestrator-state.json to verify current state
 - **VALIDATE** next state exists in SOFTWARE-FACTORY-STATE-MACHINE.md
 - **VIOLATION = IMMEDIATE FAILURE**
 
@@ -59,10 +59,10 @@ Spawn Code Reviewer agent to create a comprehensive merge plan for integrating a
 2. **Gather Wave Information**
    ```bash
    # List all wave branches for this phase
-   grep "wave_.*_branches" orchestrator-state.yaml
+   grep "wave_.*_branches" orchestrator-state.json
    
    # Verify all waves are complete
-   grep "waves_completed" orchestrator-state.yaml
+   grep "waves_completed" orchestrator-state.json
    ```
 
 3. **Spawn Code Reviewer**
@@ -93,7 +93,7 @@ Spawn Code Reviewer agent to create a comprehensive merge plan for integrating a
    save_todos "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN"
    
    # Commit state
-   git add orchestrator-state.yaml todos/*.todo
+   git add orchestrator-state.json todos/*.todo
    git commit -m "state: spawned Code Reviewer for phase merge planning"
    git push
    
@@ -131,7 +131,7 @@ ls -la phase-*-integration/
 git branch -r | grep "phase-.*-integration"
 
 # Verify waves completed
-grep "waves_completed" orchestrator-state.yaml
+grep "waves_completed" orchestrator-state.json
 
 # After spawn, verify stop
 echo "STOPPING per R313 - Code Reviewer spawned for phase merge planning"

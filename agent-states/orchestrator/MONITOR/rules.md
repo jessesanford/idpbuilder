@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -187,7 +187,7 @@ The system will check for this marker. No marker = Immediate failure.
 ### 🔴🔴🔴 R288 - State File Update and Commit Protocol (SUPREME LAW)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
 **Criticality**: SUPREME LAW - Update on every transition
-**Summary**: Update orchestrator-state.yaml on all state changes
+**Summary**: Update orchestrator-state.json on all state changes
 
 ## 🔴🔴🔴 CRITICAL: MONITOR IS A VERB - START MONITORING IMMEDIATELY! 🔴🔴🔴
 
@@ -226,9 +226,9 @@ echo "⚠️ Checking for size violations..."
 # 🔴🔴🔴 R319 CRITICAL: ORCHESTRATOR MUST NEVER MEASURE CODE! 🔴🔴🔴
 # ORCHESTRATOR CANNOT USE line-counter.sh - That's Code Reviewer work!
 # Instead, check if Code Reviewers have been spawned for completed efforts
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.yaml); do
-    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.yaml)
-    REVIEW_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .review_status" orchestrator-state.yaml)
+for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
+    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.json)
+    REVIEW_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .review_status" orchestrator-state.json)
     
     if [ "$IMPL_STATUS" = "COMPLETE" ] && [ "$REVIEW_STATUS" != "IN_PROGRESS" ]; then
         echo "🚨 Effort $effort needs Code Reviewer for size assessment!"
@@ -288,9 +288,9 @@ When MONITOR detects ANY effort has:
 #### Implementation Complete Detection Logic:
 ```bash
 # CRITICAL: Check EVERY effort for completion without review
-for effort in $(yq '.efforts_in_progress[]' orchestrator-state.yaml); do
-    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.yaml)
-    REVIEW_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .review_status" orchestrator-state.yaml)
+for effort in $(yq '.efforts_in_progress[]' orchestrator-state.json); do
+    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.json)
+    REVIEW_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .review_status" orchestrator-state.json)
     
     if [ "$IMPL_STATUS" = "COMPLETE" ] && [ "$REVIEW_STATUS" != "IN_PROGRESS" ] && [ "$REVIEW_STATUS" != "PASSED" ]; then
         echo "🚨 CRITICAL: Effort $effort implementation COMPLETE but review NOT STARTED!"
@@ -309,7 +309,7 @@ for effort in $(yq '.efforts_in_progress[]' orchestrator-state.yaml); do
               description="Code Review ${effort}"
         
         # Update state file
-        yq -i ".efforts_in_progress[] |= select(.name == \"$effort\") |= .review_status = \"IN_PROGRESS\"" orchestrator-state.yaml
+        yq -i ".efforts_in_progress[] |= select(.name == \"$effort\") |= .review_status = \"IN_PROGRESS\"" orchestrator-state.json
         
         echo "✅ Code Reviewer spawned for $effort"
     fi
@@ -390,7 +390,7 @@ Then spawn SW Engineer for sequential splits
 
 When monitoring splits:
 1. **Check if split infrastructure needed** (transition to CREATE_NEXT_SPLIT_INFRASTRUCTURE)
-2. **Update split_tracking section** in orchestrator-state.yaml
+2. **Update split_tracking section** in orchestrator-state.json
 3. **Track current split** status (ACTIVE, COMPLETED, REVIEWED)
 4. **Detect when current split complete** and next split needed
 5. **Record line counts** for each completed split
@@ -435,8 +435,8 @@ detect_split_plan_needs_infrastructure() {
     # 🔴 R308 CRITICAL: Determine base branch for splits!
     # Splits use SAME incremental base as original effort
     echo "🔴 R308: Determining incremental base for splits..."
-    PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-    WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+    PHASE=$(yq '.current_phase' orchestrator-state.json)
+    WAVE=$(yq '.current_wave' orchestrator-state.json)
     
     # Use the R308 function to get correct base
     if [[ $PHASE -eq 1 && $WAVE -eq 1 ]]; then
@@ -467,8 +467,8 @@ detect_split_plan_needs_infrastructure() {
     fi
     
     # Check if current split is complete and next needs creation
-    CURRENT_SPLIT=$(yq ".split_tracking.\"$EFFORT_NAME\".current_split // 0" orchestrator-state.yaml)
-    SPLIT_STATUS=$(yq ".split_tracking.\"$EFFORT_NAME\".splits[$CURRENT_SPLIT].status" orchestrator-state.yaml)
+    CURRENT_SPLIT=$(yq ".split_tracking.\"$EFFORT_NAME\".current_split // 0" orchestrator-state.json)
+    SPLIT_STATUS=$(yq ".split_tracking.\"$EFFORT_NAME\".splits[$CURRENT_SPLIT].status" orchestrator-state.json)
     
     if [ "$SPLIT_STATUS" = "COMPLETED" ]; then
         NEXT_SPLIT=$((CURRENT_SPLIT + 1))

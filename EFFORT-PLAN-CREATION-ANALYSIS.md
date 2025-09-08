@@ -129,7 +129,7 @@ Have Code Reviewers validate each other's plans:
 
 1. Code Reviewer A creates effort plan
 2. Code Reviewer B validates plan (different effort)
-3. Validation status recorded in orchestrator-state.yaml
+3. Validation status recorded in orchestrator-state.json
 4. SW Engineers only spawned after validation passes
 ```
 

@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -174,7 +174,7 @@ In PHASE_INTEGRATION_FEEDBACK_REVIEW, you analyze phase integration report to id
 
 ### 1. Parse Phase Integration Report
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
 REPORT_FILE="efforts/phase${PHASE}/phase-integration/PHASE_INTEGRATION_REPORT.md"
 
 echo "📋 Parsing phase integration report: $REPORT_FILE"
@@ -270,10 +270,10 @@ echo "✅ Created phase fix request: $PHASE_FIX_REQUEST"
 ### 3. Update State and Transition
 ```bash
 # Record in state file
-yq eval ".phase_integration_feedback.phase${PHASE}.report_parsed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.yaml
-yq eval ".phase_integration_feedback.phase${PHASE}.fix_request_file = \"$PHASE_FIX_REQUEST\"" -i orchestrator-state.yaml
-yq eval ".phase_integration_feedback.phase${PHASE}.failed_waves = ${#FAILED_WAVES[@]}" -i orchestrator-state.yaml
-yq eval ".phase_integration_feedback.phase${PHASE}.conflicts = ${#CONFLICT_FILES[@]}" -i orchestrator-state.yaml
+yq eval ".phase_integration_feedback.phase${PHASE}.report_parsed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+yq eval ".phase_integration_feedback.phase${PHASE}.fix_request_file = \"$PHASE_FIX_REQUEST\"" -i orchestrator-state.json
+yq eval ".phase_integration_feedback.phase${PHASE}.failed_waves = ${#FAILED_WAVES[@]}" -i orchestrator-state.json
+yq eval ".phase_integration_feedback.phase${PHASE}.conflicts = ${#CONFLICT_FILES[@]}" -i orchestrator-state.json
 
 # Determine next state
 if [ ${#FAILED_WAVES[@]} -gt 0 ] || [ ${#CONFLICT_FILES[@]} -gt 0 ] || [ ${#MISSING_DEPS[@]} -gt 0 ]; then
@@ -287,11 +287,11 @@ else
 fi
 
 # Update state
-yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.yaml
-yq eval ".state_transition_history += [{\"from\": \"PHASE_INTEGRATION_FEEDBACK_REVIEW\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"$UPDATE_REASON\"}]" -i orchestrator-state.yaml
+yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
+yq eval ".state_transition_history += [{\"from\": \"PHASE_INTEGRATION_FEEDBACK_REVIEW\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"$UPDATE_REASON\"}]" -i orchestrator-state.json
 
 # Commit
-git add orchestrator-state.yaml "$PHASE_FIX_REQUEST"
+git add orchestrator-state.json "$PHASE_FIX_REQUEST"
 git commit -m "state: Phase feedback review complete - $UPDATE_REASON"
 git push
 ```

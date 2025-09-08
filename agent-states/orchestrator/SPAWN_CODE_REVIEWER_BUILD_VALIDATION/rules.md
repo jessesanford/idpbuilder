@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -89,7 +89,7 @@ In SPAWN_CODE_REVIEWER_BUILD_VALIDATION state, you must:
    - Give clear validation requirements
 
 3. **Update State Tracking**
-   - Record spawn in orchestrator-state.yaml
+   - Record spawn in orchestrator-state.json
    - Note purpose of validation
    - Track expected report location
 
@@ -103,8 +103,8 @@ In SPAWN_CODE_REVIEWER_BUILD_VALIDATION state, you must:
 ### Step 1: Prepare Spawn Context
 ```bash
 # Get current phase and wave
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 
 # Identify integration workspace
 INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
@@ -122,11 +122,11 @@ echo "📦 Build validation needed for: $INTEGRATION_DIR"
 ### Step 2: Update State for Spawn
 ```bash
 # Record spawn details BEFORE spawning
-yq -i '.spawn_in_progress.agent = "code-reviewer"' orchestrator-state.yaml
-yq -i '.spawn_in_progress.purpose = "build_validation"' orchestrator-state.yaml
-yq -i '.spawn_in_progress.workspace = "'$INTEGRATION_DIR'"' orchestrator-state.yaml
-yq -i '.spawn_in_progress.expected_report = "'$INTEGRATION_DIR'/BUILD-VALIDATION-REPORT.md"' orchestrator-state.yaml
-yq -i '.spawn_in_progress.spawned_at = "'$(date -Iseconds)'"' orchestrator-state.yaml
+yq -i '.spawn_in_progress.agent = "code-reviewer"' orchestrator-state.json
+yq -i '.spawn_in_progress.purpose = "build_validation"' orchestrator-state.json
+yq -i '.spawn_in_progress.workspace = "'$INTEGRATION_DIR'"' orchestrator-state.json
+yq -i '.spawn_in_progress.expected_report = "'$INTEGRATION_DIR'/BUILD-VALIDATION-REPORT.md"' orchestrator-state.json
+yq -i '.spawn_in_progress.spawned_at = "'$(date -Iseconds)'"' orchestrator-state.json
 
 echo "✅ State updated with spawn details"
 ```
@@ -173,7 +173,7 @@ save_todos "SPAWN_CODE_REVIEWER_BUILD_VALIDATION"
 
 # Commit state
 cd $CLAUDE_PROJECT_DIR
-git add orchestrator-state.yaml todos/
+git add orchestrator-state.json todos/
 git commit -m "state: spawned Code Reviewer for build validation - Phase $PHASE Wave $WAVE"
 git push
 

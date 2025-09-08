@@ -369,8 +369,8 @@ EOF
     
     # Step 4: Update state to restart
     echo "📝 Updating orchestrator state to restart effort..."
-    yq -i ".efforts_in_progress.${EFFORT_NAME}.status = \"RESTARTING_R255\"" orchestrator-state.yaml
-    yq -i ".efforts_in_progress.${EFFORT_NAME}.violations += [\"R255: Wrong location/no push\"]" orchestrator-state.yaml
+    yq -i ".efforts_in_progress.${EFFORT_NAME}.status = \"RESTARTING_R255\"" orchestrator-state.json
+    yq -i ".efforts_in_progress.${EFFORT_NAME}.violations += [\"R255: Wrong location/no push\"]" orchestrator-state.json
     
     # Step 5: Respawn agent with ENHANCED instructions
     respawn_with_enhanced_instructions "$AGENT_TYPE" "$EFFORT_NAME" "$PHASE" "$WAVE"

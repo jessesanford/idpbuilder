@@ -85,7 +85,7 @@ echo "$(date +%s) - SPAWN rules acknowledged" > .state_rules_read_orchestrator_S
 ## State Exit Protocol (R322 + R313)
 1. Complete all spawns in single message
 2. Update current_state to MONITOR
-3. Commit orchestrator-state.yaml
+3. Commit orchestrator-state.json
 4. STOP immediately (don't monitor yet)
 5. Wait for /continue-orchestrating
 

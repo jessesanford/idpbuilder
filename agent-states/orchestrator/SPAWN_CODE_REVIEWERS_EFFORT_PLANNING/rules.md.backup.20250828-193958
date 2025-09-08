@@ -61,7 +61,7 @@
 
 **THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
 1. Spawn Code Reviewer for first effort NOW per parallelization plan
-2. Use spawn sequence from orchestrator-state.yaml immediately
+2. Use spawn sequence from orchestrator-state.json immediately
 3. Check TodoWrite for pending items and process them
 4. Follow R151 timing requirements for parallel spawns
 
@@ -73,7 +73,7 @@
 
 **REQUIRED - IMMEDIATE ACTION:**
 - ✅ "Entering SPAWN_CODE_REVIEWERS_EFFORT_PLANNING, Spawn Code Reviewer for first effort NOW per parallelization plan..."
-- ✅ "START SPAWNING CODE REVIEWERS, use spawn sequence from orchestrator-state.yaml immediately..."
+- ✅ "START SPAWNING CODE REVIEWERS, use spawn sequence from orchestrator-state.json immediately..."
 - ✅ "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING: Follow R151 timing requirements for parallel spawns..."
 
 ## State Context
@@ -109,7 +109,7 @@ SPAWN_AGENTS
 3. ✅ ALL branches pushed to remote with tracking
 4. ✅ work-log.md files initialized in each directory
 5. ✅ **PARALLELIZATION ANALYSIS COMPLETE (ANALYZE_CODE_REVIEWER_PARALLELIZATION)**
-6. ✅ **Parallelization plan in orchestrator-state.yaml**
+6. ✅ **Parallelization plan in orchestrator-state.json**
 
 **IF PARALLELIZATION NOT ANALYZED, GO BACK TO ANALYZE_CODE_REVIEWER_PARALLELIZATION!**
 **IF INFRASTRUCTURE IS NOT READY, GO BACK TO SETUP_EFFORT_INFRASTRUCTURE!**
@@ -149,12 +149,12 @@ SPAWNING REQUIREMENTS:
 ```bash
 # STEP 1: Load Pre-Analyzed Parallelization Plan
 echo "📖 Loading parallelization plan from ANALYZE_CODE_REVIEWER_PARALLELIZATION state"
-echo "✅ Plan already analyzed and saved in orchestrator-state.yaml"
+echo "✅ Plan already analyzed and saved in orchestrator-state.json"
 
-# Extract from orchestrator-state.yaml
-BLOCKING_EFFORTS=$(yq '.code_reviewer_parallelization_plan.blocking_efforts[].effort_id' orchestrator-state.yaml)
-PARALLEL_GROUPS=$(yq '.code_reviewer_parallelization_plan.parallel_groups' orchestrator-state.yaml)
-SPAWN_SEQUENCE=$(yq '.code_reviewer_parallelization_plan.spawn_sequence' orchestrator-state.yaml)
+# Extract from orchestrator-state.json
+BLOCKING_EFFORTS=$(yq '.code_reviewer_parallelization_plan.blocking_efforts[].effort_id' orchestrator-state.json)
+PARALLEL_GROUPS=$(yq '.code_reviewer_parallelization_plan.parallel_groups' orchestrator-state.json)
+SPAWN_SEQUENCE=$(yq '.code_reviewer_parallelization_plan.spawn_sequence' orchestrator-state.json)
 
 echo "📋 Using pre-analyzed spawn strategy:"
 echo "   Blocking efforts: $BLOCKING_EFFORTS"
@@ -281,7 +281,7 @@ Navigate to TARGET_DIRECTORY first, then create IMPLEMENTATION-PLAN.md
 ## State Transition
 
 After spawning all Code Reviewers:
-1. Record spawn times in orchestrator-state.yaml
+1. Record spawn times in orchestrator-state.json
 2. Calculate and verify <5s average delta for parallel spawns
 3. **MANDATORY: Transition to WAITING_FOR_EFFORT_PLANS (R234)**
    - DO NOT skip to ANALYZE_IMPLEMENTATION_PARALLELIZATION
@@ -296,7 +296,7 @@ save_todos "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING complete"
 
 # R189: Commit within 60 seconds
 cd $CLAUDE_PROJECT_DIR
-git add todos/*.todo orchestrator-state.yaml
+git add todos/*.todo orchestrator-state.json
 git commit -m "todo: Code Reviewers spawned for effort planning"
 git push
 ```

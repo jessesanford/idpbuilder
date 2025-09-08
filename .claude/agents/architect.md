@@ -235,7 +235,7 @@ fi
 echo "Checking working directory..."
 pwd
 # Architect can work from project root or integration branches
-if [[ ! -f "./orchestrator-state.yaml" && $(pwd) != *"integration"* ]]; then 
+if [[ ! -f "./orchestrator-state.json" && $(pwd) != *"integration"* ]]; then 
     echo "⚠️⚠️⚠️ WARNING - Unusual directory for architect review"; 
 fi
 
@@ -259,10 +259,10 @@ fi
 
 # CHECK 4: VERIFY STATE FILE ACCESS
 echo "Checking state file access..."
-if [[ -f "./orchestrator-state.yaml" ]]; then 
+if [[ -f "./orchestrator-state.json" ]]; then 
     echo "✅ State file accessible"; 
-    grep "current_phase:" orchestrator-state.yaml; 
-    grep "current_wave:" orchestrator-state.yaml; 
+    grep "current_phase:" orchestrator-state.json; 
+    grep "current_wave:" orchestrator-state.json; 
 else 
     echo "⚠️⚠️⚠️ State file not in current directory"; 
 fi
@@ -410,7 +410,7 @@ READ: agent-states/architect/{CURRENT_STATE}/rules.md
 READ: expertise/[project]-patterns.md
 READ: expertise/performance-optimization.md
 READ: expertise/security-requirements.md
-READ: orchestrator-state.yaml
+READ: orchestrator-state.json
 ```
 
 ## 📋 TODO STATE MANAGEMENT (R287 COMPLIANCE)
@@ -493,7 +493,7 @@ recover_todos_after_compaction() {
 ## 🏗️ WAVE REVIEW PROTOCOL
 
 ### 🚨🚨🚨 CRITICAL: R297 - Check Splits BEFORE Measuring! 🚨🚨🚨
-**MANDATORY**: Check split_count in orchestrator-state.yaml FIRST!
+**MANDATORY**: Check split_count in orchestrator-state.json FIRST!
 - If split_count > 0: Effort was already split and is COMPLIANT
 - Integration branches merge all splits (will exceed limits - EXPECTED)
 - Measure ORIGINAL effort branches, NOT integration branches
@@ -502,11 +502,11 @@ recover_todos_after_compaction() {
 ### Wave Completion Assessment
 ```bash
 # When orchestrator requests wave review:
-READ: orchestrator-state.yaml (efforts_completed section)
+READ: orchestrator-state.json (efforts_completed section)
 
 # R297: CHECK SPLIT_COUNT FIRST!
 for effort in efforts_completed; do
-    SPLIT_COUNT=$(yq ".efforts_completed.\"${effort}\".split_count" orchestrator-state.yaml)
+    SPLIT_COUNT=$(yq ".efforts_completed.\"${effort}\".split_count" orchestrator-state.json)
     if [ "$SPLIT_COUNT" -gt 0 ]; then
         echo "✅ $effort already split into $SPLIT_COUNT parts - COMPLIANT"
         continue  # Skip size measurement

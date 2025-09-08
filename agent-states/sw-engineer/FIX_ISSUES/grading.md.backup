@@ -780,7 +780,7 @@ def assess_fix_issues_health(current_grade, session_data):
 ## Performance State Tracking
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 grading:
   SW_ENGINEER:
     FIX_ISSUES:

@@ -19,7 +19,7 @@
 ### State File Updates (30%)
 | Criterion | Points | Requirement |
 |-----------|--------|-------------|
-| Parallelization plan saved | 15% | Complete plan in orchestrator-state.yaml |
+| Parallelization plan saved | 15% | Complete plan in orchestrator-state.json |
 | Timestamp recorded | 5% | Analysis timestamp included |
 | Spawn sequence documented | 10% | All steps clearly defined |
 

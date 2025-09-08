@@ -424,7 +424,7 @@ class ValidationGrader:
 ## Performance Tracking
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 grading:
   CODE_REVIEWER_VALIDATION:
     latest:

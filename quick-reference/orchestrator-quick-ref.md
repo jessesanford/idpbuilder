@@ -5,7 +5,7 @@
 □ Print: AGENT STARTUP: $(date '+%Y-%m-%d %H:%M:%S %Z')
 □ Verify: Current directory and git branch
 □ Load: agent-states/orchestrator/{CURRENT_STATE}/rules.md
-□ Read: orchestrator-state.yaml
+□ Read: orchestrator-state.json
 □ Check: TODO recovery if compaction detected
 ```
 
@@ -46,7 +46,7 @@ PROCESS_ARCHITECT_DECISION → [NEXT_WAVE|HARD_STOP]
 ### State Management
 ```bash
 # Load current state
-READ: orchestrator-state.yaml
+READ: orchestrator-state.json
 
 # Update state after transition  
 current_state: "{NEW_STATE}"
@@ -85,7 +85,7 @@ delta=$((spawn_end - spawn_start))
 ```
 1. Check last activity timestamp
 2. If >30min: respawn agent
-3. Update orchestrator-state.yaml
+3. Update orchestrator-state.json
 4. Record issue in work log
 ```
 

@@ -101,12 +101,12 @@ verify_phase_assessment_report() {
     fi
     
     # Update state file with report information
-    if command -v yq &> /dev/null && [ -f "orchestrator-state.yaml" ]; then
+    if command -v yq &> /dev/null && [ -f "orchestrator-state.json" ]; then
         echo "📝 Updating state file with report information..."
-        yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.yaml
-        yq -i ".phase_assessment.decision = \"$DECISION\"" orchestrator-state.yaml
-        [ -n "$SCORE" ] && yq -i ".phase_assessment.score = $SCORE" orchestrator-state.yaml
-        yq -i ".phase_assessment.verified_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+        yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.json
+        yq -i ".phase_assessment.decision = \"$DECISION\"" orchestrator-state.json
+        [ -n "$SCORE" ] && yq -i ".phase_assessment.score = $SCORE" orchestrator-state.json
+        yq -i ".phase_assessment.verified_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
         echo -e "${GREEN}✅ State file updated${NC}"
     fi
     
@@ -162,12 +162,12 @@ list_phase_assessment_reports() {
 audit_phase_completions() {
     echo "🔍 Auditing phase completions vs assessment reports..."
     
-    if [ ! -f "orchestrator-state.yaml" ]; then
-        echo -e "${YELLOW}⚠️ No orchestrator-state.yaml found${NC}"
+    if [ ! -f "orchestrator-state.json" ]; then
+        echo -e "${YELLOW}⚠️ No orchestrator-state.json found${NC}"
         return 1
     fi
     
-    local CURRENT_PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+    local CURRENT_PHASE=$(yq '.current_phase' orchestrator-state.json)
     echo "  Current phase: $CURRENT_PHASE"
     
     # Check each completed phase for assessment report

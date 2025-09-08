@@ -104,8 +104,8 @@ grep -r "'PLANNING'" --include="*.py" --include="*.js" .
 ### Verify Correct Planning State Usage
 ```bash
 # Ensure using correct planning states
-grep -r "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING" orchestrator-state.yaml
-grep -r "SPAWN_ARCHITECT_PHASE_PLANNING" orchestrator-state.yaml
+grep -r "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING" orchestrator-state.json
+grep -r "SPAWN_ARCHITECT_PHASE_PLANNING" orchestrator-state.json
 ```
 
 ## Common Mistakes to Avoid

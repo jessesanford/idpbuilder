@@ -9,7 +9,7 @@
 
 ### THE FUNDAMENTAL SEPARATION:
 1. **SOFTWARE FACTORY REPO** (Where this file lives)
-   - Has: `.claude/`, `rule-library/`, `orchestrator-state.yaml`
+   - Has: `.claude/`, `rule-library/`, `orchestrator-state.json`
    - Purpose: PLANNING AND ORCHESTRATION ONLY
    - **NEVER IMPLEMENT CODE HERE!**
 

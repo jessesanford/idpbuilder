@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -314,10 +314,10 @@ EOF
     
     # 8. Update orchestrator state
     cd "$SF_INSTANCE_DIR"
-    yq eval -i ".integration_testing.branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.yaml
-    yq eval -i ".integration_testing.workspace = \"$INTEGRATION_DIR\"" orchestrator-state.yaml
-    yq eval -i ".integration_testing.created_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-    yq eval -i ".integration_testing.base_commit = \"$(cd $INTEGRATION_DIR && git rev-parse HEAD)\"" orchestrator-state.yaml
+    yq eval -i ".integration_testing.branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.json
+    yq eval -i ".integration_testing.workspace = \"$INTEGRATION_DIR\"" orchestrator-state.json
+    yq eval -i ".integration_testing.created_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+    yq eval -i ".integration_testing.base_commit = \"$(cd $INTEGRATION_DIR && git rev-parse HEAD)\"" orchestrator-state.json
     
     # 9. Prepare effort inventory
     echo "📊 Preparing effort inventory for integration..."

@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -692,8 +692,8 @@ echo "Phase 3 Wave 1 uses: $BASE_BRANCH (from previous PHASE)"
 
 ```bash
 # Read current phase/wave from state
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 
 # 🔴 CRITICAL: Check if this is Phase 2!
 if [[ $PHASE -eq 2 && $WAVE -eq 1 ]]; then
@@ -717,7 +717,7 @@ echo "📋 Ready to spawn Code Reviewers for effort planning"
 ## State Transition
 
 After ALL infrastructure is ready:
-1. Update orchestrator-state.yaml with effort directories
+1. Update orchestrator-state.json with effort directories
 2. Verify all branches pushed to remote
 3. **MANDATORY: Transition to ANALYZE_CODE_REVIEWER_PARALLELIZATION (R234)**
    - DO NOT skip to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING

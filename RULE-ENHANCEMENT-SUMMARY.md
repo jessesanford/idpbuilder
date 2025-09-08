@@ -13,7 +13,7 @@ Successfully reviewed orchestrator's self-analysis of code violations and enhanc
 - Second failure: Try different approach or agent
 - Third failure: MANDATORY escalation to human
 - Added failure tracking protocol with state file updates
-- Clear tracking structure in orchestrator-state.yaml
+- Clear tracking structure in orchestrator-state.json
 
 ### 2. R315 - Infrastructure vs Implementation Boundary ✅
 **Enhancement**: Added comprehensive command whitelist/blacklist

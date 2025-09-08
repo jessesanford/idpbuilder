@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -284,7 +284,7 @@ You are spawning SW Engineers to implement efforts based on the implementation p
 3. ✅ All effort IMPLEMENTATION-PLAN.md files (created by Code Reviewers)
 4. ✅ All work-log.md files initialized
 5. ✅ **PARALLELIZATION ANALYSIS COMPLETE (ANALYZE_IMPLEMENTATION_PARALLELIZATION)**
-6. ✅ **SW Engineer parallelization plan in orchestrator-state.yaml**
+6. ✅ **SW Engineer parallelization plan in orchestrator-state.json**
 
 **IF PARALLELIZATION NOT ANALYZED, GO BACK TO ANALYZE_IMPLEMENTATION_PARALLELIZATION!**
 **Infrastructure was created BEFORE Code Reviewers made plans!**
@@ -302,7 +302,7 @@ Infrastructure was set up in SETUP_EFFORT_INFRASTRUCTURE state:
 - Remote tracking configured
 - IMPLEMENTATION-PLAN.md files created by Code Reviewers
 - work-log.md files initialized
-- **SW Engineer parallelization plan in orchestrator-state.yaml**
+- **SW Engineer parallelization plan in orchestrator-state.json**
 
 **Just CD to directories and spawn SW Engineers per the analyzed plan!**
 
@@ -314,7 +314,7 @@ save_todos "SPAWN_AGENTS complete - all SW Engineers spawned"
 
 # R287: Commit within 60 seconds
 cd $CLAUDE_PROJECT_DIR
-git add todos/*.todo orchestrator-state.yaml
+git add todos/*.todo orchestrator-state.json
 git commit -m "todo: SW Engineers spawned, stopping per R322"
 git push
 
@@ -323,7 +323,7 @@ echo "
 🛑 STOPPING PER R322 - CONTEXT PRESERVATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Agents spawned: [List all SW Engineers]
-State saved to: orchestrator-state.yaml
+State saved to: orchestrator-state.json
 Next state: MONITOR
 
 To continue after agents complete:
@@ -335,7 +335,110 @@ This stop preserves context and prevents rule loss.
 exit 0  # MANDATORY EXIT PER R322
 ```
 
-## Spawn Message Template WITH R295 COMPLIANCE
+## 🔴🔴🔴 SPECIAL HANDLING FOR SPLITS 🔴🔴🔴
+
+### When Spawning SW Engineer for Split Implementation:
+
+```bash
+# 1. Read split information from state file (USE ABSOLUTE PATHS!)
+EFFORT_NAME="gitea-client"  # Example
+SPLIT_NUM=2  # Current split being worked
+
+# 🔴🔴🔴 CRITICAL: GET PATHS FROM STATE FILE! 🔴🔴🔴
+SPLIT_PLAN_PATH=$(yq ".split_tracking.\"$EFFORT_NAME\".splits[$((SPLIT_NUM-1))].split_plan_path" orchestrator-state.json)
+INFRASTRUCTURE_DIR=$(yq ".split_tracking.\"$EFFORT_NAME\".splits[$((SPLIT_NUM-1))].infrastructure_dir" orchestrator-state.json)
+
+if [ -z "$SPLIT_PLAN_PATH" ] || [ -z "$INFRASTRUCTURE_DIR" ]; then
+    echo "❌ FATAL: Split paths not found in state file!"
+    echo "Expected .split_tracking.$EFFORT_NAME.splits[$((SPLIT_NUM-1))].split_plan_path"
+    echo "This should have been set by CREATE_NEXT_SPLIT_INFRASTRUCTURE"
+    exit 1
+fi
+
+echo "✅ Split paths loaded from state:"
+echo "   Plan: $SPLIT_PLAN_PATH"
+echo "   Infrastructure: $INFRASTRUCTURE_DIR"
+
+# 2. Verify split plan exists
+if [ ! -f "$SPLIT_PLAN_PATH" ]; then
+    echo "❌ FATAL: Split plan not found at: $SPLIT_PLAN_PATH"
+    exit 1
+fi
+
+# 3. CD to infrastructure directory (USE ABSOLUTE PATH!)
+cd "$INFRASTRUCTURE_DIR" || {
+    echo "❌ FATAL: Cannot cd to split infrastructure: $INFRASTRUCTURE_DIR"
+    exit 1
+}
+
+# 4. Verify we're in the right place
+pwd
+git branch --show-current
+
+# 5. Now spawn with EXPLICIT paths
+```
+
+### Split Spawn Message Template:
+
+```markdown
+# SPAWN SW ENGINEER FOR SPLIT IMPLEMENTATION:
+Task software-engineer:
+PURPOSE: Implement Split-{SPLIT_NUM} of {effort_name}
+
+🔴🔴🔴 CRITICAL SPLIT INFORMATION:
+YOU ARE IMPLEMENTING A SPLIT!
+SPLIT NUMBER: {SPLIT_NUM}
+SPLIT PLAN PATH: {SPLIT_PLAN_FULL_PATH}
+INFRASTRUCTURE DIR: {INFRASTRUCTURE_DIR}
+🔴🔴🔴
+
+🔴🔴🔴 CRITICAL FILE PLACEMENT WARNING (R326) 🔴🔴🔴
+DO NOT CREATE split-{SPLIT_NUM}/ SUBDIRECTORY!
+Files go DIRECTLY in standard project directories:
+✅ CORRECT: pkg/registry/auth.go
+❌ WRONG: split-{SPLIT_NUM}/pkg/registry/auth.go
+
+Your working directory is ALREADY split-specific:
+{INFRASTRUCTURE_DIR}
+
+Creating split subdirectories causes CATASTROPHIC measurement errors!
+Git will see files as different, measuring 1989 lines instead of 400!
+🔴🔴🔴
+
+📋 YOUR INSTRUCTIONS:
+FOLLOW ONLY: The split plan at {SPLIT_PLAN_FULL_PATH}
+LOCATION: {INFRASTRUCTURE_DIR}
+IGNORE: Original effort plans, other splits
+
+🔴🔴🔴 NAVIGATION REQUIREMENTS:
+YOU MUST USE ABSOLUTE PATHS!
+TARGET_DIRECTORY: {INFRASTRUCTURE_DIR}
+SPLIT_PLAN: {SPLIT_PLAN_FULL_PATH}
+
+YOUR MANDATORY FIRST ACTIONS:
+1. Echo current directory: pwd
+2. Navigate using ABSOLUTE path: cd "{INFRASTRUCTURE_DIR}"
+3. Verify correct directory: pwd
+4. Verify branch: git branch --show-current
+5. Read split plan: cat "{SPLIT_PLAN_FULL_PATH}"
+6. If paths don't exist:
+   - STOP IMMEDIATELY
+   - Report exact error with full paths
+
+REQUIREMENTS:
+- Follow split plan at {SPLIT_PLAN_FULL_PATH} exactly
+- Size limit: {split_limit} lines for this split
+- Base branch: {base_branch} (from state file)
+- Tests passing for split scope
+
+DELIVERABLES:
+- Split implementation complete per plan
+- Tests for split passing
+- Size under split limit
+- Code committed and pushed
+```
+
+## Spawn Message Template WITH R295 COMPLIANCE (Regular Efforts)
 
 ```markdown
 # SPAWN SW ENGINEER WITH MANDATORY CLARITY (R295):
@@ -409,7 +512,7 @@ Key points:
 ## Recording Spawn Times
 
 ```yaml
-# Update in orchestrator-state.yaml
+# Update in orchestrator-state.json
 parallel_spawn_records:
   wave{X}_group{Y}:
     spawned_at: "2025-08-23T14:30:45Z"
@@ -484,16 +587,16 @@ echo "✅ All SW Engineers spawned successfully"
 
 # CRITICAL: Update state file FIRST (R324 requirement)
 echo "🔴 R324: Updating current_state to prevent infinite loop..."
-yq -i '.current_state = "MONITOR_IMPLEMENTATION"' orchestrator-state.yaml
-yq -i '.previous_state = "SPAWN_AGENTS"' orchestrator-state.yaml
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+yq -i '.current_state = "MONITOR_IMPLEMENTATION"' orchestrator-state.json
+yq -i '.previous_state = "SPAWN_AGENTS"' orchestrator-state.json
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
 
 # Verify the update
 echo "✅ State updated to:"
-grep "current_state:" orchestrator-state.yaml
+grep "current_state:" orchestrator-state.json
 
 # Commit and push IMMEDIATELY
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: transition to MONITOR_IMPLEMENTATION from SPAWN_AGENTS (R324)"
 git push
 

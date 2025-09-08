@@ -48,7 +48,7 @@ The PHASE_INTEGRATION state must detect its entry context:
 4. Handle merge conflicts if they arise
 5. Create PHASE-{N}-INTEGRATION.md report
 6. Push integrated branch to remote
-7. Record in orchestrator-state.yaml
+7. Record in orchestrator-state.json
 
 ### Architect Assessment Must:
 1. Review the integrated phase branch (not individual waves)
@@ -142,11 +142,11 @@ assessment_targets:  # Multiple unintegrated branches - WRONG!
 
 ```bash
 # Check for forbidden transition
-grep "WAVE_REVIEW.*SPAWN_ARCHITECT_PHASE_ASSESSMENT" orchestrator-state.yaml
+grep "WAVE_REVIEW.*SPAWN_ARCHITECT_PHASE_ASSESSMENT" orchestrator-state.json
 # Should return NOTHING if compliant
 
 # Verify integration happened
-grep "phase_integration_branches" orchestrator-state.yaml
+grep "phase_integration_branches" orchestrator-state.json
 # Should show integration branch for current phase
 
 # Confirm architect assessed integrated branch

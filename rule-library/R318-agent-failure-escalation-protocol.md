@@ -100,7 +100,7 @@ echo "Status: BLOCKED"
 
 # Update state
 yq -i '.blocked_reason = "Agent failure - human intervention required"' \
-    orchestrator-state.yaml
+    orchestrator-state.json
 ```
 
 ## ❌ FORBIDDEN RESPONSES:
@@ -168,7 +168,7 @@ echo "🚀 Infrastructure ready, respawning agent..."
 
 ### Failure Attempt Tracking Protocol
 ```yaml
-# In orchestrator-state.yaml
+# In orchestrator-state.json
 failure_tracking:
   effort_name:
     agent_type: "sw-engineer"
@@ -197,7 +197,7 @@ handle_agent_failure() {
     local failure_reason="$3"
     
     # Get current failure count
-    local failure_count=$(yq ".failure_tracking.\"$effort\".failure_count // 0" orchestrator-state.yaml)
+    local failure_count=$(yq ".failure_tracking.\"$effort\".failure_count // 0" orchestrator-state.json)
     failure_count=$((failure_count + 1))
     
     echo "🚨 Failure #$failure_count for $effort ($agent_type)"
@@ -206,14 +206,14 @@ handle_agent_failure() {
         1)
             echo "📋 First failure - Respawning with detailed instructions"
             # Update tracking
-            yq -i ".failure_tracking.\"$effort\".failure_count = $failure_count" orchestrator-state.yaml
+            yq -i ".failure_tracking.\"$effort\".failure_count = $failure_count" orchestrator-state.json
             # Respawn with specific guidance
             spawn_with_fix_instructions "$agent_type" "$effort" "$failure_reason"
             ;;
         2)
             echo "⚠️ Second failure - Trying different approach"
             # Update tracking
-            yq -i ".failure_tracking.\"$effort\".failure_count = $failure_count" orchestrator-state.yaml
+            yq -i ".failure_tracking.\"$effort\".failure_count = $failure_count" orchestrator-state.json
             # Try different agent or approach
             spawn_alternate_approach "$effort" "$failure_reason"
             ;;
@@ -221,8 +221,8 @@ handle_agent_failure() {
             echo "🔴 THIRD FAILURE - MANDATORY ESCALATION"
             echo "❌ 3-STRIKE LIMIT REACHED"
             # Update tracking
-            yq -i ".failure_tracking.\"$effort\".failure_count = $failure_count" orchestrator-state.yaml
-            yq -i ".failure_tracking.\"$effort\".status = \"BLOCKED_HUMAN_REQUIRED\"" orchestrator-state.yaml
+            yq -i ".failure_tracking.\"$effort\".failure_count = $failure_count" orchestrator-state.json
+            yq -i ".failure_tracking.\"$effort\".status = \"BLOCKED_HUMAN_REQUIRED\"" orchestrator-state.json
             # Create escalation report
             create_escalation_report "$effort" "$agent_type" "$failure_reason"
             echo "🛑 STOPPED - Human intervention required"
@@ -254,7 +254,7 @@ handle_agent_failure() {
 ## Tracking Escalations
 
 ```yaml
-# In orchestrator-state.yaml
+# In orchestrator-state.json
 escalations:
   - timestamp: "2024-01-20T10:30:00Z"
     agent: "sw-engineer-1"

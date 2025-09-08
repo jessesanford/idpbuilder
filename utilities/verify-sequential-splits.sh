@@ -114,9 +114,9 @@ verify_sequential_splits() {
     fi
 }
 
-# Function to check all efforts in orchestrator-state.yaml
+# Function to check all efforts in orchestrator-state.json
 check_all_split_efforts() {
-    local state_file="${1:-orchestrator-state.yaml}"
+    local state_file="${1:-orchestrator-state.json}"
     
     if [ ! -f "$state_file" ]; then
         print_warning "State file not found: $state_file"
@@ -172,8 +172,8 @@ Usage: $0 [OPTIONS] [EFFORT_NAME] [SPLIT_COUNT]
 Verify that split branches follow MANDATORY sequential pattern.
 
 OPTIONS:
-    -a, --all           Check all split efforts in orchestrator-state.yaml
-    -s, --state FILE    Use alternate state file (default: orchestrator-state.yaml)
+    -a, --all           Check all split efforts in orchestrator-state.json
+    -s, --state FILE    Use alternate state file (default: orchestrator-state.json)
     -h, --help          Show this help message
 
 ARGUMENTS:
@@ -185,7 +185,7 @@ EXAMPLES:
         Verify authentication effort has 3 sequential splits
     
     $0 --all
-        Check all split efforts in orchestrator-state.yaml
+        Check all split efforts in orchestrator-state.json
     
     $0 tmc-workspace/phase2/wave1/api-types
         Auto-detect and verify splits for api-types
@@ -203,7 +203,7 @@ EOF
 # Main script logic
 main() {
     local check_all=false
-    local state_file="orchestrator-state.yaml"
+    local state_file="orchestrator-state.json"
     local effort_name=""
     local split_count=0
     

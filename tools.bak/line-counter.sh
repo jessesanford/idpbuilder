@@ -50,7 +50,8 @@ AUTO-DETECTION LOGIC:
     Supports optional project prefixes (e.g., my-project/phase1/wave1/effort):
     
     For split branches (--split-NNN):
-      - First split (--split-001): base is the original effort branch
+      - First split (--split-001): base is the SAME BASE as the oversized effort (NOT the effort itself!)
+        Example: If effort was based on phase1/integration, split-001 uses phase1/integration too
       - Later splits (--split-002+): base is the previous split
     
     For effort branches (phase*/wave*/effort-name):
@@ -95,8 +96,8 @@ find_project_prefix() {
         # Method 3: Search up from current directory to find orchestrator root
         local search_dir="$(pwd)"
         while [ "$search_dir" != "/" ]; do
-            # Check for orchestrator-state.yaml as a marker of the orchestrator root
-            if [ -f "$search_dir/orchestrator-state.yaml" ] || [ -f "$search_dir/orchestrator-state.yaml.example" ]; then
+            # Check for orchestrator-state.json as a marker of the orchestrator root
+            if [ -f "$search_dir/orchestrator-state.json" ] || [ -f "$search_dir/orchestrator-state.json.example" ]; then
                 if [ -f "$search_dir/target-repo-config.yaml" ]; then
                     config_file="$search_dir/target-repo-config.yaml"
                     PREFIX_SOURCE="orchestrator root ($search_dir)"
@@ -324,9 +325,46 @@ detect_base_branch() {
         [ "$VERBOSE" = true ] && echo "  Detected split branch: split #$split_num of $effort_base" >&2
         
         if [ "$split_num" = "001" ] || [ "$split_num" = "1" ]; then
-            # First split - base is the original effort branch
-            base="$effort_base"
-            [ "$VERBOSE" = true ] && echo "  First split - base is original effort: $base" >&2
+            # First split - CRITICAL: Use SAME BASE as the oversized effort, NOT the effort itself!
+            # The oversized effort branch contains ALL the too-large code.
+            # Split-001 must start clean from the same integration base.
+            
+            # Parse the effort base to determine what IT was based on
+            if [[ "$effort_base" =~ ^(.*/)phase([0-9]+)/wave([0-9]+)/([^/]+)$ ]]; then
+                local effort_prefix="${BASH_REMATCH[1]}"
+                local effort_phase="${BASH_REMATCH[2]}"
+                local effort_wave="${BASH_REMATCH[3]}"
+                local effort_name="${BASH_REMATCH[4]}"
+                
+                # Determine what the oversized effort was based on (R308 incremental base)
+                if [ "$effort_phase" = "1" ] && [ "$effort_wave" = "1" ]; then
+                    # Phase 1, Wave 1 efforts are based on main
+                    base=$(find_main_branch)
+                else
+                    # Other efforts use phase/wave integration as base
+                    local integration_base="${effort_prefix}phase${effort_phase}/wave${effort_wave}/integration"
+                    base=$(find_branch_with_suffix "$integration_base")
+                    
+                    if [ -z "$base" ]; then
+                        # Try phase integration if wave integration doesn't exist
+                        integration_base="${effort_prefix}phase${effort_phase}/integration"
+                        base=$(find_branch_with_suffix "$integration_base")
+                    fi
+                    
+                    if [ -z "$base" ]; then
+                        # Fallback to main if no integration found
+                        base=$(find_main_branch)
+                    fi
+                fi
+                
+                [ "$VERBOSE" = true ] && echo "  🔴 CRITICAL: First split uses SAME BASE as oversized effort" >&2
+                [ "$VERBOSE" = true ] && echo "  Oversized effort '$effort_base' was based on: $base" >&2
+                [ "$VERBOSE" = true ] && echo "  Split-001 will measure against: $base (NOT $effort_base)" >&2
+            else
+                # Fallback for non-standard naming - use the effort as base (old behavior)
+                base="$effort_base"
+                [ "$VERBOSE" = true ] && echo "  ⚠️ WARNING: Non-standard naming, using effort as base: $base" >&2
+            fi
         else
             # Later splits - base is previous split (use same delimiter format as current branch)
             local prev_num=$((10#$split_num - 1))

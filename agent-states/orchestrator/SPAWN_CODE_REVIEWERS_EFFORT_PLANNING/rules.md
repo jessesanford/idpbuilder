@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -215,7 +215,7 @@ The system will check for this marker. No marker = Immediate failure.
 
 **THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
 1. Spawn Code Reviewer for first effort NOW per parallelization plan
-2. Use spawn sequence from orchestrator-state.yaml immediately
+2. Use spawn sequence from orchestrator-state.json immediately
 3. Check TodoWrite for pending items and process them
 4. Follow R151 timing requirements for parallel spawns
 
@@ -227,7 +227,7 @@ The system will check for this marker. No marker = Immediate failure.
 
 **REQUIRED - IMMEDIATE ACTION:**
 - ✅ "Entering SPAWN_CODE_REVIEWERS_EFFORT_PLANNING, Spawn Code Reviewer for first effort NOW per parallelization plan..."
-- ✅ "START SPAWNING CODE REVIEWERS, use spawn sequence from orchestrator-state.yaml immediately..."
+- ✅ "START SPAWNING CODE REVIEWERS, use spawn sequence from orchestrator-state.json immediately..."
 - ✅ "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING: Follow R151 timing requirements for parallel spawns..."
 
 ## 🔴🔴🔴 MANDATORY MEASUREMENT RULE - R304 🔴🔴🔴
@@ -274,7 +274,7 @@ SPAWN_AGENTS
 3. ✅ ALL branches pushed to remote with tracking
 4. ✅ work-log.md files initialized in each directory
 5. ✅ **PARALLELIZATION ANALYSIS COMPLETE (ANALYZE_CODE_REVIEWER_PARALLELIZATION)**
-6. ✅ **Parallelization plan in orchestrator-state.yaml**
+6. ✅ **Parallelization plan in orchestrator-state.json**
 
 **IF PARALLELIZATION NOT ANALYZED, GO BACK TO ANALYZE_CODE_REVIEWER_PARALLELIZATION!**
 **IF INFRASTRUCTURE IS NOT READY, GO BACK TO SETUP_EFFORT_INFRASTRUCTURE!**

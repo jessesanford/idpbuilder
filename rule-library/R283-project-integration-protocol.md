@@ -15,7 +15,7 @@
 ### 1. Project Integration Infrastructure (FOLLOWS R104)
 ```bash
 # Setup for final project integration per R104
-TOTAL_PHASES=$(yq '.total_phases' orchestrator-state.yaml)
+TOTAL_PHASES=$(yq '.total_phases' orchestrator-state.json)
 
 # R104: Read target repository configuration
 TARGET_CONFIG="$CLAUDE_PROJECT_DIR/target-repo-config.yaml"
@@ -144,7 +144,7 @@ validate_project_integration || exit 1
 ```bash
 # Verify all phases completed
 for phase in $(seq 1 $TOTAL_PHASES); do
-    phase_status=$(yq ".phases.phase_${phase}.status" orchestrator-state.yaml)
+    phase_status=$(yq ".phases.phase_${phase}.status" orchestrator-state.json)
     if [ "$phase_status" != "INTEGRATED" ]; then
         echo "🚨 Cannot integrate project - Phase $phase not integrated"
         exit 1
@@ -152,7 +152,7 @@ for phase in $(seq 1 $TOTAL_PHASES); do
 done
 
 # Verify architect approval
-architect_approval=$(yq '.architect_approval.project_ready' orchestrator-state.yaml)
+architect_approval=$(yq '.architect_approval.project_ready' orchestrator-state.json)
 if [ "$architect_approval" != "true" ]; then
     echo "🚨 Cannot integrate - Architect approval required"
     exit 1
@@ -288,8 +288,8 @@ cat > PROJECT-DEMO.md << 'EOF'
 - Test Harness: project-test-harness.sh
 
 ## 📊 Project Metrics
-- Total Phases Integrated: $(yq '.total_phases' orchestrator-state.yaml)
-- Total Features Delivered: $(yq '.features_completed | length' orchestrator-state.yaml)
+- Total Phases Integrated: $(yq '.total_phases' orchestrator-state.json)
+- Total Features Delivered: $(yq '.features_completed | length' orchestrator-state.json)
 - Total Lines of Code: $(git diff main --numstat | awk '{sum+=$1+$2} END {print sum}')
 - Test Coverage: $(npm run coverage --silent | grep "All files" | awk '{print $10}')
 - Build Size: $(du -sh dist/ 2>/dev/null | awk '{print $1}')
@@ -461,7 +461,7 @@ $(for p in $(seq 1 $TOTAL_PHASES); do echo "- Phase $p: INTEGRATED"; done)
 - Total Lines: $total_lines
 - Test Coverage: $(npm run coverage --silent | grep "All files" | awk '{print $10}')
 - Build Size: $(du -sh dist/ 2>/dev/null | awk '{print $1}')
-- Features Delivered: $(yq '.features_completed | length' orchestrator-state.yaml)
+- Features Delivered: $(yq '.features_completed | length' orchestrator-state.json)
 
 ## Validation Checklist
 - [x] All phases merged successfully

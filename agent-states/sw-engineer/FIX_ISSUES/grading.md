@@ -786,7 +786,7 @@ Insufficient Verification <70%:
 ## Performance State Tracking
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 grading:
   SW_ENGINEER:
     FIX_ISSUES:

@@ -137,7 +137,7 @@ if [ -f "$PROJECT_DIR/utilities/pre-compact.sh" ]; then
 fi
 
 echo -e "\n${BOLD}Configuration Files:${NC}"
-check_file "orchestrator-state.yaml" "Orchestrator state"
+check_file "orchestrator-state.json" "Orchestrator state"
 check_file "project-config.yaml" "Project configuration" false
 
 echo -e "\n${BOLD}Path Configuration:${NC}"

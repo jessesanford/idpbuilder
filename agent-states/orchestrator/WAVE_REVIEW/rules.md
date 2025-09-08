@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -178,12 +178,12 @@ You are requesting an architect review of a completed wave's integration. The ar
 update_orchestrator_state "WAVE_REVIEW" "Requesting architect review of wave integration"
 
 # 2. Record review request in state file
-yq -i ".current_review.type = \"WAVE_INTEGRATION\"" orchestrator-state.yaml
-yq -i ".current_review.phase = $PHASE" orchestrator-state.yaml
-yq -i ".current_review.wave = $WAVE" orchestrator-state.yaml
-yq -i ".current_review.requested_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-yq -i ".current_review.integration_branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.yaml
-yq -i ".current_review.status = \"PENDING\"" orchestrator-state.yaml
+yq -i ".current_review.type = \"WAVE_INTEGRATION\"" orchestrator-state.json
+yq -i ".current_review.phase = $PHASE" orchestrator-state.json
+yq -i ".current_review.wave = $WAVE" orchestrator-state.json
+yq -i ".current_review.requested_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+yq -i ".current_review.integration_branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.json
+yq -i ".current_review.status = \"PENDING\"" orchestrator-state.json
 ```
 
 ## Primary Purpose
@@ -263,8 +263,8 @@ verify_wave_review_report() {
     esac
     
     # Update state with report location
-    yq -i ".wave_review.report_file = \"$REPORT_FILE\"" orchestrator-state.yaml
-    yq -i ".wave_review.decision = \"$DECISION\"" orchestrator-state.yaml
+    yq -i ".wave_review.report_file = \"$REPORT_FILE\"" orchestrator-state.json
+    yq -i ".wave_review.decision = \"$DECISION\"" orchestrator-state.json
     
     return 0
 }
@@ -278,9 +278,9 @@ verify_wave_review_report "$CURRENT_PHASE" "$CURRENT_WAVE"
 ### If PROCEED_NEXT_WAVE:
 ```bash
 # Architect approved wave, proceed to next wave
-yq -i ".current_review.status = \"APPROVED\"" orchestrator-state.yaml
-yq -i ".current_review.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-yq -i ".current_review.decision = \"PROCEED_NEXT_WAVE\"" orchestrator-state.yaml
+yq -i ".current_review.status = \"APPROVED\"" orchestrator-state.json
+yq -i ".current_review.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+yq -i ".current_review.decision = \"PROCEED_NEXT_WAVE\"" orchestrator-state.json
 
 # Transition to plan next wave
 transition_to "PLANNING"  # Plan next wave
@@ -289,9 +289,9 @@ transition_to "PLANNING"  # Plan next wave
 ### If PROCEED_PHASE_ASSESSMENT:
 ```bash
 # Last wave approved, ready for phase integration then assessment
-yq -i ".current_review.status = \"APPROVED\"" orchestrator-state.yaml
-yq -i ".current_review.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-yq -i ".current_review.decision = \"PROCEED_PHASE_ASSESSMENT\"" orchestrator-state.yaml
+yq -i ".current_review.status = \"APPROVED\"" orchestrator-state.json
+yq -i ".current_review.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+yq -i ".current_review.decision = \"PROCEED_PHASE_ASSESSMENT\"" orchestrator-state.json
 
 # CRITICAL R285: Must integrate phase BEFORE assessment!
 # Phase integration required to create single integrated branch for architect review
@@ -301,12 +301,12 @@ transition_to "PHASE_INTEGRATION"  # Integrate all waves before assessment
 ### If CHANGES_REQUIRED:
 ```bash
 # Wave needs fixes before proceeding
-yq -i ".current_review.status = \"CHANGES_REQUIRED\"" orchestrator-state.yaml
-yq -i ".current_review.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-yq -i ".current_review.decision = \"CHANGES_REQUIRED\"" orchestrator-state.yaml
+yq -i ".current_review.status = \"CHANGES_REQUIRED\"" orchestrator-state.json
+yq -i ".current_review.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+yq -i ".current_review.decision = \"CHANGES_REQUIRED\"" orchestrator-state.json
 
 # CRITICAL: Setup ERROR_RECOVERY context with report location (R258)
-REPORT_FILE=$(yq '.wave_review.report_file' orchestrator-state.yaml)
+REPORT_FILE=$(yq '.wave_review.report_file' orchestrator-state.json)
 echo "📋 Setting up ERROR_RECOVERY context for wave review fixes..."
 
 # Extract specific issues from report for ERROR_RECOVERY to process
@@ -314,12 +314,12 @@ ISSUES=$(sed -n '/## Issues Identified/,/## Required Actions/p' "$REPORT_FILE")
 REQUIRED_ACTIONS=$(sed -n '/## Required Actions/,/## Recommendations/p' "$REPORT_FILE")
 
 # Store in state file for ERROR_RECOVERY
-yq -i ".error_recovery.source = \"WAVE_REVIEW_CHANGES_REQUIRED\"" orchestrator-state.yaml
-yq -i ".error_recovery.report_to_read = \"$REPORT_FILE\"" orchestrator-state.yaml
-yq -i ".error_recovery.phase = $CURRENT_PHASE" orchestrator-state.yaml
-yq -i ".error_recovery.wave = $CURRENT_WAVE" orchestrator-state.yaml
-yq -i ".wave_review.issues_identified = \"$ISSUES\"" orchestrator-state.yaml
-yq -i ".wave_review.required_actions = \"$REQUIRED_ACTIONS\"" orchestrator-state.yaml
+yq -i ".error_recovery.source = \"WAVE_REVIEW_CHANGES_REQUIRED\"" orchestrator-state.json
+yq -i ".error_recovery.report_to_read = \"$REPORT_FILE\"" orchestrator-state.json
+yq -i ".error_recovery.phase = $CURRENT_PHASE" orchestrator-state.json
+yq -i ".error_recovery.wave = $CURRENT_WAVE" orchestrator-state.json
+yq -i ".wave_review.issues_identified = \"$ISSUES\"" orchestrator-state.json
+yq -i ".wave_review.required_actions = \"$REQUIRED_ACTIONS\"" orchestrator-state.json
 
 echo "❌ Wave review returned CHANGES_REQUIRED - transitioning to ERROR_RECOVERY"
 echo "📄 ERROR_RECOVERY must read report: $REPORT_FILE"
@@ -331,12 +331,12 @@ transition_to "ERROR_RECOVERY"
 ### If WAVE_FAILED:
 ```bash
 # Major architectural problems, cannot proceed
-yq -i ".current_review.status = \"FAILED\"" orchestrator-state.yaml
-yq -i ".current_review.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-yq -i ".current_review.decision = \"WAVE_FAILED\"" orchestrator-state.yaml
+yq -i ".current_review.status = \"FAILED\"" orchestrator-state.json
+yq -i ".current_review.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+yq -i ".current_review.decision = \"WAVE_FAILED\"" orchestrator-state.json
 
 # CRITICAL: Setup ERROR_RECOVERY context for major rework (R258)
-REPORT_FILE=$(yq '.wave_review.report_file' orchestrator-state.yaml)
+REPORT_FILE=$(yq '.wave_review.report_file' orchestrator-state.json)
 echo "❌❌❌ Wave review returned WAVE_FAILED - major architectural issues detected"
 
 # Extract all issues for comprehensive rework
@@ -344,13 +344,13 @@ ISSUES=$(sed -n '/## Issues Identified/,/## Required Actions/p' "$REPORT_FILE")
 CRITICAL_ISSUES=$(grep -A2 "\*\*\[CRITICAL\]\*\*" "$REPORT_FILE")
 
 # Store in state file for ERROR_RECOVERY major rework
-yq -i ".error_recovery.source = \"WAVE_FAILED\"" orchestrator-state.yaml
-yq -i ".error_recovery.severity = \"CRITICAL\"" orchestrator-state.yaml
-yq -i ".error_recovery.report_to_read = \"$REPORT_FILE\"" orchestrator-state.yaml
-yq -i ".error_recovery.phase = $CURRENT_PHASE" orchestrator-state.yaml
-yq -i ".error_recovery.wave = $CURRENT_WAVE" orchestrator-state.yaml
-yq -i ".wave_review.critical_issues = \"$CRITICAL_ISSUES\"" orchestrator-state.yaml
-yq -i ".wave_review.all_issues = \"$ISSUES\"" orchestrator-state.yaml
+yq -i ".error_recovery.source = \"WAVE_FAILED\"" orchestrator-state.json
+yq -i ".error_recovery.severity = \"CRITICAL\"" orchestrator-state.json
+yq -i ".error_recovery.report_to_read = \"$REPORT_FILE\"" orchestrator-state.json
+yq -i ".error_recovery.phase = $CURRENT_PHASE" orchestrator-state.json
+yq -i ".error_recovery.wave = $CURRENT_WAVE" orchestrator-state.json
+yq -i ".wave_review.critical_issues = \"$CRITICAL_ISSUES\"" orchestrator-state.json
+yq -i ".wave_review.all_issues = \"$ISSUES\"" orchestrator-state.json
 
 echo "📄 ERROR_RECOVERY must read full report for major rework: $REPORT_FILE"
 
@@ -393,10 +393,10 @@ wave_reviews:
 If architect doesn't respond within reasonable time:
 ```bash
 # Check timeout (e.g., 30 minutes)
-REQUESTED_AT=$(yq '.current_review.requested_at' orchestrator-state.yaml)
+REQUESTED_AT=$(yq '.current_review.requested_at' orchestrator-state.json)
 if [ timeout_exceeded ]; then
     # Log timeout
-    yq -i ".current_review.status = \"TIMEOUT\"" orchestrator-state.yaml
+    yq -i ".current_review.status = \"TIMEOUT\"" orchestrator-state.json
     
     # Transition to MONITOR to check manually
     transition_to "MONITOR"

@@ -188,8 +188,8 @@ prepare_effort_for_agent() {
     # 1. THINK - Determine the appropriate base branch
     echo "🧠 THINKING: What base branch should $EFFORT be based on?"
     
-    # Check dependencies in orchestrator-state.yaml
-    DEPENDENCIES=$(yq ".efforts_planned.\"$EFFORT\".depends_on[]" "$SF_ROOT/orchestrator-state.yaml" 2>/dev/null)
+    # Check dependencies in orchestrator-state.json
+    DEPENDENCIES=$(yq ".efforts_planned.\"$EFFORT\".depends_on[]" "$SF_ROOT/orchestrator-state.json" 2>/dev/null)
     
     if [ -z "$DEPENDENCIES" ] || [ "$DEPENDENCIES" = "null" ]; then
         # No dependencies - use default base branch
@@ -201,7 +201,7 @@ prepare_effort_for_agent() {
     else
         # Has dependencies - check if dependency branch exists
         FIRST_DEP=$(echo "$DEPENDENCIES" | head -n1)
-        DEP_BRANCH=$(yq ".efforts_completed.\"$FIRST_DEP\".branch" "$SF_ROOT/orchestrator-state.yaml" 2>/dev/null)
+        DEP_BRANCH=$(yq ".efforts_completed.\"$FIRST_DEP\".branch" "$SF_ROOT/orchestrator-state.json" 2>/dev/null)
         if [ -n "$DEP_BRANCH" ] && [ "$DEP_BRANCH" != "null" ]; then
             BASE_BRANCH="$DEP_BRANCH"
             echo "📌 Decision: Using branch '$BASE_BRANCH' from dependency $FIRST_DEP"
@@ -307,7 +307,7 @@ echo "📋 Ready to spawn Code Reviewers for effort planning"
 ## State Transition
 
 After ALL infrastructure is ready:
-1. Update orchestrator-state.yaml with effort directories
+1. Update orchestrator-state.json with effort directories
 2. Verify all branches pushed to remote
 3. **MANDATORY: Transition to ANALYZE_CODE_REVIEWER_PARALLELIZATION (R234)**
    - DO NOT skip to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING

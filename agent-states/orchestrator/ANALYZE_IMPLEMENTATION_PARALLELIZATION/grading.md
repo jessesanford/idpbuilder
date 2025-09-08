@@ -26,7 +26,7 @@
 ### State File Updates (20%)
 | Criterion | Points | Requirement |
 |-----------|--------|-------------|
-| SW Engineer plan saved | 10% | Complete plan in orchestrator-state.yaml |
+| SW Engineer plan saved | 10% | Complete plan in orchestrator-state.json |
 | Spawn sequence defined | 5% | Clear step-by-step execution |
 | Timestamp recorded | 5% | Analysis timestamp included |
 

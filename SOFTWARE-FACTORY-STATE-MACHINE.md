@@ -810,7 +810,7 @@ sed -n '/## SW Engineer States/,/## Code Reviewer States/p' \
 # Code Reviewer detecting need for split state (per R304)
 # Find project root and use line-counter.sh with mandatory -b parameter
 PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$CLAUDE_PROJECT_DIR")
-BASE_BRANCH=$(grep "current_phase_integration:" $PROJECT_ROOT/orchestrator-state.yaml -A 2 | grep "branch:" | awk '{print $2}')
+BASE_BRANCH=$(grep "current_phase_integration:" $PROJECT_ROOT/orchestrator-state.json -A 2 | grep "branch:" | awk '{print $2}')
 CURRENT_BRANCH=$(git branch --show-current)
 # Line counter auto-detects base branch - no parameters needed
 LINE_COUNT=$($PROJECT_ROOT/tools/line-counter.sh | grep "Total" | awk '{print $NF}')

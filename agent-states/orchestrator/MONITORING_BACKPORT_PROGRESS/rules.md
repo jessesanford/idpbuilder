@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -74,7 +74,7 @@ echo "$(date +%s) - Rules read and acknowledged for MONITORING_BACKPORT_PROGRESS
 3. **🔴🔴🔴 R288** - STATE FILE UPDATE REQUIREMENTS (SUPREME LAW)
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-requirements.md`
    - Criticality: SUPREME - State updates required for all transitions
-   - Summary: MUST update orchestrator-state.yaml before EVERY state transition
+   - Summary: MUST update orchestrator-state.json before EVERY state transition
    - **CRITICAL**: Commit and push state changes immediately
 
    - **CRITICAL**: NEVER use wc -l or manual counting
@@ -376,7 +376,7 @@ cd $CLAUDE_PROJECT_DIR
 
 if [ "$ALL_COMPLETE" = true ] && [ "$VERIFICATION_PASSED" = true ]; then
     # Success - all backports complete
-    cat > orchestrator-state.yaml << 'EOF'
+    cat > orchestrator-state.json << 'EOF'
 current_state: PR_PLAN_CREATION
 previous_state: MONITORING_BACKPORT_PROGRESS
 backport_status: COMPLETE
@@ -388,12 +388,12 @@ monitoring_duration: ${ELAPSED_TIME}
 next_action: Create PR plan for updated branches
 EOF
     
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: all backports complete - transition to PR_PLAN_CREATION"
     
 elif [ $BLOCKED_COUNT -gt 0 ]; then
     # Blocked - need error recovery
-    cat > orchestrator-state.yaml << 'EOF'
+    cat > orchestrator-state.json << 'EOF'
 current_state: ERROR_RECOVERY
 previous_state: MONITORING_BACKPORT_PROGRESS
 backport_status: BLOCKED
@@ -403,12 +403,12 @@ issues: "SW Engineers blocked during backport implementation"
 requires_intervention: true
 EOF
     
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: backports blocked - transition to ERROR_RECOVERY"
     
 else
     # Timeout or other issue
-    cat > orchestrator-state.yaml << 'EOF'
+    cat > orchestrator-state.json << 'EOF'
 current_state: ERROR_RECOVERY
 previous_state: MONITORING_BACKPORT_PROGRESS
 backport_status: TIMEOUT
@@ -417,7 +417,7 @@ backports_in_progress: ${IN_PROGRESS_COUNT}/${TOTAL_COUNT}
 timeout_after: ${MAX_MONITOR_TIME}
 EOF
     
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: backport timeout - transition to ERROR_RECOVERY"
 fi
 

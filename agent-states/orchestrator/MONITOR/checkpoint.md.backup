@@ -421,7 +421,7 @@ Save monitoring checkpoint to multiple locations for reliability:
 ```bash
 # Primary location
 CHECKPOINT_DIR="/workspaces/software-factory-2.0-template/checkpoints/active"
-SESSION_ID=$(grep -o 'session_id: "[^"]*"' orchestrator-state.yaml | cut -d'"' -f2)
+SESSION_ID=$(grep -o 'session_id: "[^"]*"' orchestrator-state.json | cut -d'"' -f2)
 CHECKPOINT_FILE="$CHECKPOINT_DIR/orchestrator-monitor-${SESSION_ID}-$(date +%Y%m%d-%H%M%S).yaml"
 
 # Backup location

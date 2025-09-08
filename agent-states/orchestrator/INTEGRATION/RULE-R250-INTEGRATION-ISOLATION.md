@@ -86,7 +86,7 @@ perform_wave_integration() {
 
 ```
 software-factory-instance/          # THIS IS THE SF INSTANCE (orchestrator lives here)
-├── orchestrator-state.yaml         # State management
+├── orchestrator-state.json         # State management
 ├── target-repo-config.yaml         # Config pointing to TARGET repo
 └── utilities/                      # Helper scripts
 
@@ -151,7 +151,7 @@ Before starting integration, verify:
 
 If you see these, you're in the WRONG place:
 - "fatal: not a git repository" - You're in SF instance, not target
-- "orchestrator-state.yaml" in git status - Wrong repo!
+- "orchestrator-state.json" in git status - Wrong repo!
 - ".claude/" directory visible - Wrong repo!
 - "setup-config.yaml" visible - Wrong repo!
 

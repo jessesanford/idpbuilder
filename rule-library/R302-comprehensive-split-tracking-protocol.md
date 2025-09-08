@@ -9,7 +9,7 @@ Without proper split tracking, the system cannot determine which branches to int
 ## Requirements
 
 ### 1. Split Tracking Data Structure
-Every split operation MUST be tracked in orchestrator-state.yaml with this structure:
+Every split operation MUST be tracked in orchestrator-state.json with this structure:
 ```yaml
 split_tracking:
   # Organized by effort ID
@@ -104,7 +104,7 @@ verify_split_sequence() {
     local effort="$1"
     
     # Get split branches from tracking
-    SPLITS=$(yq ".split_tracking.\"${effort}\".split_branches[].branch" orchestrator-state.yaml)
+    SPLITS=$(yq ".split_tracking.\"${effort}\".split_branches[].branch" orchestrator-state.json)
     
     PREV_SPLIT=""
     for split in $SPLITS; do
@@ -206,26 +206,26 @@ prepare_wave_integration() {
     echo "Collecting branches for wave integration..."
     
     # Get all efforts for this wave
-    EFFORTS=$(yq ".waves.wave${wave}.efforts[]" orchestrator-state.yaml)
+    EFFORTS=$(yq ".waves.wave${wave}.efforts[]" orchestrator-state.json)
     
     BRANCHES_TO_MERGE=()
     
     for effort in $EFFORTS; do
         # Check split tracking first
-        SPLIT_COUNT=$(yq ".split_tracking.\"${effort}\".split_count // 0" orchestrator-state.yaml)
+        SPLIT_COUNT=$(yq ".split_tracking.\"${effort}\".split_count // 0" orchestrator-state.json)
         
         if [ "$SPLIT_COUNT" -gt 0 ]; then
             echo "✅ $effort was split into $SPLIT_COUNT branches"
             # Get all split branches IN ORDER
             for i in $(seq 1 $SPLIT_COUNT); do
                 SPLIT_NUM=$(printf "%03d" $i)
-                SPLIT_BRANCH=$(yq ".split_tracking.\"${effort}\".split_branches[$((i-1))].branch" orchestrator-state.yaml)
+                SPLIT_BRANCH=$(yq ".split_tracking.\"${effort}\".split_branches[$((i-1))].branch" orchestrator-state.json)
                 BRANCHES_TO_MERGE+=("$SPLIT_BRANCH")
                 echo "  Added split $i: $SPLIT_BRANCH"
             done
         else
             # Not split, use original branch
-            BRANCH=$(yq ".efforts_completed.\"${effort}\".branch" orchestrator-state.yaml)
+            BRANCH=$(yq ".efforts_completed.\"${effort}\".branch" orchestrator-state.json)
             BRANCHES_TO_MERGE+=("$BRANCH")
             echo "  Added original: $BRANCH"
         fi
@@ -240,18 +240,18 @@ prepare_wave_integration() {
 # Ensure dependent efforts wait for ALL splits of dependencies
 validate_dependency_completion() {
     local effort="$1"
-    local dependencies=$(yq ".efforts.\"${effort}\".dependencies[]" orchestrator-state.yaml)
+    local dependencies=$(yq ".efforts.\"${effort}\".dependencies[]" orchestrator-state.json)
     
     for dep in $dependencies; do
         echo "Checking dependency $dep for $effort..."
         
         # Check if dependency has splits
-        SPLIT_COUNT=$(yq ".split_tracking.\"${dep}\".split_count // 0" orchestrator-state.yaml)
+        SPLIT_COUNT=$(yq ".split_tracking.\"${dep}\".split_count // 0" orchestrator-state.json)
         
         if [ "$SPLIT_COUNT" -gt 0 ]; then
             # ALL splits must be integrated
             for i in $(seq 1 $SPLIT_COUNT); do
-                STATUS=$(yq ".split_tracking.\"${dep}\".split_branches[$((i-1))].status" orchestrator-state.yaml)
+                STATUS=$(yq ".split_tracking.\"${dep}\".split_branches[$((i-1))].status" orchestrator-state.json)
                 if [ "$STATUS" != "INTEGRATED" ]; then
                     echo "❌ BLOCKED: $effort cannot merge!"
                     echo "   Dependency $dep split $i not integrated (status: $STATUS)"
@@ -261,7 +261,7 @@ validate_dependency_completion() {
             echo "✅ All $SPLIT_COUNT splits of $dep are integrated"
         else
             # Check single effort integration
-            STATUS=$(yq ".efforts_completed.\"${dep}\".integration_status" orchestrator-state.yaml)
+            STATUS=$(yq ".efforts_completed.\"${dep}\".integration_status" orchestrator-state.json)
             if [ "$STATUS" != "INTEGRATED" ]; then
                 echo "❌ BLOCKED: $effort cannot merge!"
                 echo "   Dependency $dep not integrated"
@@ -301,7 +301,7 @@ verify_effort_compliance() {
     local effort="$1"
     
     # R297: Check split_count first
-    SPLIT_DATA=$(yq ".split_tracking.\"${effort}\"" orchestrator-state.yaml)
+    SPLIT_DATA=$(yq ".split_tracking.\"${effort}\"" orchestrator-state.json)
     
     if [ "$SPLIT_DATA" != "null" ]; then
         SPLIT_COUNT=$(echo "$SPLIT_DATA" | yq ".split_count")
@@ -340,7 +340,7 @@ get_current_splits_for_integration() {
         select(.value.status == "SPLIT_DEPRECATED") | 
         .value.split_branches[] | 
         select(.status == "COMPLETED" or .status == "REVIEWED") | 
-        .branch' orchestrator-state.yaml
+        .branch' orchestrator-state.json
 }
 ```
 
@@ -349,7 +349,7 @@ get_current_splits_for_integration() {
 find_efforts_needing_split() {
     yq '.split_tracking | to_entries | .[] | 
         select(.value.status == "SPLIT_PLANNED") | 
-        .key' orchestrator-state.yaml
+        .key' orchestrator-state.json
 }
 ```
 
@@ -359,10 +359,10 @@ get_wave_split_summary() {
     local wave="$1"
     
     echo "Wave $wave Split Summary:"
-    yq ".waves.wave${wave}.efforts[]" orchestrator-state.yaml | while read effort; do
-        SPLIT_COUNT=$(yq ".split_tracking.\"${effort}\".split_count // 0" orchestrator-state.yaml)
+    yq ".waves.wave${wave}.efforts[]" orchestrator-state.json | while read effort; do
+        SPLIT_COUNT=$(yq ".split_tracking.\"${effort}\".split_count // 0" orchestrator-state.json)
         if [ "$SPLIT_COUNT" -gt 0 ]; then
-            TOTAL_LINES=$(yq ".split_tracking.\"${effort}\".total_original_lines" orchestrator-state.yaml)
+            TOTAL_LINES=$(yq ".split_tracking.\"${effort}\".total_original_lines" orchestrator-state.json)
             echo "  $effort: Split into $SPLIT_COUNT branches (was $TOTAL_LINES lines)"
         fi
     done
@@ -380,8 +380,8 @@ validate_splits_before_integration() {
     
     VALIDATION_ERRORS=0
     
-    yq ".waves.wave${wave}.efforts[]" orchestrator-state.yaml | while read effort; do
-        SPLIT_DATA=$(yq ".split_tracking.\"${effort}\"" orchestrator-state.yaml)
+    yq ".waves.wave${wave}.efforts[]" orchestrator-state.json | while read effort; do
+        SPLIT_DATA=$(yq ".split_tracking.\"${effort}\"" orchestrator-state.json)
         
         if [ "$SPLIT_DATA" != "null" ]; then
             # Verify all splits are completed
@@ -451,7 +451,7 @@ validate_splits_before_integration() {
 ```
 ❌ CRITICAL: No split tracking found for effort-003
 This effort was split but tracking is missing!
-Action: Update split_tracking section in orchestrator-state.yaml
+Action: Update split_tracking section in orchestrator-state.json
 ```
 
 ### Incomplete Split Tracking
@@ -479,7 +479,7 @@ verify_split_tracking_complete() {
     ERRORS=0
     
     # Check all split_tracking entries have required fields
-    yq '.split_tracking | to_entries | .[]' orchestrator-state.yaml -o json | while read -r entry; do
+    yq '.split_tracking | to_entries | .[]' orchestrator-state.json -o json | while read -r entry; do
         EFFORT=$(echo "$entry" | jq -r '.key')
         
         # Required fields

@@ -59,8 +59,8 @@ SPAWN_CODE_REVIEWER_MERGE_PLAN
 ### In WAVE_COMPLETE:
 ```bash
 # Validate but don't create branches
-WAVE_NUM=$(yq '.current_wave' orchestrator-state.yaml)
-INCOMPLETE_COUNT=$(yq '.efforts_in_progress | length' orchestrator-state.yaml)
+WAVE_NUM=$(yq '.current_wave' orchestrator-state.json)
+INCOMPLETE_COUNT=$(yq '.efforts_in_progress | length' orchestrator-state.json)
 
 if [ "$INCOMPLETE_COUNT" -gt 0 ]; then
     echo "ERROR: Still have ${INCOMPLETE_COUNT} efforts in progress"
@@ -68,20 +68,20 @@ if [ "$INCOMPLETE_COUNT" -gt 0 ]; then
 fi
 
 # Just prepare metadata
-yq -i ".pending_integration_wave = ${WAVE_NUM}" orchestrator-state.yaml
+yq -i ".pending_integration_wave = ${WAVE_NUM}" orchestrator-state.json
 ```
 
 ### In INTEGRATION:
 ```bash
 # Create the integration branch HERE
-WAVE_NUM=$(yq '.pending_integration_wave' orchestrator-state.yaml)
+WAVE_NUM=$(yq '.pending_integration_wave' orchestrator-state.json)
 
 git checkout main
 git pull origin main
 git checkout -b "wave-${WAVE_NUM}-integration"
 
-yq -i '.integration_in_progress = true' orchestrator-state.yaml
-yq -i ".integration_branch = \"wave-${WAVE_NUM}-integration\"" orchestrator-state.yaml
+yq -i '.integration_in_progress = true' orchestrator-state.json
+yq -i ".integration_branch = \"wave-${WAVE_NUM}-integration\"" orchestrator-state.json
 ```
 
 ## Reference

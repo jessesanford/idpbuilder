@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -159,12 +159,12 @@ CREATE_NEXT_SPLIT_INFRASTRUCTURE = You ARE ACTIVELY creating the infrastructure 
 ### 🚨🚨🚨 R302 - Comprehensive Split Tracking Protocol
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R302-comprehensive-split-tracking-protocol.md`
 **Criticality**: BLOCKING - Track all split operations
-**Summary**: Update split_tracking in orchestrator-state.yaml
+**Summary**: Update split_tracking in orchestrator-state.json
 
 ### 🚨🚨🚨 R288 - State File Update and Commit Protocol
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
 **Criticality**: SUPREME LAW - Update on every transition
-**Summary**: Update orchestrator-state.yaml with split progress
+**Summary**: Update orchestrator-state.json with split progress
 
 ### 🚨🚨🚨 R221 - Bash Reset Protocol (BLOCKING)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R221-bash-reset-protocol.md`
@@ -190,10 +190,10 @@ CREATE_NEXT_SPLIT_INFRASTRUCTURE = You ARE ACTIVELY creating the infrastructure 
 echo "🔧 CREATING NEXT SPLIT INFRASTRUCTURE NOW..."
 
 # Step 1: Identify which split to create (DO NOW!)
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
-EFFORT_NAME=$(yq '.split_tracking | keys | .[0]' orchestrator-state.yaml)  # Get effort with splits
-CURRENT_SPLIT=$(yq ".split_tracking.\"$EFFORT_NAME\".current_split // 0" orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
+EFFORT_NAME=$(yq '.split_tracking | keys | .[0]' orchestrator-state.json)  # Get effort with splits
+CURRENT_SPLIT=$(yq ".split_tracking.\"$EFFORT_NAME\".current_split // 0" orchestrator-state.json)
 NEXT_SPLIT=$((CURRENT_SPLIT + 1))
 
 echo "📊 Creating infrastructure for split-$(printf "%03d" $NEXT_SPLIT)"
@@ -204,10 +204,14 @@ source "$CLAUDE_PROJECT_DIR/utilities/branch-naming-helpers.sh"
 # Step 3: Determine base branch for this split (DO NOW!)
 # 🔴🔴🔴 CRITICAL: SPLITS MUST CHAIN SEQUENTIALLY! 🔴🔴🔴
 if [ $NEXT_SPLIT -eq 1 ]; then
-    # First split ONLY: Use R308 incremental base
-    echo "🔴 R308: First split uses incremental base from wave/phase"
+    # 🚨🚨🚨 CRITICAL FIX: First split uses SAME BASE as oversized effort! 🚨🚨🚨
+    # The oversized effort was based on the R308 incremental base
+    # Split-001 MUST use that SAME base, NOT the oversized branch itself!
+    echo "🔴 R308: First split uses SAME base as oversized effort (NOT the oversized branch!)"
     BASE_BRANCH=$(determine_effort_base_branch $PHASE $WAVE)
-    echo "✅ Split-001 will be based on: $BASE_BRANCH"
+    echo "✅ Split-001 will be based on: $BASE_BRANCH (same as what $EFFORT_NAME was based on)"
+    echo "❌ NOT based on $EFFORT_NAME branch (which has all the oversized code)"
+    echo "✅ This ensures split-001 starts CLEAN and line-counter.sh measures correctly"
 else
     # 🔴 CRITICAL: All subsequent splits MUST be based on PREVIOUS split!
     # NOT on the integration branch! This ensures each split builds on the last!
@@ -221,8 +225,9 @@ fi
 # Step 4: Create the infrastructure (DO NOW!)
 create_single_split_infrastructure "$EFFORT_NAME" "$NEXT_SPLIT" "$BASE_BRANCH"
 
-# Step 5: Update state tracking (DO NOW!)
-update_split_tracking "$EFFORT_NAME" "$NEXT_SPLIT" "INFRASTRUCTURE_READY"
+# Step 5: Update state tracking with full paths (DO NOW!)
+# These variables should be set by create_single_split_infrastructure function
+update_split_tracking "$EFFORT_NAME" "$NEXT_SPLIT" "INFRASTRUCTURE_READY" "$BASE_BRANCH" "$SPLIT_PLAN_FULL_PATH" "$SPLIT_DIR"
 
 # Step 6: Transition to SPAWN_AGENTS (DO NOW!)
 echo "✅ Infrastructure ready for split-$(printf "%03d" $NEXT_SPLIT)"
@@ -238,7 +243,13 @@ create_single_split_infrastructure() {
     local BASE_BRANCH="$3"
     
     SPLIT_NAME=$(printf "%03d" $SPLIT_NUM)
-    SPLIT_DIR="/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}-SPLIT-${SPLIT_NAME}"
+    
+    # 🔴🔴🔴 CRITICAL: USE ABSOLUTE PATHS TO AVOID DIRECTORY CONFUSION 🔴🔴🔴
+    # Get absolute path for Software Factory directory
+    SF_ROOT="$(cd "$CLAUDE_PROJECT_DIR" && pwd)"
+    
+    # Build absolute path for split directory
+    SPLIT_DIR="${SF_ROOT}/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}-SPLIT-${SPLIT_NAME}"
     
     echo "═══════════════════════════════════════════════════════════════"
     echo "🔧 Creating Split-${SPLIT_NAME} Infrastructure"
@@ -262,29 +273,30 @@ create_single_split_infrastructure() {
     
     git clone --branch "$BASE_BRANCH" --sparse "$TARGET_REPO_URL" "$SPLIT_DIR"
     
-    cd "$SPLIT_DIR"
+    # 🔴🔴🔴 CRITICAL: USE ABSOLUTE PATHS OR GIT -C TO AVOID CD CONFUSION 🔴🔴🔴
+    # Instead of cd, use git -C for git operations
     
     # 🔴 R309 POST-CLONE VALIDATION: Ensure we cloned the right thing!
-    if [ -f ".claude/CLAUDE.md" ] || [ -f "rule-library/RULE-REGISTRY.md" ]; then
+    if [ -f "$SPLIT_DIR/.claude/CLAUDE.md" ] || [ -f "$SPLIT_DIR/rule-library/RULE-REGISTRY.md" ]; then
         echo "🔴🔴🔴 R309 VIOLATION: Cloned SF repo instead of target!"
         echo "FATAL ERROR: This is the wrong repository!"
         exit 309
     fi
     echo "✅ R309 VALIDATED: This is TARGET repo (not SF)"
     
-    # Set up sparse checkout
-    git sparse-checkout init --cone
-    git sparse-checkout set pkg/
+    # Set up sparse checkout using git -C
+    git -C "$SPLIT_DIR" sparse-checkout init --cone
+    git -C "$SPLIT_DIR" sparse-checkout set pkg/
     
     # Create split branch with proper naming
     SPLIT_BRANCH=$(get_split_branch_name "$EFFORT_NAME" "$SPLIT_NAME")
-    git checkout -b "$SPLIT_BRANCH"
+    git -C "$SPLIT_DIR" checkout -b "$SPLIT_BRANCH"
     
     # Push to remote
-    git push -u origin "$SPLIT_BRANCH"
+    git -C "$SPLIT_DIR" push -u origin "$SPLIT_BRANCH"
     
     # Verify remote tracking
-    if git branch -vv | grep -q "$SPLIT_BRANCH.*origin/$SPLIT_BRANCH"; then
+    if git -C "$SPLIT_DIR" branch -vv | grep -q "$SPLIT_BRANCH.*origin/$SPLIT_BRANCH"; then
         echo "✅ Remote tracking configured for $SPLIT_BRANCH"
     else
         echo "❌ FATAL: Remote tracking failed for $SPLIT_BRANCH"
@@ -292,18 +304,24 @@ create_single_split_infrastructure() {
     fi
     
     # Copy split plan from too-large branch
-    TOO_LARGE_DIR="/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+    TOO_LARGE_DIR="${SF_ROOT}/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
     
     # Look for timestamped split plan (per R301)
     SPLIT_PLAN=$(ls -t "$TOO_LARGE_DIR"/SPLIT-PLAN-*-split${SPLIT_NAME}-*.md 2>/dev/null | head -1)
     
     if [ -n "$SPLIT_PLAN" ]; then
-        cp "$SPLIT_PLAN" .
-        echo "✅ Split plan copied: $(basename "$SPLIT_PLAN")"
+        cp "$SPLIT_PLAN" "$SPLIT_DIR/"
+        SPLIT_PLAN_FILENAME=$(basename "$SPLIT_PLAN")
+        echo "✅ Split plan copied: $SPLIT_PLAN_FILENAME"
+        
+        # 🔴🔴🔴 CRITICAL: RECORD EXACT SPLIT PLAN PATH IN STATE FILE 🔴🔴🔴
+        SPLIT_PLAN_FULL_PATH="${SPLIT_DIR}/${SPLIT_PLAN_FILENAME}"
     else
         # Fallback: check legacy numbered format
         if [ -f "$TOO_LARGE_DIR/SPLIT-PLAN-${SPLIT_NAME}.md" ]; then
-            cp "$TOO_LARGE_DIR/SPLIT-PLAN-${SPLIT_NAME}.md" .
+            cp "$TOO_LARGE_DIR/SPLIT-PLAN-${SPLIT_NAME}.md" "$SPLIT_DIR/"
+            SPLIT_PLAN_FILENAME="SPLIT-PLAN-${SPLIT_NAME}.md"
+            SPLIT_PLAN_FULL_PATH="${SPLIT_DIR}/${SPLIT_PLAN_FILENAME}"
             echo "⚠️ WARNING: Using legacy split plan format (should be timestamped per R301)"
         else
             echo "❌ ERROR: No split plan found for split ${SPLIT_NAME}!"
@@ -314,11 +332,10 @@ create_single_split_infrastructure() {
     fi
     
     # Add metadata to split plan (handle both formats)
-    SPLIT_PLAN_LOCAL=$(ls SPLIT-PLAN-*.md | head -1)
-    cat >> "$SPLIT_PLAN_LOCAL" << EOF
+    cat >> "$SPLIT_PLAN_FULL_PATH" << EOF
 
 ## 🚨 SPLIT INFRASTRUCTURE METADATA (Added by Orchestrator)
-**WORKING_DIRECTORY**: $(pwd)
+**WORKING_DIRECTORY**: $SPLIT_DIR
 **BRANCH**: $SPLIT_BRANCH
 **REMOTE**: origin/$SPLIT_BRANCH
 **BASE_BRANCH**: $BASE_BRANCH
@@ -327,15 +344,20 @@ create_single_split_infrastructure() {
 
 ### SW Engineer Instructions
 1. READ this metadata FIRST
-2. cd to WORKING_DIRECTORY above
+2. cd to WORKING_DIRECTORY above (use absolute path!)
 3. Verify branch matches BRANCH above
 4. ONLY THEN proceed with implementation
+
+### Directory Navigation Rules
+- ALWAYS use absolute paths: cd "$SPLIT_DIR"
+- NEVER use relative paths without verifying pwd first
+- When running git commands, prefer: git -C "$SPLIT_DIR" command
 EOF
     
-    # Commit initial setup
-    git add -A
-    git commit -m "chore: initialize split-${SPLIT_NAME} from $BASE_BRANCH"
-    git push
+    # Commit initial setup using git -C to avoid directory issues
+    git -C "$SPLIT_DIR" add -A
+    git -C "$SPLIT_DIR" commit -m "chore: initialize split-${SPLIT_NAME} from $BASE_BRANCH"
+    git -C "$SPLIT_DIR" push
     
     # 🔴🔴🔴 R312: LOCK GIT CONFIG FOR SPLIT ISOLATION 🔴🔴🔴
     echo "🔒 R312: Applying DOUBLE PROTECTION to split git config..."
@@ -407,7 +429,14 @@ EOF
     echo "   ❌ Cannot merge other changes"
     echo "   ✅ Can only work on assigned split scope"
     
+    # 🔴🔴🔴 EXPORT PATHS FOR STATE TRACKING 🔴🔴🔴
+    export SPLIT_PLAN_FULL_PATH="$SPLIT_PLAN_FULL_PATH"
+    export SPLIT_DIR="$SPLIT_DIR"
+    
     echo "✅ Split $SPLIT_NAME infrastructure complete with R312 protection"
+    echo "📁 Exported paths for state tracking:"
+    echo "   - SPLIT_PLAN_FULL_PATH=$SPLIT_PLAN_FULL_PATH"
+    echo "   - SPLIT_DIR=$SPLIT_DIR"
 }
 ```
 
@@ -425,41 +454,55 @@ From CREATE_NEXT_SPLIT_INFRASTRUCTURE state:
 
 ### 🔴🔴🔴 CRITICAL VIOLATION: ALL SPLITS FROM SAME BASE 🔴🔴🔴
 
-#### ❌ CATASTROPHIC ERROR (What orchestrator is doing WRONG now):
+#### ❌ CATASTROPHIC ERROR (What was happening WRONG):
 ```bash
-# WRONG - All splits branch from integration, losing each other's work!
-git clone --branch phase1/wave1-integration ... split-001  ✓ (correct)
-git clone --branch phase1/wave1-integration ... split-002  ❌ WRONG!
-git clone --branch phase1/wave1-integration ... split-003  ❌ WRONG!
+# WRONG WAY #1 - Basing split-001 on oversized branch
+git clone --branch phase1/wave1/effort-foo ... split-001  ❌ WRONG! Inherits 1200+ lines!
+git clone --branch phase1/wave1/effort-foo-split-001 ... split-002  ✓
+git clone --branch phase1/wave1/effort-foo-split-002 ... split-003  ✓
 
-# Result: Split-002 doesn't have Split-001's work!
-# Result: Split-003 doesn't have Split-001 OR Split-002's work!
-# THIS IS CAUSING THE BUG RIGHT NOW!
+# Result: Split-001 appears to have 1200+ lines (all of effort-foo's work)!
+
+# WRONG WAY #2 - All splits from same base
+git clone --branch phase1/wave1-integration ... split-001  ✓ 
+git clone --branch phase1/wave1-integration ... split-002  ❌ WRONG! Missing split-001!
+git clone --branch phase1/wave1-integration ... split-003  ❌ WRONG! Missing split-001 & 002!
+
+# Result: Splits don't build on each other!
 ```
 
 #### ✅ CORRECT SEQUENTIAL CHAINING:
 ```bash
-# RIGHT - Each split builds on the previous one
-git clone --branch phase1/wave1-integration ... split-001  ✓
-git clone --branch phase1/wave1/effort-split-001 ... split-002  ✓
-git clone --branch phase1/wave1/effort-split-002 ... split-003  ✓
+# RIGHT - First split from SAME base as oversized, rest chain sequentially
+# Assume effort-foo was based on phase1/wave1-integration
+git clone --branch phase1/wave1-integration ... split-001  ✓ (SAME base as effort-foo)
+git clone --branch phase1/wave1/effort-foo-split-001 ... split-002  ✓ (builds on split-001)
+git clone --branch phase1/wave1/effort-foo-split-002 ... split-003  ✓ (builds on split-002)
 
-# Result: Each split has ALL previous splits' work!
+# Result: Each split starts clean AND builds on previous work!
 ```
 
 ### Visual Diagram of the Problem:
 ```
-❌ WRONG (Current Bug):
+❌ WRONG WAY #1 (The Bug - Split inherits oversized branch):
 phase1/wave1-integration
-    ├── split-001 (has: base code)
-    ├── split-002 (has: base code ONLY - missing split-001!)
-    └── split-003 (has: base code ONLY - missing split-001 & 002!)
+    └── effort-foo (1200+ lines)
+            └── split-001 (INHERITS all 1200+ lines! line-counter sees it all!)
+                    └── split-002 (has split-001's 1200+ lines + new work)
 
-✅ CORRECT (How it should be):
+❌ WRONG WAY #2 (All splits from same base):
 phase1/wave1-integration
-    └── split-001 (has: base code)
-        └── split-002 (has: base + split-001)
-            └── split-003 (has: base + split-001 + split-002)
+    ├── split-001 (has: base + split-001 work only)
+    ├── split-002 (has: base + split-002 work only - MISSING split-001!)
+    └── split-003 (has: base + split-003 work only - MISSING split-001 & 002!)
+
+✅ CORRECT (How it MUST be):
+phase1/wave1-integration
+    ├── effort-foo (1200+ lines, becomes oversized)
+    ├── split-001 (has: base + split-001 work ONLY, clean start!)
+    │       └── split-002 (has: base + split-001 + split-002)
+    │               └── split-003 (has: base + split-001 + split-002 + split-003)
+    └── effort-bar (normal effort, no split)
 ```
 
 ### ❌ Creating All Splits at Once
@@ -474,10 +517,13 @@ done
 ```bash
 # RIGHT - One split at a time, correct base
 if [ $SPLIT_NUM -eq 1 ]; then
-    BASE=$(determine_effort_base_branch)  # R308 base for FIRST split only
+    # CRITICAL FIX: Use SAME base as oversized effort, NOT the oversized branch!
+    BASE=$(determine_effort_base_branch $PHASE $WAVE)  # Returns integration branch
+    echo "Creating split-001 from $BASE (same as what oversized effort used)"
 else
-    # CRITICAL: Use PREVIOUS split as base!
+    # CRITICAL: Use PREVIOUS split as base for chaining!
     BASE="phase${PHASE}/wave${WAVE}/${EFFORT_NAME}-split-$(printf "%03d" $((SPLIT_NUM - 1)))"
+    echo "Creating split-$(printf "%03d" $SPLIT_NUM) from previous split"
 fi
 create_single_split_infrastructure "$EFFORT" "$SPLIT_NUM" "$BASE"
 ```
@@ -489,19 +535,39 @@ update_split_tracking() {
     local EFFORT="$1"
     local SPLIT_NUM="$2"
     local STATUS="$3"
+    local BASE_BRANCH="$4"  # 🔴 CRITICAL: Must track base branch for each split!
+    local SPLIT_PLAN_PATH="$5"  # 🔴🔴🔴 NEW: Track exact split plan location!
+    local INFRASTRUCTURE_DIR="$6"  # 🔴🔴🔴 NEW: Track exact infrastructure directory!
     
     # Update current split being worked
-    yq -i ".split_tracking.\"$EFFORT\".current_split = $SPLIT_NUM" orchestrator-state.yaml
+    yq -i ".split_tracking.\"$EFFORT\".current_split = $SPLIT_NUM" orchestrator-state.json
     
-    # Add split to tracking
-    yq -i ".split_tracking.\"$EFFORT\".splits[$((SPLIT_NUM - 1))].number = $SPLIT_NUM" orchestrator-state.yaml
-    yq -i ".split_tracking.\"$EFFORT\".splits[$((SPLIT_NUM - 1))].status = \"$STATUS\"" orchestrator-state.yaml
-    yq -i ".split_tracking.\"$EFFORT\".splits[$((SPLIT_NUM - 1))].created_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+    # Add split to tracking with ALL metadata including paths
+    local SPLIT_BRANCH=$(get_split_branch_name "$EFFORT" "$(printf "%03d" $SPLIT_NUM)")
+    local IDX=$((SPLIT_NUM - 1))
+    
+    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].number = $SPLIT_NUM" orchestrator-state.json
+    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].branch = \"$SPLIT_BRANCH\"" orchestrator-state.json
+    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].base_branch = \"$BASE_BRANCH\"" orchestrator-state.json
+    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].status = \"$STATUS\"" orchestrator-state.json
+    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].created_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+    
+    # 🔴🔴🔴 CRITICAL NEW FIELDS: Store paths for easy access! 🔴🔴🔴
+    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].split_plan_path = \"$SPLIT_PLAN_PATH\"" orchestrator-state.json
+    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].infrastructure_dir = \"$INFRASTRUCTURE_DIR\"" orchestrator-state.json
     
     # Commit state update
-    git add orchestrator-state.yaml
-    git commit -m "state: created infrastructure for split-$(printf "%03d" $SPLIT_NUM)"
+    git add orchestrator-state.json
+    git commit -m "state: created infrastructure for split-$(printf "%03d" $SPLIT_NUM) with plan at $SPLIT_PLAN_PATH"
     git push
+    
+    echo "✅ Split tracking updated with COMPLETE metadata:"
+    echo "   - Split: $SPLIT_NUM"
+    echo "   - Branch: $SPLIT_BRANCH"
+    echo "   - Base: $BASE_BRANCH"
+    echo "   - Status: $STATUS"
+    echo "   - Plan Path: $SPLIT_PLAN_PATH"
+    echo "   - Infrastructure: $INFRASTRUCTURE_DIR"
 }
 ```
 

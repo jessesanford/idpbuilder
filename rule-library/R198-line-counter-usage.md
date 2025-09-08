@@ -3,7 +3,7 @@
 ## Rule Statement
 Agents MUST use the line counter tool for all size measurements. The tool AUTOMATICALLY detects the correct base branch - no manual specification needed! Manual counting = AUTOMATIC -100% FAILURE.
 
-**CRITICAL FOR SPARSE CLONES**: The tool is in the orchestrator's project root, NOT in your sparse clone! You must find the project root first (where `orchestrator-state.yaml` lives), then use `${PROJECT_ROOT}/tools/line-counter.sh [BRANCH_TO_MEASURE]`.
+**CRITICAL FOR SPARSE CLONES**: The tool is in the orchestrator's project root, NOT in your sparse clone! You must find the project root first (where `orchestrator-state.json` lives), then use `${PROJECT_ROOT}/tools/line-counter.sh [BRANCH_TO_MEASURE]`.
 
 ## Criticality Level
 **BLOCKING** - Incorrect measurement leads to size limit violations
@@ -28,7 +28,7 @@ cd /path/to/efforts/phase1/wave1/api-types
 # STEP 2: Find the orchestrator's project root
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do
-    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then
+    if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then
         break
     fi
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
@@ -139,7 +139,7 @@ echo "Current branch: $CURRENT_BRANCH"
 # 3. Find the project root (where orchestrator lives)
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do
-    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then
+    if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then
         break
     fi
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
@@ -171,7 +171,7 @@ verify_effort_size() {
     # Find project root
     PROJECT_ROOT=$(cd "$effort_dir" && pwd)
     while [ "$PROJECT_ROOT" != "/" ]; do
-        if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then
+        if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then
             break
         fi
         PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
@@ -206,9 +206,9 @@ verify_effort_size "/path/to/efforts/phase1/wave1/api-types"
 ❌ FATAL: Line counter not found at //tools/line-counter.sh
 
 # CAUSE: The PROJECT_ROOT search returned "/" (root directory)
-# This means orchestrator-state.yaml wasn't found
+# This means orchestrator-state.json wasn't found
 # SOLUTION: Find the actual orchestrator project directory
-find /home -name "orchestrator-state.yaml" -type f 2>/dev/null | head -1
+find /home -name "orchestrator-state.json" -type f 2>/dev/null | head -1
 # Then use that directory's tools/line-counter.sh
 ```
 
@@ -218,7 +218,7 @@ find /home -name "orchestrator-state.yaml" -type f 2>/dev/null | head -1
 # SOLUTION: Find project root first
 PROJECT_ROOT=$(pwd); 
 while [ "$PROJECT_ROOT" != "/" ]; do 
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break; 
+    [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break; 
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
 done
 $PROJECT_ROOT/tools/line-counter.sh  # Use PROJECT_ROOT, not ./
@@ -257,7 +257,7 @@ check_all_efforts() {
     # Find project root first
     PROJECT_ROOT=$(pwd)
     while [ "$PROJECT_ROOT" != "/" ]; do
-        [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
+        [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break
         PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
     done
     
@@ -291,7 +291,7 @@ monitor_size_during_work() {
     # Find project root once
     PROJECT_ROOT=$(pwd)
     while [ "$PROJECT_ROOT" != "/" ]; do
-        [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
+        [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break
         PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
     done
     
@@ -314,7 +314,7 @@ monitor_size_during_work() {
 
 ## Summary - Remember These Points
 
-1. **Find PROJECT_ROOT first** (where orchestrator-state.yaml lives)
+1. **Find PROJECT_ROOT first** (where orchestrator-state.json lives)
 2. **Run tool - it auto-detects the base**
 3. **Tool shows detected base in output**
 4. **Optional: pass branch name to measure**
@@ -329,7 +329,7 @@ monitor_size_during_work() {
 cd efforts/phase1/wave1/my-effort
 # Find project root first!
 PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do 
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break; 
+    [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break; 
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
 done
 # Run tool - it auto-detects everything!

@@ -39,7 +39,7 @@ All other rules are loaded based on current state.
 After loading these 5 bootstrap rules, the orchestrator:
 
 1. **Determines current state** using R203 protocol:
-   - Check if orchestrator-state.yaml exists
+   - Check if orchestrator-state.json exists
    - If yes: read current_state field
    - If no: default to INIT state
 

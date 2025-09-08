@@ -107,7 +107,7 @@ else
     # For normal efforts: use standard pattern
     PROJECT_ROOT=$(pwd)
     while [ "$PROJECT_ROOT" != "/" ]; do
-        if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then
+        if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then
             break
         fi
         PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
@@ -175,14 +175,14 @@ measure_lines() {
         LEVEL=$((LEVEL + 1))
     done
     
-    # Strategy 2: If not found, look for orchestrator-state.yaml
+    # Strategy 2: If not found, look for orchestrator-state.json
     if [ -z "$LINE_COUNTER" ]; then
         SEARCH_DIR=$(pwd)
         while [ "$SEARCH_DIR" != "/" ]; do
-            if [ -f "$SEARCH_DIR/orchestrator-state.yaml" ]; then
+            if [ -f "$SEARCH_DIR/orchestrator-state.json" ]; then
                 if [ -f "$SEARCH_DIR/tools/line-counter.sh" ]; then
                     LINE_COUNTER="$SEARCH_DIR/tools/line-counter.sh"
-                    echo "✅ Found via orchestrator-state.yaml: $LINE_COUNTER"
+                    echo "✅ Found via orchestrator-state.json: $LINE_COUNTER"
                     break
                 fi
             fi

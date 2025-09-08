@@ -87,7 +87,7 @@ Without these rules, agents were at risk of:
 ### 1. Repository Validation Checks
 ```bash
 # Added to all critical states
-if [ -f "orchestrator-state.yaml" ] || [ -f ".claude/CLAUDE.md" ]; then
+if [ -f "orchestrator-state.json" ] || [ -f ".claude/CLAUDE.md" ]; then
     echo "🔴🔴🔴 FATAL: You're in Software Factory repo!"
     exit 309
 fi

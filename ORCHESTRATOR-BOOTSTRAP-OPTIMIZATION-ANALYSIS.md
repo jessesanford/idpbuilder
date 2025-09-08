@@ -10,7 +10,7 @@ After analyzing the orchestrator's bootstrap/startup process, I've identified si
 
 **The orchestrator determines its state through a simple cascade:**
 ```bash
-1. Check if orchestrator-state.yaml exists
+1. Check if orchestrator-state.json exists
 2. If yes: Extract current_state field
 3. If no: Default to INIT state
 4. Load state-specific rules from agent-states/orchestrator/{STATE}/rules.md

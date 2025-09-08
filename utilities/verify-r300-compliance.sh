@@ -57,8 +57,8 @@ verify_effort_branch_fixes() {
     echo "Verifying fixes are properly in effort branches..."
     
     # Check orchestrator state for efforts that had fixes
-    if [ -f "orchestrator-state.yaml" ]; then
-        EFFORTS_WITH_FIXES=$(yq '.efforts_with_fixes[]' orchestrator-state.yaml 2>/dev/null || true)
+    if [ -f "orchestrator-state.json" ]; then
+        EFFORTS_WITH_FIXES=$(yq '.efforts_with_fixes[]' orchestrator-state.json 2>/dev/null || true)
         
         if [ -z "$EFFORTS_WITH_FIXES" ]; then
             echo -e "${YELLOW}⚠️ No efforts marked as having fixes in state file${NC}"
@@ -110,7 +110,7 @@ verify_effort_branch_fixes() {
             return 1
         fi
     else
-        echo -e "${YELLOW}⚠️ No orchestrator-state.yaml found${NC}"
+        echo -e "${YELLOW}⚠️ No orchestrator-state.json found${NC}"
     fi
 }
 

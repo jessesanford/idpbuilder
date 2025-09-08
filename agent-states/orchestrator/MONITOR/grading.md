@@ -359,7 +359,7 @@ class MonitorStateGrader:
 ## Monitoring Performance Tracking
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 grading:
   MONITOR:
     current_session:

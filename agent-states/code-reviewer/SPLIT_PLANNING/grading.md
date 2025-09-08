@@ -439,7 +439,7 @@ class SplitPlanningGrader:
 ## Performance Tracking
 
 ```yaml
-# Update orchestrator-state.yaml  
+# Update orchestrator-state.json  
 grading:
   CODE_REVIEWER_SPLIT_PLANNING:
     latest:

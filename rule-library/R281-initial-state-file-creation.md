@@ -75,7 +75,7 @@ Use `/home/vscode/software-factory-template/utilities/validate-state-completenes
 ```bash
 bash utilities/validate-state-completeness.sh \
   PROJECT-IMPLEMENTATION-PLAN.md \
-  orchestrator-state.yaml
+  orchestrator-state.json
 ```
 
 ## Violations

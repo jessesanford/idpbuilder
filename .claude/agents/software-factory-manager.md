@@ -57,7 +57,7 @@ READ: /workspaces/software-factory-2.0-template/rule-library/RULE-REGISTRY.md
 
 # 3. Understand state machine
 READ: /workspaces/software-factory-2.0-template/SOFTWARE-FACTORY-STATE-MACHINE.md
-READ: /workspaces/software-factory-2.0-template/orchestrator-state.yaml.example
+READ: /workspaces/software-factory-2.0-template/orchestrator-state.json.example
 
 # 4. Print startup acknowledgment
 echo "🏭 SOFTWARE FACTORY MANAGER STARTUP: $(date '+%Y-%m-%d %H:%M:%S %Z')"
@@ -195,7 +195,7 @@ audit_rule_usage() {
 ```bash
 # Verify state file follows state machine
 verify_state_compliance() {
-    local state_file="/workspaces/software-factory-2.0-template/orchestrator-state.yaml"
+    local state_file="/workspaces/software-factory-2.0-template/orchestrator-state.json"
     local current_state=$(yq '.current_state' "$state_file")
     
     # Check if state exists in state machine

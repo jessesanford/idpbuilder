@@ -7,7 +7,7 @@ Spawn Integration Agent (SW Engineer in integration mode) to execute the phase m
 
 ### 🔴🔴🔴 RULE R322: MANDATORY STOP BEFORE STATE TRANSITION (SUPREME LAW)
 - **STOP** and save state before ANY transition
-- **READ** orchestrator-state.yaml to verify current state
+- **READ** orchestrator-state.json to verify current state
 - **VALIDATE** next state exists in SOFTWARE-FACTORY-STATE-MACHINE.md
 - **VIOLATION = IMMEDIATE FAILURE**
 
@@ -73,7 +73,7 @@ Spawn Integration Agent (SW Engineer in integration mode) to execute the phase m
    git ls-remote origin | grep "wave-${PHASE_NUM}-"
    
    # Verify all waves marked complete
-   grep "waves_completed" orchestrator-state.yaml
+   grep "waves_completed" orchestrator-state.json
    ```
 
 4. **Spawn Integration Agent**
@@ -109,7 +109,7 @@ Spawn Integration Agent (SW Engineer in integration mode) to execute the phase m
    save_todos "SPAWN_INTEGRATION_AGENT_PHASE"
    
    # Commit state
-   git add orchestrator-state.yaml todos/*.todo
+   git add orchestrator-state.json todos/*.todo
    git commit -m "state: spawned Integration Agent for phase integration"
    git push
    
@@ -150,7 +150,7 @@ ls -la phase-*-integration/
 git branch -r | grep "phase-.*-integration"
 
 # Verify all waves complete
-grep -c "status: COMPLETE" orchestrator-state.yaml
+grep -c "status: COMPLETE" orchestrator-state.json
 
 # After spawn, verify stop
 echo "STOPPING per R313 - Integration Agent spawned for phase merges"

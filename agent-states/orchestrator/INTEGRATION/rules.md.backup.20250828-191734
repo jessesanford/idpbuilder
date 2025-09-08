@@ -178,8 +178,8 @@ echo "📋 Waiting for Code Reviewer to create MERGE PLAN..."
 
 ```bash
 # Setup integration infrastructure first
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
 
 # Ensure we're in integration directory
@@ -237,7 +237,7 @@ Task: subagent_type="integration-agent" \
 ## Integration Validation
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 integration_records:
   phase{X}_wave{Y}:
     started_at: "2025-08-23T15:00:00Z"

@@ -52,7 +52,7 @@ if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
                     TRANSCRIPT_TAIL=$(tail -100 "$TRANSCRIPT_PATH" 2>/dev/null)
                     
                     # Check for orchestrator patterns (most specific first)
-                    if echo "$TRANSCRIPT_TAIL" | grep -q "orchestrator\|ORCHESTRATOR\|continue-orchestrating\|orchestrator-state.yaml"; then
+                    if echo "$TRANSCRIPT_TAIL" | grep -q "orchestrator\|ORCHESTRATOR\|continue-orchestrating\|orchestrator-state.json"; then
                         CURRENT_AGENT="orchestrator"
                     # Check for code reviewer patterns
                     elif echo "$TRANSCRIPT_TAIL" | grep -q "code.reviewer\|CODE.REVIEWER\|code review\|Starting code review\|Reviewing code"; then
@@ -75,7 +75,7 @@ if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
         TRANSCRIPT_TAIL=$(tail -100 "$TRANSCRIPT_PATH" 2>/dev/null)
         
         # Check for orchestrator patterns
-        if echo "$TRANSCRIPT_TAIL" | grep -q "orchestrator\|ORCHESTRATOR\|continue-orchestrating\|orchestrator-state.yaml"; then
+        if echo "$TRANSCRIPT_TAIL" | grep -q "orchestrator\|ORCHESTRATOR\|continue-orchestrating\|orchestrator-state.json"; then
             CURRENT_AGENT="orchestrator"
         elif echo "$TRANSCRIPT_TAIL" | grep -q "code.reviewer\|CODE.REVIEWER\|code review\|Starting code review\|Reviewing code"; then
             CURRENT_AGENT="code-reviewer"

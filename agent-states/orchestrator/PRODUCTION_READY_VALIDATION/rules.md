@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -154,9 +154,9 @@ echo "🚀 Spawning Code Reviewer to run test suites..."
 cd /efforts/integration-testing
 
 # Update state to show spawning Code Reviewer
-yq -i '.current_state = "SPAWN_CODE_REVIEWER_PROD_VALIDATION"' orchestrator-state.yaml
-yq -i '.spawn_in_progress.agent = "code-reviewer"' orchestrator-state.yaml
-yq -i '.spawn_in_progress.purpose = "production_validation"' orchestrator-state.yaml
+yq -i '.current_state = "SPAWN_CODE_REVIEWER_PROD_VALIDATION"' orchestrator-state.json
+yq -i '.spawn_in_progress.agent = "code-reviewer"' orchestrator-state.json
+yq -i '.spawn_in_progress.purpose = "production_validation"' orchestrator-state.json
 
 # Spawn Code Reviewer with validation task
 Task: subagent_type="code-reviewer" \

@@ -25,7 +25,7 @@
 - ✅ **sw-engineer/SPLIT_IMPLEMENTATION/rules.md**: Complete rewrite with orchestrator notification
 
 #### System Files
-- ✅ **orchestrator-state.yaml.example**: Added SPLIT_DEPRECATED tracking schema
+- ✅ **orchestrator-state.json.example**: Added SPLIT_DEPRECATED tracking schema
 - ✅ **RULE-REGISTRY.md**: Added R296 registration
 
 #### Test Scripts

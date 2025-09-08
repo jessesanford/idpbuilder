@@ -41,7 +41,7 @@ add_r322_section() {
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -110,7 +110,7 @@ After completing state work and committing state file:\
         echo "" >> "$temp_file"
         echo "When transitioning to next state:" >> "$temp_file"
         echo "1. Complete all state work" >> "$temp_file"
-        echo "2. Update orchestrator-state.yaml" >> "$temp_file"
+        echo "2. Update orchestrator-state.json" >> "$temp_file"
         echo "3. Commit and push state file" >> "$temp_file"
         echo "4. 🛑 **STOP HERE** - Per R322, exit and wait for /continue-orchestrating 🛑" >> "$temp_file"
         echo "" >> "$temp_file"

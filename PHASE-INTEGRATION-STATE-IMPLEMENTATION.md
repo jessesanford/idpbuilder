@@ -87,7 +87,7 @@ phase${PHASE}-post-fixes-integration-${TIMESTAMP}
 
 ## State Tracking
 
-The orchestrator-state.yaml now tracks:
+The orchestrator-state.json now tracks:
 ```yaml
 phase_integration_branches:
   - phase: 3

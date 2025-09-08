@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -74,11 +74,11 @@ if [ -n "$INTEGRATION_PID" ]; then
             for branch in $MERGED_BRANCHES; do
                 # If this is a dependent effort, check its dependencies
                 EFFORT=$(echo "$branch" | sed 's/-split-[0-9]*//')
-                DEPENDENCIES=$(yq ".efforts.\"$EFFORT\".dependencies[]" orchestrator-state.yaml 2>/dev/null)
+                DEPENDENCIES=$(yq ".efforts.\"$EFFORT\".dependencies[]" orchestrator-state.json 2>/dev/null)
                 
                 for dep in $DEPENDENCIES; do
                     # Check if dependency has splits
-                    SPLIT_COUNT=$(yq ".split_tracking.\"$dep\".split_count // 0" orchestrator-state.yaml)
+                    SPLIT_COUNT=$(yq ".split_tracking.\"$dep\".split_count // 0" orchestrator-state.json)
                     if [ "$SPLIT_COUNT" -gt 0 ]; then
                         # Verify ALL splits of dependency are merged
                         for i in $(seq 1 $SPLIT_COUNT); do
@@ -115,8 +115,8 @@ fi
 
 ```bash
 # MANDATORY: Check for integration report AND enforce gates
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 REPORT_FILE="efforts/phase${PHASE}/wave${WAVE}/integration-workspace/INTEGRATION_REPORT.md"
 DEMO_STATUS_FILE="efforts/phase${PHASE}/wave${WAVE}/integration-workspace/DEMO_STATUS.md"
 
@@ -191,11 +191,11 @@ echo "📝 REASON: $UPDATE_REASON"
 ### 3. Update State File
 ```bash
 # Update orchestrator state
-yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.yaml
-yq eval ".state_transition_history += [{\"from\": \"MONITORING_INTEGRATION\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"$UPDATE_REASON\"}]" -i orchestrator-state.yaml
+yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
+yq eval ".state_transition_history += [{\"from\": \"MONITORING_INTEGRATION\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"$UPDATE_REASON\"}]" -i orchestrator-state.json
 
 # Commit state change
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: MONITORING_INTEGRATION → $UPDATE_STATE - $UPDATE_REASON"
 git push
 

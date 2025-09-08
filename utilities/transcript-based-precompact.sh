@@ -96,8 +96,8 @@ detect_agent_type() {
     
     # If still unknown, fall back to filesystem detection
     if [ "$agent_type" = "unknown" ]; then
-        # Method 1: Check if orchestrator-state.yaml exists (orchestrator agent)
-        if [ -f "orchestrator-state.yaml" ]; then
+        # Method 1: Check if orchestrator-state.json exists (orchestrator agent)
+        if [ -f "orchestrator-state.json" ]; then
             agent_type="orchestrator"
         
         # Method 2: Check for IMPLEMENTATION-PLAN.md (SW engineer)
@@ -114,7 +114,7 @@ detect_agent_type() {
         
         # Method 5: Check if we're in an effort directory
         elif pwd | grep -q "efforts/phase[0-9]*/wave[0-9]*"; then
-            if [ -f "../../../orchestrator-state.yaml" ]; then
+            if [ -f "../../../orchestrator-state.json" ]; then
                 agent_type="sw-engineer"
             else
                 agent_type="code-reviewer"
@@ -192,8 +192,8 @@ GIT_STATUS:$(git status -s 2>/dev/null | wc -l) modified files
 EOF
 
     # Add state machine information for orchestrator
-    if [ "$AGENT_TYPE" = "orchestrator" ] && [ -f "orchestrator-state.yaml" ]; then
-        local current_state=$(grep "current_state:" orchestrator-state.yaml | head -1 | awk '{print $2}')
+    if [ "$AGENT_TYPE" = "orchestrator" ] && [ -f "orchestrator-state.json" ]; then
+        local current_state=$(grep "current_state:" orchestrator-state.json | head -1 | awk '{print $2}')
         echo "ORCHESTRATOR_STATE:$current_state" >> "$MARKER_FILE"
     fi
     
@@ -246,8 +246,8 @@ main() {
     esac
     
     # Save state files if they exist
-    if [ -f "orchestrator-state.yaml" ]; then
-        cp orchestrator-state.yaml "/tmp/state-precompact-${TRANSCRIPT_ID}.yaml"
+    if [ -f "orchestrator-state.json" ]; then
+        cp orchestrator-state.json "/tmp/state-precompact-${TRANSCRIPT_ID}.yaml"
         echo "STATE_FILE_SAVED:/tmp/state-precompact-${TRANSCRIPT_ID}.yaml" >> "$MARKER_FILE"
         echo "✅ Saved orchestrator state"
     fi

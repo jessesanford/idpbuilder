@@ -58,7 +58,7 @@ if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
                     TRANSCRIPT_TAIL=$(tail -100 "$TRANSCRIPT_PATH" 2>/dev/null)
                     
                     # Check for orchestrator patterns (most specific first)
-                    if echo "$TRANSCRIPT_TAIL" | grep -q "orchestrator\|ORCHESTRATOR\|continue-orchestrating\|orchestrator-state.yaml\|/orchestrator"; then
+                    if echo "$TRANSCRIPT_TAIL" | grep -q "orchestrator\|ORCHESTRATOR\|continue-orchestrating\|orchestrator-state.json\|/orchestrator"; then
                         AGENT_TYPE="orchestrator"
                     # Check for code reviewer patterns
                     elif echo "$TRANSCRIPT_TAIL" | grep -q "code.reviewer\|CODE.REVIEWER\|code review\|Starting code review\|Reviewing code\|/reviewer"; then
@@ -80,7 +80,7 @@ if [ -n "$TRANSCRIPT_PATH" ] && [ -f "$TRANSCRIPT_PATH" ]; then
         # No subagent_type found, fall back to pattern matching
         TRANSCRIPT_TAIL=$(tail -100 "$TRANSCRIPT_PATH" 2>/dev/null)
         
-        if echo "$TRANSCRIPT_TAIL" | grep -q "orchestrator\|ORCHESTRATOR\|continue-orchestrating\|orchestrator-state.yaml\|/orchestrator"; then
+        if echo "$TRANSCRIPT_TAIL" | grep -q "orchestrator\|ORCHESTRATOR\|continue-orchestrating\|orchestrator-state.json\|/orchestrator"; then
             AGENT_TYPE="orchestrator"
         elif echo "$TRANSCRIPT_TAIL" | grep -q "code.reviewer\|CODE.REVIEWER\|code review\|Starting code review\|Reviewing code\|/reviewer"; then
             AGENT_TYPE="code-reviewer"

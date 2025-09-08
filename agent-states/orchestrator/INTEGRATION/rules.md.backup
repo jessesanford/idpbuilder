@@ -80,7 +80,7 @@ git push -u origin phase{X}/wave{Y}-integration
 ## Integration Validation
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 integration_records:
   phase{X}_wave{Y}:
     started_at: "2025-08-23T15:00:00Z"

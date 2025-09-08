@@ -27,7 +27,7 @@ verify_fixes_in_effort_branches() {
     echo "🔍 VERIFYING ALL FIXES ARE IN EFFORT BRANCHES (R298)"
     
     # For each effort that had fixes
-    for effort in $(yq '.efforts_in_progress | keys | .[]' orchestrator-state.yaml); do
+    for effort in $(yq '.efforts_in_progress | keys | .[]' orchestrator-state.json); do
         EFFORT_BRANCH="phase${PHASE}-wave${WAVE}-${effort}"
         
         # Check if effort had fixes applied

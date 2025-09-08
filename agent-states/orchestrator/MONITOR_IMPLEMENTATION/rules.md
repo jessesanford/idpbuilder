@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -91,7 +91,7 @@ echo "$(date +%s) - Rules read and acknowledged for MONITOR_IMPLEMENTATION" > .s
 ### 🔴🔴🔴 R288 - State File Update and Commit Protocol (SUPREME LAW)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
 **Criticality**: SUPREME LAW - Update on every transition
-**Summary**: Update orchestrator-state.yaml on all state changes
+**Summary**: Update orchestrator-state.json on all state changes
 
 ### State-Specific Rules
 
@@ -132,8 +132,8 @@ echo "🔍 MONITORING IMPLEMENTATIONS: Checking all active SW Engineers NOW..."
 
 # Step 1: List all SW Engineers being monitored (DO NOW!)
 echo "📊 Active SW Engineers under monitoring:"
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.yaml); do
-    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.yaml)
+for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
+    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.json)
     
     if [ "$IMPL_STATUS" = "IN_PROGRESS" ]; then
         echo "  - $effort: Checking implementation progress..."
@@ -145,15 +145,15 @@ done
 
 # Step 2: Check for completed implementations (DO NOW!)
 echo "🔍 Checking for completed implementations..."
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.yaml); do
-    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.yaml)
+for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
+    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.json)
     
     if [ "$IMPL_STATUS" != "COMPLETE" ]; then
         # Check for completion markers
         if [ -f "/efforts/phase${PHASE}/wave${WAVE}/${effort}/IMPLEMENTATION-COMPLETE.marker" ]; then
             echo "✅ Implementation complete for $effort!"
             # Update state file
-            yq -i ".efforts_in_progress[] |= select(.name == \"$effort\") |= .implementation_status = \"COMPLETE\"" orchestrator-state.yaml
+            yq -i ".efforts_in_progress[] |= select(.name == \"$effort\") |= .implementation_status = \"COMPLETE\"" orchestrator-state.json
             
             echo "🚨 CRITICAL: Implementation complete - must spawn Code Reviewer!"
             echo "➡️ Transitioning to SPAWN_CODE_REVIEWERS_FOR_REVIEW"
@@ -163,7 +163,7 @@ done
 
 # Step 3: Check for blocked implementations (DO NOW!)
 echo "🚧 Checking for blocked SW Engineers..."
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.yaml); do
+for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
     # Check for BLOCKED markers or stalled progress
     if [ -f "/efforts/phase${PHASE}/wave${WAVE}/${effort}/BLOCKED.marker" ]; then
         echo "⚠️ SW Engineer blocked on $effort!"
@@ -173,7 +173,7 @@ done
 
 # Step 4: Verify work locations (DO NOW!)
 echo "📍 Verifying all work in correct locations (R255)..."
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.yaml); do
+for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
     EXPECTED_DIR="/efforts/phase${PHASE}/wave${WAVE}/${effort}"
     if [ -d "$EXPECTED_DIR" ]; then
         cd "$EXPECTED_DIR"
@@ -290,16 +290,16 @@ echo "✅ All SW Engineers have completed implementation"
 
 # CRITICAL: Update state file FIRST (R324 requirement)
 echo "🔴 R324: Updating current_state to prevent infinite loop..."
-yq -i ".current_state = \"SPAWN_CODE_REVIEWERS_FOR_REVIEW\"" orchestrator-state.yaml
-yq -i ".previous_state = \"MONITOR_IMPLEMENTATION\"" orchestrator-state.yaml
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%%H:%%M:%%SZ)\"" orchestrator-state.yaml
+yq -i ".current_state = \"SPAWN_CODE_REVIEWERS_FOR_REVIEW\"" orchestrator-state.json
+yq -i ".previous_state = \"MONITOR_IMPLEMENTATION\"" orchestrator-state.json
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%%H:%%M:%%SZ)\"" orchestrator-state.json
 
 # Verify the update
 echo "✅ State updated to:"
-grep "current_state:" orchestrator-state.yaml
+grep "current_state:" orchestrator-state.json
 
 # Commit and push IMMEDIATELY
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: transition to SPAWN_CODE_REVIEWERS_FOR_REVIEW (R324)"
 git push
 

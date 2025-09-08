@@ -24,7 +24,7 @@ You are creating individual split plan files for an oversized implementation (>8
 **VERIFY CORRECT REPOSITORY:**
 ```bash
 echo "🔴 R251/R309: Verifying we're in TARGET repo effort..."
-if [ -f "orchestrator-state.yaml" ] || [ -f ".claude/CLAUDE.md" ]; then
+if [ -f "orchestrator-state.json" ] || [ -f ".claude/CLAUDE.md" ]; then
     echo "🔴🔴🔴 FATAL: In Software Factory repo!"
     echo "Split plans must be created in TARGET effort directory!"
     exit 309
@@ -259,6 +259,10 @@ EOF
 
 ### Step 3: Create Individual Split Plan Files in .software-factory Structure
 
+**🔴🔴🔴 CRITICAL: INCLUDE FILE PLACEMENT WARNINGS (R326) 🔴🔴🔴**
+
+Every split plan MUST include explicit warnings about file placement to prevent the catastrophic bug where SW Engineers create split-XXX/ subdirectories!
+
 **MANDATORY: Use timestamps per R301 to prevent collisions!**
 ```bash
 # CRITICAL: Copy template to ensure explicit boundaries (if it exists)
@@ -298,9 +302,20 @@ for SPLIT_NUM in 001 002 003; do
 - **Clone Required**: Yes - separate clone of target repository
 - **Branch Base**: $([ ${SPLIT_NUM} = "001" ] && echo "Same as original (e.g., phase-integration)" || echo "Previous split branch (split-$(printf "%03d" $((10#${SPLIT_NUM} - 1))))")
 
+## 🔴🔴🔴 CRITICAL: FILE PLACEMENT (R326) 🔴🔴🔴
+
+**⚠️⚠️⚠️ DO NOT CREATE split-${SPLIT_NUM}/ SUBDIRECTORY! ⚠️⚠️⚠️**
+
+Files MUST go directly in standard project directories:
+- ✅ CORRECT: pkg/registry/auth.go
+- ❌ WRONG: split-${SPLIT_NUM}/pkg/registry/auth.go
+
+Creating split subdirectories causes CATASTROPHIC measurement errors!
+Your working directory is already split-specific: efforts/.../registry-SPLIT-${SPLIT_NUM}/
+
 ## Implementation Scope
 
-### Files to Create/Modify
+### Files to Create/Modify (IN STANDARD DIRECTORIES ONLY!)
 ${FILE_LIST_FOR_SPLIT}
 
 ### 🚨 EXPLICIT SCOPE DEFINITION (MANDATORY PER R310)

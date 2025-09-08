@@ -9,7 +9,7 @@ The orchestrator MUST analyze effort dependencies and determine parallelization 
 - **READ** all IMPLEMENTATION-PLAN.md files created by Code Reviewers
 - **IDENTIFY** effort dependencies from the plans
 - **CREATE** dependency graph showing which efforts can be parallel
-- **DOCUMENT** parallelization strategy in orchestrator-state.yaml
+- **DOCUMENT** parallelization strategy in orchestrator-state.json
 
 ### 2. Parallel Execution Criteria
 Efforts can be spawned in parallel when:
@@ -29,7 +29,7 @@ Efforts MUST be sequential when:
 
 ### 4. Parallelization Decision Documentation
 ```yaml
-# In orchestrator-state.yaml
+# In orchestrator-state.json
 parallelization_analysis:
   analyzed_at: "2025-01-20T10:30:00Z"
   parallel_groups:
@@ -50,10 +50,10 @@ parallelization_analysis:
 ```bash
 # MANDATORY before spawning SW Engineers
 verify_parallelization_analysis() {
-    local state_file="orchestrator-state.yaml"
+    local state_file="orchestrator-state.json"
     
     # Check analysis exists
-    # Use text_editor tool with view command to check orchestrator-state.yaml:
+    # Use text_editor tool with view command to check orchestrator-state.json:
     # Look for parallelization_analysis field
     if [ ! parallelization_analysis field exists ]; then
         echo "❌ BLOCKING: No parallelization analysis found!"
@@ -109,7 +109,7 @@ Task sw-engineer-4: Implement effort-4  # Should wait!
 ```markdown
 1. Read all IMPLEMENTATION-PLAN.md files
 2. Analyze dependencies
-3. Document in orchestrator-state.yaml
+3. Document in orchestrator-state.json
 4. Spawn parallel groups together
 5. Monitor and spawn sequential efforts when ready
 ```

@@ -76,11 +76,11 @@ create_effort_infrastructure() {
 determine_base_branch() {
     local PHASE=$1 WAVE=$2 EFFORT=$3
     
-    # Read from orchestrator-state.yaml or config
+    # Read from orchestrator-state.json or config
     # Use text_editor tool with view command to read target-repo-config.yaml:
     # Find the target_repository.base_branch field
     local DEFAULT_BASE="<value from target_repository.base_branch>"
-    # Use text_editor tool with view command to read orchestrator-state.yaml:
+    # Use text_editor tool with view command to read orchestrator-state.json:
     # Find the efforts_planned.[EFFORT].depends_on array
     local DEPENDENCIES="<array from efforts_planned.[EFFORT].depends_on>"
     
@@ -90,7 +90,7 @@ determine_base_branch() {
         REASON="No dependencies, using repository default base"
     else
         # Has dependencies - use the dependency branch
-        # Use text_editor tool with view command to read orchestrator-state.yaml:
+        # Use text_editor tool with view command to read orchestrator-state.json:
         # Find the efforts_completed.[DEPENDENCY].branch field
         DEPENDENCY_BRANCH="<value from efforts_completed.[DEPENDENCY].branch>"
         BASE_BRANCH="$DEPENDENCY_BRANCH"

@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -40,7 +40,7 @@ Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
 
 ## 🔴🔴🔴 CRITICAL: CHECK YOUR CURRENT STATE FIRST! 🔴🔴🔴
 
-**BEFORE ANYTHING ELSE, CHECK orchestrator-state.yaml:**
+**BEFORE ANYTHING ELSE, CHECK orchestrator-state.json:**
 - If `current_state: INTEGRATION` → You are ALREADY in INTEGRATION state!
 - If already in INTEGRATION → Skip to rule reading, then START INTEGRATION WORK IMMEDIATELY
 - Integration is a VERB - it means "DO INTEGRATION NOW"
@@ -226,7 +226,7 @@ The system will check for this marker. No marker = Immediate failure.
 
 ### 🔴🔴🔴 CRITICAL: YOU ARE ALREADY IN INTEGRATION STATE! 🔴🔴🔴
 
-**If current_state = "INTEGRATION" in orchestrator-state.yaml, you MUST:**
+**If current_state = "INTEGRATION" in orchestrator-state.json, you MUST:**
 1. **IMMEDIATELY** start creating integration infrastructure
 2. **NO ANNOUNCEMENTS** - just start working
 3. **NO WAITING** - integration work begins NOW
@@ -454,8 +454,8 @@ echo "📋 Waiting for Code Reviewer to create MERGE PLAN..."
 
 ```bash
 # Setup integration infrastructure first
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
 
 # Ensure we're in integration directory
@@ -643,7 +643,7 @@ chmod +x demo-wave-features.sh
 ## Integration Validation
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 integration_records:
   phase{X}_wave{Y}:
     started_at: "2025-08-23T15:00:00Z"

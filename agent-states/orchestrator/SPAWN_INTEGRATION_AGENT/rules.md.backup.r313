@@ -110,8 +110,8 @@ The orchestrator spawns an Integration Agent to execute the merge plan created b
 ### 1. Verify Merge Plan Exists
 ```bash
 # Check that Code Reviewer completed the merge plan
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
 
 cd "$INTEGRATION_DIR"
@@ -249,7 +249,7 @@ echo "📍 R208: Returned to orchestrator directory"
 
 ### 3. Update State Tracking
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 integration_status:
   phase: ${PHASE}
   wave: ${WAVE}

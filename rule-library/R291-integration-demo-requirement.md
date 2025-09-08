@@ -108,12 +108,12 @@ verify_integration_gates() {
         echo "MANDATORY ACTION: Transition to ERROR_RECOVERY state"
         
         # Update state file to ERROR_RECOVERY
-        yq eval ".current_state = \"ERROR_RECOVERY\"" -i orchestrator-state.yaml
-        yq eval ".error_recovery.trigger = \"R291_BUILD_TEST_GATE_FAILURE\"" -i orchestrator-state.yaml
-        yq eval ".error_recovery.reason = \"$FAILURE_REASON\"" -i orchestrator-state.yaml
-        yq eval ".error_recovery.timestamp = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.yaml
+        yq eval ".current_state = \"ERROR_RECOVERY\"" -i orchestrator-state.json
+        yq eval ".error_recovery.trigger = \"R291_BUILD_TEST_GATE_FAILURE\"" -i orchestrator-state.json
+        yq eval ".error_recovery.reason = \"$FAILURE_REASON\"" -i orchestrator-state.json
+        yq eval ".error_recovery.timestamp = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
         
-        git add orchestrator-state.yaml
+        git add orchestrator-state.json
         git commit -m "error: R291 gate failure - entering ERROR_RECOVERY: $FAILURE_REASON"
         git push
         

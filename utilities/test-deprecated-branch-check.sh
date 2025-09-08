@@ -36,7 +36,7 @@ echo "TEST 2: Detecting SPLIT_DEPRECATED status in state file"
 echo "────────────────────────────────────────────────────────"
 
 # Create temporary test state file
-TEST_STATE_FILE="/tmp/test-orchestrator-state.yaml"
+TEST_STATE_FILE="/tmp/test-orchestrator-state.json"
 cat > "$TEST_STATE_FILE" << 'EOF'
 efforts_completed:
   effort-001-feature:

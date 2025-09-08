@@ -55,7 +55,7 @@
 
 **THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
 1. Begin creating integration branch NOW
-2. Update orchestrator-state.yaml with completion
+2. Update orchestrator-state.json with completion
 3. Check TodoWrite for pending items and process them
 4. Prepare for architect review immediately
 
@@ -67,7 +67,7 @@
 
 **REQUIRED - IMMEDIATE ACTION:**
 - ✅ "Entering WAVE_COMPLETE, Begin creating integration branch NOW..."
-- ✅ "START WAVE COMPLETION PROCESS, update orchestrator-state.yaml with completion..."
+- ✅ "START WAVE COMPLETION PROCESS, update orchestrator-state.json with completion..."
 - ✅ "WAVE_COMPLETE: Prepare for architect review immediately..."
 
 ## State Context
@@ -127,12 +127,12 @@ update_orchestrator_state "WAVE_COMPLETE" "All efforts reviewed and passed"
 mark_wave_complete "$PHASE" "$WAVE"
 
 # Example state file update:
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"" orchestrator-state.yaml
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.efforts_count = $EFFORT_COUNT" orchestrator-state.yaml
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.all_reviews_passed = true" orchestrator-state.yaml
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.size_compliant = true" orchestrator-state.yaml
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.integration_branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.yaml
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"" orchestrator-state.json
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.efforts_count = $EFFORT_COUNT" orchestrator-state.json
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.all_reviews_passed = true" orchestrator-state.json
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.size_compliant = true" orchestrator-state.json
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.integration_branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.json
 ```
 
 **VIOLATION = AUTOMATIC FAILURE if wave completion not recorded in state file!**
@@ -145,7 +145,7 @@ save_todos "WAVE_COMPLETE - Phase $PHASE Wave $WAVE"
 
 # R189: Commit within 60 seconds
 cd $CLAUDE_PROJECT_DIR
-git add todos/*.todo orchestrator-state.yaml
+git add todos/*.todo orchestrator-state.json
 git commit -m "todo: wave $WAVE complete, all reviews passed"
 git push
 

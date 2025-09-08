@@ -76,7 +76,7 @@
 ### Orchestrator Startup:
 1. **Loads:** `.claude/agents/orchestrator.md` (R001, R010, R006)
 2. **Loads:** `🚨-CRITICAL/*.md` (26 rules)
-3. **Checks:** Current state in `orchestrator-state.yaml`
+3. **Checks:** Current state in `orchestrator-state.json`
 4. **Loads:** `agent-states/orchestrator/{STATE}/rules.md`
 5. **References:** State machine for transitions
 

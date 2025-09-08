@@ -96,7 +96,7 @@ sw_engineer_grade = (
 
 ## Grade Reporting
 
-Grades MUST be tracked in orchestrator-state.yaml:
+Grades MUST be tracked in orchestrator-state.json:
 
 ```yaml
 agent_grades:

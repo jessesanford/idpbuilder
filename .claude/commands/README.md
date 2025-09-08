@@ -124,7 +124,7 @@ All commands enforce these mandatory requirements:
 
 Commands are tightly integrated with the Software Factory 2.0 state machine:
 
-- **State Detection**: Automatically detect current state from orchestrator-state.yaml
+- **State Detection**: Automatically detect current state from orchestrator-state.json
 - **State Transitions**: Proper TODO saving before transitions
 - **State Validation**: Ensure transitions follow valid state machine paths
 - **Recovery Support**: Context recovery protocols for lost or corrupted state
@@ -154,7 +154,7 @@ For commands to work properly, projects should maintain this structure:
 ```
 /workspaces/[project]/
 ├── agent-configs/[project]/          # Project-specific agent configs
-│   ├── orchestrator-state.yaml      # State machine persistence
+│   ├── orchestrator-state.json      # State machine persistence
 │   ├── todos/                       # TODO state files
 │   ├── [PROJECT]-ORCHESTRATOR-IMPLEMENTATION-PLAN.md
 │   ├── SOFTWARE-ENG-AGENT-STARTUP-REQUIREMENTS.md

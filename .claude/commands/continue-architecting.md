@@ -52,7 +52,7 @@ EVERY Architect startup MUST print:
 ```bash
 # If you don't remember previous work, immediately read state files
 READ: .claude/agents/architect.md
-READ: ./agent-configs/[project]/orchestrator-state.yaml
+READ: ./agent-configs/[project]/orchestrator-state.json
 ```
 
 ### STEP 2: TODO Recovery
@@ -76,14 +76,14 @@ fi
 ```bash
 # Core identity and orchestrator state
 READ: .claude/agents/architect.md
-READ: ./agent-configs/[project]/orchestrator-state.yaml
+READ: ./agent-configs/[project]/orchestrator-state.json
 ```
 
 ### STATE: WAVE_REVIEW (Reviewing Completed Wave)
 ```bash
 READ: ./agent-configs/[project]/WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md
 READ: ./agent-configs/[project]/ARCHITECT-REVIEWER-WAVE-INSTRUCTIONS.md
-READ: ./agent-configs/[project]/orchestrator-state.yaml
+READ: ./agent-configs/[project]/orchestrator-state.json
 
 # Wave Review Protocol:
 CHECK: efforts_completed for the wave
@@ -154,7 +154,7 @@ OUTPUT: Signal orchestrator to spawn Code Reviewer
 
 ### STATE: INTEGRATION_REVIEW (Checking Integration Branches)
 ```bash
-READ: ./agent-configs/[project]/orchestrator-state.yaml
+READ: ./agent-configs/[project]/orchestrator-state.json
 
 # Integration Review Protocol:
 CHECK: integration_branches section
@@ -408,7 +408,7 @@ echo "- Follow-up required: [Yes/No]" >> $REVIEW_HISTORY
 ```bash
 # If lost in review process:
 CHECK: What am I reviewing (wave/phase/integration)?
-READ: ./agent-configs/[project]/orchestrator-state.yaml
+READ: ./agent-configs/[project]/orchestrator-state.json
 CHECK: efforts_completed or integration_branches
 ASSESS: Last review status and findings
 RESUME: From appropriate review protocol

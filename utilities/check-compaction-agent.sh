@@ -77,7 +77,7 @@ if [ -f /tmp/compaction_marker.txt ]; then
     # Agent-specific recovery instructions
     case "$AGENT_TYPE" in
         orchestrator)
-            echo "5. READ: orchestrator-state.yaml to understand current state"
+            echo "5. READ: orchestrator-state.json to understand current state"
             echo "6. CONTINUE: From appropriate state in state machine"
             ;;
         sw-engineer)
@@ -91,7 +91,7 @@ if [ -f /tmp/compaction_marker.txt ]; then
             echo "7. CONTINUE: From appropriate review state"
             ;;
         architect)
-            echo "5. READ: orchestrator-state.yaml to understand context"
+            echo "5. READ: orchestrator-state.json to understand context"
             echo "6. Determine review type: Wave/Phase/Integration"
             echo "7. CONTINUE: From appropriate review state"
             ;;

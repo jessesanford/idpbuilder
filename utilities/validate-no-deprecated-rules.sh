@@ -60,13 +60,13 @@ if [ -d ".claude" ]; then
 fi
 
 # Check orchestrator state files
-if [ -f "orchestrator-state.yaml" ] || [ -f "orchestrator-state.yaml.example" ]; then
+if [ -f "orchestrator-state.json" ] || [ -f "orchestrator-state.json.example" ]; then
     echo "📂 Checking orchestrator state files..."
     for rule in "${DEPRECATED_RULES[@]}"; do
-        if grep "\b${rule}\b" orchestrator-state.yaml* 2>/dev/null > /dev/null; then
+        if grep "\b${rule}\b" orchestrator-state.json* 2>/dev/null > /dev/null; then
             echo "  ❌ ERROR: Deprecated rule $rule found in orchestrator state file!"
             VALIDATION_PASSED=false
-            ERRORS_FOUND+=("$rule in orchestrator-state.yaml")
+            ERRORS_FOUND+=("$rule in orchestrator-state.json")
         fi
     done
 fi

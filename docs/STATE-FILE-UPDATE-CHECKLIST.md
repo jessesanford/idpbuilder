@@ -3,7 +3,7 @@
 ## 🔴 CRITICAL: This checklist MUST be followed for EVERY state transition!
 
 ### Pre-Transition Checklist
-- [ ] Current state identified from orchestrator-state.yaml
+- [ ] Current state identified from orchestrator-state.json
 - [ ] Target state validated against state machine
 - [ ] Transition reason clearly defined
 - [ ] State update function available in utilities/state-file-update-functions.sh
@@ -110,25 +110,25 @@ add_spawned_agent "sw-engineer" "core-api-types" "core-api-sw-123456" \
 
 ```bash
 # Check current state
-yq '.state_machine.current_state' orchestrator-state.yaml
+yq '.state_machine.current_state' orchestrator-state.json
 
 # Check if wave is marked complete
-yq '.waves_completed.phase1.wave1.status' orchestrator-state.yaml
+yq '.waves_completed.phase1.wave1.status' orchestrator-state.json
 
 # Check transition timestamp freshness
-yq '.state_machine.transition_time' orchestrator-state.yaml
+yq '.state_machine.transition_time' orchestrator-state.json
 
 # List all completed waves
-yq '.waves_completed' orchestrator-state.yaml
+yq '.waves_completed' orchestrator-state.json
 
 # Check active agents
-yq '.agents_spawned[] | select(.status == "ACTIVE")' orchestrator-state.yaml
+yq '.agents_spawned[] | select(.status == "ACTIVE")' orchestrator-state.json
 ```
 
 ## R288 Enforcement
 
 **REMEMBER: The state file is the single source of truth!**
 
-If it's not in orchestrator-state.yaml, it didn't happen.
+If it's not in orchestrator-state.json, it didn't happen.
 
 **AUTOMATIC FAILURE** if state transitions occur without proper state file updates.

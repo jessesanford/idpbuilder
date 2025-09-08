@@ -357,7 +357,7 @@ class EffortPlanningGrader:
 ## Planning Performance Tracking
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 grading:
   CODE_REVIEWER_EFFORT_PLANNING:
     latest:

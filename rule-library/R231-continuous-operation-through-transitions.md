@@ -128,7 +128,7 @@ perform_state_transition() {
     update_state "current_state" "$NEW_STATE"
     
     # Step 3: Commit and push (R288)
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: transition to $NEW_STATE [R288]"
     git push
     

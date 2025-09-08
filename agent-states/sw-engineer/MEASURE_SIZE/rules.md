@@ -36,13 +36,13 @@ find_line_counter() {
         LEVEL=$((LEVEL + 1))
     done
     
-    # Strategy 2: Look for orchestrator-state.yaml (main project marker)
+    # Strategy 2: Look for orchestrator-state.json (main project marker)
     SEARCH_DIR=$(pwd)
     while [ "$SEARCH_DIR" != "/" ]; do
-        if [ -f "$SEARCH_DIR/orchestrator-state.yaml" ]; then
+        if [ -f "$SEARCH_DIR/orchestrator-state.json" ]; then
             if [ -f "$SEARCH_DIR/tools/line-counter.sh" ]; then
                 LINE_COUNTER="$SEARCH_DIR/tools/line-counter.sh"
-                echo "✅ Found via orchestrator-state.yaml: $LINE_COUNTER"
+                echo "✅ Found via orchestrator-state.json: $LINE_COUNTER"
                 return 0
             fi
         fi

@@ -52,7 +52,7 @@ git diff origin/idpbuilder-oci-build-push/phase1/wave1/integration...HEAD --stat
 
 ## Action Taken
 1. Documented this correction
-2. Updated orchestrator-state.yaml to reflect correct status
+2. Updated orchestrator-state.json to reflect correct status
 3. No further splitting needed - proceed to integration
 
 ## Important Note for Factory Restart

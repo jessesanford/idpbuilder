@@ -128,7 +128,7 @@ Based on the state machine and rules analysis, **every phase MUST have integrati
 
 ```
 $CLAUDE_PROJECT_DIR/
-├── orchestrator-state.yaml
+├── orchestrator-state.json
 ├── MASTER-PR-PLAN.md (created at project completion)
 │
 ├── phase-assessments/

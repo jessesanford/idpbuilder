@@ -14,7 +14,7 @@
 /                                    # System root
 ├── workspaces/                      # Development workspaces
 │   └── software-factory-2.0/        # SF INSTANCE (planning only)
-│       ├── orchestrator-state.yaml  # State management
+│       ├── orchestrator-state.json  # State management
 │       ├── target-repo-config.yaml  # Target repo configuration
 │       ├── agent-states/            # Agent-specific rules
 │       └── utilities/               # Helper scripts
@@ -197,7 +197,7 @@ export PHASE_INTEGRATION="${EFFORTS_ROOT}/phase${PHASE}/phase-integration-worksp
 **Cause**: You're in the SF instance directory
 **Solution**: cd to `/efforts/phase{X}/wave{Y}/integration-workspace/`
 
-### Error: "orchestrator-state.yaml" in git status
+### Error: "orchestrator-state.json" in git status
 **Cause**: You're in the wrong repository
 **Solution**: You're in SF instance, not target repo
 

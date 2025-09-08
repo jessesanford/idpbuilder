@@ -5,10 +5,10 @@
 **ALL AGENTS (SW Engineer, Code Reviewer, Orchestrator) MUST use this exact pattern:**
 
 ```bash
-# STEP 1: Find the project root (where orchestrator-state.yaml exists)
+# STEP 1: Find the project root (where orchestrator-state.json exists)
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do
-    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then
+    if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then
         echo "Found project root at: $PROJECT_ROOT"
         break
     fi
@@ -62,7 +62,7 @@ $LINE_COUNTER -c "$(git branch --show-current)"  # CORRECT for splits
 
 ```bash
 # For NORMAL efforts (finds project root and runs line counter)
-PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then break; fi; PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); done; $PROJECT_ROOT/tools/line-counter.sh
+PROJECT_ROOT=$(pwd); while [ "$PROJECT_ROOT" != "/" ]; do if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then break; fi; PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); done; $PROJECT_ROOT/tools/line-counter.sh
 
 # For SPLIT efforts (searches up tree and uses branch parameter)
 LC=$(d=$(pwd); while [ "$d" != "/" ]; do [ -f "$d/tools/line-counter.sh" ] && echo "$d/tools/line-counter.sh" && break; d=$(dirname "$d"); done); [ -n "$LC" ] && "$LC" -c "$(git branch --show-current)" || echo "Tool not found"
@@ -84,7 +84,7 @@ If the line counter is not at `$PROJECT_ROOT/tools/line-counter.sh`:
 
 ## Remember
 
-- **Project Root**: Where `orchestrator-state.yaml` exists
+- **Project Root**: Where `orchestrator-state.json` exists
 - **Tool Location**: Always `PROJECT_ROOT/tools/line-counter.sh`
 - **Execution**: From YOUR effort directory
 - **Parameters**: NONE (auto-detects branch and excludes generated code)

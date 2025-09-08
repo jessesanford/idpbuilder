@@ -10,7 +10,7 @@ Please refer to R288 for current state file update and commit requirements.
 
 ## THE ABSOLUTE RULE:
 
-**EVERY state transition MUST update orchestrator-state.yaml IMMEDIATELY**
+**EVERY state transition MUST update orchestrator-state.json IMMEDIATELY**
 
 No exceptions. No deferrals. No "I'll update it later."
 
@@ -147,14 +147,14 @@ update_orchestrator_state() {
     local REASON="$2"
     
     # Get current state before update
-    local OLD_STATE=$(yq '.state_machine.current_state' orchestrator-state.yaml)
+    local OLD_STATE=$(yq '.state_machine.current_state' orchestrator-state.json)
     
     # Update core state machine fields
-    yq -i ".state_machine.current_state = \"$NEW_STATE\"" orchestrator-state.yaml
-    yq -i ".state_machine.previous_state = \"$OLD_STATE\"" orchestrator-state.yaml
-    yq -i ".state_machine.transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-    yq -i ".state_machine.transition_reason = \"$REASON\"" orchestrator-state.yaml
-    yq -i ".state_machine.rules_reacknowledged = false" orchestrator-state.yaml
+    yq -i ".state_machine.current_state = \"$NEW_STATE\"" orchestrator-state.json
+    yq -i ".state_machine.previous_state = \"$OLD_STATE\"" orchestrator-state.json
+    yq -i ".state_machine.transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+    yq -i ".state_machine.transition_reason = \"$REASON\"" orchestrator-state.json
+    yq -i ".state_machine.rules_reacknowledged = false" orchestrator-state.json
     
     echo "✅ State file updated: $OLD_STATE → $NEW_STATE"
 }
@@ -165,17 +165,17 @@ mark_wave_complete() {
     local WAVE="$2"
     
     # Create wave completion record
-    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"" orchestrator-state.yaml
+    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"" orchestrator-state.json
     
     # Count efforts
     local EFFORT_COUNT=$(ls -d efforts/phase${PHASE}/wave${WAVE}/*/ 2>/dev/null | wc -l)
-    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.efforts_count = $EFFORT_COUNT" orchestrator-state.yaml
+    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.efforts_count = $EFFORT_COUNT" orchestrator-state.json
     
     # Record integration branch
     source utilities/branch-naming-helpers.sh
     local INTEGRATION_BRANCH=$(get_wave_integration_branch_name "$PHASE" "$WAVE")
-    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.integration_branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.yaml
+    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.integration_branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.json
     
     echo "✅ Wave marked complete: Phase $PHASE, Wave $WAVE"
 }
@@ -184,8 +184,8 @@ mark_wave_complete() {
 verify_state_file_updated() {
     local EXPECTED_STATE="$1"
     
-    local CURRENT=$(yq '.state_machine.current_state' orchestrator-state.yaml)
-    local TIMESTAMP=$(yq '.state_machine.transition_time' orchestrator-state.yaml)
+    local CURRENT=$(yq '.state_machine.current_state' orchestrator-state.json)
+    local TIMESTAMP=$(yq '.state_machine.transition_time' orchestrator-state.json)
     
     if [ "$CURRENT" != "$EXPECTED_STATE" ]; then
         echo "❌ ERROR: State file not updated! Expected: $EXPECTED_STATE, Found: $CURRENT"
@@ -251,6 +251,6 @@ do_integration_stuff
 
 ## THE GOLDEN RULE:
 
-**No state transition is complete until orchestrator-state.yaml reflects it.**
+**No state transition is complete until orchestrator-state.json reflects it.**
 
 The state file is the single source of truth. If it's not in the state file, it didn't happen.

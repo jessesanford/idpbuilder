@@ -58,7 +58,7 @@ GRADING VIOLATION: Proceeding would cause automatic failure per R208/R209
 When receiving agent error reports, the orchestrator MUST:
 
 1. **Read the error message** completely
-2. **Update orchestrator-state.yaml** with error details:
+2. **Update orchestrator-state.json** with error details:
 ```yaml
 agent_errors:
   - agent_type: "sw-engineer"
@@ -166,8 +166,8 @@ echo "📍 ORCHESTRATOR: Received error report from $AGENT_TYPE"
 echo "   Error code: $ERROR_CODE"
 echo "   Taking corrective action..."
 # Update state file
-yq -i ".agent_errors += [{\"agent\": \"$AGENT_TYPE\", \"code\": $ERROR_CODE, \"time\": \"$(date -Iseconds)\"}]" orchestrator-state.yaml
-git add orchestrator-state.yaml && git commit -m "state: agent error $ERROR_CODE recorded [R288]" && git push
+yq -i ".agent_errors += [{\"agent\": \"$AGENT_TYPE\", \"code\": $ERROR_CODE, \"time\": \"$(date -Iseconds)\"}]" orchestrator-state.json
+git add orchestrator-state.json && git commit -m "state: agent error $ERROR_CODE recorded [R288]" && git push
 ```
 
 ## Grading Impact

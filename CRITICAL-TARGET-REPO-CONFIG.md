@@ -214,7 +214,7 @@ git push
 │   ├── target-repo-config.yaml    # POINTS TO TARGET REPO ←──────┐
 │   ├── rule-library/              # Framework rules              │
 │   ├── .claude/agents/            # Agent configurations         │
-│   ├── orchestrator-state.yaml    # State management             │
+│   ├── orchestrator-state.json    # State management             │
 │   └── efforts/                   # CLONED TARGET REPOS          │
 │       ├── phase1/                                               │
 │       │   ├── wave1/                                            │

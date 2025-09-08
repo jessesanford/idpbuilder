@@ -40,22 +40,22 @@ They are NOT for single-line execution!
 ### Example of Documentation Style (with backslashes):
 ```bash
 # This is for DOCUMENTATION - shows line continuation
-if [ -f "orchestrator-state.yaml" ]; then 
+if [ -f "orchestrator-state.json" ]; then 
     echo "State file exists"; 
-    cat orchestrator-state.yaml; 
+    cat orchestrator-state.json; 
 fi
 ```
 
 ### Example of Execution Style (no backslashes):
 ```bash
 # For ACTUAL EXECUTION - Option 1 (multi-line)
-if [ -f "orchestrator-state.yaml" ]; then
+if [ -f "orchestrator-state.json" ]; then
     echo "State file exists"
-    cat orchestrator-state.yaml
+    cat orchestrator-state.json
 fi
 
 # For ACTUAL EXECUTION - Option 2 (single-line with semicolons)
-if [ -f "orchestrator-state.yaml" ]; then echo "State file exists"; cat orchestrator-state.yaml; fi
+if [ -f "orchestrator-state.json" ]; then echo "State file exists"; cat orchestrator-state.json; fi
 ```
 
 ## Rules for Agents

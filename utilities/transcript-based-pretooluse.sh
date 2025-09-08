@@ -61,7 +61,7 @@ detect_agent_from_transcript() {
     
     # Fallback: try pattern matching on working directory
     if [ "$agent_type" = "unknown" ]; then
-        if [ -f "orchestrator-state.yaml" ] || [[ "$PWD" == *orchestrator* ]]; then
+        if [ -f "orchestrator-state.json" ] || [[ "$PWD" == *orchestrator* ]]; then
             agent_type="orchestrator"
         elif [ -f "IMPLEMENTATION-PLAN.md" ] || [[ "$PWD" == *effort* ]]; then
             agent_type="sw-engineer"
@@ -106,7 +106,7 @@ if [ -f "$MARKER_FILE" ]; then
         recovery_msg+="- /workspaces/todos/\\n"
         recovery_msg+="- /workspaces/agent-configs/tmc-orchestrator-impl-8-20-2025/todos/\\n\\n"
         recovery_msg+="If TODOs exist, load them. Otherwise, reconstruct state from:\\n"
-        recovery_msg+="- orchestrator-state.yaml\\n"
+        recovery_msg+="- orchestrator-state.json\\n"
         recovery_msg+="- Recent work logs\\n"
         recovery_msg+="- Git history\\n"
     elif [ -n "$todos_saved" ] && [ -f "$todos_saved" ]; then
@@ -118,7 +118,7 @@ if [ -f "$MARKER_FILE" ]; then
     else
         recovery_msg+="⚠️ WARNING: Compaction occurred but no TODOs were saved\\n\\n"
         recovery_msg+="You may need to reconstruct state from:\\n"
-        recovery_msg+="- orchestrator-state.yaml\\n"
+        recovery_msg+="- orchestrator-state.json\\n"
         recovery_msg+="- Recent work logs\\n"
         recovery_msg+="- Git history\\n"
     fi

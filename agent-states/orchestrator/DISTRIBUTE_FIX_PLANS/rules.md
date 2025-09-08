@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -184,8 +184,8 @@ In DISTRIBUTE_FIX_PLANS, you copy the fix plans created by Code Reviewer to each
 
 ### 1. Load Fix Plan Summary
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 FIX_PLAN_DIR="efforts/phase${PHASE}/wave${WAVE}/fix-plans"
 SUMMARY_FILE="${FIX_PLAN_DIR}/FIX_PLAN_SUMMARY.yaml"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
@@ -251,21 +251,21 @@ echo "Total efforts with fix plans: ${#FIX_PLANS[@]}" >> "$DISTRIBUTION_LOG"
 ### 3. Update State File
 ```bash
 # Record distribution
-yq eval ".integration_feedback.wave${WAVE}.fix_plans_distributed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.yaml
-yq eval ".integration_feedback.wave${WAVE}.distribution_log = \"$DISTRIBUTION_LOG\"" -i orchestrator-state.yaml
+yq eval ".integration_feedback.wave${WAVE}.fix_plans_distributed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+yq eval ".integration_feedback.wave${WAVE}.distribution_log = \"$DISTRIBUTION_LOG\"" -i orchestrator-state.json
 
 # Mark efforts as needing fixes
 for effort in "${FIX_PLANS[@]}"; do
-    yq eval ".efforts_in_progress.\"$effort\".needs_fixes = true" -i orchestrator-state.yaml
-    yq eval ".efforts_in_progress.\"$effort\".fix_plan_distributed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.yaml
+    yq eval ".efforts_in_progress.\"$effort\".needs_fixes = true" -i orchestrator-state.json
+    yq eval ".efforts_in_progress.\"$effort\".fix_plan_distributed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
 done
 
 # Transition to spawn engineers
-yq eval ".current_state = \"SPAWN_ENGINEERS_FOR_FIXES\"" -i orchestrator-state.yaml
-yq eval ".state_transition_history += [{\"from\": \"DISTRIBUTE_FIX_PLANS\", \"to\": \"SPAWN_ENGINEERS_FOR_FIXES\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Fix plans distributed to ${#FIX_PLANS[@]} efforts\"}]" -i orchestrator-state.yaml
+yq eval ".current_state = \"SPAWN_ENGINEERS_FOR_FIXES\"" -i orchestrator-state.json
+yq eval ".state_transition_history += [{\"from\": \"DISTRIBUTE_FIX_PLANS\", \"to\": \"SPAWN_ENGINEERS_FOR_FIXES\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Fix plans distributed to ${#FIX_PLANS[@]} efforts\"}]" -i orchestrator-state.json
 
 # Commit
-git add orchestrator-state.yaml "$DISTRIBUTION_LOG"
+git add orchestrator-state.json "$DISTRIBUTION_LOG"
 git commit -m "distribute: Fix plans sent to ${#FIX_PLANS[@]} efforts"
 git push
 ```

@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -60,13 +60,13 @@ The backport process has been split into proper states with clear separation:
 ```bash
 # Transition to the new flow
 cd $CLAUDE_PROJECT_DIR
-cat > orchestrator-state.yaml << 'EOF'
+cat > orchestrator-state.json << 'EOF'
 current_state: SPAWN_CODE_REVIEWER_BACKPORT_PLAN
 previous_state: BACKPORT_FIXES
 migration_note: "Migrating from deprecated BACKPORT_FIXES to new flow"
 EOF
 
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "migrate: from deprecated BACKPORT_FIXES to new backport flow"
 git push
 ```

@@ -18,7 +18,7 @@ From the transcript provided, the orchestrator violated Rule R151 by spawning al
 - Reads Wave Implementation Plan with Read tool (R218 compliance)
 - Extracts all "Can Parallelize" metadata
 - Creates blocking vs parallel groups
-- Saves parallelization plan to orchestrator-state.yaml
+- Saves parallelization plan to orchestrator-state.json
 - Requires explicit acknowledgment before proceeding
 
 ### 2. New State: ANALYZE_IMPLEMENTATION_PARALLELIZATION
@@ -31,7 +31,7 @@ From the transcript provided, the orchestrator violated Rule R151 by spawning al
 - Reads ALL effort IMPLEMENTATION-PLAN.md files
 - Verifies consistency with wave plan metadata
 - Creates SW Engineer spawn strategy
-- Saves plan to orchestrator-state.yaml
+- Saves plan to orchestrator-state.json
 - Requires explicit acknowledgment before proceeding
 
 ## Files Created/Modified
@@ -68,7 +68,7 @@ From the transcript provided, the orchestrator violated Rule R151 by spawning al
 
 ### New Utility Scripts:
 1. **utilities/upgrade-parallelization-states.sh**
-   - Upgrades orchestrator-state.yaml with parallelization sections
+   - Upgrades orchestrator-state.json with parallelization sections
    - Creates backup before modification
    - Adds tracking for violations
 
@@ -109,7 +109,7 @@ SPAWN_AGENTS  ← Now uses pre-analyzed strategy
 
 ### 1. State Transition Blocking
 - Cannot transition to spawning states without completing analysis
-- State rules check for parallelization plan in orchestrator-state.yaml
+- State rules check for parallelization plan in orchestrator-state.json
 - Missing plan causes immediate state failure
 
 ### 2. Grading Penalties
@@ -142,7 +142,7 @@ READ: phase-plans/PHASE-3-WAVE-1-IMPLEMENTATION-PLAN.md
    Step 1: Spawn E3.1.1 ALONE and WAIT
    Step 2: Spawn others TOGETHER in ONE message
 
-✅ Strategy SAVED in orchestrator-state.yaml
+✅ Strategy SAVED in orchestrator-state.json
 ```
 
 ### Step 2: Spawn According to Strategy

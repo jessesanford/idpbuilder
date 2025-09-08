@@ -142,15 +142,61 @@ P2W1 efforts START from phase1-integration
 **🔴🔴🔴 CRITICAL: Splits MUST chain sequentially! 🔴🔴🔴**
 
 ### The Sequential Split Principle:
+
+**🚨 CRITICAL CLARIFICATION: Split-001 is based on the SAME branch the oversized effort was based on, NOT the oversized branch itself! 🚨**
+
 ```
+CORRECT SPLIT BRANCHING:
 phase1/wave1-integration (or other R308 base)
-    └─→ split-001 (based on integration)
-            └─→ split-002 (based on split-001, NOT integration!)
-                    └─→ split-003 (based on split-002, NOT integration!)
+    ├─→ effort-foo (becomes oversized, 1200+ lines, based on integration)
+    ├─→ effort-foo-split-001 (based on SAME integration branch as effort-foo, NOT on effort-foo!)
+    │       └─→ effort-foo-split-002 (based on split-001, NOT integration!)
+    │               └─→ effort-foo-split-003 (based on split-002, NOT split-001!)
+    └─→ effort-bar (normal effort, no split needed)
+
+WRONG SPLIT BRANCHING (causes the bug):
+phase1/wave1-integration
+    └─→ effort-foo (oversized, 1200+ lines)
+            └─→ effort-foo-split-001 (❌ WRONG: based on effort-foo, inherits ALL 1200+ lines!)
 ```
 
-### ✅ CORRECT Split Branching:
-- **split-001**: From wave/phase integration branch (R308 incremental base)
+### 🔴 WHY THIS MATTERS:
+When split-001 is incorrectly based on the oversized branch:
+1. **line-counter.sh sees ALL changes** (1200+ lines) instead of just split-001's portion
+2. **Split appears oversized** even though it only contains partial work
+3. **Cascading failures** as each split appears to violate size limits
+4. **Integration issues** as splits don't properly isolate changes
+
+### ✅ CORRECT Split Branching Implementation:
+```bash
+# When creating split-001 infrastructure:
+EFFORT_NAME="effort-foo"
+OVERSIZED_BRANCH="phase1/wave1/effort-foo"  # Has 1200+ lines
+
+# DETERMINE THE BASE BRANCH FOR SPLIT-001
+# Get the base that the oversized effort was based on
+BASE_FOR_OVERSIZED=$(cd /efforts/phase1/wave1/effort-foo && git merge-base HEAD origin/main | xargs git branch -r --contains | grep -E "(main|integration)" | head -1 | sed 's/.*origin\///')
+
+# OR use the same R308 determination logic:
+BASE_FOR_SPLIT_001=$(determine_effort_base_branch $PHASE $WAVE)  # Returns integration branch
+
+# Create split-001 based on SAME base as oversized effort
+git clone --branch "$BASE_FOR_SPLIT_001" "$REPO" "effort-foo-split-001"
+cd effort-foo-split-001
+git checkout -b "phase1/wave1/effort-foo-split-001"
+
+# Result: split-001 starts CLEAN, only contains split-001's work
+```
+
+### ❌ WRONG Split Branching (The Bug):
+```bash
+# WRONG - Basing split-001 on the oversized branch
+git clone --branch "phase1/wave1/effort-foo" "$REPO" "effort-foo-split-001"
+# Result: split-001 INHERITS all 1200+ lines from effort-foo!
+```
+
+### ✅ CORRECT Sequential Chaining:
+- **split-001**: From wave/phase integration branch (SAME as oversized effort's base)
 - **split-002**: From split-001 branch (contains split-001's work)
 - **split-003**: From split-002 branch (contains split-001 + split-002's work)
 - **split-N**: From split-(N-1) branch (contains all previous splits' work)
@@ -205,8 +251,8 @@ git clone --branch "phase1/wave1-integration" ... split-003  # Missing 001 & 002
 ### Pre-Clone Verification
 ```bash
 echo "🔍 Verifying incremental base branch..."
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 BASE=$(determine_effort_base_branch $PHASE $WAVE)
 
 echo "📌 Phase $PHASE, Wave $WAVE"

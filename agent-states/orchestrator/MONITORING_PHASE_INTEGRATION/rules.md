@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -64,7 +64,7 @@ fi
 ### 2. 🔴🔴🔴 CHECK PHASE INTEGRATION REPORT AND ENFORCE R291 GATES 🔴🔴🔴
 ```bash
 # MANDATORY: Check for phase integration report AND enforce build/test gates
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
 REPORT_FILE="efforts/phase${PHASE}/phase-integration/PHASE_INTEGRATION_REPORT.md"
 
 if [ ! -f "$REPORT_FILE" ]; then
@@ -150,12 +150,12 @@ echo "📝 REASON: $UPDATE_REASON"
 ### 3. Update State File with Phase Integration Results
 ```bash
 # Update orchestrator state
-yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.yaml
-yq eval ".phase_integration_status.phase${PHASE} = \"$INTEGRATION_STATUS\"" -i orchestrator-state.yaml
-yq eval ".state_transition_history += [{\"from\": \"MONITORING_PHASE_INTEGRATION\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"$UPDATE_REASON\"}]" -i orchestrator-state.yaml
+yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
+yq eval ".phase_integration_status.phase${PHASE} = \"$INTEGRATION_STATUS\"" -i orchestrator-state.json
+yq eval ".state_transition_history += [{\"from\": \"MONITORING_PHASE_INTEGRATION\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"$UPDATE_REASON\"}]" -i orchestrator-state.json
 
 # Commit state change
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: MONITORING_PHASE_INTEGRATION → $UPDATE_STATE - $UPDATE_REASON"
 git push
 ```

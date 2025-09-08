@@ -21,11 +21,11 @@ echo -e "${MAGENTA}${BOLD}══════════════════
 check_sf_instance() {
     echo -e "${CYAN}1. Checking if this is a Software Factory instance...${NC}"
     
-    if [ -f "orchestrator-state.yaml" ] || [ -f "orchestrator-state.yaml.example" ]; then
-        echo -e "   ${GREEN}✅ Found orchestrator-state.yaml - This IS an SF instance${NC}"
+    if [ -f "orchestrator-state.json" ] || [ -f "orchestrator-state.json.example" ]; then
+        echo -e "   ${GREEN}✅ Found orchestrator-state.json - This IS an SF instance${NC}"
         return 0
     else
-        echo -e "   ${RED}❌ No orchestrator-state.yaml - Not an SF instance${NC}"
+        echo -e "   ${RED}❌ No orchestrator-state.json - Not an SF instance${NC}"
         echo -e "   ${YELLOW}Run this script from the Software Factory root directory${NC}"
         return 1
     fi

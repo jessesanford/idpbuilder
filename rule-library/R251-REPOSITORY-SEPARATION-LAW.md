@@ -7,16 +7,16 @@
 ### TWO DISTINCT REPOSITORIES EXIST:
 
 1. **SOFTWARE FACTORY INSTANCE** (Planning & Orchestration)
-   - Location: The root directory with orchestrator-state.yaml
+   - Location: The root directory with orchestrator-state.json
    - Purpose: Planning, configuration, state management, agent coordination
-   - Contains: .claude/, orchestrator-state.yaml, target-repo-config.yaml, phase-plans/
+   - Contains: .claude/, orchestrator-state.json, target-repo-config.yaml, phase-plans/
    - NEVER contains: Source code, tests, application logic
 
 2. **TARGET REPOSITORY** (Actual Software Development)
    - Location: ALWAYS under `/efforts/` directory (multiple clones)
    - Purpose: Actual software development, code implementation, testing
    - Contains: pkg/, cmd/, test/, go.mod, Makefile, actual source code
-   - NEVER contains: orchestrator-state.yaml, phase plans, agent configs
+   - NEVER contains: orchestrator-state.json, phase plans, agent configs
 
 ## SECTION 2: MANDATORY PRE-FLIGHT CHECK FOR ALL AGENTS
 
@@ -32,7 +32,7 @@ echo "4. I will ONLY write code in target repo clones"
 echo "════════════════════════════════════════════════════════"
 
 # Verify current location
-if [ -f "orchestrator-state.yaml" ]; then
+if [ -f "orchestrator-state.json" ]; then
     echo "📍 Currently in: SOFTWARE FACTORY INSTANCE"
     echo "⚠️  This is for PLANNING ONLY - NO CODE HERE!"
 elif [ -f "go.mod" ] || [ -f "Makefile" ]; then
@@ -146,7 +146,7 @@ integrate_for_validation() {
 ### 📋 CODE REVIEWER:
 - **Reviews** happen in `/efforts/phaseX/waveY/effort-name/` (target repo)
 - **Plans** can be created in effort directory
-- **NEVER** review orchestrator-state.yaml as if it's source code
+- **NEVER** review orchestrator-state.json as if it's source code
 
 ### 🏗️ ARCHITECT:
 - **Can** work from SF instance for high-level review
@@ -163,7 +163,7 @@ integrate_for_validation() {
 
 ### 🚫 FORBIDDEN ACTIONS:
 
-### In Software Factory Instance (where orchestrator-state.yaml lives):
+### In Software Factory Instance (where orchestrator-state.json lives):
 ```bash
 # ❌ NEVER DO THESE IN SF INSTANCE:
 echo "package main" > main.go           # NO! Wrong repo!
@@ -175,7 +175,7 @@ git merge effort-branch                 # NO! Different repo!
 ### In Target Repository Clones (under /efforts/):
 ```bash
 # ❌ NEVER DO THESE IN TARGET CLONES:
-echo "current_state: PLANNING" > orchestrator-state.yaml  # NO! Wrong repo!
+echo "current_state: PLANNING" > orchestrator-state.json  # NO! Wrong repo!
 vi .claude/agents/orchestrator.md                        # NO! Wrong repo!
 vi phase-plans/phase1-plan.md                           # NO! Wrong repo!
 ```
@@ -185,7 +185,7 @@ vi phase-plans/phase1-plan.md                           # NO! Wrong repo!
 ### In Software Factory Instance:
 ```bash
 # ✅ CORRECT in SF instance:
-vi orchestrator-state.yaml              # Yes, state management
+vi orchestrator-state.json              # Yes, state management
 vi phase-plans/phase1-wave1-plan.md    # Yes, planning
 spawn_agent "sw-engineer"               # Yes, orchestration
 ```
@@ -204,7 +204,7 @@ git commit -m "feat: add webhook"      # Yes, version control
 ```
 software-factory-instance/              # 🎭 ORCHESTRATION HAPPENS HERE
 ├── .claude/                           # Agent configs
-├── orchestrator-state.yaml            # State tracking
+├── orchestrator-state.json            # State tracking
 ├── target-repo-config.yaml            # Points to target repo
 ├── phase-plans/                       # Planning documents
 ├── utilities/                         # SF tools
@@ -238,7 +238,7 @@ software-factory-instance/              # 🎭 ORCHESTRATION HAPPENS HERE
 Before ANY action, ask yourself:
 1. Am I in the right repository for this task?
 2. Should this file exist in a planning repo or code repo?
-3. Is `orchestrator-state.yaml` visible? Then NO CODE HERE!
+3. Is `orchestrator-state.json` visible? Then NO CODE HERE!
 4. Am I under `/efforts/`? Then CODE GOES HERE!
 
 ## SECTION 9: GRADING IMPACT

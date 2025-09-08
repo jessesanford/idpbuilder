@@ -157,7 +157,7 @@ MUST measure:
 
 ### 4. Base Branch Determination
 MANDATORY base branches:
-- For efforts: phase[N]/integration (from orchestrator-state.yaml)
+- For efforts: phase[N]/integration (from orchestrator-state.json)
 - For splits: original effort branch (before split)
 - For fixes: current integration branch
 - NEVER use "main" or "master" as base
@@ -167,7 +167,7 @@ MANDATORY base branches:
 LC=$(find /home -name "line-counter.sh" -path "*/tools/*" 2>/dev/null | head -1)
 
 # Determine base
-BASE="phase1/integration"  # From orchestrator-state.yaml
+BASE="phase1/integration"  # From orchestrator-state.json
 
 # Measure
 $LC -b $BASE -c $(git branch --show-current)

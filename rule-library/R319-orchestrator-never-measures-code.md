@@ -181,7 +181,7 @@ monitor_effort_status() {
     echo "📊 Checking status of $effort..."
     
     # Check if implementation is complete
-    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.yaml)
+    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.json)
     
     if [ "$IMPL_STATUS" = "COMPLETE" ]; then
         echo "✅ Implementation complete"

@@ -75,7 +75,7 @@ echo "================================"
 ```bash
 pwd  # Verify in project root
 git branch --show-current  # Verify on correct branch
-ls -la orchestrator-state.yaml 2>/dev/null || echo "State file will be created"
+ls -la orchestrator-state.json 2>/dev/null || echo "State file will be created"
 ```
 
 ### 4. Target Repository Configuration Validation (R191 CRITICAL)
@@ -268,8 +268,8 @@ if [ -z "$CURRENT_PHASE" ]; then
     echo "📋 RECOVERING CONTEXT..."
     
     # Read orchestrator state
-    if [ -f "./orchestrator-state.yaml" ]; then
-        READ: ./orchestrator-state.yaml
+    if [ -f "./orchestrator-state.json" ]; then
+        READ: ./orchestrator-state.json
         EXTRACT: current_phase, current_wave, current_state
     else
         echo "Starting fresh - no previous state"
@@ -300,7 +300,7 @@ fi
 ### Determine Current State
 ```bash
 # Read orchestrator state
-READ: ./orchestrator-state.yaml
+READ: ./orchestrator-state.json
 
 # Determine action based on state
 case "$CURRENT_STATE" in

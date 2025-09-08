@@ -7,7 +7,7 @@ Actively monitor Code Reviewer creating wave merge plan. Check for completion an
 
 ### 🔴🔴🔴 RULE R322: MANDATORY STOP BEFORE STATE TRANSITION (SUPREME LAW)
 - **STOP** and save state before ANY transition
-- **READ** orchestrator-state.yaml to verify current state
+- **READ** orchestrator-state.json to verify current state
 - **VALIDATE** next state exists in SOFTWARE-FACTORY-STATE-MACHINE.md
 - **VIOLATION = IMMEDIATE FAILURE**
 
@@ -44,7 +44,7 @@ Actively monitor Code Reviewer creating wave merge plan. Check for completion an
 1. **Initial Check (IMMEDIATE)**
    ```bash
    # Check if Code Reviewer was spawned
-   grep "spawned_agents" orchestrator-state.yaml
+   grep "spawned_agents" orchestrator-state.json
    
    # Verify wave integration directory
    ls -la wave-*-integration/
@@ -53,8 +53,8 @@ Actively monitor Code Reviewer creating wave merge plan. Check for completion an
 2. **Active Monitoring Loop**
    ```bash
    # Get integration workspace location
-   PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-   WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+   PHASE=$(yq '.current_phase' orchestrator-state.json)
+   WAVE=$(yq '.current_wave' orchestrator-state.json)
    INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
    
    # Check for merge plan existence in the integration workspace
@@ -104,7 +104,7 @@ Actively monitor Code Reviewer creating wave merge plan. Check for completion an
 4. **Check for Timeout**
    ```bash
    # Get spawn time
-   SPAWN_TIME=$(grep "spawned_agents" orchestrator-state.yaml -A 5 | grep "timestamp" | tail -1 | cut -d'"' -f2)
+   SPAWN_TIME=$(grep "spawned_agents" orchestrator-state.json -A 5 | grep "timestamp" | tail -1 | cut -d'"' -f2)
    
    # Calculate elapsed time
    ELAPSED=$(($(date +%s) - $(date -d "$SPAWN_TIME" +%s)))
@@ -133,11 +133,11 @@ Per R322, you MUST update `current_state` to the next state BEFORE stopping:
 ```bash
 # When merge plan is validated and ready to transition:
 echo "📝 Updating state file for transition..."
-yq -i '.current_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.yaml
-yq -i '.previous_state = "WAITING_FOR_MERGE_PLAN"' orchestrator-state.yaml
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-yq -i '.wave_integration.merge_plan = "integration-workspace/WAVE-MERGE-PLAN.md"' orchestrator-state.yaml
-git add orchestrator-state.yaml
+yq -i '.current_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.json
+yq -i '.previous_state = "WAITING_FOR_MERGE_PLAN"' orchestrator-state.json
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+yq -i '.wave_integration.merge_plan = "integration-workspace/WAVE-MERGE-PLAN.md"' orchestrator-state.json
+git add orchestrator-state.json
 git commit -m "state: transition from WAITING_FOR_MERGE_PLAN to SPAWN_INTEGRATION_AGENT"
 git push
 
@@ -189,7 +189,7 @@ echo "Entered WAITING_FOR_MERGE_PLAN at $(date)"
 echo "Starting active monitoring for merge plan"
 
 # Check spawn record
-grep "spawned_agents" orchestrator-state.yaml
+grep "spawned_agents" orchestrator-state.json
 
 # Monitor loop
 for i in {1..60}; do

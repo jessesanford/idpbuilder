@@ -177,7 +177,7 @@ verify_upgrade() {
 
 # Main upgrade logic
 main() {
-    local STATE_FILE="${1:-orchestrator-state.yaml}"
+    local STATE_FILE="${1:-orchestrator-state.json}"
     
     # Check if file exists
     if [ ! -f "$STATE_FILE" ]; then

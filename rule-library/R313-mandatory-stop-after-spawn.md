@@ -68,7 +68,7 @@ update_state "continuation_state" "MONITOR"
 update_state "continuation_message" "Spawned 2 SWE agents for parallel efforts"
 
 # Commit and push state
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: spawned agents, stopping per R313"
 git push
 
@@ -132,7 +132,7 @@ spawn_agents_for_efforts() {
     update_state "continuation_state" "MONITOR"
     
     # COMMIT STATE CHANGES
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: spawned ${#efforts[@]} agents, stopping per R313"
     git push
     
@@ -141,7 +141,7 @@ spawn_agents_for_efforts() {
 🛑 STOPPING PER R313 - CONTEXT PRESERVATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Spawned ${#efforts[@]} SWE agents for parallel work
-State saved to: orchestrator-state.yaml
+State saved to: orchestrator-state.json
 Next state: MONITOR
 
 To continue after agents complete:
@@ -161,8 +161,8 @@ continue_after_spawn() {
     echo "📖 Loading state after agent spawn..."
     
     # Read what was spawned
-    agents=$(yq '.agents_spawned' orchestrator-state.yaml)
-    next_state=$(yq '.continuation_state' orchestrator-state.yaml)
+    agents=$(yq '.agents_spawned' orchestrator-state.json)
+    next_state=$(yq '.continuation_state' orchestrator-state.json)
     
     echo "✅ Found spawned agents:"
     echo "$agents"

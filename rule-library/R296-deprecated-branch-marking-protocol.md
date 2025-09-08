@@ -24,7 +24,7 @@ git push origin "$NEW_BRANCH"   # Push renamed branch
 ```
 
 ### 2. State File Update Requirements
-The orchestrator-state.yaml MUST be updated to track deprecated branches:
+The orchestrator-state.json MUST be updated to track deprecated branches:
 ```yaml
 efforts_completed:
   effort-001-feature:
@@ -52,10 +52,10 @@ done
 
 # Check state file for SPLIT_DEPRECATED status
 for effort in "${EFFORTS[@]}"; do
-    STATUS=$(yq ".efforts_completed.\"$effort\".status" orchestrator-state.yaml)
+    STATUS=$(yq ".efforts_completed.\"$effort\".status" orchestrator-state.json)
     if [[ "$STATUS" == "SPLIT_DEPRECATED" ]]; then
         echo "❌ BLOCKED: $effort was split and deprecated"
-        SPLITS=$(yq ".efforts_completed.\"$effort\".replacement_splits[]" orchestrator-state.yaml)
+        SPLITS=$(yq ".efforts_completed.\"$effort\".replacement_splits[]" orchestrator-state.json)
         echo "Use these splits instead: $SPLITS"
         exit 1
     fi
@@ -131,7 +131,7 @@ Action Required: Update integration list to use replacement splits
 git branch -r | grep "deprecated-split"
 
 # Check state file for deprecated efforts
-yq '.efforts_completed | to_entries | .[] | select(.value.status == "SPLIT_DEPRECATED") | .key' orchestrator-state.yaml
+yq '.efforts_completed | to_entries | .[] | select(.value.status == "SPLIT_DEPRECATED") | .key' orchestrator-state.json
 ```
 
 ### Validate Integration List:

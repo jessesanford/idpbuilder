@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -172,8 +172,8 @@ In WAITING_FOR_FIX_PLANS, you monitor the Code Reviewer's progress in creating f
 
 ### 1. Check for Fix Plan Summary
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 FIX_PLAN_DIR="efforts/phase${PHASE}/wave${WAVE}/fix-plans"
 SUMMARY_FILE="${FIX_PLAN_DIR}/FIX_PLAN_SUMMARY.yaml"
 
@@ -216,7 +216,7 @@ else
         # Stay in WAITING_FOR_FIX_PLANS
     else
         # Check timeout
-        SPAWN_TIME=$(yq '.integration_feedback.wave'${WAVE}'.fix_plan_requested' orchestrator-state.yaml)
+        SPAWN_TIME=$(yq '.integration_feedback.wave'${WAVE}'.fix_plan_requested' orchestrator-state.json)
         CURRENT_TIME=$(date +%s)
         SPAWN_TIMESTAMP=$(date -d "$SPAWN_TIME" +%s 2>/dev/null || echo 0)
         ELAPSED=$((CURRENT_TIME - SPAWN_TIMESTAMP))
@@ -238,16 +238,16 @@ fi
 if [ -n "$UPDATE_STATE" ]; then
     # Record fix plans in state
     if [ "$UPDATE_STATE" = "DISTRIBUTE_FIX_PLANS" ]; then
-        yq eval ".integration_feedback.wave${WAVE}.fix_plans_completed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.yaml
-        yq eval ".integration_feedback.wave${WAVE}.total_fix_plans = $TOTAL_EFFORTS" -i orchestrator-state.yaml
+        yq eval ".integration_feedback.wave${WAVE}.fix_plans_completed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+        yq eval ".integration_feedback.wave${WAVE}.total_fix_plans = $TOTAL_EFFORTS" -i orchestrator-state.json
     fi
     
     # Update state
-    yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.yaml
-    yq eval ".state_transition_history += [{\"from\": \"WAITING_FOR_FIX_PLANS\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Fix plans ready for distribution\"}]" -i orchestrator-state.yaml
+    yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
+    yq eval ".state_transition_history += [{\"from\": \"WAITING_FOR_FIX_PLANS\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Fix plans ready for distribution\"}]" -i orchestrator-state.json
     
     # Commit
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: Fix plans complete - transitioning to $UPDATE_STATE"
     git push
 fi

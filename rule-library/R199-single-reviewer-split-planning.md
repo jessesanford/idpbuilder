@@ -216,7 +216,7 @@ split_by_dependencies() {
 
 ### Tracking Single Reviewer Assignment
 ```yaml
-# orchestrator-state.yaml
+# orchestrator-state.json
 split_planning:
   phase1_wave1_api_types:
     status: "planning"

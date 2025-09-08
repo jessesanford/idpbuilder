@@ -41,7 +41,7 @@ echo "✅ Branch verified: $CURRENT_BRANCH"
 ### 2. Branch Naming Convention (with R191)
 ```bash
 # Project prefix required (R191)
-PROJECT_PREFIX=$(grep "project_prefix:" orchestrator-state.yaml | awk '{print $2}')
+PROJECT_PREFIX=$(grep "project_prefix:" orchestrator-state.json | awk '{print $2}')
 
 # Branch format
 # Feature: ${PROJECT_PREFIX}-phase${N}-wave${N}-effort${N}

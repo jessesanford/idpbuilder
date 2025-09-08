@@ -1107,10 +1107,10 @@ handle_all_splits_sequentially() {
 YOU MUST USE THE LINE COUNTER CORRECTLY:
 ```bash
 # ✅✅✅ CORRECT - Find project root, then use tools folder:
-# Step 1: Find project root (where orchestrator-state.yaml exists)
+# Step 1: Find project root (where orchestrator-state.json exists)
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do 
-    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then 
+    if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then 
         break; 
     fi; 
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 
@@ -1261,7 +1261,7 @@ Bash: cd $EFFORT_DIR && [[ $(pwd) == *"/efforts/"* ]] && echo "✅ In effort dir
 # Find project root first
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do 
-    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then 
+    if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then 
         break; 
     fi; 
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT"); 

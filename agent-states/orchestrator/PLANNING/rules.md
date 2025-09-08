@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -175,7 +175,7 @@ The system will check for this marker. No marker = Immediate failure.
 ### 🔴🔴🔴 R288 - State File Update and Commit Protocol
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
 **Criticality**: SUPREME LAW - Update on every transition
-**Summary**: Update orchestrator-state.yaml on all state changes, commit and push
+**Summary**: Update orchestrator-state.json on all state changes, commit and push
 
 ### 🔴🔴🔴 R290 - State Rule Reading Verification
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R290-state-rule-reading-verification.md`
@@ -287,7 +287,7 @@ From PLANNING state, determine your actual need and transition to:
 
 If you find yourself in PLANNING state:
 1. Determine what planning activity is actually needed
-2. Check current_phase and current_wave in orchestrator-state.yaml
+2. Check current_phase and current_wave in orchestrator-state.json
 3. Transition to the appropriate specific planning state:
    - Need phase architecture? → SPAWN_ARCHITECT_PHASE_PLANNING
    - Need wave architecture? → SPAWN_ARCHITECT_WAVE_PLANNING

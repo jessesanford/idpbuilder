@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -92,7 +92,7 @@ echo "$(date +%s) - Rules read and acknowledged for COORDINATE_BUILD_FIXES" > .s
 ### 🔴🔴🔴 R288 - State File Update and Commit Protocol (SUPREME LAW)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
 **Criticality**: SUPREME LAW - Update on every transition
-**Summary**: Update orchestrator-state.yaml on all state changes
+**Summary**: Update orchestrator-state.json on all state changes
 
 ### State-Specific Rules
 
@@ -336,7 +336,7 @@ fi
 yq -i '.build_fix_coordination.spawned_engineers += [
     {"id": "SWE-1", "effort": "effort-1", "spawned_at": "'$(date +%s)'"},
     {"id": "SWE-2", "effort": "effort-2", "spawned_at": "'$(date +%s)'"}
-]' orchestrator-state.yaml
+]' orchestrator-state.json
 
 # SEQUENTIAL GROUP - Will spawn after dependencies met
 echo "📝 SWE-3 will be spawned after SWE-1 completes"

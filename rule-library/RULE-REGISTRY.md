@@ -261,3 +261,5 @@
 - R322.0.0 - Mandatory Stop Before State Transitions | 🔴🔴🔴 SUPREME LAW | MUST stop after completing state work and wait for /continue-orchestrating (-100% for auto-transition)
 - R323.0.0 - Mandatory Final Artifact Build | 🚨🚨🚨 BLOCKING | NO project can be SUCCESS without built deliverable artifact (-50% to -100% penalty)
 - R324.0.0 - State File Update Before Stop | 🔴🔴🔴 SUPREME LAW | MUST update current_state to new state BEFORE stopping to prevent infinite loops (-100% for violations)
+- R325.0.0 - Atomic State Transitions | 🔴🔴🔴 SUPREME LAW | State transitions must be atomic operations
+- R326.0.0 - Split File Placement Protocol | 🔴🔴🔴 SUPREME LAW | NEVER create split-XXX/ subdirectories - files go in standard project directories (-100% for violations)

@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -74,7 +74,7 @@ echo "$(date +%s) - Rules read and acknowledged for WAITING_FOR_BACKPORT_PLAN" >
 3. **🔴🔴🔴 R288** - STATE FILE UPDATE REQUIREMENTS (SUPREME LAW)
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-requirements.md`
    - Criticality: SUPREME - State updates required for all transitions
-   - Summary: MUST update orchestrator-state.yaml before EVERY state transition
+   - Summary: MUST update orchestrator-state.json before EVERY state transition
    - **CRITICAL**: Commit and push state changes immediately
 
    - **CRITICAL**: NEVER use wc -l or manual counting
@@ -265,7 +265,7 @@ EOF
     # Update orchestrator state
     cd $CLAUDE_PROJECT_DIR
     
-    cat > orchestrator-state.yaml << 'EOF'
+    cat > orchestrator-state.json << 'EOF'
 current_state: SPAWN_SW_ENGINEER_BACKPORT_FIXES
 previous_state: WAITING_FOR_BACKPORT_PLAN
 backport_status: PLAN_READY
@@ -276,7 +276,7 @@ code_reviewer_status: COMPLETE
 wait_duration: ${ELAPSED_TIME}
 EOF
     
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: transition to SPAWN_SW_ENGINEER_BACKPORT_FIXES - plan ready"
     git push
     

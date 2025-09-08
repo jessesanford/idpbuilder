@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -165,8 +165,8 @@ The orchestrator spawns an Integration Agent to execute the merge plan created b
 ### 1. Verify Merge Plan Exists
 ```bash
 # Check that Code Reviewer completed the merge plan
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
 
 cd "$INTEGRATION_DIR"
@@ -304,7 +304,7 @@ echo "📍 R208: Returned to orchestrator directory"
 
 ### 3. Update State Tracking
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 integration_status:
   phase: ${PHASE}
   wave: ${WAVE}
@@ -348,10 +348,10 @@ Per R322, you MUST update `current_state` to the next state BEFORE stopping:
 ```bash
 # After spawning integration agent successfully:
 echo "📝 Updating state file for transition..."
-yq -i '.current_state = "MONITORING_INTEGRATION"' orchestrator-state.yaml
-yq -i '.previous_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.yaml
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-git add orchestrator-state.yaml
+yq -i '.current_state = "MONITORING_INTEGRATION"' orchestrator-state.json
+yq -i '.previous_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.json
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+git add orchestrator-state.json
 git commit -m "state: transition from SPAWN_INTEGRATION_AGENT to MONITORING_INTEGRATION"
 git push
 

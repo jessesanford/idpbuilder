@@ -54,16 +54,16 @@ NEXT_STATE="SPAWN_AGENTS"  # <-- Replace with your actual next state
 CURRENT_STATE="ANALYZE_IMPLEMENTATION_PARALLELIZATION"  # <-- Replace with current
 
 # DO NOT MODIFY THIS SEQUENCE:
-yq -i ".current_state = \"$NEXT_STATE\"" orchestrator-state.yaml
-yq -i ".previous_state = \"$CURRENT_STATE\"" orchestrator-state.yaml
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+yq -i ".current_state = \"$NEXT_STATE\"" orchestrator-state.json
+yq -i ".previous_state = \"$CURRENT_STATE\"" orchestrator-state.json
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
 
 # Step 3: VERIFY the update (CRITICAL for debugging)
 echo "✅ Verification - current_state is now:"
-grep "current_state:" orchestrator-state.yaml
+grep "current_state:" orchestrator-state.json
 
 # Step 4: Commit and push the state change IMMEDIATELY
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: transition from $CURRENT_STATE to $NEXT_STATE (R324/R322)"
 git push
 
@@ -117,9 +117,9 @@ All of these MUST update current_state before stopping:
 echo "All agents spawned successfully"
 
 # UPDATE STATE FIRST!
-yq -i '.current_state = "MONITOR"' orchestrator-state.yaml
-yq -i '.previous_state = "SPAWN_AGENTS"' orchestrator-state.yaml
-git add orchestrator-state.yaml
+yq -i '.current_state = "MONITOR"' orchestrator-state.json
+yq -i '.previous_state = "SPAWN_AGENTS"' orchestrator-state.json
+git add orchestrator-state.json
 git commit -m "state: transition to MONITOR"
 git push
 
@@ -151,7 +151,7 @@ echo "🛑 Stopping now"
 exit 0
 
 # This never executes!
-yq -i '.current_state = "MONITOR"' orchestrator-state.yaml
+yq -i '.current_state = "MONITOR"' orchestrator-state.json
 ```
 
 ## Debugging Loops
@@ -160,7 +160,7 @@ If the orchestrator is stuck in a loop:
 
 1. **Check the state file**:
    ```bash
-   grep current_state orchestrator-state.yaml
+   grep current_state orchestrator-state.json
    ```
 
 2. **Look for the pattern**:
@@ -170,8 +170,8 @@ If the orchestrator is stuck in a loop:
 3. **Fix it**:
    ```bash
    # Manually update to the correct next state
-   yq -i '.current_state = "CORRECT_NEXT_STATE"' orchestrator-state.yaml
-   git add orchestrator-state.yaml
+   yq -i '.current_state = "CORRECT_NEXT_STATE"' orchestrator-state.json
+   git add orchestrator-state.json
    git commit -m "fix: manual state correction to break loop"
    git push
    ```

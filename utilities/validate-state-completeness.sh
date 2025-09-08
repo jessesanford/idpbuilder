@@ -12,8 +12,8 @@ NC='\033[0m' # No Color
 
 # Check arguments
 if [ $# -ne 2 ]; then
-    echo "Usage: $0 <implementation-plan.md> <orchestrator-state.yaml>"
-    echo "Example: $0 PROJECT-IMPLEMENTATION-PLAN.md orchestrator-state.yaml"
+    echo "Usage: $0 <implementation-plan.md> <orchestrator-state.json>"
+    echo "Example: $0 PROJECT-IMPLEMENTATION-PLAN.md orchestrator-state.json"
     exit 1
 fi
 

@@ -22,7 +22,7 @@ You are in SPLIT_IMPLEMENTATION state because an effort exceeded size limits and
 **VERIFY SPLIT IS IN TARGET REPO:**
 ```bash
 echo "🔴 R251/R309: Verifying split is in TARGET repo..."
-if [ -f "orchestrator-state.yaml" ] || [ -f ".claude/CLAUDE.md" ]; then
+if [ -f "orchestrator-state.json" ] || [ -f ".claude/CLAUDE.md" ]; then
     echo "🔴🔴🔴 FATAL: Split in Software Factory repo!"
     echo "SPLITS MUST BE IN TARGET REPO CLONES!"
     exit 309
@@ -157,7 +157,7 @@ git log --oneline -1 --format="%B" | grep "from branch:"
 
 ## Primary Responsibilities
 
-### 1. Verify Split Infrastructure (R204)
+### 1. Verify Split Infrastructure (R204) and File Placement (R326)
 ```bash
 # MANDATORY: Verify orchestrator created split infrastructure
 echo "🔍 Verifying split infrastructure..."
@@ -171,6 +171,18 @@ if [[ "$CURRENT_DIR" != *"-SPLIT-"* ]]; then
     echo "   Orchestrator must create split directories first per R204"
     exit 1
 fi
+
+# 🔴🔴🔴 R326: CRITICAL CHECK - NO SPLIT SUBDIRECTORIES! 🔴🔴🔴
+echo "🔴 R326: Checking for illegal split subdirectories..."
+if [ -d "split-"* ] 2>/dev/null; then
+    echo "🔴🔴🔴 FATAL: Split subdirectory detected!"
+    ls -d split-*
+    echo "DELETE THESE IMMEDIATELY! Files go in standard directories!"
+    exit 326
+fi
+
+echo "✅ R326: No split subdirectories - CORRECT"
+echo "📁 Files will go in standard directories: pkg/, cmd/, tests/, etc."
 
 # Extract split number from directory name
 SPLIT_NUM=$(echo "$CURRENT_DIR" | grep -o 'SPLIT-[0-9]*' | grep -o '[0-9]*')
@@ -501,6 +513,25 @@ fi
 
 ### 4. Commit and Push
 ```bash
+# 🔴🔴🔴 R326: FINAL CHECK BEFORE COMMIT 🔴🔴🔴
+echo "🔴 R326: Final check for split subdirectories..."
+if find . -type d -name "split-*" | grep -q .; then
+    echo "🔴🔴🔴 FATAL: Split subdirectories found!"
+    find . -type d -name "split-*"
+    echo "These cause CATASTROPHIC measurement errors!"
+    echo "DELETE all split-XXX/ directories and move files to standard locations!"
+    exit 326
+fi
+
+# Verify files are in correct locations
+echo "✅ R326: Verifying files in standard directories..."
+for dir in pkg cmd tests docs; do
+    if [ -d "$dir" ]; then
+        echo "  ✅ $dir/ contains:"
+        ls -la "$dir" | head -5
+    fi
+done
+
 # Commit with clear message
 git add -A
 git commit -m "feat: implement split-${SPLIT_NUM} - ${DESCRIPTION}"

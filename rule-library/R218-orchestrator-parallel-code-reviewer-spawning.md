@@ -164,7 +164,7 @@ spawn_single_code_reviewer() {
     - Create IMPLEMENTATION-PLAN.md
     
     # Record spawn time
-    echo "spawned_at: $(date -Iseconds)" >> orchestrator-state.yaml
+    echo "spawned_at: $(date -Iseconds)" >> orchestrator-state.json
 }
 
 # PARALLEL SPAWN for independent efforts (R151 CRITICAL!)
@@ -334,8 +334,8 @@ ensure_r151_compliance() {
         GRADE="FAIL"
     fi
     
-    # Record in orchestrator-state.yaml
-    cat >> orchestrator-state.yaml << EOF
+    # Record in orchestrator-state.json
+    cat >> orchestrator-state.json << EOF
 parallel_code_reviewer_spawns:
   wave_${WAVE}_effort_planning:
     agents_spawned: $NUM_AGENTS

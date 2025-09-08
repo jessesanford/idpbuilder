@@ -9,7 +9,7 @@ You are actively implementing code for an effort, following the implementation p
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R251-REPOSITORY-SEPARATION-LAW.md`
 **Criticality**: PARAMOUNT - Automatic -100% failure for violation
 **YOU ARE IN**: TARGET REPOSITORY CLONE (under /efforts/)
-**NOT IN**: Software Factory repo (where orchestrator-state.yaml lives)
+**NOT IN**: Software Factory repo (where orchestrator-state.json lives)
 
 ### R309: Never Create Efforts in SF Repo
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R309-never-create-efforts-in-sf-repo.md`
@@ -18,7 +18,7 @@ You are actively implementing code for an effort, following the implementation p
 **VERIFY YOU'RE IN THE RIGHT PLACE:**
 ```bash
 echo "🔴 R251/R309: Verifying repository location..."
-if [ -f "orchestrator-state.yaml" ] || [ -f ".claude/CLAUDE.md" ]; then
+if [ -f "orchestrator-state.json" ] || [ -f ".claude/CLAUDE.md" ]; then
     echo "🔴🔴🔴 FATAL: You're in Software Factory repo!"
     echo "NEVER WRITE CODE HERE! This is for planning only!"
     exit 309
@@ -44,7 +44,7 @@ fi
 **REMEMBER:**
 - ✅ Write code in TARGET repo clones under /efforts/
 - ❌ NEVER write code in Software Factory instance
-- ❌ NEVER create orchestrator-state.yaml in TARGET repo
+- ❌ NEVER create orchestrator-state.json in TARGET repo
 - ❌ NEVER create .claude/ configs in TARGET repo
 
 ## 🔴🔴🔴 MANDATORY: Effort Scope Strict Adherence (R311) 🔴🔴🔴
@@ -212,12 +212,12 @@ find_line_counter() {
 
 # Step 2: Determine correct base branch
 get_base_branch() {
-    # Try to find orchestrator-state.yaml
+    # Try to find orchestrator-state.json
     SEARCH_DIR=$(pwd)
     while [ "$SEARCH_DIR" != "/" ]; do
-        if [ -f "$SEARCH_DIR/orchestrator-state.yaml" ]; then
+        if [ -f "$SEARCH_DIR/orchestrator-state.json" ]; then
             # Extract phase integration branch
-            BASE=$(grep "current_phase_integration:" "$SEARCH_DIR/orchestrator-state.yaml" -A 2 | \
+            BASE=$(grep "current_phase_integration:" "$SEARCH_DIR/orchestrator-state.json" -A 2 | \
                    grep "branch:" | awk '{print $2}' | tr -d '"')
             if [ -n "$BASE" ]; then
                 echo "$BASE"

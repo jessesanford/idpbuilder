@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -22,7 +22,7 @@
 
 ### ✅ Current State Work Completed:
 - All efforts verified complete with passed reviews
-- Wave marked complete in orchestrator-state.yaml
+- Wave marked complete in orchestrator-state.json
 - current_state updated to "INTEGRATION"
 - State file committed and pushed
 
@@ -192,7 +192,7 @@ The system will check for this marker. No marker = Immediate failure.
 
 **THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
 1. Verify all efforts are complete and passed reviews
-2. Update orchestrator-state.yaml with completion
+2. Update orchestrator-state.json with completion
 3. Check TodoWrite for pending items and process them
 4. Prepare to transition to INTEGRATION state
 
@@ -204,7 +204,7 @@ The system will check for this marker. No marker = Immediate failure.
 
 **REQUIRED - IMMEDIATE ACTION:**
 - ✅ "Entering WAVE_COMPLETE, verifying all efforts complete..."
-- ✅ "START WAVE COMPLETION PROCESS, update orchestrator-state.yaml with completion..."
+- ✅ "START WAVE COMPLETION PROCESS, update orchestrator-state.json with completion..."
 - ✅ "WAVE_COMPLETE: Validating all reviews passed before proceeding..."
 
 ## State Context
@@ -269,29 +269,29 @@ update_orchestrator_state "WAVE_COMPLETE" "All efforts reviewed and passed"
 mark_wave_complete "$PHASE" "$WAVE"
 
 # Example state file update:
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"" orchestrator-state.yaml
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.efforts_count = $EFFORT_COUNT" orchestrator-state.yaml
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.all_reviews_passed = true" orchestrator-state.yaml
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.size_compliant = true" orchestrator-state.yaml
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.integration_branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.yaml
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"" orchestrator-state.json
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.efforts_count = $EFFORT_COUNT" orchestrator-state.json
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.all_reviews_passed = true" orchestrator-state.json
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.size_compliant = true" orchestrator-state.json
+yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.integration_branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.json
 
 # 3. 🔴🔴🔴 CRITICAL: UPDATE STATE TO INTEGRATION BEFORE STOPPING! 🔴🔴🔴
 # Per state machine: WAVE_COMPLETE → INTEGRATION is the REQUIRED transition
 echo "📝 Updating current_state to INTEGRATION for next continuation..."
-yq -i ".current_state = \"INTEGRATION\"" orchestrator-state.yaml
-yq -i ".previous_state = \"WAVE_COMPLETE\"" orchestrator-state.yaml
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-yq -i ".transition_reason = \"Wave $WAVE complete, all reviews passed, ready for integration\"" orchestrator-state.yaml
+yq -i ".current_state = \"INTEGRATION\"" orchestrator-state.json
+yq -i ".previous_state = \"WAVE_COMPLETE\"" orchestrator-state.json
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+yq -i ".transition_reason = \"Wave $WAVE complete, all reviews passed, ready for integration\"" orchestrator-state.json
 echo "✅ State updated to INTEGRATION - will execute integration work on next /continue-orchestrating"
 
 # R301 MANDATORY: Update current_wave_integration
 echo "📝 Updating current_wave_integration per R301..."
 
 # Deprecate existing wave integration if it exists
-EXISTING_WAVE=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE)" orchestrator-state.yaml)
+EXISTING_WAVE=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE)" orchestrator-state.json)
 if [ ! -z "$EXISTING_WAVE" ]; then
-    yq -i ".deprecated_wave_integrations += (.current_wave_integration | select(.phase == $PHASE and .wave == $WAVE))" orchestrator-state.yaml
+    yq -i ".deprecated_wave_integrations += (.current_wave_integration | select(.phase == $PHASE and .wave == $WAVE))" orchestrator-state.json
 fi
 
 # Set the NEW current wave integration
@@ -302,7 +302,7 @@ yq -i ".current_wave_integration = {
   \"status\": \"active\",
   \"created_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
   \"type\": \"initial\"
-}" orchestrator-state.yaml
+}" orchestrator-state.json
 
 echo "✅ Current wave integration updated per R301"
 ```
@@ -318,7 +318,7 @@ save_todos "WAVE_COMPLETE - Phase $PHASE Wave $WAVE"
 
 # R287: Commit within 60 seconds
 cd $CLAUDE_PROJECT_DIR
-git add todos/*.todo orchestrator-state.yaml
+git add todos/*.todo orchestrator-state.json
 git commit -m "todo: wave $WAVE complete, all reviews passed"
 git push
 
@@ -725,7 +725,7 @@ def validate_wave_quality_gates(wave_data):
 ### 🔴🔴🔴 CRITICAL: DEFAULT TRANSITION IS TO INTEGRATION! 🔴🔴🔴
 
 **UNLESS OTHERWISE DETERMINED, WAVE_COMPLETE ALWAYS TRANSITIONS TO INTEGRATION:**
-1. Update current_state to "INTEGRATION" in orchestrator-state.yaml
+1. Update current_state to "INTEGRATION" in orchestrator-state.json
 2. Commit and push the state file
 3. STOP per R322 and wait for /continue-orchestrating
 4. When user continues, orchestrator will be in INTEGRATION state and execute integration work
@@ -763,16 +763,16 @@ NEXT_STATE="INTEGRATION"  # Change ONLY if special conditions apply
 
 # CRITICAL: Update state file FIRST (R324 requirement)
 echo "🔴 R324: Updating current_state to prevent infinite loop..."
-yq -i ".current_state = \"$NEXT_STATE\"" orchestrator-state.yaml
-yq -i ".previous_state = \"WAVE_COMPLETE\"" orchestrator-state.yaml
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%%H:%%M:%%SZ)\"" orchestrator-state.yaml
+yq -i ".current_state = \"$NEXT_STATE\"" orchestrator-state.json
+yq -i ".previous_state = \"WAVE_COMPLETE\"" orchestrator-state.json
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%%H:%%M:%%SZ)\"" orchestrator-state.json
 
 # Verify the update
 echo "✅ State updated to:"
-grep "current_state:" orchestrator-state.yaml
+grep "current_state:" orchestrator-state.json
 
 # Commit and push IMMEDIATELY
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: transition from WAVE_COMPLETE to $NEXT_STATE (R324)"
 git push
 

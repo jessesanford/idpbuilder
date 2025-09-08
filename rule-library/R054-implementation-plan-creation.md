@@ -223,7 +223,7 @@ describe('{ComponentName}', () => {
 2. **VALIDATE** plan completeness
 3. **COMMIT** to git repository
 4. **REPORT** completion to orchestrator with exact path
-5. **UPDATE** orchestrator-state.yaml with plan location (if possible)
+5. **UPDATE** orchestrator-state.json with plan location (if possible)
 
 ## Common Violations
 

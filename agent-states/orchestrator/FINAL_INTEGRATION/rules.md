@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -91,9 +91,9 @@ The FINAL_INTEGRATION state is where all phases of a project are merged into the
 ### 1. Target Repository Identification
 ```bash
 # Extract target project information from configuration
-TARGET_REPO_URL=$(yq '.target_repository.url' orchestrator-state.yaml)
-TARGET_REPO_NAME=$(yq '.target_repository.name' orchestrator-state.yaml)
-PROJECT_PREFIX=$(yq '.project_prefix' orchestrator-state.yaml)
+TARGET_REPO_URL=$(yq '.target_repository.url' orchestrator-state.json)
+TARGET_REPO_NAME=$(yq '.target_repository.name' orchestrator-state.json)
+PROJECT_PREFIX=$(yq '.project_prefix' orchestrator-state.json)
 
 # Validate target repository is NOT the software-factory
 if [[ "$TARGET_REPO_URL" == *"software-factory"* ]]; then

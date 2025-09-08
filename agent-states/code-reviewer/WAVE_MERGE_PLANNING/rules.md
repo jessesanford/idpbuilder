@@ -38,8 +38,8 @@ pwd  # Verify you are in the integration workspace
 ```bash
 #!/bin/bash
 # Find all effort branches for this wave
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 
 echo "📊 Analyzing effort branches for Phase $PHASE Wave $WAVE..."
 

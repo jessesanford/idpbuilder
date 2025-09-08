@@ -35,7 +35,7 @@ update_phase_architecture_plans() {
     local PHASE="$1"
     local STATUS="$2"
     local FILE="$3"
-    local STATE_FILE="${4:-orchestrator-state.yaml}"
+    local STATE_FILE="${4:-orchestrator-state.json}"
     
     echo -e "${BLUE}Updating phase_architecture_plans section...${NC}"
     
@@ -59,7 +59,7 @@ update_wave_architecture_plans() {
     local WAVE="$2"
     local STATUS="$3"
     local FILE="$4"
-    local STATE_FILE="${5:-orchestrator-state.yaml}"
+    local STATE_FILE="${5:-orchestrator-state.json}"
     
     echo -e "${BLUE}Updating wave_architecture_plans section...${NC}"
     
@@ -81,7 +81,7 @@ update_phase_implementation_plans() {
     local STATUS="$2"
     local FILE="$3"
     local SOURCE_ARCH="$4"
-    local STATE_FILE="${5:-orchestrator-state.yaml}"
+    local STATE_FILE="${5:-orchestrator-state.json}"
     
     echo -e "${BLUE}Updating phase_implementation_plans section...${NC}"
     
@@ -104,7 +104,7 @@ update_wave_implementation_plans() {
     local STATUS="$3"
     local FILE="$4"
     local SOURCE_ARCH="$5"
-    local STATE_FILE="${6:-orchestrator-state.yaml}"
+    local STATE_FILE="${6:-orchestrator-state.json}"
     
     echo -e "${BLUE}Updating wave_implementation_plans section...${NC}"
     
@@ -126,7 +126,7 @@ add_wave_metadata_injection() {
     local PHASE="$1"
     local WAVE="$2"
     local EFFORT_COUNT="$3"
-    local STATE_FILE="${4:-orchestrator-state.yaml}"
+    local STATE_FILE="${4:-orchestrator-state.json}"
     
     echo -e "${BLUE}Adding wave metadata injection (R213)...${NC}"
     
@@ -148,7 +148,7 @@ add_code_reviewer_acknowledgment() {
     local PHASE="$1"
     local WAVE="$2"
     local EFFORT_PLANS="$3"
-    local STATE_FILE="${4:-orchestrator-state.yaml}"
+    local STATE_FILE="${4:-orchestrator-state.json}"
     
     echo -e "${BLUE}Adding code reviewer wave acknowledgment (R214)...${NC}"
     

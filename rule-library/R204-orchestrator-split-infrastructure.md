@@ -149,8 +149,8 @@ create_next_split_infrastructure() {
     echo "This ensures clean integration without conflicts"
     
     # STEP 3: Determine which split to create next
-    # Check orchestrator-state.yaml for current split being worked
-    CURRENT_SPLIT=$(yq ".split_tracking.\"$effort_name\".current_split // 0" orchestrator-state.yaml)
+    # Check orchestrator-state.json for current split being worked
+    CURRENT_SPLIT=$(yq ".split_tracking.\"$effort_name\".current_split // 0" orchestrator-state.json)
     NEXT_SPLIT=$((CURRENT_SPLIT + 1))
     
     if [ $NEXT_SPLIT -gt $total_splits ]; then
@@ -316,11 +316,11 @@ mark_original_branch_deprecated() {
     echo "✅ Branch renamed: $original_branch → $deprecated_branch"
     
     # Update state file per R296
-    echo "Updating orchestrator-state.yaml with SPLIT_DEPRECATED status..."
-    yq eval ".efforts_completed.\"$effort_name\".status = \"SPLIT_DEPRECATED\"" -i orchestrator-state.yaml
-    yq eval ".efforts_completed.\"$effort_name\".deprecated_branch = \"$deprecated_branch\"" -i orchestrator-state.yaml
-    yq eval ".efforts_completed.\"$effort_name\".do_not_integrate = true" -i orchestrator-state.yaml
-    yq eval ".efforts_completed.\"$effort_name\".split_completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.yaml
+    echo "Updating orchestrator-state.json with SPLIT_DEPRECATED status..."
+    yq eval ".efforts_completed.\"$effort_name\".status = \"SPLIT_DEPRECATED\"" -i orchestrator-state.json
+    yq eval ".efforts_completed.\"$effort_name\".deprecated_branch = \"$deprecated_branch\"" -i orchestrator-state.json
+    yq eval ".efforts_completed.\"$effort_name\".do_not_integrate = true" -i orchestrator-state.json
+    yq eval ".efforts_completed.\"$effort_name\".split_completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
     
     # Add replacement splits to state file
     local splits_array="["
@@ -332,10 +332,10 @@ mark_original_branch_deprecated() {
     done
     splits_array="${splits_array}]"
     
-    yq eval ".efforts_completed.\"$effort_name\".replacement_splits = $splits_array" -i orchestrator-state.yaml
+    yq eval ".efforts_completed.\"$effort_name\".replacement_splits = $splits_array" -i orchestrator-state.json
     
     # Commit state file update
-    git add orchestrator-state.yaml
+    git add orchestrator-state.json
     git commit -m "state: mark $effort_name as SPLIT_DEPRECATED per R296"
     git push
     
@@ -497,20 +497,26 @@ efforts/splits/api-types-001/  # Wrong location!
 # Should be: efforts/phase1/wave1/api-types--split-001/
 ```
 
-### ❌ Wrong Base Branch
+### ❌ Wrong Base Branch Examples
 ```bash
-# WRONG - All splits from main
-git checkout -b split-001 main
-git checkout -b split-002 main  # Will cause conflicts!
-git checkout -b split-003 main  # Will cause conflicts!
+# WRONG WAY #1 - Basing split-001 on oversized branch
+git checkout -b split-001 effort-foo  # ❌ Inherits all 1200+ lines!
+git checkout -b split-002 split-001    # Now has 1200+ lines too
+git checkout -b split-003 split-002    # Cascading problem
+
+# WRONG WAY #2 - All splits from same base
+git checkout -b split-001 phase1/wave1-integration
+git checkout -b split-002 phase1/wave1-integration  # ❌ Missing split-001!
+git checkout -b split-003 phase1/wave1-integration  # ❌ Missing split-001 & 002!
 ```
 
 ### ✅ Correct Sequential Setup
 ```bash
-# RIGHT - Sequential dependency
-git checkout -b split-001 main
-git checkout -b split-002 split-001  # Based on previous
-git checkout -b split-003 split-002  # Based on previous
+# RIGHT - First split from SAME base as oversized effort
+# Assume effort-foo was based on phase1/wave1-integration
+git checkout -b split-001 phase1/wave1-integration  # Same base as effort-foo
+git checkout -b split-002 split-001  # Based on previous split
+git checkout -b split-003 split-002  # Based on previous split
 ```
 
 ## Integration with Other Rules

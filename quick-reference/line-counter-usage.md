@@ -12,7 +12,7 @@ The line counter is ALWAYS at: `${PROJECT_ROOT}/tools/line-counter.sh`
 # 1. Find project root
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do
-    if [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ]; then
+    if [ -f "$PROJECT_ROOT/orchestrator-state.json" ]; then
         break
     fi
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
@@ -32,7 +32,7 @@ $PROJECT_ROOT/tools/line-counter.sh
 ## Remember
 
 - Tool is in: `PROJECT_ROOT/tools/` folder
-- Project root: Where `orchestrator-state.yaml` exists
+- Project root: Where `orchestrator-state.json` exists
 - Run from: Your effort directory
 - Parameters: NONE (auto-detects everything)
 

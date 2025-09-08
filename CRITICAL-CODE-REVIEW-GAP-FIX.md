@@ -152,7 +152,7 @@ ls -la /efforts/*/wave*/*/CODE-REVIEW-REPORT.md
 4. **Check State File**:
 ```bash
 # Verify review_status tracking
-yq '.efforts_in_progress[].review_status' orchestrator-state.yaml
+yq '.efforts_in_progress[].review_status' orchestrator-state.json
 ```
 
 ## Files Modified

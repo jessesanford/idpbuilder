@@ -69,7 +69,7 @@ You are spawning SW Engineers to implement efforts based on the implementation p
 3. ✅ All effort IMPLEMENTATION-PLAN.md files (created by Code Reviewers)
 4. ✅ All work-log.md files initialized
 5. ✅ **PARALLELIZATION ANALYSIS COMPLETE (ANALYZE_IMPLEMENTATION_PARALLELIZATION)**
-6. ✅ **SW Engineer parallelization plan in orchestrator-state.yaml**
+6. ✅ **SW Engineer parallelization plan in orchestrator-state.json**
 
 **IF PARALLELIZATION NOT ANALYZED, GO BACK TO ANALYZE_IMPLEMENTATION_PARALLELIZATION!**
 **Infrastructure was created BEFORE Code Reviewers made plans!**
@@ -87,7 +87,7 @@ Infrastructure was set up in SETUP_EFFORT_INFRASTRUCTURE state:
 - Remote tracking configured
 - IMPLEMENTATION-PLAN.md files created by Code Reviewers
 - work-log.md files initialized
-- **SW Engineer parallelization plan in orchestrator-state.yaml**
+- **SW Engineer parallelization plan in orchestrator-state.json**
 
 **Just CD to directories and spawn SW Engineers per the analyzed plan!**
 
@@ -99,7 +99,7 @@ save_todos "SPAWN_AGENTS complete - all SW Engineers spawned"
 
 # R189: Commit within 60 seconds
 cd $CLAUDE_PROJECT_DIR
-git add todos/*.todo orchestrator-state.yaml
+git add todos/*.todo orchestrator-state.json
 git commit -m "todo: SW Engineers spawned, entering monitoring"
 git push
 
@@ -165,7 +165,7 @@ Key points:
 ## Recording Spawn Times
 
 ```yaml
-# Update in orchestrator-state.yaml
+# Update in orchestrator-state.json
 parallel_spawn_records:
   wave{X}_group{Y}:
     spawned_at: "2025-08-23T14:30:45Z"
@@ -283,14 +283,14 @@ When agents report environment errors:
 ### Recording Errors (R253 compliant):
 ```bash
 # When agent reports error
-yq -i ".agent_errors += [{\"agent\": \"sw-engineer\", \"effort\": \"$EFFORT\", \"error\": \"wrong directory\", \"time\": \"$(date -Iseconds)\"}]" orchestrator-state.yaml
-git add orchestrator-state.yaml && git commit -m "state: agent error recorded [R253]" && git push
+yq -i ".agent_errors += [{\"agent\": \"sw-engineer\", \"effort\": \"$EFFORT\", \"error\": \"wrong directory\", \"time\": \"$(date -Iseconds)\"}]" orchestrator-state.json
+git add orchestrator-state.json && git commit -m "state: agent error recorded [R253]" && git push
 ```
 
 ## State Transition
 
 After spawning all required agents:
-1. Update orchestrator-state.yaml with spawn records
+1. Update orchestrator-state.json with spawn records
 2. Calculate and record grade
 3. Check for immediate error reports
 4. If errors, handle per R254 before transitioning

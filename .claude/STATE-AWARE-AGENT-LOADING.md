@@ -165,7 +165,7 @@ transition_state() {
 | Code Reviewer | Request: "create plan" | PLANNING |
 | Code Reviewer | Request: "review code" | CODE_REVIEW |
 | Code Reviewer | Effort >800 lines | SPLIT_PLANNING |
-| Orchestrator | orchestrator-state.yaml | Per current_state field |
+| Orchestrator | orchestrator-state.json | Per current_state field |
 | Architect | Request: "wave review" | WAVE_REVIEW |
 | Architect | Request: "phase review" | PHASE_REVIEW |
 

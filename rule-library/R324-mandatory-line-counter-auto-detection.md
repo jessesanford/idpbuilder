@@ -55,7 +55,7 @@ git add -A && git commit -m "feat: ready for measurement" && git push
 # STEP 3: Find project root
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do 
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
+    [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
 done
 echo "Project root: $PROJECT_ROOT"
@@ -151,7 +151,7 @@ Auto-detection ensures:
 Before measuring:
 - [ ] In correct effort directory
 - [ ] Code committed and pushed
-- [ ] Found project root with orchestrator-state.yaml
+- [ ] Found project root with orchestrator-state.json
 - [ ] Using line-counter.sh from project root
 - [ ] NO -b parameter specified
 - [ ] Ready to document auto-detected base

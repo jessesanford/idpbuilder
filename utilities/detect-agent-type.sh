@@ -13,7 +13,7 @@ AGENT_TYPE="unknown"
 # Check for orchestrator patterns
 if echo "$CURRENT_DIR" | grep -q "orchestrator\|agent-configs"; then
     AGENT_TYPE="orchestrator"
-elif [ -f "orchestrator-state.yaml" ] || [ -f "../orchestrator-state.yaml" ]; then
+elif [ -f "orchestrator-state.json" ] || [ -f "../orchestrator-state.json" ]; then
     AGENT_TYPE="orchestrator"
 elif echo "$RECENT_COMMANDS" | grep -q "continue-orchestrating\|/orchestrator"; then
     AGENT_TYPE="orchestrator"

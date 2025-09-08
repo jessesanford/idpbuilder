@@ -12,7 +12,7 @@ The Orchestrator may ONLY commit orchestration-related files. ANY commit contain
 ## Allowed Commit Contents
 
 ### ✅ ORCHESTRATOR MAY COMMIT:
-- `orchestrator-state.yaml`
+- `orchestrator-state.json`
 - `*.md` files (documentation/planning)
 - `todos/*.todo` files
 - `.gitkeep` files
@@ -69,7 +69,7 @@ validate_orchestrator_commit() {
 ### EVERY Orchestrator Commit MUST:
 ```bash
 # 1. Stage only allowed files
-git add orchestrator-state.yaml todos/*.todo *.md
+git add orchestrator-state.json todos/*.todo *.md
 
 # 2. Validate before commit
 validate_orchestrator_commit || {
@@ -105,7 +105,7 @@ git add -A  # MAY include code files
 git add *  # MAY include code files
 
 # MUST use specific adds instead
-git add orchestrator-state.yaml todos/*.todo
+git add orchestrator-state.json todos/*.todo
 ```
 
 ## Correct Patterns
@@ -113,7 +113,7 @@ git add orchestrator-state.yaml todos/*.todo
 ### ✅ GOOD: Specific File Commits
 ```bash
 # Only add orchestration files
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git add todos/orchestrator-*.todo
 git add efforts/phase1/PLAN.md
 
@@ -125,10 +125,10 @@ git commit -m "orchestrator: transition to SPAWN_AGENTS state"
 ### ✅ GOOD: State-Only Updates
 ```bash
 # Update state file
-yq -i '.current_state = "MONITOR"' orchestrator-state.yaml
+yq -i '.current_state = "MONITOR"' orchestrator-state.json
 
 # Commit ONLY the state file
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "orchestrator: update state to MONITOR"
 git push
 ```
@@ -162,7 +162,7 @@ If orchestrator accidentally stages code files:
 git reset HEAD
 
 # 2. Add ONLY allowed files
-git add orchestrator-state.yaml todos/*.todo
+git add orchestrator-state.json todos/*.todo
 
 # 3. Validate before proceeding
 validate_orchestrator_commit

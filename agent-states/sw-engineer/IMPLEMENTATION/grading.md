@@ -632,7 +632,7 @@ Test Coverage <80%:
 ## Performance State Tracking
 
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 grading:
   SW_ENGINEER:
     IMPLEMENTATION:

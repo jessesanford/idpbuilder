@@ -13,7 +13,7 @@ The Orchestrator may ONLY create empty infrastructure. ANY content, code, or imp
 
 ### ✅ INFRASTRUCTURE (Orchestrator Allowed)
 - Creating empty directories
-- Creating orchestrator-state.yaml
+- Creating orchestrator-state.json
 - Creating markdown planning documents
 - Creating empty .gitkeep files
 - Writing TODO files
@@ -110,8 +110,8 @@ cat > file.yaml           # Create YAML configs
 yq, jq                    # Process YAML/JSON
 
 # State Management
-yq eval orchestrator-state.yaml    # Update state file
-git add orchestrator-state.yaml    # Stage state changes
+yq eval orchestrator-state.json    # Update state file
+git add orchestrator-state.json    # Stage state changes
 git commit -m "orchestrator: ..." # Commit orchestration files
 ```
 

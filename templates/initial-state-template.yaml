@@ -102,6 +102,6 @@ validation:
 # 1. This template MUST be populated with ALL items from PROJECT-IMPLEMENTATION-PLAN.md
 # 2. No placeholders can be left empty - use exact names from plan
 # 3. Validation script will verify completeness:
-#    bash utilities/validate-state-completeness.sh PROJECT-IMPLEMENTATION-PLAN.md orchestrator-state.yaml
+#    bash utilities/validate-state-completeness.sh PROJECT-IMPLEMENTATION-PLAN.md orchestrator-state.json
 # 4. Incomplete state files cause -100% IMMEDIATE FAILURE (R281)
 # 5. Every phase, wave, and effort MUST have complete structure even if values are null/pending

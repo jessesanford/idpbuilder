@@ -53,7 +53,7 @@ The Orchestrator MUST NEVER:
 ## What Orchestrator CAN Do
 
 The Orchestrator MAY:
-- ✅ Update orchestrator-state.yaml
+- ✅ Update orchestrator-state.json
 - ✅ Create/update markdown documentation
 - ✅ Write TODO files
 - ✅ Create planning documents

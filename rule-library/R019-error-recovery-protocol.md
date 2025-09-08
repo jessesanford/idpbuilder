@@ -73,7 +73,7 @@ assess_error() {
 #### Step 3: Escalation Path
 If automated recovery fails:
 1. Save detailed error report
-2. Update orchestrator-state.yaml to ERROR_RECOVERY
+2. Update orchestrator-state.json to ERROR_RECOVERY
 3. Alert user with recovery options
 4. Wait for manual intervention or orchestrator directive
 

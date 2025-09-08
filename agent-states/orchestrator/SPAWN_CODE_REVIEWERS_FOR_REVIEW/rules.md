@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -219,7 +219,7 @@ You are spawning Code Reviewer agents to review:
 3. ✅ Size measurements completed and within limits
 4. ✅ All effort directories contain implemented code
 5. ✅ **PARALLELIZATION ANALYSIS COMPLETE (ANALYZE_CODE_REVIEWER_PARALLELIZATION)**
-6. ✅ **Code Reviewer parallelization plan in orchestrator-state.yaml**
+6. ✅ **Code Reviewer parallelization plan in orchestrator-state.json**
 
 **IF PARALLELIZATION NOT ANALYZED, GO BACK TO ANALYZE_CODE_REVIEWER_PARALLELIZATION!**
 
@@ -232,7 +232,7 @@ You are spawning Code Reviewer agents to review:
    - What type of review (code quality, size, patterns)
    - Where to create reports
 3. **Track spawn timestamps** (R151 requirement)
-4. **Monitor completion** via orchestrator-state.yaml
+4. **Monitor completion** via orchestrator-state.json
 
 ### Parallel vs Sequential Spawning:
 - **Parallel**: When reviewing independent efforts

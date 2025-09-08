@@ -5,7 +5,7 @@
 □ Print: AGENT STARTUP: $(date '+%Y-%m-%d %H:%M:%S %Z')
 □ Verify: Correct directory and git branch
 □ Load: agent-states/architect/{STATE}/rules.md  
-□ Read: orchestrator-state.yaml (check wave completion)
+□ Read: orchestrator-state.json (check wave completion)
 □ Read: WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md
 ```
 
@@ -41,7 +41,7 @@ INTEGRATION_REVIEW → [CLEAN_MERGE|CONFLICTS|ARCHITECTURAL_ISSUES]
 ### Wave Completion Check
 ```bash
 # Verify all splits under limit
-for effort in $(grep "efforts_completed:" orchestrator-state.yaml -A 20); do
+for effort in $(grep "efforts_completed:" orchestrator-state.json -A 20); do
     if [[ $effort =~ branch:.*$ ]]; then
         branch=${effort#*: }
         lines=$(line-counter.sh -c $branch | grep "Total:" | awk '{print $2}')

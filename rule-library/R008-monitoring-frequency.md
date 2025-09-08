@@ -129,8 +129,8 @@ check_effort_progress() {
 ```bash
 verify_state_consistency() {
     # Load state file
-    local current_state=$(grep "current_state:" orchestrator-state.yaml | awk '{print $2}')
-    local efforts_in_progress=$(grep -c "in_progress" orchestrator-state.yaml)
+    local current_state=$(grep "current_state:" orchestrator-state.json | awk '{print $2}')
+    local efforts_in_progress=$(grep -c "in_progress" orchestrator-state.json)
     
     echo "📍 Current state: $current_state"
     echo "🔄 Active efforts: $efforts_in_progress"
@@ -178,7 +178,7 @@ monitoring_report:
   actions_taken:
     - "Warned SW Engineer about size"
     - "Saved TODO state"
-    - "Updated orchestrator-state.yaml"
+    - "Updated orchestrator-state.json"
 ```
 
 ## Common Violations

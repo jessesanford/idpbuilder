@@ -20,7 +20,7 @@ This report documents the investigation and enhancement of split branch tracking
 #### Gaps Identified in Split Tracking
 1. **No comprehensive tracking structure** for split relationships
 2. **Missing split lifecycle states** (PLANNED, IN_PROGRESS, COMPLETED)
-3. **No centralized split_tracking section** in orchestrator-state.yaml
+3. **No centralized split_tracking section** in orchestrator-state.json
 4. **Incomplete tracking of split branch details** (lines, descriptions, statuses)
 5. **No integration planning guidance** for using split branches
 
@@ -139,12 +139,12 @@ This report documents the investigation and enhancement of split branch tracking
 ### Split Tracking Verification
 ```bash
 # Check split tracking completeness
-yq '.split_tracking | to_entries | length' orchestrator-state.yaml
+yq '.split_tracking | to_entries | length' orchestrator-state.json
 
 # Find current splits for integration
 yq '.split_tracking | to_entries | .[] | 
     select(.value.status == "SPLIT_DEPRECATED") | 
-    .value.split_branches[].branch' orchestrator-state.yaml
+    .value.split_branches[].branch' orchestrator-state.json
 ```
 
 ### Document Location Verification
@@ -161,7 +161,7 @@ find phase-plans -name "*.md" |
 ## Recommendations
 
 ### Immediate Actions
-1. **Update orchestrator-state.yaml template** to include split_tracking section
+1. **Update orchestrator-state.json template** to include split_tracking section
 2. **Create phase-plans directory** in all SF instances
 3. **Train agents** on new tracking requirements
 

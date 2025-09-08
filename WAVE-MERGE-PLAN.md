@@ -207,7 +207,7 @@ git push origin idpbuilder-oci-build-push/phase1/wave1-integration
 
 After successful integration:
 1. Notify Orchestrator of completion
-2. Update orchestrator-state.yaml with integration status
+2. Update orchestrator-state.json with integration status
 3. Prepare for Phase 1 Wave 2 planning (if applicable)
 4. Archive completed effort branches if needed
 

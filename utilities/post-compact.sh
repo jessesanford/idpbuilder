@@ -205,7 +205,7 @@ provide_orchestrator_guidance() {
     echo "   - DO NOT just read - you must LOAD into TodoWrite!"
     echo
     echo "2. 📊 READ STATE FILES:"
-    echo "   - orchestrator-state.yaml (current wave/phase status)"
+    echo "   - orchestrator-state.json (current wave/phase status)"
     echo "   - SOFTWARE-FACTORY-STATE-MACHINE.md (state transitions)"
     echo "   - Current phase/wave specific plan files"
     echo
@@ -307,7 +307,7 @@ provide_architect_guidance() {
     echo "   - Check for pending wave or phase reviews"
     echo
     echo "2. 📖 READ CONTEXT FILES:"
-    echo "   - orchestrator-state.yaml (current wave status)"
+    echo "   - orchestrator-state.json (current wave status)"
     echo "   - WAVE-COMPLETION-ARCHITECT-REVIEW-PROTOCOL.md"
     echo "   - Integration branch status and conflicts"
     echo

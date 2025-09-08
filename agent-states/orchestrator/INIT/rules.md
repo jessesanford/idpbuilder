@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -111,7 +111,7 @@ if [ -f /tmp/claude-compaction-detected ]; then
 fi
 
 # STEP 1: LOAD STATE FILE OR CREATE NEW
-STATE_FILE="$CLAUDE_PROJECT_DIR/orchestrator-state.yaml"
+STATE_FILE="$CLAUDE_PROJECT_DIR/orchestrator-state.json"
 if [ -f "$STATE_FILE" ]; then
     CURRENT_STATE=$(yq '.current_state' "$STATE_FILE")
     echo "✅ Found existing state: $CURRENT_STATE"
@@ -153,7 +153,7 @@ git branch --show-current
 
 ## State Context
 Initial state when orchestrator starts. Primary purpose is to:
-1. Load or create orchestrator-state.yaml
+1. Load or create orchestrator-state.json
 2. Verify environment configuration
 3. Transition to appropriate next state
 
@@ -161,7 +161,7 @@ Initial state when orchestrator starts. Primary purpose is to:
 1. Check for compaction and recover if needed
 2. Load target-repo-config.yaml (R191 - INIT-specific)
 3. Verify repository separation (R192 - INIT-specific)  
-4. Check/create orchestrator-state.yaml (R281 from orchestrator.md)
+4. Check/create orchestrator-state.json (R281 from orchestrator.md)
 5. If creating new state file:
    - Parse PROJECT-IMPLEMENTATION-PLAN.md completely
    - Extract ALL phases, waves, and efforts
@@ -171,7 +171,7 @@ Initial state when orchestrator starts. Primary purpose is to:
 7. Transition to appropriate state immediately
 
 ## State Transitions
-- If orchestrator-state.yaml exists with current_state → Resume from that state
+- If orchestrator-state.json exists with current_state → Resume from that state
 - If no state file → Create COMPLETE initial state (R281), then go to SPAWN_ARCHITECT_PHASE_PLANNING
 - If state file incomplete → IMMEDIATE FAILURE (-100%)
 - If config missing → HARD_STOP

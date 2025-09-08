@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -76,7 +76,7 @@ The system will check for this marker. No marker = Immediate failure.
 3. **🔴🔴🔴 R288** - STATE FILE UPDATE REQUIREMENTS (SUPREME LAW)
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-requirements.md`
    - Criticality: SUPREME - State updates required for all transitions
-   - Summary: MUST update orchestrator-state.yaml before EVERY state transition
+   - Summary: MUST update orchestrator-state.json before EVERY state transition
    - **CRITICAL**: Commit and push state changes immediately
 
    - **CRITICAL**: NEVER use wc -l or manual counting
@@ -121,7 +121,7 @@ In the SPAWN_CODE_REVIEWER_BACKPORT_PLAN state, the ORCHESTRATOR is responsible 
    - Track Code Reviewer progress
 
 4. **Stopping After Spawn (R313)**
-   - Update orchestrator-state.yaml to WAITING_FOR_BACKPORT_PLAN
+   - Update orchestrator-state.json to WAITING_FOR_BACKPORT_PLAN
    - Commit and push state changes
    - STOP and wait for user continuation
    - Do NOT continue to next state automatically
@@ -261,7 +261,7 @@ echo "✅ Code Reviewer spawn command prepared"
 cd $CLAUDE_PROJECT_DIR
 
 # Update state file
-cat > orchestrator-state.yaml << 'EOF'
+cat > orchestrator-state.json << 'EOF'
 current_state: WAITING_FOR_BACKPORT_PLAN
 previous_state: SPAWN_CODE_REVIEWER_BACKPORT_PLAN
 agents_spawned:
@@ -277,7 +277,7 @@ waiting_for:
 EOF
 
 # Commit state change
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: transition to WAITING_FOR_BACKPORT_PLAN after spawning Code Reviewer"
 git push
 

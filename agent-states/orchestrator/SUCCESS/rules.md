@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -194,7 +194,7 @@ READ THIS RULE FILE: `$CLAUDE_PROJECT_DIR/rule-library/R323-mandatory-final-arti
 
 ## Final Actions
 1. Create phase completion report
-2. Update orchestrator-state.yaml with completion timestamp
+2. Update orchestrator-state.json with completion timestamp
 3. Document metrics (efforts completed, lines of code, test coverage)
 4. **R323: Document final artifact details (path, size, type, build command)**
 5. Archive state for phase

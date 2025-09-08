@@ -70,7 +70,7 @@
 ### 🔴🔴🔴 R252 - Mandatory State File Updates (SUPREME LAW)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R252-mandatory-state-file-updates.md`
 **Criticality**: SUPREME LAW - Update on every transition
-**Summary**: Must update orchestrator-state.yaml on all transitions
+**Summary**: Must update orchestrator-state.json on all transitions
 
 ### 🚨🚨🚨 R253 - Mandatory State File Commit Push
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R253-mandatory-state-file-commit-push.md`
@@ -93,7 +93,7 @@
 - ✅ Wave plan READ with Read tool
 - ✅ Blocking efforts identified
 - ✅ Parallel groups created
-- ✅ Plan saved to orchestrator-state.yaml
+- ✅ Plan saved to orchestrator-state.json
 - ✅ Acknowledgment output displayed
 
 ### Failure Triggers:
@@ -110,7 +110,7 @@
 1. READ the Wave Implementation Plan with Read tool NOW
 2. Extract "Can Parallelize" metadata immediately
 3. Create parallelization groups without delay
-4. Save the plan to orchestrator-state.yaml NOW
+4. Save the plan to orchestrator-state.json NOW
 5. Output acknowledgment decision immediately
 
 **FORBIDDEN - AUTOMATIC FAILURE:**
@@ -156,7 +156,7 @@ SPAWN_AGENTS
 
 **THIS STATE IS A MANDATORY STOP!**
 - You CANNOT proceed to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING without completing this analysis
-- You MUST create a parallelization plan and save it to orchestrator-state.yaml
+- You MUST create a parallelization plan and save it to orchestrator-state.json
 - You MUST acknowledge your parallelization decision BEFORE any spawning
 
 ---
@@ -232,9 +232,9 @@ code_reviewer_parallelization_plan:
       r151_requirement: "All in ONE message with <5s delta"
 EOF
 
-# STEP 4: Update orchestrator-state.yaml
+# STEP 4: Update orchestrator-state.json
 echo ""
-echo "💾 Saving parallelization plan to orchestrator-state.yaml..."
+echo "💾 Saving parallelization plan to orchestrator-state.json..."
 # Update the state file with the parallelization plan
 ```
 
@@ -265,7 +265,7 @@ echo "💾 Saving parallelization plan to orchestrator-state.yaml..."
    Step 1: Spawn E3.1.1 ALONE and WAIT for completion
    Step 2: Spawn E3.1.2, E3.1.3, E3.1.4, E3.1.5 TOGETHER in ONE message
    
-✅ This strategy is SAVED in orchestrator-state.yaml
+✅ This strategy is SAVED in orchestrator-state.json
 ✅ I WILL follow this strategy in SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
 ═══════════════════════════════════════════════════════════════
 ```
@@ -273,7 +273,7 @@ echo "💾 Saving parallelization plan to orchestrator-state.yaml..."
 ## Post-State Actions
 
 After completing parallelization analysis:
-1. Save parallelization plan to orchestrator-state.yaml
+1. Save parallelization plan to orchestrator-state.json
 2. Display state machine visualization (R230)
 3. Transition to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
 4. Re-acknowledge critical rules (R217)
@@ -286,22 +286,22 @@ validate_parallelization_analysis() {
     echo "🔍 Validating parallelization analysis completeness..."
     
     # CHECK 1: Was the wave plan actually read?
-    if ! grep -q "code_reviewer_parallelization_plan" orchestrator-state.yaml; then
-        echo "❌ FATAL: No parallelization plan found in orchestrator-state.yaml!"
+    if ! grep -q "code_reviewer_parallelization_plan" orchestrator-state.json; then
+        echo "❌ FATAL: No parallelization plan found in orchestrator-state.json!"
         echo "Cannot proceed to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING!"
         exit 1
     fi
     
     # CHECK 2: Are blocking efforts identified?
-    BLOCKING_COUNT=$(yq '.code_reviewer_parallelization_plan.blocking_efforts | length' orchestrator-state.yaml)
+    BLOCKING_COUNT=$(yq '.code_reviewer_parallelization_plan.blocking_efforts | length' orchestrator-state.json)
     echo "✅ Found $BLOCKING_COUNT blocking efforts"
     
     # CHECK 3: Are parallel groups identified?
-    PARALLEL_COUNT=$(yq '.code_reviewer_parallelization_plan.parallel_groups | length' orchestrator-state.yaml)
+    PARALLEL_COUNT=$(yq '.code_reviewer_parallelization_plan.parallel_groups | length' orchestrator-state.json)
     echo "✅ Found $PARALLEL_COUNT parallel groups"
     
     # CHECK 4: Is spawn sequence defined?
-    SEQUENCE_COUNT=$(yq '.code_reviewer_parallelization_plan.spawn_sequence | length' orchestrator-state.yaml)
+    SEQUENCE_COUNT=$(yq '.code_reviewer_parallelization_plan.spawn_sequence | length' orchestrator-state.json)
     echo "✅ Spawn sequence has $SEQUENCE_COUNT steps"
     
     if [ $SEQUENCE_COUNT -eq 0 ]; then
@@ -322,7 +322,7 @@ validate_parallelization_analysis() {
 
 1. ✅ Wave Implementation Plan has been READ with Read tool
 2. ✅ All efforts have been analyzed for parallelization
-3. ✅ Parallelization plan saved to orchestrator-state.yaml
+3. ✅ Parallelization plan saved to orchestrator-state.json
 4. ✅ Acknowledgment output has been displayed
 5. ✅ Validation checks have passed
 6. ✅ TODOs saved per R187 (before transition)
@@ -335,7 +335,7 @@ save_todos "ANALYZE_CODE_REVIEWER_PARALLELIZATION complete"
 
 # R189: Commit within 60 seconds
 cd $CLAUDE_PROJECT_DIR
-git add todos/*.todo orchestrator-state.yaml
+git add todos/*.todo orchestrator-state.json
 git commit -m "todo: parallelization analysis complete"
 git push
 echo "✅ Analysis and TODOs persisted"
@@ -363,7 +363,7 @@ orchestrator_state:
 
 1. ❌ Attempting to spawn without reading the wave plan
 2. ❌ Skipping this state and going directly to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
-3. ❌ Not saving parallelization plan to orchestrator-state.yaml
+3. ❌ Not saving parallelization plan to orchestrator-state.json
 4. ❌ Spawning all efforts in parallel when some are blocking
 5. ❌ Not acknowledging the parallelization decision
 
@@ -380,8 +380,8 @@ READ: phase-plans/PHASE-3-WAVE-1-IMPLEMENTATION-PLAN.md
 echo "Found 1 blocking effort: E3.1.1"
 echo "Found 4 parallel efforts: E3.1.2, E3.1.3, E3.1.4, E3.1.5"
 
-# 4. Save to orchestrator-state.yaml
-yq eval '.code_reviewer_parallelization_plan = ...' orchestrator-state.yaml
+# 4. Save to orchestrator-state.json
+yq eval '.code_reviewer_parallelization_plan = ...' orchestrator-state.json
 
 # 5. Acknowledge decision
 echo "✅ PARALLELIZATION DECISION COMMITTED"

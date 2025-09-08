@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -190,8 +190,8 @@ In SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN, you spawn a Code Reviewer to analyze phas
 
 ### 1. Spawn Code Reviewer for Phase Fix Planning
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-PHASE_FIX_REQUEST=$(yq ".phase_integration_feedback.phase${PHASE}.fix_request_file" orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE_FIX_REQUEST=$(yq ".phase_integration_feedback.phase${PHASE}.fix_request_file" orchestrator-state.json)
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 # Create command for Code Reviewer
@@ -232,10 +232,10 @@ echo "🚀 Spawning Code Reviewer for phase fix planning"
 echo "@agent-code-reviewer Please execute: $COMMAND_FILE"
 
 # Update state
-yq eval ".agents_spawned += [{\"type\": \"code-reviewer\", \"task\": \"phase_fix_plan\", \"state\": \"CREATE_PHASE_FIX_PLAN\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}]" -i orchestrator-state.yaml
-yq eval ".current_state = \"WAITING_FOR_PHASE_FIX_PLANS\"" -i orchestrator-state.yaml
+yq eval ".agents_spawned += [{\"type\": \"code-reviewer\", \"task\": \"phase_fix_plan\", \"state\": \"CREATE_PHASE_FIX_PLAN\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}]" -i orchestrator-state.json
+yq eval ".current_state = \"WAITING_FOR_PHASE_FIX_PLANS\"" -i orchestrator-state.json
 
-git add orchestrator-state.yaml "$COMMAND_FILE"
+git add orchestrator-state.json "$COMMAND_FILE"
 git commit -m "spawn: Code Reviewer for phase fix planning"
 git push
 ```

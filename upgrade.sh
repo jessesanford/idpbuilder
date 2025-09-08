@@ -210,7 +210,7 @@ preserve_files() {
     
     # Files/directories to preserve
     local preserve_items=(
-        "orchestrator-state.yaml"
+        "orchestrator-state.json"
         "todos"
         "efforts"
         "checkpoints"
@@ -684,7 +684,7 @@ if [ "$FORCE" != true ] && [ "$DRY_RUN" != true ]; then
     echo -e "\n${GREEN}The following will be preserved:${NC}"
     echo -e "  • efforts/ directory (all work in progress)"
     echo -e "  • todos/ directory"
-    echo -e "  • orchestrator-state.yaml"
+    echo -e "  • orchestrator-state.json"
     echo -e "  • project-config.yaml"
     echo -e "  • target-repo-config.yaml"
     echo -e "  • .git repository"

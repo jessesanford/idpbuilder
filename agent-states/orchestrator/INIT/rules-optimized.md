@@ -7,7 +7,7 @@
 
 ### 1. 🚨🚨🚨 R281 - Complete State File Initialization (SUPREME LAW #7)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R281-initial-state-file-creation.md`
-**INIT Requirement**: Create complete orchestrator-state.yaml with ALL phases/waves/efforts
+**INIT Requirement**: Create complete orchestrator-state.json with ALL phases/waves/efforts
 **Validation**: Must match implementation plan exactly or -100% failure
 
 ### 2. 🚨🚨🚨 R191 - Target Repository Configuration (BLOCKING)
@@ -63,7 +63,7 @@ echo "$(date +%s) - INIT rules acknowledged" > .state_rules_read_orchestrator_IN
 ## State Exit Protocol (R322)
 1. Complete state file creation
 2. Update current_state to next state
-3. Commit orchestrator-state.yaml
+3. Commit orchestrator-state.json
 4. STOP and summarize work
 5. Wait for /continue-orchestrating
 

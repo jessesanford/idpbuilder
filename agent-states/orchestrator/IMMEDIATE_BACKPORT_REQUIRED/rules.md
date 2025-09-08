@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -140,7 +140,7 @@ EOF
 # Update state to spawn Code Reviewer
 cd $CLAUDE_PROJECT_DIR
 
-cat > orchestrator-state.yaml << 'EOF'
+cat > orchestrator-state.json << 'EOF'
 current_state: SPAWN_CODE_REVIEWER_BACKPORT_PLAN
 previous_state: IMMEDIATE_BACKPORT_REQUIRED
 backport_trigger: "R321 - Immediate backport required"
@@ -148,7 +148,7 @@ fix_documentation: /efforts/integration-testing/FIX-MANIFEST-FOR-BACKPORT.md
 next_action: "Spawn Code Reviewer to create backport plan"
 EOF
 
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: transition to SPAWN_CODE_REVIEWER_BACKPORT_PLAN per R321"
 git push
 ```

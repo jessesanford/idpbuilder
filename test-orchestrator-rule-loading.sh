@@ -65,13 +65,13 @@ echo ""
 echo "TEST 4: Simulating Rule Loading for Each State"
 echo "-----------------------------------------------"
 
-# Create a mock orchestrator-state.yaml for testing
+# Create a mock orchestrator-state.json for testing
 for state in $STATES; do
     echo "Testing state: $state"
-    echo "current_state: $state" > test-orchestrator-state.yaml
+    echo "current_state: $state" > test-orchestrator-state.json
     
     # Simulate what orchestrator would do
-    CURRENT_STATE=$(grep "current_state:" test-orchestrator-state.yaml | awk '{print $2}')
+    CURRENT_STATE=$(grep "current_state:" test-orchestrator-state.json | awk '{print $2}')
     
     if [ "$CURRENT_STATE" = "$state" ]; then
         echo "  ✓ Detected state: $CURRENT_STATE"
@@ -98,7 +98,7 @@ for state in $STATES; do
 done
 
 # Clean up test file
-rm -f test-orchestrator-state.yaml
+rm -f test-orchestrator-state.json
 
 echo "==================================================="
 echo "✅ ALL TESTS PASSED!"

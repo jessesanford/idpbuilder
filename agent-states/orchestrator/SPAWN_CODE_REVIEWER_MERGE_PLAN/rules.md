@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -159,8 +159,8 @@ The orchestrator spawns a Code Reviewer agent to create a merge plan for wave in
 ### 1. Verify Integration Infrastructure
 ```bash
 # Confirm integration workspace is ready
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
 INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
 
 if [ ! -d "$INTEGRATION_DIR" ]; then
@@ -213,7 +213,7 @@ echo "🚀 Spawning Code Reviewer for merge plan creation..."
 
 ### 3. Update State Tracking
 ```yaml
-# Update orchestrator-state.yaml
+# Update orchestrator-state.json
 integration_status:
   phase: ${PHASE}
   wave: ${WAVE}

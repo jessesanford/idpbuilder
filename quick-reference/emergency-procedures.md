@@ -147,7 +147,7 @@ CONTEXT RECOVERY PROTOCOL:
    fi
 
 2. Load most recent state:
-   READ: orchestrator-state.yaml
+   READ: orchestrator-state.json
    READ: latest TODO files in todos directory
 
 3. Determine current position:

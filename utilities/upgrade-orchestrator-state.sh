@@ -368,13 +368,13 @@ main() {
     
     # If no file specified, try common locations
     if [ -z "$STATE_FILE" ]; then
-        if [ -f "orchestrator-state.yaml" ]; then
-            STATE_FILE="orchestrator-state.yaml"
-        elif [ -f "orchestrator-state.yaml.example" ]; then
-            STATE_FILE="orchestrator-state.yaml.example"
+        if [ -f "orchestrator-state.json" ]; then
+            STATE_FILE="orchestrator-state.json"
+        elif [ -f "orchestrator-state.json.example" ]; then
+            STATE_FILE="orchestrator-state.json.example"
         else
             echo -e "${RED}❌ No state file specified and none found in current directory${NC}"
-            echo "Usage: $0 <orchestrator-state.yaml>"
+            echo "Usage: $0 <orchestrator-state.json>"
             exit 1
         fi
     fi

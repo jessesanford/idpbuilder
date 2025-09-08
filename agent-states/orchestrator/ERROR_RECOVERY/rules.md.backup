@@ -294,7 +294,7 @@ def validate_full_recovery():
 original_state_backup:
   preserved_at: "2025-08-23T16:15:30Z"
   orchestrator_state: |
-    # Full copy of orchestrator-state.yaml at error time
+    # Full copy of orchestrator-state.json at error time
   working_directories:
     - path: "/workspaces/efforts/phase1/wave2/effort2-controller"
       branch: "phase1/wave2/effort2-controller"
@@ -370,7 +370,7 @@ From ERROR_RECOVERY state:
 After successful recovery, update prevention measures:
 
 ```yaml
-# Add to orchestrator-state.yaml
+# Add to orchestrator-state.json
 error_prevention:
   learned_patterns:
     - error_type: "SIZE_LIMIT_VIOLATION"

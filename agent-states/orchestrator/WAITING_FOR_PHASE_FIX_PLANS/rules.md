@@ -7,7 +7,7 @@ Actively monitor Code Reviewer creating fix plans for phase-level integration fa
 
 ### 🔴🔴🔴 RULE R322: MANDATORY STOP BEFORE STATE TRANSITION (SUPREME LAW)
 - **STOP** and save state before ANY transition
-- **READ** orchestrator-state.yaml to verify current state
+- **READ** orchestrator-state.json to verify current state
 - **VALIDATE** next state exists in SOFTWARE-FACTORY-STATE-MACHINE.md
 - **VIOLATION = IMMEDIATE FAILURE**
 
@@ -50,7 +50,7 @@ Actively monitor Code Reviewer creating fix plans for phase-level integration fa
 1. **Initial Check (IMMEDIATE)**
    ```bash
    # Verify Code Reviewer was spawned for fix planning
-   grep "spawned_agents" orchestrator-state.yaml | grep -i "fix"
+   grep "spawned_agents" orchestrator-state.json | grep -i "fix"
    
    # Check phase integration directory
    ls -la phase-*-integration/
@@ -133,7 +133,7 @@ Actively monitor Code Reviewer creating fix plans for phase-level integration fa
 5. **Check for Timeout**
    ```bash
    # Get spawn time
-   SPAWN_TIME=$(grep "phase_fix_planning" orchestrator-state.yaml -A 2 | grep "timestamp" | cut -d'"' -f2)
+   SPAWN_TIME=$(grep "phase_fix_planning" orchestrator-state.json -A 2 | grep "timestamp" | cut -d'"' -f2)
    
    # Calculate elapsed
    ELAPSED=$(($(date +%s) - $(date -d "$SPAWN_TIME" +%s)))
@@ -223,7 +223,7 @@ echo "Entered WAITING_FOR_PHASE_FIX_PLANS at $(date)"
 echo "Phase integration failed - monitoring fix plan creation"
 
 # Check failure context
-grep "phase_integration" orchestrator-state.yaml | grep "status"
+grep "phase_integration" orchestrator-state.json | grep "status"
 
 # Active monitoring
 for i in {1..90}; do  # 45 minute timeout

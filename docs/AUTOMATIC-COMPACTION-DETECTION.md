@@ -64,7 +64,7 @@ Each file has compaction detection as CHECK 0 in pre-flight checks.
 ```bash
 if [ -f /tmp/compaction_marker.txt ]; then
     # Shows latest orchestrator-*.todo files
-    # Guides to reload orchestrator-state.yaml
+    # Guides to reload orchestrator-state.json
     # Forces TODO recovery before continuing
 fi
 ```
@@ -91,7 +91,7 @@ fi
 ```bash
 if [ -f /tmp/compaction_marker.txt ]; then
     # Shows latest architect-*.todo files
-    # Guides to reload orchestrator-state.yaml
+    # Guides to reload orchestrator-state.json
     # Determines review type needed
 fi
 ```

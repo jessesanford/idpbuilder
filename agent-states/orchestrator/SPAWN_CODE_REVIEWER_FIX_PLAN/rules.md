@@ -6,7 +6,7 @@
 
 ### YOU MUST STOP AFTER:
 1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.yaml with new state
+2. ✅ Updating orchestrator-state.json with new state
 3. ✅ Committing and pushing the state file  
 4. ✅ Providing work summary
 
@@ -201,9 +201,9 @@ In SPAWN_CODE_REVIEWER_FIX_PLAN, you spawn a Code Reviewer agent to analyze inte
 
 ### 1. Prepare Fix Plan Request
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.yaml)
-WAVE=$(yq '.current_wave' orchestrator-state.yaml)
-FIX_REQUEST_FILE=$(yq ".integration_feedback.wave${WAVE}.fix_request_file" orchestrator-state.yaml)
+PHASE=$(yq '.current_phase' orchestrator-state.json)
+WAVE=$(yq '.current_wave' orchestrator-state.json)
+FIX_REQUEST_FILE=$(yq ".integration_feedback.wave${WAVE}.fix_request_file" orchestrator-state.json)
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 # Create fix plan workspace
@@ -295,14 +295,14 @@ echo "@agent-code-reviewer Please execute the task in: $COMMAND_FILE"
 ### 3. Update State File
 ```bash
 # Record spawning
-yq eval ".agents_spawned += [{\"type\": \"code-reviewer\", \"task\": \"create_fix_plans\", \"state\": \"CREATE_INTEGRATION_FIX_PLAN\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"command_file\": \"$COMMAND_FILE\"}]" -i orchestrator-state.yaml
+yq eval ".agents_spawned += [{\"type\": \"code-reviewer\", \"task\": \"create_fix_plans\", \"state\": \"CREATE_INTEGRATION_FIX_PLAN\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"command_file\": \"$COMMAND_FILE\"}]" -i orchestrator-state.json
 
 # Update current state
-yq eval ".current_state = \"WAITING_FOR_FIX_PLANS\"" -i orchestrator-state.yaml
-yq eval ".integration_feedback.wave${WAVE}.fix_plan_requested = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.yaml
+yq eval ".current_state = \"WAITING_FOR_FIX_PLANS\"" -i orchestrator-state.json
+yq eval ".integration_feedback.wave${WAVE}.fix_plan_requested = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
 
 # Commit
-git add orchestrator-state.yaml "$COMMAND_FILE"
+git add orchestrator-state.json "$COMMAND_FILE"
 git commit -m "spawn: Code Reviewer for integration fix plans - wave ${WAVE}"
 git push
 ```

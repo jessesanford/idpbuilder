@@ -23,7 +23,7 @@ The architect was measuring the wrong thing:
 
 ### Rule Summary
 R297 mandates that architects MUST:
-1. Check `split_count` in orchestrator-state.yaml BEFORE measuring any effort
+1. Check `split_count` in orchestrator-state.json BEFORE measuring any effort
 2. If `split_count > 0`, the effort was already split and is COMPLIANT
 3. Measure ORIGINAL effort branches in `/efforts/phase*/wave*/[effort-name]/`
 4. NOT measure the integrated branch size for compliance
@@ -101,7 +101,7 @@ The architect will now:
 
 ```bash
 # Architect reviews E1.1.2
-SPLIT_COUNT=$(yq '.efforts_completed."E1.1.2".split_count' orchestrator-state.yaml)
+SPLIT_COUNT=$(yq '.efforts_completed."E1.1.2".split_count' orchestrator-state.json)
 # Result: 2
 
 if [ "$SPLIT_COUNT" -gt 0 ]; then

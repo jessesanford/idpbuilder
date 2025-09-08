@@ -114,7 +114,7 @@ check_todo_save_requirement() {
         
         # R189: Commit within 60 seconds
         cd $CLAUDE_PROJECT_DIR
-        git add todos/*.todo orchestrator-state.yaml
+        git add todos/*.todo orchestrator-state.json
         git commit -m "todo: monitor checkpoint - R188 compliance"
         git push
     fi
@@ -135,7 +135,7 @@ update_state "last_todo_save" "$LAST_TODO_SAVE"
 
 # If compaction happens:
 # 1. TODOs are in /todos directory (R187-R190)
-# 2. State is in orchestrator-state.yaml (R252)
+# 2. State is in orchestrator-state.json (R252)
 # 3. Reload and continue monitoring (R190)
 # NO FEAR, FULL RECOVERY WITH TODO PERSISTENCE
 ```
@@ -346,7 +346,7 @@ When monitoring dependent efforts:
 ---
 
 ```yaml
-# Dependency tracking in orchestrator-state.yaml
+# Dependency tracking in orchestrator-state.json
 dependency_monitoring:
   wave2_dependencies:
     effort1_api_types:
@@ -460,7 +460,7 @@ def check_intervention_triggers(monitoring_data):
 ## Status Reporting
 
 ```yaml
-# Real-time status in orchestrator-state.yaml
+# Real-time status in orchestrator-state.json
 monitoring_status:
   last_full_check: "2025-08-23T15:30:00Z"
   check_interval_minutes: 10

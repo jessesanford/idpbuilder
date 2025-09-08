@@ -151,7 +151,7 @@ validate_orchestrator_command() {
 
 **Rule Statement**:
 Orchestrator commits MUST ONLY contain:
-- State files (orchestrator-state.yaml)
+- State files (orchestrator-state.json)
 - Markdown documentation (.md)
 - Configuration files (.yaml, .json)
 - TODO files (.todo)

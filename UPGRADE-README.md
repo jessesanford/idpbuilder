@@ -23,7 +23,7 @@ The script also updates your global Claude configurations:
 ## What Gets Preserved
 - ✅ **efforts/** - All your implementation work
 - ✅ **todos/** - All TODO state files  
-- ✅ **orchestrator-state.yaml** - Current orchestrator state
+- ✅ **orchestrator-state.json** - Current orchestrator state
 - ✅ **project-config.yaml** - Your project configuration
 - ✅ **target-repo-config.yaml** - Target repository settings
 - ✅ **.git/** - Your git repository
@@ -229,7 +229,7 @@ If you encounter issues:
 To preserve additional files, modify the `preserve_items` array in the script:
 ```bash
 local preserve_items=(
-    "orchestrator-state.yaml"
+    "orchestrator-state.json"
     "todos"
     "efforts"
     "my-custom-file.txt"  # Add your files

@@ -79,7 +79,7 @@ Previously, architects could provide wave review decisions through agent respons
 | {effort-name} | {0 or N} | {lines or "N/A"} | [PASS|FAIL] | {if split: "Already split - compliant"} |
 | {effort-name} | {0 or N} | {lines or "N/A"} | [PASS|FAIL] | {if split: "Already split - compliant"} |
 
-**Split Detection (R297)**: Checked split_count in orchestrator-state.yaml FIRST
+**Split Detection (R297)**: Checked split_count in orchestrator-state.json FIRST
 **Measurement Method**: `$PROJECT_ROOT/tools/line-counter.sh` (from ORIGINAL effort directory)
 **Measurement Target**: Original effort branches (NOT integration branches)
 **All Efforts Compliant**: [YES|NO]
@@ -230,11 +230,11 @@ verify_wave_review_report() {
     local SIZE_COMPLIANT=$(grep "^\*\*All Efforts Compliant\*\*:" "$REPORT_FILE" | grep -o "\(YES\|NO\)")
     
     # Update state file with report details
-    yq -i ".wave_review.report_file = \"$REPORT_FILE\"" orchestrator-state.yaml
-    yq -i ".wave_review.decision = \"$DECISION\"" orchestrator-state.yaml
-    yq -i ".wave_review.score = $SCORE" orchestrator-state.yaml
-    yq -i ".wave_review.size_compliant = \"$SIZE_COMPLIANT\"" orchestrator-state.yaml
-    yq -i ".wave_review.timestamp = \"$(date -Iseconds)\"" orchestrator-state.yaml
+    yq -i ".wave_review.report_file = \"$REPORT_FILE\"" orchestrator-state.json
+    yq -i ".wave_review.decision = \"$DECISION\"" orchestrator-state.json
+    yq -i ".wave_review.score = $SCORE" orchestrator-state.json
+    yq -i ".wave_review.size_compliant = \"$SIZE_COMPLIANT\"" orchestrator-state.json
+    yq -i ".wave_review.timestamp = \"$(date -Iseconds)\"" orchestrator-state.json
     
     echo "✅ Wave review report verified:"
     echo "  📄 Report: $REPORT_FILE"
@@ -250,7 +250,7 @@ verify_wave_review_report "$CURRENT_PHASE" "$CURRENT_WAVE"
 
 # Process decision based on report
 process_wave_review_decision() {
-    local DECISION=$(yq '.wave_review.decision' orchestrator-state.yaml)
+    local DECISION=$(yq '.wave_review.decision' orchestrator-state.json)
     
     case "$DECISION" in
         PROCEED_NEXT_WAVE)
@@ -430,7 +430,7 @@ find wave-reviews -type d -name "wave*" | while read wave_dir; do
 done
 
 # Check for waves marked complete without reports
-yq '.efforts_completed[] | select(.wave != null)' orchestrator-state.yaml | while read effort; do
+yq '.efforts_completed[] | select(.wave != null)' orchestrator-state.json | while read effort; do
     wave=$(echo "$effort" | yq '.wave')
     phase=$(echo "$effort" | yq '.phase')
     report="wave-reviews/phase${phase}/wave${wave}/PHASE-${phase}-WAVE-${wave}-REVIEW-REPORT.md"

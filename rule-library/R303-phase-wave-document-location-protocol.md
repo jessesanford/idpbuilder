@@ -33,7 +33,7 @@ ${SF_INSTANCE_DIR}/
 │               │           └── effort-001/
 │               │               └── IMPLEMENTATION-PLAN-*.md
 │               └── src/                          # Actual code
-└── orchestrator-state.yaml                       # References to documents
+└── orchestrator-state.json                       # References to documents
 ```
 
 ### 2. Document Types and Locations
@@ -144,7 +144,7 @@ EOF
 
 ### 4. Document Reference in State File
 
-The orchestrator-state.yaml MUST track document locations:
+The orchestrator-state.json MUST track document locations:
 ```yaml
 phase_documents:
   phase_1:

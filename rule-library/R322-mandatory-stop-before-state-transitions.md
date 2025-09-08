@@ -42,16 +42,16 @@ CURRENT_STATE="[YOUR_CURRENT_STATE]"  # What state you're leaving
 
 # STEP 2: UPDATE THE STATE FILE (THIS IS THE CRITICAL PART!)
 echo "📝 CRITICAL: Updating current_state to prevent infinite loop..."
-yq -i ".current_state = \"$NEXT_STATE\"" orchestrator-state.yaml
-yq -i ".previous_state = \"$CURRENT_STATE\"" orchestrator-state.yaml
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+yq -i ".current_state = \"$NEXT_STATE\"" orchestrator-state.json
+yq -i ".previous_state = \"$CURRENT_STATE\"" orchestrator-state.json
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
 
 # STEP 3: Verify the update worked
 echo "✅ State file updated:"
-grep "current_state:" orchestrator-state.yaml
+grep "current_state:" orchestrator-state.json
 
 # STEP 4: Commit and push IMMEDIATELY
-git add orchestrator-state.yaml
+git add orchestrator-state.json
 git commit -m "state: transition from $CURRENT_STATE to $NEXT_STATE (R324 compliance)"
 git push
 
@@ -131,10 +131,10 @@ This rule SUPERSEDES and REPLACES:
 ```bash
 # First, update the state file
 echo "Updating state file for transition..."
-yq -i '.current_state = "MONITOR"' orchestrator-state.yaml
-yq -i '.previous_state = "SPAWN_AGENTS"' orchestrator-state.yaml
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
-git add orchestrator-state.yaml
+yq -i '.current_state = "MONITOR"' orchestrator-state.json
+yq -i '.previous_state = "SPAWN_AGENTS"' orchestrator-state.json
+yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+git add orchestrator-state.json
 git commit -m "state: transition from SPAWN_AGENTS to MONITOR"
 git push
 ```

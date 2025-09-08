@@ -5,9 +5,9 @@
 **Criticality:** MISSION CRITICAL - State corruption causes system failure  
 **Priority:** HIGHEST - Prevents conflicting state updates
 
-## 🚨 ONLY THE ORCHESTRATOR CAN UPDATE orchestrator-state.yaml 🚨
+## 🚨 ONLY THE ORCHESTRATOR CAN UPDATE orchestrator-state.json 🚨
 
-The orchestrator is the SOLE OWNER of the state file. All other agents may READ but MUST NEVER WRITE to orchestrator-state.yaml.
+The orchestrator is the SOLE OWNER of the state file. All other agents may READ but MUST NEVER WRITE to orchestrator-state.json.
 
 ## The Problem This Solves
 
@@ -34,7 +34,7 @@ update_orchestrator_state() {
         exit 1; 
     fi
     
-    cat >> orchestrator-state.yaml << EOF
+    cat >> orchestrator-state.json << EOF
 current_state: $NEW_STATE
 previous_state: $CURRENT_STATE
 transition_time: "$(date -Iseconds)"
@@ -106,7 +106,7 @@ validate_agent_state_transition() {
     # Validate against SOFTWARE-FACTORY-STATE-MACHINE.md
     validate_state_transition "$AGENT_CURRENT" "$AGENT_TARGET" "$AGENT_TYPE"
     
-    # Update AGENT's internal state (NOT orchestrator-state.yaml)
+    # Update AGENT's internal state (NOT orchestrator-state.json)
     echo "agent_state: $AGENT_TARGET" > agent-internal-state.yaml
 }
 ```
@@ -115,8 +115,8 @@ validate_agent_state_transition() {
 
 ### Orchestrator
 ✅ **CAN**:
-- Read orchestrator-state.yaml
-- Write/update orchestrator-state.yaml
+- Read orchestrator-state.json
+- Write/update orchestrator-state.json
 - Add new sections to state file
 - Update any field in state file
 - Create state backups
@@ -126,13 +126,13 @@ validate_agent_state_transition() {
 
 ### SW Engineer / Code Reviewer / Architect
 ✅ **CAN**:
-- Read orchestrator-state.yaml (for context)
+- Read orchestrator-state.json (for context)
 - Write to agent-status.yaml
 - Track their own internal state
 - Signal status to orchestrator
 
 ❌ **CANNOT**:
-- Write to orchestrator-state.yaml
+- Write to orchestrator-state.json
 - Update orchestrator state sections
 - Modify state transitions
 - Add fields to orchestrator state
@@ -155,7 +155,7 @@ fi
 ### ❌ Wrong: Agent Updates Orchestrator State Directly
 ```bash
 # SW ENGINEER - WRONG!
-echo "current_state: COMPLETED" >> orchestrator-state.yaml  # VIOLATION!
+echo "current_state: COMPLETED" >> orchestrator-state.json  # VIOLATION!
 
 # CODE REVIEWER - WRONG!
 ./utilities/update-orchestrator-state-section.sh ...  # VIOLATION!
@@ -164,7 +164,7 @@ echo "current_state: COMPLETED" >> orchestrator-state.yaml  # VIOLATION!
 ## Migration Required
 
 Current code that violates this rule:
-1. Architect updating phase_architecture_plans in orchestrator-state.yaml
+1. Architect updating phase_architecture_plans in orchestrator-state.json
 2. Code Reviewer updating implementation_plans sections
 3. Helper script allowing non-orchestrator updates
 
@@ -183,15 +183,15 @@ check_state_file_ownership() {
     echo "🔍 R215: Checking orchestrator state file ownership..."
     
     # Check last modification
-    if [ -f "orchestrator-state.yaml" ]; then 
+    if [ -f "orchestrator-state.json" ]; then 
         # Check git log for who modified it
-        git log -1 --format="%an: %s" orchestrator-state.yaml; 
+        git log -1 --format="%an: %s" orchestrator-state.json; 
         
         # Look for violations in agent code
         echo "Checking for violation patterns..."; 
         
         # SW Engineers shouldn't update state
-        if grep -r "orchestrator-state.yaml" efforts/*/sw-engineer.sh 2>/dev/null; then 
+        if grep -r "orchestrator-state.json" efforts/*/sw-engineer.sh 2>/dev/null; then 
             echo "❌ SW Engineer attempting to update orchestrator state!"; 
         fi; 
         
@@ -200,14 +200,14 @@ check_state_file_ownership() {
             echo "❌ Code Reviewer attempting to update orchestrator state!"; 
         fi; 
         
-        echo "✅ Only orchestrator should update orchestrator-state.yaml"; 
+        echo "✅ Only orchestrator should update orchestrator-state.json"; 
     fi
 }
 ```
 
 ## Summary
 
-- **Orchestrator** is the SOLE OWNER of orchestrator-state.yaml
+- **Orchestrator** is the SOLE OWNER of orchestrator-state.json
 - **Other agents** can only READ, never WRITE
 - **Agent communication** happens through agent-status.yaml files
 - **State transitions** are orchestrator's responsibility
