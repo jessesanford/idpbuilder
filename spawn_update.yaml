@@ -1,0 +1,16 @@
+state_machine:
+  current_state: "SPAWN_AGENTS"
+  sw_engineers_spawned: true
+  spawn_timestamp: "2025-09-08T01:15:00Z"
+  spawn_results:
+    E2.1.1:
+      status: "COMPLETED"
+      lines: 615
+      agent: "sw-engineer-1"
+      completed_at: "2025-09-08T01:15:30Z"
+    E2.1.2:
+      status: "NEEDS_RESPAWN"
+      issue: "Branch configuration was incorrect, now fixed"
+      agent: "sw-engineer-2"
+  r151_compliance: "PASS - Both agents spawned in one message with <5s delta"
+  next_action: "Respawn E2.1.2 gitea-client with corrected environment"
