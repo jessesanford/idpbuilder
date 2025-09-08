@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "SPAWN_AGENTS",
-    "previous_state": "SPAWN_CODE_REVIEWERS_FOR_SPLIT_PLAN",
-    "transition_time": "2025-09-08T13:52:00Z",
-    "transition_reason": "Split plan created and infrastructure ready for E2.1.2 Split-001",
+    "current_state": "MONITOR_IMPLEMENTATION",
+    "previous_state": "SPAWN_AGENTS",
+    "transition_time": "2025-09-08T13:55:00Z",
+    "transition_reason": "Reset to monitoring state - split plan needs to be created",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -522,9 +522,9 @@
     "sw_engineers_wave2_spawn": "2025-09-07T12:58:05.535354Z"
   },
   "next_actions": [
-    "Spawn SW Engineer for E2.1.2 Split-001 implementation",
-    "Monitor Split-001 implementation progress",
-    "Prepare for Split-002 after Split-001 completion"
+    "Spawn Code Reviewer to create split plan for E2.1.2 (1200 lines)",
+    "Wait for split plan creation",
+    "Create split infrastructure based on plan"
   ],
   "current_review": {
     "type": "WAVE_INTEGRATION",
@@ -579,27 +579,6 @@
       "split_plan_reviewed": true,
       "infrastructure_created": true,
       "note": "All 3 splits completed successfully. Ready for integration and final review."
-    },
-    "gitea-client": {
-      "current_split": 1,
-      "total_splits": 2,
-      "splits": [
-        {
-          "number": 1,
-          "status": "INFRASTRUCTURE_CREATED",
-          "created_at": "2025-09-08T13:50:00Z",
-          "directory": "efforts/phase2/wave1/gitea-client-SPLIT-001",
-          "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
-          "base_branch": "idpbuilder-oci-build-push/phase1/integration",
-          "split_plan_path": "efforts/phase2/wave1/gitea-client-SPLIT-001/SPLIT-PLAN-001.md",
-          "estimated_lines": 512
-        }
-      ],
-      "split_plan_created": true,
-      "split_plan_location": "efforts/phase2/wave1/gitea-client/SPLIT-INVENTORY-20250908-041645.md",
-      "splits_planned": 2,
-      "split_infrastructure_created": true,
-      "note": "Split plan created for 2 splits. Infrastructure ready for Split-001 (Core Registry & Auth)."
     }
   },
   "phase2_wave1_implementation": {
