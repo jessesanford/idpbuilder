@@ -1,0 +1,17 @@
+# Orchestrator TODOs - SPAWN_CODE_REVIEWERS_FOR_REVIEW State
+# Saved: 2025-09-08 06:15:00
+
+## Completed:
+✅ Spawn Code Reviewer to re-review E2.1.2 Split-001 with correct base branch
+✅ Verify Code Reviewer spawned successfully per R255
+
+## In Progress:
+🔄 Save TODOs and update state file per R287/R288
+
+## Pending:
+⏳ Transition to MONITOR_REVIEWS state per R322/R324
+
+## Context:
+- E2.1.2 Split-001 reviewed and APPROVED (629 lines)
+- Measurement corrected from wrong 1564 to actual 629
+- Ready to transition to MONITOR_REVIEWS
