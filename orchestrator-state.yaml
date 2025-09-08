@@ -1,15 +1,15 @@
 {
   "state_machine": {
-    "current_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-    "previous_state": "WAITING_FOR_EFFORT_PLANS",
-    "transition_time": "2025-09-08T00:42:00Z",
-    "transition_reason": "All Phase 2 Wave 1 effort plans completed and verified - proceeding to analyze SW Engineer parallelization",
+    "current_state": "SPAWN_AGENTS",
+    "previous_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+    "transition_time": "2025-09-08T02:49:40Z",
+    "transition_reason": "Analysis complete - ready to spawn SW Engineers for Phase 2 Wave 1",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
     "infrastructure_setup_time": "2025-09-07T23:59:00Z",
     "infrastructure_verified_time": "2025-09-08T00:13:00Z",
-    "next_state": "SPAWN_AGENTS",
+    "next_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
     "prepared_for_transition": true,
     "analysis_acknowledged": true,
     "r290_verification_complete": true,
@@ -18,7 +18,10 @@
     "phase2_wave1_effort_plans": {
       "spawn_time": "2025-09-08T00:18:00Z",
       "agents_spawned": 2,
-      "efforts": ["E2.1.1-image-builder", "E2.1.2-gitea-client"],
+      "efforts": [
+        "E2.1.1-image-builder",
+        "E2.1.2-gitea-client"
+      ],
       "spawn_type": "parallel",
       "r151_compliant": true,
       "average_delta": "< 5s",
@@ -32,7 +35,6 @@
     },
     "monitoring_complete": true,
     "fix_monitoring_complete": true,
-    "prepared_for_transition": true,
     "next_transition_prepared_at": "2025-09-07T23:36:00Z",
     "monitoring_results": {
       "E1.2.1": {
@@ -79,7 +81,6 @@
     },
     "error_recovery_reason": "Build failed with duplicate function/type declarations between E1.1.1 and E1.1.2",
     "next_action": "Spawn Code Reviewer to create Phase 2 implementation plan",
-    "next_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
     "phase2_architecture_plan": {
       "requested_at": "2025-09-07T23:26:00Z",
       "architect_spawned": true,
@@ -351,7 +352,10 @@
   "current_phase": 2,
   "current_wave": 1,
   "current_effort": "effort-planning",
-  "efforts_in_progress": ["E2.1.1-image-builder-planning", "E2.1.2-gitea-client-planning"],
+  "efforts_in_progress": [
+    "E2.1.1-image-builder-planning",
+    "E2.1.2-gitea-client-planning"
+  ],
   "phase2_wave1_infrastructure": {
     "setup_complete": true,
     "setup_time": "2025-09-07T23:58:00Z",
@@ -402,7 +406,9 @@
     "phase1/wave1",
     "phase1/wave2"
   ],
-  "phases_completed": ["phase1"],
+  "phases_completed": [
+    "phase1"
+  ],
   "phase1_completion": {
     "completed_at": "2025-09-07T23:20:00Z",
     "integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -443,7 +449,10 @@
         "step": 1,
         "action": "spawn_parallel",
         "agent_type": "code-reviewer",
-        "efforts": ["E2.1.1", "E2.1.2"],
+        "efforts": [
+          "E2.1.1",
+          "E2.1.2"
+        ],
         "r151_requirement": "All in ONE message with <5s delta",
         "note": "Both efforts can run fully in parallel - no blocking dependencies"
       }
@@ -534,7 +543,6 @@
           "completed_at": "2025-09-07T20:06:00Z"
         }
       ],
-      "current_split": 3,
       "status": "ALL_SPLITS_COMPLETE",
       "split_plan_created": true,
       "split_plan_reviewed": true,
@@ -543,32 +551,3 @@
     }
   }
 }
-  fix_engineer_work_complete:
-    E1.2.1:
-      spawned_at: "2025-09-07T21:06:23Z"
-      fixes_applied:
-        - "R320 violation resolved - all TODO comments removed"
-        - "Test compilation errors fixed - duplicate functions removed"
-        - "Missing functions implemented - isFeatureEnabled and NewCertValidator"
-        - "All splits building successfully"
-      fix_complete_flag: false
-      ready_for_review: false
-      split_001_needs_subdivision: true
-      final_review_failed_reason: "Split-001 has 1564 lines - nearly double the 800-line limit"
-      command_file: "efforts/phase1/wave2/cert-validation/sw-engineer-fix-command.md"
-  final_review_results:
-    E1.2.1:
-      review_time: "2025-09-07T21:27:06Z"
-      verdict: "NEEDS_FIXES"
-      split_001_lines: 1564
-      split_002_lines: 460
-      split_003_lines: 536
-      blocking_issue: "Split-001 exceeds 800-line limit by 764 lines"
-      fixes_confirmed:
-        - "R320 compliance - NO TODO comments"
-        - "All functions properly defined"
-        - "Build succeeds"
-        - "All tests pass"
-      action_required: "Subdivide Split-001 into 2-3 sub-splits"
-      report_location: "efforts/phase1/wave2/cert-validation/CODE-REVIEW-REPORT-FINAL-20250907-212706.md"
-phase_metrics:
