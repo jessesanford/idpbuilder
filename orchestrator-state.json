@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
-    "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
-    "transition_time": "2025-09-08T21:36:00Z",
-    "transition_reason": "E2.1.2 Split 001 review APPROVED (684 lines) - ready for Split 002",
+    "current_state": "SPAWN_AGENTS",
+    "previous_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+    "transition_time": "2025-09-08T21:47:37Z",
+    "transition_reason": "Split-002 infrastructure ready for implementation",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -586,5 +586,34 @@
       "split_plan_needed": true
     }
   },
-  "engineers_spawned_count": 2
+  "engineers_spawned_count": 2,
+  "split_tracking": {
+    "gitea-client": {
+      "effort_name": "E2.1.2-gitea-client",
+      "total_splits": 3,
+      "current_split": 2,
+      "splits": [
+        {
+          "number": 1,
+          "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+          "base_branch": "phase2-integration",
+          "status": "REVIEWED_APPROVED",
+          "lines": 684,
+          "created_at": "2025-09-08T17:30:00Z",
+          "reviewed_at": "2025-09-08T21:36:00Z",
+          "infrastructure_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-001",
+          "split_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-001/SPLIT-PLAN-001.md"
+        },
+        {
+          "number": 2,
+          "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+          "base_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+          "status": "INFRASTRUCTURE_READY",
+          "created_at": "2025-09-08T21:45:00Z",
+          "infrastructure_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-002",
+          "split_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-002/SPLIT-PLAN-002-GITEA.md"
+        }
+      ]
+    }
+  }
 }
