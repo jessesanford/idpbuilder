@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "SPAWN_AGENTS",
-    "previous_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
-    "transition_time": "2025-09-08T17:11:00Z",
-    "transition_reason": "Split-001 infrastructure created, ready to spawn agents for implementation",
+    "current_state": "MONITOR_IMPLEMENTATION",
+    "previous_state": "SPAWN_AGENTS",
+    "transition_time": "2025-09-08T18:12:25Z",
+    "transition_reason": "SW Engineer spawned for E2.1.2 Split 001 implementation",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -165,13 +165,15 @@
         "splits": [
           {
             "number": 1,
-            "status": "INFRASTRUCTURE_READY",
+            "status": "IMPLEMENTATION_IN_PROGRESS",
             "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
             "base_branch": "idpbuilder-oci-build-push/phase1/integration",
             "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-001",
             "split_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-001/SPLIT-PLAN-001.md",
             "created_at": "2025-09-08T17:10:00Z",
-            "estimated_lines": 635
+            "estimated_lines": 635,
+            "implementation_started": "2025-09-08T18:12:40Z",
+            "sw_engineer_spawned": true
           }
         ]
       }
