@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
-    "previous_state": "MONITOR_IMPLEMENTATION",
-    "transition_time": "2025-09-08T18:59:51Z",
-    "transition_reason": "E2.1.2 Split 001 implementation complete (679 lines) - ready for review",
+    "current_state": "ERROR_RECOVERY",
+    "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+    "transition_time": "2025-09-08T20:51:29Z",
+    "transition_reason": "E2.1.2 Split 001 SIZE VIOLATION - 1010 lines exceeds 800 limit",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -175,9 +175,14 @@
             "implementation_started": "2025-09-08T18:12:40Z",
             "sw_engineer_spawned": true,
             "implementation_completed": "2025-09-08T18:10:00Z",
-            "actual_lines": 679
+            "actual_lines": 679,
+            "review_status": "SPLIT_REQUIRED",
+            "review_actual_lines": 1010,
+            "review_time": "2025-09-08T20:51:29Z",
+            "review_report": "efforts/phase2/wave1/gitea-client-split-001/CODE-REVIEW-REPORT-20250908-204947.md"
           }
-        ]
+        ],
+        "needs_further_split": true
       }
     },
     "spawn_engineers_for_fixes_completed": "2025-09-08T05:00:31Z",
