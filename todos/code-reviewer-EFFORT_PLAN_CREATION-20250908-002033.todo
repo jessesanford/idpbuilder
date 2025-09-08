@@ -1,0 +1,20 @@
+# Code Reviewer TODOs - Trigger: EFFORT_PLAN_CREATION_COMPLETE
+# State: EFFORT_PLAN_CREATION
+# Effort: image-builder
+# Timestamp: 2025-09-08T00:19:30Z
+
+## Completed Tasks:
+✅ Create implementation plan for E2.1.1 image-builder effort
+✅ Define technical architecture for image building with go-containerregistry
+✅ Specify file structure and components to implement
+✅ Include explicit scope control per R311
+✅ Create atomic PR design per R220
+✅ Save plan in .software-factory directory structure
+✅ Commit and push implementation plan
+
+## Plan Details:
+- Location: .software-factory/phase2/wave1/image-builder/IMPLEMENTATION-PLAN-20250908-001819.md
+- Size Estimate: 600 lines (strict scope to ~525 lines)
+- Can Parallelize: Yes (with E2.1.2)
+- Feature Flag: ENABLE_IMAGE_BUILDER
+- Key Functions: BuildImage only (not List/Remove/Tag)
