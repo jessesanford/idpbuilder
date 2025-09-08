@@ -63,7 +63,7 @@ if error_type == 'PHASE_ASSESSMENT_NEEDS_WORK':
 #!/bin/bash
 # Immediate actions in PHASE_INTEGRATION
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 BRANCH="phase${PHASE}-post-fixes-integration-${TIMESTAMP}"
 
@@ -85,8 +85,8 @@ done
 git push -u origin "$BRANCH"
 
 # Update state for reassessment
-yq -i '.current_state = "SPAWN_ARCHITECT_PHASE_ASSESSMENT"' orchestrator-state.json
-yq -i ".phase_integration_branches += [{\"phase\": $PHASE, \"branch\": \"$BRANCH\"}]" orchestrator-state.json
+jq '.current_state = "SPAWN_ARCHITECT_PHASE_ASSESSMENT"' orchestrator-state.json
+jq ".phase_integration_branches += [{\"phase\": $PHASE, \"branch\": \"$BRANCH\"}]" orchestrator-state.json
 ```
 
 ## Validation
@@ -120,8 +120,8 @@ def validate_r259_compliance(state_history):
 # verify-r259-compliance.sh
 
 # Check if phase integration branch exists after fixes
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-INTEGRATION_BRANCH=$(yq ".phase_integration_branches[] | select(.phase == $PHASE) | .branch" orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+INTEGRATION_BRANCH=$(jq ".phase_integration_branches[] | select(.phase == $PHASE) | .branch" orchestrator-state.json)
 
 if [ -z "$INTEGRATION_BRANCH" ]; then
     echo "❌ R259 VIOLATION: No phase integration branch found!"

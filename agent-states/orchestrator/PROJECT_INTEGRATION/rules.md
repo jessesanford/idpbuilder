@@ -191,7 +191,7 @@ create_project_integration_infrastructure() {
 - Base Branch: $DEFAULT_BRANCH
 
 ## Phase Integration Branches to Merge
-$(yq '.phases[].integration_branch' "$SF_INSTANCE_DIR/orchestrator-state.json")
+$(jq '.phases[].integration_branch' "$SF_INSTANCE_DIR/orchestrator-state.json")
 
 ## R283 Compliance
 - ✅ Isolated workspace created
@@ -202,7 +202,7 @@ EOF
     
     # Update orchestrator state
     cd "$SF_INSTANCE_DIR"
-    yq -i '.project_integration = {
+    jq '.project_integration = {
         "workspace": "'$PROJECT_INTEGRATION_DIR'",
         "branch": "'$INTEGRATION_BRANCH'",
         "status": "INFRASTRUCTURE_READY"

@@ -14,8 +14,8 @@ get_effort_branch_name() {
     local effort_name="$3"
     
     # Read format and prefix from config
-    local format=$(yq -r '.branch_naming.effort_format' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "phase{phase}/wave{wave}/{effort_name}")
-    local project_prefix=$(yq -r '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "")
+    local format=$(jq -r '.branch_naming.effort_format' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "phase{phase}/wave{wave}/{effort_name}")
+    local project_prefix=$(jq -r '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "")
     
     # Add prefix with slash if it exists
     local prefix=""
@@ -39,8 +39,8 @@ get_integration_branch_name() {
     local wave="$2"
     
     # Read format and prefix from config
-    local format=$(yq -r '.branch_naming.integration_format' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "phase{phase}/wave{wave}/integration")
-    local project_prefix=$(yq -r '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "")
+    local format=$(jq -r '.branch_naming.integration_format' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "phase{phase}/wave{wave}/integration")
+    local project_prefix=$(jq -r '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "")
     
     # Add prefix with slash if it exists
     local prefix=""
@@ -62,8 +62,8 @@ get_phase_integration_branch_name() {
     local phase="$1"
     
     # Read format and prefix from config
-    local format=$(yq -r '.branch_naming.phase_integration_format' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "phase{phase}/integration")
-    local project_prefix=$(yq -r '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "")
+    local format=$(jq -r '.branch_naming.phase_integration_format' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "phase{phase}/integration")
+    local project_prefix=$(jq -r '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "")
     
     # Add prefix with slash if it exists
     local prefix=""
@@ -109,7 +109,7 @@ validate_branch_name() {
     local expected_type="$2"  # "effort", "integration", or "phase_integration"
     
     # Get the project prefix
-    local project_prefix=$(yq -r '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "")
+    local project_prefix=$(jq -r '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "")
     
     # Build expected pattern
     local pattern=""
@@ -148,7 +148,7 @@ parse_branch_name() {
     local branch="$1"
     
     # Remove project prefix if present
-    local project_prefix=$(yq -r '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "")
+    local project_prefix=$(jq -r '.branch_naming.project_prefix' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null || echo "")
     if [ -n "$project_prefix" ] && [ "$project_prefix" != "null" ]; then
         branch="${branch#${project_prefix}/}"
     fi

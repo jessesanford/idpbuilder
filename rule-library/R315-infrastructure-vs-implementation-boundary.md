@@ -110,7 +110,7 @@ cat > file.yaml           # Create YAML configs
 yq, jq                    # Process YAML/JSON
 
 # State Management
-yq eval orchestrator-state.json    # Update state file
+jq orchestrator-state.json    # Update state file
 git add orchestrator-state.json    # Stage state changes
 git commit -m "orchestrator: ..." # Commit orchestration files
 ```

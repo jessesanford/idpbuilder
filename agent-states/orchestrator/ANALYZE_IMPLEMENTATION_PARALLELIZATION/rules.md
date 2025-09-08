@@ -361,9 +361,9 @@ echo "✅ Implementation parallelization analysis complete"
 
 # CRITICAL: Update state file FIRST (R324 requirement)
 echo "🔴 R324: Updating current_state to prevent infinite loop..."
-yq -i '.current_state = "SPAWN_AGENTS"' orchestrator-state.json
-yq -i '.previous_state = "ANALYZE_IMPLEMENTATION_PARALLELIZATION"' orchestrator-state.json
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+jq '.current_state = "SPAWN_AGENTS"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.previous_state = "ANALYZE_IMPLEMENTATION_PARALLELIZATION"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
 # Verify the update
 echo "✅ State updated to:"
@@ -408,8 +408,8 @@ validate_implementation_parallelization() {
     fi
     
     # CHECK 3: Verify consistency with Code Reviewer parallelization
-    CR_BLOCKING=$(yq '.code_reviewer_parallelization_plan.blocking_efforts | length' orchestrator-state.json)
-    SW_BLOCKING=$(yq '.sw_engineer_parallelization_plan.blocking_implementations | length' orchestrator-state.json)
+    CR_BLOCKING=$(jq '.code_reviewer_parallelization_plan.blocking_efforts | length' orchestrator-state.json)
+    SW_BLOCKING=$(jq '.sw_engineer_parallelization_plan.blocking_implementations | length' orchestrator-state.json)
     
     if [ "$CR_BLOCKING" != "$SW_BLOCKING" ]; then
         echo "⚠️ WARNING: Mismatch between Code Reviewer and SW Engineer blocking counts"
@@ -418,7 +418,7 @@ validate_implementation_parallelization() {
     fi
     
     # CHECK 4: Verify spawn sequence exists
-    SEQUENCE_COUNT=$(yq '.sw_engineer_parallelization_plan.spawn_sequence | length' orchestrator-state.json)
+    SEQUENCE_COUNT=$(jq '.sw_engineer_parallelization_plan.spawn_sequence | length' orchestrator-state.json)
     echo "✅ SW Engineer spawn sequence has $SEQUENCE_COUNT steps"
     
     echo ""
@@ -527,7 +527,7 @@ echo "  4 parallel implementations (E3.1.2-E3.1.5)"
 verify_parallelization_consistency
 
 # 5. Save to orchestrator-state.json
-yq eval '.sw_engineer_parallelization_plan = ...' orchestrator-state.json
+jq '.sw_engineer_parallelization_plan = ...' orchestrator-state.json
 
 # 6. Acknowledge decision
 echo "✅ SW ENGINEER SPAWN STRATEGY COMMITTED"
@@ -537,8 +537,8 @@ validate_implementation_parallelization
 
 # 8. R324 CRITICAL: Update state BEFORE stopping
 echo "🔴 R324: Updating current_state to SPAWN_AGENTS..."
-yq -i '.current_state = "SPAWN_AGENTS"' orchestrator-state.json
-yq -i '.previous_state = "ANALYZE_IMPLEMENTATION_PARALLELIZATION"' orchestrator-state.json
+jq '.current_state = "SPAWN_AGENTS"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.previous_state = "ANALYZE_IMPLEMENTATION_PARALLELIZATION"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 git add orchestrator-state.json
 git commit -m "state: transition to SPAWN_AGENTS (R324)"
 git push

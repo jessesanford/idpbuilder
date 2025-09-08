@@ -273,12 +273,12 @@ Before transitioning to SPAWN_AGENTS, verify:
            LATEST_PLAN=$(ls -t "$PLAN_LOCATION/IMPLEMENTATION-PLAN-"*.md | head -1)
            echo "✅ Found plan for $EFFORT_NAME: $LATEST_PLAN"
            # Update state file with exact path
-           yq eval ".effort_plan_paths.\"$EFFORT_NAME\" = \"$LATEST_PLAN\"" -i orchestrator-state.json
+           jq ".effort_plan_paths.\"$EFFORT_NAME\" = \"$LATEST_PLAN\"" -i orchestrator-state.json
        elif [ -f "$effort_dir/IMPLEMENTATION-PLAN.md" ]; then
            echo "⚠️ Found legacy plan for $EFFORT_NAME: IMPLEMENTATION-PLAN.md"
            echo "   Consider migrating to .software-factory/ structure"
            # Update state file with legacy path
-           yq eval ".effort_plan_paths.\"$EFFORT_NAME\" = \"$effort_dir/IMPLEMENTATION-PLAN.md\"" -i orchestrator-state.json
+           jq ".effort_plan_paths.\"$EFFORT_NAME\" = \"$effort_dir/IMPLEMENTATION-PLAN.md\"" -i orchestrator-state.json
        else
            echo "❌ No plan found for $EFFORT_NAME"
            echo "   Expected location: $PLAN_LOCATION/IMPLEMENTATION-PLAN-*.md"

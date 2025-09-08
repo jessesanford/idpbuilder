@@ -154,7 +154,7 @@ class SpawnAgentsGrader:
 
 ## Grade Reporting
 
-Update orchestrator-state.json:
+Update orchestrator-state.yaml:
 ```yaml
 grading:
   SPAWN_AGENTS:

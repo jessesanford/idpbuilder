@@ -165,8 +165,8 @@ The orchestrator spawns an Integration Agent to execute the merge plan created b
 ### 1. Verify Merge Plan Exists
 ```bash
 # Check that Code Reviewer completed the merge plan
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
 
 cd "$INTEGRATION_DIR"
@@ -348,9 +348,9 @@ Per R322, you MUST update `current_state` to the next state BEFORE stopping:
 ```bash
 # After spawning integration agent successfully:
 echo "📝 Updating state file for transition..."
-yq -i '.current_state = "MONITORING_INTEGRATION"' orchestrator-state.json
-yq -i '.previous_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.json
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+jq '.current_state = "MONITORING_INTEGRATION"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.previous_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 git add orchestrator-state.json
 git commit -m "state: transition from SPAWN_INTEGRATION_AGENT to MONITORING_INTEGRATION"
 git push

@@ -77,7 +77,7 @@ verify_deprecated_branch_handling() {
     done < "$integration_list"
     
     # Check state file for SPLIT_DEPRECATED
-    local deprecated_count=$(yq '[.efforts_completed[] | select(.status == "SPLIT_DEPRECATED")] | length' orchestrator-state.json)
+    local deprecated_count=$(jq '[.efforts_completed[] | select(.status == "SPLIT_DEPRECATED")] | length' orchestrator-state.json)
     if [ "$deprecated_count" -gt 0 ]; then
         echo "⚠️ Found $deprecated_count deprecated efforts - must use replacement splits"
     fi

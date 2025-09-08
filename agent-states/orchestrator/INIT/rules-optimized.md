@@ -31,7 +31,7 @@ if [ ! -f "./target-repo-config.yaml" ]; then
 fi
 
 # Verify separation (R192)
-TARGET_URL=$(yq '.target_repository.url' target-repo-config.yaml)
+TARGET_URL=$(jq '.target_repository.url' target-repo-config.yaml)
 SF_ORIGIN=$(git remote get-url origin)
 if [ "$TARGET_URL" = "$SF_ORIGIN" ]; then
     echo "FATAL: Target is SF repo!"

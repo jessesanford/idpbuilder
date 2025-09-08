@@ -101,12 +101,12 @@ verify_phase_assessment_report() {
     fi
     
     # Update state file with report information
-    if command -v yq &> /dev/null && [ -f "orchestrator-state.json" ]; then
+    if command -v jq &> /dev/null && [ -f "orchestrator-state.json" ]; then
         echo "📝 Updating state file with report information..."
-        yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.json
-        yq -i ".phase_assessment.decision = \"$DECISION\"" orchestrator-state.json
-        [ -n "$SCORE" ] && yq -i ".phase_assessment.score = $SCORE" orchestrator-state.json
-        yq -i ".phase_assessment.verified_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+        jq ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.json
+        jq ".phase_assessment.decision = \"$DECISION\"" orchestrator-state.json
+        [ -n "$SCORE" ] && jq ".phase_assessment.score = $SCORE" orchestrator-state.json
+        jq ".phase_assessment.verified_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
         echo -e "${GREEN}✅ State file updated${NC}"
     fi
     
@@ -167,7 +167,7 @@ audit_phase_completions() {
         return 1
     fi
     
-    local CURRENT_PHASE=$(yq '.current_phase' orchestrator-state.json)
+    local CURRENT_PHASE=$(jq '.current_phase' orchestrator-state.json)
     echo "  Current phase: $CURRENT_PHASE"
     
     # Check each completed phase for assessment report

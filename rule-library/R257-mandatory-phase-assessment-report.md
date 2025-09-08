@@ -189,9 +189,9 @@ verify_phase_assessment_report() {
     local SCORE=$(grep "^\*\*TOTAL SCORE\*\*" "$REPORT_FILE" | grep -o "[0-9]\+" | tail -1)
     
     # Update state file with report location
-    yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.json
-    yq -i ".phase_assessment.decision = \"$DECISION\"" orchestrator-state.json
-    yq -i ".phase_assessment.score = $SCORE" orchestrator-state.json
+    jq ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.json
+    jq ".phase_assessment.decision = \"$DECISION\"" orchestrator-state.json
+    jq ".phase_assessment.score = $SCORE" orchestrator-state.json
     
     echo "✅ Phase assessment report verified:"
     echo "  📄 Report: $REPORT_FILE"

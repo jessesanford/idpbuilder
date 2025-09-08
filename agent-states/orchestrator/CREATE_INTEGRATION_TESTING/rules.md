@@ -235,10 +235,10 @@ create_integration_testing_infrastructure() {
     
     # 1. Source branch naming helpers
     source "$SF_INSTANCE_DIR/utilities/branch-naming-helpers.sh"
-    PROJECT_PREFIX=$(yq '.branch_naming.project_prefix' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+    PROJECT_PREFIX=$(jq '.branch_naming.project_prefix' "$SF_INSTANCE_DIR/target-repo-config.yaml")
     
     # 2. Get target repository configuration
-    TARGET_REPO_URL=$(yq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+    TARGET_REPO_URL=$(jq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
     TARGET_REPO_NAME=$(basename "$TARGET_REPO_URL" .git)
     
     # 3. Create integration testing workspace
@@ -314,10 +314,10 @@ EOF
     
     # 8. Update orchestrator state
     cd "$SF_INSTANCE_DIR"
-    yq eval -i ".integration_testing.branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.json
-    yq eval -i ".integration_testing.workspace = \"$INTEGRATION_DIR\"" orchestrator-state.json
-    yq eval -i ".integration_testing.created_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
-    yq eval -i ".integration_testing.base_commit = \"$(cd $INTEGRATION_DIR && git rev-parse HEAD)\"" orchestrator-state.json
+    jq '.integration_testing.branch = \"$INTEGRATION_BRANCH\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+    jq '.integration_testing.workspace = \"$INTEGRATION_DIR\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+    jq '.integration_testing.created_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+    jq '.integration_testing.base_commit = \"$(cd $INTEGRATION_DIR && git rev-parse HEAD)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
     
     # 9. Prepare effort inventory
     echo "📊 Preparing effort inventory for integration..."

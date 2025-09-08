@@ -161,8 +161,8 @@ continue_after_spawn() {
     echo "📖 Loading state after agent spawn..."
     
     # Read what was spawned
-    agents=$(yq '.agents_spawned' orchestrator-state.json)
-    next_state=$(yq '.continuation_state' orchestrator-state.json)
+    agents=$(jq '.agents_spawned' orchestrator-state.json)
+    next_state=$(jq '.continuation_state' orchestrator-state.json)
     
     echo "✅ Found spawned agents:"
     echo "$agents"

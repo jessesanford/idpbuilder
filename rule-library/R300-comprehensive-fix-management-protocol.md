@@ -102,7 +102,7 @@ verify_all_fixes_in_effort_branches() {
     echo "🔍 R300 VERIFICATION: Checking all fixes are in effort branches"
     
     # Check each effort that needed fixes
-    for effort in $(yq '.efforts_with_fixes[]' orchestrator-state.json); do
+    for effort in $(jq '.efforts_with_fixes[]' orchestrator-state.json); do
         EFFORT_BRANCH="effort-${effort}-phase-${PHASE}-wave-${WAVE}"
         
         # Verify fix commits exist

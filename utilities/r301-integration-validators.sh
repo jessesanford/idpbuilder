@@ -8,8 +8,8 @@ validate_using_current_integration() {
     local BRANCH_TO_USE=$2
     
     # Get the CURRENT integration branch
-    CURRENT=$(yq '.current_integration | select(.phase == env(PHASE)).branch' orchestrator-state.json)
-    CURRENT_STATUS=$(yq '.current_integration | select(.phase == env(PHASE)).status' orchestrator-state.json)
+    CURRENT=$(jq '.current_integration | select(.phase == env(PHASE)).branch' orchestrator-state.json)
+    CURRENT_STATUS=$(jq '.current_integration | select(.phase == env(PHASE)).status' orchestrator-state.json)
     
     # FATAL if not using current
     if [[ "$BRANCH_TO_USE" != "$CURRENT" ]]; then
@@ -36,8 +36,8 @@ validate_using_current_integration() {
 get_current_integration_branch() {
     local PHASE=$1
     
-    CURRENT=$(yq '.current_integration | select(.phase == env(PHASE)).branch' orchestrator-state.json)
-    STATUS=$(yq '.current_integration | select(.phase == env(PHASE)).status' orchestrator-state.json)
+    CURRENT=$(jq '.current_integration | select(.phase == env(PHASE)).branch' orchestrator-state.json)
+    STATUS=$(jq '.current_integration | select(.phase == env(PHASE)).status' orchestrator-state.json)
     
     if [ -z "$CURRENT" ]; then
         echo "❌ ERROR: No current integration for phase $PHASE" >&2
@@ -63,18 +63,19 @@ set_current_integration() {
     echo "📝 Updating current_integration per R301..."
     
     # First, move any existing current to deprecated
-    EXISTING=$(yq '.current_integration | select(.phase == env(PHASE))' orchestrator-state.json)
+    EXISTING=$(jq '.current_integration | select(.phase == env(PHASE))' orchestrator-state.json)
     if [ "$EXISTING" != "" ] && [ "$EXISTING" != "null" ]; then
         echo "  Deprecating old integration..."
         
         # Add to deprecated list with updated fields
-        yq -i '.deprecated_integrations += [{
+        cat <<EOF | jq '.deprecated_integrations  += [{
             "phase": env(PHASE),
             "branch": .current_integration.branch,
             "status": "deprecated",
             "deprecated_at": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'",
             "reason": env(REASON)
-        }]' orchestrator-state.json
+        }]' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+EOF' orchestrator-state.json
     fi
     
     # Set the new current integration
@@ -96,7 +97,7 @@ validate_single_active_integration() {
     local PHASE=$1
     
     # Count active integrations for this phase
-    ACTIVE_COUNT=$(yq '.current_integration | select(.phase == env(PHASE) and .status == "active")' orchestrator-state.json | grep -c "phase:")
+    ACTIVE_COUNT=$(jq '.current_integration | select(.phase == env(PHASE) and .status == "active")' orchestrator-state.json | grep -c "phase:")
     
     if [ "$ACTIVE_COUNT" -gt 1 ]; then
         echo "🔴🔴🔴 FATAL: Multiple active integrations detected for phase $PHASE!"
@@ -119,7 +120,7 @@ list_deprecated_integrations() {
     local PHASE=$1
     
     echo "📋 Deprecated integrations for phase $PHASE:"
-    yq '.deprecated_integrations[] | select(.phase == env(PHASE))' orchestrator-state.json | \
+    jq '.deprecated_integrations[] | select(.phase == env(PHASE))' orchestrator-state.json | \
         yq '{branch: .branch, deprecated_at: .deprecated_at, reason: .reason}'
 }
 
@@ -127,7 +128,7 @@ list_deprecated_integrations() {
 is_branch_deprecated() {
     local BRANCH=$1
     
-    DEPRECATED=$(yq '.deprecated_integrations[] | select(.branch == env(BRANCH))' orchestrator-state.json)
+    DEPRECATED=$(jq '.deprecated_integrations[] | select(.branch == env(BRANCH))' orchestrator-state.json)
     
     if [ -n "$DEPRECATED" ]; then
         echo "⚠️ Branch '$BRANCH' is DEPRECATED"
@@ -145,13 +146,13 @@ migrate_to_r301_structure() {
     echo "🔄 Migrating to R301 structure for phase $PHASE..."
     
     # Check if already migrated
-    if [ "$(yq '.current_integration' orchestrator-state.json)" != "null" ]; then
+    if [ "$(jq '.current_integration' orchestrator-state.json)" != "null" ]; then
         echo "  Already using R301 structure"
         return 0
     fi
     
     # Find the most recent integration branch from old structure
-    LATEST_BRANCH=$(yq ".phase_integration_branches[] | select(.phase == $PHASE)" orchestrator-state.json | \
+    LATEST_BRANCH=$(jq ".phase_integration_branches[] | select(.phase == $PHASE)" orchestrator-state.json | \
                     yq '.branch' | tail -1)
     
     if [ -z "$LATEST_BRANCH" ]; then
@@ -177,7 +178,7 @@ migrate_to_r301_structure() {
            orchestrator-state.json
     
     # Remove old structure
-    yq -i 'del(.phase_integration_branches)' orchestrator-state.json
+    jq 'del(.phase_integration_branches)' orchestrator-state.json
     
     echo "✅ Migration complete"
     return 0

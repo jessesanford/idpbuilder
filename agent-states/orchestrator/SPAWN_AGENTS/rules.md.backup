@@ -84,7 +84,7 @@ DELIVERABLES:
 ## Recording Spawn Times
 
 ```yaml
-# Update in orchestrator-state.json
+# Update in orchestrator-state.yaml
 parallel_spawn_records:
   wave{X}_group{Y}:
     spawned_at: "2025-08-23T14:30:45Z"
@@ -141,7 +141,7 @@ def calculate_spawn_grade(timestamps):
 ## State Transition
 
 After spawning all required agents:
-1. Update orchestrator-state.json with spawn records
+1. Update orchestrator-state.yaml with spawn records
 2. Calculate and record grade
 3. Transition to MONITOR state
 4. Begin monitoring agent progress

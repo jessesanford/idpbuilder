@@ -162,12 +162,32 @@ git log --oneline -1 --format="%B" | grep "from branch:"
 # MANDATORY: Verify orchestrator created split infrastructure
 echo "🔍 Verifying split infrastructure..."
 
-# Check 1: We're in a properly named split directory
+# 🔴🔴🔴 CRITICAL PRE-WORK VALIDATION: DETECT NESTED STRUCTURES! 🔴🔴🔴
 CURRENT_DIR=$(pwd)
-if [[ "$CURRENT_DIR" != *"-SPLIT-"* ]]; then
+echo "📍 Current directory: $CURRENT_DIR"
+
+# FATAL CHECK: Detect nested effort paths (the catastrophic bug!)
+if [[ "$CURRENT_DIR" == *"/efforts/"*"/efforts/"* ]]; then
+    echo "🔴🔴🔴 CATASTROPHIC ERROR: NESTED EFFORT STRUCTURE DETECTED!"
+    echo "Path contains duplicate '/efforts/' segments!"
+    echo "Current: $CURRENT_DIR"
+    echo ""
+    echo "This is the WRONG infrastructure pattern:"
+    echo "  efforts/phase2/wave1/gitea-client/efforts/phase2/wave1/gitea-client-split-001"
+    echo ""
+    echo "CORRECT pattern should be:"
+    echo "  efforts/phase2/wave1/gitea-client-split-001"
+    echo ""
+    echo "SW ENGINEER REFUSING TO WORK IN CORRUPTED INFRASTRUCTURE!"
+    echo "Orchestrator must fix infrastructure setup!"
+    exit 1
+fi
+
+# Check 1: We're in a properly named split directory
+if [[ "$CURRENT_DIR" != *"-split-"* ]] && [[ "$CURRENT_DIR" != *"-SPLIT-"* ]]; then
     echo "❌ FATAL: Not in a split directory!"
     echo "   Current: $CURRENT_DIR"
-    echo "   Expected: path containing '-SPLIT-XXX'"
+    echo "   Expected: path containing '-split-XXX' or '-SPLIT-XXX'"
     echo "   Orchestrator must create split directories first per R204"
     exit 1
 fi

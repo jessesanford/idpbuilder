@@ -113,7 +113,7 @@ fi
 # STEP 1: LOAD STATE FILE OR CREATE NEW
 STATE_FILE="$CLAUDE_PROJECT_DIR/orchestrator-state.json"
 if [ -f "$STATE_FILE" ]; then
-    CURRENT_STATE=$(yq '.current_state' "$STATE_FILE")
+    CURRENT_STATE=$(jq '.current_state' "$STATE_FILE")
     echo "✅ Found existing state: $CURRENT_STATE"
     # Transition to that state
 else

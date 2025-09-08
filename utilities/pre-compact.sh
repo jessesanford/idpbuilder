@@ -265,8 +265,8 @@ preserve_state_machine_context() {
             # Extract current phase/wave if possible
             if [[ "$state_file" =~ \.yaml$ ]]; then
                 if command -v yq > /dev/null 2>&1; then
-                    local phase=$(yq eval '.current_phase // "unknown"' "$state_file" 2>/dev/null || echo "unknown")
-                    local wave=$(yq eval '.current_wave // "unknown"' "$state_file" 2>/dev/null || echo "unknown")
+                    local phase=$(jq '.current_phase // "unknown"' "$state_file" 2>/dev/null || echo "unknown")
+                    local wave=$(jq '.current_wave // "unknown"' "$state_file" 2>/dev/null || echo "unknown")
                     echo "STATE_MACHINE_PHASE=\"$phase\"" >> "$MARKER_FILE"
                     echo "STATE_MACHINE_WAVE=\"$wave\"" >> "$MARKER_FILE"
                 fi

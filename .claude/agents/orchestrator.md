@@ -223,7 +223,7 @@ cat "${EFFORT_DIR}/SPLIT-PLAN-002.md"
 ### 🔍 FINDING SPLIT PLANS:
 ```bash
 # ✅ BEST: Read from state file (after implementing path tracking)
-SPLIT_PLAN=$(yq '.split_tracking.gitea-client.splits[1].split_plan_path' orchestrator-state.json)
+SPLIT_PLAN=$(jq '.split_tracking.gitea-client.splits[1].split_plan_path' orchestrator-state.json)
 cat "$SPLIT_PLAN"
 
 # ✅ GOOD: Use absolute paths with pattern matching
@@ -250,9 +250,9 @@ echo "✅ Completed all work for CURRENT_STATE"
 
 # 2. UPDATE STATE FILE FIRST (BEFORE STOPPING!)
 echo "🔴 R324: Updating current_state to prevent infinite loop..."
-yq -i '.current_state = "NEXT_STATE"' orchestrator-state.json
-yq -i '.previous_state = "CURRENT_STATE"' orchestrator-state.json
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+jq '.current_state = "NEXT_STATE"' orchestrator-state.json
+jq '.previous_state = "CURRENT_STATE"' orchestrator-state.json
+jq ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
 
 # 3. Verify the update worked
 grep "current_state:" orchestrator-state.json

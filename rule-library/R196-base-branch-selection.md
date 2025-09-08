@@ -40,8 +40,8 @@ The ORCHESTRATOR MUST create all effort clones with proper branches BEFORE spawn
 ```bash
 # Step 1: Determine incremental base branch per R308
 source /path/to/determine_effort_base_branch.sh  # From R308
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 BASE_BRANCH=$(determine_effort_base_branch $PHASE $WAVE)
 
 # Fallback to config only for Phase 1, Wave 1

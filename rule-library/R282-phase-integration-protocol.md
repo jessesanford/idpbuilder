@@ -15,7 +15,7 @@
 ### 1. Phase Integration Infrastructure (FOLLOWS R104)
 ```bash
 # Setup for phase integration per R104
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 
 # R104: Read target repository configuration
 TARGET_CONFIG="$CLAUDE_PROJECT_DIR/target-repo-config.yaml"
@@ -117,7 +117,7 @@ validate_phase_integration() {
 ```bash
 # Verify all waves completed
 for wave in $(seq 1 $TOTAL_WAVES); do
-    wave_status=$(yq ".waves.wave_${wave}.status" orchestrator-state.json)
+    wave_status=$(jq ".waves.wave_${wave}.status" orchestrator-state.json)
     if [ "$wave_status" != "INTEGRATED" ]; then
         echo "🚨 Cannot integrate phase - Wave $wave not integrated"
         exit 1

@@ -154,9 +154,9 @@ echo "🚀 Spawning Code Reviewer to run test suites..."
 cd /efforts/integration-testing
 
 # Update state to show spawning Code Reviewer
-yq -i '.current_state = "SPAWN_CODE_REVIEWER_PROD_VALIDATION"' orchestrator-state.json
-yq -i '.spawn_in_progress.agent = "code-reviewer"' orchestrator-state.json
-yq -i '.spawn_in_progress.purpose = "production_validation"' orchestrator-state.json
+jq '.current_state = "SPAWN_CODE_REVIEWER_PROD_VALIDATION"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.spawn_in_progress.agent = "code-reviewer"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.spawn_in_progress.purpose = "production_validation"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
 # Spawn Code Reviewer with validation task
 Task: subagent_type="code-reviewer" \

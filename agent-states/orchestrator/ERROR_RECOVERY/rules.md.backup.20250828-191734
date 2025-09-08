@@ -577,8 +577,8 @@ def validate_wave_review_fixes():
     """Validate all wave review issues from R258 report are addressed"""
     
     # Read original wave review report
-    phase = yq('.current_phase', 'orchestrator-state.json')
-    wave = yq('.current_wave', 'orchestrator-state.json')
+    phase = yq('.current_phase', 'orchestrator-state.yaml')
+    wave = yq('.current_wave', 'orchestrator-state.yaml')
     report_file = f"wave-reviews/phase{phase}/wave{wave}/PHASE-{phase}-WAVE-{wave}-REVIEW-REPORT.md"
     
     if not os.path.exists(report_file):
@@ -634,7 +634,7 @@ def validate_phase_assessment_fixes():
     """Validate all phase assessment issues from R257 report are addressed"""
     
     # Read original phase assessment report
-    phase = yq('.current_phase', 'orchestrator-state.json')
+    phase = yq('.current_phase', 'orchestrator-state.yaml')
     report_file = f"phase-assessments/phase{phase}/PHASE-{phase}-ASSESSMENT-REPORT.md"
     
     if not os.path.exists(report_file):
@@ -687,7 +687,7 @@ def validate_phase_assessment_fixes():
 original_state_backup:
   preserved_at: "2025-08-23T16:15:30Z"
   orchestrator_state: |
-    # Full copy of orchestrator-state.json at error time
+    # Full copy of orchestrator-state.yaml at error time
   working_directories:
     - path: "/workspaces/efforts/phase1/wave2/effort2-controller"
       branch: "phase1/wave2/effort2-controller"
@@ -784,7 +784,7 @@ The key difference is that architect feedback errors MUST:
 After successful recovery, update prevention measures:
 
 ```yaml
-# Add to orchestrator-state.json
+# Add to orchestrator-state.yaml
 error_prevention:
   learned_patterns:
     - error_type: "SIZE_LIMIT_VIOLATION"

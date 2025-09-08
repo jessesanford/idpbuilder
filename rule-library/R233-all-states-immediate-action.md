@@ -75,7 +75,7 @@ echo "Analyzing dependencies between efforts..."
 ```bash
 # MUST DO IMMEDIATELY:
 echo "Checking agent availability..."
-yq '.agents_available' orchestrator-state.json
+jq '.agents_available' orchestrator-state.json
 ```
 
 ### SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
@@ -199,7 +199,7 @@ echo "Requesting architect review of Wave ${WAVE}..."
 ```bash
 # MUST DO IMMEDIATELY:
 echo "ERROR DETECTED - Diagnosing..."
-yq '.last_error' orchestrator-state.json
+jq '.last_error' orchestrator-state.json
 ```
 
 ### SUCCESS (TERMINAL STATE)

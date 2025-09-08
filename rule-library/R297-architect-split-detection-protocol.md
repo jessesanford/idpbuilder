@@ -28,7 +28,7 @@ check_effort_splits() {
     echo "🔍 Checking if $effort_name was already split..."
     
     # Check orchestrator-state.json for split_count
-    SPLIT_COUNT=$(yq ".efforts_completed.\"${effort_name}\".split_count" orchestrator-state.json 2>/dev/null || echo "0")
+    SPLIT_COUNT=$(jq ".efforts_completed.\"${effort_name}\".split_count" orchestrator-state.json 2>/dev/null || echo "0")
     
     if [ "$SPLIT_COUNT" -gt 0 ]; then
         echo "✅ $effort_name was ALREADY SPLIT into $SPLIT_COUNT parts"
@@ -97,7 +97,7 @@ review_wave_efforts() {
     echo "═══════════════════════════════════════════════════════════════"
     
     # Get list of efforts from state file
-    EFFORTS=$(yq ".waves.wave${wave}.efforts[]" orchestrator-state.json)
+    EFFORTS=$(jq ".waves.wave${wave}.efforts[]" orchestrator-state.json)
     
     for effort in $EFFORTS; do
         echo ""
@@ -157,7 +157,7 @@ echo "This needs to be split again!"  # WRONG! Check split_count first!
 ### ALWAYS Check Split Count First
 ```bash
 # ✅ CORRECT - Check split_count before anything else
-SPLIT_COUNT=$(yq '.efforts_completed."E1.1.2".split_count' orchestrator-state.json)
+SPLIT_COUNT=$(jq '.efforts_completed."E1.1.2".split_count' orchestrator-state.json)
 if [ "$SPLIT_COUNT" -gt 0 ]; then
     echo "✅ E1.1.2 already split into $SPLIT_COUNT parts - COMPLIANT"
 fi

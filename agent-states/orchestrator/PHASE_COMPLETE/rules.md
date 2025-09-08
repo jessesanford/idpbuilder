@@ -276,7 +276,7 @@ if [ "$TARGET_REPO_URL" = "null" ] || [ -z "$TARGET_REPO_URL" ]; then
 fi
 
 # 3. Create phase integration workspace (R282 directory structure)
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 PHASE_INTEGRATION_DIR="$CLAUDE_PROJECT_DIR/efforts/phase${PHASE}/integration-workspace"
 echo "📂 Creating phase integration workspace at: $PHASE_INTEGRATION_DIR"
 
@@ -325,7 +325,7 @@ git checkout -b "$PHASE_BRANCH"
 
 # 7. Merge all wave integration branches (R282 sequential merging)
 echo "📦 Starting wave integration merges..."
-TOTAL_WAVES=$(yq ".phases[] | select(.phase_number == $PHASE) | .total_waves // 1" orchestrator-state.json)
+TOTAL_WAVES=$(jq ".phases[] | select(.phase_number == $PHASE) | .total_waves // 1" orchestrator-state.json)
 
 for wave in $(seq 1 $TOTAL_WAVES); do
     WAVE_BRANCH="wave-${wave}-integration"
@@ -377,7 +377,7 @@ echo "🏷️ Tag: $TAG_NAME"
 
 ```bash
 # Generate phase completion report
-ASSESSMENT_REPORT=$(yq '.phase_assessment.report_file' orchestrator-state.json)
+ASSESSMENT_REPORT=$(jq '.phase_assessment.report_file' orchestrator-state.json)
 if [ -z "$ASSESSMENT_REPORT" ] || [ ! -f "$ASSESSMENT_REPORT" ]; then
     echo "❌ CRITICAL: No phase assessment report found in state!"
     echo "❌ This violates R257 - cannot complete phase without report"
@@ -427,11 +427,11 @@ git push
 
 ```bash
 # Record phase completion
-yq -i ".phases_completed[] = $PHASE" orchestrator-state.json
-yq -i ".phase_metrics.phase$PHASE.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
-yq -i ".phase_metrics.phase$PHASE.waves = $WAVE_COUNT" orchestrator-state.json
-yq -i ".phase_metrics.phase$PHASE.efforts = $EFFORT_COUNT" orchestrator-state.json
-yq -i ".phase_metrics.phase$PHASE.integration_branch = \"$PHASE_BRANCH\"" orchestrator-state.json
+jq ".phases_completed[] = $PHASE" orchestrator-state.json
+jq ".phase_metrics.phase$PHASE.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+jq ".phase_metrics.phase$PHASE.waves = $WAVE_COUNT" orchestrator-state.json
+jq ".phase_metrics.phase$PHASE.efforts = $EFFORT_COUNT" orchestrator-state.json
+jq ".phase_metrics.phase$PHASE.integration_branch = \"$PHASE_BRANCH\"" orchestrator-state.json
 ```
 
 ## Multi-Phase Decision Logic
@@ -439,16 +439,16 @@ yq -i ".phase_metrics.phase$PHASE.integration_branch = \"$PHASE_BRANCH\"" orches
 ```bash
 # Check if more phases exist
 TOTAL_PHASES=$(get_total_phases_from_plan)
-CURRENT_PHASE=$(yq '.current_phase' orchestrator-state.json)
+CURRENT_PHASE=$(jq '.current_phase' orchestrator-state.json)
 
 if [ "$CURRENT_PHASE" -lt "$TOTAL_PHASES" ]; then
     # More phases to complete
     echo "Phase $CURRENT_PHASE complete. Preparing for Phase $((CURRENT_PHASE + 1))"
     
     # Update for next phase
-    yq -i ".current_phase = $((CURRENT_PHASE + 1))" orchestrator-state.json
-    yq -i ".current_wave = 1" orchestrator-state.json
-    yq -i ".current_state = \"INIT\"" orchestrator-state.json
+    jq ".current_phase = $((CURRENT_PHASE + 1))" orchestrator-state.json
+    jq ".current_wave = 1" orchestrator-state.json
+    jq ".current_state = \"INIT\"" orchestrator-state.json
     
     # Transition to start next phase
     transition_to "INIT"  # Start next phase planning

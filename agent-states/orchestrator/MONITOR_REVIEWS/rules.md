@@ -132,8 +132,8 @@ echo "🔍 MONITORING REVIEWS: Checking all active Code Reviewers NOW..."
 
 # Step 1: List all Code Reviewers being monitored (DO NOW!)
 echo "📊 Active Code Reviewers under monitoring:"
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
-    REVIEW_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .review_status" orchestrator-state.json)
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
+    REVIEW_STATUS=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .review_status' orchestrator-state.json)
     
     if [ "$REVIEW_STATUS" = "IN_PROGRESS" ]; then
         echo "  - $effort: Checking review progress..."
@@ -149,8 +149,8 @@ done
 
 # Step 2: Check for completed reviews (DO NOW!)
 echo "🔍 Checking for completed reviews..."
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
-    REVIEW_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .review_status" orchestrator-state.json)
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
+    REVIEW_STATUS=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .review_status' orchestrator-state.json)
     REVIEW_DIR="/efforts/phase${PHASE}/wave${WAVE}/${effort}"
     
     if [ "$REVIEW_STATUS" = "IN_PROGRESS" ] && [ -f "$REVIEW_DIR/CODE-REVIEW-REPORT.md" ]; then
@@ -159,16 +159,16 @@ for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
         
         if [ "$REVIEW_RESULT" = "PASSED" ]; then
             echo "✅ Review PASSED for $effort!"
-            yq -i ".efforts_in_progress[] |= select(.name == \"$effort\") |= .review_status = \"PASSED\"" orchestrator-state.json
+            jq '.efforts_in_progress[] |= select(.name == \"$effort\") |= .review_status = \"PASSED\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
             
         elif [ "$REVIEW_RESULT" = "FAILED" ]; then
             echo "❌ Review FAILED for $effort - fixes needed!"
-            yq -i ".efforts_in_progress[] |= select(.name == \"$effort\") |= .review_status = \"FAILED\"" orchestrator-state.json
+            jq '.efforts_in_progress[] |= select(.name == \"$effort\") |= .review_status = \"FAILED\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
             echo "➡️ Must spawn SW Engineer for fixes"
             
         elif [ "$REVIEW_RESULT" = "NEEDS_SPLIT" ]; then
             echo "🔀 Review requires SPLIT for $effort!"
-            yq -i ".efforts_in_progress[] |= select(.name == \"$effort\") |= .review_status = \"NEEDS_SPLIT\"" orchestrator-state.json
+            jq '.efforts_in_progress[] |= select(.name == \"$effort\") |= .review_status = \"NEEDS_SPLIT\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
             
             # Check if split plan exists
             if [ -f "$REVIEW_DIR/SPLIT-PLAN.md" ]; then
@@ -181,7 +181,7 @@ done
 
 # Step 3: Check for size violations (DO NOW!)
 echo "📏 Checking for size violations in reviews..."
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
     REVIEW_DIR="/efforts/phase${PHASE}/wave${WAVE}/${effort}"
     
     if [ -f "$REVIEW_DIR/CODE-REVIEW-REPORT.md" ]; then
@@ -202,8 +202,8 @@ done
 # Step 4: Check all reviews complete (DO NOW!)
 echo "🎯 Checking if all reviews complete..."
 ALL_REVIEWS_DONE=true
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
-    REVIEW_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .review_status" orchestrator-state.json)
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
+    REVIEW_STATUS=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .review_status' orchestrator-state.json)
     
     if [ "$REVIEW_STATUS" != "PASSED" ] && [ "$REVIEW_STATUS" != "FAILED" ] && [ "$REVIEW_STATUS" != "NEEDS_SPLIT" ]; then
         ALL_REVIEWS_DONE=false
@@ -265,8 +265,8 @@ ALL_PASSED=true
 ANY_FAILED=false
 ANY_NEEDS_SPLIT=false
 
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
-    STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .review_status" orchestrator-state.json)
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
+    STATUS=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .review_status' orchestrator-state.json)
     
     case "$STATUS" in
         "PASSED") ;;

@@ -201,9 +201,9 @@ In SPAWN_CODE_REVIEWER_FIX_PLAN, you spawn a Code Reviewer agent to analyze inte
 
 ### 1. Prepare Fix Plan Request
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
-FIX_REQUEST_FILE=$(yq ".integration_feedback.wave${WAVE}.fix_request_file" orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
+FIX_REQUEST_FILE=$(jq ".integration_feedback.wave${WAVE}.fix_request_file" orchestrator-state.json)
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 # Create fix plan workspace
@@ -295,11 +295,11 @@ echo "@agent-code-reviewer Please execute the task in: $COMMAND_FILE"
 ### 3. Update State File
 ```bash
 # Record spawning
-yq eval ".agents_spawned += [{\"type\": \"code-reviewer\", \"task\": \"create_fix_plans\", \"state\": \"CREATE_INTEGRATION_FIX_PLAN\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"command_file\": \"$COMMAND_FILE\"}]" -i orchestrator-state.json
+jq ".agents_spawned += [{\"type\": \"code-reviewer\", \"task\": \"create_fix_plans\", \"state\": \"CREATE_INTEGRATION_FIX_PLAN\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"command_file\": \"$COMMAND_FILE\"}]" -i orchestrator-state.json
 
 # Update current state
-yq eval ".current_state = \"WAITING_FOR_FIX_PLANS\"" -i orchestrator-state.json
-yq eval ".integration_feedback.wave${WAVE}.fix_plan_requested = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+jq ".current_state = \"WAITING_FOR_FIX_PLANS\"" -i orchestrator-state.json
+jq ".integration_feedback.wave${WAVE}.fix_plan_requested = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
 
 # Commit
 git add orchestrator-state.json "$COMMAND_FILE"

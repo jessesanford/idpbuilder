@@ -251,8 +251,8 @@ git clone --branch "phase1/wave1-integration" ... split-003  # Missing 001 & 002
 ### Pre-Clone Verification
 ```bash
 echo "🔍 Verifying incremental base branch..."
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 BASE=$(determine_effort_base_branch $PHASE $WAVE)
 
 echo "📌 Phase $PHASE, Wave $WAVE"

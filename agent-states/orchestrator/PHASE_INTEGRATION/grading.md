@@ -28,7 +28,7 @@ Total Score =
 ### Evidence Required
 ```bash
 # Check first action timestamp
-ENTRY_TIME=$(yq '.transition_time' orchestrator-state.json)
+ENTRY_TIME=$(jq '.transition_time' orchestrator-state.json)
 FIRST_ACTION=$(git log --format="%ai" -1 | head -1)
 DELAY=$(time_diff "$ENTRY_TIME" "$FIRST_ACTION")
 ```

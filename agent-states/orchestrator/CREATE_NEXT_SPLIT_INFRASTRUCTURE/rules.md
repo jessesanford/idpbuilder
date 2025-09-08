@@ -190,10 +190,10 @@ CREATE_NEXT_SPLIT_INFRASTRUCTURE = You ARE ACTIVELY creating the infrastructure 
 echo "🔧 CREATING NEXT SPLIT INFRASTRUCTURE NOW..."
 
 # Step 1: Identify which split to create (DO NOW!)
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
-EFFORT_NAME=$(yq '.split_tracking | keys | .[0]' orchestrator-state.json)  # Get effort with splits
-CURRENT_SPLIT=$(yq ".split_tracking.\"$EFFORT_NAME\".current_split // 0" orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
+EFFORT_NAME=$(jq '.split_tracking | keys | .[0]' orchestrator-state.json)  # Get effort with splits
+CURRENT_SPLIT=$(jq ".split_tracking.\"$EFFORT_NAME\".current_split // 0" orchestrator-state.json)
 NEXT_SPLIT=$((CURRENT_SPLIT + 1))
 
 echo "📊 Creating infrastructure for split-$(printf "%03d" $NEXT_SPLIT)"
@@ -234,6 +234,58 @@ echo "✅ Infrastructure ready for split-$(printf "%03d" $NEXT_SPLIT)"
 transition_to_state "SPAWN_AGENTS"
 ```
 
+## 🔴🔴🔴 CRITICAL: CORRECT DIRECTORY STRUCTURE 🔴🔴🔴
+
+### ✅ CORRECT Structure (Splits at SAME LEVEL as effort):
+```
+efforts/phase2/wave1/
+├── gitea-client/              # Original oversized effort  
+├── gitea-client-split-001/    # Split 1 - SIBLING directory
+├── gitea-client-split-002/    # Split 2 - SIBLING directory  
+└── gitea-client-split-003/    # Split 3 - SIBLING directory
+```
+
+### ❌ WRONG Structure (NEVER nest splits inside effort!):
+```
+efforts/phase2/wave1/
+└── gitea-client/                          # Original effort
+    └── efforts/phase2/wave1/              # ❌ DUPLICATED PATH!
+        └── gitea-client/                  # ❌ NESTED INSIDE!
+            └── gitea-client-split-001/    # ❌ WRONG LOCATION!
+```
+
+### ❌ CATASTROPHIC BUG THAT HAPPENED:
+```bash
+# The orchestrator did THIS (WRONG!):
+cd efforts/phase2/wave1/gitea-client
+mkdir -p efforts/phase2/wave1/gitea-client-split-001  # CREATES NESTED STRUCTURE!
+
+# Result: efforts/phase2/wave1/gitea-client/efforts/phase2/wave1/gitea-client-split-001
+# This is COMPLETELY WRONG! Double-nested path structure!
+```
+
+### ✅ CORRECT APPROACH:
+```bash
+# ALWAYS work from SF root, use absolute paths
+cd $CLAUDE_PROJECT_DIR
+mkdir -p efforts/phase2/wave1/gitea-client-split-001  # Creates at CORRECT level
+
+# Result: efforts/phase2/wave1/gitea-client-split-001 (sibling to gitea-client)
+```
+
+### 🔴 MANDATORY PRE-CREATION VALIDATION:
+```bash
+# BEFORE creating any split directory, VALIDATE you're at SF root:
+validate_at_sf_root() {
+    if [ ! -f "orchestrator-state.json" ] || [ ! -d "rule-library" ]; then
+        echo "🔴 FATAL: Not at SF root! Current: $(pwd)"
+        echo "Must be at: $CLAUDE_PROJECT_DIR"
+        cd "$CLAUDE_PROJECT_DIR"
+    fi
+    echo "✅ Confirmed at SF root: $(pwd)"
+}
+```
+
 ## Core Implementation Function
 
 ```bash
@@ -244,24 +296,60 @@ create_single_split_infrastructure() {
     
     SPLIT_NAME=$(printf "%03d" $SPLIT_NUM)
     
-    # 🔴🔴🔴 CRITICAL: USE ABSOLUTE PATHS TO AVOID DIRECTORY CONFUSION 🔴🔴🔴
-    # Get absolute path for Software Factory directory
-    SF_ROOT="$(cd "$CLAUDE_PROJECT_DIR" && pwd)"
+    # 🔴🔴🔴 CRITICAL: ALWAYS START FROM SF ROOT! 🔴🔴🔴
+    echo "🔴 CRITICAL: Ensuring we start from SF root to avoid nesting!"
+    cd "$CLAUDE_PROJECT_DIR"
     
-    # Build absolute path for split directory
-    SPLIT_DIR="${SF_ROOT}/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}-SPLIT-${SPLIT_NAME}"
+    # Build path for split directory (SIBLING to effort, not child!)
+    SPLIT_DIR="efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}-split-${SPLIT_NAME}"
+    SPLIT_DIR_ABS="${CLAUDE_PROJECT_DIR}/${SPLIT_DIR}"
+    
+    # 🔴🔴🔴 VALIDATION: Prevent nested directory bug! 🔴🔴🔴
+    if [[ "$SPLIT_DIR_ABS" == *"/${EFFORT_NAME}/"*"/${EFFORT_NAME}"* ]]; then
+        echo "🔴🔴🔴 FATAL: Detected nested directory structure!"
+        echo "Path would be: $SPLIT_DIR_ABS"
+        echo "This creates splits INSIDE the effort directory!"
+        echo "Splits must be SIBLINGS, not children!"
+        exit 1
+    fi
+    
+    # Verify split will be at correct level
+    PARENT_DIR="efforts/phase${PHASE}/wave${WAVE}"
+    echo "✅ Creating split as sibling in: $PARENT_DIR"
+    echo "   Original effort: ${PARENT_DIR}/${EFFORT_NAME}/"
+    echo "   New split:       ${PARENT_DIR}/${EFFORT_NAME}-split-${SPLIT_NAME}/"
     
     echo "═══════════════════════════════════════════════════════════════"
     echo "🔧 Creating Split-${SPLIT_NAME} Infrastructure"
-    echo "Directory: $SPLIT_DIR"
+    echo "Directory: $SPLIT_DIR_ABS"
     echo "Base Branch: $BASE_BRANCH"
     echo "═══════════════════════════════════════════════════════════════"
     
-    # Create directory
-    mkdir -p "$SPLIT_DIR"
+    # Create directory with validation
+    echo "📁 Creating directory at correct level..."
+    mkdir -p "$SPLIT_DIR_ABS"
     
-    # Clone with correct base
+    # 🔴 POST-CREATION VALIDATION: Verify no nesting occurred
+    if [[ "$(realpath "$SPLIT_DIR_ABS")" == *"/efforts/"*/efforts/* ]]; then
+        echo "🔴🔴🔴 FATAL: Created nested effort structure!"
+        echo "Actual path: $(realpath "$SPLIT_DIR_ABS")"
+        echo "This is the double-nesting bug!"
+        rm -rf "$SPLIT_DIR_ABS"
+        exit 1
+    fi
+    
+    # Clone with correct base (use absolute path!)
     echo "📦 Cloning from base branch: $BASE_BRANCH"
+    echo "   Into directory: $SPLIT_DIR_ABS"
+    
+    # Load target repo config if not already loaded
+    if [ -z "$TARGET_REPO_URL" ]; then
+        TARGET_REPO_URL=$(yq '.target_repository.url' "$CLAUDE_PROJECT_DIR/target-repo-config.yaml")
+        if [ -z "$TARGET_REPO_URL" ] || [ "$TARGET_REPO_URL" = "null" ]; then
+            echo "🔴 ERROR: No target repository URL in config!"
+            exit 191
+        fi
+    fi
     
     # 🔴 R309 CRITICAL CHECK: Verify target is NOT SF repo!
     if [[ "$TARGET_REPO_URL" == *"software-factory"* ]]; then
@@ -271,57 +359,69 @@ create_single_split_infrastructure() {
         exit 309
     fi
     
-    git clone --branch "$BASE_BRANCH" --sparse "$TARGET_REPO_URL" "$SPLIT_DIR"
+    git clone --branch "$BASE_BRANCH" --sparse "$TARGET_REPO_URL" "$SPLIT_DIR_ABS"
     
     # 🔴🔴🔴 CRITICAL: USE ABSOLUTE PATHS OR GIT -C TO AVOID CD CONFUSION 🔴🔴🔴
     # Instead of cd, use git -C for git operations
     
     # 🔴 R309 POST-CLONE VALIDATION: Ensure we cloned the right thing!
-    if [ -f "$SPLIT_DIR/.claude/CLAUDE.md" ] || [ -f "$SPLIT_DIR/rule-library/RULE-REGISTRY.md" ]; then
+    if [ -f "$SPLIT_DIR_ABS/.claude/CLAUDE.md" ] || [ -f "$SPLIT_DIR_ABS/rule-library/RULE-REGISTRY.md" ]; then
         echo "🔴🔴🔴 R309 VIOLATION: Cloned SF repo instead of target!"
         echo "FATAL ERROR: This is the wrong repository!"
+        rm -rf "$SPLIT_DIR_ABS"
         exit 309
     fi
     echo "✅ R309 VALIDATED: This is TARGET repo (not SF)"
     
+    # 🔴 FINAL DIRECTORY STRUCTURE VALIDATION
+    echo "🔍 Validating final directory structure..."
+    EFFORT_DIR="efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+    if [ -d "${EFFORT_DIR}/${SPLIT_DIR}" ]; then
+        echo "🔴🔴🔴 FATAL: Split is nested inside effort directory!"
+        echo "Found at: ${EFFORT_DIR}/${SPLIT_DIR}"
+        echo "Should be at: ${SPLIT_DIR}"
+        rm -rf "$SPLIT_DIR_ABS"
+        exit 1
+    fi
+    
     # Set up sparse checkout using git -C
-    git -C "$SPLIT_DIR" sparse-checkout init --cone
-    git -C "$SPLIT_DIR" sparse-checkout set pkg/
+    git -C "$SPLIT_DIR_ABS" sparse-checkout init --cone
+    git -C "$SPLIT_DIR_ABS" sparse-checkout set pkg/
     
     # Create split branch with proper naming
     SPLIT_BRANCH=$(get_split_branch_name "$EFFORT_NAME" "$SPLIT_NAME")
-    git -C "$SPLIT_DIR" checkout -b "$SPLIT_BRANCH"
+    git -C "$SPLIT_DIR_ABS" checkout -b "$SPLIT_BRANCH"
     
     # Push to remote
-    git -C "$SPLIT_DIR" push -u origin "$SPLIT_BRANCH"
+    git -C "$SPLIT_DIR_ABS" push -u origin "$SPLIT_BRANCH"
     
     # Verify remote tracking
-    if git -C "$SPLIT_DIR" branch -vv | grep -q "$SPLIT_BRANCH.*origin/$SPLIT_BRANCH"; then
+    if git -C "$SPLIT_DIR_ABS" branch -vv | grep -q "$SPLIT_BRANCH.*origin/$SPLIT_BRANCH"; then
         echo "✅ Remote tracking configured for $SPLIT_BRANCH"
     else
         echo "❌ FATAL: Remote tracking failed for $SPLIT_BRANCH"
         exit 1
     fi
     
-    # Copy split plan from too-large branch
-    TOO_LARGE_DIR="${SF_ROOT}/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+    # Copy split plan from too-large branch (use absolute paths!)
+    TOO_LARGE_DIR="${CLAUDE_PROJECT_DIR}/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
     
     # Look for timestamped split plan (per R301)
     SPLIT_PLAN=$(ls -t "$TOO_LARGE_DIR"/SPLIT-PLAN-*-split${SPLIT_NAME}-*.md 2>/dev/null | head -1)
     
     if [ -n "$SPLIT_PLAN" ]; then
-        cp "$SPLIT_PLAN" "$SPLIT_DIR/"
+        cp "$SPLIT_PLAN" "$SPLIT_DIR_ABS/"
         SPLIT_PLAN_FILENAME=$(basename "$SPLIT_PLAN")
         echo "✅ Split plan copied: $SPLIT_PLAN_FILENAME"
         
         # 🔴🔴🔴 CRITICAL: RECORD EXACT SPLIT PLAN PATH IN STATE FILE 🔴🔴🔴
-        SPLIT_PLAN_FULL_PATH="${SPLIT_DIR}/${SPLIT_PLAN_FILENAME}"
+        SPLIT_PLAN_FULL_PATH="${SPLIT_DIR_ABS}/${SPLIT_PLAN_FILENAME}"
     else
         # Fallback: check legacy numbered format
         if [ -f "$TOO_LARGE_DIR/SPLIT-PLAN-${SPLIT_NAME}.md" ]; then
-            cp "$TOO_LARGE_DIR/SPLIT-PLAN-${SPLIT_NAME}.md" "$SPLIT_DIR/"
+            cp "$TOO_LARGE_DIR/SPLIT-PLAN-${SPLIT_NAME}.md" "$SPLIT_DIR_ABS/"
             SPLIT_PLAN_FILENAME="SPLIT-PLAN-${SPLIT_NAME}.md"
-            SPLIT_PLAN_FULL_PATH="${SPLIT_DIR}/${SPLIT_PLAN_FILENAME}"
+            SPLIT_PLAN_FULL_PATH="${SPLIT_DIR_ABS}/${SPLIT_PLAN_FILENAME}"
             echo "⚠️ WARNING: Using legacy split plan format (should be timestamped per R301)"
         else
             echo "❌ ERROR: No split plan found for split ${SPLIT_NAME}!"
@@ -335,38 +435,49 @@ create_single_split_infrastructure() {
     cat >> "$SPLIT_PLAN_FULL_PATH" << EOF
 
 ## 🚨 SPLIT INFRASTRUCTURE METADATA (Added by Orchestrator)
-**WORKING_DIRECTORY**: $SPLIT_DIR
+**WORKING_DIRECTORY**: $SPLIT_DIR_ABS
 **BRANCH**: $SPLIT_BRANCH
 **REMOTE**: origin/$SPLIT_BRANCH
 **BASE_BRANCH**: $BASE_BRANCH
 **SPLIT_NUMBER**: $SPLIT_NAME
 **CREATED_AT**: $(date '+%Y-%m-%d %H:%M:%S')
 
+### 🔴🔴🔴 CRITICAL: DIRECTORY VALIDATION 🔴🔴🔴
+**VALIDATE BEFORE WORKING:**
+- Split is at: $SPLIT_DIR_ABS
+- Original effort at: ${CLAUDE_PROJECT_DIR}/efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}/
+- These MUST be siblings, NOT parent-child!
+
 ### SW Engineer Instructions
 1. READ this metadata FIRST
-2. cd to WORKING_DIRECTORY above (use absolute path!)
-3. Verify branch matches BRANCH above
-4. ONLY THEN proceed with implementation
+2. VALIDATE no nested structure: pwd should NOT contain duplicate path segments
+3. cd to WORKING_DIRECTORY above (use absolute path!)
+4. Verify branch matches BRANCH above
+5. ONLY THEN proceed with implementation
 
 ### Directory Navigation Rules
-- ALWAYS use absolute paths: cd "$SPLIT_DIR"
+- ALWAYS use absolute paths: cd "$SPLIT_DIR_ABS"
 - NEVER use relative paths without verifying pwd first
-- When running git commands, prefer: git -C "$SPLIT_DIR" command
+- When running git commands, prefer: git -C "$SPLIT_DIR_ABS" command
 EOF
     
     # Commit initial setup using git -C to avoid directory issues
-    git -C "$SPLIT_DIR" add -A
-    git -C "$SPLIT_DIR" commit -m "chore: initialize split-${SPLIT_NAME} from $BASE_BRANCH"
-    git -C "$SPLIT_DIR" push
+    git -C "$SPLIT_DIR_ABS" add -A
+    git -C "$SPLIT_DIR_ABS" commit -m "chore: initialize split-${SPLIT_NAME} from $BASE_BRANCH"
+    git -C "$SPLIT_DIR_ABS" push
     
     # 🔴🔴🔴 R312: LOCK GIT CONFIG FOR SPLIT ISOLATION 🔴🔴🔴
     echo "🔒 R312: Applying DOUBLE PROTECTION to split git config..."
     
-    # Verify .git/config exists
-    if [ ! -f .git/config ]; then
-        echo "❌ FATAL: No .git/config found in $SPLIT_DIR"
+    # Verify .git/config exists (use absolute path)
+    if [ ! -f "$SPLIT_DIR_ABS/.git/config" ]; then
+        echo "❌ FATAL: No .git/config found in $SPLIT_DIR_ABS"
         exit 312
     fi
+    
+    # Save current directory and change to split directory for config locking
+    ORIG_DIR="$(pwd)"
+    cd "$SPLIT_DIR_ABS"
     
     # Store current permissions and ownership for audit
     BEFORE_PERMS=$(stat -c %a .git/config 2>/dev/null || stat -f %A .git/config)
@@ -429,14 +540,23 @@ EOF
     echo "   ❌ Cannot merge other changes"
     echo "   ✅ Can only work on assigned split scope"
     
+    # Return to original directory
+    cd "$ORIG_DIR"
+    
     # 🔴🔴🔴 EXPORT PATHS FOR STATE TRACKING 🔴🔴🔴
     export SPLIT_PLAN_FULL_PATH="$SPLIT_PLAN_FULL_PATH"
-    export SPLIT_DIR="$SPLIT_DIR"
+    export SPLIT_DIR="$SPLIT_DIR_ABS"
     
     echo "✅ Split $SPLIT_NAME infrastructure complete with R312 protection"
     echo "📁 Exported paths for state tracking:"
     echo "   - SPLIT_PLAN_FULL_PATH=$SPLIT_PLAN_FULL_PATH"
-    echo "   - SPLIT_DIR=$SPLIT_DIR"
+    echo "   - SPLIT_DIR=$SPLIT_DIR_ABS"
+    
+    # 🔴 FINAL VALIDATION: Show correct structure was created
+    echo "📊 Verifying correct directory structure:"
+    echo "efforts/phase${PHASE}/wave${WAVE}/"
+    ls -la "${CLAUDE_PROJECT_DIR}/efforts/phase${PHASE}/wave${WAVE}/" | grep -E "${EFFORT_NAME}|split"
+    echo "✅ Splits are SIBLINGS, not nested!"
 }
 ```
 
@@ -540,21 +660,21 @@ update_split_tracking() {
     local INFRASTRUCTURE_DIR="$6"  # 🔴🔴🔴 NEW: Track exact infrastructure directory!
     
     # Update current split being worked
-    yq -i ".split_tracking.\"$EFFORT\".current_split = $SPLIT_NUM" orchestrator-state.json
+    jq ".split_tracking.\"$EFFORT\".current_split = $SPLIT_NUM" orchestrator-state.json
     
     # Add split to tracking with ALL metadata including paths
     local SPLIT_BRANCH=$(get_split_branch_name "$EFFORT" "$(printf "%03d" $SPLIT_NUM)")
     local IDX=$((SPLIT_NUM - 1))
     
-    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].number = $SPLIT_NUM" orchestrator-state.json
-    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].branch = \"$SPLIT_BRANCH\"" orchestrator-state.json
-    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].base_branch = \"$BASE_BRANCH\"" orchestrator-state.json
-    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].status = \"$STATUS\"" orchestrator-state.json
-    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].created_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+    jq ".split_tracking.\"$EFFORT\".splits[$IDX].number = $SPLIT_NUM" orchestrator-state.json
+    jq ".split_tracking.\"$EFFORT\".splits[$IDX].branch = \"$SPLIT_BRANCH\"" orchestrator-state.json
+    jq ".split_tracking.\"$EFFORT\".splits[$IDX].base_branch = \"$BASE_BRANCH\"" orchestrator-state.json
+    jq ".split_tracking.\"$EFFORT\".splits[$IDX].status = \"$STATUS\"" orchestrator-state.json
+    jq ".split_tracking.\"$EFFORT\".splits[$IDX].created_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
     
     # 🔴🔴🔴 CRITICAL NEW FIELDS: Store paths for easy access! 🔴🔴🔴
-    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].split_plan_path = \"$SPLIT_PLAN_PATH\"" orchestrator-state.json
-    yq -i ".split_tracking.\"$EFFORT\".splits[$IDX].infrastructure_dir = \"$INFRASTRUCTURE_DIR\"" orchestrator-state.json
+    jq ".split_tracking.\"$EFFORT\".splits[$IDX].split_plan_path = \"$SPLIT_PLAN_PATH\"" orchestrator-state.json
+    jq ".split_tracking.\"$EFFORT\".splits[$IDX].infrastructure_dir = \"$INFRASTRUCTURE_DIR\"" orchestrator-state.json
     
     # Commit state update
     git add orchestrator-state.json

@@ -23,7 +23,7 @@ A wave is **ONLY** considered complete when:
 ```bash
 # 1. Verify all efforts completed
 check_all_efforts_complete() {
-    local wave_efforts=$(yq '.efforts_in_progress[] | select(.wave == '$CURRENT_WAVE')' orchestrator-state.json)
+    local wave_efforts=$(jq '.efforts_in_progress[] | select(.wave == '$CURRENT_WAVE')' orchestrator-state.json)
     
     for effort in $wave_efforts; do
         local status=$(echo "$effort" | yq '.review_status')
@@ -45,7 +45,7 @@ create_wave_integration_branch() {
     git checkout -b "$branch_name" main
     
     # Merge all effort branches
-    for effort_branch in $(yq '.efforts_in_progress[].branch' orchestrator-state.json); do
+    for effort_branch in $(jq '.efforts_in_progress[].branch' orchestrator-state.json); do
         git merge --no-ff "$effort_branch" -m "integrate: $effort_branch into wave $CURRENT_WAVE"
     done
     
@@ -118,8 +118,8 @@ update_wave_completion_state() {
     local timestamp=$(date -Iseconds)
     
     # Move efforts from in_progress to completed
-    yq -i ".efforts_completed += .efforts_in_progress" orchestrator-state.json
-    yq -i ".efforts_in_progress = []" orchestrator-state.json
+    jq ".efforts_completed += .efforts_in_progress" orchestrator-state.json
+    jq ".efforts_in_progress = []" orchestrator-state.json
     
     # Update wave completion metadata
     yq -i ".waves_completed.phase${CURRENT_PHASE}.wave${CURRENT_WAVE} = {

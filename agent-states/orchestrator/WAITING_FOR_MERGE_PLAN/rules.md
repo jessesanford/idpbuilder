@@ -53,8 +53,8 @@ Actively monitor Code Reviewer creating wave merge plan. Check for completion an
 2. **Active Monitoring Loop**
    ```bash
    # Get integration workspace location
-   PHASE=$(yq '.current_phase' orchestrator-state.json)
-   WAVE=$(yq '.current_wave' orchestrator-state.json)
+   PHASE=$(jq '.current_phase' orchestrator-state.json)
+   WAVE=$(jq '.current_wave' orchestrator-state.json)
    INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
    
    # Check for merge plan existence in the integration workspace
@@ -133,10 +133,10 @@ Per R322, you MUST update `current_state` to the next state BEFORE stopping:
 ```bash
 # When merge plan is validated and ready to transition:
 echo "📝 Updating state file for transition..."
-yq -i '.current_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.json
-yq -i '.previous_state = "WAITING_FOR_MERGE_PLAN"' orchestrator-state.json
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
-yq -i '.wave_integration.merge_plan = "integration-workspace/WAVE-MERGE-PLAN.md"' orchestrator-state.json
+jq '.current_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.previous_state = "WAITING_FOR_MERGE_PLAN"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.wave_integration.merge_plan = "integration-workspace/WAVE-MERGE-PLAN.md"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 git add orchestrator-state.json
 git commit -m "state: transition from WAITING_FOR_MERGE_PLAN to SPAWN_INTEGRATION_AGENT"
 git push

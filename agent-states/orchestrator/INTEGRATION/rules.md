@@ -373,11 +373,11 @@ SF_INSTANCE_DIR=$(pwd)  # Save SF instance location
 
 # 0. Source branch naming helpers and get project prefix
 source "$SF_INSTANCE_DIR/utilities/branch-naming-helpers.sh"
-PROJECT_PREFIX=$(yq '.branch_naming.project_prefix' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+PROJECT_PREFIX=$(jq '.branch_naming.project_prefix' "$SF_INSTANCE_DIR/target-repo-config.yaml")
 
 # THINK about base branch for integration
 echo "🧠 THINKING: Integration needs clean base from main branch"
-BASE_BRANCH=$(yq '.target_repository.base_branch' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+BASE_BRANCH=$(jq '.target_repository.base_branch' "$SF_INSTANCE_DIR/target-repo-config.yaml")
 if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
     BASE_BRANCH="main"  # Default to main
 fi
@@ -391,7 +391,7 @@ mkdir -p "$(dirname "$INTEGRATION_DIR")"
 
 # 2. SINGLE-BRANCH FULL clone of TARGET repository (R271 Supreme Law)
 echo "📦 Creating FULL integration clone from branch: $BASE_BRANCH"
-TARGET_REPO_URL=$(yq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+TARGET_REPO_URL=$(jq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
 
 git clone \
     --single-branch \
@@ -454,8 +454,8 @@ echo "📋 Waiting for Code Reviewer to create MERGE PLAN..."
 
 ```bash
 # Setup integration infrastructure first
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
 
 # Ensure we're in integration directory

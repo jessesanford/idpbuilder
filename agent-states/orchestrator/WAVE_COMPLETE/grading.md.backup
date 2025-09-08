@@ -368,7 +368,7 @@ class WaveCompleteGrader:
 ## Wave Completion Performance Tracking
 
 ```yaml
-# Update orchestrator-state.json
+# Update orchestrator-state.yaml
 grading:
   WAVE_COMPLETE:
     latest:

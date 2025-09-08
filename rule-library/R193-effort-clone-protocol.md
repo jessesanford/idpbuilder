@@ -59,7 +59,7 @@ create_effort_clone() {
     
     # Step 5: Configure sparse checkout if patterns specified
     cd "$effort_path"
-    local sparse_patterns=$(yq -r '.workspace.sparse_patterns[]' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null)
+    local sparse_patterns=$(jq -r '.workspace.sparse_patterns[]' "$SF_ROOT/target-repo-config.yaml" 2>/dev/null)
     if [ -n "$sparse_patterns" ]; then 
         echo "🔧 Configuring sparse checkout"; 
         git sparse-checkout init --cone; 

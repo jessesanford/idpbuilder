@@ -394,6 +394,41 @@ echo "⚠️ NEVER create code in the Software Factory repo itself!"
 5. SW Engineers implement
 
 
+## 🔴🔴🔴 CRITICAL: CORRECT DIRECTORY STRUCTURE 🔴🔴🔴
+
+### ✅ CORRECT Structure (All efforts at SAME LEVEL):
+```
+/home/vscode/software-factory-template/     # SF Root (Planning/Orchestration)
+└── efforts/                                # All implementation work here
+    └── phase2/
+        └── wave1/
+            ├── gitea-client/                # Effort 1 (if becomes oversized)
+            ├── gitea-client-split-001/     # Split 1 - SIBLING to original
+            ├── gitea-client-split-002/     # Split 2 - SIBLING to original
+            ├── gitea-client-split-003/     # Split 3 - SIBLING to original
+            ├── user-management/            # Effort 2 (normal size)
+            └── api-gateway/                # Effort 3 (normal size)
+```
+
+### ❌ WRONG Structure (NEVER nest efforts inside efforts!):
+```
+/home/vscode/software-factory-template/
+└── efforts/
+    └── phase2/
+        └── wave1/
+            └── gitea-client/                          # Original effort
+                └── efforts/                           # ❌ DUPLICATED PATH!
+                    └── phase2/                        # ❌ NESTED STRUCTURE!
+                        └── wave1/                     # ❌ CATASTROPHIC BUG!
+                            └── gitea-client/          # ❌ WRONG LOCATION!
+```
+
+### 🚨 HOW TO PREVENT THE BUG:
+1. **ALWAYS cd to SF root before creating directories**
+2. **ALWAYS use absolute paths from SF root**
+3. **NEVER use relative paths when already inside an effort**
+4. **VALIDATE after creation - check for nested 'efforts' directories**
+
 ## Infrastructure Setup Protocol (R271 SUPREME LAW - Full Checkouts)
 
 ```bash
@@ -483,9 +518,20 @@ prepare_effort_for_agent() {
     
     echo "✅ R308 VALIDATED: Using incremental base: $BASE_BRANCH"
     
-    # 2. Create effort directory under efforts/ (relative to SF instance root)
+    # 2. Create effort directory under efforts/ (ABSOLUTE PATH FROM SF ROOT)
+    # 🔴🔴🔴 CRITICAL: ALWAYS USE ABSOLUTE PATHS TO PREVENT NESTING! 🔴🔴🔴
     EFFORT_DIR="${CLAUDE_PROJECT_DIR}/efforts/phase${PHASE}/wave${WAVE}/${EFFORT}"
-    mkdir -p "$(dirname "$EFFORT_DIR")"
+    EFFORT_DIR_ABS="$(realpath -m "$EFFORT_DIR")"
+    
+    # VALIDATION: Prevent nested directory structure
+    if [[ "$EFFORT_DIR_ABS" == *"/efforts/"*/efforts/* ]]; then
+        echo "🔴🔴🔴 FATAL: Would create nested effort structure!"
+        echo "Path would be: $EFFORT_DIR_ABS"
+        echo "This creates efforts INSIDE efforts directory!"
+        exit 1
+    fi
+    
+    mkdir -p "$(dirname "$EFFORT_DIR_ABS")"
     
     # 3. SINGLE-BRANCH FULL CLONE (R271 Supreme Law)
     echo "📦 Creating FULL clone from branch: $BASE_BRANCH"
@@ -510,18 +556,20 @@ prepare_effort_for_agent() {
         exit 309
     fi
     
+    # Clone using ABSOLUTE path to prevent nesting
     git clone \
         --single-branch \
         --branch "$BASE_BRANCH" \
         "$TARGET_REPO_URL" \
-        "$EFFORT_DIR"
+        "$EFFORT_DIR_ABS"
     
     if [ $? -ne 0 ]; then
         echo "❌ Clone failed! Check if base branch '$BASE_BRANCH' exists"
         exit 1
     fi
     
-    cd "$EFFORT_DIR"
+    # Change to effort directory using absolute path
+    cd "$EFFORT_DIR_ABS"
     
     # 🔴 R309 POST-CLONE VALIDATION: Ensure we cloned the right thing!
     if [ -f ".claude/CLAUDE.md" ] || [ -f "rule-library/RULE-REGISTRY.md" ]; then
@@ -654,7 +702,25 @@ EOF
     echo "   ✅ git add, commit, push"
     echo "   ✅ git status, diff, log"
     
+    # 🔴 POST-CREATION VALIDATION: Verify directory structure is correct
+    echo "🔍 Validating final directory structure..."
+    PARENT_DIR="${CLAUDE_PROJECT_DIR}/efforts/phase${PHASE}/wave${WAVE}"
+    if [ ! -d "$EFFORT_DIR_ABS" ]; then
+        echo "🔴 FATAL: Effort directory not created at expected location!"
+        echo "Expected: $EFFORT_DIR_ABS"
+        exit 1
+    fi
+    
+    # Check for nested structure bug
+    if [ -d "${EFFORT_DIR_ABS}/efforts" ]; then
+        echo "🔴🔴🔴 FATAL: Nested 'efforts' directory detected!"
+        echo "Found: ${EFFORT_DIR_ABS}/efforts"
+        echo "This is the nesting bug - infrastructure is wrong!"
+        exit 1
+    fi
+    
     echo "✅ Infrastructure ready for $EFFORT with FULL code from $BASE_BRANCH"
+    echo "✅ Directory structure validated - no nesting detected"
     echo "🔒 Config locked per R312 - effort isolation guaranteed"
     cd "$SF_ROOT"  # Return to root
 }
@@ -692,8 +758,8 @@ echo "Phase 3 Wave 1 uses: $BASE_BRANCH (from previous PHASE)"
 
 ```bash
 # Read current phase/wave from state
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 
 # 🔴 CRITICAL: Check if this is Phase 2!
 if [[ $PHASE -eq 2 && $WAVE -eq 1 ]]; then

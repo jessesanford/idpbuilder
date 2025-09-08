@@ -70,11 +70,11 @@ echo "📊 Decision: $DECISION"
 ### If PHASE_COMPLETE (Assessment Passed):
 ```bash
 # Update state file with report location
-yq -i ".phase_assessment.status = \"COMPLETE\"" orchestrator-state.json
-yq -i ".phase_assessment.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
-yq -i ".phase_assessment.decision = \"PHASE_COMPLETE\"" orchestrator-state.json
-yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.json
-yq -i ".phase_assessment.feedback = \"$FEEDBACK\"" orchestrator-state.json
+yq -i ".phase_assessment.status = \"COMPLETE\"" orchestrator-state.yaml
+yq -i ".phase_assessment.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.yaml
+yq -i ".phase_assessment.decision = \"PHASE_COMPLETE\"" orchestrator-state.yaml
+yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.yaml
+yq -i ".phase_assessment.feedback = \"$FEEDBACK\"" orchestrator-state.yaml
 
 # Phase approved - can now complete
 transition_to "PHASE_COMPLETE"  # Handle phase completion tasks
@@ -83,9 +83,9 @@ transition_to "PHASE_COMPLETE"  # Handle phase completion tasks
 ### If NEEDS_WORK (Fixes Required):
 ```bash
 # Update state file with decision and report location
-yq -i ".phase_assessment.status = \"NEEDS_WORK\"" orchestrator-state.json
-yq -i ".phase_assessment.decision = \"NEEDS_WORK\"" orchestrator-state.json
-yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.json
+yq -i ".phase_assessment.status = \"NEEDS_WORK\"" orchestrator-state.yaml
+yq -i ".phase_assessment.decision = \"NEEDS_WORK\"" orchestrator-state.yaml
+yq -i ".phase_assessment.report_file = \"$REPORT_FILE\"" orchestrator-state.yaml
 
 # CRITICAL: Extract specific issues from the report (R257)
 echo "📋 Extracting required fixes from assessment report..."
@@ -93,10 +93,10 @@ PRIORITY_1_FIXES=$(sed -n '/### Priority 1/,/### Priority 2/p' "$REPORT_FILE" | 
 ISSUES_IDENTIFIED=$(sed -n '/## Issues Identified/,/## Required Fixes/p' "$REPORT_FILE")
 
 # Store issues in state file for ERROR_RECOVERY to process
-yq -i ".phase_assessment.priority_1_fixes = \"$PRIORITY_1_FIXES\"" orchestrator-state.json
-yq -i ".phase_assessment.issues_identified = \"$ISSUES_IDENTIFIED\"" orchestrator-state.json
-yq -i ".error_recovery.source = \"PHASE_ASSESSMENT_NEEDS_WORK\"" orchestrator-state.json
-yq -i ".error_recovery.report_to_read = \"$REPORT_FILE\"" orchestrator-state.json
+yq -i ".phase_assessment.priority_1_fixes = \"$PRIORITY_1_FIXES\"" orchestrator-state.yaml
+yq -i ".phase_assessment.issues_identified = \"$ISSUES_IDENTIFIED\"" orchestrator-state.yaml
+yq -i ".error_recovery.source = \"PHASE_ASSESSMENT_NEEDS_WORK\"" orchestrator-state.yaml
+yq -i ".error_recovery.report_to_read = \"$REPORT_FILE\"" orchestrator-state.yaml
 
 echo "❌ Phase assessment returned NEEDS_WORK - transitioning to ERROR_RECOVERY"
 echo "📄 ERROR_RECOVERY must read report: $REPORT_FILE"
@@ -108,8 +108,8 @@ transition_to "ERROR_RECOVERY"  # ERROR_RECOVERY will read report and coordinate
 ### If PHASE_FAILED (Cannot Complete):
 ```bash
 # Update state file
-yq -i ".phase_assessment.status = \"FAILED\"" orchestrator-state.json
-yq -i ".phase_assessment.failure_reason = \"$REASON\"" orchestrator-state.json
+yq -i ".phase_assessment.status = \"FAILED\"" orchestrator-state.yaml
+yq -i ".phase_assessment.failure_reason = \"$REASON\"" orchestrator-state.yaml
 
 # Phase cannot complete - major rework needed
 transition_to "HARD_STOP"  # Critical failure
@@ -129,11 +129,11 @@ From WAITING_FOR_PHASE_ASSESSMENT:
 
 ```bash
 # Check for timeout (e.g., 45 minutes for phase assessment)
-REQUESTED_AT=$(yq '.phase_assessment.requested_at' orchestrator-state.json)
+REQUESTED_AT=$(yq '.phase_assessment.requested_at' orchestrator-state.yaml)
 TIMEOUT_MINUTES=45
 
 if timeout_exceeded "$REQUESTED_AT" "$TIMEOUT_MINUTES"; then
-    yq -i ".phase_assessment.status = \"TIMEOUT\"" orchestrator-state.json
+    yq -i ".phase_assessment.status = \"TIMEOUT\"" orchestrator-state.yaml
     log_error "Phase assessment timeout after $TIMEOUT_MINUTES minutes"
     transition_to "ERROR_RECOVERY"
 fi

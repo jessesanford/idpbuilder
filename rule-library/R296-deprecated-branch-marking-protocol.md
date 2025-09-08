@@ -52,10 +52,10 @@ done
 
 # Check state file for SPLIT_DEPRECATED status
 for effort in "${EFFORTS[@]}"; do
-    STATUS=$(yq ".efforts_completed.\"$effort\".status" orchestrator-state.json)
+    STATUS=$(jq ".efforts_completed.\"$effort\".status" orchestrator-state.json)
     if [[ "$STATUS" == "SPLIT_DEPRECATED" ]]; then
         echo "❌ BLOCKED: $effort was split and deprecated"
-        SPLITS=$(yq ".efforts_completed.\"$effort\".replacement_splits[]" orchestrator-state.json)
+        SPLITS=$(jq ".efforts_completed.\"$effort\".replacement_splits[]" orchestrator-state.json)
         echo "Use these splits instead: $SPLITS"
         exit 1
     fi
@@ -131,7 +131,7 @@ Action Required: Update integration list to use replacement splits
 git branch -r | grep "deprecated-split"
 
 # Check state file for deprecated efforts
-yq '.efforts_completed | to_entries | .[] | select(.value.status == "SPLIT_DEPRECATED") | .key' orchestrator-state.json
+jq '.efforts_completed | to_entries | .[] | select(.value.status == "SPLIT_DEPRECATED") | .key' orchestrator-state.json
 ```
 
 ### Validate Integration List:

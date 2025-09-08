@@ -333,10 +333,11 @@ if [ $SPAWN_DURATION -gt 5 ]; then
 fi
 
 # Document spawns in state file
-yq -i '.build_fix_coordination.spawned_engineers += [
+cat <<EOF | jq '.build_fix_coordination.spawned_engineers += [
     {"id": "SWE-1", "effort": "effort-1", "spawned_at": "'$(date +%s)'"},
     {"id": "SWE-2", "effort": "effort-2", "spawned_at": "'$(date +%s)'"}
-]' orchestrator-state.json
+]' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+EOF' orchestrator-state.json
 
 # SEQUENTIAL GROUP - Will spawn after dependencies met
 echo "📝 SWE-3 will be spawned after SWE-1 completes"

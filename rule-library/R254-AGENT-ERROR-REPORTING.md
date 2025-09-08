@@ -166,7 +166,7 @@ echo "📍 ORCHESTRATOR: Received error report from $AGENT_TYPE"
 echo "   Error code: $ERROR_CODE"
 echo "   Taking corrective action..."
 # Update state file
-yq -i ".agent_errors += [{\"agent\": \"$AGENT_TYPE\", \"code\": $ERROR_CODE, \"time\": \"$(date -Iseconds)\"}]" orchestrator-state.json
+jq ".agent_errors += [{\"agent\": \"$AGENT_TYPE\", \"code\": $ERROR_CODE, \"time\": \"$(date -Iseconds)\"}]" orchestrator-state.json
 git add orchestrator-state.json && git commit -m "state: agent error $ERROR_CODE recorded [R288]" && git push
 ```
 

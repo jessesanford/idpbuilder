@@ -36,8 +36,8 @@ Before ANY integration attempt, verify:
 ### 2. State Validation
 ```bash
 # Verify all efforts completed
-for effort in $(yq '.efforts_in_progress[]' orchestrator-state.json); do
-    status=$(yq ".efforts_completed[] | select(.name == \"$effort\") | .status" orchestrator-state.json)
+for effort in $(jq '.efforts_in_progress[]' orchestrator-state.json); do
+    status=$(jq ".efforts_completed[] | select(.name == \"$effort\") | .status" orchestrator-state.json)
     if [ "$status" != "COMPLETED" ]; then
         echo "🚨 Cannot integrate - $effort not completed"
         exit 1
@@ -45,11 +45,11 @@ for effort in $(yq '.efforts_in_progress[]' orchestrator-state.json); do
 done
 
 # R296: Check for deprecated branches
-for effort in $(yq '.efforts_completed[].name' orchestrator-state.json); do
-    status=$(yq ".efforts_completed[] | select(.name == \"$effort\") | .status" orchestrator-state.json)
+for effort in $(jq '.efforts_completed[].name' orchestrator-state.json); do
+    status=$(jq ".efforts_completed[] | select(.name == \"$effort\") | .status" orchestrator-state.json)
     if [ "$status" == "SPLIT_DEPRECATED" ]; then
         echo "🚨 BLOCKED: Cannot integrate deprecated effort: $effort"
-        SPLITS=$(yq ".efforts_completed[] | select(.name == \"$effort\") | .replacement_splits[]" orchestrator-state.json)
+        SPLITS=$(jq ".efforts_completed[] | select(.name == \"$effort\") | .replacement_splits[]" orchestrator-state.json)
         echo "Use replacement splits instead:"
         echo "$SPLITS"
         exit 1
@@ -61,8 +61,8 @@ done
 
 ### Step 1: Setup Isolated Workspace (R250 + R104)
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 
 # Per R104: Read target repository configuration
 TARGET_CONFIG="$CLAUDE_PROJECT_DIR/target-repo-config.yaml"

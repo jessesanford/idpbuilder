@@ -59,9 +59,9 @@ deprecated_phase_integrations:
 When creating a wave integration branch (in WAVE_COMPLETE state):
 ```bash
 # MANDATORY: Deprecate existing wave integration for this wave
-EXISTING_WAVE=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE)" orchestrator-state.json)
+EXISTING_WAVE=$(jq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE)" orchestrator-state.json)
 if [ ! -z "$EXISTING_WAVE" ]; then
-    yq -i ".deprecated_wave_integrations += (.current_wave_integration | select(.phase == $PHASE and .wave == $WAVE))" orchestrator-state.json
+    jq ".deprecated_wave_integrations += (.current_wave_integration | select(.phase == $PHASE and .wave == $WAVE))" orchestrator-state.json
 fi
 
 # Set the NEW current wave integration
@@ -79,9 +79,9 @@ yq -i ".current_wave_integration = {
 When creating a phase integration branch (in PHASE_INTEGRATION state):
 ```bash
 # MANDATORY: Deprecate existing phase integration for this phase
-EXISTING_PHASE=$(yq ".current_phase_integration | select(.phase == $PHASE)" orchestrator-state.json)
+EXISTING_PHASE=$(jq ".current_phase_integration | select(.phase == $PHASE)" orchestrator-state.json)
 if [ ! -z "$EXISTING_PHASE" ]; then
-    yq -i ".deprecated_phase_integrations += (.current_phase_integration | select(.phase == $PHASE))" orchestrator-state.json
+    jq ".deprecated_phase_integrations += (.current_phase_integration | select(.phase == $PHASE))" orchestrator-state.json
 fi
 
 # Set the NEW current phase integration
@@ -104,8 +104,8 @@ validate_current_wave_integration() {
     local BRANCH_TO_USE=$3
     
     # Get the CURRENT wave integration branch
-    CURRENT=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).branch" orchestrator-state.json)
-    CURRENT_STATUS=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).status" orchestrator-state.json)
+    CURRENT=$(jq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).branch" orchestrator-state.json)
+    CURRENT_STATUS=$(jq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).status" orchestrator-state.json)
     
     # FATAL if not using current
     if [[ "$BRANCH_TO_USE" != "$CURRENT" ]]; then
@@ -133,8 +133,8 @@ validate_current_phase_integration() {
     local BRANCH_TO_USE=$2
     
     # Get the CURRENT phase integration branch
-    CURRENT=$(yq ".current_phase_integration | select(.phase == $PHASE).branch" orchestrator-state.json)
-    CURRENT_STATUS=$(yq ".current_phase_integration | select(.phase == $PHASE).status" orchestrator-state.json)
+    CURRENT=$(jq ".current_phase_integration | select(.phase == $PHASE).branch" orchestrator-state.json)
+    CURRENT_STATUS=$(jq ".current_phase_integration | select(.phase == $PHASE).status" orchestrator-state.json)
     
     # FATAL if not using current
     if [[ "$BRANCH_TO_USE" != "$CURRENT" ]]; then
@@ -160,7 +160,7 @@ validate_current_phase_integration() {
 #### For WAVE Reviews (SPAWN_ARCHITECT_WAVE_REVIEW):
 ```bash
 # MANDATORY: Get ONLY the current wave integration
-WAVE_BRANCH=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).branch" orchestrator-state.json)
+WAVE_BRANCH=$(jq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).branch" orchestrator-state.json)
 
 if [ -z "$WAVE_BRANCH" ]; then
     echo "❌ No current wave integration branch for phase $PHASE wave $WAVE!"
@@ -168,7 +168,7 @@ if [ -z "$WAVE_BRANCH" ]; then
 fi
 
 # Validate it's active
-STATUS=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).status" orchestrator-state.json)
+STATUS=$(jq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).status" orchestrator-state.json)
 if [ "$STATUS" != "active" ]; then
     echo "🔴🔴🔴 Current wave integration is not active!"
     exit 1
@@ -180,7 +180,7 @@ echo "✅ Using current wave integration: $WAVE_BRANCH"
 #### For PHASE Assessments (SPAWN_ARCHITECT_PHASE_ASSESSMENT):
 ```bash
 # MANDATORY: Get ONLY the current phase integration
-PHASE_BRANCH=$(yq ".current_phase_integration | select(.phase == $PHASE).branch" orchestrator-state.json)
+PHASE_BRANCH=$(jq ".current_phase_integration | select(.phase == $PHASE).branch" orchestrator-state.json)
 
 if [ -z "$PHASE_BRANCH" ]; then
     echo "❌ No current phase integration branch for phase $PHASE!"
@@ -188,7 +188,7 @@ if [ -z "$PHASE_BRANCH" ]; then
 fi
 
 # Validate it's active
-STATUS=$(yq ".current_phase_integration | select(.phase == $PHASE).status" orchestrator-state.json)
+STATUS=$(jq ".current_phase_integration | select(.phase == $PHASE).status" orchestrator-state.json)
 if [ "$STATUS" != "active" ]; then
     echo "🔴🔴🔴 Current phase integration is not active!"
     exit 1
@@ -202,11 +202,11 @@ echo "✅ Using current phase integration: $PHASE_BRANCH"
 ### For Wave Integration Branches:
 ```bash
 # Migration script for wave integrations
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 
 # Find existing wave integration branches
-WAVE_BRANCHES=$(yq ".integration_branches[] | select(.branch | test(\"phase$PHASE.*wave$WAVE.*integration\"))" orchestrator-state.json)
+WAVE_BRANCHES=$(jq ".integration_branches[] | select(.branch | test(\"phase$PHASE.*wave$WAVE.*integration\"))" orchestrator-state.json)
 
 if [ ! -z "$WAVE_BRANCHES" ]; then
     # Get the most recent wave integration
@@ -227,10 +227,10 @@ fi
 ### For Phase Integration Branches:
 ```bash
 # Migration script for phase integrations
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 
 # Find existing phase integration branches (NOT wave integrations)
-PHASE_BRANCHES=$(yq ".phase_integration_branches[] | select(.phase == $PHASE)" orchestrator-state.json)
+PHASE_BRANCHES=$(jq ".phase_integration_branches[] | select(.phase == $PHASE)" orchestrator-state.json)
 
 if [ ! -z "$PHASE_BRANCHES" ]; then
     # Get the most recent phase integration
@@ -250,7 +250,7 @@ if [ ! -z "$PHASE_BRANCHES" ]; then
            select(.branch != \"$LATEST_PHASE_BRANCH\"))" orchestrator-state.json
     
     # Remove old structure
-    yq -i 'del(.phase_integration_branches)' orchestrator-state.json
+    jq 'del(.phase_integration_branches)' orchestrator-state.json
 fi
 ```
 
@@ -372,34 +372,34 @@ current_phase_integration:
 
 ```bash
 # Check current WAVE integration
-yq '.current_wave_integration' orchestrator-state.json
+jq '.current_wave_integration' orchestrator-state.json
 
 # Check current PHASE integration
-yq '.current_phase_integration' orchestrator-state.json
+jq '.current_phase_integration' orchestrator-state.json
 
 # Verify only one active wave integration
-yq '.current_wave_integration | select(.status == "active")' orchestrator-state.json
+jq '.current_wave_integration | select(.status == "active")' orchestrator-state.json
 # Must have status: "active"
 
 # Verify only one active phase integration
-yq '.current_phase_integration | select(.status == "active")' orchestrator-state.json
+jq '.current_phase_integration | select(.status == "active")' orchestrator-state.json
 # Must have status: "active"
 
 # List deprecated wave integrations
-yq '.deprecated_wave_integrations[]' orchestrator-state.json
+jq '.deprecated_wave_integrations[]' orchestrator-state.json
 
 # List deprecated phase integrations
-yq '.deprecated_phase_integrations[]' orchestrator-state.json
+jq '.deprecated_phase_integrations[]' orchestrator-state.json
 
 # Validate before architect wave review
 PHASE=2
 WAVE=1
-WAVE_CURRENT=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).branch" orchestrator-state.json)
+WAVE_CURRENT=$(jq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE).branch" orchestrator-state.json)
 echo "Architect MUST review wave integration: $WAVE_CURRENT"
 
 # Validate before architect phase assessment
 PHASE=2
-PHASE_CURRENT=$(yq ".current_phase_integration | select(.phase == $PHASE).branch" orchestrator-state.json)
+PHASE_CURRENT=$(jq ".current_phase_integration | select(.phase == $PHASE).branch" orchestrator-state.json)
 echo "Architect MUST assess phase integration: $PHASE_CURRENT"
 ```
 

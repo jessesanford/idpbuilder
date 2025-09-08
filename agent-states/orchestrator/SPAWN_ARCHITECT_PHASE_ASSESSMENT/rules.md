@@ -244,9 +244,9 @@ The architect must review:
 
 ```bash
 # R301 MANDATORY: Get ONLY the current phase integration branch
-CURRENT_BRANCH=$(yq '.current_phase_integration | select(.phase == env(PHASE)).branch' orchestrator-state.json)
-CURRENT_STATUS=$(yq '.current_phase_integration | select(.phase == env(PHASE)).status' orchestrator-state.json)
-INTEGRATION_TYPE=$(yq '.current_phase_integration | select(.phase == env(PHASE)).type' orchestrator-state.json)
+CURRENT_BRANCH=$(jq '.current_phase_integration | select(.phase == env(PHASE)).branch' orchestrator-state.json)
+CURRENT_STATUS=$(jq '.current_phase_integration | select(.phase == env(PHASE)).status' orchestrator-state.json)
+INTEGRATION_TYPE=$(jq '.current_phase_integration | select(.phase == env(PHASE)).type' orchestrator-state.json)
 
 # Validate current integration is active (R301)
 if [ "$CURRENT_STATUS" != "active" ]; then
@@ -329,13 +329,13 @@ Task: subagent_type="architect-reviewer" \
 
 ```bash
 # Record phase assessment request
-yq -i ".phase_assessment.phase = $PHASE" orchestrator-state.json
-yq -i ".phase_assessment.requested_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
-yq -i ".phase_assessment.expected_report = \"phase-assessments/phase${PHASE}/PHASE-${PHASE}-ASSESSMENT-REPORT.md\"" orchestrator-state.json
-yq -i ".phase_assessment.type = \"COMPLETE_PHASE\"" orchestrator-state.json
-yq -i ".phase_assessment.phase_branch = \"$PHASE_BRANCH\"" orchestrator-state.json
-yq -i ".phase_assessment.wave_count = $WAVE_COUNT" orchestrator-state.json
-yq -i ".phase_assessment.status = \"PENDING\"" orchestrator-state.json
+jq '.phase_assessment.phase = $PHASE' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.phase_assessment.requested_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.phase_assessment.expected_report = \"phase-assessments/phase${PHASE}/PHASE-${PHASE}-ASSESSMENT-REPORT.md\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.phase_assessment.type = \"COMPLETE_PHASE\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.phase_assessment.phase_branch = \"$PHASE_BRANCH\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.phase_assessment.wave_count = $WAVE_COUNT' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.phase_assessment.status = \"PENDING\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
 # Immediate transition to waiting
 transition_to "WAITING_FOR_PHASE_ASSESSMENT"

@@ -172,8 +172,8 @@ In WAITING_FOR_FIX_PLANS, you monitor the Code Reviewer's progress in creating f
 
 ### 1. Check for Fix Plan Summary
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 FIX_PLAN_DIR="efforts/phase${PHASE}/wave${WAVE}/fix-plans"
 SUMMARY_FILE="${FIX_PLAN_DIR}/FIX_PLAN_SUMMARY.yaml"
 
@@ -183,7 +183,7 @@ if [ -f "$SUMMARY_FILE" ]; then
     echo "✅ Fix plan summary found!"
     
     # Parse the summary
-    TOTAL_EFFORTS=$(yq '.total_efforts' "$SUMMARY_FILE")
+    TOTAL_EFFORTS=$(jq '.total_efforts' "$SUMMARY_FILE")
     echo "Total efforts with fix plans: $TOTAL_EFFORTS"
     
     # Verify all fix plan files exist
@@ -196,7 +196,7 @@ if [ -f "$SUMMARY_FILE" ]; then
         else
             echo "✅ Found fix plan: $plan_file"
         fi
-    done < <(yq '.fix_plans_created[].plan_file' "$SUMMARY_FILE")
+    done < <(jq '.fix_plans_created[].plan_file' "$SUMMARY_FILE")
     
     if [ "$ALL_PLANS_EXIST" = true ]; then
         echo "✅ All fix plans created successfully"
@@ -216,7 +216,7 @@ else
         # Stay in WAITING_FOR_FIX_PLANS
     else
         # Check timeout
-        SPAWN_TIME=$(yq '.integration_feedback.wave'${WAVE}'.fix_plan_requested' orchestrator-state.json)
+        SPAWN_TIME=$(jq '.integration_feedback.wave'${WAVE}'.fix_plan_requested' orchestrator-state.json)
         CURRENT_TIME=$(date +%s)
         SPAWN_TIMESTAMP=$(date -d "$SPAWN_TIME" +%s 2>/dev/null || echo 0)
         ELAPSED=$((CURRENT_TIME - SPAWN_TIMESTAMP))
@@ -238,13 +238,13 @@ fi
 if [ -n "$UPDATE_STATE" ]; then
     # Record fix plans in state
     if [ "$UPDATE_STATE" = "DISTRIBUTE_FIX_PLANS" ]; then
-        yq eval ".integration_feedback.wave${WAVE}.fix_plans_completed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
-        yq eval ".integration_feedback.wave${WAVE}.total_fix_plans = $TOTAL_EFFORTS" -i orchestrator-state.json
+        jq ".integration_feedback.wave${WAVE}.fix_plans_completed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+        jq '.integration_feedback.wave${WAVE}.total_fix_plans = $TOTAL_EFFORTS' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
     fi
     
     # Update state
-    yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
-    yq eval ".state_transition_history += [{\"from\": \"WAITING_FOR_FIX_PLANS\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Fix plans ready for distribution\"}]" -i orchestrator-state.json
+    jq ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
+    jq ".state_transition_history += [{\"from\": \"WAITING_FOR_FIX_PLANS\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Fix plans ready for distribution\"}]" -i orchestrator-state.json
     
     # Commit
     git add orchestrator-state.json

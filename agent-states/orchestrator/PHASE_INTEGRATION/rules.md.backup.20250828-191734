@@ -53,7 +53,7 @@
 ### 🔴🔴🔴 R252 - Mandatory State File Updates (SUPREME LAW #10)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R252-mandatory-state-file-updates.md`
 **Criticality**: SUPREME LAW - Update on every transition
-**Summary**: Update orchestrator-state.json with integration details
+**Summary**: Update orchestrator-state.yaml with integration details
 
 ### 🚨🚨🚨 R253 - Mandatory State File Commit Push
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R253-mandatory-state-file-commit-push.md`
@@ -128,7 +128,7 @@ PHASE_FIXES_BRANCH="${BASE_BRANCH}-post-fixes-$(date +%Y%m%d-%H%M%S)"
 # Setup phase integration workspace and branch
 
 SF_INSTANCE_DIR=$(pwd)  # Save SF instance location
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 # Source branch naming helpers (R014 MANDATORY)
@@ -190,7 +190,7 @@ echo "✅ Phase integration infrastructure ready: $BRANCH_NAME"
 #!/bin/bash
 # Spawn Code Reviewer to create PHASE-MERGE-PLAN.md
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
 INTEGRATION_DIR="/efforts/phase${PHASE}/phase-integration-workspace"
 BRANCH_NAME=$(git branch --show-current)
 
@@ -223,7 +223,7 @@ echo "📋 Waiting for Code Reviewer to create PHASE-MERGE-PLAN.md..."
 #!/bin/bash
 # After Code Reviewer creates PHASE-MERGE-PLAN.md
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
 INTEGRATION_DIR="/efforts/phase${PHASE}/phase-integration-workspace"
 
 # CD into phase integration directory
@@ -294,7 +294,7 @@ verify_phase_integration() {
     fi
 }
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
 verify_phase_integration $PHASE
 ```
 
@@ -327,7 +327,7 @@ run_phase_tests() {
     return 0
 }
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
 run_phase_tests $PHASE
 ```
 
@@ -384,7 +384,7 @@ EOF
 ## State Tracking Updates
 
 ```yaml
-# Update orchestrator-state.json
+# Update orchestrator-state.yaml
 phase_integration_branches:
   - phase: 3
     branch: "phase3-post-fixes-integration-20250827-143000"
@@ -413,7 +413,7 @@ error_recovery_completed:
 def validate_phase_integration_branch():
     """Validate phase integration branch is ready for reassessment"""
     
-    phase = read_yaml('orchestrator-state.json')['current_phase']
+    phase = read_yaml('orchestrator-state.yaml')['current_phase']
     
     # Check branch exists
     branch_pattern = f"phase{phase}-post-fixes-integration-*"
@@ -429,7 +429,7 @@ def validate_phase_integration_branch():
         }
     
     # Verify all waves included
-    wave_count = read_yaml('orchestrator-state.json')['waves_per_phase'][phase-1]
+    wave_count = read_yaml('orchestrator-state.yaml')['waves_per_phase'][phase-1]
     
     for wave in range(1, wave_count + 1):
         wave_branch = f"phase{phase}-wave{wave}-integration"
@@ -526,7 +526,7 @@ Before transitioning to SPAWN_ARCHITECT_PHASE_ASSESSMENT:
 
 ```bash
 # Essential commands for PHASE_INTEGRATION
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
 BRANCH="phase${PHASE}-post-fixes-integration-$(date +%Y%m%d-%H%M%S)"
 
 # Create integration branch
@@ -547,8 +547,8 @@ done
 git push -u origin "$BRANCH"
 
 # Update state and transition
-yq -i ".phase_integration_branches += [{\"phase\": $PHASE, \"branch\": \"$BRANCH\"}]" orchestrator-state.json
-yq -i '.current_state = "SPAWN_ARCHITECT_PHASE_ASSESSMENT"' orchestrator-state.json
+yq -i ".phase_integration_branches += [{\"phase\": $PHASE, \"branch\": \"$BRANCH\"}]" orchestrator-state.yaml
+yq -i '.current_state = "SPAWN_ARCHITECT_PHASE_ASSESSMENT"' orchestrator-state.yaml
 ```
 
 ### 🔴🔴🔴 RULE R233 - States Are Verbs (CRITICAL)

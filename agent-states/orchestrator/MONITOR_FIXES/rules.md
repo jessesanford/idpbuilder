@@ -137,8 +137,8 @@ echo "🔍 MONITORING FIXES: Checking all active SW Engineers fixing issues NOW.
 
 # Step 1: List all SW Engineers fixing issues (DO NOW!)
 echo "📊 Active SW Engineers performing fixes:"
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
-    FIX_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .fix_status" orchestrator-state.json)
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
+    FIX_STATUS=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .fix_status' orchestrator-state.json)
     
     if [ "$FIX_STATUS" = "IN_PROGRESS" ]; then
         echo "  - $effort: Checking fix progress..."
@@ -154,13 +154,13 @@ done
 
 # Step 2: Check for completed fixes (DO NOW!)
 echo "🔍 Checking for completed fixes..."
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
-    FIX_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .fix_status" orchestrator-state.json)
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
+    FIX_STATUS=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .fix_status' orchestrator-state.json)
     FIX_DIR="/efforts/phase${PHASE}/wave${WAVE}/${effort}"
     
     if [ "$FIX_STATUS" = "IN_PROGRESS" ] && [ -f "$FIX_DIR/FIXES-COMPLETE.marker" ]; then
         echo "✅ Fixes complete for $effort!"
-        yq -i ".efforts_in_progress[] |= select(.name == \"$effort\") |= .fix_status = \"COMPLETE\"" orchestrator-state.json
+        jq '.efforts_in_progress[] |= select(.name == \"$effort\") |= .fix_status = \"COMPLETE\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
         
         # Determine if re-review needed
         echo "📋 Fixes complete - need re-review"
@@ -170,16 +170,16 @@ done
 
 # Step 3: Check for backport requirements (R321) (DO NOW!)
 echo "🔄 Checking for backport requirements (R321)..."
-INTEGRATION_CONTEXT=$(yq '.integration_context // "none"' orchestrator-state.json)
+INTEGRATION_CONTEXT=$(jq '.integration_context // "none"' orchestrator-state.json)
 
 if [ "$INTEGRATION_CONTEXT" = "active" ]; then
     echo "🔴🔴🔴 R321: INTEGRATION CONTEXT ACTIVE - IMMEDIATE BACKPORT REQUIRED!"
     
-    for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
-        FIX_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .fix_status" orchestrator-state.json)
+    for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
+        FIX_STATUS=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .fix_status' orchestrator-state.json)
         
         if [ "$FIX_STATUS" = "COMPLETE" ]; then
-            BACKPORTED=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .backported // false" orchestrator-state.json)
+            BACKPORTED=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .backported // false' orchestrator-state.json)
             
             if [ "$BACKPORTED" != "true" ]; then
                 echo "⚠️ $effort: Fixes complete but NOT BACKPORTED!"
@@ -193,7 +193,7 @@ fi
 
 # Step 4: Check for blocked fixes (DO NOW!)
 echo "🚧 Checking for blocked fix attempts..."
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
     FIX_DIR="/efforts/phase${PHASE}/wave${WAVE}/${effort}"
     
     if [ -f "$FIX_DIR/FIX-BLOCKED.marker" ]; then
@@ -212,8 +212,8 @@ REVIEW_FIXES=0
 BUILD_FIXES=0
 INTEGRATION_FIXES=0
 
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
-    FIX_TYPE=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .fix_type // \"unknown\"" orchestrator-state.json)
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
+    FIX_TYPE=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .fix_type // \"unknown\"' orchestrator-state.json)
     
     case "$FIX_TYPE" in
         "review_issues") ((REVIEW_FIXES++)) ;;

@@ -759,7 +759,7 @@ def assess_test_writing_health(current_grade, session_data):
 ## Performance State Tracking
 
 ```yaml
-# Update orchestrator-state.json
+# Update orchestrator-state.yaml
 grading:
   SW_ENGINEER:
     TEST_WRITING:

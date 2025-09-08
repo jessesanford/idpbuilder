@@ -150,7 +150,7 @@ create_next_split_infrastructure() {
     
     # STEP 3: Determine which split to create next
     # Check orchestrator-state.json for current split being worked
-    CURRENT_SPLIT=$(yq ".split_tracking.\"$effort_name\".current_split // 0" orchestrator-state.json)
+    CURRENT_SPLIT=$(jq ".split_tracking.\"$effort_name\".current_split // 0" orchestrator-state.json)
     NEXT_SPLIT=$((CURRENT_SPLIT + 1))
     
     if [ $NEXT_SPLIT -gt $total_splits ]; then
@@ -317,10 +317,10 @@ mark_original_branch_deprecated() {
     
     # Update state file per R296
     echo "Updating orchestrator-state.json with SPLIT_DEPRECATED status..."
-    yq eval ".efforts_completed.\"$effort_name\".status = \"SPLIT_DEPRECATED\"" -i orchestrator-state.json
-    yq eval ".efforts_completed.\"$effort_name\".deprecated_branch = \"$deprecated_branch\"" -i orchestrator-state.json
-    yq eval ".efforts_completed.\"$effort_name\".do_not_integrate = true" -i orchestrator-state.json
-    yq eval ".efforts_completed.\"$effort_name\".split_completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+    jq ".efforts_completed.\"$effort_name\".status = \"SPLIT_DEPRECATED\"" -i orchestrator-state.json
+    jq ".efforts_completed.\"$effort_name\".deprecated_branch = \"$deprecated_branch\"" -i orchestrator-state.json
+    jq ".efforts_completed.\"$effort_name\".do_not_integrate = true" -i orchestrator-state.json
+    jq ".efforts_completed.\"$effort_name\".split_completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
     
     # Add replacement splits to state file
     local splits_array="["
@@ -332,7 +332,7 @@ mark_original_branch_deprecated() {
     done
     splits_array="${splits_array}]"
     
-    yq eval ".efforts_completed.\"$effort_name\".replacement_splits = $splits_array" -i orchestrator-state.json
+    jq ".efforts_completed.\"$effort_name\".replacement_splits = $splits_array" -i orchestrator-state.json
     
     # Commit state file update
     git add orchestrator-state.json

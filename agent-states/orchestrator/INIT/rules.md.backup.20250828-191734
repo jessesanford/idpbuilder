@@ -47,7 +47,7 @@
 ### 🔴🔴🔴 R252 - Mandatory State File Updates (SUPREME LAW #10)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R252-mandatory-state-file-updates.md`
 **Criticality**: SUPREME LAW - Update on every transition
-**Summary**: Update orchestrator-state.json on all state changes
+**Summary**: Update orchestrator-state.yaml on all state changes
 
 ### 🚨🚨🚨 R253 - Mandatory State File Commit Push
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R253-mandatory-state-file-commit-push.md`
@@ -63,7 +63,7 @@
 
 ### Critical Requirements:
 1. Check for compaction IMMEDIATELY - Penalty: -100%
-2. Load orchestrator-state.json NOW - Penalty: -50%
+2. Load orchestrator-state.yaml NOW - Penalty: -50%
 3. Load target-repo-config.yaml NOW - Penalty: -50%
 4. Run R203 startup sequence - Penalty: -100%
 5. Check TodoWrite for pending items - Penalty: -30%
@@ -115,8 +115,8 @@ echo "📝 Loading TODO persistence rules..."
 
 # STEP 3: LOAD STATE AND CONFIG
 echo "📊 Loading orchestrator state..."
-# Load orchestrator-state.json NOW to check current state
-STATE_FILE="$CLAUDE_PROJECT_DIR/orchestrator-state.json"
+# Load orchestrator-state.yaml NOW to check current state
+STATE_FILE="$CLAUDE_PROJECT_DIR/orchestrator-state.yaml"
 if [ -f "$STATE_FILE" ]; then
     CURRENT_STATE=$(yq '.current_state' "$STATE_FILE")
     echo "✅ Found existing state: $CURRENT_STATE"
@@ -150,7 +150,7 @@ echo "➡️ Determining next state and transitioning NOW..."
 
 1. Check for compaction FIRST (highest priority)
 2. Run R203 state-aware startup sequence
-3. Load orchestrator-state.json NOW to check current state
+3. Load orchestrator-state.yaml NOW to check current state
 4. Load target-repo-config.yaml NOW to get configuration  
 5. Check TodoWrite for pending items (they are COMMANDS!)
 6. Run R235 pre-flight verification
@@ -164,7 +164,7 @@ echo "➡️ Determining next state and transitioning NOW..."
 - ❌ "I'm in INIT state" [does nothing]
 
 **REQUIRED - IMMEDIATE ACTION:**
-- ✅ "Entering INIT, loading orchestrator-state.json now..."
+- ✅ "Entering INIT, loading orchestrator-state.yaml now..."
 - ✅ "Initializing, checking for existing state file..."
 - ✅ "INIT: Reading configuration and determining next state..."
 
@@ -173,12 +173,12 @@ Initial state when orchestrator starts. Load configuration and determine next st
 
 ## Primary Actions
 1. Load target-repo-config.yaml
-2. Check/create orchestrator-state.json
+2. Check/create orchestrator-state.yaml
 3. Determine if resuming or starting fresh
 4. Transition to appropriate state (PLANNING if new, current state if resuming)
 
 ## State Transition
-- If orchestrator-state.json exists with current_state → Resume from that state
+- If orchestrator-state.yaml exists with current_state → Resume from that state
 - If no state file → Create initial state file and go to PLANNING
 - If error loading config → HARD_STOP
 

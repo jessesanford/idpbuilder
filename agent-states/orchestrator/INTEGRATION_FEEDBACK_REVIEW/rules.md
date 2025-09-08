@@ -193,8 +193,8 @@ In INTEGRATION_FEEDBACK_REVIEW, you analyze the integration report to identify w
 
 ### 1. Parse Integration Report for Failed Efforts
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 REPORT_FILE="efforts/phase${PHASE}/wave${WAVE}/integration-workspace/INTEGRATION_REPORT.md"
 
 echo "📋 Parsing integration report: $REPORT_FILE"
@@ -226,7 +226,7 @@ for branch in "${FAILED_BRANCHES[@]}"; do
     EFFORTS_NEEDING_FIXES+=("$EFFORT")
     
     # Record in state file
-    yq eval ".integration_feedback.wave${WAVE}.efforts_needing_fixes += [\"$EFFORT\"]" -i orchestrator-state.json
+    jq ".integration_feedback.wave${WAVE}.efforts_needing_fixes += [\"$EFFORT\"]" -i orchestrator-state.json
 done
 
 # Check if we have build dependency issues
@@ -237,8 +237,8 @@ if grep -q "BLOCKED_BY_DEPENDENCIES" "$REPORT_FILE"; then
     MISSING_DEPS=$(grep -A5 "Missing Dependencies:" "$REPORT_FILE" | grep "^-" | sed 's/^- //')
     
     # Record in state file
-    yq eval ".integration_feedback.wave${WAVE}.missing_dependencies = \"$MISSING_DEPS\"" -i orchestrator-state.json
-    yq eval ".integration_feedback.wave${WAVE}.requires_system_fixes = true" -i orchestrator-state.json
+    jq ".integration_feedback.wave${WAVE}.missing_dependencies = \"$MISSING_DEPS\"" -i orchestrator-state.json
+    jq '.integration_feedback.wave${WAVE}.requires_system_fixes = true' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 fi
 ```
 
@@ -316,10 +316,10 @@ fi
 ### 5. Update State File
 ```bash
 # Update orchestrator state
-yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
-yq eval ".integration_feedback.wave${WAVE}.fix_request_file = \"$FIX_REQUEST_FILE\"" -i orchestrator-state.json
-yq eval ".integration_feedback.wave${WAVE}.review_timestamp = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
-yq eval ".state_transition_history += [{\"from\": \"INTEGRATION_FEEDBACK_REVIEW\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Identified ${#EFFORTS_NEEDING_FIXES[@]} efforts needing fixes\"}]" -i orchestrator-state.json
+jq ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
+jq ".integration_feedback.wave${WAVE}.fix_request_file = \"$FIX_REQUEST_FILE\"" -i orchestrator-state.json
+jq ".integration_feedback.wave${WAVE}.review_timestamp = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+jq ".state_transition_history += [{\"from\": \"INTEGRATION_FEEDBACK_REVIEW\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Identified ${#EFFORTS_NEEDING_FIXES[@]} efforts needing fixes\"}]" -i orchestrator-state.json
 
 # Commit changes
 git add orchestrator-state.json "$FIX_REQUEST_FILE"

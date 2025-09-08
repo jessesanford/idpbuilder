@@ -173,8 +173,8 @@ In MONITORING_FIX_PROGRESS, you monitor Software Engineers implementing integrat
 
 ### 1. Check Fix Progress for Each Effort
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 
 echo "📊 Monitoring fix progress for wave ${WAVE}"
 
@@ -186,7 +186,7 @@ FIXES_PENDING=()
 # Check each effort that needs fixes
 while IFS= read -r effort; do
     if [ "$effort" != "null" ]; then
-        NEEDS_FIXES=$(yq ".efforts_in_progress.\"$effort\".needs_fixes" orchestrator-state.json)
+        NEEDS_FIXES=$(jq ".efforts_in_progress.\"$effort\".needs_fixes" orchestrator-state.json)
         
         if [ "$NEEDS_FIXES" = "true" ]; then
             EFFORT_DIR="efforts/phase${PHASE}/wave${WAVE}/${effort}"
@@ -197,8 +197,8 @@ while IFS= read -r effort; do
                 FIXES_COMPLETE+=("$effort")
                 
                 # Update state file
-                yq eval ".efforts_in_progress.\"$effort\".fixes_completed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
-                yq eval ".efforts_in_progress.\"$effort\".needs_fixes = false" -i orchestrator-state.json
+                jq ".efforts_in_progress.\"$effort\".fixes_completed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+                jq ".efforts_in_progress.\"$effort\".needs_fixes = false" -i orchestrator-state.json
             elif [ -f "${EFFORT_DIR}/FIX_REQUIRED.flag" ]; then
                 echo "⏳ $effort: Fixes still in progress"
                 FIXES_PENDING+=("$effort")
@@ -215,7 +215,7 @@ while IFS= read -r effort; do
             fi
         fi
     fi
-done < <(yq '.efforts_in_progress | keys | .[]' orchestrator-state.json)
+done < <(jq '.efforts_in_progress | keys | .[]' orchestrator-state.json)
 
 echo "Fixes complete: ${#FIXES_COMPLETE[@]}"
 echo "Fixes pending: ${#FIXES_PENDING[@]}"
@@ -255,12 +255,12 @@ if [ "$ALL_FIXES_COMPLETE" = true ]; then
     fi
     
     # Record completion
-    yq eval ".integration_feedback.wave${WAVE}.all_fixes_completed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+    jq ".integration_feedback.wave${WAVE}.all_fixes_completed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
 else
     echo "⏳ Still waiting for ${#FIXES_PENDING[@]} fixes to complete"
     
     # Check for timeout (30 minutes per effort)
-    SPAWN_TIME=$(yq ".integration_feedback.wave${WAVE}.fix_engineers_spawned" orchestrator-state.json 2>/dev/null)
+    SPAWN_TIME=$(jq ".integration_feedback.wave${WAVE}.fix_engineers_spawned" orchestrator-state.json 2>/dev/null)
     if [ -n "$SPAWN_TIME" ]; then
         CURRENT_TIME=$(date +%s)
         SPAWN_TIMESTAMP=$(date -d "$SPAWN_TIME" +%s 2>/dev/null || echo 0)
@@ -284,8 +284,8 @@ fi
 ```bash
 if [ -n "$UPDATE_STATE" ]; then
     # Update state
-    yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
-    yq eval ".state_transition_history += [{\"from\": \"MONITORING_FIX_PROGRESS\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"$UPDATE_REASON\"}]" -i orchestrator-state.json
+    jq ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
+    jq ".state_transition_history += [{\"from\": \"MONITORING_FIX_PROGRESS\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"$UPDATE_REASON\"}]" -i orchestrator-state.json
     
     # Commit
     git add orchestrator-state.json

@@ -506,7 +506,7 @@ READ: orchestrator-state.json (efforts_completed section)
 
 # R297: CHECK SPLIT_COUNT FIRST!
 for effort in efforts_completed; do
-    SPLIT_COUNT=$(yq ".efforts_completed.\"${effort}\".split_count" orchestrator-state.json)
+    SPLIT_COUNT=$(jq ".efforts_completed.\"${effort}\".split_count" orchestrator-state.json)
     if [ "$SPLIT_COUNT" -gt 0 ]; then
         echo "✅ $effort already split into $SPLIT_COUNT parts - COMPLIANT"
         continue  # Skip size measurement

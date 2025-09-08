@@ -58,7 +58,7 @@ verify_effort_branch_fixes() {
     
     # Check orchestrator state for efforts that had fixes
     if [ -f "orchestrator-state.json" ]; then
-        EFFORTS_WITH_FIXES=$(yq '.efforts_with_fixes[]' orchestrator-state.json 2>/dev/null || true)
+        EFFORTS_WITH_FIXES=$(jq '.efforts_with_fixes[]' orchestrator-state.json 2>/dev/null || true)
         
         if [ -z "$EFFORTS_WITH_FIXES" ]; then
             echo -e "${YELLOW}⚠️ No efforts marked as having fixes in state file${NC}"

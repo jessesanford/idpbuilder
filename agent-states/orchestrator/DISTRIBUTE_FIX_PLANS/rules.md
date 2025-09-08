@@ -184,8 +184,8 @@ In DISTRIBUTE_FIX_PLANS, you copy the fix plans created by Code Reviewer to each
 
 ### 1. Load Fix Plan Summary
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 FIX_PLAN_DIR="efforts/phase${PHASE}/wave${WAVE}/fix-plans"
 SUMMARY_FILE="${FIX_PLAN_DIR}/FIX_PLAN_SUMMARY.yaml"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
@@ -193,8 +193,8 @@ TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 echo "📦 Distributing fix plans to effort directories"
 
 # Parse fix plans from summary
-readarray -t FIX_PLANS < <(yq '.fix_plans_created[].effort' "$SUMMARY_FILE")
-readarray -t PLAN_FILES < <(yq '.fix_plans_created[].plan_file' "$SUMMARY_FILE")
+readarray -t FIX_PLANS < <(jq '.fix_plans_created[].effort' "$SUMMARY_FILE")
+readarray -t PLAN_FILES < <(jq '.fix_plans_created[].plan_file' "$SUMMARY_FILE")
 ```
 
 ### 2. Distribute Fix Plans to Efforts
@@ -251,18 +251,18 @@ echo "Total efforts with fix plans: ${#FIX_PLANS[@]}" >> "$DISTRIBUTION_LOG"
 ### 3. Update State File
 ```bash
 # Record distribution
-yq eval ".integration_feedback.wave${WAVE}.fix_plans_distributed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
-yq eval ".integration_feedback.wave${WAVE}.distribution_log = \"$DISTRIBUTION_LOG\"" -i orchestrator-state.json
+jq ".integration_feedback.wave${WAVE}.fix_plans_distributed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+jq ".integration_feedback.wave${WAVE}.distribution_log = \"$DISTRIBUTION_LOG\"" -i orchestrator-state.json
 
 # Mark efforts as needing fixes
 for effort in "${FIX_PLANS[@]}"; do
-    yq eval ".efforts_in_progress.\"$effort\".needs_fixes = true" -i orchestrator-state.json
-    yq eval ".efforts_in_progress.\"$effort\".fix_plan_distributed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+    jq ".efforts_in_progress.\"$effort\".needs_fixes = true" -i orchestrator-state.json
+    jq ".efforts_in_progress.\"$effort\".fix_plan_distributed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
 done
 
 # Transition to spawn engineers
-yq eval ".current_state = \"SPAWN_ENGINEERS_FOR_FIXES\"" -i orchestrator-state.json
-yq eval ".state_transition_history += [{\"from\": \"DISTRIBUTE_FIX_PLANS\", \"to\": \"SPAWN_ENGINEERS_FOR_FIXES\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Fix plans distributed to ${#FIX_PLANS[@]} efforts\"}]" -i orchestrator-state.json
+jq ".current_state = \"SPAWN_ENGINEERS_FOR_FIXES\"" -i orchestrator-state.json
+jq ".state_transition_history += [{\"from\": \"DISTRIBUTE_FIX_PLANS\", \"to\": \"SPAWN_ENGINEERS_FOR_FIXES\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Fix plans distributed to ${#FIX_PLANS[@]} efforts\"}]" -i orchestrator-state.json
 
 # Commit
 git add orchestrator-state.json "$DISTRIBUTION_LOG"

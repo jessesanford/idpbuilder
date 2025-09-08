@@ -64,14 +64,14 @@ verify_wave_sizes() {
     echo "📊 ARCHITECT: Verifying sizes for Phase $PHASE Wave $WAVE"
     
     # Get list of efforts from state file
-    EFFORTS=$(yq ".waves.wave${WAVE}.efforts[]" $PROJECT_ROOT/orchestrator-state.json)
+    EFFORTS=$(jq ".waves.wave${WAVE}.efforts[]" $PROJECT_ROOT/orchestrator-state.json)
     
     for effort_name in $EFFORTS; do
         echo ""
         echo "🔍 Checking effort: $effort_name"
         
         # R297: CHECK SPLIT_COUNT FIRST!
-        SPLIT_COUNT=$(yq ".efforts_completed.\"${effort_name}\".split_count" $PROJECT_ROOT/orchestrator-state.json 2>/dev/null || echo "0")
+        SPLIT_COUNT=$(jq ".efforts_completed.\"${effort_name}\".split_count" $PROJECT_ROOT/orchestrator-state.json 2>/dev/null || echo "0")
         
         if [ "$SPLIT_COUNT" -gt 0 ]; then
             echo "   ✅ COMPLIANT: Already split into $SPLIT_COUNT parts"

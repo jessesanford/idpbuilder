@@ -48,7 +48,7 @@ error_recovery_checkpoint:
   # Original state backup (CRITICAL for rollback)
   original_state_backup:
     orchestrator_state_snapshot: |
-      # Complete orchestrator-state.json content at error time
+      # Complete orchestrator-state.yaml content at error time
     working_directories:
       - path: "/workspaces/efforts/phase1/wave2/effort2-controller"
         branch: "phase1/wave2/effort2-controller"

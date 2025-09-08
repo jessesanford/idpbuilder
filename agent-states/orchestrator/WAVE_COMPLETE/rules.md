@@ -269,40 +269,40 @@ update_orchestrator_state "WAVE_COMPLETE" "All efforts reviewed and passed"
 mark_wave_complete "$PHASE" "$WAVE"
 
 # Example state file update:
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"" orchestrator-state.json
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.efforts_count = $EFFORT_COUNT" orchestrator-state.json
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.all_reviews_passed = true" orchestrator-state.json
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.size_compliant = true" orchestrator-state.json
-yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.integration_branch = \"$INTEGRATION_BRANCH\"" orchestrator-state.json
+jq '.waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.waves_completed.phase${PHASE}.wave${WAVE}.efforts_count = $EFFORT_COUNT' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.waves_completed.phase${PHASE}.wave${WAVE}.all_reviews_passed = true' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.waves_completed.phase${PHASE}.wave${WAVE}.size_compliant = true' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.waves_completed.phase${PHASE}.wave${WAVE}.integration_branch = \"$INTEGRATION_BRANCH\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
 # 3. 🔴🔴🔴 CRITICAL: UPDATE STATE TO INTEGRATION BEFORE STOPPING! 🔴🔴🔴
 # Per state machine: WAVE_COMPLETE → INTEGRATION is the REQUIRED transition
 echo "📝 Updating current_state to INTEGRATION for next continuation..."
-yq -i ".current_state = \"INTEGRATION\"" orchestrator-state.json
-yq -i ".previous_state = \"WAVE_COMPLETE\"" orchestrator-state.json
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
-yq -i ".transition_reason = \"Wave $WAVE complete, all reviews passed, ready for integration\"" orchestrator-state.json
+jq '.current_state = \"INTEGRATION\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.previous_state = \"WAVE_COMPLETE\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.transition_reason = \"Wave $WAVE complete, all reviews passed, ready for integration\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 echo "✅ State updated to INTEGRATION - will execute integration work on next /continue-orchestrating"
 
 # R301 MANDATORY: Update current_wave_integration
 echo "📝 Updating current_wave_integration per R301..."
 
 # Deprecate existing wave integration if it exists
-EXISTING_WAVE=$(yq ".current_wave_integration | select(.phase == $PHASE and .wave == $WAVE)" orchestrator-state.json)
+EXISTING_WAVE=$(jq '.current_wave_integration | select(.phase == $PHASE and .wave == $WAVE)' orchestrator-state.json)
 if [ ! -z "$EXISTING_WAVE" ]; then
-    yq -i ".deprecated_wave_integrations += (.current_wave_integration | select(.phase == $PHASE and .wave == $WAVE))" orchestrator-state.json
+    jq '.deprecated_wave_integrations += (.current_wave_integration | select(.phase == $PHASE and .wave == $WAVE))' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 fi
 
 # Set the NEW current wave integration
-yq -i ".current_wave_integration = {
-  \"phase\": $PHASE,
-  \"wave\": $WAVE,
-  \"branch\": \"$INTEGRATION_BRANCH\",
-  \"status\": \"active\",
-  \"created_at\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\",
-  \"type\": \"initial\"
-}" orchestrator-state.json
+jq --arg phase "$PHASE" --arg wave "$WAVE" --arg branch "$INTEGRATION_BRANCH" '.current_wave_integration = {
+  "phase": ($phase | tonumber),
+  "wave": ($wave | tonumber),
+  "branch": $branch,
+  "status": "active",
+  "created_at": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'",
+  "type": "initial"
+}' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
 echo "✅ Current wave integration updated per R301"
 ```
@@ -763,9 +763,9 @@ NEXT_STATE="INTEGRATION"  # Change ONLY if special conditions apply
 
 # CRITICAL: Update state file FIRST (R324 requirement)
 echo "🔴 R324: Updating current_state to prevent infinite loop..."
-yq -i ".current_state = \"$NEXT_STATE\"" orchestrator-state.json
-yq -i ".previous_state = \"WAVE_COMPLETE\"" orchestrator-state.json
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%%H:%%M:%%SZ)\"" orchestrator-state.json
+jq '.current_state = \"$NEXT_STATE\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.previous_state = \"WAVE_COMPLETE\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.transition_time = \"$(date -u +%Y-%m-%dT%%H:%%M:%%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
 # Verify the update
 echo "✅ State updated to:"

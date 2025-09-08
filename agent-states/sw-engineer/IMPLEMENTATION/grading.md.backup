@@ -626,7 +626,7 @@ def assess_implementation_health(current_grade, trends):
 ## Performance State Tracking
 
 ```yaml
-# Update orchestrator-state.json
+# Update orchestrator-state.yaml
 grading:
   SW_ENGINEER:
     IMPLEMENTATION:

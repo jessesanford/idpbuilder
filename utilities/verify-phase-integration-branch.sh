@@ -18,9 +18,9 @@ if [ ! -f "orchestrator-state.json" ]; then
 fi
 
 # Get current phase
-CURRENT_PHASE=$(yq '.current_phase' orchestrator-state.json)
-CURRENT_STATE=$(yq '.current_state' orchestrator-state.json)
-PREVIOUS_STATE=$(yq '.previous_state' orchestrator-state.json)
+CURRENT_PHASE=$(jq '.current_phase' orchestrator-state.json)
+CURRENT_STATE=$(jq '.current_state' orchestrator-state.json)
+PREVIOUS_STATE=$(jq '.previous_state' orchestrator-state.json)
 
 echo "📊 Current Status:"
 echo "  - Phase: ${CURRENT_PHASE}"
@@ -50,7 +50,7 @@ verify_phase_integration_branch() {
         fi
         
         # Check if recorded in state file
-        local RECORDED=$(yq ".phase_integration_branches[] | select(.phase == $PHASE).branch" orchestrator-state.json)
+        local RECORDED=$(jq ".phase_integration_branches[] | select(.phase == $PHASE).branch" orchestrator-state.json)
         if [ -n "$RECORDED" ]; then
             echo "✅ Branch recorded in state file: $RECORDED"
         else
@@ -76,7 +76,7 @@ check_if_integration_required() {
     local PHASE=$1
     
     # Check if we're coming from ERROR_RECOVERY with phase fixes
-    local ERROR_RECOVERY_TYPE=$(yq '.error_recovery_reason' orchestrator-state.json)
+    local ERROR_RECOVERY_TYPE=$(jq '.error_recovery_reason' orchestrator-state.json)
     
     if [ "$ERROR_RECOVERY_TYPE" = "PHASE_ASSESSMENT_NEEDS_WORK" ]; then
         echo "⚠️ Phase assessment fixes detected - integration branch REQUIRED (R259)"
@@ -116,7 +116,7 @@ if check_if_integration_required $CURRENT_PHASE; then
         echo "5. Only then transition to SPAWN_ARCHITECT_PHASE_ASSESSMENT"
         echo ""
         echo "Command to fix:"
-        echo "  yq -i '.current_state = \"PHASE_INTEGRATION\"' orchestrator-state.json"
+        echo "  jq '.current_state = \"PHASE_INTEGRATION\"' orchestrator-state.json"
         exit 1
     fi
 else

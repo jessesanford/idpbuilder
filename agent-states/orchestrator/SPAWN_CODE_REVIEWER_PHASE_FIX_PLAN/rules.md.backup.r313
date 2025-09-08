@@ -124,8 +124,8 @@ In SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN, you spawn a Code Reviewer to analyze phas
 
 ### 1. Spawn Code Reviewer for Phase Fix Planning
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-PHASE_FIX_REQUEST=$(yq ".phase_integration_feedback.phase${PHASE}.fix_request_file" orchestrator-state.json)
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+PHASE_FIX_REQUEST=$(yq ".phase_integration_feedback.phase${PHASE}.fix_request_file" orchestrator-state.yaml)
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 # Create command for Code Reviewer
@@ -166,10 +166,10 @@ echo "🚀 Spawning Code Reviewer for phase fix planning"
 echo "@agent-code-reviewer Please execute: $COMMAND_FILE"
 
 # Update state
-yq eval ".agents_spawned += [{\"type\": \"code-reviewer\", \"task\": \"phase_fix_plan\", \"state\": \"CREATE_PHASE_FIX_PLAN\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}]" -i orchestrator-state.json
-yq eval ".current_state = \"WAITING_FOR_PHASE_FIX_PLANS\"" -i orchestrator-state.json
+yq eval ".agents_spawned += [{\"type\": \"code-reviewer\", \"task\": \"phase_fix_plan\", \"state\": \"CREATE_PHASE_FIX_PLAN\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}]" -i orchestrator-state.yaml
+yq eval ".current_state = \"WAITING_FOR_PHASE_FIX_PLANS\"" -i orchestrator-state.yaml
 
-git add orchestrator-state.json "$COMMAND_FILE"
+git add orchestrator-state.yaml "$COMMAND_FILE"
 git commit -m "spawn: Code Reviewer for phase fix planning"
 git push
 ```

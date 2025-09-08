@@ -419,15 +419,15 @@ validate_parallelization_analysis() {
     fi
     
     # CHECK 2: Are blocking efforts identified?
-    BLOCKING_COUNT=$(yq '.code_reviewer_parallelization_plan.blocking_efforts | length' orchestrator-state.json)
+    BLOCKING_COUNT=$(jq '.code_reviewer_parallelization_plan.blocking_efforts | length' orchestrator-state.json)
     echo "✅ Found $BLOCKING_COUNT blocking efforts"
     
     # CHECK 3: Are parallel groups identified?
-    PARALLEL_COUNT=$(yq '.code_reviewer_parallelization_plan.parallel_groups | length' orchestrator-state.json)
+    PARALLEL_COUNT=$(jq '.code_reviewer_parallelization_plan.parallel_groups | length' orchestrator-state.json)
     echo "✅ Found $PARALLEL_COUNT parallel groups"
     
     # CHECK 4: Is spawn sequence defined?
-    SEQUENCE_COUNT=$(yq '.code_reviewer_parallelization_plan.spawn_sequence | length' orchestrator-state.json)
+    SEQUENCE_COUNT=$(jq '.code_reviewer_parallelization_plan.spawn_sequence | length' orchestrator-state.json)
     echo "✅ Spawn sequence has $SEQUENCE_COUNT steps"
     
     if [ $SEQUENCE_COUNT -eq 0 ]; then
@@ -507,7 +507,7 @@ echo "Found 1 blocking effort: E3.1.1"
 echo "Found 4 parallel efforts: E3.1.2, E3.1.3, E3.1.4, E3.1.5"
 
 # 4. Save to orchestrator-state.json
-yq eval '.code_reviewer_parallelization_plan = ...' orchestrator-state.json
+jq '.code_reviewer_parallelization_plan = ...' orchestrator-state.json
 
 # 5. Acknowledge decision
 echo "✅ PARALLELIZATION DECISION COMMITTED"

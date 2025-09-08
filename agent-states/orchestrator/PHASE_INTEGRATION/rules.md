@@ -306,7 +306,7 @@ tmc-workspace/phase2-wave1-api-gateway
 #!/bin/bash
 # Script to find all effort branches for current phase
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 SF_INSTANCE_DIR=$(pwd)
 
 echo "🔍 Locating effort branches for Phase ${PHASE} integration"
@@ -376,7 +376,7 @@ verify_effort_branches() {
     echo "🔍 Verifying effort branches for Phase ${PHASE}"
     
     # Check orchestrator-state.json for expected efforts
-    EXPECTED_EFFORTS=$(yq ".phases.phase_${PHASE}.efforts[]" orchestrator-state.json 2>/dev/null)
+    EXPECTED_EFFORTS=$(jq '.phases.phase_${PHASE}.efforts[]' orchestrator-state.json 2>/dev/null)
     
     if [ -z "$EXPECTED_EFFORTS" ]; then
         echo "⚠️ No efforts recorded in orchestrator-state.json for phase ${PHASE}"
@@ -422,7 +422,7 @@ verify_effort_branches() {
 }
 
 # Run verification
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 verify_effort_branches $PHASE
 ```
 
@@ -525,7 +525,7 @@ Check previous_state in orchestrator-state.json to determine context!
 source "$SF_INSTANCE_DIR/utilities/branch-naming-helpers.sh"
 
 # Determine context to choose naming convention
-PREVIOUS_STATE=$(yq '.previous_state' orchestrator-state.json)
+PREVIOUS_STATE=$(jq '.previous_state' orchestrator-state.json)
 
 if [ "$PREVIOUS_STATE" = "WAVE_REVIEW" ]; then
     # Normal flow (R285) - standard phase integration
@@ -553,7 +553,7 @@ fi
 # Setup phase integration workspace and branch
 
 SF_INSTANCE_DIR=$(pwd)  # Save SF instance location
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 # Source branch naming helpers (R014 MANDATORY)
@@ -567,7 +567,7 @@ mkdir -p "$(dirname "$INTEGRATION_DIR")"
 
 # Determine base branch for phase integration (R271)
 echo "🧠 THINKING: Phase integration needs clean base from main branch"
-BASE_BRANCH=$(yq '.target_repository.base_branch' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+BASE_BRANCH=$(jq '.target_repository.base_branch' "$SF_INSTANCE_DIR/target-repo-config.yaml")
 if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
     BASE_BRANCH="main"
 fi
@@ -575,7 +575,7 @@ echo "📌 Decision: Using '$BASE_BRANCH' for phase integration (clean start)"
 
 # SINGLE-BRANCH FULL clone of TARGET repository (R271 Supreme Law)
 echo "📦 Creating FULL phase integration clone from branch: $BASE_BRANCH"
-TARGET_REPO_URL=$(yq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+TARGET_REPO_URL=$(jq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
 
 git clone \
     --single-branch \
@@ -610,19 +610,19 @@ git push -u origin "$BRANCH_NAME"
 echo "📝 Updating current_phase_integration per R301..."
 
 # First, move any existing current phase integration to deprecated
-EXISTING_PHASE=$(yq ".current_phase_integration | select(.phase == env(PHASE))" "$SF_INSTANCE_DIR/orchestrator-state.json")
+EXISTING_PHASE=$(jq --arg phase "$PHASE" '.current_phase_integration | select(.phase == ($phase | tonumber))' "$SF_INSTANCE_DIR/orchestrator-state.json")
 if [ ! -z "$EXISTING_PHASE" ]; then
-    yq -i '.deprecated_phase_integrations += (.current_phase_integration | select(.phase == env(PHASE)))' "$SF_INSTANCE_DIR/orchestrator-state.json"
+    jq --arg phase "$PHASE" '.deprecated_phase_integrations += (.current_phase_integration | select(.phase == ($phase | tonumber)))' "$SF_INSTANCE_DIR/orchestrator-state.json" > tmp.json && mv tmp.json "$SF_INSTANCE_DIR/orchestrator-state.json"
 fi
 
 # Set the new current phase integration
-yq -i '.current_phase_integration = {
-  "phase": env(PHASE),
-  "branch": env(BRANCH_NAME),
+jq --arg phase "$PHASE" --arg branch "$BRANCH_NAME" '.current_phase_integration = {
+  "phase": ($phase | tonumber),
+  "branch": $branch,
   "status": "active",
   "created_at": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'",
   "type": "post_fixes"
-}' "$SF_INSTANCE_DIR/orchestrator-state.json"
+}' "$SF_INSTANCE_DIR/orchestrator-state.json" > tmp.json && mv tmp.json "$SF_INSTANCE_DIR/orchestrator-state.json"
 
 echo "✅ Phase integration infrastructure ready: $BRANCH_NAME"
 echo "✅ Current phase integration updated per R301"
@@ -634,7 +634,7 @@ echo "✅ Current phase integration updated per R301"
 #!/bin/bash
 # Spawn Code Reviewer to create PHASE-MERGE-PLAN.md
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 INTEGRATION_DIR="${CLAUDE_PROJECT_DIR}/efforts/phase${PHASE}/phase-integration-workspace"
 BRANCH_NAME=$(git branch --show-current)
 
@@ -685,7 +685,7 @@ echo "📋 Waiting for Code Reviewer to create PHASE-MERGE-PLAN.md..."
 #!/bin/bash
 # After Code Reviewer creates PHASE-MERGE-PLAN.md
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 INTEGRATION_DIR="${CLAUDE_PROJECT_DIR}/efforts/phase${PHASE}/phase-integration-workspace"
 
 # CD into phase integration directory
@@ -756,7 +756,7 @@ verify_phase_integration() {
     fi
 }
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 verify_phase_integration $PHASE
 ```
 
@@ -803,7 +803,7 @@ verify_phase_build() {
     return 0
 }
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 verify_phase_build $PHASE || exit 1
 ```
 
@@ -871,7 +871,7 @@ EOF
     "./phase${PHASE}-test-harness.sh" "$PHASE"
 }
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 create_phase_test_harness $PHASE
 ```
 
@@ -898,7 +898,7 @@ create_phase_demo() {
 - Test Harness: phase${PHASE}-test-harness.sh
 
 ## Integrated Waves
-$(yq ".phases.phase_${PHASE}.waves[]" orchestrator-state.json | sed 's/^/- Wave /')
+$(jq '.phases.phase_${PHASE}.waves[]' orchestrator-state.json | sed 's/^/- Wave /')
 
 ## Features Delivered in Phase ${PHASE}
 $(grep "^- " "phase-plans/phase${PHASE}/PHASE-PLAN.md" | head -10)
@@ -931,7 +931,7 @@ npm start
 ## Phase Metrics
 - Total Lines Added: $(git diff main --numstat | awk '{sum+=$1} END {print sum}')
 - Test Coverage: $(npm run coverage --silent | grep "All files" | awk '{print $10}')
-- Features Completed: $(yq ".phases.phase_${PHASE}.features_completed" orchestrator-state.json)
+- Features Completed: $(jq '.phases.phase_${PHASE}.features_completed' orchestrator-state.json)
 EOF
     
     # Create automated demo script
@@ -1011,7 +1011,7 @@ EOF
     echo "  - verify-phase${PHASE}-features.sh"
 }
 
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 create_phase_demo $PHASE
 ```
 
@@ -1272,7 +1272,7 @@ git push -u origin phase2-integration-20250901-143000
 
 ```bash
 # Essential commands for PHASE_INTEGRATION
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 BRANCH="phase${PHASE}-post-fixes-integration-$(date +%Y%m%d-%H%M%S)"
 
 # Find all effort branches
@@ -1306,8 +1306,8 @@ done
 git push -u origin "$BRANCH"
 
 # Update state and transition
-yq -i ".phase_integration_branches += [{\"phase\": $PHASE, \"branch\": \"$BRANCH\"}]" orchestrator-state.json
-yq -i '.current_state = "SPAWN_ARCHITECT_PHASE_ASSESSMENT"' orchestrator-state.json
+jq '.phase_integration_branches += [{\"phase\": $PHASE, \"branch\": \"$BRANCH\"}]' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.current_state = "SPAWN_ARCHITECT_PHASE_ASSESSMENT"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 ```
 
 ### 🔴🔴🔴 RULE R233 - States Are Verbs (CRITICAL)

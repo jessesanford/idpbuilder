@@ -196,8 +196,8 @@ In SPAWN_ENGINEERS_FOR_FIXES, you spawn Software Engineer agents to implement th
 
 ### 1. Identify Efforts Needing Engineers
 ```bash
-PHASE=$(yq '.current_phase' orchestrator-state.json)
-WAVE=$(yq '.current_wave' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
 echo "🔧 Identifying efforts that need fix engineers"
@@ -206,13 +206,13 @@ echo "🔧 Identifying efforts that need fix engineers"
 EFFORTS_TO_FIX=()
 while IFS= read -r effort; do
     if [ "$effort" != "null" ]; then
-        NEEDS_FIXES=$(yq ".efforts_in_progress.\"$effort\".needs_fixes" orchestrator-state.json)
+        NEEDS_FIXES=$(jq ".efforts_in_progress.\"$effort\".needs_fixes" orchestrator-state.json)
         if [ "$NEEDS_FIXES" = "true" ]; then
             EFFORTS_TO_FIX+=("$effort")
             echo "  - $effort needs fixes"
         fi
     fi
-done < <(yq '.efforts_in_progress | keys | .[]' orchestrator-state.json)
+done < <(jq '.efforts_in_progress | keys | .[]' orchestrator-state.json)
 
 echo "Total efforts needing fixes: ${#EFFORTS_TO_FIX[@]}"
 ```
@@ -307,8 +307,8 @@ EOF
     echo "  Command: $COMMAND_FILE" >> "$SPAWN_LOG"
     
     # Update state file
-    yq eval ".agents_spawned += [{\"type\": \"sw-engineer\", \"task\": \"fix_integration\", \"effort\": \"$effort\", \"state\": \"FIX_INTEGRATION_ISSUES\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"command_file\": \"$COMMAND_FILE\"}]" -i orchestrator-state.json
-    yq eval ".efforts_in_progress.\"$effort\".fix_engineer_spawned = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+    jq ".agents_spawned += [{\"type\": \"sw-engineer\", \"task\": \"fix_integration\", \"effort\": \"$effort\", \"state\": \"FIX_INTEGRATION_ISSUES\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"command_file\": \"$COMMAND_FILE\"}]" -i orchestrator-state.json
+    jq ".efforts_in_progress.\"$effort\".fix_engineer_spawned = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
 done
 
 echo "" >> "$SPAWN_LOG"
@@ -318,9 +318,9 @@ echo "Total engineers spawned: ${#EFFORTS_TO_FIX[@]}" >> "$SPAWN_LOG"
 ### 3. Transition to Monitoring
 ```bash
 # Update state
-yq eval ".current_state = \"MONITORING_FIX_PROGRESS\"" -i orchestrator-state.json
-yq eval ".integration_feedback.wave${WAVE}.fix_engineers_spawned = ${#EFFORTS_TO_FIX[@]}" -i orchestrator-state.json
-yq eval ".state_transition_history += [{\"from\": \"SPAWN_ENGINEERS_FOR_FIXES\", \"to\": \"MONITORING_FIX_PROGRESS\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Spawned ${#EFFORTS_TO_FIX[@]} engineers for fixes\"}]" -i orchestrator-state.json
+jq ".current_state = \"MONITORING_FIX_PROGRESS\"" -i orchestrator-state.json
+jq '.integration_feedback.wave${WAVE}.fix_engineers_spawned = ${#EFFORTS_TO_FIX[@]}' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq ".state_transition_history += [{\"from\": \"SPAWN_ENGINEERS_FOR_FIXES\", \"to\": \"MONITORING_FIX_PROGRESS\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Spawned ${#EFFORTS_TO_FIX[@]} engineers for fixes\"}]" -i orchestrator-state.json
 
 # Commit
 git add orchestrator-state.json "$SPAWN_LOG"

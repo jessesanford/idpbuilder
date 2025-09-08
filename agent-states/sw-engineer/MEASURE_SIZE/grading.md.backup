@@ -766,7 +766,7 @@ def assess_size_measurement_health(current_grade, session_data):
 ## Performance State Tracking
 
 ```yaml
-# Update orchestrator-state.json
+# Update orchestrator-state.yaml
 grading:
   SW_ENGINEER:
     MEASURE_SIZE:

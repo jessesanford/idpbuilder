@@ -61,19 +61,19 @@ commit_and_push_state() {
 ### ✅ CORRECT - Immediate Commit/Push:
 ```bash
 # Update state
-yq -i '.current_state = "WAVE_COMPLETE"' orchestrator-state.json
+jq '.current_state = "WAVE_COMPLETE"' orchestrator-state.json
 git add orchestrator-state.json
 git commit -m "state: transition to WAVE_COMPLETE [R253]"
 git push
 
 # Update wave completion
-yq -i '.waves_completed.phase1.wave1.status = "COMPLETE"' orchestrator-state.json
+jq '.waves_completed.phase1.wave1.status = "COMPLETE"' orchestrator-state.json
 git add orchestrator-state.json
 git commit -m "state: mark phase1/wave1 complete [R253]"
 git push
 
 # Update effort tracking
-yq -i '.efforts_in_progress.effort1.status = "REVIEWING"' orchestrator-state.json
+jq '.efforts_in_progress.effort1.status = "REVIEWING"' orchestrator-state.json
 git add orchestrator-state.json
 git commit -m "state: effort1 now in review [R253]"
 git push
@@ -82,19 +82,19 @@ git push
 ### ❌ WRONG - Deferred or Batch Commits:
 ```bash
 # ❌❌❌ NEVER DO THIS:
-yq -i '.current_state = "WAVE_COMPLETE"' orchestrator-state.json
-yq -i '.waves_completed.phase1.wave1.status = "COMPLETE"' orchestrator-state.json
+jq '.current_state = "WAVE_COMPLETE"' orchestrator-state.json
+jq '.waves_completed.phase1.wave1.status = "COMPLETE"' orchestrator-state.json
 # ... do other work ...
 git add orchestrator-state.json  # TOO LATE! VIOLATION!
 git commit -m "state: various updates"  # BATCH = FAIL!
 
 # ❌❌❌ NEVER DO THIS:
-yq -i '.current_state = "INTEGRATION"' orchestrator-state.json
+jq '.current_state = "INTEGRATION"' orchestrator-state.json
 echo "I'll commit this after I finish integration"  # NO! VIOLATION!
 
 # ❌❌❌ NEVER DO THIS:
 for i in 1 2 3; do
-    yq -i ".effort$i.status = 'complete'" orchestrator-state.json
+    jq ".effort$i.status = 'complete'" orchestrator-state.json
 done
 git add orchestrator-state.json  # BATCHING = VIOLATION!
 ```
@@ -111,7 +111,7 @@ update_orchestrator_state() {
     local REASON="${3:-update}"
     
     # 1. Make the edit
-    yq -i ".${KEY} = \"${VALUE}\"" orchestrator-state.json
+    jq ".${KEY} = \"${VALUE}\"" orchestrator-state.json
     
     # 2. IMMEDIATELY commit and push (R253)
     git add orchestrator-state.json
@@ -131,13 +131,13 @@ mark_wave_complete() {
     local WAVE="$2"
     
     # Multiple edits, multiple commits (R253)
-    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+    jq ".waves_completed.phase${PHASE}.wave${WAVE}.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
     git add orchestrator-state.json && git commit -m "state: wave${WAVE} completion time [R253]" && git push
     
-    yq -i ".waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"" orchestrator-state.json
+    jq ".waves_completed.phase${PHASE}.wave${WAVE}.status = \"COMPLETE\"" orchestrator-state.json
     git add orchestrator-state.json && git commit -m "state: wave${WAVE} status COMPLETE [R253]" && git push
     
-    yq -i ".current_wave_complete = true" orchestrator-state.json
+    jq ".current_wave_complete = true" orchestrator-state.json
     git add orchestrator-state.json && git commit -m "state: current wave marked complete [R253]" && git push
 }
 ```
@@ -158,7 +158,7 @@ Examples:
 ## FREQUENCY REQUIREMENT:
 
 **EVERY SINGLE EDIT** means:
-- After EVERY yq command that touches orchestrator-state.json
+- After EVERY jq command that touches orchestrator-state.json
 - After EVERY state transition
 - After EVERY status update
 - After EVERY effort tracking change
@@ -178,7 +178,7 @@ If you realize you've violated R253:
 3. **PUSH** immediately
 4. **LOG** the violation in the state file itself:
    ```bash
-   yq -i ".r253_violations += 1" orchestrator-state.json
+   jq ".r253_violations += 1" orchestrator-state.json
    git add orchestrator-state.json
    git commit -m "state: R253 violation logged [R253]"
    git push

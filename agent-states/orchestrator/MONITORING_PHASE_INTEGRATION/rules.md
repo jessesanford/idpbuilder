@@ -64,7 +64,7 @@ fi
 ### 2. 🔴🔴🔴 CHECK PHASE INTEGRATION REPORT AND ENFORCE R291 GATES 🔴🔴🔴
 ```bash
 # MANDATORY: Check for phase integration report AND enforce build/test gates
-PHASE=$(yq '.current_phase' orchestrator-state.json)
+PHASE=$(jq '.current_phase' orchestrator-state.json)
 REPORT_FILE="efforts/phase${PHASE}/phase-integration/PHASE_INTEGRATION_REPORT.md"
 
 if [ ! -f "$REPORT_FILE" ]; then
@@ -150,9 +150,9 @@ echo "📝 REASON: $UPDATE_REASON"
 ### 3. Update State File with Phase Integration Results
 ```bash
 # Update orchestrator state
-yq eval ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
-yq eval ".phase_integration_status.phase${PHASE} = \"$INTEGRATION_STATUS\"" -i orchestrator-state.json
-yq eval ".state_transition_history += [{\"from\": \"MONITORING_PHASE_INTEGRATION\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"$UPDATE_REASON\"}]" -i orchestrator-state.json
+jq ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
+jq ".phase_integration_status.phase${PHASE} = \"$INTEGRATION_STATUS\"" -i orchestrator-state.json
+jq ".state_transition_history += [{\"from\": \"MONITORING_PHASE_INTEGRATION\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"$UPDATE_REASON\"}]" -i orchestrator-state.json
 
 # Commit state change
 git add orchestrator-state.json

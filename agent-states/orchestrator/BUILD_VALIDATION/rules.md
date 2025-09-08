@@ -167,10 +167,10 @@ echo "🏗️ Build validation needed for integrated code"
 echo "🚀 Spawning Code Reviewer to validate builds..."
 
 # Update state to show spawning Code Reviewer
-yq -i '.current_state = "SPAWN_CODE_REVIEWER_BUILD_VALIDATION"' orchestrator-state.json
-yq -i '.spawn_in_progress.agent = "code-reviewer"' orchestrator-state.json
-yq -i '.spawn_in_progress.purpose = "build_validation"' orchestrator-state.json
-yq -i '.spawn_in_progress.workspace = "/efforts/integration-testing"' orchestrator-state.json
+jq '.current_state = "SPAWN_CODE_REVIEWER_BUILD_VALIDATION"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.spawn_in_progress.agent = "code-reviewer"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.spawn_in_progress.purpose = "build_validation"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.spawn_in_progress.workspace = "/efforts/integration-testing"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
 # Spawn Code Reviewer with build validation task
 Task: subagent_type="code-reviewer" \
@@ -196,8 +196,8 @@ if [ -f "$VALIDATION_REPORT" ]; then
     echo "Build validation result: $BUILD_STATUS"
     
     # Update state file
-    yq -i '.build_validation.completed = true' orchestrator-state.json
-    yq -i ".build_validation.status = \"$(echo $BUILD_STATUS | cut -d: -f2 | xargs)\"" orchestrator-state.json
+    jq '.build_validation.completed = true' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+    jq '.build_validation.status = \"$(echo $BUILD_STATUS | cut -d: -f2 | xargs)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 else
     echo "⏳ Waiting for Code Reviewer to complete validation"
     echo "📍 Expected report: $VALIDATION_REPORT"
@@ -227,7 +227,7 @@ else
 fi
 
 echo "📊 Next state: $NEXT_STATE"
-yq -i ".current_state = \"$NEXT_STATE\"" orchestrator-state.json
+jq '.current_state = \"$NEXT_STATE\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
 ```
 
@@ -265,8 +265,8 @@ if grep -q "Backport Required: Yes" "$VALIDATION_REPORT"; then
     echo "$BACKPORT_LIST"
     
     # Update state for backporting
-    yq -i '.backport_required = true' orchestrator-state.json
-    yq -i '.current_state = "IMMEDIATE_BACKPORT_REQUIRED"' orchestrator-state.json
+    jq '.backport_required = true' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+    jq '.current_state = "IMMEDIATE_BACKPORT_REQUIRED"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
     
     echo "🔄 Transitioning to IMMEDIATE_BACKPORT_REQUIRED state"
 fi

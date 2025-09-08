@@ -345,8 +345,8 @@ EFFORT_NAME="gitea-client"  # Example
 SPLIT_NUM=2  # Current split being worked
 
 # 🔴🔴🔴 CRITICAL: GET PATHS FROM STATE FILE! 🔴🔴🔴
-SPLIT_PLAN_PATH=$(yq ".split_tracking.\"$EFFORT_NAME\".splits[$((SPLIT_NUM-1))].split_plan_path" orchestrator-state.json)
-INFRASTRUCTURE_DIR=$(yq ".split_tracking.\"$EFFORT_NAME\".splits[$((SPLIT_NUM-1))].infrastructure_dir" orchestrator-state.json)
+SPLIT_PLAN_PATH=$(jq '.split_tracking.\"$EFFORT_NAME\".splits[$((SPLIT_NUM-1))].split_plan_path' orchestrator-state.json)
+INFRASTRUCTURE_DIR=$(jq '.split_tracking.\"$EFFORT_NAME\".splits[$((SPLIT_NUM-1))].infrastructure_dir' orchestrator-state.json)
 
 if [ -z "$SPLIT_PLAN_PATH" ] || [ -z "$INFRASTRUCTURE_DIR" ]; then
     echo "❌ FATAL: Split paths not found in state file!"
@@ -587,9 +587,9 @@ echo "✅ All SW Engineers spawned successfully"
 
 # CRITICAL: Update state file FIRST (R324 requirement)
 echo "🔴 R324: Updating current_state to prevent infinite loop..."
-yq -i '.current_state = "MONITOR_IMPLEMENTATION"' orchestrator-state.json
-yq -i '.previous_state = "SPAWN_AGENTS"' orchestrator-state.json
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+jq '.current_state = "MONITOR_IMPLEMENTATION"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.previous_state = "SPAWN_AGENTS"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
 # Verify the update
 echo "✅ State updated to:"

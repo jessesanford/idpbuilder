@@ -36,7 +36,7 @@ perform_atomic_state_transition() {
     echo "════════════════════════════════════════════════════════════"
     
     # STEP 1: Verify we're in the expected state
-    CURRENT=$(yq '.current_state' orchestrator-state.json)
+    CURRENT=$(jq '.current_state' orchestrator-state.json)
     if [ "$CURRENT" != "$FROM_STATE" ]; then
         echo "❌ FATAL: Expected to be in $FROM_STATE but found $CURRENT"
         echo "❌ ATOMIC TRANSITION ABORTED"
@@ -45,23 +45,23 @@ perform_atomic_state_transition() {
     
     # STEP 2: Update the state file (THE CRITICAL PART!)
     echo "📝 Updating current_state to $TO_STATE..."
-    yq -i ".current_state = \"$TO_STATE\"" orchestrator-state.json || {
+    jq ".current_state = \"$TO_STATE\"" orchestrator-state.json || {
         echo "❌ FATAL: Failed to update current_state"
         exit 1
     }
     
-    yq -i ".previous_state = \"$FROM_STATE\"" orchestrator-state.json || {
+    jq ".previous_state = \"$FROM_STATE\"" orchestrator-state.json || {
         echo "❌ FATAL: Failed to update previous_state"
         exit 1
     }
     
-    yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json || {
+    jq ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json || {
         echo "❌ FATAL: Failed to update transition_time"
         exit 1
     }
     
     # STEP 3: Verify the update worked
-    NEW_STATE=$(yq '.current_state' orchestrator-state.json)
+    NEW_STATE=$(jq '.current_state' orchestrator-state.json)
     if [ "$NEW_STATE" != "$TO_STATE" ]; then
         echo "❌ FATAL: State update verification failed!"
         echo "❌ Expected: $TO_STATE, Found: $NEW_STATE"
@@ -160,7 +160,7 @@ echo "✅ Analysis complete"
 
 # WRONG - Not atomic, steps can fail independently
 echo "Transitioning to SPAWN_AGENTS"  # Just saying it
-yq -i '.current_state = "SPAWN_AGENTS"' orchestrator-state.json  # What if this fails?
+jq '.current_state = "SPAWN_AGENTS"' orchestrator-state.json  # What if this fails?
 # Forgot to update previous_state
 # Forgot to commit
 echo "Stopping now"  # State not persisted!
@@ -176,7 +176,7 @@ echo "Stopping before transition"
 exit 0
 
 # This never runs!
-yq -i '.current_state = "SPAWN_AGENTS"' orchestrator-state.json
+jq '.current_state = "SPAWN_AGENTS"' orchestrator-state.json
 ```
 
 ## Enforcement
@@ -210,7 +210,7 @@ If a transition fails:
 ```bash
 # Check current state
 echo "Current state in file:"
-yq '.current_state' orchestrator-state.json
+jq '.current_state' orchestrator-state.json
 
 # Check git status
 echo "Git status:"
@@ -221,7 +221,7 @@ echo "Last transition commit:"
 git log --oneline -n 5 | grep "state:"
 
 # Manual recovery if needed
-yq -i '.current_state = "CORRECT_STATE"' orchestrator-state.json
+jq '.current_state = "CORRECT_STATE"' orchestrator-state.json
 git add orchestrator-state.json
 git commit -m "fix: manual state correction after failed atomic transition"
 git push

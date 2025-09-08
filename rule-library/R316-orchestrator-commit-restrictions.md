@@ -125,7 +125,7 @@ git commit -m "orchestrator: transition to SPAWN_AGENTS state"
 ### ✅ GOOD: State-Only Updates
 ```bash
 # Update state file
-yq -i '.current_state = "MONITOR"' orchestrator-state.json
+jq '.current_state = "MONITOR"' orchestrator-state.json
 
 # Commit ONLY the state file
 git add orchestrator-state.json

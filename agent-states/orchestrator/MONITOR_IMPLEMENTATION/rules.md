@@ -132,8 +132,8 @@ echo "🔍 MONITORING IMPLEMENTATIONS: Checking all active SW Engineers NOW..."
 
 # Step 1: List all SW Engineers being monitored (DO NOW!)
 echo "📊 Active SW Engineers under monitoring:"
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
-    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.json)
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
+    IMPL_STATUS=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status' orchestrator-state.json)
     
     if [ "$IMPL_STATUS" = "IN_PROGRESS" ]; then
         echo "  - $effort: Checking implementation progress..."
@@ -145,15 +145,15 @@ done
 
 # Step 2: Check for completed implementations (DO NOW!)
 echo "🔍 Checking for completed implementations..."
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
-    IMPL_STATUS=$(yq ".efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status" orchestrator-state.json)
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
+    IMPL_STATUS=$(jq '.efforts_in_progress[] | select(.name == \"$effort\") | .implementation_status' orchestrator-state.json)
     
     if [ "$IMPL_STATUS" != "COMPLETE" ]; then
         # Check for completion markers
         if [ -f "/efforts/phase${PHASE}/wave${WAVE}/${effort}/IMPLEMENTATION-COMPLETE.marker" ]; then
             echo "✅ Implementation complete for $effort!"
             # Update state file
-            yq -i ".efforts_in_progress[] |= select(.name == \"$effort\") |= .implementation_status = \"COMPLETE\"" orchestrator-state.json
+            jq '.efforts_in_progress[] |= select(.name == \"$effort\") |= .implementation_status = \"COMPLETE\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
             
             echo "🚨 CRITICAL: Implementation complete - must spawn Code Reviewer!"
             echo "➡️ Transitioning to SPAWN_CODE_REVIEWERS_FOR_REVIEW"
@@ -163,7 +163,7 @@ done
 
 # Step 3: Check for blocked implementations (DO NOW!)
 echo "🚧 Checking for blocked SW Engineers..."
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
     # Check for BLOCKED markers or stalled progress
     if [ -f "/efforts/phase${PHASE}/wave${WAVE}/${effort}/BLOCKED.marker" ]; then
         echo "⚠️ SW Engineer blocked on $effort!"
@@ -173,7 +173,7 @@ done
 
 # Step 4: Verify work locations (DO NOW!)
 echo "📍 Verifying all work in correct locations (R255)..."
-for effort in $(yq '.efforts_in_progress[].name' orchestrator-state.json); do
+for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
     EXPECTED_DIR="/efforts/phase${PHASE}/wave${WAVE}/${effort}"
     if [ -d "$EXPECTED_DIR" ]; then
         cd "$EXPECTED_DIR"
@@ -290,9 +290,9 @@ echo "✅ All SW Engineers have completed implementation"
 
 # CRITICAL: Update state file FIRST (R324 requirement)
 echo "🔴 R324: Updating current_state to prevent infinite loop..."
-yq -i ".current_state = \"SPAWN_CODE_REVIEWERS_FOR_REVIEW\"" orchestrator-state.json
-yq -i ".previous_state = \"MONITOR_IMPLEMENTATION\"" orchestrator-state.json
-yq -i ".transition_time = \"$(date -u +%Y-%m-%dT%%H:%%M:%%SZ)\"" orchestrator-state.json
+jq '.current_state = \"SPAWN_CODE_REVIEWERS_FOR_REVIEW\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.previous_state = \"MONITOR_IMPLEMENTATION\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.transition_time = \"$(date -u +%Y-%m-%dT%%H:%%M:%%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
 # Verify the update
 echo "✅ State updated to:"

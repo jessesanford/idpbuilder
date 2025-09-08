@@ -134,7 +134,7 @@ Before transitioning to SPAWN_AGENTS, verify:
 ## State Transition
 
 Once ALL effort plans are complete:
-1. Update orchestrator-state.json
+1. Update orchestrator-state.yaml
 2. Record effort plan locations
 3. **MANDATORY: Transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION (R234)**
    - DO NOT skip directly to SPAWN_AGENTS
@@ -166,7 +166,7 @@ save_todos "All effort plans complete"
 
 # R189: Commit within 60 seconds
 cd $CLAUDE_PROJECT_DIR
-git add todos/*.todo orchestrator-state.json
+git add todos/*.todo orchestrator-state.yaml
 git commit -m "todo: effort plans complete, ready for analysis"
 git push
 ```

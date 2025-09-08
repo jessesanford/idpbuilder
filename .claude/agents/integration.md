@@ -191,11 +191,11 @@ validate_merge_readiness() {
     local effort=$(echo "$branch" | sed 's/-split-[0-9]*//')
     
     # Check dependencies are complete (including ALL splits)
-    DEPS=$(yq ".efforts.\"$effort\".dependencies[]" orchestrator-state.json 2>/dev/null)
+    DEPS=$(jq ".efforts.\"$effort\".dependencies[]" orchestrator-state.json 2>/dev/null)
     
     for dep in $DEPS; do
         # Check if dependency has splits per R302
-        SPLIT_COUNT=$(yq ".split_tracking.\"$dep\".split_count // 0" orchestrator-state.json)
+        SPLIT_COUNT=$(jq ".split_tracking.\"$dep\".split_count // 0" orchestrator-state.json)
         
         if [ "$SPLIT_COUNT" -gt 0 ]; then
             # ALL splits must be merged first!

@@ -28,7 +28,7 @@
 ### 🔴🔴🔴 R252 - Mandatory State File Updates (SUPREME LAW #10)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R252-mandatory-state-file-updates.md`
 **Criticality**: SUPREME LAW - Update on every transition
-**Summary**: Update orchestrator-state.json on all state changes
+**Summary**: Update orchestrator-state.yaml on all state changes
 
 ### 🚨🚨🚨 R253 - Mandatory State File Commit Push
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R253-mandatory-state-file-commit-push.md`
@@ -118,7 +118,7 @@ validate_metadata_injection() {
 ## Next Steps
 
 After successfully injecting metadata:
-1. Update orchestrator-state.json (R252)
+1. Update orchestrator-state.yaml (R252)
 2. Commit and push changes (R253)
 3. Check TodoWrite for pending items (R232)
 4. Transition to next mandatory state (R234)

@@ -28,7 +28,7 @@ perform_wave_integration() {
     # 0. SOURCE BRANCH NAMING HELPERS AND GET PREFIX
     SF_INSTANCE_DIR=$(pwd)
     source "$SF_INSTANCE_DIR/utilities/branch-naming-helpers.sh"
-    PROJECT_PREFIX=$(yq '.branch_naming.project_prefix' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+    PROJECT_PREFIX=$(jq '.branch_naming.project_prefix' "$SF_INSTANCE_DIR/target-repo-config.yaml")
     
     # 1. CREATE INTEGRATION DIRECTORY UNDER /efforts/ STRUCTURE
     WAVE_DIR="/efforts/phase${PHASE}/wave${WAVE}"
@@ -38,7 +38,7 @@ perform_wave_integration() {
     
     # 2. FRESH CLONE OF TARGET REPO (NOT SF INSTANCE!)
     cd "$INTEGRATION_DIR"
-    TARGET_REPO_URL=$(yq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+    TARGET_REPO_URL=$(jq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
     git clone "$TARGET_REPO_URL" .
     
     # 3. CREATE INTEGRATION BRANCH WITH PROPER PREFIX
