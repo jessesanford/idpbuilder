@@ -171,11 +171,19 @@ $PROJECT_ROOT/tools/line-counter.sh
 
 MANDATORY SIZE VALIDATION:
 1. Use ONLY ${PROJECT_ROOT}/tools/line-counter.sh
-2. Specify correct base branch (-b parameter)
+2. NO PARAMETERS NEEDED - Tool auto-detects EVERYTHING!
 3. Exclude generated code (tool handles automatically)
 4. Implementation must be ≤800 lines
 5. If >800 lines, IMMEDIATE split required
 6. Document exact command and output in review
+---
+
+### 🔴🔴🔴 RULE R304 - MANDATORY LINE COUNTER USAGE 🔴🔴🔴
+**YOU MUST USE tools/line-counter.sh FOR ALL MEASUREMENTS!**
+- NEVER use git diff for line counting
+- NEVER count manually  
+- NEVER use any other method
+- Failure to use line-counter.sh = -100% IMMEDIATE FAILURE
 ---
 
 ```python
@@ -246,7 +254,7 @@ def document_size_measurement(size_result, review_context):
     review_context['size_compliance'] = {
         'measured_at': datetime.now().isoformat(),
         'tool_used': size_result.get('tool_used', './tools/line-counter.sh'),
-        'base_branch': size_result.get('base_branch', 'UNKNOWN'),
+        'auto_detected_base': size_result.get('auto_detected_base', 'UNKNOWN'),
         'command_executed': size_result.get('command', 'UNKNOWN'),
         'actual_lines': size_result.get('actual_lines', 0),
         'limit': size_result.get('limit', 800),

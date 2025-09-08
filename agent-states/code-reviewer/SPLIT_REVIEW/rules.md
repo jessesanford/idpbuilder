@@ -55,49 +55,53 @@ Say: "✅ Successfully read SPLIT_REVIEW rules for code-reviewer"
 - **split-003**: Measures against split-002 (NOT main, NOT split-001!)
 - **split-N**: Measures against split-(N-1)
 
-### 🚨🚨🚨 MANDATORY: CONSULT SPLIT PLAN FOR BASE BRANCH 🚨🚨🚨
+### 🚨🚨🚨 TOOL AUTO-DETECTS CORRECT BASE - JUST RUN IT! 🚨🚨🚨
 
-**NEVER AUTO-DETECT BASE FOR SPLITS - ALWAYS READ THE PLAN:**
+**THE TOOL IS SMART - IT KNOWS THE CORRECT BASE FOR SPLITS:**
 ```bash
-# FIRST: Find and read the split plan
-SPLIT_PLAN=$(ls SPLIT-PLAN-*.md 2>/dev/null | head -1)
-if [ -z "$SPLIT_PLAN" ]; then
-    echo "❌ CRITICAL: No SPLIT-PLAN.md found!"
-    echo "Cannot proceed without knowing correct base branch"
-    exit 1
-fi
+# ✅✅✅ CORRECT: Just run the tool, NO PARAMETERS!
+cd /path/to/effort/repo  # Navigate to effort directory
+$PROJECT_ROOT/tools/line-counter.sh
+# Tool output will show:
+# 🎯 Detected base: phase1/wave1/effort (for split-001)
+# 🎯 Detected base: split-001 (for split-002)
+# 🎯 Detected base: split-002 (for split-003)
+# ✅ Total non-generated lines: [actual count]
 
-# Extract base branch from split plan
-echo "📖 Reading split plan: $SPLIT_PLAN"
-BASE_BRANCH=$(grep -A2 "Split 1:" "$SPLIT_PLAN" | grep "Base Branch:" | cut -d: -f2- | xargs)
-echo "✅ Base branch from plan: $BASE_BRANCH"
-
-# THEN measure using the documented base
-./tools/line-counter.sh -b "$BASE_BRANCH" phase1/wave1/effort--split-001
+# ❌❌❌ WRONG: Don't use -b parameter (OLD/WRONG)
+./tools/line-counter.sh -b main  # WRONG! No -b parameter!
 ```
 
-### AUTOMATIC SPLIT MEASUREMENT (ONLY AFTER VERIFYING BASE):
+### TOOL HANDLES ALL SPLIT LOGIC AUTOMATICALLY:
 ```bash
-# ✅ CORRECT: First verify base from plan, then measure
-SPLIT_PLAN="SPLIT-PLAN-gitea-client.md"
-BASE_FROM_PLAN=$(grep -A2 "Split 1:" "$SPLIT_PLAN" | grep "Base Branch:" | cut -d: -f2- | xargs)
-echo "📋 Split plan specifies base: $BASE_FROM_PLAN"
+# For split-001:
+# Tool KNOWS to use the oversized effort's base (NOT the effort itself!)
+cd efforts/phase1/wave1/my-effort--split-001
+../../tools/line-counter.sh
+# Output: 🎯 Detected base: main (or phase integration)
 
-./tools/line-counter.sh phase1/wave1/effort--split-001
-# Tool MAY auto-detect, but VERIFY it matches plan!
-# If tool says different base than plan, USE PLAN's BASE:
-./tools/line-counter.sh -b "$BASE_FROM_PLAN" phase1/wave1/effort--split-001
+# For split-002:
+# Tool KNOWS to use split-001 as base
+cd efforts/phase1/wave1/my-effort--split-002
+../../tools/line-counter.sh
+# Output: 🎯 Detected base: phase1/wave1/my-effort--split-001
+
+# For split-003:
+# Tool KNOWS to use split-002 as base
+cd efforts/phase1/wave1/my-effort--split-003
+../../tools/line-counter.sh
+# Output: 🎯 Detected base: phase1/wave1/my-effort--split-002
 ```
 
-### OLD TOOL PROBLEMS (NOW FIXED!):
+### VERIFY TOOL'S AUTO-DETECTION:
 ```bash
-# ❌ OLD TOOL - Human error selecting wrong base:
-./tools/line-counter.sh -b main -c split-003  # OLD SYNTAX
-# Result: 5,584 lines (included ALL splits!)
+# Run the tool and CHECK what base it detected:
+$PROJECT_ROOT/tools/line-counter.sh
+# Look for this line in output:
+# 🎯 Detected base: [whatever the tool detected]
 
-# ✅ NEW TOOL - Auto-detects correct base:
-./tools/line-counter.sh split-003  # NEW SYNTAX
-# Tool output: 🎯 Detected base: split-002
+# If the detected base looks wrong, report it as a bug!
+# The tool should ALWAYS detect the correct base automatically.
 # Result: 280 lines (CORRECT - only split-003's work!)
 
 # THE TOOL ELIMINATES HUMAN ERROR IN BASE SELECTION!

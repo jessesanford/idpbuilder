@@ -161,12 +161,18 @@ The system will check for this marker. No marker = Immediate failure.
 
 ## 🔴🔴🔴 MANDATORY MEASUREMENT RULE - R304 🔴🔴🔴
 
-**ABSOLUTE REQUIREMENTS:**
+### ⚠️⚠️⚠️ CRITICAL MESSAGE FOR CODE REVIEWERS ⚠️⚠️⚠️
+**TELL CODE REVIEWERS: "YOU MUST USE tools/line-counter.sh - NO PARAMETERS NEEDED!"**
+
+**ABSOLUTE REQUIREMENTS FOR CODE REVIEWERS:**
 - ✅ MUST use `$CLAUDE_PROJECT_DIR/tools/line-counter.sh` for ALL line counting
+- ✅ Tool AUTO-DETECTS correct base branch - NO PARAMETERS NEEDED!
 - ❌ NEVER use `wc -l` or any manual counting method
+- ❌ NEVER use git diff for line counting
 - ❌ NEVER count lines any other way - this is a -100% automatic failure
-- ✅ MUST specify both -b (base branch) and -c (current branch) parameters
-- ✅ Base branch MUST be phase integration branch (NOT "main")
+- ❌ NEVER use old -b or -c parameters (tool updated!)
+
+**MESSAGE TO SPAWN: "MUST use tools/line-counter.sh for ALL measurements per R304. Tool auto-detects base - just run it!"**
 
 **Failure to use the line counter tool = AUTOMATIC -100% GRADE**
 

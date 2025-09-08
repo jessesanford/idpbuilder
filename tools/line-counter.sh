@@ -7,6 +7,7 @@ set -euo pipefail
 
 # Initialize variables
 BRANCH=""
+BASE_OVERRIDE=""
 DETAILED=false
 VERBOSE=false
 HELP=false
@@ -25,6 +26,7 @@ OPTIONS:
     -d, --detailed         Show detailed file breakdown
     -v, --verbose          Show verbose output including what's excluded
     -h, --help            Show this help message
+    -b, --base BRANCH      Override base branch (only use if auto-detection fails)
 
 ARGUMENTS:
     BRANCH                 Branch to measure (default: current branch)
@@ -35,6 +37,7 @@ EXAMPLES:
     $0 -d                  # Show detailed breakdown for current branch
     $0 phase2/wave1/api-refactor -d  # Measure specific effort with details
     $0 my-project/phase2/wave1/api-refactor  # Measure with project prefix
+    $0 -b phase1-integration mybranch  # Manual base override (last resort)
 
 AUTO-DETECTION LOGIC:
     The tool automatically determines the correct base branch.
@@ -174,6 +177,15 @@ while [[ $# -gt 0 ]]; do
             show_usage
             exit 0
             ;;
+        -b|--base)
+            if [ -z "${2:-}" ]; then
+                echo "Error: -b flag requires a base branch argument"
+                echo "Use -h or --help for usage"
+                exit 1
+            fi
+            BASE_OVERRIDE="$2"
+            shift 2
+            ;;
         -*)
             echo "Error: Unknown option $1"
             echo "Use -h or --help for usage"
@@ -256,6 +268,29 @@ find_branch_with_suffix() {
         return 0
     fi
     
+    return 1
+}
+
+# Function to find the main branch (main or master)
+find_main_branch() {
+    # Check for main first, then master
+    for candidate in main master; do
+        if branch_exists "$candidate"; then
+            echo "$candidate"
+            return 0
+        fi
+    done
+    
+    # If neither exists locally, check remotes
+    for candidate in origin/main origin/master; do
+        if git rev-parse --verify "$candidate" >/dev/null 2>&1; then
+            echo "${candidate#origin/}"
+            return 0
+        fi
+    done
+    
+    # Fatal error if no main branch found
+    echo "Error: No main or master branch found!" >&2
     return 1
 }
 
@@ -580,44 +615,137 @@ detect_base_branch() {
     fi
 }
 
-# Detect base branch
-BASE=$(detect_base_branch "$BRANCH")
-
-if [ -z "$BASE" ]; then
-    echo "Error: Could not determine base branch for '$BRANCH'"
-    echo ""
-    echo "Debugging information:"
-    echo "  Current branch: $BRANCH"
+# Function to find orchestrator state file
+find_orchestrator_state() {
+    local search_dir="$(pwd)"
+    while [ "$search_dir" != "/" ]; do
+        if [ -f "$search_dir/orchestrator-state.json" ]; then
+            echo "$search_dir/orchestrator-state.json"
+            return 0
+        fi
+        search_dir="$(dirname "$search_dir")"
+    done
     
-    # Check if it matches any known patterns
-    if [[ "$BRANCH" =~ ^(([^/]+)/)?phase([0-9]+)/wave([0-9]+)/([^/]+)$ ]]; then
-        echo "  ✓ Matches effort pattern"
-        echo "    - Project prefix: ${BASH_REMATCH[2]:-none}"
-        echo "    - Phase: ${BASH_REMATCH[3]}"
-        echo "    - Wave: ${BASH_REMATCH[4]}"
-        echo "    - Effort: ${BASH_REMATCH[5]}"
-        echo ""
-        echo "  ⚠ Pattern matched but base branch not found"
-        echo "  Possible causes:"
-        echo "    - Missing main/master branch"
-        echo "    - No common ancestor with main/master"
-    else
-        echo "  ✗ Does not match expected patterns"
+    # Check CLAUDE_PROJECT_DIR if set
+    if [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -f "$CLAUDE_PROJECT_DIR/orchestrator-state.json" ]; then
+        echo "$CLAUDE_PROJECT_DIR/orchestrator-state.json"
+        return 0
     fi
     
-    echo ""
-    echo "Branch naming conventions:"
-    echo "  - Efforts: phaseN/waveM/effort-name"
-    echo "  - Efforts with prefix: project-name/phaseN/waveM/effort-name"
-    echo "  - Splits: phaseN/waveM/effort--split-NNN"
-    echo "  - Splits with prefix: project-name/phaseN/waveM/effort--split-NNN"
-    echo "  - Wave Integration: phaseN/waveM-integration or phaseN-waveM-integration"
-    echo "  - Phase Integration: phaseN-integration"
-    echo "  - With prefix: project-name/phaseN/waveM-integration"
-    echo "  - With timestamp: any-pattern-YYYYMMDD-HHMMSS"
-    echo ""
-    echo "Run with -v flag for verbose pattern matching details."
-    exit 1
+    return 1
+}
+
+# Function to lookup base branch from orchestrator state
+lookup_base_from_state() {
+    local branch="$1"
+    local state_file=$(find_orchestrator_state)
+    
+    if [ -z "$state_file" ]; then
+        return 1
+    fi
+    
+    [ "$VERBOSE" = true ] && echo "  Checking orchestrator state file: $state_file" >&2
+    
+    # Extract effort or split name from branch
+    local effort_name=""
+    local split_num=""
+    
+    # Check if it's a split branch
+    if [[ "$branch" =~ ^(.*/)?phase[0-9]+/wave[0-9]+/([^/]+)(--|-split-)([0-9]+)$ ]]; then
+        effort_name="${BASH_REMATCH[2]}"
+        split_num="${BASH_REMATCH[4]}"
+        [ "$VERBOSE" = true ] && echo "  Detected split branch: effort=$effort_name, split=$split_num" >&2
+    elif [[ "$branch" =~ ^(.*/)?phase[0-9]+/wave[0-9]+/([^/]+)$ ]]; then
+        effort_name="${BASH_REMATCH[2]}"
+        [ "$VERBOSE" = true ] && echo "  Detected effort branch: effort=$effort_name" >&2
+    fi
+    
+    if [ -z "$effort_name" ]; then
+        return 1
+    fi
+    
+    # Try to find base branch in state file
+    local base=""
+    
+    if [ -n "$split_num" ]; then
+        # For splits, check split_tracking
+        base=$(jq -r ".split_tracking.\"$effort_name\".splits[] | select(.number==$split_num or .branch==\"$branch\") | .base_branch // empty" "$state_file" 2>/dev/null | head -1)
+        
+        if [ -z "$base" ] || [ "$base" = "null" ]; then
+            # Try without quotes on number
+            base=$(jq -r ".split_tracking.\"$effort_name\".splits[] | select(.number==\"$split_num\" or .branch==\"$branch\") | .base_branch // empty" "$state_file" 2>/dev/null | head -1)
+        fi
+    fi
+    
+    # For efforts or if split lookup failed, check efforts_in_progress
+    if [ -z "$base" ] || [ "$base" = "null" ]; then
+        base=$(jq -r ".efforts_in_progress[] | select(.name==\"$effort_name\" or .branch==\"$branch\") | .base_branch // empty" "$state_file" 2>/dev/null | head -1)
+    fi
+    
+    # Also check efforts_completed
+    if [ -z "$base" ] || [ "$base" = "null" ]; then
+        base=$(jq -r ".efforts_completed[] | select(.name==\"$effort_name\" or .branch==\"$branch\") | .base_branch // empty" "$state_file" 2>/dev/null | head -1)
+    fi
+    
+    if [ -n "$base" ] && [ "$base" != "null" ]; then
+        [ "$VERBOSE" = true ] && echo "  Found base branch in state file: $base" >&2
+        echo "$base"
+        return 0
+    fi
+    
+    return 1
+}
+
+# Detect base branch - use override if provided
+if [ -n "$BASE_OVERRIDE" ]; then
+    BASE="$BASE_OVERRIDE"
+    [ "$VERBOSE" = true ] && echo "Using manually specified base branch: $BASE" >&2
+else
+    # Try auto-detection first
+    BASE=$(detect_base_branch "$BRANCH")
+    
+    if [ -z "$BASE" ]; then
+        # Try to lookup from orchestrator state file
+        [ "$VERBOSE" = true ] && echo "Auto-detection failed. Checking orchestrator-state.json..." >&2
+        
+        BASE_FROM_STATE=$(lookup_base_from_state "$BRANCH")
+        if [ -n "$BASE_FROM_STATE" ]; then
+            BASE="$BASE_FROM_STATE"
+            [ "$VERBOSE" = true ] && echo "Found base branch in orchestrator state: $BASE" >&2
+        else
+            echo "Error: Could not determine base branch for '$BRANCH'"
+            echo ""
+            echo "Auto-detection failed and base branch not found in orchestrator-state.json"
+            echo ""
+            echo "Debugging information:"
+            echo "  Current branch: $BRANCH"
+            
+            # Try to find and show path to state file
+            STATE_FILE=$(find_orchestrator_state)
+            if [ -n "$STATE_FILE" ]; then
+                echo "  State file: $STATE_FILE"
+                echo ""
+                echo "Please check the orchestrator-state.json for this effort/split's base_branch info."
+                echo "Ensure the effort has a base_branch field in efforts_in_progress or split_tracking."
+            else
+                echo "  State file: NOT FOUND"
+                echo ""
+                echo "Could not find orchestrator-state.json in any parent directory."
+            fi
+            
+            echo ""
+            echo "As a last resort, you can specify the base branch manually with:"
+            echo "  $0 -b <base-branch> $BRANCH"
+            echo ""
+            echo "Branch naming conventions:"
+            echo "  - Efforts: phaseN/waveM/effort-name"
+            echo "  - Splits: phaseN/waveM/effort--split-NNN"
+            echo "  - Integration: phaseN/waveM-integration"
+            echo ""
+            echo "Run with -v flag for verbose pattern matching details."
+            exit 1
+        fi
+    fi
 fi
 
 # Show what we're measuring

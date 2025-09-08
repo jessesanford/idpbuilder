@@ -783,7 +783,23 @@ echo "📋 Ready to spawn Code Reviewers for effort planning"
 ## State Transition
 
 After ALL infrastructure is ready:
-1. Update orchestrator-state.json with effort directories
+1. Update orchestrator-state.json with effort metadata INCLUDING base_branch:
+   ```bash
+   # MANDATORY: Track base_branch for line-counter.sh tool
+   jq --arg effort "$EFFORT" \
+      --arg branch "$BRANCH" \
+      --arg base "$BASE_BRANCH" \
+      --arg dir "$EFFORT_DIR_ABS" \
+      '.efforts_in_progress += [{
+        "name": $effort,
+        "branch": $branch,
+        "base_branch": $base,
+        "directory": $dir,
+        "phase": .current_phase,
+        "wave": .current_wave,
+        "status": "infrastructure_ready"
+      }]' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+   ```
 2. Verify all branches pushed to remote
 3. **MANDATORY: Transition to ANALYZE_CODE_REVIEWER_PARALLELIZATION (R234)**
    - DO NOT skip to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING

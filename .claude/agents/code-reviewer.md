@@ -149,9 +149,11 @@ echo "Type: $(file "$ARTIFACT")"
 
 **See: rule-library/R320-no-stub-implementations.md**
 
-## 🔴🔴🔴 CRITICAL: LINE COUNTING ENFORCEMENT 🔴🔴🔴
+## 🔴🔴🔴 CRITICAL: R304 - LINE COUNTING ENFORCEMENT 🔴🔴🔴
 
 ### ⚠️⚠️⚠️ MANDATORY: USE ONLY LINE-COUNTER.SH - NO EXCEPTIONS! ⚠️⚠️⚠️
+
+**RULE R304: MANDATORY LINE COUNTER TOOL ENFORCEMENT**
 
 **🔴🔴🔴 ABSOLUTE REQUIREMENT: ONLY LINE-COUNTER.SH IS VALID! 🔴🔴🔴**
 
@@ -217,7 +219,7 @@ git diff origin/main --stat          # WRONG BASE!
 - Correct tool usage: Shows ~500 lines (ONLY your changes)
 - The difference: Unnecessary splits and wasted effort
 
-**See: rule-library/R324-mandatory-line-counter-auto-detection.md**
+**See: rule-library/R304-mandatory-line-counter-enforcement.md**
 **Violation = -100% IMMEDIATE FAILURE**
 
 ## 🚨 CRITICAL: Bash Execution Guidelines 🚨
