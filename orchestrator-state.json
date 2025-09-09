@@ -1,15 +1,15 @@
 {
   "state_machine": {
-    "current_state": "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN",
-    "previous_state": "PROJECT_INTEGRATION",
-    "transition_time": "2025-09-09T06:28:00Z",
-    "transition_reason": "Project integration infrastructure ready, need merge plan creation",
+    "current_state": "WAITING_FOR_PROJECT_MERGE_PLAN",
+    "previous_state": "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN",
+    "transition_time": "2025-09-09T06:22:04Z",
+    "transition_reason": "Code Reviewer completed project merge plan",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
     "infrastructure_setup_time": "2025-09-07T23:59:00Z",
     "infrastructure_verified_time": "2025-09-08T00:13:00Z",
-    "next_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
+    "next_state": "SPAWN_INTEGRATION_AGENT",
     "prepared_for_transition": true,
     "analysis_acknowledged": true,
     "r290_verification_complete": true,
@@ -693,12 +693,15 @@
     "repository_url": "https://github.com/jessesanford/idpbuilder.git",
     "branch": "project-integration",
     "base_branch": "main",
-    "status": "INFRASTRUCTURE_READY",
+    "status": "MERGE_PLAN_READY",
     "created_at": "2025-09-09T06:26:00Z",
     "phase_branches_to_merge": [
       "idpbuilder-oci-build-push/phase1/integration",
       "phase2/wave1/integration"
     ],
-    "documentation": "efforts/project/integration-workspace/idpbuilder/PROJECT-INTEGRATION-INFO.md"
+    "documentation": "efforts/project/integration-workspace/idpbuilder/PROJECT-INTEGRATION-INFO.md",
+    "merge_plan_created": true,
+    "merge_plan_location": "efforts/project/integration-workspace/PROJECT-MERGE-PLAN.md",
+    "merge_plan_created_at": "2025-09-09T06:22:04Z"
   }
 }
