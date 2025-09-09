@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "WAITING_FOR_PROJECT_MERGE_PLAN",
-    "previous_state": "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN",
-    "transition_time": "2025-09-09T06:22:04Z",
-    "transition_reason": "Code Reviewer completed project merge plan",
+    "current_state": "SPAWN_INTEGRATION_AGENT_PROJECT",
+    "previous_state": "WAITING_FOR_PROJECT_MERGE_PLAN",
+    "transition_time": "2025-09-09T08:39:48Z",
+    "transition_reason": "Project merge plan reviewed, ready to spawn Integration Agent",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
