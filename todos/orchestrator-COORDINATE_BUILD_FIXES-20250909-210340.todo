@@ -1,0 +1,34 @@
+# Orchestrator TODO State
+Date: 2025-09-09T21:04:00Z
+State: COORDINATE_BUILD_FIXES
+Agent: orchestrator
+
+## Completed Tasks (ANALYZE_BUILD_FAILURES State)
+✅ Performed agent identity verification
+✅ Acknowledged critical rules from orchestrator config
+✅ Verified environment and state files
+✅ Validated target repository configuration (R191)
+✅ Checked for master implementation plan
+✅ Loaded orchestrator state and determined next actions
+✅ Read ANALYZE_BUILD_FAILURES state rules (R290 mandatory)
+✅ Analyzed the 3 test failures from production validation
+✅ Created BUILD-ERROR-ANALYSIS.md documenting categorized errors
+✅ Created ERROR-TO-EFFORT-MAP.md mapping errors to efforts
+✅ Created BUILD-FAILURE-ANALYSIS-SUMMARY.md
+✅ Created CODE-REVIEWER-FIX-PLANNING-BRIEF.md
+✅ Spawned code reviewer to create fix plans for build failures
+✅ Updated state file to next state before stopping (R324)
+✅ Saved TODO state before stopping (R287)
+
+## Next Tasks (COORDINATE_BUILD_FIXES State)
+- [ ] Read COORDINATE_BUILD_FIXES state rules (R290)
+- [ ] Spawn SW Engineers to implement the 3 fixes
+- [ ] Monitor fix implementation progress
+- [ ] Verify fixes resolve the test failures
+- [ ] Transition to next appropriate state
+
+## Context for Next Session
+- Fix plans created at: efforts/project/integration-workspace/FIX-PLAN-PREEXISTING-TESTS.md
+- 3 pre-existing test failures need fixing (not from our implementation)
+- All fixes are to test files only, production binary already works
+- Fixes can be parallelized (no dependencies between them)
