@@ -20,3 +20,15 @@ Status: Success
 
 ## Operation 4: Merge image-builder branch
 Command: git merge origin/idpbuilder-oci-build-push/phase2/wave1/image-builder --no-ff -m 'integrate: phase2/wave1/image-builder into project-integration'
+Result: CONFLICT in work-log.md (resolved by preserving effort-specific log in separate file)
+Status: Resolved
+
+---
+# Merged Effort Logs
+
+## E2.1.1: image-builder
+- Branch: idpbuilder-oci-build-push/phase2/wave1/image-builder
+- Implementation Status: COMPLETE
+- Total Lines: 615/800 (within limit)
+- All tests passing: 12/12 tests
+- Feature flag: ENABLE_IMAGE_BUILDER (disabled by default)
