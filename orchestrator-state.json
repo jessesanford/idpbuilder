@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "PROJECT_INTEGRATION",
-    "previous_state": "PHASE_COMPLETE",
-    "transition_time": "2025-09-09T06:04:06Z",
-    "transition_reason": "All phases complete (2/2), ready for project-level integration",
+    "current_state": "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN",
+    "previous_state": "PROJECT_INTEGRATION",
+    "transition_time": "2025-09-09T06:28:00Z",
+    "transition_reason": "Project integration infrastructure ready, need merge plan creation",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -686,5 +686,19 @@
     "test_status": "PASSED",
     "build_status": "SUCCESS",
     "ready_for_project_integration": true
+  },
+  "project_integration": {
+    "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace",
+    "target_repository": "idpbuilder",
+    "repository_url": "https://github.com/jessesanford/idpbuilder.git",
+    "branch": "project-integration",
+    "base_branch": "main",
+    "status": "INFRASTRUCTURE_READY",
+    "created_at": "2025-09-09T06:26:00Z",
+    "phase_branches_to_merge": [
+      "idpbuilder-oci-build-push/phase1/integration",
+      "phase2/wave1/integration"
+    ],
+    "documentation": "efforts/project/integration-workspace/idpbuilder/PROJECT-INTEGRATION-INFO.md"
   }
 }
