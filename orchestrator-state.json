@@ -662,10 +662,10 @@
       "all_splits_reviewed": true
     }
   },
-  "current_state": "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
-  "previous_state": "MONITORING_PROJECT_INTEGRATION",
-  "transition_time": "2025-09-09T14:30:00Z",
-  "transition_reason": "Bugs found during project integration, need Code Reviewer to create fix plan",
+  "current_state": "WAITING_FOR_PROJECT_FIX_PLANS",
+  "previous_state": "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
+  "transition_time": "2025-09-09T15:11:02Z",
+  "transition_reason": "Code Reviewer spawned to create project fix plan",
   "phase2_wave1_integration": {
     "status": "COMPLETED",
     "integration_branch": "phase2/wave1/integration",
@@ -733,5 +733,31 @@
     "merge_plan_created": true,
     "merge_plan_location": "efforts/project/integration-workspace/PROJECT-MERGE-PLAN.md",
     "merge_plan_created_at": "2025-09-09T06:22:04Z"
+  },
+  "agents_spawned": [
+    {
+      "type": "code-reviewer",
+      "task": "project_fix_plan",
+      "state": "CREATE_PROJECT_FIX_PLAN",
+      "timestamp": "2025-09-09T15:10:39Z",
+      "plan_created": true,
+      "plan_location": "PROJECT-FIX-PLAN.md"
+    }
+  ],
+  "project_bugs_to_fix": {
+    "fix_plan_status": "CREATED",
+    "fix_plan_location": "PROJECT-FIX-PLAN.md",
+    "fix_plan_created_at": "2025-09-09T15:10:39Z",
+    "bugs_count": 1,
+    "bugs_details": [
+      {
+        "id": 1,
+        "file": "pkg/registry/gitea.go",
+        "lines": "14-16",
+        "severity": "HIGH",
+        "description": "Incorrect import paths - using jessesanford instead of cnoe-io",
+        "source_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client"
+      }
+    ]
   }
 }
