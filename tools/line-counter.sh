@@ -121,7 +121,7 @@ find_project_prefix() {
     if [ -n "$config_file" ]; then
         # Check if yq is available
         if command -v yq &> /dev/null; then
-            prefix=$(jq '.branch_naming.project_prefix // ""' "$config_file" 2>/dev/null || echo "")
+            prefix=$(yq '.branch_naming.project_prefix // ""' "$config_file" 2>/dev/null || echo "")
             if [ -n "$prefix" ]; then
                 PROJECT_PREFIX="$prefix"
                 [ "$VERBOSE" = true ] && echo "✓ Found project prefix '$PROJECT_PREFIX' from config in $PREFIX_SOURCE"
@@ -234,6 +234,21 @@ fi
 
 # Try to find project prefix from configuration
 find_project_prefix
+
+# If no prefix found in config (or config says empty), try to detect from branch pattern
+if [ -z "$PROJECT_PREFIX" ] || [ "$PREFIX_SOURCE" = "config (empty)" ]; then
+    # Check if branch matches pattern: [project-prefix]/phase[N]/wave[N]/[effort]
+    if [[ "$BRANCH" =~ ^([^/]+)/phase[0-9]+/wave[0-9]+/ ]]; then
+        potential_prefix="${BASH_REMATCH[1]}"
+        
+        # Validate it's not a standard SF pattern without prefix
+        if [[ ! "$potential_prefix" =~ ^phase[0-9]+ ]]; then
+            PROJECT_PREFIX="$potential_prefix"
+            PREFIX_SOURCE="branch pattern"
+            [ "$VERBOSE" = true ] && echo "✓ Detected project prefix '$PROJECT_PREFIX' from current branch pattern"
+        fi
+    fi
+fi
 
 # Function to check if branch exists (locally or remote)
 branch_exists() {
