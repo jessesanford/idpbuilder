@@ -661,9 +661,9 @@
       "all_splits_reviewed": true
     }
   },
-  "current_state": "WAITING_FOR_PROJECT_FIX_PLANS",
-  "previous_state": "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
-  "transition_time": "2025-09-09T15:11:02Z",
+  "current_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
+  "previous_state": "WAITING_FOR_PROJECT_FIX_PLANS",
+  "transition_time": "2025-09-09T15:23:36Z",
   "transition_reason": "Code Reviewer spawned to create project fix plan",
   "phase2_wave1_integration": {
     "status": "COMPLETED",
@@ -759,5 +759,10 @@
       }
     ],
     "fix_plan_verified_at": "2025-09-09T15:19:24Z"
+  },
+  "project_fixes": {
+    "plan_location": "PROJECT-FIX-PLAN.md",
+    "plan_received": true,
+    "engineers_needed": 1
   }
 }
