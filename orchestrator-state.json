@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "PROJECT_INTEGRATION_COMPLETE",
-    "previous_state": "MONITORING_PROJECT_FIXES",
-    "transition_time": "2025-09-09T16:08:05Z",
-    "transition_reason": "Final project integration completed successfully with import path fix applied",
+    "current_state": "CREATE_INTEGRATION_TESTING",
+    "previous_state": "PROJECT_INTEGRATION_COMPLETE",
+    "transition_time": "2025-09-09T16:18:08Z",
+    "transition_reason": "Moving to integration testing after successful project integration",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -213,7 +213,10 @@
       "fix_plan_status": "NOT_CREATED",
       "fix_status": "NOT_STARTED"
     },
-    "monitor_fixes_completed": false
+    "monitor_fixes_completed": false,
+    "integration_testing_branch": "idpbuilder-oci-build-push/integration-testing",
+    "build_validation_status": "PARTIAL_85_PERCENT",
+    "pr_plan_created": true
   },
   "sw_engineer_parallelization_plan": {
     "wave": 1,
