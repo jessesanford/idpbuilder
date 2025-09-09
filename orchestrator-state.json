@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "MONITORING_PROJECT_INTEGRATION",
-    "previous_state": "SPAWN_INTEGRATION_AGENT_PROJECT",
-    "transition_time": "2025-09-09T10:50:28Z",
-    "transition_reason": "Integration Agent spawned and completed project integration",
+    "current_state": "PROJECT_FIX_PLANNING",
+    "previous_state": "MONITORING_PROJECT_INTEGRATION",
+    "transition_time": "2025-09-09T13:31:33Z",
+    "transition_reason": "Bugs found during project integration - need fix plans per R266",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -204,6 +204,12 @@
       "bug_documented": true,
       "integration_score": "100/100",
       "report_location": "efforts/project/integration-workspace/INTEGRATION-REPORT.md"
+    },
+    "project_bugs_to_fix": {
+      "location": "pkg/registry/gitea.go:14-16",
+      "description": "Upstream bug in registry initialization",
+      "documented": true,
+      "needs_fix_plan": true
     }
   },
   "sw_engineer_parallelization_plan": {
