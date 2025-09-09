@@ -34,7 +34,7 @@
       "verified": true
     },
     "monitoring_complete": true,
-    "fix_monitoring_complete": false,
+    "fix_monitoring_complete": true,
     "next_transition_prepared_at": "2025-09-07T23:36:00Z",
     "monitoring_results": {
       "E1.2.1": {
@@ -664,10 +664,10 @@
       "all_splits_reviewed": true
     }
   },
-  "current_state": "MONITORING_PROJECT_FIXES",
-  "previous_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
-  "transition_time": "2025-09-09T15:30:25Z",
-  "transition_reason": "Code Reviewer spawned to create project fix plan",
+  "current_state": "PROJECT_INTEGRATION",
+  "previous_state": "MONITORING_PROJECT_FIXES",
+  "transition_time": "2025-09-09T16:45:58Z",
+  "transition_reason": "All project fixes completed and reviewed. Per R327, must re-run full integration with fixed source branches.",
   "phase2_wave1_integration": {
     "status": "COMPLETED",
     "integration_branch": "phase2/wave1/integration",
@@ -783,7 +783,32 @@
       "branch": "phase2/wave1/gitea-client",
       "status": "completed",
       "commit": "bf3d6e0",
-      "completion_time": "2025-09-09T15:30:25Z"
+      "completion_time": "2025-09-09T15:30:25Z",
+      "review_status": "PASSED",
+      "review_completed_at": "2025-09-09T16:31:20Z",
+      "review_findings": "Import path fix correct. Related Phase 1 API issues resolved in bugs #2 and #3."
+    },
+    {
+      "bug_id": 2,
+      "description": "Phase 1 API mismatches in registry package",
+      "engineer": "sw-engineer-2",
+      "branch": "phase2/wave1/gitea-client",
+      "status": "completed",
+      "details": "Code calls non-existent Phase 1 functions/types: NewTrustStoreManager, CertValidator, FallbackHandler",
+      "completion_time": "2025-09-09T16:40:24Z",
+      "review_status": "PASSED",
+      "review_completed_at": "2025-09-09T16:44:29Z"
+    },
+    {
+      "bug_id": 3,
+      "description": "go-containerregistry API version issues",
+      "engineer": "sw-engineer-2",
+      "branch": "phase2/wave1/gitea-client",
+      "status": "completed",
+      "details": "remote.WithTimeout undefined, remote.WithProgress expects different parameter type",
+      "completion_time": "2025-09-09T16:40:24Z",
+      "review_status": "PASSED",
+      "review_completed_at": "2025-09-09T16:44:29Z"
     }
   ],
   "final_integration": {

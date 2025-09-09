@@ -1,0 +1,23 @@
+# Orchestrator TODO State - MONITORING_PROJECT_FIXES
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+## Completed Tasks:
+✅ Read state-specific rules for MONITORING_PROJECT_FIXES (R290)
+✅ Check orchestrator-state.json for active efforts and fix status
+✅ Monitor SW Engineer progress in fix implementations
+✅ Check for completed fixes and validation status
+✅ Spawn Code Reviewer to review bug #1 fix
+✅ Update orchestrator-state.json with review results
+✅ Spawn SW Engineer to fix Phase 1 API mismatches (bugs #2 and #3)
+✅ Update orchestrator-state.json with bug #2 and #3 fix status
+✅ Spawn Code Reviewer to review bugs #2 and #3 fixes
+✅ Update bug #1 review status to PASSED
+✅ Check if all fixes are complete and reviewed
+
+## Project Fix Summary:
+- Bug #1: Import path fix - COMPLETED & PASSED REVIEW
+- Bug #2: Phase 1 API mismatches - COMPLETED & PASSED REVIEW  
+- Bug #3: go-containerregistry API issues - COMPLETED & PASSED REVIEW
+
+## Next State: PROJECT_INTEGRATION
+Per R327, must delete old integration and re-run with fixed source branches.
