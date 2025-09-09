@@ -37,7 +37,7 @@ Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
 
 ---
 
-## 🛑🛑🛑 R313 MANDATORY STOP AFTER SPAWNING AGENTS 🛑🛑🛑
+## 🛑🛑🛑 R322 Part A MANDATORY STOP AFTER SPAWNING AGENTS 🛑🛑🛑
 
 **SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
 
@@ -56,7 +56,7 @@ Spawn Integration Agent to execute the project merge plan, merging all phase int
    - Project integration workspace path
    - Phase branch details
 3. **Update State File** with agent details
-4. **STOP per R313**
+4. **STOP per R322 Part A**
 
 ## Valid State Transitions
 

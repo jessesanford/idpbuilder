@@ -11,7 +11,7 @@ Spawn Integration Agent (SW Engineer in integration mode) to execute the phase m
 - **VALIDATE** next state exists in SOFTWARE-FACTORY-STATE-MACHINE.md
 - **VIOLATION = IMMEDIATE FAILURE**
 
-### 🔴🔴🔴 RULE R313: MANDATORY STOP AFTER SPAWNING AGENTS (SUPREME LAW)
+### 🔴🔴🔴 RULE R322 Part A: MANDATORY STOP AFTER SPAWNING AGENTS (SUPREME LAW)
 - **MUST STOP IMMEDIATELY** after spawning Integration Agent
 - **RECORD** what was spawned in state file
 - **SAVE** TODOs and commit state changes
@@ -103,7 +103,7 @@ Spawn Integration Agent (SW Engineer in integration mode) to execute the phase m
      agent_spawned: true
    ```
 
-6. **Save and Exit (R313 MANDATORY)**
+6. **Save and Exit (R322 Part A MANDATORY)**
    ```bash
    # Save TODOs
    save_todos "SPAWN_INTEGRATION_AGENT_PHASE"
@@ -121,16 +121,16 @@ Spawn Integration Agent (SW Engineer in integration mode) to execute the phase m
 ## Transition Rules
 
 ### Valid Next States
-- **MONITORING_PHASE_INTEGRATION** - After spawning (MANDATORY per R313)
+- **MONITORING_PHASE_INTEGRATION** - After spawning (MANDATORY per R322 Part A)
 
 ### Invalid Transitions
 - ❌ Any state other than MONITORING_PHASE_INTEGRATION
-- ❌ Continuing work after spawn (violates R313)
+- ❌ Continuing work after spawn (violates R322 Part A)
 - ❌ Attempting integration yourself (orchestrator doesn't merge)
 
 ## Common Violations to Avoid
 
-1. **Not stopping after spawn** - Violates R313, causes context loss
+1. **Not stopping after spawn** - Violates R322 Part A, causes context loss
 2. **Missing PHASE-MERGE-PLAN.md** - Integration has no guidance
 3. **Wrong directory for spawn** - Integration happens in wrong place
 4. **Not verifying wave completeness** - Merging incomplete work
@@ -153,7 +153,7 @@ git branch -r | grep "phase-.*-integration"
 grep -c "status: COMPLETE" orchestrator-state.json
 
 # After spawn, verify stop
-echo "STOPPING per R313 - Integration Agent spawned for phase merges"
+echo "STOPPING per R322 Part A - Integration Agent spawned for phase merges"
 ```
 
 ## Integration Failure Handling
@@ -165,7 +165,7 @@ If integration fails (detected in MONITORING_PHASE_INTEGRATION):
 4. Re-run entire phase integration after fixes
 
 ## References
-- R313: rule-library/R313-mandatory-stop-after-spawn.md
+- R322 Part A: rule-library/R322 Part A-mandatory-stop-after-spawn.md
 - R208: rule-library/R208-spawn-directory-protocol.md
 - R285: rule-library/R285-phase-integration-requirements.md
 - R321: rule-library/R321-immediate-backport-during-integration.md

@@ -11,7 +11,7 @@ Spawn Code Reviewer agent to create a comprehensive merge plan for integrating a
 - **VALIDATE** next state exists in SOFTWARE-FACTORY-STATE-MACHINE.md
 - **VIOLATION = IMMEDIATE FAILURE**
 
-### 🔴🔴🔴 RULE R313: MANDATORY STOP AFTER SPAWNING AGENTS (SUPREME LAW)
+### 🔴🔴🔴 RULE R322 Part A: MANDATORY STOP AFTER SPAWNING AGENTS (SUPREME LAW)
 - **MUST STOP IMMEDIATELY** after spawning Code Reviewer
 - **RECORD** what was spawned in state file
 - **SAVE** TODOs and commit state changes
@@ -87,7 +87,7 @@ Spawn Code Reviewer agent to create a comprehensive merge plan for integrating a
        timestamp: YYYY-MM-DD HH:MM:SS
    ```
 
-5. **Save and Exit (R313 MANDATORY)**
+5. **Save and Exit (R322 Part A MANDATORY)**
    ```bash
    # Save TODOs
    save_todos "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN"
@@ -105,16 +105,16 @@ Spawn Code Reviewer agent to create a comprehensive merge plan for integrating a
 ## Transition Rules
 
 ### Valid Next States
-- **WAITING_FOR_PHASE_MERGE_PLAN** - After spawning (MANDATORY per R313)
+- **WAITING_FOR_PHASE_MERGE_PLAN** - After spawning (MANDATORY per R322 Part A)
 
 ### Invalid Transitions
 - ❌ Any state other than WAITING_FOR_PHASE_MERGE_PLAN
-- ❌ Continuing work after spawn (violates R313)
-- ❌ Spawning multiple agents (violates R313)
+- ❌ Continuing work after spawn (violates R322 Part A)
+- ❌ Spawning multiple agents (violates R322 Part A)
 
 ## Common Violations to Avoid
 
-1. **Not stopping after spawn** - Violates R313, causes context loss
+1. **Not stopping after spawn** - Violates R322 Part A, causes context loss
 2. **Forgetting to update state file** - Causes state machine corruption
 3. **Not verifying phase infrastructure** - Causes spawn failures
 4. **Missing wave branch information** - Results in incomplete merge plans
@@ -134,11 +134,11 @@ git branch -r | grep "phase-.*-integration"
 grep "waves_completed" orchestrator-state.json
 
 # After spawn, verify stop
-echo "STOPPING per R313 - Code Reviewer spawned for phase merge planning"
+echo "STOPPING per R322 Part A - Code Reviewer spawned for phase merge planning"
 ```
 
 ## References
-- R313: rule-library/R313-mandatory-stop-after-spawn.md
+- R322 Part A: rule-library/R322 Part A-mandatory-stop-after-spawn.md
 - R208: rule-library/R208-spawn-directory-protocol.md
 - R269: rule-library/R269-merge-plan-requirements.md
 - R270: rule-library/R270-merge-sequence-validation.md

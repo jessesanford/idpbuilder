@@ -5,11 +5,18 @@ Actively monitor Code Reviewer creating wave merge plan. Check for completion an
 
 ## Critical Rules
 
-### 🔴🔴🔴 RULE R322: MANDATORY STOP BEFORE STATE TRANSITION (SUPREME LAW)
-- **STOP** and save state before ANY transition
-- **READ** orchestrator-state.json to verify current state
-- **VALIDATE** next state exists in SOFTWARE-FACTORY-STATE-MACHINE.md
-- **VIOLATION = IMMEDIATE FAILURE**
+### 🛑🛑🛑 RULE R322: MANDATORY CHECKPOINT BEFORE SPAWN_INTEGRATION_AGENT (SUPREME LAW) 🛑🛑🛑
+
+**THIS IS A CRITICAL R322 CHECKPOINT STATE!**
+
+When transitioning from WAITING_FOR_MERGE_PLAN → SPAWN_INTEGRATION_AGENT:
+- **MUST STOP** to allow user review of WAVE-MERGE-PLAN.md
+- **MUST UPDATE** state file to SPAWN_INTEGRATION_AGENT before stopping
+- **MUST DISPLAY** checkpoint message with plan location
+- **MUST EXIT** cleanly to preserve context
+- **VIOLATION = -100% IMMEDIATE FAILURE**
+
+See: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
 
 ### 🔴🔴🔴 RULE R233: IMMEDIATE ACTION REQUIRED (SUPREME LAW)
 - **NO PASSIVE WAITING** - Must actively check for completion
@@ -127,27 +134,72 @@ Actively monitor Code Reviewer creating wave merge plan. Check for completion an
 
 ## Transition Rules
 
-### 🔴🔴🔴 CRITICAL: Update State BEFORE Stopping! 🔴🔴🔴
-Per R322, you MUST update `current_state` to the next state BEFORE stopping:
+### 🛑🛑🛑 R322 MANDATORY CHECKPOINT - DO NOT SKIP! 🛑🛑🛑
+
+**THIS TRANSITION REQUIRES A MANDATORY USER CHECKPOINT!**
+
+When merge plan is ready and validated:
 
 ```bash
-# When merge plan is validated and ready to transition:
-echo "📝 Updating state file for transition..."
+# STEP 1: Validate merge plan exists
+if [ ! -f "${INTEGRATION_DIR}/WAVE-MERGE-PLAN.md" ]; then
+    echo "❌ Cannot transition - no merge plan found!"
+    exit 1
+fi
+
+# STEP 2: Update state file to SPAWN_INTEGRATION_AGENT
+echo "📝 R322: Updating state for checkpoint..."
 jq '.current_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 jq '.previous_state = "WAITING_FOR_MERGE_PLAN"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
-jq '.transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.transition_time = "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 jq '.wave_integration.merge_plan = "integration-workspace/WAVE-MERGE-PLAN.md"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
-git add orchestrator-state.json
-git commit -m "state: transition from WAITING_FOR_MERGE_PLAN to SPAWN_INTEGRATION_AGENT"
+
+# STEP 3: Save TODOs per R287
+save_todos "R322_CHECKPOINT_MERGE_PLAN_READY"
+
+# STEP 4: Commit state changes
+git add orchestrator-state.json todos/*.todo
+git commit -m "state: R322 checkpoint - merge plan ready for user review"
 git push
 
-# THEN stop per R322
-echo "🛑 Stopping before SPAWN_INTEGRATION_AGENT state (per R322)"
+# STEP 5: Display R322 checkpoint message
+cat << 'EOF'
+## 🛑 R322 MANDATORY CHECKPOINT - USER REVIEW REQUIRED
+
+### ✅ Merge Plan Created Successfully:
+- Location: integration-workspace/WAVE-MERGE-PLAN.md
+- Created by: Code Reviewer
+- Status: Ready for review
+
+### 📊 State Transition Ready:
+- Current State: WAITING_FOR_MERGE_PLAN ✅
+- Next State: SPAWN_INTEGRATION_AGENT (pending user approval)
+
+### 📋 CRITICAL: Review Required Before Execution
+The merge plan has been created but NOT executed. Please review:
+1. Merge order and dependencies
+2. Conflict resolution strategy
+3. Branch selection (splits vs originals)
+
+### ⏸️ STOPPED FOR USER REVIEW
+DO NOT proceed without reviewing the merge plan!
+To continue after review: /continue-orchestrating
+EOF
+
+# STEP 6: EXIT CLEANLY (R322 MANDATORY)
+exit 0  # STOP HERE - DO NOT CONTINUE!
+```
+
+### ❌ R322 VIOLATION - AUTOMATIC FAILURE:
+```bash
+# ❌❌❌ NEVER DO THIS - IMMEDIATE -100% FAILURE!
+echo "Merge plan ready, spawning integration agent..."
+/spawn integration-agent  # R322 VIOLATION!
 ```
 
 ### Valid Next States
-- **SPAWN_INTEGRATION_AGENT** - Merge plan created and validated (UPDATE STATE FIRST!)
-- **ERROR_RECOVERY** - Timeout or Code Reviewer blocked (UPDATE STATE FIRST!)
+- **SPAWN_INTEGRATION_AGENT** - After R322 checkpoint and user review
+- **ERROR_RECOVERY** - Timeout or Code Reviewer blocked
 
 ### Invalid Transitions
 - ❌ Skipping to MONITORING_INTEGRATION without spawn

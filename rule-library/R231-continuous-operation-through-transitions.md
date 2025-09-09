@@ -1,15 +1,21 @@
-# 🔴🔴🔴 Rule R231: Continuous Operation Through State Transitions [SUPREME] - MODIFIED BY R313
+# 🔴🔴🔴 Rule R231: Continuous Operation Through State Transitions [SUPREME] - EXCEPT R322 CHECKPOINTS
 
-## ⚠️⚠️⚠️ CRITICAL UPDATE: EXCEPTION FOR SPAWN STATES ⚠️⚠️⚠️
+## ⚠️⚠️⚠️ CRITICAL: R322 CHECKPOINT EXCEPTIONS ⚠️⚠️⚠️
 
-**THIS RULE IS NOW MODIFIED BY R313 FOR SPAWN STATES**
-- **R313** mandates MANDATORY STOP after transitioning to spawn states
-- **R231** applies to all NON-SPAWN state transitions
-- **Spawn states MUST STOP after spawning to preserve context**
-- **See R313-mandatory-stop-after-spawn.md for spawn state requirements**
+**THIS RULE APPLIES TO ALL TRANSITIONS EXCEPT R322 CHECKPOINTS**
+- **R322** defines mandatory checkpoint stops (spawns, reviews, assessments)
+- **R231** applies to all OTHER state transitions
+- **At R322 checkpoints: MUST STOP per R322 + R324**
+- **At all other transitions: MUST CONTINUE per R231**
 
 ## Rule Statement
-State transitions are WAYPOINTS, not DESTINATIONS. The orchestrator MUST IMMEDIATELY CONTINUE working after every state transition without stopping, pausing, or awaiting instructions (EXCEPT for spawn states per R313). Transitions are part of continuous workflow, NOT endpoints. Stopping after a non-spawn transition violates R021 (Orchestrator Never Stops) and results in AUTOMATIC FAILURE.
+State transitions are WAYPOINTS, not DESTINATIONS. The orchestrator MUST IMMEDIATELY CONTINUE working after every state transition without stopping, pausing, or awaiting instructions (EXCEPT at R322 checkpoints). Transitions are part of continuous workflow, NOT endpoints. Stopping after a non-checkpoint transition violates R021 (Orchestrator Never Stops) and results in AUTOMATIC FAILURE.
+
+**R322 Checkpoints include:**
+- After spawning agents (Part A)
+- Before executing reviewed plans (Part B)
+- After assessments requiring decisions (Part C)
+- At monitoring state changes (Part D)
 
 ## Criticality Level
 **SUPREME** - Violation = -100% AUTOMATIC FAILURE (Dereliction of duty)

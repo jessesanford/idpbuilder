@@ -1,3 +1,8 @@
+---
+name: reset-state
+description: Emergency reset of Software Factory state machine when corrupted
+---
+
 # /reset-state
 
 ╔═══════════════════════════════════════════════════════════════════════════════╗

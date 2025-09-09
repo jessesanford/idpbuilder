@@ -1,3 +1,8 @@
+---
+name: check-status
+description: Comprehensive diagnostic analysis of Software Factory 2.0 system state
+---
+
 # /check-status
 
 ╔═══════════════════════════════════════════════════════════════════════════════╗

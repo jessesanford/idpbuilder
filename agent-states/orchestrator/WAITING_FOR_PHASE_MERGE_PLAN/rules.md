@@ -5,11 +5,18 @@ Actively monitor Code Reviewer creating phase merge plan for integrating all wav
 
 ## Critical Rules
 
-### 🔴🔴🔴 RULE R322: MANDATORY STOP BEFORE STATE TRANSITION (SUPREME LAW)
-- **STOP** and save state before ANY transition
-- **READ** orchestrator-state.json to verify current state
-- **VALIDATE** next state exists in SOFTWARE-FACTORY-STATE-MACHINE.md
-- **VIOLATION = IMMEDIATE FAILURE**
+### 🛑🛑🛑 RULE R322: MANDATORY CHECKPOINT BEFORE SPAWN_INTEGRATION_AGENT_PHASE (SUPREME LAW) 🛑🛑🛑
+
+**THIS IS A CRITICAL R322 CHECKPOINT STATE!**
+
+When transitioning from WAITING_FOR_PHASE_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PHASE:
+- **MUST STOP** to allow user review of PHASE-MERGE-PLAN.md
+- **MUST UPDATE** state file to SPAWN_INTEGRATION_AGENT_PHASE before stopping
+- **MUST DISPLAY** checkpoint message with plan location
+- **MUST EXIT** cleanly to preserve context
+- **VIOLATION = -100% IMMEDIATE FAILURE**
+
+See: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
 
 ### 🔴🔴🔴 RULE R233: IMMEDIATE ACTION REQUIRED (SUPREME LAW)
 - **NO PASSIVE WAITING** - Must actively check for completion

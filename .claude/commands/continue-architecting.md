@@ -1,3 +1,8 @@
+---
+name: continue-architecting
+description: Continue architecture review as Architect agent
+---
+
 # /continue-architecting
 
 ╔═══════════════════════════════════════════════════════════════════════════════╗

@@ -1,39 +1,42 @@
 # Orchestrator - WAITING_FOR_BACKPORT_PLAN State Rules
 
-## 🛑🛑🛑 R322 MANDATORY STOP BEFORE STATE TRANSITIONS 🛑🛑🛑
+## 🛑🛑🛑 R322 MANDATORY CHECKPOINT BEFORE SPAWN_SW_ENGINEER_BACKPORT_FIXES 🛑🛑🛑
 
-**SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
+**THIS IS A CRITICAL R322 CHECKPOINT STATE!**
 
-### YOU MUST STOP AFTER:
-1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.json with new state
-3. ✅ Committing and pushing the state file  
-4. ✅ Providing work summary
+### SUPREME LAW - BACKPORT PLAN REQUIRES USER REVIEW
 
-### YOU MUST NOT:
-- ❌ Continue to the next state automatically
-- ❌ Start work for the new state
-- ❌ Spawn agents for the new state
-- ❌ Assume permission to continue
+When transitioning from WAITING_FOR_BACKPORT_PLAN → SPAWN_SW_ENGINEER_BACKPORT_FIXES:
+- **MUST STOP** to allow user review of BACKPORT-PLAN.md
+- **MUST UPDATE** state file to SPAWN_SW_ENGINEER_BACKPORT_FIXES before stopping
+- **MUST DISPLAY** checkpoint message listing ALL branches to be backported
+- **MUST EXIT** cleanly to preserve context
+- **VIOLATION = -100% IMMEDIATE FAILURE**
 
-### STOP PROTOCOL:
+### CHECKPOINT PROTOCOL:
 ```markdown
-## 🛑 STATE TRANSITION CHECKPOINT: CURRENT_STATE → NEXT_STATE
+## 🛑 R322 BACKPORT CHECKPOINT
 
-### ✅ Current State Work Completed:
-- [List completed work]
+### ✅ Backport Plan Created:
+- Location: BACKPORT-PLAN.md
+- Branches requiring backports: [List all effort branches]
+- Fixes to apply: [Summary of changes]
 
-### 📊 Current Status:
-- Current State: CURRENT_STATE
-- Next State: NEXT_STATE
-- TODOs Completed: X/Y
-- State Files: Updated and committed ✅
+### 📊 Ready to Execute Backports:
+- Current State: WAITING_FOR_BACKPORT_PLAN ✅
+- Next State: SPAWN_SW_ENGINEER_BACKPORT_FIXES (pending approval)
 
-### ⏸️ STOPPED - Awaiting User Continuation
-Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
+### ⚠️ BACKPORT REVIEW REQUIRED
+These fixes will modify source branches!
+Please review the plan before execution.
+
+### ⏸️ STOPPED FOR USER REVIEW
+To proceed after review: /continue-orchestrating
 ```
 
-**STOP MEANS STOP - Exit and wait for /continue-orchestrating**
+**STOP MEANS STOP - NO automatic continuation!**
+
+See: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
 
 ---
 

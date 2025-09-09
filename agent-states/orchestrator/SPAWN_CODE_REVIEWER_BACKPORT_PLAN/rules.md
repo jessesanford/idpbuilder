@@ -93,8 +93,8 @@ The system will check for this marker. No marker = Immediate failure.
    - Criticality: SUPREME LAW - Fixes go to effort branches
    - Summary: Effort branches are the source of truth for all fixes
 
-7. **🔴🔴🔴 R313** - Mandatory Stop After Spawn States
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R313-mandatory-stop-after-spawn.md`
+7. **🔴🔴🔴 R322 Part A** - Mandatory Stop After Spawn States
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R322 Part A-mandatory-stop-after-spawn.md`
    - Criticality: SUPREME LAW - Must stop after spawning
    - Summary: ALL spawn states require STOP after spawning agents
 
@@ -120,7 +120,7 @@ In the SPAWN_CODE_REVIEWER_BACKPORT_PLAN state, the ORCHESTRATOR is responsible 
    - Monitor Code Reviewer state file creation
    - Track Code Reviewer progress
 
-4. **Stopping After Spawn (R313)**
+4. **Stopping After Spawn (R322 Part A)**
    - Update orchestrator-state.json to WAITING_FOR_BACKPORT_PLAN
    - Commit and push state changes
    - STOP and wait for user continuation
@@ -255,7 +255,7 @@ EOF
 echo "✅ Code Reviewer spawn command prepared"
 ```
 
-### Step 4: Update State and STOP (R313 Enforcement)
+### Step 4: Update State and STOP (R322 Part A Enforcement)
 ```bash
 # Update orchestrator state to waiting
 cd $CLAUDE_PROJECT_DIR
@@ -282,7 +282,7 @@ git commit -m "state: transition to WAITING_FOR_BACKPORT_PLAN after spawning Cod
 git push
 
 echo "✅ State updated and committed"
-echo "🛑 STOPPING per R313 - Must stop after spawn state"
+echo "🛑 STOPPING per R322 Part A - Must stop after spawn state"
 ```
 
 ## ⚠️ CRITICAL REQUIREMENTS
@@ -297,7 +297,7 @@ echo "🛑 STOPPING per R313 - Must stop after spawn state"
 - Orchestrator MUST NOT create the plan itself
 - Orchestrator ONLY prepares documentation and spawns
 
-### R313 Compliance
+### R322 Part A Compliance
 - MUST stop after spawning Code Reviewer
 - MUST update state to WAITING_FOR_BACKPORT_PLAN
 - MUST NOT continue automatically
@@ -307,7 +307,7 @@ echo "🛑 STOPPING per R313 - Must stop after spawn state"
 
 1. **Creating the backport plan yourself** - Must be done by Code Reviewer
 2. **Analyzing code changes directly** - Code Reviewer's responsibility
-3. **Continuing past spawn without stopping** - R313 violation
+3. **Continuing past spawn without stopping** - R322 Part A violation
 4. **Spawning SW Engineers in this state** - That's the next state
 5. **Making any code edits** - R006 violation
 
@@ -319,7 +319,7 @@ Before transitioning to WAITING_FOR_BACKPORT_PLAN:
 - [ ] Code Reviewer spawned with proper state
 - [ ] Orchestrator state updated to WAITING_FOR_BACKPORT_PLAN
 - [ ] State changes committed and pushed
-- [ ] STOPPED per R313 requirements
+- [ ] STOPPED per R322 Part A requirements
 
 ## 🔄 STATE TRANSITIONS
 
@@ -345,7 +345,7 @@ You will be evaluated on:
    - Code Reviewer does planning
    - Orchestrator only coordinates
    
-2. **R313 Compliance** (30%)
+2. **R322 Part A Compliance** (30%)
    - Proper stop after spawn
    - State update before stop
    
@@ -361,7 +361,7 @@ You will be evaluated on:
 
 1. **Let Code Reviewer analyze** - Don't try to understand fixes yourself
 2. **Provide complete information** - Give Code Reviewer everything needed
-3. **Stop means stop** - R313 is absolute
+3. **Stop means stop** - R322 Part A is absolute
 4. **Clear expectations** - Tell Code Reviewer exactly what output you need
 
 Remember: This state is about DELEGATION, not doing the work yourself!

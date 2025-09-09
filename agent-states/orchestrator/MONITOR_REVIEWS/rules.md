@@ -171,9 +171,29 @@ for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
             jq '.efforts_in_progress[] |= select(.name == \"$effort\") |= .review_status = \"NEEDS_SPLIT\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
             
             # Check if split plan exists
-            if [ -f "$REVIEW_DIR/SPLIT-PLAN.md" ]; then
-                echo "📋 Split plan found - need to create infrastructure"
+            if [ -f "$REVIEW_DIR/SPLIT-INVENTORY.md" ]; then
+                echo "📋 Split inventory found - initializing split tracking"
+                
+                # 🔴🔴🔴 CRITICAL: Initialize split_tracking with CORRECT count! 🔴🔴🔴
+                # Count actual splits from SPLIT-INVENTORY.md
+                ACTUAL_SPLITS=$(grep -c "^| [0-9]" "$REVIEW_DIR/SPLIT-INVENTORY.md" || echo 0)
+                echo "📊 Detected $ACTUAL_SPLITS splits needed from SPLIT-INVENTORY.md"
+                
+                # Initialize split tracking for this effort
+                jq ".split_tracking.\"$effort\" = {
+                    \"total_splits\": $ACTUAL_SPLITS,
+                    \"current_split\": 0,
+                    \"splits\": [],
+                    \"original_branch\": \"$(jq -r ".efforts_in_progress[] | select(.name == \"$effort\") | .branch" orchestrator-state.json)\",
+                    \"status\": \"SPLIT_PLANNED\",
+                    \"split_date\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+                }" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+                
+                echo "✅ Split tracking initialized for $effort with $ACTUAL_SPLITS splits"
                 echo "➡️ Transitioning to CREATE_NEXT_SPLIT_INFRASTRUCTURE"
+            else
+                echo "❌ ERROR: NEEDS_SPLIT but no SPLIT-INVENTORY.md found!"
+                echo "   Code Reviewer must create split inventory first"
             fi
         fi
     fi
@@ -193,6 +213,29 @@ for effort in $(jq '.efforts_in_progress[].name' orchestrator-state.json); do
             # Check for split inventory
             if [ -f "$REVIEW_DIR/SPLIT-INVENTORY.md" ]; then
                 echo "✅ Split inventory created by Code Reviewer"
+                
+                # Initialize split_tracking if not already done
+                if ! jq -e ".split_tracking.\"$effort\"" orchestrator-state.json > /dev/null 2>&1; then
+                    echo "📊 Initializing split tracking from size violation detection"
+                    
+                    # Count actual splits from SPLIT-INVENTORY.md
+                    ACTUAL_SPLITS=$(grep -c "^| [0-9]" "$REVIEW_DIR/SPLIT-INVENTORY.md" || echo 0)
+                    echo "📊 Detected $ACTUAL_SPLITS splits needed from SPLIT-INVENTORY.md"
+                    
+                    # Initialize split tracking
+                    jq ".split_tracking.\"$effort\" = {
+                        \"total_splits\": $ACTUAL_SPLITS,
+                        \"current_split\": 0,
+                        \"splits\": [],
+                        \"original_branch\": \"$(jq -r ".efforts_in_progress[] | select(.name == \"$effort\") | .branch" orchestrator-state.json)\",
+                        \"status\": \"SPLIT_PLANNED\",
+                        \"split_reason\": \"SIZE_VIOLATION detected by Code Reviewer\",
+                        \"split_date\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+                    }" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+                    
+                    echo "✅ Split tracking initialized for $effort with $ACTUAL_SPLITS splits"
+                fi
+                
                 echo "➡️ Need to create split infrastructure"
             fi
         fi

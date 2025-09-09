@@ -1,3 +1,8 @@
+---
+name: continue-orchestrating
+description: Continue orchestrating the Software Factory 2.0 development process
+---
+
 # /continue-orchestrating
 
 ╔═══════════════════════════════════════════════════════════════════════════════╗
@@ -263,20 +268,64 @@ fi
 
 ### Check for Context Loss
 ```bash
-# Check if we remember previous work
-if [ -z "$CURRENT_PHASE" ]; then
-    echo "📋 RECOVERING CONTEXT..."
+# 🔴🔴🔴 CRITICAL: ALWAYS reload state from file - NEVER trust memory! 🔴🔴🔴
+echo "📋 LOADING STATE FROM FILE (R324 enforcement)..."
+
+# Read orchestrator state - this is TRUTH
+if [ -f "./orchestrator-state.json" ]; then
+    # Read fresh state from file
+    CURRENT_STATE_FROM_FILE=$(jq -r '.current_state' orchestrator-state.json)
+    CURRENT_PHASE=$(jq -r '.current_phase' orchestrator-state.json)
+    CURRENT_WAVE=$(jq -r '.current_wave' orchestrator-state.json)
+    PREVIOUS_STATE=$(jq -r '.previous_state // "unknown"' orchestrator-state.json)
+    TRANSITION_TIME=$(jq -r '.transition_time // "unknown"' orchestrator-state.json)
     
-    # Read orchestrator state
-    if [ -f "./orchestrator-state.json" ]; then
-        READ: ./orchestrator-state.json
-        EXTRACT: current_phase, current_wave, current_state
-    else
-        echo "Starting fresh - no previous state"
-        echo "CURRENT_PHASE: 1"
-        echo "CURRENT_WAVE: 1"
-        echo "CURRENT_STATE: INIT"
+    echo "✅ State loaded from file:"
+    echo "   - Current State: $CURRENT_STATE_FROM_FILE"
+    echo "   - Previous State: $PREVIOUS_STATE"
+    echo "   - Phase: $CURRENT_PHASE, Wave: $CURRENT_WAVE"
+    echo "   - Last Transition: $TRANSITION_TIME"
+    
+    # 🔴 CRITICAL: Check for unexpected state progression
+    if [ -n "$EXPECTED_STATE" ] && [ "$EXPECTED_STATE" != "$CURRENT_STATE_FROM_FILE" ]; then
+        echo "⚠️⚠️⚠️ STATE MISMATCH DETECTED!"
+        echo "   Expected: $EXPECTED_STATE"
+        echo "   Actual: $CURRENT_STATE_FROM_FILE"
+        echo "   The state has progressed beyond what was expected!"
+        echo ""
+        echo "🔍 Analyzing state progression..."
+        echo "   Previous state was: $PREVIOUS_STATE"
+        echo "   Transitioned at: $TRANSITION_TIME"
+        echo ""
+        echo "📊 This indicates one of:"
+        echo "   1. Another agent/user updated the state"
+        echo "   2. State was manually edited"
+        echo "   3. Race condition with parallel updates"
+        echo ""
+        echo "✅ Using file state as truth: $CURRENT_STATE_FROM_FILE"
     fi
+    
+    # Set the current state from file as the working state
+    CURRENT_STATE="$CURRENT_STATE_FROM_FILE"
+else
+    echo "Starting fresh - no previous state"
+    CURRENT_PHASE=1
+    CURRENT_WAVE=1
+    CURRENT_STATE="INIT"
+    
+    # Create initial state file
+    cat > orchestrator-state.json << EOF
+{
+  "current_phase": 1,
+  "current_wave": 1,
+  "current_state": "INIT",
+  "transition_time": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "efforts_in_progress": [],
+  "efforts_completed": [],
+  "split_tracking": {}
+}
+EOF
+    echo "✅ Created initial state file"
 fi
 ```
 

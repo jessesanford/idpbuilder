@@ -37,7 +37,7 @@ Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
 
 ---
 
-## 🛑🛑🛑 R313 MANDATORY STOP AFTER SPAWNING AGENTS 🛑🛑🛑
+## 🛑🛑🛑 R322 Part A MANDATORY STOP AFTER SPAWNING AGENTS 🛑🛑🛑
 
 **SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
 
@@ -59,7 +59,7 @@ Spawn Code Reviewer to perform comprehensive validation of the integrated projec
    - Functional correctness across phases
    - No inter-phase conflicts
    - Production readiness
-4. **Update State File** and **STOP per R313**
+4. **Update State File** and **STOP per R322 Part A**
 
 ## Valid State Transitions
 

@@ -20,8 +20,8 @@
 **When**: Spawning multiple code reviewers for different efforts
 **Requirement**: Parallel spawn for independent reviews
 
-### 4. ⚠️⚠️⚠️ R313 - Stop After Spawn (WARNING)
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R313-orchestrator-stop-after-spawn.md`
+### 4. ⚠️⚠️⚠️ R322 Part A - Stop After Spawn (WARNING)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R322 Part A-orchestrator-stop-after-spawn.md`
 **Requirement**: After spawning, transition to MONITOR and STOP
 **Purpose**: Let agents work before checking progress
 
@@ -58,7 +58,7 @@ Working directory: efforts/phase1/wave1
 ### Phase 3: Post-Spawn Protocol
 ```yaml
 Next State: MONITOR
-Stop Required: YES (R322 + R313)
+Stop Required: YES (R322 + R322 Part A)
 Action: Update state file, commit, STOP
 ```
 
@@ -67,8 +67,8 @@ Action: Update state file, commit, STOP
 - [ ] Each spawn has CD to correct directory (R208)
 - [ ] Timestamp delta <5 seconds average (R151)
 - [ ] Independent work spawned in parallel (R218)
-- [ ] State updated to MONITOR (R313)
-- [ ] STOPPED after spawn (R313)
+- [ ] State updated to MONITOR (R322 Part A)
+- [ ] STOPPED after spawn (R322 Part A)
 
 ## Common Violations to Avoid
 1. **Sequential Spawning**: Separate messages = FAIL
@@ -82,7 +82,7 @@ touch .state_rules_read_orchestrator_SPAWN_AGENTS
 echo "$(date +%s) - SPAWN rules acknowledged" > .state_rules_read_orchestrator_SPAWN_AGENTS
 ```
 
-## State Exit Protocol (R322 + R313)
+## State Exit Protocol (R322 + R322 Part A)
 1. Complete all spawns in single message
 2. Update current_state to MONITOR
 3. Commit orchestrator-state.json

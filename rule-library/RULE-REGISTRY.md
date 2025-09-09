@@ -253,12 +253,12 @@
 - R310.0.0 - Split Scope Strict Adherence Protocol | 🚨🚨🚨 BLOCKING | Prevents 3-5X overruns from vague split plans
 - R311.0.0 - Effort Scope Strict Adherence Protocol | 🚨🚨🚨 BLOCKING | Prevents over-engineering in regular efforts, -100% for violations
 - R312.0.0 - Git Config Immutability Protocol | 🔴🔴🔴 SUPREME LAW | DOUBLE PROTECTION: root:root ownership + 444 permissions for unbreakable effort isolation
-- R313.0.0 - Mandatory Stop After Spawning Agents | 🔴 SUPREME LAW | Context preservation - MUST STOP after spawning agents
+- R313.0.0 - [DEPRECATED - Merged into R322 Part A] | ⚠️ DEPRECATED | Now part of R322 comprehensive checkpoint rule
 - R314.0.0 through R318.0.0 - Reserved for future rules
 - R319.0.0 - Orchestrator Never Measures Code | 🚨🚨🚨 BLOCKING | Orchestrator NEVER uses line-counter.sh or assesses code - delegate ALL to Code Reviewers
 - R320.0.0 - No Stub Implementations | 🚨🚨🚨 BLOCKING | ANY stub implementation = CRITICAL BLOCKER = FAILED REVIEW (-50% penalty)
 - R321.0.0 - Immediate Backport During Integration | 🔴🔴🔴 SUPREME LAW | ALL fixes during integration MUST be immediately backported to source branches (-100% for violations)
-- R322.0.0 - Mandatory Stop Before State Transitions | 🔴🔴🔴 SUPREME LAW | MUST stop after completing state work and wait for /continue-orchestrating (-100% for auto-transition)
+- R322.0.0 - Mandatory Orchestrator Checkpoints | 🔴🔴🔴 SUPREME LAW | Comprehensive checkpoint rule: spawns (Part A), reviews (Part B), assessments (Part C), monitoring (Part D) - MUST stop and wait for /continue-orchestrating (-100% for violations)
 - R323.0.0 - Mandatory Final Artifact Build | 🚨🚨🚨 BLOCKING | NO project can be SUCCESS without built deliverable artifact (-50% to -100% penalty)
 - R324.0.0 - State File Update Before Stop | 🔴🔴🔴 SUPREME LAW | MUST update current_state to new state BEFORE stopping to prevent infinite loops (-100% for violations)
 - R325.0.0 - Atomic State Transitions | 🔴🔴🔴 SUPREME LAW | State transitions must be atomic operations

@@ -1,3 +1,8 @@
+---
+name: continue-reviewing
+description: Continue code review as Code Reviewer agent
+---
+
 # /continue-reviewing
 
 ╔═══════════════════════════════════════════════════════════════════════════════╗

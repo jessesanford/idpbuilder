@@ -1,192 +1,314 @@
-# 🔴🔴🔴 RULE R322: MANDATORY STOP BEFORE STATE TRANSITIONS 🔴🔴🔴
+# 🛑🛑🛑 RULE R322: MANDATORY ORCHESTRATOR CHECKPOINTS (SUPREME LAW)
 
-## Rule Identifier
-**Rule ID:** R322  
-**Category:** State Machine Control  
-**Criticality:** 🔴🔴🔴 SUPREME LAW  
-**Introduced:** Version 2.0.322  
+**CRITICALITY**: 🔴🔴🔴 SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE
 
-## Rule Statement
+## Purpose
+Enforce mandatory checkpoints at critical orchestrator transitions to:
+1. Allow user review of plans before execution
+2. Preserve context after spawning agents (prevents overflow)
+3. Provide clear decision points for continuation
+4. Ensure proper state persistence before moving forward
 
-**THE ORCHESTRATOR MUST STOP BEFORE EVERY STATE TRANSITION!**
+**THIS RULE CONSOLIDATES:**
+- Former R313 (stop after spawning) - now Part A of this rule
+- Checkpoint stops for user review - Part B of this rule
+- Works with R324 (state update before stop) as companion rule
 
-After completing ALL work for the current state:
-1. **STOP** - Do not automatically transition
-2. **SUMMARIZE** - Provide clear summary of completed work
-3. **SAVE** - Persist TODOs and commit state files (per R287/R288)
-4. **WAIT** - For user to explicitly continue
+## 🔴🔴🔴 SUPREME LAW: STOP MEANS STOP 🔴🔴🔴
 
-## Detailed Requirements
+### MANDATORY STOP POINTS
 
-### 1. Completion of Current State
-Before stopping, the orchestrator MUST:
-- ✅ Complete ALL TODOs for the current state
-- ✅ Ensure all spawned agents have completed their tasks
-- ✅ Verify all state requirements are met
-- ✅ Update state files with completed work
+The orchestrator MUST STOP and exit after these specific transitions:
 
-### 2. State Update BEFORE Stop Protocol
-When ready to transition, the orchestrator MUST:
+#### PART A: SPAWN STATE STOPS (Context Preservation)
+**After spawning ANY agents, MUST stop to prevent context overflow:**
 
-#### 🔴🔴🔴 CRITICAL: UPDATE current_state FIRST OR GET STUCK IN INFINITE LOOP! 🔴🔴🔴
+- ALL `SPAWN_*` states → Next state
+  - `SPAWN_AGENTS` → `MONITOR_IMPLEMENTATION`
+  - `SPAWN_CODE_REVIEWERS_EFFORT_PLANNING` → `WAITING_FOR_EFFORT_PLANS`
+  - `SPAWN_CODE_REVIEWERS_FOR_REVIEW` → `MONITOR_REVIEWS`
+  - `SPAWN_ENGINEERS_FOR_FIXES` → `MONITOR_FIXES`
+  - `SPAWN_INTEGRATION_AGENT` → `MONITORING_INTEGRATION`
+  - `SPAWN_INTEGRATION_AGENT_PHASE` → `MONITORING_PHASE_INTEGRATION`
+  - `SPAWN_INTEGRATION_AGENT_PROJECT` → `MONITORING_PROJECT_INTEGRATION`
+  - `SPAWN_ARCHITECT_*` → Respective monitoring states
+  - `SPAWN_CODE_REVIEWER_*` → Respective waiting states
+  - `SPAWN_SW_ENGINEER_*` → Respective monitoring states
+  
+**Reason**: Agent outputs flood context window, causing rule amnesia
 
-**⚠️⚠️⚠️ WARNING: FAILURE TO UPDATE current_state = INFINITE LOOP BUG! ⚠️⚠️⚠️**
+#### PART B: PLANNING → EXECUTION STOPS
+**These transitions REQUIRE user review before execution:**
 
-The orchestrator WILL be stuck repeating the same state work forever if you don't update current_state!
+- `WAITING_FOR_MERGE_PLAN` → `SPAWN_INTEGRATION_AGENT`
+  - User must review WAVE-MERGE-PLAN.md before execution
+  - Stop allows verification of merge order and strategy
+  
+- `WAITING_FOR_PHASE_MERGE_PLAN` → `SPAWN_INTEGRATION_AGENT_PHASE`
+  - User must review PHASE-MERGE-PLAN.md before execution
+  - Stop allows verification of phase integration approach
+  
+- `WAITING_FOR_PROJECT_MERGE_PLAN` → `SPAWN_INTEGRATION_AGENT_PROJECT`
+  - User must review PROJECT-MERGE-PLAN.md before execution
+  - Stop allows verification of final project integration
 
+- `WAITING_FOR_FIX_PLANS` → `DISTRIBUTE_FIX_PLANS`
+  - User must review fix plans before distribution
+  - Stop allows verification of fix approach
+
+- `WAITING_FOR_BACKPORT_PLAN` → `SPAWN_SW_ENGINEER_BACKPORT_FIXES`
+  - User must review backport plan before execution
+  - Stop allows verification of backport strategy
+
+#### PART C: ASSESSMENT → ACTION STOPS
+**These transitions REQUIRE user decision before proceeding:**
+
+- `WAITING_FOR_PHASE_ASSESSMENT` → `PHASE_COMPLETE`
+  - User must acknowledge architect assessment
+  - Stop allows review of phase achievements
+
+- `WAITING_FOR_PROJECT_VALIDATION` → `CREATE_INTEGRATION_TESTING`
+  - User must approve project validation results
+  - Stop allows final review before testing
+
+#### PART D: MONITORING → STATE CHANGE STOPS
+**These transitions REQUIRE state persistence:**
+
+- `MONITORING_INTEGRATION` → `WAVE_REVIEW`
+  - Must save integration results
+  - Stop ensures proper state capture
+
+- `MONITORING_PHASE_INTEGRATION` → `SPAWN_ARCHITECT_PHASE_ASSESSMENT`
+  - Must save phase integration results
+  - Stop ensures proper state capture
+
+## STOP PROTOCOL
+
+### 🚨 CRITICAL COMPANION: R324 MUST BE FOLLOWED
+**Before ANY stop, MUST update current_state per R324 to prevent infinite loops!**
+
+### ✅ REQUIRED ACTIONS BEFORE STOPPING:
+
+1. **Complete ALL work for current state**
+   ```bash
+   # Finish all TODOs for current state
+   # Process any pending items
+   # Clean up working directory
+   ```
+
+2. **Update orchestrator-state.json with NEW state**
+   ```bash
+   # CRITICAL: Set current_state to NEXT state
+   jq '.current_state = "NEXT_STATE"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+   jq '.previous_state = "CURRENT_STATE"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+   jq '.transition_time = "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+   ```
+
+3. **Save TODO state per R287**
+   ```bash
+   # Save current TODO list
+   # Include reason for stop
+   save_todos "R322_CHECKPOINT_BEFORE_${NEXT_STATE}"
+   ```
+
+4. **Commit and push state changes**
+   ```bash
+   git add orchestrator-state.json todos/*.todo
+   git commit -m "state: R322 checkpoint before ${NEXT_STATE}"
+   git push
+   ```
+
+5. **Display checkpoint message**
+   ```markdown
+   ## 🛑 R322 STATE TRANSITION CHECKPOINT
+   
+   ### ✅ Current State Work Completed:
+   - [List completed work]
+   - [Include any created artifacts]
+   
+   ### 📊 Current Status:
+   - Previous State: CURRENT_STATE ✅
+   - Next State: NEXT_STATE (ready to enter)
+   - Checkpoint Reason: [e.g., "Merge plan ready for review"]
+   
+   ### 📋 Artifacts for Review:
+   - [List files created: plans, reports, etc.]
+   
+   ### ⏸️ STOPPED - User Review Required
+   Please review the above artifacts before continuing.
+   To proceed, use: /continue-orchestrating
+   ```
+
+### ❌ FORBIDDEN ACTIONS:
+
+1. **DO NOT continue to next state automatically**
+   ```bash
+   # ❌ WRONG: Automatic transition
+   echo "Moving to SPAWN_INTEGRATION_AGENT..."
+   spawn_integration_agent()  # VIOLATION!
+   ```
+
+2. **DO NOT start work for new state**
+   ```bash
+   # ❌ WRONG: Starting new work
+   echo "Now spawning integration agent..."
+   /spawn integration-agent  # VIOLATION!
+   ```
+
+3. **DO NOT assume permission to continue**
+   ```bash
+   # ❌ WRONG: Assuming continuation
+   echo "Plan looks good, proceeding with integration..."
+   ```
+
+## ENFORCEMENT MECHANISM
+
+### Detection Pattern
+```python
+def detect_r322_violation(current_state, next_state, action):
+    """Detect R322 violations in state transitions"""
+    
+    CHECKPOINT_REQUIRED = [
+        ("WAITING_FOR_MERGE_PLAN", "SPAWN_INTEGRATION_AGENT"),
+        ("WAITING_FOR_PHASE_MERGE_PLAN", "SPAWN_INTEGRATION_AGENT_PHASE"),
+        ("WAITING_FOR_PROJECT_MERGE_PLAN", "SPAWN_INTEGRATION_AGENT_PROJECT"),
+        ("WAITING_FOR_FIX_PLANS", "DISTRIBUTE_FIX_PLANS"),
+        ("WAITING_FOR_BACKPORT_PLAN", "SPAWN_SW_ENGINEER_BACKPORT_FIXES"),
+        ("WAITING_FOR_PHASE_ASSESSMENT", "PHASE_COMPLETE"),
+        ("WAITING_FOR_PROJECT_VALIDATION", "CREATE_INTEGRATION_TESTING"),
+    ]
+    
+    if (current_state, next_state) in CHECKPOINT_REQUIRED:
+        if action != "STOP":
+            return {
+                'violation': True,
+                'severity': 'SUPREME_LAW',
+                'penalty': '-100%',
+                'reason': f'R322: Must stop between {current_state} and {next_state}'
+            }
+    
+    return {'violation': False}
+```
+
+### Validation Script
 ```bash
-# 🚨🚨🚨 MANDATORY SEQUENCE - DO NOT SKIP ANY STEP! 🚨🚨🚨
-# STEP 1: Determine your next state
-NEXT_STATE="[YOUR_NEXT_STATE_HERE]"  # e.g., "MONITOR", "SPAWN_AGENTS", etc.
-CURRENT_STATE="[YOUR_CURRENT_STATE]"  # What state you're leaving
+#!/bin/bash
+# Validate R322 compliance in state transition
 
-# STEP 2: UPDATE THE STATE FILE (THIS IS THE CRITICAL PART!)
-echo "📝 CRITICAL: Updating current_state to prevent infinite loop..."
-jq ".current_state = \"$NEXT_STATE\"" orchestrator-state.json
-jq ".previous_state = \"$CURRENT_STATE\"" orchestrator-state.json
-jq ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+validate_r322_checkpoint() {
+    local CURRENT_STATE="$1"
+    local NEXT_STATE="$2"
+    
+    # Check if this transition requires R322 stop
+    case "${CURRENT_STATE}->${NEXT_STATE}" in
+        "WAITING_FOR_MERGE_PLAN->SPAWN_INTEGRATION_AGENT"|\
+        "WAITING_FOR_PHASE_MERGE_PLAN->SPAWN_INTEGRATION_AGENT_PHASE"|\
+        "WAITING_FOR_PROJECT_MERGE_PLAN->SPAWN_INTEGRATION_AGENT_PROJECT")
+            echo "🛑 R322 CHECKPOINT REQUIRED!"
+            echo "User must review plan before execution"
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+```
 
-# STEP 3: Verify the update worked
-echo "✅ State file updated:"
-grep "current_state:" orchestrator-state.json
+## GRADING IMPACT
 
-# STEP 4: Commit and push IMMEDIATELY
-git add orchestrator-state.json
-git commit -m "state: transition from $CURRENT_STATE to $NEXT_STATE (R324 compliance)"
+### Violations Result In:
+- **-100% IMMEDIATE FAILURE** for skipping required checkpoint
+- **-50% PENALTY** for improper stop protocol
+- **-25% PENALTY** for missing state persistence
+- **AUTOMATIC REJECTION** of any work done after violation
+
+### Compliance Results In:
+- **+10% BONUS** for perfect checkpoint execution
+- **Clean audit trail** for review and debugging
+- **User confidence** in system operation
+- **Context preservation** preventing rule loss
+
+## RELATIONSHIP TO OTHER RULES
+
+### Works With:
+- **R324**: State file update before stop (CRITICAL COMPANION)
+- **R287**: TODO persistence at checkpoints
+- **R206**: State validation requirements
+- **R231**: Continuous operation (EXCEPT at R322 checkpoints)
+
+### Supersedes:
+- **R313**: Now incorporated as Part A of this rule
+- Any guidance suggesting automatic continuation at checkpoints
+- Any pattern of immediate transition without checkpoint
+- Previous "continue if successful" patterns at spawn points
+
+## EXAMPLES
+
+### ✅ CORRECT: Proper R322 Checkpoint
+```bash
+# In WAITING_FOR_MERGE_PLAN state
+echo "✅ Merge plan created and validated"
+
+# Update state BEFORE stopping
+jq '.current_state = "SPAWN_INTEGRATION_AGENT"' orchestrator-state.json > tmp.json
+mv tmp.json orchestrator-state.json
+
+# Save TODOs
+save_todos "R322_CHECKPOINT_BEFORE_SPAWN_INTEGRATION"
+
+# Commit state
+git add orchestrator-state.json todos/*.todo
+git commit -m "state: R322 checkpoint - merge plan ready for review"
 git push
 
-# STEP 5: NOW you can stop (state is safely persisted)
-echo "✅ State transition persisted - safe to stop"
+# Display checkpoint
+cat << 'EOF'
+## 🛑 R322 STATE TRANSITION CHECKPOINT
+
+### ✅ Merge Plan Created:
+- Location: integration-workspace/WAVE-MERGE-PLAN.md
+- Efforts: 5 branches identified
+- Strategy: Sequential merge with conflict resolution
+
+### 📊 Ready to Spawn Integration Agent
+- Current State: WAITING_FOR_MERGE_PLAN ✅
+- Next State: SPAWN_INTEGRATION_AGENT (ready)
+
+### ⏸️ STOPPED - User Review Required
+Please review WAVE-MERGE-PLAN.md before execution.
+To proceed: /continue-orchestrating
+EOF
+
+exit 0  # STOP EXECUTION
 ```
 
-**SEE ALSO: R324 - State File Update Before Stop (PREVENTS INFINITE LOOPS)**
-
-#### THEN Stop and Summarize:
-```markdown
-## 🛑 STATE TRANSITION CHECKPOINT: [CURRENT_STATE] → [NEXT_STATE]
-
-### ✅ Current State Work Completed:
-- [Summary of work done in current state]
-- [Key accomplishments]
-- [Any issues or blockers encountered]
-
-### 📊 Current Status:
-- Current State: [NEXT_STATE] ← UPDATED IN FILE!
-- Previous State: [CURRENT_STATE]
-- TODOs Completed: [X/Y]
-- State Files: Updated and committed ✅
-
-### 📝 State Persistence:
-- TODOs saved to: todos/orchestrator-[STATE]-[timestamp].todo
-- State file updated with NEW state: [NEXT_STATE]
-- State file committed: [commit hash]
-
-### ⏸️ STOPPED - Ready to Continue in [NEXT_STATE]
-When restarted, will continue from [NEXT_STATE]. Please use the appropriate continuation command.
-```
-
-### 3. Save and Commit Requirements
-Before stopping, ALWAYS:
-- Save TODOs using R287 protocol
-- Commit state files using R288 protocol
-- Push all changes to remote
-- Include transition readiness in commit message
-
-### 4. User Continuation Required
-The orchestrator MUST NOT:
-- ❌ Automatically transition to the next state
-- ❌ Continue without explicit user instruction
-- ❌ Skip the summary and stop protocol
-- ❌ Assume permission to continue
-
-The orchestrator MUST:
-- ✅ Wait for user to explicitly continue
-- ✅ Provide clear guidance on next steps
-- ✅ Maintain state readiness for continuation
-
-## Replaces Previous Rules
-
-This rule SUPERSEDES and REPLACES:
-- **R021** - Orchestrator Never Stops (DEPRECATED by R322)
-- **R231** - Continuous Operation Through Transitions (DEPRECATED by R322)
-- **R313** - Mandatory Stop After Spawn (CONSOLIDATED into R322)
-
-## Enforcement
-
-### Success Criteria
-- ✅ Orchestrator stops at EVERY state transition
-- ✅ Clear summary provided for each transition
-- ✅ State files and TODOs properly persisted
-- ✅ User explicitly continues each transition
-
-### Failure Conditions
-- ❌ Automatic transition without stopping = -50% penalty
-- ❌ Missing summary at transition = -20% penalty
-- ❌ Not saving state/TODOs = -30% penalty
-- ❌ Continuing without user permission = -100% FAILURE
-
-## Examples
-
-### ✅ CORRECT: Update state THEN stop
+### ❌ WRONG: Skipping Checkpoint
 ```bash
-# First, update the state file
-echo "Updating state file for transition..."
-jq '.current_state = "MONITOR"' orchestrator-state.json
-jq '.previous_state = "SPAWN_AGENTS"' orchestrator-state.json
-jq ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
-git add orchestrator-state.json
-git commit -m "state: transition from SPAWN_AGENTS to MONITOR"
-git push
+# In WAITING_FOR_MERGE_PLAN state
+echo "✅ Merge plan created"
+
+# VIOLATION: Continuing without stop!
+echo "Spawning integration agent..."
+/spawn integration-agent  # R322 VIOLATION = -100%
 ```
 
-```
-## 🛑 STATE TRANSITION CHECKPOINT: SPAWN_AGENTS → MONITOR
+## AUDIT REQUIREMENTS
 
-### ✅ Current State Work Completed:
-- Spawned 3 SW-Engineer agents for parallel implementation
-- All agents confirmed startup in correct directories
-- Timestamps verified within 5s window
+Every R322 checkpoint must create:
+1. State file update with transition recorded
+2. TODO save with checkpoint reason
+3. Git commit with R322 reference
+4. User-visible checkpoint message
+5. Clean exit (not error)
 
-### 📊 Current Status:
-- Current State: MONITOR (UPDATED IN FILE!)
-- Previous State: SPAWN_AGENTS
-- TODOs Completed: 5/5
-- State Files: Updated with new state and committed ✅
+## SUMMARY
 
-### ⏸️ STOPPED - Ready to Continue in MONITOR
-When restarted, will continue from MONITOR state.
-```
+**R322 is a SUPREME LAW that ensures:**
+- Users can review plans before execution
+- Context is preserved between major transitions
+- State is properly saved at critical points
+- System provides clear decision points
+- No automatic execution of unreviewed plans
 
-### ❌ WRONG: Stop without updating state (CAUSES LOOPS!)
-```
-Completing SPAWN_AGENTS state work...
-All agents spawned successfully.
-
-## 🛑 STATE TRANSITION CHECKPOINT: SPAWN_AGENTS → MONITOR
-- Current State: SPAWN_AGENTS  # WRONG - File still says SPAWN_AGENTS!
-- Next State: MONITOR
-STOPPED - Awaiting continuation
-
-# PROBLEM: When restarted, orchestrator reads current_state: SPAWN_AGENTS
-# and repeats SPAWN_AGENTS work forever!
-```
-
-### ❌ WRONG: Automatic transition without stop
-```
-Completing SPAWN_AGENTS state work...
-All agents spawned successfully.
-Transitioning to MONITOR state...  # WRONG - No stop!
-```
-
-## Related Rules
-- **R324** - State File Update Before Stop (CRITICAL - prevents loops!)
-- **R287** - TODO Persistence Requirements (still required)
-- **R288** - State File Update Requirements (still required)
-- **R234** - Mandatory State Traversal (still required)
-- **R206** - State Machine Validation (still required)
-
-## Notes
-- This rule fundamentally changes orchestrator behavior from continuous to checkpoint-based operation
-- Each state transition becomes a natural breakpoint for user review and control
-- Improves debuggability and user oversight of the orchestration process
-- Preserves context better by creating explicit checkpoints
+**REMEMBER:** When in doubt, STOP and checkpoint. It's better to have an extra stop than to violate R322 and fail immediately.

@@ -1,39 +1,42 @@
 # Orchestrator - WAITING_FOR_FIX_PLANS State Rules
 
-## 🛑🛑🛑 R322 MANDATORY STOP BEFORE STATE TRANSITIONS 🛑🛑🛑
+## 🛑🛑🛑 R322 MANDATORY CHECKPOINT BEFORE DISTRIBUTE_FIX_PLANS 🛑🛑🛑
 
-**SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
+**THIS IS A CRITICAL R322 CHECKPOINT STATE!**
 
-### YOU MUST STOP AFTER:
-1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.json with new state
-3. ✅ Committing and pushing the state file  
-4. ✅ Providing work summary
+### SUPREME LAW - FIX PLANS REQUIRE USER REVIEW
 
-### YOU MUST NOT:
-- ❌ Continue to the next state automatically
-- ❌ Start work for the new state
-- ❌ Spawn agents for the new state
-- ❌ Assume permission to continue
+When transitioning from WAITING_FOR_FIX_PLANS → DISTRIBUTE_FIX_PLANS:
+- **MUST STOP** to allow user review of all FIX-PLAN-*.md files
+- **MUST UPDATE** state file to DISTRIBUTE_FIX_PLANS before stopping
+- **MUST DISPLAY** checkpoint message listing ALL fixes to be distributed
+- **MUST EXIT** cleanly to preserve context
+- **VIOLATION = -100% IMMEDIATE FAILURE**
 
-### STOP PROTOCOL:
+### CHECKPOINT PROTOCOL:
 ```markdown
-## 🛑 STATE TRANSITION CHECKPOINT: CURRENT_STATE → NEXT_STATE
+## 🛑 R322 FIX PLAN CHECKPOINT
 
-### ✅ Current State Work Completed:
-- [List completed work]
+### ✅ Fix Plans Created:
+- Total plans: [Number of fix plans]
+- Affected efforts: [List all efforts needing fixes]
+- Fix complexity: [Simple/Complex/Critical]
 
-### 📊 Current Status:
-- Current State: CURRENT_STATE
-- Next State: NEXT_STATE
-- TODOs Completed: X/Y
-- State Files: Updated and committed ✅
+### 📊 Ready to Distribute Fixes:
+- Current State: WAITING_FOR_FIX_PLANS ✅
+- Next State: DISTRIBUTE_FIX_PLANS (pending approval)
 
-### ⏸️ STOPPED - Awaiting User Continuation
-Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
+### ⚠️ FIX PLAN REVIEW REQUIRED
+These fixes will be distributed to effort directories!
+Please review all plans before distribution.
+
+### ⏸️ STOPPED FOR USER REVIEW
+To proceed after review: /continue-orchestrating
 ```
 
-**STOP MEANS STOP - Exit and wait for /continue-orchestrating**
+**STOP MEANS STOP - NO automatic continuation!**
+
+See: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
 
 ---
 

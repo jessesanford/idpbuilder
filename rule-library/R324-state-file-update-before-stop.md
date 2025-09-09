@@ -54,13 +54,18 @@ NEXT_STATE="SPAWN_AGENTS"  # <-- Replace with your actual next state
 CURRENT_STATE="ANALYZE_IMPLEMENTATION_PARALLELIZATION"  # <-- Replace with current
 
 # DO NOT MODIFY THIS SEQUENCE:
-jq ".current_state = \"$NEXT_STATE\"" orchestrator-state.json
-jq ".previous_state = \"$CURRENT_STATE\"" orchestrator-state.json
-jq ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json
+jq ".current_state = \"$NEXT_STATE\"" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq ".previous_state = \"$CURRENT_STATE\"" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq ".transition_reason = \"Completed $CURRENT_STATE work, transitioning to $NEXT_STATE\"" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+
+# Add transition to history log (helps debug state progression issues)
+TRANSITION_ENTRY="{\"from\": \"$CURRENT_STATE\", \"to\": \"$NEXT_STATE\", \"time\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"R324 state transition\"}"
+jq ".transition_history = (.transition_history // []) + [$TRANSITION_ENTRY]" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
 # Step 3: VERIFY the update (CRITICAL for debugging)
 echo "✅ Verification - current_state is now:"
-grep "current_state:" orchestrator-state.json
+jq -r '.current_state' orchestrator-state.json
 
 # Step 4: Commit and push the state change IMMEDIATELY
 git add orchestrator-state.json
@@ -117,8 +122,9 @@ All of these MUST update current_state before stopping:
 echo "All agents spawned successfully"
 
 # UPDATE STATE FIRST!
-jq '.current_state = "MONITOR"' orchestrator-state.json
-jq '.previous_state = "SPAWN_AGENTS"' orchestrator-state.json
+jq '.current_state = "MONITOR"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.previous_state = "SPAWN_AGENTS"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq '.transition_time = "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 git add orchestrator-state.json
 git commit -m "state: transition to MONITOR"
 git push
@@ -160,7 +166,11 @@ If the orchestrator is stuck in a loop:
 
 1. **Check the state file**:
    ```bash
-   grep current_state orchestrator-state.json
+   jq -r '.current_state' orchestrator-state.json
+   jq -r '.previous_state' orchestrator-state.json
+   jq -r '.transition_time' orchestrator-state.json
+   # Check transition history if available
+   jq '.transition_history[-5:]' orchestrator-state.json  # Last 5 transitions
    ```
 
 2. **Look for the pattern**:
@@ -170,9 +180,16 @@ If the orchestrator is stuck in a loop:
 3. **Fix it**:
    ```bash
    # Manually update to the correct next state
-   jq '.current_state = "CORRECT_NEXT_STATE"' orchestrator-state.json
+   CORRECT_STATE="MONITOR_REVIEWS"  # Or whatever the correct state should be
+   PREVIOUS_STATE=$(jq -r '.current_state' orchestrator-state.json)
+   
+   jq ".current_state = \"$CORRECT_STATE\"" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+   jq ".previous_state = \"$PREVIOUS_STATE\"" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+   jq ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+   jq ".transition_reason = \"Manual correction to break loop\"" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+   
    git add orchestrator-state.json
-   git commit -m "fix: manual state correction to break loop"
+   git commit -m "fix: manual state correction from $PREVIOUS_STATE to $CORRECT_STATE to break loop"
    git push
    ```
 

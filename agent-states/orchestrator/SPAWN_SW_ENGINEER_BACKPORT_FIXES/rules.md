@@ -93,8 +93,8 @@ The system will check for this marker. No marker = Immediate failure.
    - Criticality: SUPREME LAW - Fixes go to effort branches
    - Summary: Effort branches are the source of truth for all fixes
 
-7. **🔴🔴🔴 R313** - Mandatory Stop After Spawn States
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R313-mandatory-stop-after-spawn.md`
+7. **🔴🔴🔴 R322 Part A** - Mandatory Stop After Spawn States
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R322 Part A-mandatory-stop-after-spawn.md`
    - Criticality: SUPREME LAW - Must stop after spawning
    - Summary: ALL spawn states require STOP after spawning agents
 
@@ -125,7 +125,7 @@ In the SPAWN_SW_ENGINEER_BACKPORT_FIXES state, the ORCHESTRATOR is responsible f
    - If parallel: spawn all within 5 seconds (R151)
    - If sequential: document why and spawn in order
 
-4. **Stopping After Spawn (R313)**
+4. **Stopping After Spawn (R322 Part A)**
    - Update orchestrator-state.json to MONITORING_BACKPORT_PROGRESS
    - Document all spawned engineers
    - Commit and push state changes
@@ -326,7 +326,7 @@ if [ "$PARALLEL_EXECUTION" = true ] && [ $SPAWN_DURATION -gt 5 ]; then
 fi
 ```
 
-### Step 5: Update State and STOP (R313 Enforcement)
+### Step 5: Update State and STOP (R322 Part A Enforcement)
 ```bash
 # Update orchestrator state
 cd $CLAUDE_PROJECT_DIR
@@ -371,11 +371,11 @@ git commit -m "state: transition to MONITORING_BACKPORT_PROGRESS after spawning 
 - Spawned SW Engineers for all efforts requiring backports
 - Using backport plan from Code Reviewer
 - R151 compliant parallel spawn
-- R313 stopping after spawn"
+- R322 Part A stopping after spawn"
 git push
 
 echo "✅ State updated and committed"
-echo "🛑 STOPPING per R313 - Must stop after spawn state"
+echo "🛑 STOPPING per R322 Part A - Must stop after spawn state"
 ```
 
 ## ⚠️ CRITICAL REQUIREMENTS
@@ -395,7 +395,7 @@ echo "🛑 STOPPING per R313 - Must stop after spawn state"
 - Orchestrator MUST NOT use git commands on code
 - Orchestrator ONLY coordinates
 
-### R313 Enforcement
+### R322 Part A Enforcement
 - MUST stop after spawning engineers
 - MUST update state before stopping
 - MUST NOT continue automatically
@@ -404,7 +404,7 @@ echo "🛑 STOPPING per R313 - Must stop after spawn state"
 
 1. **Implementing any fixes directly** - R006 violation
 2. **Using cherry-pick or applying patches** - SW Engineer's job
-3. **Continuing without stopping** - R313 violation
+3. **Continuing without stopping** - R322 Part A violation
 4. **Modifying the backport plan** - Use it as-is from Code Reviewer
 5. **Spawning agents slowly in parallel mode** - R151 violation
 
@@ -418,7 +418,7 @@ Before transitioning to MONITORING_BACKPORT_PROGRESS:
 - [ ] R151 compliance verified if parallel
 - [ ] State updated to MONITORING_BACKPORT_PROGRESS
 - [ ] State changes committed and pushed
-- [ ] STOPPED per R313
+- [ ] STOPPED per R322 Part A
 
 ## 🔄 STATE TRANSITIONS
 
@@ -450,7 +450,7 @@ You will be evaluated on:
    - Parallel spawns within 5 seconds
    - Proper timestamp documentation
    
-2. **R313 Compliance** (25%)
+2. **R322 Part A Compliance** (25%)
    - Stop after spawning
    - No automatic continuation
    
@@ -467,7 +467,7 @@ You will be evaluated on:
 1. **Trust the plan** - Code Reviewer analyzed the fixes, use their plan
 2. **Spawn quickly** - For parallel execution, speed matters (R151)
 3. **Clear instructions** - Each engineer needs to know exactly what to do
-4. **Stop means stop** - R313 is non-negotiable
+4. **Stop means stop** - R322 Part A is non-negotiable
 
 Remember: You're the COORDINATOR, not the implementer!
 

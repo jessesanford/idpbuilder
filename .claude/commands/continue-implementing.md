@@ -1,3 +1,8 @@
+---
+name: continue-implementing
+description: Continue implementation as Software Engineer agent
+---
+
 # /continue-implementing
 
 ╔═══════════════════════════════════════════════════════════════════════════════╗

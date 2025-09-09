@@ -37,7 +37,7 @@ Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
 
 ---
 
-## 🛑🛑🛑 R313 MANDATORY STOP AFTER SPAWNING AGENTS 🛑🛑🛑
+## 🛑🛑🛑 R322 Part A MANDATORY STOP AFTER SPAWNING AGENTS 🛑🛑🛑
 
 **SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
 
@@ -60,7 +60,7 @@ Spawn Code Reviewer to create a comprehensive merge plan for integrating all pha
    - Target project integration branch
    - Dependency order requirements (R270)
 3. **Update State File** with spawned agent details
-4. **STOP per R313** - Exit immediately after spawning
+4. **STOP per R322 Part A** - Exit immediately after spawning
 
 ## Valid State Transitions
 

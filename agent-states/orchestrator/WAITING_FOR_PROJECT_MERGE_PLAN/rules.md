@@ -1,39 +1,42 @@
 # Orchestrator - WAITING_FOR_PROJECT_MERGE_PLAN State Rules
 
-## 🛑🛑🛑 R322 MANDATORY STOP BEFORE STATE TRANSITIONS 🛑🛑🛑
+## 🛑🛑🛑 R322 MANDATORY CHECKPOINT BEFORE SPAWN_INTEGRATION_AGENT_PROJECT 🛑🛑🛑
 
-**SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
+**THIS IS A CRITICAL R322 CHECKPOINT STATE!**
 
-### YOU MUST STOP AFTER:
-1. ✅ Completing all TODOs for this state
-2. ✅ Updating orchestrator-state.json with new state
-3. ✅ Committing and pushing the state file  
-4. ✅ Providing work summary
+### SUPREME LAW - PROJECT MERGE PLAN REQUIRES USER REVIEW
 
-### YOU MUST NOT:
-- ❌ Continue to the next state automatically
-- ❌ Start work for the new state
-- ❌ Spawn agents for the new state
-- ❌ Assume permission to continue
+When transitioning from WAITING_FOR_PROJECT_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PROJECT:
+- **MUST STOP** to allow user review of PROJECT-MERGE-PLAN.md
+- **MUST UPDATE** state file to SPAWN_INTEGRATION_AGENT_PROJECT before stopping
+- **MUST DISPLAY** checkpoint message listing ALL phases to be merged
+- **MUST EXIT** cleanly to preserve context
+- **VIOLATION = -100% IMMEDIATE FAILURE**
 
-### STOP PROTOCOL:
+### CHECKPOINT PROTOCOL:
 ```markdown
-## 🛑 STATE TRANSITION CHECKPOINT: CURRENT_STATE → NEXT_STATE
+## 🛑 R322 PROJECT INTEGRATION CHECKPOINT
 
-### ✅ Current State Work Completed:
-- [List completed work]
+### ✅ Project Merge Plan Created:
+- Location: project-integration/PROJECT-MERGE-PLAN.md
+- Phases to merge: [List all phase branches]
+- Integration strategy: [Sequential/Parallel]
 
-### 📊 Current Status:
-- Current State: CURRENT_STATE
-- Next State: NEXT_STATE
-- TODOs Completed: X/Y
-- State Files: Updated and committed ✅
+### 📊 Ready for Final Integration:
+- Current State: WAITING_FOR_PROJECT_MERGE_PLAN ✅
+- Next State: SPAWN_INTEGRATION_AGENT_PROJECT (pending approval)
 
-### ⏸️ STOPPED - Awaiting User Continuation
-Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
+### ⚠️ CRITICAL REVIEW REQUIRED
+This is the FINAL integration merging ALL phases!
+Please review the plan carefully before execution.
+
+### ⏸️ STOPPED FOR USER REVIEW
+To proceed after review: /continue-orchestrating
 ```
 
-**STOP MEANS STOP - Exit and wait for /continue-orchestrating**
+**STOP MEANS STOP - NO automatic continuation!**
+
+See: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
 
 ---
 

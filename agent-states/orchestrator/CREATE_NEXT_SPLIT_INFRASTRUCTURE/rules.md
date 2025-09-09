@@ -194,7 +194,31 @@ PHASE=$(jq '.current_phase' orchestrator-state.json)
 WAVE=$(jq '.current_wave' orchestrator-state.json)
 EFFORT_NAME=$(jq '.split_tracking | keys | .[0]' orchestrator-state.json)  # Get effort with splits
 CURRENT_SPLIT=$(jq ".split_tracking.\"$EFFORT_NAME\".current_split // 0" orchestrator-state.json)
+TOTAL_SPLITS=$(jq ".split_tracking.\"$EFFORT_NAME\".total_splits // 0" orchestrator-state.json)
 NEXT_SPLIT=$((CURRENT_SPLIT + 1))
+
+echo "📊 Split tracking status for $EFFORT_NAME:"
+echo "   - Total splits needed: $TOTAL_SPLITS"
+echo "   - Current split: $CURRENT_SPLIT"
+echo "   - Next split to create: $NEXT_SPLIT"
+
+# 🔴🔴🔴 CRITICAL VALIDATION: Don't create splits that don't exist! 🔴🔴🔴
+if [ $NEXT_SPLIT -gt $TOTAL_SPLITS ]; then
+    echo "🔴🔴🔴 ERROR: Trying to create split $NEXT_SPLIT but only $TOTAL_SPLITS splits exist!"
+    echo "   This is the bug that was happening!"
+    echo "   All $TOTAL_SPLITS splits have been created"
+    echo "   Transitioning to appropriate next state"
+    
+    # Check if all splits are complete
+    ALL_SPLITS_COMPLETE=$(jq ".split_tracking.\"$EFFORT_NAME\".splits | length >= $TOTAL_SPLITS" orchestrator-state.json)
+    if [ "$ALL_SPLITS_COMPLETE" = "true" ]; then
+        echo "✅ All splits for $EFFORT_NAME are complete"
+        echo "➡️ Should transition to review state or wave complete"
+        # Update state to appropriate next state
+        transition_to_state "MONITOR_REVIEWS"  # Or appropriate state
+    fi
+    exit 0
+fi
 
 echo "📊 Creating infrastructure for split-$(printf "%03d" $NEXT_SPLIT)"
 
