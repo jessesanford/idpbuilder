@@ -445,10 +445,10 @@
       "all_splits_reviewed": true
     }
   },
-  "current_state": "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN",
-  "previous_state": "PROJECT_INTEGRATION",
-  "transition_time": "2025-09-09T19:04:02Z",
-  "transition_reason": "Infrastructure ready, spawning Code Reviewer to create merge plan per R269",
+  "current_state": "SPAWN_INTEGRATION_AGENT_PROJECT",
+  "previous_state": "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN",
+  "transition_time": "2025-09-09T19:07:17Z",
+  "transition_reason": "Merge plan created, ready to spawn Integration Agent per R329",
   "phase2_wave1_integration": {
     "status": "COMPLETED",
     "integration_branch": "phase2/wave1/integration",
@@ -513,7 +513,8 @@
     "is_stale": false,
     "integration_agent_result": "SUCCESS",
     "branch_url": "https://github.com/jessesanford/idpbuilder/tree/project-integration",
-    "completion_time": "2025-09-09T18:43:19Z"
+    "completion_time": "2025-09-09T18:43:19Z",
+    "merge_plan": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace/PROJECT-MERGE-PLAN.md"
   },
   "agents_spawned": [
     {
