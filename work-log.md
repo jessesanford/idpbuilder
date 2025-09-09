@@ -21,7 +21,7 @@ Status: Success
 ## Operation 4: Merge image-builder branch
 Command: git merge origin/idpbuilder-oci-build-push/phase2/wave1/image-builder --no-ff -m 'integrate: phase2/wave1/image-builder into project-integration'
 Result: CONFLICT in work-log.md (resolved by preserving effort-specific log in separate file)
-Status: Resolved
+Status: Resolved - MERGED: idpbuilder-oci-build-push/phase2/wave1/image-builder at 2025-09-09 18:38:15 UTC
 
 ---
 # Merged Effort Logs
@@ -32,3 +32,6 @@ Status: Resolved
 - Total Lines: 615/800 (within limit)
 - All tests passing: 12/12 tests
 - Feature flag: ENABLE_IMAGE_BUILDER (disabled by default)
+
+## Operation 5: Merge gitea-client branch
+Command: git merge origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client --no-ff -m 'integrate: phase2/wave1/gitea-client into project-integration'
