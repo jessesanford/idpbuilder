@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
-    "previous_state": "PROJECT_FIX_PLANNING",
-    "transition_time": "2025-09-09T13:35:49Z",
-    "transition_reason": "Fix plan created for import path bug - ready to spawn SW Engineer",
+    "current_state": "MONITORING_PROJECT_FIXES",
+    "previous_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
+    "transition_time": "2025-09-09T13:54:36Z",
+    "transition_reason": "SW Engineer spawned for bug fix - now monitoring progress (bug already fixed)",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -738,5 +738,16 @@
     "severity": "HIGH",
     "strategy": "single_engineer",
     "estimated_time": "30-60 minutes"
-  }
+  },
+  "project_fixes_in_progress": [
+    {
+      "bug_id": 1,
+      "engineer": "sw-engineer-1",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+      "status": "completed",
+      "result": "bug_already_fixed",
+      "completion_time": "2025-09-09T13:50:00Z",
+      "notes": "Import paths already correct - no fix needed"
+    }
+  ]
 }
