@@ -1,20 +1,30 @@
-# 🔴🔴🔴 RULE R266: Upstream Bug Documentation Protocol 🔴🔴🔴
+# 🔴🔴🔴 RULE R266: Upstream Bug Documentation and Fix Protocol 🔴🔴🔴
 
 ## Rule Definition
-**Criticality:** SUPREME - NEVER FIX UPSTREAM BUGS
+**Criticality:** SUPREME - DOCUMENT THEN FIX
 **Category:** Agent-Specific
-**Applies To:** integration-agent
+**Applies To:** integration-agent (documentation), orchestrator (fix coordination)
 
-## ABSOLUTE REQUIREMENT: DO NOT FIX BUGS
+## TWO-STEP PROTOCOL: DOCUMENT FIRST, FIX SECOND
 
-### The Integration Agent's Prime Directive
-**YOU ARE AN INTEGRATOR, NOT A FIXER**
+### Step 1: The Integration Agent Documents
+**INTEGRATION AGENT: YOU ARE AN INTEGRATOR, NOT A FIXER**
 
 - **NEVER** fix bugs in integrated code
 - **NEVER** patch failing tests
 - **NEVER** correct compilation errors
 - **NEVER** modify source to make it work
 - **ONLY** document what you find
+
+### Step 2: The Orchestrator Coordinates Fixes
+**ORCHESTRATOR: BUGS MUST BE FIXED BEFORE PROCEEDING**
+
+After Integration Agent documents bugs:
+- **MUST** transition to PROJECT_FIX_PLANNING state
+- **MUST** create fix plans for all documented bugs
+- **MUST** spawn SW Engineers to fix in source branches
+- **MUST** re-run integration after fixes complete
+- **NEVER** proceed to validation with known bugs
 
 ### Why This Rule Exists
 1. **Preserve Accountability** - Original authors must fix their code
@@ -142,11 +152,26 @@ EOF
 | MEDIUM | Feature partially works | Edge case failures |
 | LOW | Minor issues | Formatting problems |
 
+## Orchestrator Responsibilities
+
+When monitoring project integration:
+1. **CHECK** for "UPSTREAM BUGS IDENTIFIED" section in report
+2. **COUNT** number of bugs documented
+3. **TRANSITION** to PROJECT_FIX_PLANNING if bugs > 0
+4. **CREATE** fix plans for each bug
+5. **SPAWN** SW Engineers to fix in source branches
+6. **MONITOR** fix progress
+7. **RE-RUN** integration after fixes complete
+
+**VIOLATION**: Proceeding to validation with documented bugs = -100% FAILURE
+
 ## Grading Impact
-- **-50% INSTANT PENALTY** if any upstream bug is fixed
+- **-50% INSTANT PENALTY** if Integration Agent fixes any bug
+- **-100% INSTANT FAILURE** if Orchestrator proceeds with known bugs
 - **+10%** for comprehensive bug documentation
 - **+5%** for clear reproduction steps
 - **+5%** for actionable recommendations
+- **+20%** for proper fix coordination by Orchestrator
 
 ## Related Rules
 - R262 - Merge Operation Protocols (don't modify originals)

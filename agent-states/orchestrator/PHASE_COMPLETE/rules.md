@@ -251,6 +251,38 @@ The PHASE_COMPLETE state is for:
 
 ## Phase Integration Tasks (FOLLOWS R104 AND R282)
 
+### 🔴🔴🔴 MANDATORY PHASE INTEGRATION BRANCH CREATION 🔴🔴🔴
+
+**EVERY PHASE MUST HAVE A PHASE-LEVEL INTEGRATION BRANCH - NO EXCEPTIONS!**
+
+Even if a phase has only one wave:
+- ✅ MUST create phase-level integration branch ALWAYS
+- ✅ Single-wave phases: Clone the wave integration to phase level
+- ✅ Multi-wave phases: Integrate all wave integration branches
+- ❌ NEVER skip phase integration branch creation
+- ❌ NEVER think "phase integration is same as wave integration"
+
+**Example for single-wave phase:**
+```bash
+# Phase 2 has only Wave 1
+# Wave integration exists: phase2/wave1/integration
+# MUST create phase integration: phase2/integration
+
+git fetch origin
+git checkout -b phase2/integration origin/phase2/wave1/integration
+git push origin phase2/integration
+
+# Both branches now point to same commits - THIS IS CORRECT!
+# Ensures consistency across ALL phases regardless of wave count
+```
+
+**Rationale for MANDATORY requirement:**
+1. **Consistency**: All phases follow same branch structure
+2. **Clear naming**: Future phases can reference previous phase integrations predictably
+3. **Automation**: Tools expect standard branch names (phase{N}/integration)
+4. **Documentation**: Clear progression through phases
+5. **No special cases**: Simpler mental model, no "if single wave then..." logic
+
 ### 🔴🔴🔴 SETUP PHASE INTEGRATION INFRASTRUCTURE (R104/R282) 🔴🔴🔴
 
 **YOU MUST FOLLOW R104 AND R282 - Integration branches are created in TARGET repository!**
@@ -327,28 +359,47 @@ git checkout -b "$PHASE_BRANCH"
 echo "📦 Starting wave integration merges..."
 TOTAL_WAVES=$(jq ".phases[] | select(.phase_number == $PHASE) | .total_waves // 1" orchestrator-state.json)
 
-for wave in $(seq 1 $TOTAL_WAVES); do
-    WAVE_BRANCH="wave-${wave}-integration"
-    echo "   Merging Wave $wave: $WAVE_BRANCH"
+# MANDATORY: Even single-wave phases get phase integration branches
+if [ "$TOTAL_WAVES" -eq 1 ]; then
+    echo "🔴 MANDATORY: Creating phase integration for single-wave phase"
+    echo "   This ensures consistency across ALL phases"
+    WAVE_BRANCH="wave-1-integration"
+    echo "   Cloning Wave 1 integration to phase level: $WAVE_BRANCH → $PHASE_BRANCH"
     
-    # Fetch and merge
+    # For single wave, we still fetch and "merge" to maintain consistency
     git fetch origin "$WAVE_BRANCH"
-    if git merge "origin/$WAVE_BRANCH" --no-ff -m "Integrate Wave $wave into Phase $PHASE"; then
-        echo "   ✅ Wave $wave merged successfully"
+    if git merge "origin/$WAVE_BRANCH" --no-ff -m "Create Phase $PHASE integration from single Wave 1"; then
+        echo "   ✅ Phase integration created from single wave"
+        echo "   ✅ Both branches now point to same content - THIS IS CORRECT"
     else
-        echo "   ❌ Merge conflict in Wave $wave - manual resolution required"
+        echo "   ❌ Failed to create phase integration from wave"
         exit 1
     fi
-    
-    # Test after each wave (R282 requirement)
-    echo "   🧪 Running tests after Wave $wave integration..."
-    if command -v npm &> /dev/null && [ -f "package.json" ]; then
-        npm test || echo "   ⚠️ npm tests need attention"
-    fi
-    if [ -f "Makefile" ] && grep -q "^test:" Makefile; then
-        make test || echo "   ⚠️ make tests need attention"
-    fi
-done
+else
+    echo "   Multiple waves detected - integrating all sequentially"
+    for wave in $(seq 1 $TOTAL_WAVES); do
+        WAVE_BRANCH="wave-${wave}-integration"
+        echo "   Merging Wave $wave: $WAVE_BRANCH"
+        
+        # Fetch and merge
+        git fetch origin "$WAVE_BRANCH"
+        if git merge "origin/$WAVE_BRANCH" --no-ff -m "Integrate Wave $wave into Phase $PHASE"; then
+            echo "   ✅ Wave $wave merged successfully"
+        else
+            echo "   ❌ Merge conflict in Wave $wave - manual resolution required"
+            exit 1
+        fi
+        
+        # Test after each wave (R282 requirement)
+        echo "   🧪 Running tests after Wave $wave integration..."
+        if command -v npm &> /dev/null && [ -f "package.json" ]; then
+            npm test || echo "   ⚠️ npm tests need attention"
+        fi
+        if [ -f "Makefile" ] && grep -q "^test:" Makefile; then
+            make test || echo "   ⚠️ make tests need attention"
+        fi
+    done
+fi
 
 # 8. Tag phase completion in TARGET repo
 TAG_NAME="phase${PHASE}-complete-v1.0"

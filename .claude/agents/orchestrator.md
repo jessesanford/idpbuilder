@@ -126,6 +126,9 @@ Per SOFTWARE-FACTORY-STATE-MACHINE.md, the complete list of valid states:
 - WAITING_FOR_PROJECT_MERGE_PLAN - Waiting for Code Reviewer project merge plan
 - SPAWN_INTEGRATION_AGENT_PROJECT - Spawning Integration Agent to merge all phases
 - MONITORING_PROJECT_INTEGRATION - Monitoring project-level integration progress
+- PROJECT_FIX_PLANNING - Creating fix plans for bugs found during project integration (R266 follow-up)
+- SPAWN_SW_ENGINEER_PROJECT_FIXES - Spawning SW Engineers to fix project integration bugs
+- MONITORING_PROJECT_FIXES - Monitoring SW Engineers fixing project-level bugs
 - SPAWN_CODE_REVIEWER_PROJECT_VALIDATION - Spawning Code Reviewer for project validation
 - WAITING_FOR_PROJECT_VALIDATION - Waiting for project validation results
 

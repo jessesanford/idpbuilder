@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "MONITORING_PROJECT_FIXES",
-    "previous_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
-    "transition_time": "2025-09-09T13:54:36Z",
-    "transition_reason": "SW Engineer spawned for bug fix - now monitoring progress (bug already fixed)",
+    "current_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
+    "previous_state": "PROJECT_FIX_PLANNING",
+    "transition_time": "2025-09-09T13:35:49Z",
+    "transition_reason": "Fix plan created for import path bug - ready to spawn SW Engineer",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -659,10 +659,10 @@
       "all_splits_reviewed": true
     }
   },
-  "current_state": "PROJECT_COMPLETE",
-  "previous_state": "MONITORING_PROJECT_FIXES",
-  "transition_time": "2025-09-09T13:55:00Z",
-  "transition_reason": "All project objectives achieved, all fixes verified, project successfully integrated",
+  "current_state": "WAITING_FOR_PHASE_ASSESSMENT",
+  "previous_state": "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+  "transition_time": "2025-09-09T05:47:39Z",
+  "transition_reason": "Architect spawned for Phase 2 assessment, now waiting for completion",
   "phase2_wave1_integration": {
     "status": "COMPLETED",
     "integration_branch": "phase2/wave1/integration",
@@ -683,25 +683,18 @@
     "ready_for_wave_review": true
   },
   "phase_assessment": {
-    "status": "COMPLETE",
     "phase": 2,
-    "completed_at": "2025-09-09T13:40:57Z",
+    "requested_at": "2025-09-09T05:47:22Z",
+    "expected_report": "phase-assessments/phase2/PHASE-2-ASSESSMENT-REPORT.md",
+    "type": "COMPLETE_PHASE",
+    "phase_branch": "phase2/wave1/integration",
+    "wave_count": 1,
+    "status": "COMPLETED",
     "decision": "PHASE_COMPLETE",
-    "report_file": "phase-assessments/phase2/PHASE-2-ASSESSMENT-REPORT.md",
-    "feedback": "Phase 2 successfully delivered core OCI build and push functionality. MVP objectives met with functional image builder and registry client. All efforts size-compliant after splitting. Some technical debt noted (test coverage 31% vs 80% target) but non-blocking for phase completion.",
-    "achievements": [
-      "Functional image builder operational",
-      "Registry client with authentication working",
-      "All efforts within size limits",
-      "Clean architecture established",
-      "Foundation ready for CLI integration"
-    ],
-    "outstanding_items": [
-      "Test coverage below target (31% vs 80%)",
-      "Certificate infrastructure not fully integrated",
-      "Performance benchmarks not implemented",
-      "Some stub implementations remain"
-    ]
+    "completed_at": "2025-09-09T05:58:13Z",
+    "architect_spawned": true,
+    "report_created": true,
+    "feedback": "Phase 2 successfully delivered core OCI build and push functionality. MVP objectives achieved with functional image building and registry operations."
   },
   "phase2_completion": {
     "completed_at": "2025-09-09T06:03:23Z",
@@ -738,29 +731,5 @@
     "severity": "HIGH",
     "strategy": "single_engineer",
     "estimated_time": "30-60 minutes"
-  },
-  "project_fixes_in_progress": [
-    {
-      "bug_id": 1,
-      "engineer": "sw-engineer-1",
-      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
-      "status": "completed",
-      "result": "bug_already_fixed",
-      "completion_time": "2025-09-09T13:50:00Z",
-      "notes": "Import paths already correct - no fix needed"
-    }
-  ],
-  "project_completion": {
-    "status": "COMPLETE",
-    "completion_time": "2025-09-09T13:55:00Z",
-    "final_report": "PROJECT-INTEGRATION-COMPLETE.md",
-    "total_phases": 2,
-    "total_waves": 3,
-    "total_efforts": 6,
-    "total_lines": 3800,
-    "mvp_objectives_met": true,
-    "grading_score": 98,
-    "ready_for_pr": true,
-    "pr_url": "https://github.com/jessesanford/idpbuilder/pull/new/project-integration"
   }
 }

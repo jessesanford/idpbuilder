@@ -48,16 +48,22 @@ Monitor the Integration Agent as it merges all phase branches into the project i
    - Check for PROJECT-INTEGRATION-REPORT.md
    - Track merge completion for each phase
    - Monitor for conflicts or failures
-2. **Validate Integration Success**:
+2. **Check for Documented Bugs (R266)**:
+   - Look for "UPSTREAM BUGS IDENTIFIED" section in report
+   - If bugs found, MUST fix them before proceeding
+   - Transition to PROJECT_FIX_PLANNING if any bugs documented
+3. **Validate Integration Success**:
    - All phases merged successfully
    - No unresolved conflicts
    - Build/tests pass in integrated state
-3. **Handle Failures per R321**:
+   - NO BUGS documented (if bugs exist, must fix first)
+4. **Handle Failures per R321**:
    - If integration fails, must fix in source branches
    - Trigger IMMEDIATE_BACKPORT_REQUIRED if needed
 
 ## Valid State Transitions
 
-- **SUCCESS** → SPAWN_CODE_REVIEWER_PROJECT_VALIDATION (all phases merged)
-- **FAILURE** → ERROR_RECOVERY (integration failed)
+- **SUCCESS + NO BUGS** → SPAWN_CODE_REVIEWER_PROJECT_VALIDATION (all phases merged, no bugs found)
+- **SUCCESS + BUGS FOUND** → PROJECT_FIX_PLANNING (R266: bugs documented, must fix before proceeding)
+- **FAILURE** → ERROR_RECOVERY (integration failed catastrophically)
 - **CONFLICTS** → IMMEDIATE_BACKPORT_REQUIRED (R321 enforcement)

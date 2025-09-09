@@ -50,33 +50,72 @@ git checkout -b "$PHASE_BRANCH"
 ```
 
 ### 2. Wave Integration Sequence
-All waves in the phase must be integrated sequentially:
+
+**🔴🔴🔴 MANDATORY: EVERY PHASE MUST HAVE A PHASE-LEVEL INTEGRATION BRANCH 🔴🔴🔴**
+
+Even if a phase has only ONE wave, you MUST create a phase-level integration branch:
+- **Single-wave phases**: Clone the wave integration to phase level (branches point to same commits)
+- **Multi-wave phases**: Integrate all wave branches sequentially
+- **NEVER skip phase integration** thinking "it's redundant for single wave"
+
 ```bash
-# For each wave in phase
-for wave in $(seq 1 $TOTAL_WAVES); do
-    echo "📦 Integrating Wave $wave..."
+# MANDATORY: Handle both single and multi-wave phases
+TOTAL_WAVES=$(jq ".phases[] | select(.phase_number == $PHASE) | .total_waves // 1" orchestrator-state.json)
+
+if [ "$TOTAL_WAVES" -eq 1 ]; then
+    echo "🔴 MANDATORY: Creating phase integration for single-wave phase"
+    echo "   This ensures consistency across ALL phases"
     
     # Get wave integration branch (R104 naming)
-    WAVE_BRANCH="wave-${wave}-integration"
+    WAVE_BRANCH="wave-1-integration"
     
-    # R296: Pre-check for deprecated branches
-    if [[ "$WAVE_BRANCH" == *"-deprecated-split" ]]; then
-        echo "❌ BLOCKED: Cannot integrate deprecated branch: $WAVE_BRANCH"
-        exit 1
-    fi
-    
-    # Fetch and merge wave
+    # For single wave, still fetch and merge to maintain consistency
     git fetch origin "$WAVE_BRANCH"
     git merge "origin/$WAVE_BRANCH" --no-ff \
-        -m "integrate: Wave $wave into Phase $PHASE"
+        -m "Create Phase $PHASE integration from single Wave 1"
     
-    # Test after EACH wave merge
+    echo "✅ Phase integration created from single wave"
+    echo "✅ Both phase and wave branches now point to same content - THIS IS CORRECT!"
+    
+    # Test the phase integration
     if ! npm test || ! make test || ! pytest; then
-        echo "🚨 Tests failed after integrating Wave $wave"
+        echo "🚨 Tests failed for phase integration"
         exit 1
     fi
-done
+else
+    # Multi-wave integration - sequential merging
+    for wave in $(seq 1 $TOTAL_WAVES); do
+        echo "📦 Integrating Wave $wave..."
+        
+        # Get wave integration branch (R104 naming)
+        WAVE_BRANCH="wave-${wave}-integration"
+        
+        # R296: Pre-check for deprecated branches
+        if [[ "$WAVE_BRANCH" == *"-deprecated-split" ]]; then
+            echo "❌ BLOCKED: Cannot integrate deprecated branch: $WAVE_BRANCH"
+            exit 1
+        fi
+        
+        # Fetch and merge wave
+        git fetch origin "$WAVE_BRANCH"
+        git merge "origin/$WAVE_BRANCH" --no-ff \
+            -m "integrate: Wave $wave into Phase $PHASE"
+        
+        # Test after EACH wave merge
+        if ! npm test || ! make test || ! pytest; then
+            echo "🚨 Tests failed after integrating Wave $wave"
+            exit 1
+        fi
+    done
+fi
 ```
+
+**Rationale for MANDATORY phase integration (even for single-wave phases):**
+1. **Consistency**: All phases follow identical branch structure
+2. **Predictability**: Tools and scripts expect `phase-{N}-integration` branches
+3. **Documentation**: Clear progression visible in branch history
+4. **Future-proofing**: Next phases can reference previous phase integrations
+5. **No special cases**: Simpler mental model, no conditional logic
 
 ### 3. Workspace Isolation Requirements (Per R104)
 - **Location**: `$CLAUDE_PROJECT_DIR/efforts/phase{X}/integration-workspace/[target-repo-name]/`
