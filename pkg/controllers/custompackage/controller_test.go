@@ -49,8 +49,21 @@ func TestReconcileCustomPkg(t *testing.T) {
 	}
 
 	cfg, err := testEnv.Start()
-	require.NoError(t, err)
-	defer testEnv.Stop()
+	require.NoError(t, err, "Failed to start test environment")
+	require.NotNil(t, cfg, "Test environment config should not be nil")
+
+	t.Cleanup(func() {
+		if testEnv != nil {
+			err := testEnv.Stop()
+			if err != nil {
+				t.Logf("Failed to stop test environment: %v", err)
+			}
+		}
+	})
+
+	k8sClient, err := client.New(cfg, client.Options{Scheme: s})
+	require.NoError(t, err, "Failed to create Kubernetes client")
+	require.NotNil(t, k8sClient, "Kubernetes client should not be nil")
 
 	mgr, err := ctrl.NewManager(cfg, ctrl.Options{
 		Scheme: s,
@@ -262,13 +275,26 @@ func TestReconcileCustomPkgAppSet(t *testing.T) {
 	}
 
 	cfg, err := testEnv.Start()
-	assert.Nil(t, err)
-	defer testEnv.Stop()
+	require.NoError(t, err, "Failed to start test environment")
+	require.NotNil(t, cfg, "Test environment config should not be nil")
+
+	t.Cleanup(func() {
+		if testEnv != nil {
+			err := testEnv.Stop()
+			if err != nil {
+				t.Logf("Failed to stop test environment: %v", err)
+			}
+		}
+	})
+
+	k8sClient, err := client.New(cfg, client.Options{Scheme: s})
+	require.NoError(t, err, "Failed to create Kubernetes client")
+	require.NotNil(t, k8sClient, "Kubernetes client should not be nil")
 
 	mgr, err := ctrl.NewManager(cfg, ctrl.Options{
 		Scheme: s,
 	})
-	assert.Nil(t, err)
+	require.NoError(t, err)
 
 	ctx, ctxCancel := context.WithCancel(context.Background())
 	stoppedCh := make(chan error)
@@ -292,7 +318,7 @@ func TestReconcileCustomPkgAppSet(t *testing.T) {
 		Recorder: mgr.GetEventRecorderFor("test-custompkg-controller"),
 	}
 	cwd, err := os.Getwd()
-	assert.Nil(t, err)
+	require.NoError(t, err)
 
 	for _, n := range []string{"argocd", "test"} {
 		ns := v1.Namespace{
@@ -301,7 +327,7 @@ func TestReconcileCustomPkgAppSet(t *testing.T) {
 			},
 		}
 		err = mgr.GetClient().Create(context.Background(), &ns)
-		assert.Nil(t, err)
+		require.NoError(t, err)
 	}
 
 	cases := []testCase{
@@ -543,20 +569,20 @@ func TestReconcileCustomPkgAppSet(t *testing.T) {
 	for i := range cases {
 		tc := cases[i]
 		_, err = r.reconcileCustomPackage(context.Background(), &tc.input)
-		assert.Nil(t, err)
+		require.NoError(t, err)
 		time.Sleep(1 * time.Second)
 
 		c := mgr.GetClient()
 		repo := v1alpha1.GitRepository{}
 		err = c.Get(context.Background(), client.ObjectKeyFromObject(&tc.expectedGitRepo), &repo)
-		assert.Nil(t, err)
+		require.NoError(t, err)
 
 		assert.Equal(t, tc.expectedGitRepo.Spec, repo.Spec)
 
 		// verify argocd applicationSet
 		appset := argov1alpha1.ApplicationSet{}
 		err = c.Get(context.Background(), client.ObjectKeyFromObject(&tc.expectedApplicationSet), &appset)
-		assert.Nil(t, err)
+		require.NoError(t, err)
 
 		if len(tc.expectedApplicationSet.Spec.Template.Spec.Sources) > 0 {
 			for j := range tc.expectedApplicationSet.Spec.Template.Spec.Sources {
