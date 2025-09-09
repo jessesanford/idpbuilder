@@ -634,5 +634,24 @@
   "current_state": "INTEGRATION",
   "previous_state": "WAVE_COMPLETE",
   "transition_time": "2025-09-09T03:33:47Z",
-  "transition_reason": "Phase 2 Wave 1 complete, proceeding to integration"
+  "transition_reason": "Phase 2 Wave 1 complete, proceeding to integration",
+  "phase2_wave1_integration": {
+    "status": "COMPLETED",
+    "integration_branch": "phase2/wave1/integration",
+    "integration_workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace",
+    "merge_plan_created": true,
+    "merge_plan_location": "efforts/phase2/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+    "integration_report_location": "efforts/phase2/wave1/integration-workspace/INTEGRATION-REPORT.md",
+    "branches_merged": [
+      "idpbuilder-oci-build-push/phase2/wave1/image-builder",
+      "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+      "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002"
+    ],
+    "total_lines_integrated": 1943,
+    "conflicts_encountered": 0,
+    "test_status": "PASSING",
+    "build_status": "SUCCESS",
+    "integration_completed_at": "2025-09-09T03:55:10Z",
+    "ready_for_wave_review": true
+  }
 }
