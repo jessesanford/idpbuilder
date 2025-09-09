@@ -1,66 +1,79 @@
 # Brief for Code Reviewer Fix Planning
-Date: 2025-09-09T20:59:00Z
+Date: 2025-09-09T21:13:00Z
 From: orchestrator/ANALYZE_BUILD_FAILURES
-To: code-reviewer
 
 ## Your Task
-Create detailed fix plans for 3 pre-existing test failures in the idpbuilder codebase that are blocking the test suite.
+Create detailed fix plans for build failures found during production validation testing.
 
 ## Context
-These are NOT failures introduced by our Phase 1 or Phase 2 implementation. They are pre-existing issues in the original idpbuilder codebase that need to be fixed to achieve clean test execution.
+During production validation, we discovered 4 test-related issues in the existing idpbuilder codebase (NOT in our Phase 1/2 implementations). These issues prevent comprehensive testing of our OCI build and push features.
 
 ## Input Documents
 1. BUILD-ERROR-ANALYSIS.md - Categorized errors with root cause analysis
 2. ERROR-TO-EFFORT-MAP.md - Error locations and mapping
-3. efforts/project/integration-workspace/test-output-verbose.txt - Raw test output with full error details
-4. efforts/project/integration-workspace/PRODUCTION-VALIDATION-REPORT.md - Complete validation report
+3. BUILD-FAILURE-ANALYSIS-SUMMARY.md - Summary and recommendations
+4. efforts/project/integration-workspace/test-output-verbose.txt - Raw test output with full error details
+
+## Specific Errors to Fix
+
+### Error 1: Docker API Type Issue
+- File: pkg/kind/cluster_test.go
+- Line: 232
+- Error: `undefined: types.ContainerListOptions`
+- Required: Research current Docker SDK API and provide correct type
+
+### Error 2: Test Format String Issue  
+- File: pkg/util/git_repository_test.go
+- Line: 102
+- Error: `non-constant format string in call to (*testing.common).Fatalf`
+- Required: Correct the format string usage in test
+
+### Error 3: Missing etcd Binary
+- Files: pkg/controllers/custompackage/controller_test.go
+- Tests: TestReconcileCustomPkg, TestReconcileCustomPkgAppSet
+- Error: `fork/exec ../../../bin/k8s/1.29.1-linux-amd64/etcd: no such file or directory`
+- Required: Fix test setup or download required binaries
+
+### Error 4: Nil Pointer in Test
+- File: pkg/controllers/custompackage/controller_test.go
+- Test: TestReconcileCustomPkgAppSet
+- Error: `panic: runtime error: invalid memory address or nil pointer dereference`
+- Required: Add proper nil checks after fixing etcd issue
 
 ## Required Outputs
-Create a single comprehensive fix plan document:
-- **FIX-PLAN-PREEXISTING-TESTS.md**
+Create FIX-PLAN-BUILD-FAILURES.md containing:
 
-The fix plan must include for each of the 3 errors:
-1. **Error 1: Docker API Type Issue**
-   - File: pkg/kind/cluster_test.go:232
-   - Current problematic code (exact snippet)
-   - Fixed code (exact replacement)
-   - Explanation of the fix
-   - How to verify the fix works
-
-2. **Error 2: Format String Issue**
-   - File: pkg/util/git_repository_test.go:102
-   - Current problematic code (exact snippet)
-   - Fixed code (exact replacement)
-   - Explanation of the fix
-   - How to verify the fix works
-
-3. **Error 3: Missing etcd Binary**
-   - File: pkg/controllers/custompackage/controller_test.go
-   - Analysis of why etcd is missing
-   - Solution approach (download binary or update test setup)
-   - Exact commands or code changes needed
-   - How to verify the fix works
+For each error:
+1. **Error Description**: Brief summary
+2. **Root Cause**: Why it's failing
+3. **Fix Strategy**: How to fix it
+4. **Code Changes**: 
+   - Exact file and line numbers
+   - Before code snippet
+   - After code snippet
+5. **Test Verification**: How to verify the fix works
+6. **Dependencies**: Any dependencies on other fixes
 
 ## Priority Order
-1. Fix Docker API type issue (compilation error)
-2. Fix format string issue (compilation error)
-3. Fix missing etcd binary (test execution error)
+1. Fix compilation errors first (Error 1 & 2)
+2. Fix test infrastructure (Error 3)  
+3. Fix test failures (Error 4)
 
 ## Success Criteria
-- All 3 errors have implementable fix plans
-- Each fix includes exact code snippets (before/after)
-- Plans are clear enough for SW Engineers to implement without ambiguity
-- Each fix is independently testable
-- All fixes can be applied to the project-integration branch
-
-## Working Directory
-You should work in: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace
+- All fixes must be implementable by SW Engineers
+- Each fix must be independently testable
+- Fixes should be minimal and targeted
+- No changes to business logic, only test fixes
+- All tests should pass after fixes applied
 
 ## Important Notes
-- These fixes will be applied to the project-integration branch
-- No backporting is needed since these are pre-existing issues
-- The production binary already builds successfully - we're fixing tests only
-- Focus on minimal, targeted fixes that resolve the specific errors
+- These are ALL in the existing codebase, not our new implementations
+- Fixes will be applied to the project-integration branch
+- No backporting needed as these aren't from our effort branches
+- Focus on minimal changes to get tests passing
+
+## Workspace
+You should work in: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace
 
 ## After Creating Fix Plan
-Return control to the orchestrator who will spawn SW Engineers to implement the fixes.
+Return the path to your FIX-PLAN-BUILD-FAILURES.md document so the orchestrator can spawn SW Engineers to implement the fixes.
