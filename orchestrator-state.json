@@ -4,12 +4,12 @@
     "previous_state": "MONITORING_PROJECT_INTEGRATION",
     "transition_time": "2025-09-09T15:02:58Z",
     "transition_reason": "Bugs found during project integration, need Code Reviewer to create fix plan",
-    "ready_for_transition": false,
+    "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
     "infrastructure_setup_time": "2025-09-07T23:59:00Z",
     "infrastructure_verified_time": "2025-09-08T00:13:00Z",
-    "next_state": "SPAWN_INTEGRATION_AGENT",
+    "next_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
     "prepared_for_transition": true,
     "analysis_acknowledged": true,
     "r290_verification_complete": true,
@@ -572,10 +572,9 @@
     "sw_engineers_wave2_spawn": "2025-09-07T12:58:05.535354Z"
   },
   "next_actions": [
-    "Spawn SW Engineer to implement E2.1.2 Split 001 (Core Registry Infrastructure)",
-    "Monitor Split 001 implementation progress",
-    "Spawn Code Reviewer for Split 001 review",
-    "Sequential implementation of Split 002 after Split 001 completes"
+    "Spawn SW Engineer to fix import paths in phase2/wave1/gitea-client branch",
+    "Monitor fix implementation",
+    "Re-run project integration after fix"
   ],
   "current_review": {
     "type": "WAVE_INTEGRATION",
@@ -745,7 +744,7 @@
     }
   ],
   "project_bugs_to_fix": {
-    "fix_plan_status": "CREATED",
+    "fix_plan_status": "VERIFIED",
     "fix_plan_location": "PROJECT-FIX-PLAN.md",
     "fix_plan_created_at": "2025-09-09T15:10:39Z",
     "bugs_count": 1,
@@ -758,6 +757,7 @@
         "description": "Incorrect import paths - using jessesanford instead of cnoe-io",
         "source_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client"
       }
-    ]
+    ],
+    "fix_plan_verified_at": "2025-09-09T15:19:24Z"
   }
 }
