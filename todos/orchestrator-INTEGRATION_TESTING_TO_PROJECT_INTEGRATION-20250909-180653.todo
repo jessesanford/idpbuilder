@@ -1,0 +1,31 @@
+ORCHESTRATOR TODO STATE - RESET TO PROJECT_INTEGRATION
+========================================================
+Timestamp: 2025-09-09T18:07:00Z
+Previous State: INTEGRATION_TESTING
+Current State: PROJECT_INTEGRATION
+Reason: Re-integration required after upstream fixes (R327)
+
+COMPLETED TASKS:
+[✅] Updated state file to reflect fixed bugs
+[✅] Cleaned up stale integration workspaces
+[✅] Reset orchestrator state to PROJECT_INTEGRATION
+[✅] Committed and pushed state changes
+
+PENDING TASKS FOR PROJECT_INTEGRATION:
+[ ] Create fresh project integration workspace
+[ ] Clone target repository (jessesanford/idpbuilder)
+[ ] Create project-integration branch from main
+[ ] Merge Phase 1 integration (with all efforts)
+[ ] Create Phase 2 Wave 1 integration from Phase 1
+[ ] Merge E2.1.1 (image-builder) with fixes
+[ ] Merge E2.1.2 (gitea-client) with fixes
+[ ] Merge Phase 2 Wave 1 into project-integration
+[ ] Verify imports are correct (github.com/cnoe-io/idpbuilder)
+[ ] Run build validation
+[ ] Document integration results
+
+CRITICAL CONTEXT:
+- Import path fixes confirmed in: efforts/phase2/wave1/gitea-client
+- Correct imports: github.com/cnoe-io/idpbuilder/pkg/*
+- Previous integration was stale (created before fixes)
+- R327 mandates complete re-integration after fixes

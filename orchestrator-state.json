@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "PROJECT_INTEGRATION",
-    "previous_state": "MONITORING_PROJECT_FIXES",
-    "transition_time": "2025-09-09T18:06:23Z",
-    "transition_reason": "Re-integrating after upstream fixes completed per R327",
+    "current_state": "CREATE_INTEGRATION_TESTING",
+    "previous_state": "PROJECT_INTEGRATION",
+    "transition_time": "2025-09-09T18:43:19Z",
+    "transition_reason": "Project integration completed successfully - ready for testing",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -732,20 +732,18 @@
   },
   "project_integration": {
     "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace",
-    "target_repository": "idpbuilder",
-    "repository_url": "https://github.com/jessesanford/idpbuilder.git",
     "branch": "project-integration",
-    "base_branch": "main",
-    "status": "MERGE_PLAN_READY",
-    "created_at": "2025-09-09T06:26:00Z",
-    "phase_branches_to_merge": [
-      "idpbuilder-oci-build-push/phase1/integration",
-      "phase2/wave1/integration"
+    "repository": "idpbuilder",
+    "status": "COMPLETED",
+    "created_at": "2025-09-09T18:35:53Z",
+    "efforts_to_merge": [
+      "phase2/wave1/image-builder",
+      "phase2/wave1/gitea-client"
     ],
-    "documentation": "efforts/project/integration-workspace/idpbuilder/PROJECT-INTEGRATION-INFO.md",
-    "merge_plan_created": true,
-    "merge_plan_location": "efforts/project/integration-workspace/PROJECT-MERGE-PLAN.md",
-    "merge_plan_created_at": "2025-09-09T06:22:04Z"
+    "is_stale": false,
+    "integration_agent_result": "SUCCESS",
+    "branch_url": "https://github.com/jessesanford/idpbuilder/tree/project-integration",
+    "completion_time": "2025-09-09T18:43:19Z"
   },
   "agents_spawned": [
     {
@@ -843,5 +841,11 @@
     "created_at": "2025-09-09T17:00:06Z",
     "base_commit": "e210954a0aa81afd110ab47e5a6239fd228c5ce0",
     "status": "INFRASTRUCTURE_CREATED"
+  },
+  "integration_workspaces": {
+    "project": {
+      "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace",
+      "created_at": "2025-09-09T18:35:53Z"
+    }
   }
 }
