@@ -1,0 +1,25 @@
+# Code Reviewer TODOs - CREATE_PROJECT_FIX_PLAN Complete
+# State: CREATE_PROJECT_FIX_PLAN
+# Timestamp: 2025-09-09T15:52:33+00:00
+# Task: Project bug fix planning completed
+
+## Completed Tasks:
+- ✅ Created PROJECT-FIX-PLAN.md with comprehensive bug fix instructions
+- ✅ Documented bug analysis and severity (HIGH - blocks compilation)  
+- ✅ Provided specific fix instructions with before/after code snippets
+- ✅ Included detailed verification steps for the fix
+- ✅ Added SW Engineer spawn instructions
+
+## Fix Plan Summary:
+- Bug #1: Incorrect import paths in pkg/registry/gitea.go
+- Source Branch: phase2/wave1/gitea-client
+- Fix: Change imports from github.com/jessesanford/idpbuilder to github.com/cnoe-io/idpbuilder
+- Compliance: R266 (documented), R321 (source branch fix), R006 (plan only)
+
+## Output Created:
+- efforts/project/integration-workspace/PROJECT-FIX-PLAN.md (223 lines)
+
+## Next Steps:
+- Orchestrator to spawn SW Engineer with fix instructions
+- SW Engineer to execute fix in source branch
+- Re-run integration after fix
