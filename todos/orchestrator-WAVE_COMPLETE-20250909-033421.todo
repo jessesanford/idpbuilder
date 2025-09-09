@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Verify all Phase 2 Wave 1 efforts are complete and passed reviews",
+    "status": "completed",
+    "activeForm": "Verifying all Phase 2 Wave 1 efforts are complete and passed reviews"
+  },
+  {
+    "content": "Update orchestrator-state.json with wave completion metadata",
+    "status": "completed",
+    "activeForm": "Updating orchestrator-state.json with wave completion metadata"
+  },
+  {
+    "content": "Update current_state to INTEGRATION per R324",
+    "status": "completed",
+    "activeForm": "Updating current_state to INTEGRATION per R324"
+  },
+  {
+    "content": "Commit and push state file changes",
+    "status": "completed",
+    "activeForm": "Committing and pushing state file changes"
+  },
+  {
+    "content": "Save TODO state per R287",
+    "status": "completed",
+    "activeForm": "Saving TODO state per R287"
+  },
+  {
+    "content": "Stop and await continuation per R322",
+    "status": "in_progress",
+    "activeForm": "Stopping and awaiting continuation per R322"
+  }
+]
