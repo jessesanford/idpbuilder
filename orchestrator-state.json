@@ -638,10 +638,10 @@
       "all_splits_reviewed": true
     }
   },
-  "current_state": "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
-  "previous_state": "INTEGRATION",
-  "transition_time": "2025-09-09T04:01:34Z",
-  "transition_reason": "Wave review complete, proceeding to Phase 2 assessment per architect decision",
+  "current_state": "WAITING_FOR_PHASE_ASSESSMENT",
+  "previous_state": "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+  "transition_time": "2025-09-09T05:47:39Z",
+  "transition_reason": "Architect spawned for Phase 2 assessment, now waiting for completion",
   "phase2_wave1_integration": {
     "status": "COMPLETED",
     "integration_branch": "phase2/wave1/integration",
@@ -660,5 +660,18 @@
     "build_status": "SUCCESS",
     "integration_completed_at": "2025-09-09T03:55:10Z",
     "ready_for_wave_review": true
+  },
+  "phase_assessment": {
+    "phase": 2,
+    "requested_at": "2025-09-09T05:47:22Z",
+    "expected_report": "phase-assessments/phase2/PHASE-2-ASSESSMENT-REPORT.md",
+    "type": "COMPLETE_PHASE",
+    "phase_branch": "phase2/wave1/integration",
+    "wave_count": 1,
+    "status": "COMPLETED",
+    "decision": "PHASE_COMPLETE",
+    "completed_at": "2025-09-09T05:47:22Z",
+    "architect_spawned": true,
+    "report_created": true
   }
 }
