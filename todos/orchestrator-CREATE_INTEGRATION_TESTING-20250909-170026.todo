@@ -1,0 +1,19 @@
+## Orchestrator TODOs - CREATE_INTEGRATION_TESTING State
+## Saved: 2025-09-09T17:00:30Z
+
+### Completed:
+- [x] Read and acknowledge all PRIMARY DIRECTIVE rules for CREATE_INTEGRATION_TESTING state
+- [x] Create R290 verification marker after rule acknowledgment  
+- [x] Create integration-testing branch from main HEAD
+- [x] Set up integration testing workspace with full clone
+- [x] Document branch creation in INTEGRATION-INFO.md
+- [x] Update orchestrator-state.json with integration testing details
+
+### In Progress:
+- [ ] Save TODOs per R287 before state transition
+
+### Next State (INTEGRATION_TESTING):
+- [ ] Merge project-integration branch into integration-testing branch
+- [ ] Validate build and tests work
+- [ ] Document any conflicts encountered
+- [ ] Generate MASTER-PR-PLAN for human execution
