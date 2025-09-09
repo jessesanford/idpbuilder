@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "CREATE_INTEGRATION_TESTING",
-    "previous_state": "PROJECT_INTEGRATION_COMPLETE",
-    "transition_time": "2025-09-09T16:18:08Z",
-    "transition_reason": "Moving to integration testing after successful project integration",
+    "current_state": "INTEGRATION_TESTING",
+    "previous_state": "CREATE_INTEGRATION_TESTING",
+    "transition_time": "2025-09-09T17:01:00Z",
+    "transition_reason": "Integration testing infrastructure successfully created. Branch and workspace ready.",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -818,5 +818,12 @@
     "tests_status": "PASSING",
     "pr_ready": true,
     "completion_time": "2025-09-09T16:08:05Z"
+  },
+  "integration_testing": {
+    "branch": "idpbuilder-oci-build-push/integration-testing-20250909-165834",
+    "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/integration-testing-20250909-165834",
+    "created_at": "2025-09-09T17:00:06Z",
+    "base_commit": "e210954a0aa81afd110ab47e5a6239fd228c5ce0",
+    "status": "INFRASTRUCTURE_CREATED"
   }
 }
