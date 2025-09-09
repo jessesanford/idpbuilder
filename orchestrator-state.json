@@ -603,7 +603,7 @@
   "split_tracking": {
     "gitea-client": {
       "effort_name": "E2.1.2-gitea-client",
-      "total_splits": 3,
+      "total_splits": 2,
       "current_split": 2,
       "splits": [
         {
@@ -633,7 +633,9 @@
           "review_status": "APPROVED",
           "review_measured_lines": 658
         }
-      ]
+      ],
+      "effort_status": "ALL_SPLITS_COMPLETE",
+      "all_splits_reviewed": true
     }
   },
   "current_state": "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
