@@ -16,13 +16,13 @@ import (
 // It integrates with Phase 1 certificate infrastructure for secure TLS connections
 // and provides comprehensive error handling and retry logic.
 type giteaRegistryImpl struct {
-	config       RegistryConfig
-	trustStore   *certs.DefaultTrustStore
-	validator    *certvalidation.ChainValidator  
-	fallback     *fallback.FallbackManager
-	authn        *authenticator
-	baseURL      *url.URL
-	initialized  bool
+	config      RegistryConfig
+	trustStore  *certs.DefaultTrustStore
+	validator   *certvalidation.ChainValidator
+	fallback    *fallback.FallbackManager
+	authn       *authenticator
+	baseURL     *url.URL
+	initialized bool
 }
 
 // NewGiteaRegistry creates a new Gitea registry client with Phase 1 certificate integration.
@@ -33,36 +33,36 @@ func NewGiteaRegistry(config RegistryConfig) (Registry, error) {
 		return nil, fmt.Errorf("registry URL is required")
 	}
 	if config.Username == "" {
-		return nil, fmt.Errorf("registry username is required")  
+		return nil, fmt.Errorf("registry username is required")
 	}
 	if config.Password == "" {
 		return nil, fmt.Errorf("registry password is required")
 	}
-	
+
 	// Parse and validate registry URL
 	baseURL, err := url.Parse(config.URL)
 	if err != nil {
 		return nil, fmt.Errorf("invalid registry URL %q: %v", config.URL, err)
 	}
-	
+
 	// Set default timeout if not specified
 	if config.TimeoutSeconds <= 0 {
 		config.TimeoutSeconds = 30
 	}
-	
+
 	// Initialize Phase 1 Certificate Infrastructure Components
 	trustStore := certs.NewTrustStore()
-	
+
 	validator := certvalidation.NewChainValidator()
-	
+
 	fallbackHandler := fallback.NewFallbackManager(trustStore)
-	
+
 	// Create authenticator for credential management
 	auth := &authenticator{
 		username: config.Username,
 		password: config.Password,
 	}
-	
+
 	registry := &giteaRegistryImpl{
 		config:      config,
 		trustStore:  trustStore,
@@ -72,7 +72,7 @@ func NewGiteaRegistry(config RegistryConfig) (Registry, error) {
 		baseURL:     baseURL,
 		initialized: true,
 	}
-	
+
 	log.Printf("Gitea registry client initialized for %s", config.URL)
 	return registry, nil
 }
@@ -89,7 +89,7 @@ func (r *giteaRegistryImpl) validateRegistry() error {
 		return fmt.Errorf("certificate validator not initialized")
 	}
 	if r.fallback == nil {
-		return fmt.Errorf("fallback handler not initialized") 
+		return fmt.Errorf("fallback handler not initialized")
 	}
 	return nil
 }

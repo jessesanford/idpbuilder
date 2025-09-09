@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"io"
-	
+
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/types"
 )
@@ -34,7 +34,7 @@ func (m *MockImageLoader) LoadImage(ctx context.Context, source string) (v1.Imag
 	return &testImage{
 		configFile: &v1.ConfigFile{
 			Architecture: "amd64",
-			OS:          "linux",
+			OS:           "linux",
 		},
 	}, nil
 }
@@ -89,7 +89,7 @@ func (t *testImage) RawConfigFile() ([]byte, error) {
 // Digest returns digest for test image
 func (t *testImage) Digest() (v1.Hash, error) {
 	return v1.Hash{
-		Algorithm: "sha256", 
+		Algorithm: "sha256",
 		Hex:       "test-image-digest",
 	}, nil
 }
@@ -149,7 +149,7 @@ func (l *testLayer) Digest() (v1.Hash, error) {
 // DiffID returns diff ID for test layer
 func (l *testLayer) DiffID() (v1.Hash, error) {
 	return v1.Hash{
-		Algorithm: "sha256", 
+		Algorithm: "sha256",
 		Hex:       "test-layer-diffid",
 	}, nil
 }
@@ -160,7 +160,7 @@ func (l *testLayer) Compressed() (io.ReadCloser, error) {
 	return io.NopCloser(bytes.NewReader(data)), nil
 }
 
-// Uncompressed returns uncompressed layer content  
+// Uncompressed returns uncompressed layer content
 func (l *testLayer) Uncompressed() (io.ReadCloser, error) {
 	data := []byte("test layer content")
 	return io.NopCloser(bytes.NewReader(data)), nil
