@@ -1,0 +1,12 @@
+test -s /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace/bin/controller-gen && /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace/bin/controller-gen --version | grep -q v0.15.0 || \
+GOBIN=/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace/bin go install sigs.k8s.io/controller-tools/cmd/controller-gen@v0.15.0
+/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace/bin/controller-gen rbac:roleName=manager-role crd webhook paths="./api/..." output:crd:artifacts:config=pkg/controllers/resources
+/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./api/..."
+go fmt ./...
+go vet ./...
+export PATH=/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace/bin:$PATH; ./hack/embedded-resources.sh;
+"gitea-charts" has been added to your repositories
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the "gitea-charts" chart repository
+Update Complete. ⎈Happy Helming!⎈
+go build -ldflags " -X github.com/cnoe-io/idpbuilder/pkg/cmd/version.idpbuilderVersion=9a90b65-dirty -X github.com/cnoe-io/idpbuilder/pkg/cmd/version.gitCommit=9a90b65f2cd15dd5e99ea1c96deb2a5f9425eec5 -X github.com/cnoe-io/idpbuilder/pkg/cmd/version.buildDate=2025-09-09T22:45:44Z " -o idpbuilder main.go
