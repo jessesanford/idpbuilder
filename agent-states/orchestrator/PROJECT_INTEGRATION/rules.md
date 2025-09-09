@@ -97,6 +97,11 @@ echo "$(date +%s) - Rules read and acknowledged for PROJECT_INTEGRATION" > .stat
 **Criticality**: BLOCKING - Must verify branches are mergeable before attempting
 **Summary**: Check for conflicts and mergeability before integration operations
 
+### 🚨🚨🚨 R328 - Integration Freshness Validation [BLOCKING]
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R328-integration-freshness-validation.md`
+**Criticality**: BLOCKING - Stale integrations cause failed merges and lost fixes
+**Summary**: MUST verify all phase branches are fresh before creating project integration
+
 ## 🚨 PROJECT_INTEGRATION IS A VERB - SET UP INFRASTRUCTURE NOW! 🚨
 
 ### IMMEDIATE ACTIONS UPON ENTERING PROJECT_INTEGRATION
@@ -135,12 +140,70 @@ PROJECT_INTEGRATION creates the infrastructure for merging ALL phases:
 4. Prepare for merging all phase integration branches
 5. Document project integration plan
 
+## 🔴🔴🔴 CRITICAL: VERIFY PHASE BRANCH FRESHNESS FIRST! 🔴🔴🔴
+
+**Before creating project integration, MUST verify all phase branches are fresh:**
+
+```bash
+verify_phase_branch_freshness() {
+    echo "🔍 Checking phase branch freshness..."
+    
+    # Check if any effort branches have been updated after phase integrations
+    STALE_PHASES=""
+    
+    for phase_num in $(seq 1 $(jq '.phases_planned' orchestrator-state.json)); do
+        PHASE_INTEGRATION_TIME=$(jq -r --arg p "$phase_num" '.integration_branches[] | select(.phase == ($p | tonumber)) | .created_at' orchestrator-state.json)
+        
+        if [[ -z "$PHASE_INTEGRATION_TIME" ]]; then
+            echo "⚠️ Phase $phase_num has no integration branch yet"
+            continue
+        fi
+        
+        # Check if any efforts in this phase were updated after integration
+        EFFORTS_UPDATED=$(jq -r --arg p "$phase_num" --arg time "$PHASE_INTEGRATION_TIME" '
+            .efforts_completed[] | 
+            select(.phase == ($p | tonumber)) | 
+            select((.last_updated_at // .completion_time) > $time) | 
+            .name' orchestrator-state.json)
+        
+        if [[ -n "$EFFORTS_UPDATED" ]]; then
+            echo "🔴 Phase $phase_num integration is STALE!"
+            echo "   Updated efforts: $EFFORTS_UPDATED"
+            STALE_PHASES="$STALE_PHASES $phase_num"
+        fi
+    done
+    
+    if [[ -n "$STALE_PHASES" ]]; then
+        echo "❌ CRITICAL: Phase integrations are stale: $STALE_PHASES"
+        echo "📝 These phases received fixes/updates after integration"
+        echo "🔄 Must recreate phase integrations from fresh effort branches"
+        return 1
+    else
+        echo "✅ All phase integrations are fresh"
+        return 0
+    fi
+}
+```
+
 ## 🔴🔴🔴 CRITICAL: R283 COMPLIANCE REQUIRED 🔴🔴🔴
 
 **Project Integration Infrastructure per R283:**
 
 ```bash
 create_project_integration_infrastructure() {
+    # FIRST: Verify phase branches are fresh
+    if ! verify_phase_branch_freshness; then
+        echo "❌ Cannot create project integration with stale phase branches"
+        echo "📝 Document the staleness issue"
+        cat > PHASE-STALENESS-REPORT.md << 'EOF'
+# Phase Integration Staleness Detected
+Date: $(date)
+Issue: Some phase integration branches are outdated
+Action Required: Recreate phase integrations from latest effort branches
+Stale Phases: $STALE_PHASES
+EOF
+        return 1
+    fi
     echo "🏭 PROJECT_INTEGRATION: Starting infrastructure setup per R283..."
     
     # Save SF instance directory
@@ -200,15 +263,42 @@ $(jq '.phases[].integration_branch' "$SF_INSTANCE_DIR/orchestrator-state.json")
 - ✅ Ready for merge plan creation
 EOF
     
-    # Update orchestrator state
+    # Update orchestrator state with comprehensive metadata
     cd "$SF_INSTANCE_DIR"
-    jq '.project_integration = {
-        "workspace": "'$PROJECT_INTEGRATION_DIR'",
-        "branch": "'$INTEGRATION_BRANCH'",
-        "status": "INFRASTRUCTURE_READY"
-    }' orchestrator-state.json
     
-    echo "✅ Project integration infrastructure ready"
+    # Collect phase integration branch information
+    PHASE_BRANCHES=$(jq -r '.integration_branches[] | "\(.branch):\(.created_at)"' orchestrator-state.json)
+    
+    # Update state file with detailed tracking
+    jq --arg workspace "$PROJECT_INTEGRATION_DIR" \
+       --arg branch "$INTEGRATION_BRANCH" \
+       --arg repo_name "$TARGET_REPO_NAME" \
+       --arg created "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+       '.project_integration = {
+        "workspace": $workspace,
+        "branch": $branch,
+        "repository": $repo_name,
+        "status": "INFRASTRUCTURE_READY",
+        "created_at": $created,
+        "phase_branches_to_merge": (.integration_branches | map(.branch)),
+        "merge_plan": ($workspace + "/PROJECT-MERGE-PLAN.md"),
+        "is_stale": false
+    } | .integration_workspaces.project = {
+        "workspace": $workspace,
+        "merge_plan": ($workspace + "/PROJECT-MERGE-PLAN.md"),
+        "created_at": $created
+    } | .repository_contexts.current_operation = {
+        "type": "PROJECT_INTEGRATION",
+        "target_repo_workspace": $workspace,
+        "software_factory_dir": "'$SF_INSTANCE_DIR'"
+    }' orchestrator-state.json > orchestrator-state.json.tmp && mv orchestrator-state.json.tmp orchestrator-state.json
+    
+    echo "✅ Project integration infrastructure ready with metadata tracking"
+    echo "📊 State file updated with:"
+    echo "   - Integration workspace location"
+    echo "   - Merge plan path"
+    echo "   - Repository context tracking"
+    echo "   - Phase branches to merge"
 }
 ```
 
@@ -244,3 +334,25 @@ The PROJECT_INTEGRATION state is responsible for:
 3. Setting up for Integration Agent to execute merges
 4. Ensuring all phases will be integrated together
 5. Maintaining separation between SF and target repositories
+
+### 🔴🔴🔴 MANDATORY VALIDATION REQUIREMENT 🔴🔴🔴
+
+**Per R288 and R324**: ALL state file updates MUST be validated before commit:
+
+```bash
+# After ANY update to orchestrator-state.json:
+"$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || {
+    echo "❌ State file validation failed!"
+    exit 288
+}
+```
+
+**Use helper functions for automatic validation:**
+```bash
+# Source the helper functions
+source "$CLAUDE_PROJECT_DIR/utilities/state-file-update-functions.sh"
+
+# Use safe functions that include validation:
+safe_state_transition "NEW_STATE" "reason"
+safe_update_field "field_name" "value"
+```

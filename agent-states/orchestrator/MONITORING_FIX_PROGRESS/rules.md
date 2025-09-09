@@ -415,3 +415,26 @@ If you find yourself:
 - Continuing after completing state work
 
 **STOP IMMEDIATELY - You are violating R322!**
+
+
+### 🔴🔴🔴 MANDATORY VALIDATION REQUIREMENT 🔴🔴🔴
+
+**Per R288 and R324**: ALL state file updates MUST be validated before commit:
+
+```bash
+# After ANY update to orchestrator-state.json:
+"$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || {
+    echo "❌ State file validation failed!"
+    exit 288
+}
+```
+
+**Use helper functions for automatic validation:**
+```bash
+# Source the helper functions
+source "$CLAUDE_PROJECT_DIR/utilities/state-file-update-functions.sh"
+
+# Use safe functions that include validation:
+safe_state_transition "NEW_STATE" "reason"
+safe_update_field "field_name" "value"
+```

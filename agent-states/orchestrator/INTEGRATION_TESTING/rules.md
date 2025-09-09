@@ -81,12 +81,20 @@ The system will check for this marker. No marker = Immediate failure.
 
 READ THIS RULE FILE: `$CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md`
 
-**⚠️ R006 WARNING FOR INTEGRATION_TESTING STATE:**
-- DO NOT resolve merge conflicts yourself!
-- DO NOT edit code to fix integration issues!
-- DO NOT apply patches or fixes directly!
-- Document all issues for SW Engineers to resolve
-- You only coordinate merging - NEVER modify code
+### 🚨🚨🚨 RULE R329 - Orchestrator NEVER Performs Git Merges [BLOCKING]
+**Source:** `$CLAUDE_PROJECT_DIR/rule-library/R329-orchestrator-never-performs-merges.md`
+**Criticality:** BLOCKING - Any merge operation = -100% IMMEDIATE FAILURE
+
+READ THIS RULE FILE: `$CLAUDE_PROJECT_DIR/rule-library/R329-orchestrator-never-performs-merges.md`
+
+**⚠️ R006 + R329 WARNING FOR INTEGRATION_TESTING STATE:**
+- DO NOT execute git merge commands yourself! (R329)
+- DO NOT resolve merge conflicts yourself! (R006 + R329)
+- DO NOT edit code to fix integration issues! (R006)
+- DO NOT apply patches or fixes directly! (R006 + R329)
+- MUST spawn Integration Agent for ALL merges (R329)
+- Document all issues for appropriate agents to resolve
+- You only coordinate - NEVER execute merges or modify code
 
 ### 🚨🚨🚨 RULE R271 - Mandatory Production Ready Validation [BLOCKING]
 **MUST validate production readiness** | Source: rule-library/R271-mandatory-production-ready-validation.md
@@ -109,79 +117,272 @@ READ THIS RULE FILE: `$CLAUDE_PROJECT_DIR/rule-library/R280-main-branch-protecti
 
 Software Factory creates MASTER-PR-PLAN.md for humans to execute PRs. We NEVER push to main ourselves.
 
+### 🚨🚨🚨 RULE R328 - Integration Freshness Validation [BLOCKING]
+**MUST verify integration branch freshness before merging** | Source: rule-library/R328-integration-freshness-validation.md
+
+READ THIS RULE FILE: `$CLAUDE_PROJECT_DIR/rule-library/R328-integration-freshness-validation.md`
+
+Integration branches become stale when fixes are applied after creation. ALWAYS check timestamps!
+
 ## 🎯 STATE OBJECTIVES
 
 In the INTEGRATION_TESTING state, you are responsible for:
 
-1. **Merging All Efforts Sequentially**
-   - Read all effort directories to identify branches
-   - Determine dependency order based on implementation plan
-   - Merge each effort one at a time
-   - Handle conflicts systematically
+1. **Coordinating Integration via Integration Agent (R329 MANDATORY)**
+   - Identify all effort directories and branches
+   - Spawn Code Reviewer to create merge plan
+   - **SPAWN INTEGRATION AGENT TO EXECUTE ALL MERGES**
+   - Monitor Integration Agent progress via reports
+   - NEVER execute merges yourself (R329 VIOLATION)
 
-2. **Verifying Integration Success**
-   - After each merge, verify no conflicts remain
-   - Run basic compilation/build checks if applicable
-   - Document any issues encountered
+2. **Verifying Integration Success (via Agent Reports)**
+   - Review Integration Agent's INTEGRATION-REPORT.md
+   - Check for conflicts documented by Integration Agent
+   - Spawn Code Reviewer for build/test validation if needed
+   - Document any issues for next states
 
-3. **Creating Integration Report**
-   - Document merge order executed
-   - List any conflicts resolved
-   - Note any issues for BUILD_VALIDATION state
+3. **Creating Orchestration Report**
+   - Document which agents were spawned
+   - Summarize Integration Agent's findings
+   - Note any issues requiring attention
+   - Track state transitions
 
 ## 📝 REQUIRED ACTIONS
 
-### Step 1: Identify All Efforts
+### 🔴🔴🔴 CRITICAL: UNDERSTANDING REPOSITORY CONTEXTS 🔴🔴🔴
+
+**BEFORE YOU START, YOU MUST UNDERSTAND WHERE THINGS ARE:**
+
+1. **Software Factory Repository** (`/home/vscode/software-factory-template/`)
+   - Contains: SF code, rules, state files, agent configs
+   - Branches: main, software-factory-2.0
+   - **NEVER contains effort branches or integration branches**
+
+2. **Target Repository Clones** (`efforts/*/*/`)
+   - Contains: Actual project implementation code
+   - Branches: effort branches (e.g., `phase1/wave1/effort-name`)
+   - Location: Each effort has its own clone of target repo
+   - **THIS IS WHERE EFFORT CODE LIVES**
+
+3. **Integration Workspaces** (`efforts/*/integration-workspace/`)
+   - Contains: Integration branches and merge operations
+   - Branches: integration branches (e.g., `wave1-integration`, `phase1-integration`)
+   - Location: Separate clones for merging work
+   - **THIS IS WHERE INTEGRATION HAPPENS**
+
+### Step 1: Identify All Efforts and Their Locations
 ```bash
-# List all effort directories
+# CRITICAL: Navigate from SF instance directory
+SF_INSTANCE_DIR=$(pwd)
+echo "📁 SF Instance: $SF_INSTANCE_DIR"
+
+# Check state file for effort locations
+echo "📊 Reading effort locations from state file..."
+jq -r '.efforts_completed[] | "\(.name): \(.workspace // "NO_WORKSPACE_TRACKED")"' orchestrator-state.json
+jq -r '.efforts_in_progress[] | "\(.name): \(.workspace // "NO_WORKSPACE_TRACKED")"' orchestrator-state.json
+
+# List all effort directories (these are TARGET REPO CLONES, not SF branches!)
+echo "📂 Effort directories (target repo clones):"
 ls -la efforts/
 
-# For each effort, identify the branch
-for effort in efforts/*/; do
-    echo "Effort: $(basename $effort)"
-    cd "$effort"
-    git branch --show-current
+# For each effort, identify the branch IN THE TARGET REPO CLONE
+for effort_dir in efforts/*/; do
+    if [[ -d "$effort_dir/.git" ]]; then
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "📁 Effort: $(basename $effort_dir)"
+        echo "📍 Location: $effort_dir"
+        cd "$effort_dir"
+        
+        # Verify this is a target repo clone, NOT software-factory
+        REMOTE_URL=$(git remote get-url origin)
+        if [[ "$REMOTE_URL" == *"software-factory"* ]]; then
+            echo "❌ ERROR: This is a Software Factory clone, not target repo!"
+            continue
+        fi
+        
+        echo "🔗 Repository: $REMOTE_URL"
+        echo "🌿 Current branch: $(git branch --show-current)"
+        echo "📝 Latest commit: $(git log -1 --oneline)"
+        cd "$SF_INSTANCE_DIR"
+    fi
 done
 ```
 
-### Step 2: Read Merge Order Plan
-Check for existing merge plan from previous states:
+### Step 2: Locate and Read Merge Order Plan
 ```bash
-# Check for merge plan
-if [ -f "INTEGRATION-MERGE-PLAN.md" ]; then
-    cat INTEGRATION-MERGE-PLAN.md
+# CRITICAL: Merge plans are in integration workspaces, NOT in SF directory!
+SF_INSTANCE_DIR=$(pwd)
+
+# Check state file for integration workspace location
+INTEGRATION_WORKSPACE=$(jq -r '.current_wave_integration.workspace // .current_phase_integration.workspace // "NOT_SET"' orchestrator-state.json)
+MERGE_PLAN_PATH=$(jq -r '.current_wave_integration.merge_plan // .current_phase_integration.merge_plan // "NOT_SET"' orchestrator-state.json)
+
+echo "📍 Integration workspace: $INTEGRATION_WORKSPACE"
+echo "📄 Merge plan path: $MERGE_PLAN_PATH"
+
+# Navigate to integration workspace if it exists
+if [[ -d "$INTEGRATION_WORKSPACE" ]]; then
+    cd "$INTEGRATION_WORKSPACE"
+    echo "✅ Found integration workspace"
+    
+    # Look for merge plan
+    if [[ -f "WAVE-MERGE-PLAN.md" ]]; then
+        echo "📋 Found WAVE-MERGE-PLAN.md"
+        cat WAVE-MERGE-PLAN.md
+    elif [[ -f "PHASE-MERGE-PLAN.md" ]]; then
+        echo "📋 Found PHASE-MERGE-PLAN.md"
+        cat PHASE-MERGE-PLAN.md
+    elif [[ -f "PROJECT-MERGE-PLAN.md" ]]; then
+        echo "📋 Found PROJECT-MERGE-PLAN.md"
+        cat PROJECT-MERGE-PLAN.md
+    else
+        echo "⚠️ No merge plan found - Code Reviewer should have created one!"
+        ls -la *.md
+    fi
+    
+    cd "$SF_INSTANCE_DIR"
 else
-    echo "⚠️ No merge plan found - will use alphabetical order"
+    echo "❌ Integration workspace not found at: $INTEGRATION_WORKSPACE"
+    echo "📂 Available workspaces:"
+    find efforts -type d -name "integration-workspace" 2>/dev/null
 fi
 ```
 
-### Step 3: Execute Sequential Merges
+### Step 3: Verify Integration Freshness and Spawn Integration Agent
 ```bash
-# Change to integration-testing workspace
-cd efforts/integration-testing
-
-# Ensure we're on integration-testing branch
-git checkout integration-testing
-
-# For each effort in order
-for effort_branch in "${ORDERED_EFFORTS[@]}"; do
-    echo "📝 Merging: $effort_branch"
+# 🔴🔴🔴 CRITICAL: CHECK INTEGRATION FRESHNESS FIRST! 🔴🔴🔴
+verify_integration_freshness() {
+    echo "🔍 Checking if integration branch is stale..."
     
-    # Fetch the effort branch
-    git fetch origin "$effort_branch"
+    # Get integration branch creation time from state
+    INTEGRATION_CREATED=$(jq -r '.current_wave_integration.created_at // .current_phase_integration.created_at' orchestrator-state.json)
     
-    # Attempt merge
-    if git merge "origin/$effort_branch" --no-ff -m "integrate: merge $effort_branch into integration-testing"; then
-        echo "✅ Successfully merged $effort_branch"
-    else
-        echo "⚠️ Conflicts detected in $effort_branch"
-        # Document conflicts
-        git status --short > "CONFLICTS-$effort_branch.txt"
+    # Check each effort for newer commits
+    STALE_INTEGRATION=false
+    for effort in $(jq -r '.efforts_completed[].name, .efforts_in_progress[].name' orchestrator-state.json); do
+        EFFORT_UPDATED=$(jq -r --arg name "$effort" '.efforts_completed[], .efforts_in_progress[] | select(.name == $name) | .last_updated_at // .completion_time' orchestrator-state.json)
         
-        # Attempt automatic resolution for simple conflicts
-        # If complex, transition to FIX_BUILD_ISSUES state
+        if [[ "$EFFORT_UPDATED" > "$INTEGRATION_CREATED" ]]; then
+            echo "⚠️ Effort '$effort' has newer commits than integration branch!"
+            echo "   Effort updated: $EFFORT_UPDATED"
+            echo "   Integration created: $INTEGRATION_CREATED"
+            STALE_INTEGRATION=true
+        fi
+    done
+    
+    if [[ "$STALE_INTEGRATION" == "true" ]]; then
+        echo "🔴 CRITICAL: Integration branch is STALE!"
+        echo "📝 Must recreate integration from fresh effort branches"
+        echo "   The merge plan may reference outdated branches"
+        return 1
+    else
+        echo "✅ Integration branch is fresh"
+        return 0
     fi
-done
+}
+
+# Get integration workspace location
+SF_INSTANCE_DIR=$(pwd)
+INTEGRATION_WORKSPACE=$(jq -r '.current_wave_integration.workspace // .current_phase_integration.workspace // .project_integration.workspace' orchestrator-state.json)
+
+if [[ ! -d "$INTEGRATION_WORKSPACE" ]]; then
+    echo "❌ Integration workspace not found: $INTEGRATION_WORKSPACE"
+    echo "📝 Need to create integration infrastructure first"
+    exit 1
+fi
+
+# Verify freshness before proceeding
+cd "$SF_INSTANCE_DIR"
+if ! verify_integration_freshness; then
+    echo "🔄 Integration is stale - need fresh integration"
+    # Document the staleness
+    cat > "$INTEGRATION_WORKSPACE/INTEGRATION-STALENESS-REPORT.md" << 'EOF'
+# Integration Staleness Detected
+Date: $(date)
+Issue: Effort branches have been updated after integration branch creation
+Resolution: Integration Agent must fetch fresh branches
+Action: Integration Agent will handle fresh merges
+EOF
+fi
+
+# 🔴🔴🔴 R329 ENFORCEMENT: SPAWN INTEGRATION AGENT 🔴🔴🔴
+echo "📋 R329 MANDATORY: Spawning Integration Agent for ALL merges"
+echo "🚫 Orchestrator MUST NOT execute merges directly"
+
+# Check if merge plan exists
+if [[ -f "$INTEGRATION_WORKSPACE/WAVE-MERGE-PLAN.md" ]] || \
+   [[ -f "$INTEGRATION_WORKSPACE/PHASE-MERGE-PLAN.md" ]] || \
+   [[ -f "$INTEGRATION_WORKSPACE/PROJECT-MERGE-PLAN.md" ]]; then
+    
+    MERGE_PLAN=$(ls "$INTEGRATION_WORKSPACE"/*MERGE-PLAN.md | head -1)
+    echo "✅ Found merge plan: $(basename $MERGE_PLAN)"
+    
+    # Spawn Integration Agent to execute merges
+    echo "🚀 SPAWNING INTEGRATION AGENT (R329 COMPLIANCE)"
+    
+    cat > /tmp/integration-agent-task.md << EOF
+# Integration Testing Execution Task
+
+## Critical Requirements (R329)
+- You are the Integration Agent, responsible for ALL merge operations
+- The orchestrator has delegated this work per R329
+- You MUST execute all merges according to the plan
+
+## Working Directory
+$INTEGRATION_WORKSPACE
+
+## Merge Plan Location  
+$(basename $MERGE_PLAN)
+
+## Instructions
+1. CD to integration workspace: $INTEGRATION_WORKSPACE
+2. Read and follow $(basename $MERGE_PLAN) EXACTLY
+3. Fetch latest branches from origin
+4. Execute merges in specified order
+5. Document any conflicts in INTEGRATION-REPORT.md
+6. Handle merge conflicts if resolvable
+7. Create comprehensive report of all operations
+
+## Expected Outputs
+- INTEGRATION-REPORT.md with full details
+- work-log.md showing all commands executed
+- Merged integration branch pushed to remote
+
+## Staleness Check
+$(if [[ "$STALE_INTEGRATION" == "true" ]]; then
+    echo "⚠️ CRITICAL: Integration branches are stale"
+    echo "MUST fetch fresh branches before merging"
+else
+    echo "✅ Integration branches are fresh"
+fi)
+EOF
+
+    # Spawn the Integration Agent
+    echo "📋 Spawning Integration Agent with task..."
+    /spawn integration-agent EXECUTE_MERGES "$(cat /tmp/integration-agent-task.md)"
+    
+    # Update state to track spawning
+    echo "📝 Updating state to MONITORING_INTEGRATION"
+    # Transition to monitoring the Integration Agent
+    
+else
+    echo "❌ No merge plan found in $INTEGRATION_WORKSPACE"
+    echo "📝 Must spawn Code Reviewer first to create merge plan"
+    
+    # Spawn Code Reviewer to create merge plan
+    echo "🚀 Spawning Code Reviewer to create merge plan..."
+    /spawn code-reviewer CREATE_MERGE_PLAN "Create merge plan for integration testing in $INTEGRATION_WORKSPACE"
+fi
+
+cd "$SF_INSTANCE_DIR"
+
+# 🔴 CRITICAL R329 REMINDER 🔴
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🚨 R329 ENFORCEMENT COMPLETE"
+echo "✅ Integration Agent spawned for merge execution"
+echo "❌ Orchestrator did NOT execute any merges"
+echo "📊 Waiting for Integration Agent reports..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 ```
 
 ### Step 4: Create Integration Report
@@ -272,7 +473,7 @@ INTEGRATION_TESTING → PRODUCTION_READY_VALIDATION
 
 ### Error Path:
 ```
-INTEGRATION_TESTING → FIX_BUILD_ISSUES
+INTEGRATION_TESTING → ANALYZE_BUILD_FAILURES
 ```
 - Complex merge conflicts require fixes
 - Structural incompatibilities found
@@ -337,3 +538,26 @@ If you find yourself:
 - Continuing after completing state work
 
 **STOP IMMEDIATELY - You are violating R322!**
+
+
+### 🔴🔴🔴 MANDATORY VALIDATION REQUIREMENT 🔴🔴🔴
+
+**Per R288 and R324**: ALL state file updates MUST be validated before commit:
+
+```bash
+# After ANY update to orchestrator-state.json:
+"$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || {
+    echo "❌ State file validation failed!"
+    exit 288
+}
+```
+
+**Use helper functions for automatic validation:**
+```bash
+# Source the helper functions
+source "$CLAUDE_PROJECT_DIR/utilities/state-file-update-functions.sh"
+
+# Use safe functions that include validation:
+safe_state_transition "NEW_STATE" "reason"
+safe_update_field "field_name" "value"
+```

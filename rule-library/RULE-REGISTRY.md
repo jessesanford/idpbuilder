@@ -34,6 +34,7 @@
 22. **R309.0.0** - NEVER Create Efforts in SF Repo (PARAMOUNT LAW - -100% FOR VIOLATION!)
 23. **R312.0.0** - Git Config Immutability Protocol (SUPREME LAW - ROOT-OWNED + READONLY CONFIGS FOR DOUBLE PROTECTION!)
 24. **R323.0.0** - Mandatory Final Artifact Build (NO PROJECT SUCCESS WITHOUT DELIVERABLE!)
+25. **R329.0.0** - Orchestrator Never Performs Git Merges (SUPREME LAW - INTEGRATION AGENT HANDLES ALL MERGES!)
 
 ## Rule Categories
 
@@ -264,3 +265,5 @@
 - R325.0.0 - Atomic State Transitions | 🔴🔴🔴 SUPREME LAW | State transitions must be atomic operations
 - R326.0.0 - Split File Placement Protocol | 🔴🔴🔴 SUPREME LAW | NEVER create split-XXX/ subdirectories - files go in standard project directories (-100% for violations)
 - R327.0.0 - Mandatory Re-Integration After Fixes | 🔴🔴🔴 SUPREME LAW | After ANY fixes to source branches, MUST delete and re-run ENTIRE integration from scratch (-100% for violations)
+- R328.0.0 - Integration Freshness Validation | 🚨🚨🚨 BLOCKING | MUST verify integration branch freshness before merging - stale branches cause lost fixes (-30% to -50% penalty)
+- R329.0.0 - Orchestrator Never Performs Git Merges | 🚨🚨🚨 BLOCKING | Orchestrator MUST spawn Integration Agent for ALL merges - NO EXCEPTIONS (-100% for violations)

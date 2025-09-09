@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "PROJECT_INTEGRATION_COMPLETE",
-    "previous_state": "MONITORING_PROJECT_FIXES",
-    "transition_time": "2025-09-09T16:08:05Z",
-    "transition_reason": "Final project integration completed successfully with import path fix applied",
+    "current_state": "CREATE_INTEGRATION_TESTING",
+    "previous_state": "PROJECT_INTEGRATION",
+    "transition_time": "2025-09-09T18:43:19Z",
+    "transition_reason": "Project integration completed successfully - ready for testing",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -34,7 +34,7 @@
       "verified": true
     },
     "monitoring_complete": true,
-    "fix_monitoring_complete": false,
+    "fix_monitoring_complete": true,
     "next_transition_prepared_at": "2025-09-07T23:36:00Z",
     "monitoring_results": {
       "E1.2.1": {
@@ -192,18 +192,13 @@
       "E2_1_1": "APPROVED - 601 lines, ready for integration"
     },
     "project_integration": {
-      "agent_spawned": true,
-      "spawn_time": "2025-09-09T10:40:32Z",
-      "completion_time": "2025-09-09T10:49:00Z",
-      "status": "BUGS_FOUND",
-      "phase1_merged": true,
-      "phase2_wave1_merged": true,
-      "project_integration_branch": "project-integration",
-      "upstream_bug_found": true,
-      "bug_location": "pkg/registry/gitea.go:14-16",
-      "bug_documented": true,
-      "needs_fix_plan": true,
-      "report_location": "efforts/project/integration-workspace/INTEGRATION-REPORT.md"
+      "status": "PENDING_REINTEGRATION",
+      "integration_workspace": null,
+      "branch_created": false,
+      "is_stale": true,
+      "previous_attempt_had_bugs": true,
+      "reintegration_required": true,
+      "reason": "R327 mandatory re-integration after fixes"
     },
     "project_bugs_to_fix": {
       "location": "pkg/registry/gitea.go:14-16",
@@ -213,7 +208,26 @@
       "fix_plan_status": "NOT_CREATED",
       "fix_status": "NOT_STARTED"
     },
-    "monitor_fixes_completed": false
+    "monitor_fixes_completed": false,
+    "integration_testing_branch": "idpbuilder-oci-build-push/integration-testing",
+    "build_validation_status": "PARTIAL_85_PERCENT",
+    "pr_plan_created": true,
+    "monitoring_project_fixes": {
+      "fixes_completed": true,
+      "all_reviewed": true,
+      "ready_for_reintegration": true
+    },
+    "integration_metadata": {
+      "workspaces": {
+        "project": null
+      },
+      "is_stale": true,
+      "effort_branches_updated": true,
+      "fixes_applied": {
+        "gitea-client": "Import paths corrected to github.com/cnoe-io/idpbuilder",
+        "image-builder": "Import paths corrected to github.com/cnoe-io/idpbuilder"
+      }
+    }
   },
   "sw_engineer_parallelization_plan": {
     "wave": 1,
@@ -661,10 +675,10 @@
       "all_splits_reviewed": true
     }
   },
-  "current_state": "MONITORING_PROJECT_FIXES",
-  "previous_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
-  "transition_time": "2025-09-09T15:30:25Z",
-  "transition_reason": "Code Reviewer spawned to create project fix plan",
+  "current_state": "PROJECT_INTEGRATION",
+  "previous_state": "MONITORING_PROJECT_FIXES",
+  "transition_time": "2025-09-09T16:45:58Z",
+  "transition_reason": "All project fixes completed and reviewed. Per R327, must re-run full integration with fixed source branches.",
   "phase2_wave1_integration": {
     "status": "COMPLETED",
     "integration_branch": "phase2/wave1/integration",
@@ -718,20 +732,18 @@
   },
   "project_integration": {
     "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace",
-    "target_repository": "idpbuilder",
-    "repository_url": "https://github.com/jessesanford/idpbuilder.git",
     "branch": "project-integration",
-    "base_branch": "main",
-    "status": "MERGE_PLAN_READY",
-    "created_at": "2025-09-09T06:26:00Z",
-    "phase_branches_to_merge": [
-      "idpbuilder-oci-build-push/phase1/integration",
-      "phase2/wave1/integration"
+    "repository": "idpbuilder",
+    "status": "COMPLETED",
+    "created_at": "2025-09-09T18:35:53Z",
+    "efforts_to_merge": [
+      "phase2/wave1/image-builder",
+      "phase2/wave1/gitea-client"
     ],
-    "documentation": "efforts/project/integration-workspace/idpbuilder/PROJECT-INTEGRATION-INFO.md",
-    "merge_plan_created": true,
-    "merge_plan_location": "efforts/project/integration-workspace/PROJECT-MERGE-PLAN.md",
-    "merge_plan_created_at": "2025-09-09T06:22:04Z"
+    "is_stale": false,
+    "integration_agent_result": "SUCCESS",
+    "branch_url": "https://github.com/jessesanford/idpbuilder/tree/project-integration",
+    "completion_time": "2025-09-09T18:43:19Z"
   },
   "agents_spawned": [
     {
@@ -766,7 +778,14 @@
       }
     ],
     "fix_plan_verified_at": "2025-09-09T15:19:24Z",
-    "code_reviewer_spawned": true
+    "code_reviewer_spawned": true,
+    "fix_status": "FIXED_IN_UPSTREAM",
+    "fix_branches": [
+      "idpbuilder-oci-build-push/phase2/wave1/gitea-client",
+      "idpbuilder-oci-build-push/phase2/wave1/image-builder"
+    ],
+    "fix_completed_at": "2025-09-09T18:00:00Z",
+    "fix_verified": true
   },
   "project_fixes": {
     "plan_location": "PROJECT-FIX-PLAN.md",
@@ -780,7 +799,32 @@
       "branch": "phase2/wave1/gitea-client",
       "status": "completed",
       "commit": "bf3d6e0",
-      "completion_time": "2025-09-09T15:30:25Z"
+      "completion_time": "2025-09-09T15:30:25Z",
+      "review_status": "PASSED",
+      "review_completed_at": "2025-09-09T16:31:20Z",
+      "review_findings": "Import path fix correct. Related Phase 1 API issues resolved in bugs #2 and #3."
+    },
+    {
+      "bug_id": 2,
+      "description": "Phase 1 API mismatches in registry package",
+      "engineer": "sw-engineer-2",
+      "branch": "phase2/wave1/gitea-client",
+      "status": "completed",
+      "details": "Code calls non-existent Phase 1 functions/types: NewTrustStoreManager, CertValidator, FallbackHandler",
+      "completion_time": "2025-09-09T16:40:24Z",
+      "review_status": "PASSED",
+      "review_completed_at": "2025-09-09T16:44:29Z"
+    },
+    {
+      "bug_id": 3,
+      "description": "go-containerregistry API version issues",
+      "engineer": "sw-engineer-2",
+      "branch": "phase2/wave1/gitea-client",
+      "status": "completed",
+      "details": "remote.WithTimeout undefined, remote.WithProgress expects different parameter type",
+      "completion_time": "2025-09-09T16:40:24Z",
+      "review_status": "PASSED",
+      "review_completed_at": "2025-09-09T16:44:29Z"
     }
   ],
   "final_integration": {
@@ -790,5 +834,18 @@
     "tests_status": "PASSING",
     "pr_ready": true,
     "completion_time": "2025-09-09T16:08:05Z"
+  },
+  "integration_testing": {
+    "branch": "idpbuilder-oci-build-push/integration-testing-20250909-165834",
+    "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/integration-testing-20250909-165834",
+    "created_at": "2025-09-09T17:00:06Z",
+    "base_commit": "e210954a0aa81afd110ab47e5a6239fd228c5ce0",
+    "status": "INFRASTRUCTURE_CREATED"
+  },
+  "integration_workspaces": {
+    "project": {
+      "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace",
+      "created_at": "2025-09-09T18:35:53Z"
+    }
   }
 }

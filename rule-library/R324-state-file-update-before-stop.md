@@ -63,11 +63,23 @@ jq ".transition_reason = \"Completed $CURRENT_STATE work, transitioning to $NEXT
 TRANSITION_ENTRY="{\"from\": \"$CURRENT_STATE\", \"to\": \"$NEXT_STATE\", \"time\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"R324 state transition\"}"
 jq ".transition_history = (.transition_history // []) + [$TRANSITION_ENTRY]" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
-# Step 3: VERIFY the update (CRITICAL for debugging)
+# Step 3: 🔴🔴🔴 MANDATORY VALIDATION (BLOCKING) 🔴🔴🔴
+# State file MUST be valid before proceeding
+echo "🔍 Validating state file integrity..."
+if [ -f "$CLAUDE_PROJECT_DIR/tools/validate-state.sh" ]; then
+    "$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || {
+        echo "❌❌❌ R324 VIOLATION: State file validation failed!"
+        echo "State file is corrupted - cannot proceed with invalid state!"
+        echo "Fix the state file manually before continuing!"
+        exit 324
+    }
+fi
+
+# Step 4: VERIFY the update (CRITICAL for debugging)
 echo "✅ Verification - current_state is now:"
 jq -r '.current_state' orchestrator-state.json
 
-# Step 4: Commit and push the state change IMMEDIATELY
+# Step 5: Commit and push the state change IMMEDIATELY
 git add orchestrator-state.json
 git commit -m "state: transition from $CURRENT_STATE to $NEXT_STATE (R324/R322)"
 git push
@@ -116,7 +128,7 @@ All of these MUST update current_state before stopping:
 
 ## Examples
 
-### ✅ CORRECT: Update state, then stop
+### ✅ CORRECT: Update state, validate, then stop
 ```bash
 # Complete SPAWN_AGENTS work
 echo "All agents spawned successfully"
@@ -125,6 +137,12 @@ echo "All agents spawned successfully"
 jq '.current_state = "MONITOR"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 jq '.previous_state = "SPAWN_AGENTS"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 jq '.transition_time = "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+
+# VALIDATE STATE FILE (BLOCKING)
+if [ -f "$CLAUDE_PROJECT_DIR/tools/validate-state.sh" ]; then
+    "$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || exit 324
+fi
+
 git add orchestrator-state.json
 git commit -m "state: transition to MONITOR"
 git push

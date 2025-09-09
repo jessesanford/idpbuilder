@@ -1,25 +1,33 @@
-# ⚠️⚠️⚠️ RULE R268: Orchestrator Integration Agent Spawn Protocol ⚠️⚠️⚠️
+# 🚨🚨🚨 RULE R268: Orchestrator Integration Agent Spawn Protocol [SUPERSEDED BY R329] 🚨🚨🚨
+
+## ⚠️⚠️⚠️ IMPORTANT: THIS RULE HAS BEEN SUPERSEDED BY R329 ⚠️⚠️⚠️
+
+**R329 makes Integration Agent MANDATORY for ALL merges - NO EXCEPTIONS**
+See: `$CLAUDE_PROJECT_DIR/rule-library/R329-orchestrator-never-performs-merges.md`
 
 ## Rule Definition
-**Criticality:** WARNING - Recommended for complex integrations
+**Criticality:** BLOCKING (Updated per R329) - MANDATORY for ALL integrations
 **Category:** Agent-Specific
 **Applies To:** orchestrator, integration-agent
+**Status:** SUPERSEDED - R329 takes precedence
 
 ## When to Spawn Integration Agent
 
-### Spawn Integration Agent When:
-1. **Multiple Branches** - Integrating 3+ effort branches
-2. **Complex Dependencies** - Branches have parent-child relationships
-3. **Known Conflicts** - Previous attempts had merge conflicts
-4. **Split Branches** - Integrating branches that were split for size
-5. **Cross-Wave Integration** - Merging waves into phase branch
-6. **High Risk** - Critical production branches
+### ALWAYS Spawn Integration Agent (R329 MANDATORY):
+Per R329, the orchestrator MUST spawn Integration Agent for:
+1. **ALL Merges** - Even single branch merges
+2. **Simple Merges** - No exceptions for "simple" cases
+3. **Complex Merges** - Multiple branches with dependencies
+4. **Test Merges** - Even quick validation merges
+5. **Any git merge operation** - 100% delegation required
 
-### Handle Directly When:
-1. **Simple Merges** - 1-2 branches with no conflicts expected
-2. **Linear History** - All branches based directly on main
-3. **Quick Integration** - Time-critical simple merges
-4. **Test Integrations** - Quick validation merges
+### NEVER Handle Directly (R329 VIOLATION):
+The orchestrator MUST NEVER:
+1. ❌ Execute "simple merges" directly
+2. ❌ Perform "quick integrations" itself
+3. ❌ Handle "linear history" merges
+4. ❌ Do "test integrations" directly
+5. ❌ Execute ANY merge operation itself
 
 ## Spawning Protocol
 

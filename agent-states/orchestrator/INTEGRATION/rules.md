@@ -190,7 +190,12 @@ The system will check for this marker. No marker = Immediate failure.
 ### 🚨🚨🚨 R006 - Orchestrator NEVER Writes Code [BLOCKING]
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md`
 **Criticality**: BLOCKING - Any code operation = -100% IMMEDIATE FAILURE
-**Summary**: Orchestrator coordinates but NEVER implements, merges, or fixes code
+**Summary**: Orchestrator coordinates but NEVER implements or fixes code
+
+### 🚨🚨🚨 R329 - Orchestrator NEVER Performs Git Merges [BLOCKING]
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R329-orchestrator-never-performs-merges.md`
+**Criticality**: BLOCKING - Any merge operation = -100% IMMEDIATE FAILURE
+**Summary**: Orchestrator MUST spawn Integration Agent for ALL merges - NO EXCEPTIONS
 
 ### 🚨🚨🚨 R319 - Orchestrator NEVER Measures or Assesses Code [BLOCKING]
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R319-orchestrator-never-measures-code.md`
@@ -258,18 +263,19 @@ The system will check for this marker. No marker = Immediate failure.
 You are the COORDINATOR of integration, not the executor. Your responsibilities:
 1. **CREATE** integration workspace infrastructure
 2. **SPAWN** Code Reviewer to create merge plans
-3. **SPAWN** Integration Agent to execute merges
+3. **SPAWN** Integration Agent to execute ALL merges (R329 MANDATORY)
 4. **SPAWN** Code Reviewer to validate builds/tests
 5. **MONITOR** progress via reports
 6. **COORDINATE** fixes through SW Engineers if needed
 
-**YOU MUST NEVER:**
-- ❌ Execute git merges yourself
-- ❌ Resolve merge conflicts yourself
-- ❌ Run build commands yourself
-- ❌ Execute test suites yourself
-- ❌ Fix code issues yourself
-- ❌ Apply patches or cherry-picks yourself
+**YOU MUST NEVER (R329 + R006 ENFORCEMENT):**
+- ❌ Execute git merges yourself (R329 VIOLATION = IMMEDIATE FAILURE)
+- ❌ Resolve merge conflicts yourself (R329 VIOLATION)
+- ❌ Perform "simple" merges yourself (R329: NO EXCEPTIONS)
+- ❌ Run build commands yourself (R006 VIOLATION)
+- ❌ Execute test suites yourself (R319 VIOLATION)
+- ❌ Fix code issues yourself (R006 VIOLATION)
+- ❌ Apply patches or cherry-picks yourself (R329 VIOLATION)
 
 ## 🔴🔴🔴 CRITICAL: RE-RUNNING INTEGRATION AFTER FIXES 🔴🔴🔴
 
@@ -742,3 +748,26 @@ If you find yourself:
 - Continuing after completing state work
 
 **STOP IMMEDIATELY - You are violating R322!**
+
+
+### 🔴🔴🔴 MANDATORY VALIDATION REQUIREMENT 🔴🔴🔴
+
+**Per R288 and R324**: ALL state file updates MUST be validated before commit:
+
+```bash
+# After ANY update to orchestrator-state.json:
+"$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || {
+    echo "❌ State file validation failed!"
+    exit 288
+}
+```
+
+**Use helper functions for automatic validation:**
+```bash
+# Source the helper functions
+source "$CLAUDE_PROJECT_DIR/utilities/state-file-update-functions.sh"
+
+# Use safe functions that include validation:
+safe_state_transition "NEW_STATE" "reason"
+safe_update_field "field_name" "value"
+```

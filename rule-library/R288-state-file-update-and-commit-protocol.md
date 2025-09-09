@@ -33,19 +33,29 @@ perform_state_transition() {
     # - Replace transition_reason with REASON
     # Agents should use multiple str_replace commands to update each field
     
-    # Step 3: 🔴 COMMIT AND PUSH IMMEDIATELY 🔴
+    # Step 3: 🔴🔴🔴 MANDATORY VALIDATION 🔴🔴🔴
+    # BLOCKING: State file MUST be valid before commit
+    if [ -f "$CLAUDE_PROJECT_DIR/tools/validate-state.sh" ]; then
+        "$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || {
+            echo "❌❌❌ R288 VIOLATION: State file validation failed!"
+            echo "Cannot commit invalid state file!"
+            exit 288
+        }
+    fi
+    
+    # Step 4: 🔴 COMMIT AND PUSH IMMEDIATELY 🔴
     git add orchestrator-state.json
     git commit -m "state: ${OLD_STATE} → ${NEW_STATE} - ${REASON} [R288]"
     git push
     
-    # Step 4: Verify push succeeded
+    # Step 5: Verify push succeeded
     if [ $? -ne 0 ]; then
         echo "🔴🔴🔴 CRITICAL: STATE PUSH FAILED! 🔴🔴🔴"
         git push --force-with-lease
         [ $? -ne 0 ] && exit 911  # Emergency exit
     fi
     
-    # Step 5: Reload rules for new state (R217)
+    # Step 6: Reload rules for new state (R217)
     reload_rules_for_state "$NEW_STATE"
     
     echo "✅ State transition complete and persisted: $OLD_STATE → $NEW_STATE"
@@ -106,12 +116,21 @@ update_and_commit_state() {
     # - Replace the KEY's current value with VALUE
     # Example: str_replace to change KEY: old_value to KEY: new_value
     
-    # 2. IMMEDIATELY commit and push
+    # 2. 🔴🔴🔴 MANDATORY VALIDATION 🔴🔴🔴
+    if [ -f "$CLAUDE_PROJECT_DIR/tools/validate-state.sh" ]; then
+        "$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || {
+            echo "❌❌❌ R288 VIOLATION: State file validation failed!"
+            echo "Fix the state file before proceeding!"
+            exit 288
+        }
+    fi
+    
+    # 3. IMMEDIATELY commit and push
     git add orchestrator-state.json
     git commit -m "state: ${KEY}=${VALUE} - ${REASON} [R288]"
     git push
     
-    # 3. Verify success
+    # 4. Verify success
     if [ $? -ne 0 ]; then
         echo "🔴 R288 VIOLATION: Failed to push state!"
         exit 288
@@ -166,8 +185,8 @@ check_r288_compliance() {
     
     # Check timestamp freshness
     # Use text_editor tool with view command to read orchestrator-state.json:
-    # Find the state_machine.transition_time field
-    local TIMESTAMP="<value from state_machine.transition_time>"
+    # Find the transition_time field at root level
+    local TIMESTAMP="<value from .transition_time>"
     local NOW=$(date +%s)
     local TRANS_TIME=$(date -d "$TIMESTAMP" +%s 2>/dev/null || echo 0)
     local AGE=$((NOW - TRANS_TIME))

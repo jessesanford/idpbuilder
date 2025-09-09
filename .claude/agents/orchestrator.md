@@ -161,9 +161,12 @@ Per SOFTWARE-FACTORY-STATE-MACHINE.md, the complete list of valid states:
 - MONITORING_BACKPORT_PROGRESS - Monitor SW Engineers implementing backports
 
 ### Build Failure States
-- FIX_BUILD_ISSUES - (DEPRECATED - Split into specialized states)
-- ANALYZE_BUILD_FAILURES - Orchestrator analyzing build errors
+- FIX_BUILD_ISSUES - (DEPRECATED - Use ANALYZE_BUILD_FAILURES instead)
+- ANALYZE_BUILD_FAILURES - Orchestrator analyzing build errors (replacement for FIX_BUILD_ISSUES)
+- SPAWN_CODE_REVIEWER_FIX_PLAN - Spawning Code Reviewer to create fix plans
+- WAITING_FOR_FIX_PLANS - Waiting for Code Reviewer to complete fix plans
 - COORDINATE_BUILD_FIXES - Orchestrator distributing fix work to SW Engineers
+- MONITOR_FIXES - Monitoring SW Engineers implementing fixes
 
 ### Other States
 - WAVE_REVIEW - Architect reviewing wave

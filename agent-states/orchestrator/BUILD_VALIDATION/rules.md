@@ -219,7 +219,7 @@ elif grep -q "Status: FAILED" "$VALIDATION_REPORT"; then
         NEXT_STATE="IMMEDIATE_BACKPORT_REQUIRED"
     else
         echo "🔧 Build fixes needed"
-        NEXT_STATE="FIX_BUILD_ISSUES"
+        NEXT_STATE="ANALYZE_BUILD_FAILURES"
     fi
 else
     echo "⚠️ Unable to determine build status"
@@ -243,9 +243,9 @@ if grep -q "Status: FAILED" "$VALIDATION_REPORT"; then
     for effort in $EFFORTS_NEEDING_FIXES; do
         echo "🚀 Spawning SW Engineer to fix build issues in $effort"
         
-        Task: subagent_type="software-engineer" \
-              state="FIX_BUILD_ISSUES" \
-              prompt="Fix build issues identified in BUILD-VALIDATION-REPORT.md. Apply fixes and ensure build succeeds." \
+        Task: subagent_type="code-reviewer" \
+              state="ANALYZE_BUILD_FAILURES" \
+              prompt="Analyze build failures identified in BUILD-VALIDATION-REPORT.md. Create fix plans for issues." \
               workspace="/efforts/$effort" \
               description="Fix build issues in $effort"
     done
@@ -334,7 +334,7 @@ BUILD_VALIDATION → PR_PLAN_CREATION
 
 ### Fix Required Path:
 ```
-BUILD_VALIDATION → FIX_BUILD_ISSUES
+BUILD_VALIDATION → ANALYZE_BUILD_FAILURES
 ```
 - Build failures found
 - Fixes too complex for inline resolution
@@ -412,3 +412,26 @@ If you find yourself:
 - Continuing after completing state work
 
 **STOP IMMEDIATELY - You are violating R322!**
+
+
+### 🔴🔴🔴 MANDATORY VALIDATION REQUIREMENT 🔴🔴🔴
+
+**Per R288 and R324**: ALL state file updates MUST be validated before commit:
+
+```bash
+# After ANY update to orchestrator-state.json:
+"$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || {
+    echo "❌ State file validation failed!"
+    exit 288
+}
+```
+
+**Use helper functions for automatic validation:**
+```bash
+# Source the helper functions
+source "$CLAUDE_PROJECT_DIR/utilities/state-file-update-functions.sh"
+
+# Use safe functions that include validation:
+safe_state_transition "NEW_STATE" "reason"
+safe_update_field "field_name" "value"
+```
