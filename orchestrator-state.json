@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "INTEGRATION_TESTING",
-    "previous_state": "CREATE_INTEGRATION_TESTING",
-    "transition_time": "2025-09-09T17:01:00Z",
-    "transition_reason": "Integration testing infrastructure successfully created. Branch and workspace ready.",
+    "current_state": "PROJECT_INTEGRATION",
+    "previous_state": "MONITORING_PROJECT_FIXES",
+    "transition_time": "2025-09-09T18:06:23Z",
+    "transition_reason": "Re-integrating after upstream fixes completed per R327",
     "ready_for_transition": true,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -192,18 +192,13 @@
       "E2_1_1": "APPROVED - 601 lines, ready for integration"
     },
     "project_integration": {
-      "agent_spawned": true,
-      "spawn_time": "2025-09-09T10:40:32Z",
-      "completion_time": "2025-09-09T10:49:00Z",
-      "status": "BUGS_FOUND",
-      "phase1_merged": true,
-      "phase2_wave1_merged": true,
-      "project_integration_branch": "project-integration",
-      "upstream_bug_found": true,
-      "bug_location": "pkg/registry/gitea.go:14-16",
-      "bug_documented": true,
-      "needs_fix_plan": true,
-      "report_location": "efforts/project/integration-workspace/INTEGRATION-REPORT.md"
+      "status": "PENDING_REINTEGRATION",
+      "integration_workspace": null,
+      "branch_created": false,
+      "is_stale": true,
+      "previous_attempt_had_bugs": true,
+      "reintegration_required": true,
+      "reason": "R327 mandatory re-integration after fixes"
     },
     "project_bugs_to_fix": {
       "location": "pkg/registry/gitea.go:14-16",
@@ -216,7 +211,23 @@
     "monitor_fixes_completed": false,
     "integration_testing_branch": "idpbuilder-oci-build-push/integration-testing",
     "build_validation_status": "PARTIAL_85_PERCENT",
-    "pr_plan_created": true
+    "pr_plan_created": true,
+    "monitoring_project_fixes": {
+      "fixes_completed": true,
+      "all_reviewed": true,
+      "ready_for_reintegration": true
+    },
+    "integration_metadata": {
+      "workspaces": {
+        "project": null
+      },
+      "is_stale": true,
+      "effort_branches_updated": true,
+      "fixes_applied": {
+        "gitea-client": "Import paths corrected to github.com/cnoe-io/idpbuilder",
+        "image-builder": "Import paths corrected to github.com/cnoe-io/idpbuilder"
+      }
+    }
   },
   "sw_engineer_parallelization_plan": {
     "wave": 1,
@@ -769,7 +780,14 @@
       }
     ],
     "fix_plan_verified_at": "2025-09-09T15:19:24Z",
-    "code_reviewer_spawned": true
+    "code_reviewer_spawned": true,
+    "fix_status": "FIXED_IN_UPSTREAM",
+    "fix_branches": [
+      "idpbuilder-oci-build-push/phase2/wave1/gitea-client",
+      "idpbuilder-oci-build-push/phase2/wave1/image-builder"
+    ],
+    "fix_completed_at": "2025-09-09T18:00:00Z",
+    "fix_verified": true
   },
   "project_fixes": {
     "plan_location": "PROJECT-FIX-PLAN.md",
