@@ -20,8 +20,9 @@
 **ORCHESTRATOR: BUGS MUST BE FIXED BEFORE PROCEEDING**
 
 After Integration Agent documents bugs:
-- **MUST** transition to PROJECT_FIX_PLANNING state
-- **MUST** create fix plans for all documented bugs
+- **MUST** transition to SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING state
+- **MUST** spawn Code Reviewer to create fix plans for all documented bugs
+- **MUST** wait for plans in WAITING_FOR_PROJECT_FIX_PLANS state
 - **MUST** spawn SW Engineers to fix in source branches
 - **MUST** re-run integration after fixes complete
 - **NEVER** proceed to validation with known bugs
@@ -157,9 +158,10 @@ EOF
 When monitoring project integration:
 1. **CHECK** for "UPSTREAM BUGS IDENTIFIED" section in report
 2. **COUNT** number of bugs documented
-3. **TRANSITION** to PROJECT_FIX_PLANNING if bugs > 0
-4. **CREATE** fix plans for each bug
-5. **SPAWN** SW Engineers to fix in source branches
+3. **TRANSITION** to SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING if bugs > 0
+4. **SPAWN** Code Reviewer to create fix plans for each bug
+5. **WAIT** for plans in WAITING_FOR_PROJECT_FIX_PLANS state
+6. **SPAWN** SW Engineers to fix in source branches
 6. **MONITOR** fix progress
 7. **RE-RUN** integration after fixes complete
 

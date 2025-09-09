@@ -17,7 +17,7 @@ The orchestrator MUST STOP IMMEDIATELY after spawning to preserve context:
 ## State Context
 
 **Purpose:**
-Spawn SW Engineers to fix bugs identified during project integration per the fix plan created in PROJECT_FIX_PLANNING.
+Spawn SW Engineers to fix bugs identified during project integration per the fix plan created by Code Reviewer in WAITING_FOR_PROJECT_FIX_PLANS state.
 
 ## Primary Actions
 

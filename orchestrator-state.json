@@ -207,9 +207,10 @@
     },
     "project_bugs_to_fix": {
       "location": "pkg/registry/gitea.go:14-16",
-      "description": "Upstream bug in registry initialization",
+      "description": "Upstream bug in registry initialization - incorrect import paths",
       "documented": true,
-      "needs_fix_plan": true
+      "needs_fix_plan": true,
+      "fix_plan_needed": true
     }
   },
   "sw_engineer_parallelization_plan": {
@@ -659,10 +660,10 @@
       "all_splits_reviewed": true
     }
   },
-  "current_state": "PROJECT_COMPLETE",
-  "previous_state": "MONITORING_PROJECT_FIXES",
-  "transition_time": "2025-09-09T13:55:00Z",
-  "transition_reason": "All project objectives achieved, all fixes verified, project successfully integrated",
+  "current_state": "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
+  "previous_state": "MONITORING_PROJECT_INTEGRATION",
+  "transition_time": "2025-09-09T14:30:00Z",
+  "transition_reason": "Bugs found during project integration, need Code Reviewer to create fix plan",
   "phase2_wave1_integration": {
     "status": "COMPLETED",
     "integration_branch": "phase2/wave1/integration",
@@ -730,37 +731,5 @@
     "merge_plan_created": true,
     "merge_plan_location": "efforts/project/integration-workspace/PROJECT-MERGE-PLAN.md",
     "merge_plan_created_at": "2025-09-09T06:22:04Z"
-  },
-  "project_fix_plan": {
-    "created": true,
-    "location": "PROJECT-FIX-PLAN.md",
-    "bugs_to_fix": 1,
-    "severity": "HIGH",
-    "strategy": "single_engineer",
-    "estimated_time": "30-60 minutes"
-  },
-  "project_fixes_in_progress": [
-    {
-      "bug_id": 1,
-      "engineer": "sw-engineer-1",
-      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
-      "status": "completed",
-      "result": "bug_already_fixed",
-      "completion_time": "2025-09-09T13:50:00Z",
-      "notes": "Import paths already correct - no fix needed"
-    }
-  ],
-  "project_completion": {
-    "status": "COMPLETE",
-    "completion_time": "2025-09-09T13:55:00Z",
-    "final_report": "PROJECT-INTEGRATION-COMPLETE.md",
-    "total_phases": 2,
-    "total_waves": 3,
-    "total_efforts": 6,
-    "total_lines": 3800,
-    "mvp_objectives_met": true,
-    "grading_score": 98,
-    "ready_for_pr": true,
-    "pr_url": "https://github.com/jessesanford/idpbuilder/pull/new/project-integration"
   }
 }

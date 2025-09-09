@@ -263,3 +263,4 @@
 - R324.0.0 - State File Update Before Stop | 🔴🔴🔴 SUPREME LAW | MUST update current_state to new state BEFORE stopping to prevent infinite loops (-100% for violations)
 - R325.0.0 - Atomic State Transitions | 🔴🔴🔴 SUPREME LAW | State transitions must be atomic operations
 - R326.0.0 - Split File Placement Protocol | 🔴🔴🔴 SUPREME LAW | NEVER create split-XXX/ subdirectories - files go in standard project directories (-100% for violations)
+- R327.0.0 - Mandatory Re-Integration After Fixes | 🔴🔴🔴 SUPREME LAW | After ANY fixes to source branches, MUST delete and re-run ENTIRE integration from scratch (-100% for violations)

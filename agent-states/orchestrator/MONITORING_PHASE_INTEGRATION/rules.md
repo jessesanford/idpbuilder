@@ -116,17 +116,19 @@ else
         UPDATE_STATE="ERROR_RECOVERY"
         UPDATE_REASON="R291 PHASE DEMO GATE FAILURE: $DEMO_STATUS"
         
-    # CONFLICTS CHECK
+    # CONFLICTS CHECK - R321 ENFORCEMENT
     elif [[ "$CONFLICTS" != "0" ]] && [[ -n "$CONFLICTS" ]]; then
-        echo "🔴 Unresolved conflicts detected - cannot proceed"
-        UPDATE_STATE="PHASE_INTEGRATION_FEEDBACK_REVIEW"
-        UPDATE_REASON="Phase has $CONFLICTS unresolved conflicts"
+        echo "🔴🔴🔴 R321 ENFORCEMENT: Conflicts require immediate source fixes! 🔴🔴🔴"
+        echo "Integration branches are READ-ONLY - fixes must go to source branches"
+        UPDATE_STATE="IMMEDIATE_BACKPORT_REQUIRED"
+        UPDATE_REASON="R321: Phase has $CONFLICTS conflicts - fix in source branches immediately"
         
-    # INTEGRATION STATUS CHECK
+    # INTEGRATION STATUS CHECK - R321 ENFORCEMENT
     elif [[ "$INTEGRATION_STATUS" != "SUCCESS" ]]; then
-        echo "🔴 Phase integration failed - review needed"
-        UPDATE_STATE="PHASE_INTEGRATION_FEEDBACK_REVIEW"
-        UPDATE_REASON="Phase integration status: $INTEGRATION_STATUS"
+        echo "🔴🔴🔴 R321 ENFORCEMENT: Integration failure requires immediate source fixes! 🔴🔴🔴"
+        echo "Cannot fix in integration branch - must fix in wave/effort branches"
+        UPDATE_STATE="IMMEDIATE_BACKPORT_REQUIRED"
+        UPDATE_REASON="R321: Phase integration failed ($INTEGRATION_STATUS) - fix sources immediately"
         
     # ALL GATES PASSED - PHASE CAN BE ASSESSED
     else
@@ -167,11 +169,44 @@ Based on phase integration report analysis:
 1. **SUCCESS Path**: `MONITORING_PHASE_INTEGRATION` → `SPAWN_ARCHITECT_PHASE_ASSESSMENT`
    - When: Phase integration, build, tests all pass, no conflicts
    
-2. **FAILURE Path**: `MONITORING_PHASE_INTEGRATION` → `PHASE_INTEGRATION_FEEDBACK_REVIEW`
+2. **FAILURE Path (R321)**: `MONITORING_PHASE_INTEGRATION` → `IMMEDIATE_BACKPORT_REQUIRED`
    - When: Phase integration failed, conflicts exist, or build/tests fail
+   - MUST fix in source branches (wave/effort branches) immediately
    
 3. **ERROR Path**: `MONITORING_PHASE_INTEGRATION` → `ERROR_RECOVERY`
    - When: No report found or unexpected status
+
+## 🔴🔴🔴 MANDATORY PHASE RE-INTEGRATION PROTOCOL (R321) 🔴🔴🔴
+
+**When phase integration fails, the cycle MUST be:**
+
+```
+MONITORING_PHASE_INTEGRATION (detects failure)
+    ↓
+IMMEDIATE_BACKPORT_REQUIRED (R321: fix in source branches)
+    ↓
+SPAWN_ENGINEERS_FOR_FIXES (fix wave/effort branches)
+    ↓
+MONITORING_FIX_PROGRESS (monitor source fixes)
+    ↓
+SPAWN_CODE_REVIEWERS_FOR_REVIEW (review fixes)
+    ↓
+MONITOR_REVIEWS (all fixes reviewed)
+    ↓
+PHASE_INTEGRATION (DELETE old, create FRESH integration)
+    ↓
+SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN (new merge plan)
+    ↓
+SPAWN_INTEGRATION_AGENT_PHASE (re-merge ALL waves with fixes)
+    ↓
+MONITORING_PHASE_INTEGRATION (check if NOW it works)
+```
+
+**CRITICAL POINTS:**
+- Integration branches are READ-ONLY (R321)
+- ALL fixes go to source branches FIRST
+- Phase integration must be DELETED and RE-CREATED
+- Re-merge ALL waves to get fixed code
 
 ## Grading Criteria
 

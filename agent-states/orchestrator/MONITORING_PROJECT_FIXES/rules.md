@@ -95,15 +95,17 @@ def determine_next_state():
     if not all_reviewed:
         return "SPAWN_CODE_REVIEWERS_FOR_REVIEW"  # Review fixes
     
-    # All fixes complete and reviewed
-    return "PROJECT_INTEGRATION"  # Re-run integration with fixed code
+    # 🔴🔴🔴 CRITICAL: MUST RE-RUN FULL INTEGRATION 🔴🔴🔴
+    # All fixes complete and reviewed - MUST go back to PROJECT_INTEGRATION
+    # to re-run the ENTIRE integration with the fixed source branches!
+    return "PROJECT_INTEGRATION"  # Re-run FULL integration with fixed code
 ```
 
 ## Valid State Transitions
 
 - **FIXES_ONGOING** → MONITORING_PROJECT_FIXES (continue monitoring)
 - **FIXES_COMPLETE** → SPAWN_CODE_REVIEWERS_FOR_REVIEW (review all fixes)
-- **ALL_REVIEWED** → PROJECT_INTEGRATION (re-run with fixed code)
+- **🔴 ALL_REVIEWED** → PROJECT_INTEGRATION (MANDATORY: Re-run FULL integration with fixed code)
 - **FIXES_FAILED** → ERROR_RECOVERY (unable to fix bugs)
 
 ## Critical Requirements
@@ -114,14 +116,44 @@ def determine_next_state():
 4. **Spawn reviews** - All fixes need code review
 5. **Re-run integration** - After fixes, must re-integrate
 
-## Integration Re-run Protocol
+## 🔴🔴🔴 MANDATORY INTEGRATION RE-RUN PROTOCOL 🔴🔴🔴
 
-After all fixes complete and pass review:
-1. Transition to PROJECT_INTEGRATION
-2. Re-run entire project integration with fixed branches
-3. Check if new bugs appear
-4. If clean, proceed to validation
-5. If new bugs, repeat fix cycle
+**CRITICAL: After fixes are complete, you MUST re-run the ENTIRE project integration!**
+
+### Why Re-Integration Is MANDATORY:
+- Fixes were applied to UPSTREAM branches (phase/wave/effort branches)
+- The project-integration branch still has the BROKEN code
+- You MUST re-merge all branches to get the fixed code into integration
+- Without re-integration, the binary CANNOT be built
+
+### The CORRECT Re-Integration Cycle:
+```
+MONITORING_PROJECT_FIXES (all fixes complete & reviewed)
+    ↓
+PROJECT_INTEGRATION (delete old integration, create fresh)
+    ↓
+SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN (create new merge plan)
+    ↓
+SPAWN_INTEGRATION_AGENT_PROJECT (re-merge ALL branches with fixes)
+    ↓
+MONITORING_PROJECT_INTEGRATION (check if NOW it works)
+    ↓
+If bugs found → SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING → WAITING_FOR_PROJECT_FIX_PLANS → SPAWN_SW_ENGINEER_PROJECT_FIXES → MONITORING_PROJECT_FIXES
+If clean → SPAWN_CODE_REVIEWER_PROJECT_VALIDATION → SUCCESS
+```
+
+### What Happens During Re-Integration:
+1. **Delete old broken integration branch** (it has unfixed code)
+2. **Create fresh project-integration from main**
+3. **Re-run ENTIRE merge plan** (all phases with their fixed branches)
+4. **All fixes from upstream branches now merged in**
+5. **Binary can finally be built with working code**
+
+### NEVER DO THESE (AUTOMATIC FAILURE):
+- ❌ Skip re-integration and claim "fixes are done"
+- ❌ Manually copy fixes to integration branch
+- ❌ Proceed to validation with broken integration branch
+- ❌ Cherry-pick fixes instead of full re-merge
 
 ## Grading Impact
 

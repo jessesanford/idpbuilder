@@ -35,15 +35,23 @@ model: opus
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R319-orchestrator-never-measures-code.md`
    - Purpose: Core identity - orchestrator delegates measurement
 
-4. **R322 - Mandatory Stop Before State Transitions**
+4. **R321 - Immediate Backport During Integration**
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R321-immediate-backport-during-integration.md`
+   - Purpose: Integration branches are READ-ONLY, fixes go to sources
+
+5. **R327 - Mandatory Re-Integration After Fixes**
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R327-mandatory-reintegration-after-fixes.md`
+   - Purpose: After fixes, MUST delete and re-run entire integration
+
+6. **R322 - Mandatory Stop Before State Transitions**
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
    - Purpose: Checkpoint control - MUST stop and await continuation
 
-5. **R324 - State File Update Before Stop** 🔴🔴🔴 **PREVENTS INFINITE LOOPS!** 🔴🔴🔴
+7. **R324 - State File Update Before Stop** 🔴🔴🔴 **PREVENTS INFINITE LOOPS!** 🔴🔴🔴
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R324-state-file-update-before-stop.md`
    - Purpose: **CRITICAL: Update current_state BEFORE stopping or get stuck in loops!**
 
-6. **R288 - State File Update and Commit Protocol**
+8. **R288 - State File Update and Commit Protocol**
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
    - Purpose: Maintain state persistence across transitions
 
@@ -126,7 +134,8 @@ Per SOFTWARE-FACTORY-STATE-MACHINE.md, the complete list of valid states:
 - WAITING_FOR_PROJECT_MERGE_PLAN - Waiting for Code Reviewer project merge plan
 - SPAWN_INTEGRATION_AGENT_PROJECT - Spawning Integration Agent to merge all phases
 - MONITORING_PROJECT_INTEGRATION - Monitoring project-level integration progress
-- PROJECT_FIX_PLANNING - Creating fix plans for bugs found during project integration (R266 follow-up)
+- SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING - Spawning Code Reviewer to create fix plans for bugs (R266 follow-up)
+- WAITING_FOR_PROJECT_FIX_PLANS - Waiting for Code Reviewer to complete project fix plans
 - SPAWN_SW_ENGINEER_PROJECT_FIXES - Spawning SW Engineers to fix project integration bugs
 - MONITORING_PROJECT_FIXES - Monitoring SW Engineers fixing project-level bugs
 - SPAWN_CODE_REVIEWER_PROJECT_VALIDATION - Spawning Code Reviewer for project validation
@@ -178,6 +187,13 @@ Per SOFTWARE-FACTORY-STATE-MACHINE.md, the complete list of valid states:
 - Spawn reviewers for ALL measurements
 
 ### STOP BEFORE TRANSITIONS (R322)
+
+### MANDATORY RE-INTEGRATION AFTER FIXES (R327)
+- After ANY fixes to source branches, MUST delete and recreate integration
+- PROJECT_INTEGRATION after MONITORING_PROJECT_FIXES
+- PHASE_INTEGRATION after phase fixes
+- INTEGRATION after wave fixes
+- Never skip re-integration or binary won't build
 - MUST stop before EVERY state change
 - Update state file per R288
 - Wait for continuation command

@@ -157,11 +157,12 @@ stateDiagram-v2
     WAITING_FOR_PROJECT_MERGE_PLAN --> SPAWN_INTEGRATION_AGENT_PROJECT: Plan ready
     SPAWN_INTEGRATION_AGENT_PROJECT --> MONITORING_PROJECT_INTEGRATION: Merging all phases
     MONITORING_PROJECT_INTEGRATION --> SPAWN_CODE_REVIEWER_PROJECT_VALIDATION: Integration success, no bugs
-    MONITORING_PROJECT_INTEGRATION --> PROJECT_FIX_PLANNING: Bugs found (R266)
+    MONITORING_PROJECT_INTEGRATION --> SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING: Bugs found (R266)
     MONITORING_PROJECT_INTEGRATION --> ERROR_RECOVERY: Integration failed
-    PROJECT_FIX_PLANNING --> SPAWN_SW_ENGINEER_PROJECT_FIXES: Create fix plans
+    SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING --> WAITING_FOR_PROJECT_FIX_PLANS: Creating fix plans
+    WAITING_FOR_PROJECT_FIX_PLANS --> SPAWN_SW_ENGINEER_PROJECT_FIXES: Fix plans ready
     SPAWN_SW_ENGINEER_PROJECT_FIXES --> MONITORING_PROJECT_FIXES: Engineers fixing
-    MONITORING_PROJECT_FIXES --> PROJECT_INTEGRATION: Re-run integration
+    MONITORING_PROJECT_FIXES --> PROJECT_INTEGRATION: 🔴 Re-run FULL integration with fixed sources
     SPAWN_CODE_REVIEWER_PROJECT_VALIDATION --> WAITING_FOR_PROJECT_VALIDATION: Validating
     WAITING_FOR_PROJECT_VALIDATION --> CREATE_INTEGRATION_TESTING: Validation passed
     WAITING_FOR_PROJECT_VALIDATION --> ERROR_RECOVERY: Validation failed
@@ -284,9 +285,31 @@ PRODUCTION_READY_VALIDATION → BUILD_VALIDATION → [FIX_BUILD_ISSUES if needed
 - MASTER-PR-PLAN.md provides instructions for humans (R279)
 - SUCCESS only after proving software works (R271)
 
-## Integration Feedback Cycle (R238, R300)
+## 🔴🔴🔴 CRITICAL: INTEGRATION RE-RUN CYCLES AFTER FIXES 🔴🔴🔴
 
-**CRITICAL**: Integration failures MUST be detected and fixed through a proper feedback cycle:
+**SUPREME LAW: After ANY fixes are applied to source branches, the ENTIRE integration MUST be re-run from scratch!**
+
+### The Problem This Solves:
+```
+❌ BROKEN PATTERN (what happens without re-integration):
+1. Integration fails with bugs
+2. Fixes applied to source branches
+3. Integration branch STILL HAS BROKEN CODE
+4. Binary cannot be built
+5. Project appears "fixed" but integration is broken
+
+✅ CORRECT PATTERN (with mandatory re-integration):
+1. Integration fails with bugs
+2. Fixes applied to source branches
+3. DELETE old integration branch
+4. CREATE fresh integration from main
+5. RE-MERGE all branches with fixes
+6. Binary can now be built with working code
+```
+
+## Integration Feedback Cycle (R238, R300, R321)
+
+**CRITICAL**: Integration failures MUST be detected and fixed through a proper feedback cycle with MANDATORY re-integration:
 
 ### Wave Integration Feedback Flow (R321 Enforced):
 1. **MONITORING_INTEGRATION** checks for INTEGRATION_REPORT.md
@@ -309,10 +332,22 @@ PRODUCTION_READY_VALIDATION → BUILD_VALIDATION → [FIX_BUILD_ISSUES if needed
 3. If phase integration SUCCESS:
    - → **SPAWN_ARCHITECT_PHASE_ASSESSMENT** (proceed)
 
+### Project Integration Feedback Flow (R321 Enforced):
+1. **MONITORING_PROJECT_INTEGRATION** checks for PROJECT_INTEGRATION_REPORT.md
+2. If project integration has bugs or fails:
+   - → **SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING** (spawn Code Reviewer to create fix plans)
+   - → **WAITING_FOR_PROJECT_FIX_PLANS** (monitor plan creation)
+   - → **SPAWN_SW_ENGINEER_PROJECT_FIXES** (fix in source branches)
+   - → **MONITORING_PROJECT_FIXES** (track fixes)
+   - → **PROJECT_INTEGRATION** (🔴 CRITICAL: re-run FULL project integration)
+3. If project integration SUCCESS:
+   - → **SPAWN_CODE_REVIEWER_PROJECT_VALIDATION** (proceed)
+
 **Key Points:**
 - NEVER ignore integration failures (R238)
 - Fix plans must be distributed to effort directories (R239)
 - Engineers execute fixes, not orchestrator (R300)
+- After fixes, MUST re-run ENTIRE integration (R321)
 
 ## 🔴🔴🔴 CRITICAL: INTEGRATION RE-RUN AFTER FIXES 🔴🔴🔴
 
@@ -496,7 +531,8 @@ The orchestrator coordinates all work and manages the overall flow.
 - **WAITING_FOR_PROJECT_MERGE_PLAN** - Waiting for Code Reviewer project merge plan
 - **SPAWN_INTEGRATION_AGENT_PROJECT** - Spawning Integration Agent to merge all phases
 - **MONITORING_PROJECT_INTEGRATION** - Monitoring project-level integration progress
-- **PROJECT_FIX_PLANNING** - Creating fix plans for bugs found during project integration (R266 follow-up)
+- **SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING** - Spawning Code Reviewer to create fix plans for bugs (R266 follow-up)
+- **WAITING_FOR_PROJECT_FIX_PLANS** - Waiting for Code Reviewer to complete project fix plans
 - **SPAWN_SW_ENGINEER_PROJECT_FIXES** - Spawning SW Engineers to fix project integration bugs
 - **MONITORING_PROJECT_FIXES** - Monitoring SW Engineers fixing project-level bugs
 - **SPAWN_CODE_REVIEWER_PROJECT_VALIDATION** - Spawning Code Reviewer for project validation
@@ -587,11 +623,12 @@ SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN → WAITING_FOR_PROJECT_MERGE_PLAN
 WAITING_FOR_PROJECT_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PROJECT (R322: MANDATORY CHECKPOINT - Review project plan!)
 SPAWN_INTEGRATION_AGENT_PROJECT → MONITORING_PROJECT_INTEGRATION
 MONITORING_PROJECT_INTEGRATION → SPAWN_CODE_REVIEWER_PROJECT_VALIDATION (integration success, no bugs)
-MONITORING_PROJECT_INTEGRATION → PROJECT_FIX_PLANNING (bugs found, need fixes per R266)
+MONITORING_PROJECT_INTEGRATION → SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING (bugs found, need fixes per R266)
 MONITORING_PROJECT_INTEGRATION → ERROR_RECOVERY (integration failed catastrophically)
-PROJECT_FIX_PLANNING → SPAWN_SW_ENGINEER_PROJECT_FIXES (fix plans created)
+SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING → WAITING_FOR_PROJECT_FIX_PLANS (spawned reviewer)
+WAITING_FOR_PROJECT_FIX_PLANS → SPAWN_SW_ENGINEER_PROJECT_FIXES (fix plans ready)
 SPAWN_SW_ENGINEER_PROJECT_FIXES → MONITORING_PROJECT_FIXES (engineers spawned)
-MONITORING_PROJECT_FIXES → PROJECT_INTEGRATION (fixes complete, re-run integration)
+MONITORING_PROJECT_FIXES → PROJECT_INTEGRATION (🔴 CRITICAL: fixes complete, MUST re-run FULL integration with fixed sources)
 MONITORING_PROJECT_FIXES → ERROR_RECOVERY (fixes failed)
 SPAWN_CODE_REVIEWER_PROJECT_VALIDATION → WAITING_FOR_PROJECT_VALIDATION
 WAITING_FOR_PROJECT_VALIDATION → CREATE_INTEGRATION_TESTING (validation passed)

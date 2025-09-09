@@ -321,36 +321,52 @@ fi
 3. **CONTINUE Path**: `MONITORING_FIX_PROGRESS` → `MONITORING_FIX_PROGRESS`
    - When: Still waiting for fixes to complete
 
-## 🚨🚨🚨 INTEGRATION RE-RUN PROTOCOL 🚨🚨🚨
+## 🚨🚨🚨 MANDATORY WAVE INTEGRATION RE-RUN PROTOCOL 🚨🚨🚨
 
-**After fixes are reviewed and approved:**
-1. Return to INTEGRATION state (NOT MONITORING_INTEGRATION)
-2. Re-execute the ENTIRE integration plan from scratch
-3. Merge ALL branches in sequence (not just fixed ones)
-4. Run full test suite on integrated code
-5. Generate new integration report
+**CRITICAL: After wave fixes are complete, you MUST re-run the ENTIRE wave integration!**
 
-**NEVER DO THESE (AUTOMATIC FAILURE):**
+### Why Re-Integration Is MANDATORY:
+- Fixes were applied to EFFORT branches (the source branches)
+- The wave-integration branch still has the BROKEN code
+- You MUST re-merge all effort branches to get fixes into integration
+- Without re-integration, the wave cannot proceed to phase integration
+
+### The CORRECT Wave Re-Integration Cycle:
+```
+MONITORING_FIX_PROGRESS (all wave fixes complete)
+    ↓
+SPAWN_CODE_REVIEWERS_FOR_REVIEW (review the fixes in effort branches)
+    ↓
+MONITOR_REVIEWS (monitor review progress)
+    ↓
+WAVE_COMPLETE (if reviews pass - marks wave ready for re-integration)
+    ↓
+INTEGRATION (DELETE old integration, create FRESH from main)
+    ↓
+SPAWN_CODE_REVIEWER_MERGE_PLAN (create NEW merge plan)
+    ↓
+SPAWN_INTEGRATION_AGENT (re-merge ALL effort branches with fixes)
+    ↓
+MONITORING_INTEGRATION (monitor new integration attempt)
+    ↓
+If fails → IMMEDIATE_BACKPORT_REQUIRED → fix sources → repeat cycle
+If succeeds → WAVE_REVIEW → proceed to next wave or phase
+```
+
+### What ACTUALLY Happens During Re-Integration:
+1. **Delete the broken wave-integration branch**
+2. **Create fresh wave-integration from main**
+3. **Re-execute ENTIRE merge plan** (all efforts in sequence)
+4. **Fixed code from effort branches now merged**
+5. **Wave can finally build and pass tests**
+
+### NEVER DO THESE (AUTOMATIC FAILURE):
 - ❌ Manually copy fixed files to integration workspace
 - ❌ Skip the integration plan and go directly to monitoring
 - ❌ Assume fixes will "just work" without re-integration
 - ❌ Bypass the full integration process
 - ❌ Cherry-pick fixes instead of proper branch merging
-
-**CORRECT FLOW AFTER FIXES:**
-```
-MONITORING_FIX_PROGRESS (fixes complete)
-    ↓
-SPAWN_CODE_REVIEWERS_FOR_REVIEW (review the fixes)
-    ↓
-MONITOR (monitor review progress)
-    ↓
-WAVE_COMPLETE (if reviews pass)
-    ↓
-INTEGRATION (re-run FULL integration with ALL branches)
-    ↓
-MONITORING_INTEGRATION (monitor new integration attempt)
-```
+- ❌ Edit code directly in integration branch (R321 violation)
 
 ## Monitoring Requirements
 
