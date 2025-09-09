@@ -31,7 +31,7 @@ func getDefaultRetryConfig() retryConfig {
 func retryWithExponentialBackoff(operation func() error, operationName, context string) error {
 	config := getDefaultRetryConfig()
 	var lastErr error
-	
+
 	for attempt := 1; attempt <= config.maxAttempts; attempt++ {
 		// Execute the operation
 		err := operation()
@@ -42,32 +42,32 @@ func retryWithExponentialBackoff(operation func() error, operationName, context 
 			}
 			return nil
 		}
-		
+
 		lastErr = err
-		
+
 		// Check if this is the last attempt
 		if attempt == config.maxAttempts {
 			log.Printf("Operation %s failed on final attempt %d/%d: %v", operationName, attempt, config.maxAttempts, err)
 			break
 		}
-		
+
 		// Check if error is retryable
 		if !isRetryableError(err) {
 			log.Printf("Operation %s failed with non-retryable error: %v", operationName, err)
 			break
 		}
-		
+
 		// Calculate delay for this attempt
 		delay := calculateDelay(attempt, config)
-		
-		log.Printf("Operation %s failed on attempt %d/%d, retrying in %v: %v", 
+
+		log.Printf("Operation %s failed on attempt %d/%d, retrying in %v: %v",
 			operationName, attempt, config.maxAttempts, delay, err)
-		
+
 		// Wait before retry
 		time.Sleep(delay)
 	}
-	
-	return fmt.Errorf("operation %s failed after %d attempts, last error: %v", 
+
+	return fmt.Errorf("operation %s failed after %d attempts, last error: %v",
 		operationName, config.maxAttempts, lastErr)
 }
 
@@ -75,12 +75,12 @@ func retryWithExponentialBackoff(operation func() error, operationName, context 
 func calculateDelay(attempt int, config retryConfig) time.Duration {
 	// Calculate exponential delay: baseDelay * (backoffFactor ^ (attempt - 1))
 	delay := float64(config.baseDelay) * pow(config.backoffFactor, float64(attempt-1))
-	
+
 	// Apply maximum delay limit
 	if delay > float64(config.maxDelay) {
 		delay = float64(config.maxDelay)
 	}
-	
+
 	return time.Duration(delay)
 }
 
@@ -102,14 +102,14 @@ func isRetryableError(err error) bool {
 	if err == nil {
 		return false
 	}
-	
+
 	errorMsg := strings.ToLower(err.Error())
-	
+
 	// Network-related errors that are typically transient
 	retryablePatterns := []string{
 		"timeout",
 		"connection reset",
-		"connection refused", 
+		"connection refused",
 		"network unreachable",
 		"temporary failure",
 		"service unavailable",
@@ -120,13 +120,13 @@ func isRetryableError(err error) bool {
 		"rate limit",
 		"throttle",
 	}
-	
+
 	for _, pattern := range retryablePatterns {
 		if strings.Contains(errorMsg, pattern) {
 			return true
 		}
 	}
-	
+
 	// Non-retryable errors
 	nonRetryablePatterns := []string{
 		"unauthorized",
@@ -138,13 +138,13 @@ func isRetryableError(err error) bool {
 		"unsupported",
 		"authentication",
 	}
-	
+
 	for _, pattern := range nonRetryablePatterns {
 		if strings.Contains(errorMsg, pattern) {
 			return false
 		}
 	}
-	
+
 	// Default to retryable for unknown errors
 	return true
 }
