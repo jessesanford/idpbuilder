@@ -1,0 +1,14 @@
+INTEGRATION COMPLETE: 2025-09-09 18:41:15 UTC
+
+Branch: project-integration
+Commits: 50c14d8 (HEAD)
+
+Merged Branches:
+- idpbuilder-oci-build-push/phase2/wave1/image-builder ✅
+- idpbuilder-oci-build-push/phase2/wave1/gitea-client ✅
+
+Build Status: SUCCESS ✅
+Import Verification: PASSED ✅
+Documentation: COMPLETE ✅
+
+Ready for orchestrator to create PR to main.
