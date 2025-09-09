@@ -661,9 +661,9 @@
       "all_splits_reviewed": true
     }
   },
-  "current_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
-  "previous_state": "WAITING_FOR_PROJECT_FIX_PLANS",
-  "transition_time": "2025-09-09T15:23:36Z",
+  "current_state": "MONITORING_PROJECT_FIXES",
+  "previous_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
+  "transition_time": "2025-09-09T15:30:25Z",
   "transition_reason": "Code Reviewer spawned to create project fix plan",
   "phase2_wave1_integration": {
     "status": "COMPLETED",
@@ -764,5 +764,15 @@
     "plan_location": "PROJECT-FIX-PLAN.md",
     "plan_received": true,
     "engineers_needed": 1
-  }
+  },
+  "project_fixes_in_progress": [
+    {
+      "bug_id": 1,
+      "engineer": "sw-engineer-1",
+      "branch": "phase2/wave1/gitea-client",
+      "status": "completed",
+      "commit": "bf3d6e0",
+      "completion_time": "2025-09-09T15:30:25Z"
+    }
+  ]
 }

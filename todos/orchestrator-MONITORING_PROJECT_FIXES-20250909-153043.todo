@@ -1,0 +1,10 @@
+# Orchestrator TODO State - MONITORING_PROJECT_FIXES
+# Saved at: 2025-09-09T15:30:43Z
+
+[✅] Read PROJECT-FIX-PLAN.md to identify fixes and spawn strategy
+[✅] Identify which engineers to spawn and for which fixes
+[✅] Navigate to source branches for each fix
+[✅] Spawn SW Engineer to fix import paths in gitea-client branch
+[✅] Update orchestrator-state.json with spawn details
+[✅] Save TODOs and commit state changes (R287)
+[ ] Monitor fix completion and prepare for re-integration
