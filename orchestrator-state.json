@@ -1,9 +1,9 @@
 {
   "state_machine": {
-    "current_state": "PROJECT_INTEGRATION",
-    "previous_state": "MONITORING_PROJECT_FIXES",
-    "transition_time": "2025-09-09T14:57:54Z",
-    "transition_reason": "All project fixes complete (bug already fixed), re-running full integration per MONITORING_PROJECT_FIXES rules",
+    "current_state": "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
+    "previous_state": "MONITORING_PROJECT_INTEGRATION",
+    "transition_time": "2025-09-09T15:02:58Z",
+    "transition_reason": "Bugs found during project integration, need Code Reviewer to create fix plan",
     "ready_for_transition": false,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
@@ -34,7 +34,7 @@
       "verified": true
     },
     "monitoring_complete": true,
-    "fix_monitoring_complete": true,
+    "fix_monitoring_complete": false,
     "next_transition_prepared_at": "2025-09-07T23:36:00Z",
     "monitoring_results": {
       "E1.2.1": {
@@ -195,14 +195,14 @@
       "agent_spawned": true,
       "spawn_time": "2025-09-09T10:40:32Z",
       "completion_time": "2025-09-09T10:49:00Z",
-      "status": "COMPLETED",
+      "status": "BUGS_FOUND",
       "phase1_merged": true,
       "phase2_wave1_merged": true,
       "project_integration_branch": "project-integration",
       "upstream_bug_found": true,
       "bug_location": "pkg/registry/gitea.go:14-16",
       "bug_documented": true,
-      "integration_score": "100/100",
+      "needs_fix_plan": true,
       "report_location": "efforts/project/integration-workspace/INTEGRATION-REPORT.md"
     },
     "project_bugs_to_fix": {
@@ -210,8 +210,10 @@
       "description": "Upstream bug in registry initialization - incorrect import paths",
       "documented": true,
       "needs_fix_plan": true,
-      "fix_plan_needed": true
-    }
+      "fix_plan_status": "NOT_CREATED",
+      "fix_status": "NOT_STARTED"
+    },
+    "monitor_fixes_completed": false
   },
   "sw_engineer_parallelization_plan": {
     "wave": 1,
