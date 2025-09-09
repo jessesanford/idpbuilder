@@ -1,10 +1,10 @@
 {
   "state_machine": {
-    "current_state": "MONITORING_PROJECT_FIXES",
-    "previous_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
-    "transition_time": "2025-09-09T13:54:36Z",
-    "transition_reason": "SW Engineer spawned for bug fix - now monitoring progress (bug already fixed)",
-    "ready_for_transition": true,
+    "current_state": "PROJECT_INTEGRATION",
+    "previous_state": "MONITORING_PROJECT_FIXES",
+    "transition_time": "2025-09-09T14:57:54Z",
+    "transition_reason": "All project fixes complete (bug already fixed), re-running full integration per MONITORING_PROJECT_FIXES rules",
+    "ready_for_transition": false,
     "transition_prepared_at": "2025-09-08T01:49:00Z",
     "infrastructure_setup_complete": true,
     "infrastructure_setup_time": "2025-09-07T23:59:00Z",
