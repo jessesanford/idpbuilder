@@ -1322,7 +1322,7 @@ While these efforts can be implemented in parallel, they share some common types
 # From project root, use the line counter tool
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do 
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
+    [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
 done
 
@@ -1439,6 +1439,26 @@ export IDPBUILDER_KEY_FILE=/path/to/key.pem
 - Insecure mode must show clear warnings
 - All bypasses must be logged with reason
 
+## 🎬 Demo Requirements (R330)
+
+### Demo Objectives
+1. Demonstrate OCI image building from directory contexts
+2. Showcase TLS certificate generation and management
+3. Illustrate secure registry push operations with custom certificates
+4. Display feature flag configuration and control
+5. Prove integration readiness with Gitea registry
+
+### Demo Deliverables
+- **demo-features.sh** (executable) - Main demo script with 4 scenarios
+- **DEMO.md** (documentation) - Complete demo guide and validation steps
+- **test-data/** (sample files) - Sample app contexts and configurations
+
+### Demo Scenarios Summary
+1. **Build OCI Image** - Create container image from local directory
+2. **Generate TLS Certs** - Create self-signed certificates for testing
+3. **Push with TLS** - Secure registry operations with custom CA
+4. **Feature Flags** - Dynamic feature enable/disable demonstration
+
 ## 📚 References
 
 ### External Dependencies
@@ -1450,6 +1470,7 @@ export IDPBUILDER_KEY_FILE=/path/to/key.pem
 - Phase 1 Architecture Plan: `phase-plans/PHASE-1-PLAN.md`
 - Certificate Handling Guide: (to be created)
 - Security Best Practices: (to be created)
+- Demo Retrofit Plan: `DEMO-RETROFIT-PLAN.md`
 
 ---
 
