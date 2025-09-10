@@ -38,17 +38,19 @@ Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
 ---
 
 
-## 🔴🔴🔴 CRITICAL: BASE BRANCH DETERMINATION (R308) 🔴🔴🔴
+## 🔴🔴🔴 CRITICAL: BASE BRANCH DETERMINATION (R308 + R009) 🔴🔴🔴
 
 **VIOLATION = -100% AUTOMATIC FAILURE**
 
-### YOU MUST DETERMINE THE CORRECT BASE BRANCH PER R308:
+### YOU MUST DETERMINE THE CORRECT BASE BRANCH PER R308 + R009:
 - Phase 1, Wave 1: from **main**
-- Phase 1, Wave 2+: from **phase1-wave[N-1]-integration**  
+- Phase 1, Wave 2+: from **phase1-wave[N-1]-integration** (R009: MANDATORY!)
 - Phase 2+, Wave 1: from **phase[N-1]-integration** (NEVER main!)
-- Phase 2+, Wave 2+: from **phase[N]-wave[N-1]-integration**
+- Phase 2+, Wave 2+: from **phase[N]-wave[N-1]-integration** (R009: MANDATORY!)
 
-### NEVER BASE PHASE 2 ON MAIN!
+### 🔴 R009 ENFORCEMENT: WAVE INTEGRATION IS MANDATORY! 🔴
+**For Wave > 1, the previous wave's integration branch MUST exist!**
+If it doesn't exist, STOP IMMEDIATELY - the previous wave wasn't integrated!
 
 Example for Phase 2, Wave 1:
 ```bash
@@ -211,35 +213,41 @@ The system will check for this marker. No marker = Immediate failure.
    - **READ THIS FIRST - DETERMINES ALL BASE BRANCHES!**
    - **PHASE 2 FROM PHASE1-INTEGRATION, NOT MAIN!**
 
-4. **R309** - NEVER Create Efforts in SF Repo (PARAMOUNT LAW!)
+4. **R009** - Mandatory Wave/Phase Integration Protocol (SUPREME LAW!)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R009-integration-branch-creation.md`
+   - Criticality: 🔴🔴🔴 SUPREME LAW - Wave N+1 REQUIRES Wave N integration!
+   - **ENFORCES TRUNK-BASED DEVELOPMENT!**
+   - **NO WAVE CAN START WITHOUT PREVIOUS WAVE'S INTEGRATION!**
+
+5. **R309** - NEVER Create Efforts in SF Repo (PARAMOUNT LAW!)
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R309-never-create-efforts-in-sf-repo.md`
    - Criticality: PARAMOUNT - Automatic -100% failure for violation
    - **AVOID CATASTROPHIC FAILURE!**
 
-5. **R312** - Git Config Immutability Protocol (SUPREME LAW!)
+6. **R312** - Git Config Immutability Protocol (SUPREME LAW!)
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R312-git-config-immutability-protocol.md`
    - Criticality: 🔴🔴🔴 SUPREME LAW - Lock .git/config after setup
    - **CRITICAL FOR EFFORT ISOLATION!**
    - **PREVENTS BRANCH/REMOTE CONTAMINATION!**
 
-6. **R191** - Target Repository Configuration
+7. **R191** - Target Repository Configuration
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R191-target-repo-config.md`
    - Criticality: BLOCKING - Must load config before proceeding
    
-7. **R176** - Workspace Isolation  
+8. **R176** - Workspace Isolation  
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R176-workspace-isolation.md`
    - Criticality: BLOCKING - Ensure complete workspace isolation
 
-8. **R271** - Single-Branch Full Checkout Protocol
+9. **R271** - Single-Branch Full Checkout Protocol
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R271-single-branch-full-checkout.md`
    - Criticality: SUPREME LAW - Full single-branch checkout required
 
-9. **🚨🚨🚨 R216** - Bash Execution Syntax Protocol (BLOCKING)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R216-bash-execution-syntax.md`
-   - Criticality: BLOCKING - Incorrect syntax causes failures
-   - Summary: Use parentheses for subshells, proper variable syntax
+10. **🚨🚨🚨 R216** - Bash Execution Syntax Protocol (BLOCKING)
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R216-bash-execution-syntax.md`
+    - Criticality: BLOCKING - Incorrect syntax causes failures
+    - Summary: Use parentheses for subshells, proper variable syntax
 
-10. **🚨🚨🚨 R235** - Pre-flight Verification Checklist (BLOCKING)
+11. **🚨🚨🚨 R235** - Pre-flight Verification Checklist (BLOCKING)
     - File: `$CLAUDE_PROJECT_DIR/rule-library/R235-MANDATORY-PREFLIGHT-VERIFICATION-SUPREME-LAW.md`
     - Criticality: BLOCKING - Must verify environment before setup
     - Summary: Check directories, permissions, branches before infrastructure setup

@@ -16,8 +16,35 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-# Schema file location
-SCHEMA_FILE="$PROJECT_ROOT/orchestrator-state.schema.json"
+# Function to find schema file in multiple locations
+find_schema_file() {
+    local locations=(
+        # 1. First check in current project directory
+        "$PROJECT_ROOT/orchestrator-state.schema.json"
+        # 2. Check in SOFTWARE_FACTORY_DIR if set
+        "${SOFTWARE_FACTORY_DIR:-}/orchestrator-state.schema.json"
+        # 3. Check in CLAUDE_PROJECT_DIR if set
+        "${CLAUDE_PROJECT_DIR:-}/orchestrator-state.schema.json"
+        # 4. Check in known software-factory-template location
+        "/home/vscode/software-factory-template/orchestrator-state.schema.json"
+        # 5. Check relative to workspaces
+        "/home/vscode/workspaces/software-factory-2.0-template/orchestrator-state.schema.json"
+        # 6. Check parent directory (for when run from subdirs)
+        "$(dirname "$PROJECT_ROOT")/orchestrator-state.schema.json"
+    )
+    
+    for location in "${locations[@]}"; do
+        if [ -n "$location" ] && [ -f "$location" ]; then
+            echo "$location"
+            return 0
+        fi
+    done
+    
+    return 1
+}
+
+# Find schema file
+SCHEMA_FILE=$(find_schema_file || echo "")
 
 # Default state file location
 DEFAULT_STATE_FILE="$PROJECT_ROOT/orchestrator-state.json"
@@ -26,8 +53,17 @@ DEFAULT_STATE_FILE="$PROJECT_ROOT/orchestrator-state.json"
 STATE_FILE="${1:-$DEFAULT_STATE_FILE}"
 
 # Check if schema file exists
-if [ ! -f "$SCHEMA_FILE" ]; then
-    echo -e "${RED}❌ Schema file not found: $SCHEMA_FILE${NC}"
+if [ -z "$SCHEMA_FILE" ] || [ ! -f "$SCHEMA_FILE" ]; then
+    echo -e "${RED}❌ Schema file not found in any of these locations:${NC}"
+    echo "   - $PROJECT_ROOT/orchestrator-state.schema.json"
+    echo "   - \${SOFTWARE_FACTORY_DIR}/orchestrator-state.schema.json"
+    echo "   - \${CLAUDE_PROJECT_DIR}/orchestrator-state.schema.json"
+    echo "   - /home/vscode/software-factory-template/orchestrator-state.schema.json"
+    echo ""
+    echo -e "${YELLOW}💡 To fix this:${NC}"
+    echo "   1. Set SOFTWARE_FACTORY_DIR or CLAUDE_PROJECT_DIR environment variable"
+    echo "   2. OR copy the schema file to your project:"
+    echo "      cp /home/vscode/software-factory-template/orchestrator-state.schema.json $PROJECT_ROOT/"
     exit 1
 fi
 

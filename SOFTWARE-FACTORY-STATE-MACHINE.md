@@ -157,6 +157,23 @@ The orchestrator MUST STOP for user review at these critical transitions:
 
 See rule-library/R322-mandatory-stop-before-state-transitions.md for complete requirements.
 
+## 🔴🔴🔴 SUPREME LAW R336: MANDATORY WAVE INTEGRATION BEFORE NEXT WAVE 🔴🔴🔴
+
+**TRUNK-BASED DEVELOPMENT LAW - EACH WAVE BUILDS ON INTEGRATED PREVIOUS WAVE!**
+
+Every wave MUST be fully integrated before the next wave can start:
+- **WAVE_COMPLETE → INTEGRATION** (MANDATORY - cannot skip to next wave)
+- **Wave N integration branch** becomes the base for **Wave N+1 efforts** (per R308)
+- **NO wave may start** without previous wave's integration branch existing
+- **Architect reviews** the INTEGRATED wave, not individual efforts
+
+**THE INTEGRATION CHAIN IS SACRED:**
+```
+main → wave1-integration → wave2-integration → wave3-integration → phase-integration
+```
+
+See rule-library/R336-mandatory-wave-integration-before-next-wave.md for complete requirements.
+
 ## 🔴🔴🔴 SUPREME LAW R321: IMMEDIATE BACKPORT DURING INTEGRATION 🔴🔴🔴
 
 **ALL FIXES DURING INTEGRATION MUST BE IMMEDIATELY BACKPORTED TO SOURCE BRANCHES!**
@@ -743,7 +760,7 @@ SPAWN_ENGINEERS_FOR_FIXES → MONITORING_FIX_PROGRESS
 MONITORING_FIX_PROGRESS → SPAWN_CODE_REVIEWERS_FOR_REVIEW (fixes complete)
 MONITORING_FIX_PROGRESS → ERROR_RECOVERY (timeout)
 SPAWN_CODE_REVIEWERS_FOR_REVIEW → MONITOR_REVIEWS (re-enter review cycle)
-WAVE_REVIEW → WAVE_START (next wave, not last)
+WAVE_REVIEW → WAVE_START (next wave - R336: ONLY after integration verified!)
 WAVE_REVIEW → PHASE_INTEGRATION (last wave of phase - R285)
 SPAWN_ARCHITECT_PHASE_ASSESSMENT → WAITING_FOR_PHASE_ASSESSMENT
 WAITING_FOR_PHASE_ASSESSMENT → PHASE_COMPLETE (assessment passed)

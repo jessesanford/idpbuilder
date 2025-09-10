@@ -275,6 +275,108 @@ def document_size_measurement(size_result, review_context):
     return review_context
 ```
 
+## Demo Artifact Verification (R291)
+
+```python
+def verify_demo_artifacts(effort_dir):
+    """Verify demo artifacts exist per R291 requirements
+    
+    DEMOS ARE MANDATORY - NO DEMO = FAILED REVIEW
+    """
+    
+    demo_findings = {
+        'demo_script_exists': False,
+        'demo_doc_exists': False,
+        'demo_executable': False,
+        'demo_runs_successfully': False,
+        'missing_artifacts': [],
+        'review_result': 'PENDING'
+    }
+    
+    # Check for demo script
+    demo_script_path = os.path.join(effort_dir, 'demo-features.sh')
+    if os.path.exists(demo_script_path):
+        demo_findings['demo_script_exists'] = True
+        
+        # Check if executable
+        if os.access(demo_script_path, os.X_OK):
+            demo_findings['demo_executable'] = True
+            
+            # Try running demo
+            try:
+                result = subprocess.run(['./demo-features.sh'], 
+                                      cwd=effort_dir, 
+                                      capture_output=True, 
+                                      text=True,
+                                      timeout=30)
+                if result.returncode == 0:
+                    demo_findings['demo_runs_successfully'] = True
+                else:
+                    demo_findings['demo_error'] = result.stderr
+            except Exception as e:
+                demo_findings['demo_error'] = str(e)
+        else:
+            demo_findings['missing_artifacts'].append('demo-features.sh not executable')
+    else:
+        demo_findings['missing_artifacts'].append('demo-features.sh not found')
+    
+    # Check for demo documentation
+    demo_doc_path = os.path.join(effort_dir, 'DEMO.md')
+    if os.path.exists(demo_doc_path):
+        demo_findings['demo_doc_exists'] = True
+    else:
+        demo_findings['missing_artifacts'].append('DEMO.md not found')
+    
+    # Determine review result
+    if (demo_findings['demo_script_exists'] and 
+        demo_findings['demo_doc_exists'] and 
+        demo_findings['demo_executable'] and 
+        demo_findings['demo_runs_successfully']):
+        demo_findings['review_result'] = 'PASSED'
+    else:
+        demo_findings['review_result'] = 'FAILED'
+        demo_findings['critical_blocker'] = True
+    
+    return demo_findings
+
+def generate_demo_verification_report(demo_result):
+    """Generate demo verification report for R291 compliance"""
+    
+    if demo_result.get('review_result') == 'PASSED':
+        return "✅ Demo artifacts verified - R291 compliant"
+    
+    report = [
+        "❌ CRITICAL BLOCKER: DEMO ARTIFACTS MISSING OR BROKEN (R291)",
+        "",
+        "FINDINGS:",
+    ]
+    
+    if not demo_result.get('demo_script_exists'):
+        report.append("❌ demo-features.sh NOT FOUND")
+    elif not demo_result.get('demo_executable'):
+        report.append("❌ demo-features.sh NOT EXECUTABLE")
+    elif not demo_result.get('demo_runs_successfully'):
+        report.append("❌ demo-features.sh FAILS TO RUN")
+        if 'demo_error' in demo_result:
+            report.append(f"   Error: {demo_result['demo_error']}")
+    
+    if not demo_result.get('demo_doc_exists'):
+        report.append("❌ DEMO.md NOT FOUND")
+    
+    report.extend([
+        "",
+        "REQUIRED ACTION:",
+        "- Create demo-features.sh executable script",
+        "- Create DEMO.md documentation",
+        "- Ensure demo runs successfully (exit 0)",
+        "- Demo must demonstrate all implemented features",
+        "",
+        "Per R291: Zero tolerance for missing demos - Integration will fail!"
+    ])
+    
+    return "\n".join(report)
+```
+
 ## Stub Implementation Detection (R320)
 
 ```python
@@ -776,7 +878,18 @@ def make_review_decision(review_data):
     # Critical blocking issues
     blocking_issues = []
     
-    # STUB IMPLEMENTATIONS (HIGHEST PRIORITY - R320)
+    # DEMO ARTIFACTS (HIGHEST PRIORITY - R291)
+    demo_result = review_data.get('demo_verification', {})
+    if demo_result.get('review_result') == 'FAILED':
+        blocking_issues.append({
+            'type': 'DEMO_ARTIFACTS_MISSING',
+            'description': "Demo artifacts missing or broken per R291",
+            'action_required': 'CREATE_DEMO_ARTIFACTS',
+            'severity': 'CRITICAL_BLOCKER',
+            'details': demo_result.get('missing_artifacts', [])
+        })
+    
+    # STUB IMPLEMENTATIONS (HIGH PRIORITY - R320)
     stub_result = review_data.get('stub_detection', {})
     if stub_result.get('stubs_found', False):
         blocking_issues.append({

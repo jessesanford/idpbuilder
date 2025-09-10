@@ -249,7 +249,7 @@ The PHASE_COMPLETE state is for:
 4. Determining single vs multi-phase flow
 5. Transitioning to SUCCESS or next phase
 
-## Phase Integration Tasks (FOLLOWS R104 AND R282)
+## Phase Integration Tasks (FOLLOWS R009 AND R282)
 
 ### 🔴🔴🔴 MANDATORY PHASE INTEGRATION BRANCH CREATION 🔴🔴🔴
 
@@ -283,12 +283,12 @@ git push origin phase2/integration
 4. **Documentation**: Clear progression through phases
 5. **No special cases**: Simpler mental model, no "if single wave then..." logic
 
-### 🔴🔴🔴 SETUP PHASE INTEGRATION INFRASTRUCTURE (R104/R282) 🔴🔴🔴
+### 🔴🔴🔴 SETUP PHASE INTEGRATION INFRASTRUCTURE (R009/R282) 🔴🔴🔴
 
-**YOU MUST FOLLOW R104 AND R282 - Integration branches are created in TARGET repository!**
+**YOU MUST FOLLOW R009 AND R282 - Integration branches are created in TARGET repository!**
 
 ```bash
-# 1. Read target repository configuration (R104 requirement)
+# 1. Read target repository configuration (R009 requirement)
 TARGET_CONFIG="$CLAUDE_PROJECT_DIR/target-repo-config.yaml"
 TARGET_REPO_URL=$(yq '.target_repository.url' "$TARGET_CONFIG")
 TARGET_REPO_NAME=$(yq '.target_repository.name' "$TARGET_CONFIG")
@@ -320,7 +320,7 @@ fi
 
 mkdir -p "$(dirname "$PHASE_INTEGRATION_DIR")"
 
-# 4. Clone TARGET repository (NOT software-factory!) - R104/R282 CRITICAL
+# 4. Clone TARGET repository (NOT software-factory!) - R009/R282 CRITICAL
 echo "📦 Cloning TARGET repository for phase integration..."
 echo "   Repository: $TARGET_REPO_URL"
 echo "   Destination: $PHASE_INTEGRATION_DIR"
@@ -341,14 +341,14 @@ if [[ "$REMOTE_URL" == *"software-factory"* ]] || [[ "$REMOTE_URL" == *"planning
     echo "🔴🔴🔴 CRITICAL ERROR: Cloned wrong repository!"
     echo "Expected: Target project repository"
     echo "Got: $REMOTE_URL"
-    echo "This violates R104 and R282!"
+    echo "This violates R009 and R282!"
     exit 104
 fi
 
 echo "✅ Verified: Working in target repository"
 echo "   Remote URL: $REMOTE_URL"
 
-# 6. Create phase integration branch in TARGET repo (R104 naming)
+# 6. Create phase integration branch in TARGET repo (R009 naming)
 git checkout "$DEFAULT_BRANCH"
 git pull origin "$DEFAULT_BRANCH"
 PHASE_BRANCH="phase-${PHASE}-integration"
@@ -417,7 +417,7 @@ echo "🌿 Branch: $PHASE_BRANCH"
 echo "🏷️ Tag: $TAG_NAME"
 ```
 
-**VIOLATION OF R104/R282 = AUTOMATIC FAILURE!**
+**VIOLATION OF R009/R282 = AUTOMATIC FAILURE!**
 - Never create integration branches in software-factory-template or planning repo
 - Always clone target repository first
 - Phase integration happens in target repo only

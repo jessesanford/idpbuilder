@@ -77,8 +77,8 @@ echo "$(date +%s) - Rules read and acknowledged for PROJECT_INTEGRATION" > .stat
 **Criticality**: BLOCKING - Merge order is critical
 **Summary**: Phases must be merged in dependency order (Phase 1 → Phase 2 → ...)
 
-### 🚨🚨🚨 R104 - Target Repository Integration [BLOCKING]
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R104-target-repository-integration.md`
+### 🚨🚨🚨 R009 - Mandatory Wave/Phase Integration Protocol [SUPREME LAW]
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R009-integration-branch-creation.md`
 **Criticality**: BLOCKING - Must use target repository
 **Summary**: Integration happens in target repository, NOT software-factory
 
@@ -210,7 +210,7 @@ EOF
     SF_INSTANCE_DIR=$(pwd)
     echo "📁 SF Instance: $SF_INSTANCE_DIR"
     
-    # Read target repository configuration (R104)
+    # Read target repository configuration (R009 requirement)
     TARGET_CONFIG="$SF_INSTANCE_DIR/target-repo-config.yaml"
     TARGET_REPO_URL=$(yq '.repository_path' "$TARGET_CONFIG")
     TARGET_REPO_NAME=$(yq '.repository_name' "$TARGET_CONFIG")
@@ -222,18 +222,18 @@ EOF
     mkdir -p "$PROJECT_INTEGRATION_DIR"
     cd "$PROJECT_INTEGRATION_DIR"
     
-    # Clone TARGET repository (NOT software-factory!) per R104
-    echo "🔄 Cloning target repository (R104)..."
+    # Clone TARGET repository (NOT software-factory!) per R009
+    echo "🔄 Cloning target repository (R009)..."
     git clone "$TARGET_REPO_URL" "$TARGET_REPO_NAME"
     cd "$TARGET_REPO_NAME"
     
-    # CRITICAL SAFETY CHECK - Verify correct repository (R104)
+    # CRITICAL SAFETY CHECK - Verify correct repository (R009)
     REMOTE_URL=$(git remote get-url origin)
     if [[ "$REMOTE_URL" == *"software-factory"* ]]; then
         echo "❌ CRITICAL: Cloned orchestrator repository instead of target!"
         echo "Expected: Target project repository"
         echo "Got: $REMOTE_URL"
-        exit 104  # R104 violation
+        exit 9  # R009 violation
     fi
     
     # Create project integration branch

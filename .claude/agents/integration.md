@@ -264,8 +264,64 @@ make build || BUILD_STATUS="FAILED"
 # Run tests (DO NOT FIX IF FAILS)  
 make test || TEST_STATUS="FAILED"
 
+# 🔴🔴🔴 R291 MANDATORY: Run Demo Scripts 🔴🔴🔴
+echo "🎬 R291: Running mandatory demo verification..."
+DEMO_STATUS="NOT_RUN"
+DEMO_OUTPUT=""
+
+# Look for demo scripts in each effort branch
+for effort_dir in efforts/*/; do
+    if [[ -f "$effort_dir/demo-features.sh" ]]; then
+        echo "Found demo script in $effort_dir"
+        if [[ -x "$effort_dir/demo-features.sh" ]]; then
+            echo "Running demo for $(basename $effort_dir)..."
+            if cd "$effort_dir" && ./demo-features.sh; then
+                DEMO_OUTPUT="$DEMO_OUTPUT\n✅ $(basename $effort_dir): PASSED"
+            else
+                DEMO_OUTPUT="$DEMO_OUTPUT\n❌ $(basename $effort_dir): FAILED"
+                DEMO_STATUS="FAILED"
+            fi
+            cd - > /dev/null
+        else
+            echo "❌ Demo script not executable in $effort_dir"
+            DEMO_STATUS="FAILED"
+        fi
+    else
+        echo "❌ No demo script found in $effort_dir"
+        DEMO_STATUS="FAILED"
+    fi
+done
+
+# If all demos passed and at least one was found
+if [[ "$DEMO_STATUS" != "FAILED" ]] && [[ -n "$DEMO_OUTPUT" ]]; then
+    DEMO_STATUS="PASSED"
+fi
+
+# Create wave-level demo if individual demos exist
+if [[ "$DEMO_STATUS" == "PASSED" ]]; then
+    echo "Creating wave-level demo..."
+    cat > demo-wave.sh << 'EOF'
+#!/bin/bash
+# Wave-level demo script
+echo "🎬 Running Wave Demo..."
+echo "========================="
+
+# Run all individual effort demos
+for demo in efforts/*/demo-features.sh; do
+    if [[ -x "$demo" ]]; then
+        echo "Running $(dirname $demo) demo..."
+        (cd $(dirname $demo) && ./demo-features.sh)
+    fi
+done
+
+echo "========================="
+echo "✅ Wave demo completed!"
+EOF
+    chmod +x demo-wave.sh
+fi
+
 # Document results in INTEGRATION-REPORT.md
-cat > INTEGRATION-REPORT.md << 'EOF'
+cat > INTEGRATION-REPORT.md << EOF
 # Integration Report
 
 ## Build Results
@@ -276,9 +332,22 @@ Status: $BUILD_STATUS
 Status: $TEST_STATUS
 [Include failures]
 
+## Demo Results (R291 MANDATORY)
+Status: $DEMO_STATUS
+Results:
+$DEMO_OUTPUT
+
 ## Upstream Bugs Found
 [List but DO NOT FIX]
 EOF
+
+# R291 GATE: FAIL INTEGRATION IF DEMOS NOT PASSING
+if [[ "$DEMO_STATUS" != "PASSED" ]]; then
+    echo "🔴🔴🔴 R291 GATE FAILURE: Demos not passing!"
+    echo "Integration CANNOT proceed without working demos"
+    echo "SW Engineers must create demo-features.sh in each effort"
+    exit 291  # Exit with R291 error code
+fi
 ```
 
 ### Phase 4: Final Documentation

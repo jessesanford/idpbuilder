@@ -47,7 +47,7 @@
 - R006.0.0 - Orchestrator Never Writes Code
 - R007.0.0 - Size Limit Compliance (800 lines)
 - R008.0.0 - Monitoring Frequency Requirements
-- R009.0.0 - Integration Branch Creation
+- R009.0.0 - Mandatory Wave/Phase Integration Protocol (🔴🔴🔴 SUPREME LAW - Consolidates R104, R336)
 - R010.0.0 - Wrong Location Handling
 
 ### Process Rules (R011-R030)
@@ -92,7 +92,7 @@
 - R101.0.0 - INIT State Rules
 - R102.0.0 - WAVE_START Rules
 - R103.0.0 - SPAWN_AGENTS Rules
-- R104.0.0 - MONITOR Rules
+- R104.0.0 - [DEPRECATED - Merged into R009] Integration Branch Creation (workspace location)
 - R105.0.0 - WAVE_COMPLETE Rules
 - R106.0.0 - IMPLEMENTATION Rules
 - R107.0.0 - MEASURE_SIZE Rules
@@ -234,7 +234,7 @@
 - R289.0.0 - Orphaned State Detection and Prevention | BLOCKING | State Machine Integrity
 - R290.0.0 - State Rule Reading and Verification (🔴 SUPREME LAW #3)
 - R291.0.0 - Integration Demo Requirement | BLOCKING | Integration Validation
-- R292.0.0 - DEPRECATED - Consolidated into R300
+- R292.0.0 - [DEPRECATED - Merged into R300] Integration fixes in effort branches
 - R293.0.0 - Integration Report Distribution Protocol | BLOCKING | Fix Distribution
 - R294.0.0 - Fix Plan Archival Protocol | BLOCKING | Plan Management
 - R295.0.0 - SW Engineer Spawn Clarity Protocol | SUPREME | Agent Communication
@@ -267,3 +267,6 @@
 - R327.0.0 - Mandatory Re-Integration After Fixes | 🔴🔴🔴 SUPREME LAW | After ANY fixes to source branches, MUST delete and re-run ENTIRE integration from scratch (-100% for violations)
 - R328.0.0 - Integration Freshness Validation | 🚨🚨🚨 BLOCKING | MUST verify integration branch freshness before merging - stale branches cause lost fixes (-30% to -50% penalty)
 - R329.0.0 - Orchestrator Never Performs Git Merges | 🚨🚨🚨 BLOCKING | Orchestrator MUST spawn Integration Agent for ALL merges - NO EXCEPTIONS (-100% for violations)
+- R330.0.0 - Demo Planning Requirements | 🚨🚨🚨 BLOCKING | EVERY effort plan MUST include explicit demo requirements with size impact (-25% to -50% for violations)
+- R331.0.0 through R335.0.0 - Reserved for future rules
+- R336.0.0 - [DEPRECATED - Merged into R009] Mandatory Wave Integration Before Next Wave | Was SUPREME LAW | Now part of comprehensive R009

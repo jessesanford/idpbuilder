@@ -155,12 +155,18 @@ The system will check for this marker. No marker = Immediate failure.
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R035-phase-completion-testing.md`
    - Criticality: MANDATORY - Validation requirements
 
+4. **🔴🔴🔴 R009** - Mandatory Wave/Phase Integration Protocol
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R009-integration-branch-creation.md`
+   - Criticality: SUPREME LAW - Wave integration is MANDATORY
+   - Summary: WAVE_COMPLETE must lead to INTEGRATION, next wave uses integration as base
+
 **Note**: R288 (state updates), R287 (TODO saves) are already in orchestrator.md.
 
 ## 📋 RULE SUMMARY FOR WAVE_COMPLETE STATE
 
 ### Rules Enforced in This State:
 - R222: Code Review Gate [BLOCKING - ALL reviews must pass]
+- R009: Mandatory Wave/Phase Integration [SUPREME LAW - Must transition to INTEGRATION]
 - R288: State File Update and Commit [SUPREME LAW - Update immediately, includes commit/push]
 - R105: Wave Completion Protocol [INFO - Best practice]
 - R035: Phase Completion Testing [MANDATORY - Validation required]
@@ -731,12 +737,12 @@ def validate_wave_quality_gates(wave_data):
 4. When user continues, orchestrator will be in INTEGRATION state and execute integration work
 
 From WAVE_COMPLETE state, the STANDARD transition is:
-- **DEFAULT** → **INTEGRATION** (Always go here unless special conditions below)
+- **DEFAULT** → **INTEGRATION** (R009: MANDATORY - Always go here unless special conditions below)
 
 Special condition transitions (RARE):
 - **ARCHITECT_REVIEW_REQUIRED** → WAVE_REVIEW (Only if architect review explicitly needed)
 - **SPLITS_REQUIRED** → SPAWN_AGENTS (Only if size violations detected)
-- **NEXT_WAVE_READY** → WAVE_START (Only if skipping integration - VERY RARE)
+- **NEXT_WAVE_READY** → WAVE_START (❌ R009 VIOLATION - Integration is MANDATORY!)
 - **PHASE_COMPLETE** → WAVE_REVIEW (Only at end of phase)
 
 ## R322 VIOLATION DETECTION

@@ -282,8 +282,23 @@ jq '.current_review.status = \"APPROVED\"' orchestrator-state.json > tmp.json &&
 jq '.current_review.completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 jq '.current_review.decision = \"PROCEED_NEXT_WAVE\"' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
 
-# Transition to plan next wave
-transition_to "PLANNING"  # Plan next wave
+# 🔴 R009 ENFORCEMENT: Verify integration exists before next wave!
+echo "🔍 R009: Verifying wave integration exists..."
+PHASE=$(jq -r '.current_phase' orchestrator-state.json)
+WAVE=$(jq -r '.current_wave' orchestrator-state.json)
+INTEGRATION_BRANCH="phase${PHASE}-wave${WAVE}-integration"
+
+if ! git ls-remote --heads origin "$INTEGRATION_BRANCH" > /dev/null 2>&1; then
+    echo "🔴🔴🔴 R009 VIOLATION: Wave integration missing!"
+    echo "Integration branch required: $INTEGRATION_BRANCH"
+    echo "Cannot start next wave without integration!"
+    transition_to "ERROR_RECOVERY"
+    exit 336
+fi
+
+echo "✅ R009: Integration verified, ready for next wave"
+# Transition to start next wave (Wave N+1 will use this integration as base)
+transition_to "WAVE_START"  # Start next wave with integration as base
 ```
 
 ### If PROCEED_PHASE_ASSESSMENT:

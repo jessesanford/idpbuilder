@@ -904,6 +904,104 @@ git commit -m "fix: prevent infinite reconciliation loop in status updates
 - No size impact (refactoring existing code)"
 ```
 
+## 🔴🔴🔴 MANDATORY: Create Demo Script and Documentation (R291) 🔴🔴🔴
+
+### CRITICAL REQUIREMENT - INTEGRATION WILL FAIL WITHOUT DEMOS
+
+**Per R291, you MUST create demo artifacts BEFORE marking implementation complete:**
+
+```bash
+# MANDATORY: Create demo script for your implementation
+echo "🎬 Creating MANDATORY demo script per R291..."
+cat > demo-features.sh << 'EOF'
+#!/bin/bash
+# Demo script for [EFFORT_NAME]
+# Created: $(date)
+# Purpose: Demonstrate working functionality for integration verification
+
+echo "🎬 Starting feature demonstration..."
+echo "================================"
+
+# 1. Setup demo environment
+echo "📦 Setting up demo environment..."
+# [Setup commands here]
+
+# 2. Demonstrate feature 1
+echo "🎯 Demonstrating [Feature 1]..."
+# [Commands to show feature working]
+# [Expected output verification]
+
+# 3. Demonstrate feature 2
+echo "🎯 Demonstrating [Feature 2]..."
+# [Commands to show feature working]
+# [Expected output verification]
+
+# 4. Verify functionality
+echo "✅ Verifying all features work..."
+# [Test commands]
+
+echo "================================"
+echo "✅ Demo completed successfully!"
+exit 0
+EOF
+chmod +x demo-features.sh
+
+# MANDATORY: Create demo documentation
+cat > DEMO.md << 'EOF'
+# Feature Demo Documentation
+
+## What This Demonstrates
+- [List features being demonstrated]
+- [Expected behavior]
+
+## How to Run
+```bash
+./demo-features.sh
+```
+
+## Expected Output
+[Describe what should be seen]
+
+## Manual Verification Steps
+1. [Step 1]
+2. [Step 2]
+3. [Step 3]
+
+## Evidence
+- Build status: ✅ PASSING
+- Test status: ✅ PASSING
+- Demo status: ✅ WORKING
+EOF
+
+# Test the demo actually works
+echo "🧪 Testing demo script..."
+if ./demo-features.sh; then
+    echo "✅ Demo script executes successfully"
+else
+    echo "❌ Demo script failed - FIX BEFORE COMPLETING!"
+    exit 1
+fi
+
+# Add to git
+git add demo-features.sh DEMO.md
+git commit -m "demo: add mandatory demo script and documentation per R291"
+git push
+```
+
+**WHY THIS IS MANDATORY:**
+- ❌ WITHOUT demo = Integration fails per R291
+- ❌ WITHOUT demo = R291 gate blocks progression
+- ❌ WITHOUT demo = -50% to -75% grading penalty
+- ✅ WITH demo = Integration can verify functionality
+- ✅ WITH demo = Clear evidence features work
+
+### Demo Requirements:
+1. **Executable Script**: `demo-features.sh` that runs without errors
+2. **Documentation**: `DEMO.md` explaining what's demonstrated
+3. **Feature Coverage**: Demo shows ALL implemented features
+4. **Self-Contained**: Demo should work in clean environment
+5. **Exit Code**: Must exit 0 on success, non-zero on failure
+
 ## 🔴🔴🔴 MANDATORY: Create IMPLEMENTATION-COMPLETE Marker 🔴🔴🔴
 
 ### CRITICAL REQUIREMENT - CANNOT CONSIDER WORK COMPLETE WITHOUT THIS

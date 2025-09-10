@@ -1,12 +1,45 @@
-# 🚨 RULE R009 - Mandatory Integration Branch Creation
+# 🔴🔴🔴 SUPREME LAW R009 - Mandatory Wave/Phase Integration Protocol
 
-**Criticality:** BLOCKING - Cannot proceed without integration  
-**Grading Impact:** -30% for missing integration branch  
-**Enforcement:** AT EVERY WAVE COMPLETION
+**Criticality:** SUPREME LAW - Foundation of trunk-based development  
+**Grading Impact:** -100% for skipping wave integration, -30% for other violations  
+**Enforcement:** MANDATORY at EVERY wave/phase completion  
+**Consolidates:** R104 (workspace location), R336 (enforcement timing)
 
 ## Rule Statement
 
-EVERY wave completion REQUIRES an integration branch BEFORE starting the next wave. NO EXCEPTIONS.
+**EVERY wave MUST be fully integrated and its integration branch created BEFORE the next wave can start. The next wave's efforts MUST use the previous wave's integration branch as their base. This creates TRUE trunk-based development.**
+
+### 🔴 ABSOLUTE REQUIREMENTS 🔴
+1. Wave N must complete ALL reviews before integration
+2. Wave N integration branch MUST be created before Wave N+1 starts
+3. Wave N+1 efforts MUST use Wave N integration as base branch
+4. Integration branches are created in TARGET repository, NOT software-factory
+5. NO EXCEPTIONS - this is the foundation of incremental development
+
+## Target Repository Configuration (from R104)
+
+### CRITICAL: Integration Location
+**Integration branches are ALWAYS created in the TARGET repository being developed, NOT in the software-factory repository!**
+
+```yaml
+# Read from: $CLAUDE_PROJECT_DIR/target-repo-config.yaml
+repository_path: /path/to/target/repo  # Absolute path
+repository_name: target-project-name
+default_branch: main  # Base for integrations
+```
+
+### Workspace Structure Requirements
+```bash
+# Wave Integration Workspace
+$CLAUDE_PROJECT_DIR/efforts/phase{X}/wave{Y}/integration-workspace/
+└── [target-repo-name]/  # Clone of TARGET repository
+    └── phase{X}-wave{Y}-integration  # Branch created HERE
+
+# Phase Integration Workspace  
+$CLAUDE_PROJECT_DIR/efforts/phase{X}/phase-integration/
+└── [target-repo-name]/  # Fresh clone of TARGET repository
+    └── phase{X}-integration  # Branch created HERE
+```
 
 ## Integration Requirements
 
@@ -20,14 +53,54 @@ phase1/wave2/effort1 ─┐                             │
 phase1/wave2/effort2 ─┼─→ phase1/wave2-integration ─┘
 ```
 
+### Mandatory Integration Flow (SUPREME LAW)
+
+```
+Wave N efforts complete
+    ↓
+WAVE_COMPLETE (verify all reviews passed)
+    ↓
+INTEGRATION (setup infrastructure)
+    ↓
+SPAWN_CODE_REVIEWER_MERGE_PLAN (create merge plan)
+    ↓
+SPAWN_INTEGRATION_AGENT (execute merges)
+    ↓
+MONITORING_INTEGRATION (verify success)
+    ↓
+WAVE_REVIEW (architect reviews integrated wave)
+    ↓
+WAVE_START (Wave N+1 MUST use wave-N-integration as base!)
+```
+
 ### Mandatory Integration Points
 
-| Completion Event | Required Integration Branch | Before Proceeding To |
-|-----------------|----------------------------|---------------------|
-| Wave Complete | phase{N}/wave{M}-integration | Next Wave |
-| Phase Complete | phase{N}-integration | Next Phase |
-| All Efforts in Wave | wave-integration | Wave Review |
-| All Waves in Phase | phase-integration | Phase Review |
+| Completion Event | Required Integration Branch | Before Proceeding To | Base for Next |
+|-----------------|----------------------------|---------------------|---------------|
+| Wave N Complete | phase{X}-wave{N}-integration | Wave N+1 | Wave N+1 efforts |
+| Phase X Complete | phase{X}-integration | Phase X+1 | Phase X+1 Wave 1 |
+| All Efforts in Wave | wave-integration | Wave Review | Next wave planning |
+| All Waves in Phase | phase-integration | Phase Assessment | Next phase |
+
+## Why This Is CRITICAL (The Problem Without It)
+
+### Without Mandatory Wave Integration (BROKEN):
+```
+main
+  ├─→ P1W1 efforts (from main)
+  ├─→ P1W2 efforts (ALSO from main - missing W1 work!)
+  └─→ P1W3 efforts (ALSO from main - missing W1 & W2 work!)
+```
+**Result**: Massive conflicts, broken dependencies, integration nightmare
+
+### With Mandatory Wave Integration (CORRECT):
+```
+main
+  └─→ P1W1 efforts → wave1-integration
+                        └─→ P1W2 efforts → wave2-integration
+                                              └─→ P1W3 efforts
+```
+**Result**: Incremental integration, conflicts detected early, true CI/CD
 
 ## Integration Protocol
 
@@ -58,7 +131,7 @@ verify_wave_complete() {
 }
 ```
 
-### Step 2: Create Integration Branch
+### Step 2: Create Integration Branch (TARGET REPOSITORY!)
 ```bash
 create_integration_branch() {
     local phase=$1
@@ -67,9 +140,48 @@ create_integration_branch() {
     
     echo "🌿 Creating integration branch: $integration_branch"
     
-    # Create from base
-    git checkout main
-    git pull origin main
+    # CRITICAL: Work in TARGET repository, not software-factory!
+    TARGET_REPO=$(yq '.repository_path' "$CLAUDE_PROJECT_DIR/target-repo-config.yaml")
+    TARGET_NAME=$(yq '.repository_name' "$CLAUDE_PROJECT_DIR/target-repo-config.yaml")
+    
+    # Create fresh workspace
+    INTEGRATION_DIR="/efforts/phase${phase}/wave${wave}/integration-workspace"
+    rm -rf "$INTEGRATION_DIR"
+    mkdir -p "$INTEGRATION_DIR"
+    
+    # Clone TARGET repository
+    cd "$INTEGRATION_DIR"
+    git clone "$TARGET_REPO" "$TARGET_NAME"
+    cd "$TARGET_NAME"
+    
+    # Verify NOT software-factory
+    if git remote get-url origin | grep -q "software-factory"; then
+        echo "❌ CRITICAL: Wrong repository!"
+        exit 1
+    fi
+    
+    # Determine base branch per R308 + this rule
+    if [[ $phase -eq 1 && $wave -eq 1 ]]; then
+        BASE="main"
+    elif [[ $wave -eq 1 ]]; then
+        # First wave of new phase: from previous phase integration
+        PREV_PHASE=$((phase - 1))
+        BASE="phase${PREV_PHASE}-integration"
+    else
+        # SUBSEQUENT WAVES: FROM PREVIOUS WAVE INTEGRATION!
+        PREV_WAVE=$((wave - 1))
+        BASE="phase${phase}-wave${PREV_WAVE}-integration"
+    fi
+    
+    # Verify base exists (enforcement)
+    if ! git ls-remote --heads origin "$BASE" > /dev/null 2>&1; then
+        echo "🔴🔴🔴 R009 VIOLATION: Required base branch missing!"
+        echo "Cannot create Wave $wave integration without: $BASE"
+        exit 9  # R009 violation
+    fi
+    
+    git checkout "$BASE"
+    git pull origin "$BASE"
     git checkout -b "$integration_branch"
     
     # Merge each effort sequentially
@@ -192,13 +304,26 @@ post_integration_verification() {
 }
 ```
 
+## State Machine Enforcement
+
+### FORBIDDEN State Transitions:
+- ❌ `WAVE_COMPLETE` → `WAVE_START` (skips integration!)
+- ❌ `WAVE_COMPLETE` → `PLANNING` (skips integration!)
+- ❌ `WAVE_REVIEW` → `WAVE_START` without verifying integration exists
+
+### REQUIRED State Transitions:
+- ✅ `WAVE_COMPLETE` → `INTEGRATION`
+- ✅ `INTEGRATION` → `SPAWN_CODE_REVIEWER_MERGE_PLAN`
+- ✅ `MONITORING_INTEGRATION` → `WAVE_REVIEW`
+- ✅ `WAVE_REVIEW` → `WAVE_START` (only after integration verified)
+
 ## Common Violations
 
-### VIOLATION: Skipping Integration
+### VIOLATION: Skipping Integration (AUTOMATIC FAILURE)
 ```bash
 # ❌ WRONG: Starting next wave without integration
-echo "Wave 1 complete, starting Wave 2..."
-# No integration branch created
+current_state: WAVE_COMPLETE → WAVE_START  # NO! -100% FAILURE!
+# Wave 2 starting without Wave 1 integration
 ```
 
 ### VIOLATION: Partial Integration
@@ -273,6 +398,15 @@ phase2/wave1-integration
 phase2-integration
 ```
 
+## Stop Work Conditions
+
+**IMMEDIATE STOP if:**
+1. Wave > 1 starting without previous wave integration branch
+2. Efforts using main as base when integration exists
+3. WAVE_COMPLETE transitioning directly to WAVE_START
+4. Integration branch missing when wave review requested
+5. Integration happening in software-factory repo instead of target
+
 ## Grading Criteria
 
 ```python
@@ -285,7 +419,15 @@ def grade_integration_compliance(orchestrator):
     
     grade = 100
     
-    # Deductions
+    # SUPREME LAW violations
+    if skipped_wave_integration:
+        return 0  # -100% AUTOMATIC FAILURE
+    
+    # Major violations
+    if wrong_base_branch:
+        grade -= 100  # Using main instead of integration
+    
+    # Standard deductions
     if compliance_rate < 1.0:
         missing = total_waves - integration_branches
         grade -= (missing * 30)  # -30% per missing
@@ -320,9 +462,13 @@ If integration was missed:
 ```
 Every wave needs integration
 No integration, no progression
+Next wave uses previous integration
+Never in software-factory, always in target
 Test everything after merging
 Document in state, always pushing
-Integration branches are MANDATORY
+The chain of integration is sacred:
+Wave 1 → wave1-integration → Wave 2 → wave2-integration → Wave 3
+Break the chain = Break the build = FAILURE
 ```
 
 ## 🔴🔴🔴 ADDENDUM: FINAL INTEGRATION PROTOCOL (R271-R280) 🔴🔴🔴
@@ -384,4 +530,13 @@ execute_pr_plan() {
 - **Actually pushing to main: IMMEDIATE TERMINATION**
 
 ---
-**Remember:** Integration branches prevent chaos. Create them, test them, document them. But NEVER touch main - that's for humans only!
+
+## Integration with Other Rules
+
+- **R308**: Incremental branching (defines base branch logic)
+- **R282**: Phase integration protocol (phase-level integration)
+- **R327**: Mandatory re-integration after fixes
+- **R234**: Mandatory state traversal (prevents skipping states)
+- **R222**: Code review gate (ensures reviews before integration)
+
+**Remember:** Every wave stands on the shoulders of the integrated wave before it! Integration branches prevent chaos. Create them IN THE TARGET REPO, test them, document them. But NEVER touch main - that's for humans only!
