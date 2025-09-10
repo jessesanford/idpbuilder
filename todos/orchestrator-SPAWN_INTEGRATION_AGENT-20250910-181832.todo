@@ -1,0 +1,19 @@
+## Orchestrator TODO State - R322 Checkpoint
+### Timestamp: 2025-09-10T18:18:10Z
+### State: SPAWN_INTEGRATION_AGENT
+### Trigger: R322_CHECKPOINT_MERGE_PLAN_READY
+
+## Completed Tasks:
+✅ Verify WAITING_FOR_MERGE_PLAN state rules loaded (R290)
+✅ Check integration workspace for WAVE-MERGE-PLAN.md
+✅ Validate merge plan contents if found
+✅ Update state to SPAWN_INTEGRATION_AGENT (R322 checkpoint)
+✅ Save TODOs before state transition (R287)
+
+## Pending Tasks:
+- Commit state changes and display R322 checkpoint message
+
+## Context:
+- Phase 2, Wave 1 merge plan ready at ./WAVE-MERGE-PLAN.md
+- State transition requires user review per R322
+- Next action: Spawn Integration Agent after user approval

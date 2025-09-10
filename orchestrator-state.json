@@ -1,9 +1,9 @@
 {
-  "current_state": "WAITING_FOR_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "WAITING_FOR_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-10T16:08:45Z",
+  "transition_time": "2025-09-10T18:18:10Z",
   "efforts_completed": [
     "E1.1.1-kind-certificate-extraction",
     "E1.1.2-registry-tls-trust-integration",
@@ -48,7 +48,7 @@
   },
   "next_action": "Review merge plan and spawn Integration Agent to execute merges",
   "notes": "Code Reviewer has completed WAVE-MERGE-PLAN.md creation for Phase 2 Wave 1",
-  "transition_reason": "Code Reviewer spawned successfully to create merge plan",
+  "transition_reason": "R322 checkpoint - merge plan ready for user review",
   "phases_planned": 3,
   "waves_per_phase": {
     "phase1": 2,
@@ -61,5 +61,10 @@
     "repository": "https://github.com/jessesanford/idpbuilder.git",
     "language": "golang",
     "target": "idpbuilder-oci-build-push"
+  },
+  "wave_integration": {
+    "merge_plan": "./WAVE-MERGE-PLAN.md",
+    "merge_plan_created": "2025-09-10T18:18:10Z",
+    "plan_validation": "PARTIAL"
   }
 }
