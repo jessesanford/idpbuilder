@@ -1439,6 +1439,26 @@ export IDPBUILDER_KEY_FILE=/path/to/key.pem
 - Insecure mode must show clear warnings
 - All bypasses must be logged with reason
 
+## 🎬 Demo Requirements (R330)
+
+### Demo Objectives
+1. Demonstrate image push operations with progress tracking
+2. Showcase repository listing with pagination
+3. Illustrate retry logic with exponential backoff
+4. Display repository deletion capabilities
+5. Prove integration with Split-001 authentication
+
+### Demo Deliverables
+- **demo-features.sh** (executable) - Main demo script with 4 scenarios
+- **DEMO.md** (documentation) - Complete operation guide
+- **test-data/** (sample files) - Test images and configurations
+
+### Demo Scenarios Summary
+1. **Push with Progress** - Multi-layer image upload with tracking
+2. **List Repositories** - Paginated repository discovery
+3. **Retry Logic** - Network resilience demonstration
+4. **Delete Repo** - Repository cleanup operations
+
 ## 📚 References
 
 ### External Dependencies
@@ -1450,6 +1470,8 @@ export IDPBUILDER_KEY_FILE=/path/to/key.pem
 - Phase 1 Architecture Plan: `phase-plans/PHASE-1-PLAN.md`
 - Certificate Handling Guide: (to be created)
 - Security Best Practices: (to be created)
+- Demo Retrofit Plan: `DEMO-RETROFIT-PLAN.md`
+- Split-001 Integration: `../gitea-client-split-001/DEMO-RETROFIT-PLAN.md`
 
 ---
 
