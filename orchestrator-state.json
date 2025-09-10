@@ -1,9 +1,9 @@
 {
-  "current_state": "WAITING_FOR_RETROFIT_PLANS",
-  "previous_state": "RETROFIT_PLANNING",
+  "current_state": "DEMO_IMPLEMENTATION",
+  "previous_state": "WAITING_FOR_RETROFIT_PLANS",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-10T19:36:33Z",
+  "transition_time": "2025-09-10T20:12:45Z",
   "efforts_completed": [
     "E1.1.1-kind-certificate-extraction",
     "E1.1.2-registry-tls-trust-integration",
@@ -81,8 +81,18 @@
   "retrofit_context": {
     "purpose": "Add R330 demo requirements to completed efforts",
     "timestamp": "2025-09-10T19:34:06Z",
-    "phase": "WAITING_FOR_PLANS",
+    "phase": "DEMO_IMPLEMENTATION",
     "reviewers_spawned": 3,
     "spawn_time": "2025-09-10T19:36:33Z"
+  },
+  "demo_implementation": {
+    "start_time": "2025-09-10T20:12:45Z",
+    "efforts_requiring_demos": [
+      "image-builder",
+      "gitea-client",
+      "gitea-client-split-001", 
+      "gitea-client-split-002"
+    ],
+    "status": "IN_PROGRESS"
   }
 }
