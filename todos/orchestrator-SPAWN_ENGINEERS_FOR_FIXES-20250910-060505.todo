@@ -1,0 +1,18 @@
+# Orchestrator TODOs - SPAWN_ENGINEERS_FOR_FIXES State
+# Saved: 2025-09-10T06:05:05Z
+
+## Completed
+- ✅ Spawn Code Reviewer for E2.2.1-cli-commands re-review
+- ✅ Update orchestrator-state.json with review results
+
+## Next State Actions (SPAWN_ENGINEERS_FOR_FIXES)
+- [ ] Spawn SW Engineer to fix go.mod replace directives
+- [ ] Monitor fix implementation
+- [ ] Spawn Code Reviewer for re-review after fixes
+- [ ] Verify R307 compliance achieved
+
+## Review Outcome
+- Effort: E2.2.1-cli-commands
+- Status: NEEDS_FIXES
+- Main Issue: Missing go.mod replace directives for local packages
+- Report: CODE-REVIEW-REPORT-20250910-060030.md
