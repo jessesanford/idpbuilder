@@ -1,9 +1,9 @@
 {
-  "current_state": "RETROFIT_PLANNING",
-  "previous_state": "ERROR_RECOVERY",
+  "current_state": "WAITING_FOR_RETROFIT_PLANS",
+  "previous_state": "RETROFIT_PLANNING",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-10T19:34:06Z",
+  "transition_time": "2025-09-10T19:36:33Z",
   "efforts_completed": [
     "E1.1.1-kind-certificate-extraction",
     "E1.1.2-registry-tls-trust-integration",
@@ -48,7 +48,7 @@
   },
   "next_action": "Review merge plan and spawn Integration Agent to execute merges",
   "notes": "Code Reviewer has completed WAVE-MERGE-PLAN.md creation for Phase 2 Wave 1",
-  "transition_reason": "Beginning demo retrofit for Phase 1 and Phase 2 completed efforts per R330",
+  "transition_reason": "Code Reviewers spawned for demo retrofit planning",
   "phases_planned": 3,
   "waves_per_phase": {
     "phase1": 2,
@@ -81,6 +81,8 @@
   "retrofit_context": {
     "purpose": "Add R330 demo requirements to completed efforts",
     "timestamp": "2025-09-10T19:34:06Z",
-    "phase": "PLANNING"
+    "phase": "WAITING_FOR_PLANS",
+    "reviewers_spawned": 3,
+    "spawn_time": "2025-09-10T19:36:33Z"
   }
 }
