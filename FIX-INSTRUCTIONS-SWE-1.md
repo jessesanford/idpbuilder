@@ -1,69 +1,106 @@
-# Fix Instructions for SW Engineer 1 - Docker API Type Issue
+# Fix Instructions for SW Engineer - kindlogger Build Errors
 Date: 2025-09-09
 Assigned by: orchestrator/COORDINATE_BUILD_FIXES
-Priority: HIGH
+Engineer ID: SWE-1
+
+## 🚨 CRITICAL: Emit Timestamp First (R151)
+```bash
+echo "SWE-1 START TIMESTAMP: $(date +%s)"
+```
 
 ## Your Assignment
-Fix Docker API type compilation error in pkg/kind/cluster_test.go
+Fix format string errors in pkg/kind/kindlogger.go that are causing build failures.
 
 ## Working Directory
 ```bash
 cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/integration-workspace
 ```
 
-## Fix Plan Reference
-See: FIX-PLAN-BUILD-FAILURES.md Error 1 (lines 23-100)
-
-## Specific Tasks
-1. Add container package import to pkg/kind/cluster_test.go
-2. Update ContainerList method signature to use container.ListOptions
-3. Verify compilation succeeds
-4. Run tests to ensure fix is complete
-
-## Code Changes Required
-
-### Change 1: Add container import
-**File**: pkg/kind/cluster_test.go  
-**Location**: Import section (lines 3-17)  
-**Action**: Add line after types import:
-```go
-"github.com/docker/docker/api/types/container"
+## Current Build Errors
+```
+pkg/kind/kindlogger.go:26:31: non-constant format string in call to fmt.Errorf
+pkg/kind/kindlogger.go:31:31: non-constant format string in call to fmt.Errorf
 ```
 
-### Change 2: Update ContainerList signature
-**File**: pkg/kind/cluster_test.go  
-**Location**: Line 232  
-**BEFORE**: 
+## Root Cause Analysis
+The `fmt.Errorf()` function requires a constant format string as its first argument. The current code is passing dynamic strings directly, which violates Go's static analysis requirements.
+
+## Specific Fix Required
+
+### File: pkg/kind/kindlogger.go
+
+#### Fix 1: Line 26
+**Current Code:**
 ```go
-func (m *DockerClientMock) ContainerList(ctx context.Context, listOptions types.ContainerListOptions) ([]types.Container, error) {
+func (l *kindLogger) Error(message string) {
+    l.cliLogger.Error(fmt.Errorf(message), "")
+}
 ```
-**AFTER**:
+
+**Fixed Code:**
 ```go
-func (m *DockerClientMock) ContainerList(ctx context.Context, listOptions container.ListOptions) ([]types.Container, error) {
+func (l *kindLogger) Error(message string) {
+    l.cliLogger.Error(fmt.Errorf("%s", message), "")
+}
 ```
+
+#### Fix 2: Line 31
+**Current Code:**
+```go
+func (l *kindLogger) Errorf(message string, args ...interface{}) {
+    msg := fmt.Sprintf(message, args...)
+    l.cliLogger.Error(fmt.Errorf(msg), "")
+}
+```
+
+**Fixed Code:**
+```go
+func (l *kindLogger) Errorf(message string, args ...interface{}) {
+    msg := fmt.Sprintf(message, args...)
+    l.cliLogger.Error(fmt.Errorf("%s", msg), "")
+}
+```
+
+## Implementation Steps
+1. Navigate to the working directory
+2. Open pkg/kind/kindlogger.go
+3. Apply the fixes to lines 26 and 31 as shown above
+4. Verify the build succeeds
+5. Run tests to ensure no regressions
 
 ## Testing Requirements
+After applying fixes:
 ```bash
-# Step 1: Verify compilation
-go test -c ./pkg/kind
-# Should compile without "undefined: types.ContainerListOptions" error
+# 1. Verify build succeeds
+go build ./pkg/kind/...
 
-# Step 2: Run tests
-go test ./pkg/kind -v
-# Should pass or at least not fail with compilation errors
+# 2. Run tests for the package
+go test ./pkg/kind/...
 
-# Step 3: Create completion marker
-touch FIX-COMPLETE-SWE-1.marker
-echo "Docker API type fix completed at $(date)" > FIX-COMPLETE-SWE-1.marker
+# 3. Run full build to ensure no other issues
+go build ./...
 ```
 
 ## Success Indicators
-- ✅ No compilation errors for pkg/kind
-- ✅ Tests compile successfully
-- ✅ ContainerList method works with new type
-- ✅ FIX-COMPLETE-SWE-1.marker created
+- ✅ No build errors in pkg/kind/kindlogger.go
+- ✅ `go build ./pkg/kind/...` succeeds
+- ✅ `go test ./pkg/kind/...` passes
+- ✅ Full project builds without errors
 
-## Important Notes
-- This is fixing existing idpbuilder test code, not our Phase 1/2 implementations
-- Docker SDK v28 reorganized types, requiring this update
-- Independent fix - can be done in parallel with other fixes
+## Completion Marker
+When all fixes are complete and verified:
+```bash
+echo "$(date): SWE-1 completed kindlogger fixes" > FIX-COMPLETE-SWE-1.marker
+```
+
+## Backport Tracking (R321)
+**CRITICAL**: Document changes for backporting:
+- Branch: project-integration
+- File Modified: pkg/kind/kindlogger.go
+- Lines Changed: 26, 31
+- Nature of Change: Format string compliance for fmt.Errorf
+
+## Notes
+- This is a simple syntax fix similar to the test format string issues
+- The fix adds an explicit format specifier "%s" to make the format string constant
+- No functional changes to the code behavior
