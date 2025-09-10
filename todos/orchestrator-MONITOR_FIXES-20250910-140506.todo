@@ -1,0 +1,5 @@
+TODOs at state transition checkpoint:
+- [COMPLETED] Monitor E2.2.1-cli-commands fix status
+- [COMPLETED] Verify fix completion for E2.2.1
+- [PENDING] Spawn Code Reviewer for re-review if fixes complete
+- [COMPLETED] Update state to SPAWN_CODE_REVIEWERS_FOR_REVIEW
