@@ -302,13 +302,102 @@ echo "🛑 Stopping - state updated to NEXT_STATE"
 - Without updating it, you repeat the same state forever
 - This is NOT optional - it's MANDATORY
 
+## 🛑🛑🛑 CRITICAL: STATE BOUNDARY ENFORCEMENT 🛑🛑🛑
+
+**ABSOLUTE REQUIREMENT - VIOLATION = -100% IMMEDIATE FAILURE**
+
+### Each State Does EXACTLY ONE TYPE of Operation:
+- **MONITOR_IMPLEMENTATION**: ONLY monitors SW Engineers implementing
+- **SPAWN_CODE_REVIEWERS_FOR_REVIEW**: ONLY spawns code reviewers (multiple OK per R151)
+- **MONITOR_REVIEWS**: ONLY monitors review progress
+- **SPAWN_ENGINEERS_FOR_FIXES**: ONLY spawns engineers for fixes (multiple OK per R151)
+- **MONITOR_FIXES**: ONLY monitors fix progress
+
+### CLARIFICATION: Parallelization vs Phase Mixing
+✅ **ALLOWED - Parallel Spawning of SAME Type (R151):**
+- Spawning 3 Code Reviewers in parallel for different efforts
+- Spawning 4 SW Engineers in parallel for independent implementations
+- All agents of same type spawned with <5s timing delta
+
+❌ **FORBIDDEN - Phase Mixing Patterns (AUTOMATIC FAILURE):**
+```
+# WRONG - Mixing different PHASES in one state
+MONITOR_IMPLEMENTATION: "Implementation complete, spawning reviewer..."
+[spawns reviewer]  # Different phase!
+"Now monitoring review..."  # Different state's work!
+[checks review results]
+"Review failed, spawning engineer for fixes..."  # Yet another phase!
+[spawns engineer]
+```
+
+❌ **FORBIDDEN - Spawning DIFFERENT Agent Types:**
+```
+# WRONG - Different agent types = different phases
+SPAWN_AGENTS: "Spawning Code Reviewer for planning..."
+[spawns Code Reviewer]
+"Now spawning SW Engineer for implementation..."  # Different type!
+[spawns SW Engineer]
+```
+
+✅ **CORRECT - One Phase, One Type, One Stop:**
+```
+# RIGHT - Each state does ONE TYPE of operation then STOPS
+SPAWN_CODE_REVIEWERS_FOR_REVIEW: "Spawning 3 reviewers in parallel per R151"
+[spawns Code Reviewer 1 for effort A]
+[spawns Code Reviewer 2 for effort B]  # Same type, allowed!
+[spawns Code Reviewer 3 for effort C]  # Same type, allowed!
+[Updates state to MONITOR_REVIEWS]
+[Commits and pushes]
+"🛑 STOP - Reviewers spawned. Use /continue-orchestrating"
+[EXIT]
+```
+
+### The Review-Fix Cycle REQUIRES Multiple Stops:
+1. **MONITOR_IMPLEMENTATION** → Detect completion → STOP
+2. **SPAWN_CODE_REVIEWERS_FOR_REVIEW** → Spawn reviewers → STOP
+3. **MONITOR_REVIEWS** → Check results → STOP
+4. **SPAWN_ENGINEERS_FOR_FIXES** → Spawn fixes → STOP
+5. **MONITOR_FIXES** → Monitor progress → STOP
+6. Repeat until all reviews pass
+
+### Why Phase Separation Matters (Not Agent Count):
+- **Phase Integrity**: Each phase (planning/implementation/review) has distinct goals
+- **Context Preservation**: Each phase loads its specific rules and context
+- **Parallelization Efficiency**: Multiple same-type agents can work in parallel (R151)
+- **Clean Boundaries**: Clear separation between planning → doing → reviewing
+- **Error Recovery**: Phase failures are isolated and recoverable
+- **Grading**: Phase mixing = automatic failure, parallelization = bonus points!
+
+### Detection Code for Phase Mixing Violations:
+```bash
+# VIOLATIONS - If you find yourself typing these, STOP:
+"Now let me spawn a different type..." # Phase mixing!
+"Next I'll review what was implemented..." # Without state transition!
+"While implementation runs, I'll spawn reviewers..." # Mixing phases!
+"Let me also spawn engineers for fixes..." # Different phase!
+
+# ALLOWED - These are fine:
+"Spawning 3 Code Reviewers in parallel..." # Same type, same phase ✅
+"Spawning all parallelizable SW Engineers..." # Same type, R151 compliant ✅
+"All 4 engineers spawned with <5s delta..." # Proper parallelization ✅
+```
+
+### Key Principle: States Enforce PHASE Boundaries, Not Agent Limits
+- **One state = One phase of work**
+- **Multiple agents OK if same phase** (R151)
+- **Different phases REQUIRE state transitions**
+- **Parallelization IMPROVES efficiency when plan allows**
+
 ## 📊 GRADING CRITERIA
 
 You will be graded on:
 1. **WORKSPACE ISOLATION (20%)** - Agents in correct directories
 2. **WORKFLOW COMPLIANCE (25%)** - Proper review protocols
 3. **SIZE COMPLIANCE (20%)** - No PRs >800 lines
-4. **PARALLELIZATION (15%)** - Parallel agent spawning
+4. **PARALLELIZATION (15%)** - R151 compliant parallel spawning:
+   - Same-type agents spawned together when plan allows
+   - <5s timing delta between parallel spawns
+   - NO phase mixing (different agent types = failure)
 5. **QUALITY ASSURANCE (20%)** - Tests, reviews, persistence
 
 ## 🚀 STARTUP VERIFICATION

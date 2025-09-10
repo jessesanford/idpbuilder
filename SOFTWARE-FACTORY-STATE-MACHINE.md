@@ -4,6 +4,32 @@
 
 **RULE R206**: Agents MUST validate transitions against this file. Any state not listed here is INVALID.
 
+## 🛑🛑🛑 CRITICAL: EVERY STATE TRANSITION REQUIRES A STOP 🛑🛑🛑
+
+**FUNDAMENTAL LAW OF STATE MACHINES:**
+- Each state does ONE atomic operation (same TYPE of operation for all agents)
+- After completing that operation, the agent MUST STOP
+- State transitions are NEVER automatic
+- The orchestrator CANNOT continue through multiple states in one session
+
+**CLARIFICATION ON PARALLELIZATION (R151 COMPLIANT):**
+✅ **ALLOWED**: Spawning multiple agents of the SAME TYPE in parallel
+   - Multiple Code Reviewers for different effort plans (same phase: planning)
+   - Multiple SW Engineers for parallelizable implementations (same phase: implementation)
+   - Multiple Integration Agents for different branches (same phase: integration)
+   - All agents must be spawned with <5s timing delta per R151
+
+❌ **FORBIDDEN - PHASE MIXING (AUTOMATIC -100% FAILURE):**
+   - Spawning an agent then immediately monitoring them (different phases)
+   - Getting review results then immediately spawning fixes (planning → implementation)
+   - Spawning Code Reviewer then immediately spawning SW Engineer (different agent types)
+   - Completing one phase's work then starting next phase's work
+   - Any "flow through" behavior across phase boundaries without stops
+
+**CORRECT PATTERN:**
+✅ Enter state → Perform ONE TYPE of operation → Update state file → STOP → Wait for continuation
+✅ Multiple agents OK if same type and same phase (per R151)
+
 ## 🔴🔴🔴 SUPREME LAW R233: ALL STATES REQUIRE IMMEDIATE ACTION 🔴🔴🔴
 
 **STATES ARE VERBS, NOT DESTINATIONS!**
@@ -31,6 +57,85 @@ The orchestrator MUST STOP IMMEDIATELY after ANY spawn state to preserve context
 - All SPAWN_ARCHITECT_* and SPAWN_CODE_REVIEWER_* states
 
 See rule-library/R313-mandatory-stop-after-spawn.md for complete requirements.
+
+## ✅ PARALLELIZATION VS PHASE MIXING - CRITICAL DISTINCTION
+
+### ALLOWED PARALLEL SPAWNING PATTERNS (R151 COMPLIANT)
+
+**Example 1: Multiple Code Reviewers for Effort Planning**
+```
+STATE: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+ACTION: Spawn 3 Code Reviewers in parallel for efforts E1.1, E1.2, E1.3
+- All same agent type: Code Reviewer ✅
+- All same phase: Planning ✅
+- All same purpose: Create effort plans ✅
+- Timing: <5s delta between spawns (R151) ✅
+RESULT: ALLOWED - This is efficient parallelization
+```
+
+**Example 2: Multiple SW Engineers for Independent Implementations**
+```
+STATE: SPAWN_AGENTS
+ACTION: Spawn 4 SW Engineers for parallelizable efforts
+- All same agent type: SW Engineer ✅
+- All same phase: Implementation ✅
+- No dependencies between efforts (per plan) ✅
+- Timing: All spawned in one message (R151) ✅
+RESULT: ALLOWED - This maximizes throughput
+```
+
+**Example 3: Multiple Code Reviewers for Review Phase**
+```
+STATE: SPAWN_CODE_REVIEWERS_FOR_REVIEW
+ACTION: Spawn 3 Code Reviewers to review completed implementations
+- All same agent type: Code Reviewer ✅
+- All same phase: Review ✅
+- Each reviews different effort ✅
+RESULT: ALLOWED - Parallel review is efficient
+```
+
+### FORBIDDEN PHASE MIXING PATTERNS (AUTOMATIC FAILURE)
+
+**Violation 1: Mixing Planning and Implementation**
+```
+STATE: MONITOR_IMPLEMENTATION
+WRONG ACTION: SW Engineer completes, immediately spawn Code Reviewer for review
+- Different agent types: SW Engineer → Code Reviewer ❌
+- Different phases: Implementation → Review ❌
+- No state transition between phases ❌
+RESULT: FORBIDDEN - Must transition states between phases
+```
+
+**Violation 2: Chaining Different Operations**
+```
+STATE: SPAWN_CODE_REVIEWERS_FOR_REVIEW
+WRONG ACTION: Spawn reviewer, wait for result, spawn engineer for fixes
+- Multiple operations in one state ❌
+- Different phases without transition ❌
+- "Flow through" behavior ❌
+RESULT: FORBIDDEN - Each spawn needs its own state
+```
+
+**Violation 3: Sequential Different Agent Types**
+```
+STATE: SPAWN_AGENTS
+WRONG ACTION: Spawn Code Reviewer for planning, then SW Engineer for implementation
+- Different agent types in same state ❌
+- Different phases mixed together ❌
+- Violates state atomicity ❌
+RESULT: FORBIDDEN - Planning and implementation are separate states
+```
+
+### KEY PRINCIPLE: State Boundaries Are About PHASES, Not Parallelization
+
+**The state machine enforces PHASE SEPARATION, not agent limits:**
+- Planning states → spawn planners → stop
+- Implementation states → spawn implementers → stop
+- Review states → spawn reviewers → stop
+- Fix states → spawn fixers → stop
+- Integration states → spawn integrators → stop
+
+**Parallelization within a phase is ENCOURAGED when the plan allows it (R151).**
 
 ## 🛑🛑🛑 SUPREME LAW R322: MANDATORY CHECKPOINT BEFORE STATE TRANSITIONS 🛑🛑🛑
 
@@ -391,15 +496,26 @@ PRODUCTION_READY_VALIDATION → BUILD_VALIDATION → [FIX_BUILD_ISSUES if needed
 5. NO efforts are in FIX_ISSUES state
 6. NO efforts are BLOCKED
 
-**The Implementation-Review Flow:**
+**The Implementation-Review Flow (WITH MANDATORY STOPS PER R322):**
 1. SW Engineer completes implementation → sets implementation_status: COMPLETE
-2. **ORCHESTRATOR IN MONITOR_IMPLEMENTATION DETECTS THIS → MUST SPAWN CODE REVIEWER**
-3. Code Reviewer reviews the implementation
-4. If PASSED → effort marked complete with review_status: PASSED
-5. If FAILED → Orchestrator spawns SW Engineer to FIX_ISSUES
-6. If NEEDS_SPLIT → Code Reviewer creates split plan
-   → **ORCHESTRATOR creates split infrastructure (R204)**
-   → ORCHESTRATOR spawns SW Engineer for sequential splits
+2. **ORCHESTRATOR IN MONITOR_IMPLEMENTATION DETECTS THIS → TRANSITIONS TO SPAWN_CODE_REVIEWERS_FOR_REVIEW**
+3. **🛑 STOP per R322** - Orchestrator updates state file and exits, awaiting /continue-orchestrating
+4. **ORCHESTRATOR IN SPAWN_CODE_REVIEWERS_FOR_REVIEW** → Spawns Code Reviewers for completed implementations
+5. **🛑 STOP per R322** - Orchestrator records spawned reviewers and exits
+6. **ORCHESTRATOR IN MONITOR_REVIEWS** → Monitors Code Reviewer progress
+7. Code Reviewer completes review with one of three outcomes:
+   - If PASSED → effort marked complete with review_status: PASSED
+   - If FAILED → Orchestrator transitions to SPAWN_ENGINEERS_FOR_FIXES
+   - If NEEDS_SPLIT → Orchestrator transitions to CREATE_NEXT_SPLIT_INFRASTRUCTURE
+8. **🛑 STOP per R322** - After determining next state based on review outcome
+9. For FAILED reviews:
+   → **ORCHESTRATOR IN SPAWN_ENGINEERS_FOR_FIXES** spawns SW Engineers to fix issues
+   → **🛑 STOP per R322**
+   → **ORCHESTRATOR IN MONITOR_FIXES** monitors fix progress
+10. For NEEDS_SPLIT:
+   → **ORCHESTRATOR IN CREATE_NEXT_SPLIT_INFRASTRUCTURE** creates split infrastructure (R204)
+   → **🛑 STOP per R322**
+   → **ORCHESTRATOR IN SPAWN_AGENTS** spawns SW Engineer for next split
 
 If any review fails or cannot be run:
 1. Orchestrator spawns SW Engineer to FIX_ISSUES state
@@ -412,14 +528,30 @@ If any review fails or cannot be run:
 8. This cycle continues until ALL reviews pass
 9. Only then can transition to WAVE_COMPLETE occur
 
-**The Review-Fix Loop:**
+**The Review-Fix Loop (WITH MANDATORY R322 STOPS):**
 ```
-MONITOR_IMPLEMENTATION detects implementation COMPLETE → SPAWN_CODE_REVIEWERS_FOR_REVIEW → CODE_REVIEW
-    ↓ (if fails)
-SPAWN_ENGINEERS_FOR_FIXES → FIX_ISSUES → implementation COMPLETE
-    ↓ (detected in MONITOR_IMPLEMENTATION)
-SPAWN_CODE_REVIEWERS_FOR_REVIEW → CODE_REVIEW (re-run)
+MONITOR_IMPLEMENTATION (detects implementation COMPLETE)
+    ↓ [🛑 STOP]
+SPAWN_CODE_REVIEWERS_FOR_REVIEW (spawns reviewers)
+    ↓ [🛑 STOP]
+MONITOR_REVIEWS (monitors review progress)
+    ↓ (if review FAILED) [🛑 STOP]
+SPAWN_ENGINEERS_FOR_FIXES (spawns engineers to fix)
+    ↓ [🛑 STOP]
+MONITOR_FIXES (monitors fix progress)
+    ↓ (when fixes COMPLETE) [🛑 STOP]
+SPAWN_CODE_REVIEWERS_FOR_REVIEW (re-review fixed code)
+    ↓ [🛑 STOP]
+MONITOR_REVIEWS (monitors re-review)
+    ↓ (if PASSED)
+WAVE_COMPLETE (all reviews passed)
 ```
+
+**CRITICAL: Each [🛑 STOP] requires:**
+1. Update orchestrator-state.json with next state
+2. Commit and push state changes
+3. Exit and await /continue-orchestrating
+4. NO automatic continuation to next state
 
 ## Split Infrastructure Flow
 
