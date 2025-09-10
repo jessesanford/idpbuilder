@@ -1,9 +1,9 @@
 {
-  "current_state": "INTEGRATION",
-  "previous_state": "WAVE_COMPLETE",
+  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "previous_state": "INTEGRATION",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-10T15:21:18Z",
+  "transition_time": "2025-09-10T15:35:44Z",
   "efforts_completed": [
     "E1.1.1-kind-certificate-extraction",
     "E1.1.2-registry-tls-trust-integration",
@@ -46,7 +46,20 @@
       }
     }
   },
-  "next_action": "Set up integration infrastructure and spawn integration agent",
-  "notes": "E2.2.1 fixes completed successfully - all 3 issues addressed, 18 tests added",
-  "transition_reason": "Phase 2 Wave 1 complete - mandatory integration per R009 SUPREME LAW"
+  "next_action": "Wait for Code Reviewer to complete merge plan, then spawn Integration Agent",
+  "notes": "Integration infrastructure created, Code Reviewer spawned to create merge plan",
+  "transition_reason": "Integration infrastructure setup complete, transitioning to merge planning phase",
+  "phases_planned": 3,
+  "waves_per_phase": {
+    "phase1": 2,
+    "phase2": 2,
+    "phase3": 1
+  },
+  "efforts_in_progress": [],
+  "efforts_pending": [],
+  "project_info": {
+    "repository": "https://github.com/jessesanford/idpbuilder.git",
+    "language": "golang",
+    "target": "idpbuilder-oci-build-push"
+  }
 }

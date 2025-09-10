@@ -1,0 +1,31 @@
+# Orchestrator TODOs - State: SPAWN_CODE_REVIEWER_MERGE_PLAN
+# Saved: 2025-09-10T15:37:24Z
+# Agent: orchestrator
+# Phase: 2, Wave: 1
+
+## Completed Tasks ✅
+- [x] Read and acknowledge all 14 PRIMARY DIRECTIVE rules for INTEGRATION state
+- [x] Create R290 verification marker after reading rules
+- [x] Set up integration workspace infrastructure
+- [x] Create integration branch with proper naming (phase2/wave1/integration)
+- [x] Spawn Code Reviewer for merge plan creation
+- [x] Update state to SPAWN_CODE_REVIEWER_MERGE_PLAN
+
+## In Progress Tasks 🔄
+- [ ] Save TODOs per R287 (currently executing)
+
+## Pending Tasks ⏳
+- [ ] Commit and push state file
+
+## Next Actions
+- [ ] Wait for Code Reviewer to complete merge plan
+- [ ] Spawn Integration Agent to execute merges per plan
+- [ ] Monitor integration progress
+- [ ] Handle any integration issues per R321
+
+## Integration Details
+- Integration Directory: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo
+- Integration Branch: phase2/wave1/integration
+- Merge Plan Location: WAVE-MERGE-PLAN.md (created by Code Reviewer)
+- Efforts to Merge: image-builder, gitea-client-split-001, gitea-client-split-002
+- Excluded (deprecated): gitea-client (per R296)
