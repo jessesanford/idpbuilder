@@ -1,0 +1,65 @@
+{
+  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "previous_state": "INTEGRATION",
+  "current_phase": 2,
+  "current_wave": 1,
+  "transition_time": "2025-09-10T15:35:44Z",
+  "efforts_completed": [
+    "E1.1.1-kind-certificate-extraction",
+    "E1.1.2-registry-tls-trust-integration",
+    "E1.2.1-certificate-validation-pipeline",
+    "E1.2.2-fallback-strategies",
+    "E2.1.1-image-builder",
+    "E2.1.2-gitea-client"
+  ],
+  "split_tracking": {
+    "gitea-client": {
+      "split_count": 2,
+      "splits": [
+        {
+          "split_id": "001",
+          "status": "completed",
+          "lines": 650,
+          "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001"
+        },
+        {
+          "split_id": "002",
+          "status": "completed",
+          "lines": 450,
+          "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002"
+        }
+      ]
+    }
+  },
+  "phase_status": {
+    "phase1": {
+      "status": "COMPLETE",
+      "waves": {
+        "wave1": "COMPLETE",
+        "wave2": "COMPLETE"
+      }
+    },
+    "phase2": {
+      "status": "IN_PROGRESS",
+      "waves": {
+        "wave1": "COMPLETE"
+      }
+    }
+  },
+  "next_action": "Wait for Code Reviewer to complete merge plan, then spawn Integration Agent",
+  "notes": "Integration infrastructure created, Code Reviewer spawned to create merge plan",
+  "transition_reason": "Integration infrastructure setup complete, transitioning to merge planning phase",
+  "phases_planned": 3,
+  "waves_per_phase": {
+    "phase1": 2,
+    "phase2": 2,
+    "phase3": 1
+  },
+  "efforts_in_progress": [],
+  "efforts_pending": [],
+  "project_info": {
+    "repository": "https://github.com/jessesanford/idpbuilder.git",
+    "language": "golang",
+    "target": "idpbuilder-oci-build-push"
+  }
+}
