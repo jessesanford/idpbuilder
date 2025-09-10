@@ -1,9 +1,9 @@
 {
-  "current_state": "MONITOR_DEMO_IMPLEMENTATION",
-  "previous_state": "DEMO_IMPLEMENTATION",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "MONITOR_DEMO_IMPLEMENTATION",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-10T20:14:10Z",
+  "transition_time": "2025-09-10T21:22:55Z",
   "efforts_completed": [
     "E1.1.1-kind-certificate-extraction",
     "E1.1.2-registry-tls-trust-integration",
@@ -90,12 +90,17 @@
     "efforts_requiring_demos": [
       "image-builder",
       "gitea-client",
-      "gitea-client-split-001", 
+      "gitea-client-split-001",
       "gitea-client-split-002"
     ],
     "status": "IN_PROGRESS",
     "engineers_spawned": 4,
     "spawn_time": "2025-09-10T20:14:00Z",
     "parallel_spawn_compliance": "R151_COMPLIANT"
+  },
+  "error_recovery": {
+    "trigger": "R291_DEMO_GATE_FAILURE",
+    "reason": "Demo implementations not completed - no demo-features.sh files found in any effort",
+    "timestamp": "2025-09-10T21:22:55Z"
   }
 }
