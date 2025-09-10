@@ -1,10 +1,10 @@
 {
-  "current_state": "WAVE_START",
-  "previous_state": "WAVE_COMPLETE",
+  "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+  "previous_state": "WAVE_START",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-10T04:52:38Z",
-  "efforts_in_progress": [],
+  "transition_time": "2025-09-10T04:57:00Z",
+  "efforts_in_progress": ["E2.2.1-cli-commands"],
   "efforts_completed": [
     "E1.1.1-kind-certificate-extraction",
     "E1.1.2-registry-tls-trust-integration",
@@ -48,7 +48,7 @@
       }
     }
   },
-  "next_action": "Set up Wave 2 infrastructure and implement CLI commands",
-  "notes": "Phase 2 Wave 1 complete. Ready to implement Wave 2 (E2.2.1-cli-commands) for CLI integration.",
-  "transition_reason": "Phase 2 Wave 1 complete, starting Wave 2 (E2.2.1-cli-commands)"
+  "next_action": "Spawn Code Reviewer to create effort plan for E2.2.1-cli-commands",
+  "notes": "Wave 2 infrastructure created. Need Code Reviewer to create effort plan before implementation.",
+  "transition_reason": "No effort plan exists for E2.2.1, spawning Code Reviewer for planning"
 }
