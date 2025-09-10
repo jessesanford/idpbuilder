@@ -101,6 +101,17 @@
   "error_recovery": {
     "trigger": "R291_DEMO_GATE_FAILURE",
     "reason": "Demo implementations not completed - no demo-features.sh files found in any effort",
-    "timestamp": "2025-09-10T21:22:55Z"
+    "timestamp": "2025-09-10T21:22:55Z",
+    "action": "Spawned 4 SW Engineers for demo implementation recovery",
+    "engineers_spawned": 4,
+    "spawn_time": "2025-09-10T21:25:51Z",
+    "recovery_status": "IN_PROGRESS",
+    "instruction_files": [
+      "DEMO-RECOVERY-INSTRUCTIONS-image-builder.md",
+      "DEMO-RECOVERY-INSTRUCTIONS-gitea-client.md",
+      "DEMO-RECOVERY-INSTRUCTIONS-gitea-client-split-001.md",
+      "DEMO-RECOVERY-INSTRUCTIONS-gitea-client-split-002.md"
+    ],
+    "parallel_spawn_compliance": "R151_COMPLIANT"
   }
 }
