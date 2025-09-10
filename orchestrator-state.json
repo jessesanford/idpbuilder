@@ -1,9 +1,9 @@
 {
-  "current_state": "MONITORING_INTEGRATION",
-  "previous_state": "SPAWN_INTEGRATION_AGENT",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "MONITORING_INTEGRATION",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-10T18:38:54Z",
+  "transition_time": "2025-09-10T18:49:23Z",
   "efforts_completed": [
     "E1.1.1-kind-certificate-extraction",
     "E1.1.2-registry-tls-trust-integration",
@@ -48,7 +48,7 @@
   },
   "next_action": "Review merge plan and spawn Integration Agent to execute merges",
   "notes": "Code Reviewer has completed WAVE-MERGE-PLAN.md creation for Phase 2 Wave 1",
-  "transition_reason": "Integration Agent successfully completed merges (R324/R322)",
+  "transition_reason": "R291 DEMO GATE FAILURE: Demo was NOT_RUN - cannot proceed without working demo",
   "phases_planned": 3,
   "waves_per_phase": {
     "phase1": 2,
@@ -69,5 +69,13 @@
     "status": "COMPLETED",
     "integration_completed": "2025-09-10T18:39:01Z",
     "agent_report": "Integration successful - 3 efforts merged"
+  },
+  "gate_failure": {
+    "type": "R291_DEMO_GATE",
+    "details": "Demo was not run during integration",
+    "build_status": "SUCCESS",
+    "test_status": "PASSING",
+    "demo_status": "NOT_RUN",
+    "integration_status": "COMPLETE"
   }
 }
