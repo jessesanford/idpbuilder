@@ -1,10 +1,10 @@
 {
-  "current_state": "INTEGRATION",
-  "previous_state": "ERROR_RECOVERY",
+  "current_state": "WAVE_REVIEW",
+  "previous_state": "INTEGRATION",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-11T23:16:01Z",
-  "transition_reason": "Error recovery complete - all fixes applied to effort branches",
+  "transition_time": "2025-09-11T23:35:21Z",
+  "transition_reason": "Wave 2 integration complete, ready for architect review",
   "wave_2_implementation_status": "COMPLETE",
   "integration_infrastructure": {
     "type": "wave",
@@ -191,7 +191,7 @@
     "language": "golang",
     "target": "idpbuilder"
   },
-  "next_action": "Spawn architect for wave review per R258",
+  "next_action": "Spawn architect to create mandatory wave review report per R258",
   "notes": "Wave 2 integration complete. All effort branches successfully merged. Build and tests passing. Ready for architect review.",
   "agents_spawned": [
     {
