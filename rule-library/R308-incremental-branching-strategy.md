@@ -137,6 +137,126 @@ Create phase1-integration (merge all P1 waves)
 P2W1 efforts START from phase1-integration
 ```
 
+## Serial/Dependent Efforts (Sequential Chaining)
+
+**🔴🔴🔴 CRITICAL: Dependent efforts MUST chain sequentially like splits! 🔴🔴🔴**
+
+### The Serial Effort Principle:
+
+When efforts within a wave have dependencies (as determined by R219 and R053):
+- **DEPENDENT EFFORTS CHAIN SEQUENTIALLY** from each other
+- **PARALLEL EFFORTS BRANCH IN PARALLEL** from the wave integration base
+
+### Parallelization Decision Flow:
+```
+R219 (Effort Plan) defines dependencies
+    ↓
+R053 determines serial vs parallel execution
+    ↓
+R308 enforces correct branching strategy:
+    - Parallel: All from wave integration base
+    - Serial: Chain from each other
+```
+
+### Serial/Dependent Effort Branching:
+```
+CORRECT SERIAL BRANCHING (with dependencies):
+phase2-wave1-integration
+    ├─→ effort-1: Authentication (branches from integration)
+    │       └─→ effort-2: User Profile (DEPENDS on Auth, branches from effort-1)
+    │               └─→ effort-3: Permissions (DEPENDS on Profile, branches from effort-2)
+    └─→ effort-4: Independent feature (parallel, branches from integration)
+
+CORRECT PARALLEL BRANCHING (no dependencies):
+phase2-wave2-integration
+    ├─→ effort-1: UI Theme (branches from integration)
+    ├─→ effort-2: Documentation (branches from integration)
+    └─→ effort-3: Performance (branches from integration)
+```
+
+### 🔴 WHY SERIAL CHAINING FOR DEPENDENCIES:
+1. **Code Availability**: Dependent efforts need prior effort's code
+2. **Conflict Prevention**: Sequential merging prevents dependency conflicts
+3. **Build Integrity**: Ensures dependent features compile/run correctly
+4. **Testing Continuity**: Later efforts can test with earlier features present
+
+### Implementation for Serial Efforts:
+```bash
+# Orchestrator determines effort dependencies from R219 plan
+determine_effort_base_for_dependencies() {
+    local PHASE=$1
+    local WAVE=$2
+    local EFFORT_NUM=$3
+    local EFFORT_PLAN="phase${PHASE}-wave${WAVE}-effort-plan.md"
+    
+    # Check if effort has dependencies
+    local DEPENDS_ON=$(grep -A2 "effort-${EFFORT_NUM}:" "$EFFORT_PLAN" | grep "depends_on:" | cut -d: -f2 | tr -d ' ')
+    
+    if [[ -n "$DEPENDS_ON" ]]; then
+        # This effort depends on another - branch from it
+        echo "phase${PHASE}/wave${WAVE}/${DEPENDS_ON}"
+    else
+        # No dependencies - use wave integration base
+        determine_effort_base_branch $PHASE $WAVE
+    fi
+}
+
+# Example usage for serial efforts:
+# Effort-1 (no dependencies)
+BASE=$(determine_effort_base_branch 2 2)  # Returns phase2-wave1-integration
+git clone --branch "$BASE" "$REPO" "effort-1-auth"
+cd "effort-1-auth"
+git checkout -b "phase2/wave2/authentication"
+
+# Effort-2 (depends on effort-1)
+BASE="phase2/wave2/authentication"  # From effort-1
+git clone --branch "$BASE" "$REPO" "effort-2-profile"
+cd "effort-2-profile"
+git checkout -b "phase2/wave2/user-profile"
+
+# Effort-3 (depends on effort-2)
+BASE="phase2/wave2/user-profile"  # From effort-2
+git clone --branch "$BASE" "$REPO" "effort-3-permissions"
+cd "effort-3-permissions"
+git checkout -b "phase2/wave2/permissions"
+```
+
+### Verification for Serial Dependencies:
+```bash
+verify_dependency_chain() {
+    local EFFORT_DIR=$1
+    local EXPECTED_DEPENDENCY=$2
+    
+    cd "$EFFORT_DIR"
+    
+    # Check if dependency code is present
+    if ! git log --oneline | grep -q "$EXPECTED_DEPENDENCY"; then
+        echo "❌ FATAL: Missing dependency code from $EXPECTED_DEPENDENCY"
+        echo "This effort must be based on its dependency!"
+        exit 1
+    fi
+    
+    echo "✅ Dependency chain verified: includes $EXPECTED_DEPENDENCY"
+}
+```
+
+### Orchestrator Decision Logic:
+```bash
+# Read effort plan to determine parallelization
+for effort in $(jq -r '.efforts_in_wave[]' orchestrator-state.json); do
+    # Check R219 effort plan for dependencies
+    if effort_has_dependencies "$effort"; then
+        echo "📌 Serial execution required for $effort"
+        # Branch from previous effort
+        spawn_agent_serial "$effort"
+    else
+        echo "📌 Parallel execution allowed for $effort"
+        # Branch from wave integration base
+        spawn_agent_parallel "$effort"
+    fi
+done
+```
+
 ## Split Branching (Sequential Chaining - MANDATORY)
 
 **🔴🔴🔴 CRITICAL: Splits MUST chain sequentially! 🔴🔴🔴**
@@ -280,20 +400,51 @@ fi
 
 ## Examples
 
-### ✅ CORRECT: Phase 2, Wave 2 Effort
+### ✅ CORRECT: Parallel Efforts (No Dependencies)
 ```bash
-# Determine base (will return phase2-wave1-integration)
-BASE=$(determine_effort_base_branch 2 2)
+# All efforts branch from the same wave integration base
+BASE=$(determine_effort_base_branch 2 2)  # Returns phase2-wave1-integration
 
-# Clone from integration
-git clone --branch "$BASE" "$REPO" "efforts/phase2/wave2/new-feature"
+# Effort 1: UI Theme
+git clone --branch "$BASE" "$REPO" "efforts/phase2/wave2/ui-theme"
+cd "efforts/phase2/wave2/ui-theme"
+git checkout -b "phase2/wave2/ui-theme"
 
-# Create effort branch
-cd "efforts/phase2/wave2/new-feature"
-git checkout -b "phase2/wave2/new-feature"
+# Effort 2: Documentation (parallel, same base)
+git clone --branch "$BASE" "$REPO" "efforts/phase2/wave2/documentation"
+cd "efforts/phase2/wave2/documentation"
+git checkout -b "phase2/wave2/documentation"
 
-# Verify includes Wave 1 work
-git log --oneline | grep "wave1" || echo "⚠️ Missing wave1 commits!"
+# Effort 3: Performance (parallel, same base)
+git clone --branch "$BASE" "$REPO" "efforts/phase2/wave2/performance"
+cd "efforts/phase2/wave2/performance"
+git checkout -b "phase2/wave2/performance"
+```
+
+### ✅ CORRECT: Serial Efforts (With Dependencies)
+```bash
+# Effort 1: Authentication (no dependencies, uses wave base)
+BASE=$(determine_effort_base_branch 2 2)  # Returns phase2-wave1-integration
+git clone --branch "$BASE" "$REPO" "efforts/phase2/wave2/authentication"
+cd "efforts/phase2/wave2/authentication"
+git checkout -b "phase2/wave2/authentication"
+# ... complete authentication implementation ...
+
+# Effort 2: User Profile (depends on authentication)
+BASE="phase2/wave2/authentication"  # From effort-1, NOT wave integration
+git clone --branch "$BASE" "$REPO" "efforts/phase2/wave2/user-profile"
+cd "efforts/phase2/wave2/user-profile"
+git checkout -b "phase2/wave2/user-profile"
+# Verify includes authentication code
+git log --oneline | grep "authentication" || echo "❌ Missing dependency!"
+
+# Effort 3: Permissions (depends on user-profile)
+BASE="phase2/wave2/user-profile"  # From effort-2, NOT wave integration
+git clone --branch "$BASE" "$REPO" "efforts/phase2/wave2/permissions"
+cd "efforts/phase2/wave2/permissions"
+git checkout -b "phase2/wave2/permissions"
+# Verify includes both auth and profile code
+git log --oneline | grep "profile" || echo "❌ Missing dependency!"
 ```
 
 ### ❌ WRONG: Always Using Main
@@ -366,6 +517,8 @@ main (Phase 1 start)
 - **R034**: Integration requirements (creates R308 bases)
 - **R302**: Split tracking (sequential within incremental)
 - **R304**: Line counting (counts from R308 base)
+- **R219**: Dependency-Aware Effort Planning (determines serial vs parallel)
+- **R053**: Parallelization Decisions (decides execution strategy)
 
 ## Stop Work Conditions
 
