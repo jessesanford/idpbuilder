@@ -1,10 +1,10 @@
 {
-  "current_state": "INTEGRATION_CODE_REVIEW",
-  "previous_state": "INTEGRATION_COMPLETE",
+  "current_state": "INTEGRATION",
+  "previous_state": "INTEGRATION_CODE_REVIEW",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-11T15:30:00Z",
-  "transition_reason": "P1W2 integration complete, ready for code review of integrated branch",
+  "transition_time": "2025-09-11T20:11:00Z",
+  "transition_reason": "Code Reviewer found no integration exists - must perform actual integration first",
   "integration_required": true,
   "efforts_completed": [
     {
@@ -207,7 +207,7 @@
       }
     }
   },
-  "next_action": "Setup Phase 1 Wave 2 integration infrastructure, then spawn Code Reviewer for merge planning, then Integration Agent for execution",
+  "next_action": "Setup Phase 1 Wave 2 integration infrastructure and spawn Integration Agent",
   "notes": "Phase 1 Wave 2 complete. All efforts rebased on phase1/wave1/integration. Cert-validation splits follow proper sequential dependencies. Fallback-strategies parallelizable with cert-validation. Ready for integration.",
   "phases_planned": 3,
   "waves_per_phase": {
@@ -346,7 +346,7 @@
   },
   "integration_planning": {
     "phase1_wave2": {
-      "status": "COMPLETED",
+      "status": "READY",
       "base_branch": "phase1/wave1/integration",
       "target_branch": "phase1/wave2/integration",
       "efforts_to_integrate": [
@@ -387,12 +387,12 @@
       ]
     }
   },
-  "integration_status": "completed",
-  "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+  "integration_status": "pending",
+  "integration_branch": null,
   "integration_code_review": {
-    "status": "PENDING",
+    "status": "not_started",
     "branch_to_review": "idpbuilder-oci-build-push/phase1/wave2/integration",
     "requested_at": "2025-09-11T15:30:00Z",
-    "note": "Integration branch needs code review before proceeding to architect wave review"
+    "note": "Integration must be performed before code review"
   }
 }
