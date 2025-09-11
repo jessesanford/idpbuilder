@@ -6,6 +6,41 @@
   "transition_time": "2025-09-11T01:35:11Z",
   "efforts_completed": [
     {
+      "effort_id": "E1.1.1-kind-cert-extraction",
+      "phase": 1,
+      "wave": 1,
+      "branch": "phase1/wave1/effort-kind-cert-extraction",
+      "review_status": "PASSED",
+      "lines_changed": 650,
+      "working_dir": "efforts/phase1/wave1/kind-cert-extraction",
+      "completed_at": "2025-09-07T10:00:00Z"
+    },
+    {
+      "effort_id": "E1.1.2-registry-tls-trust",
+      "phase": 1,
+      "wave": 1,
+      "branch": "phase1/wave1/effort-registry-tls-trust",
+      "review_status": "PASSED",
+      "lines_changed": 700,
+      "working_dir": "efforts/phase1/wave1/registry-tls-trust",
+      "completed_at": "2025-09-07T12:00:00Z"
+    },
+    {
+      "effort_id": "E1.1.3-registry-auth-types",
+      "phase": 1,
+      "wave": 1,
+      "branch": "phase1/wave1/registry-auth-types",
+      "review_status": "SPLIT",
+      "lines_changed": 1600,
+      "working_dir": "efforts/phase1/wave1/registry-auth-types",
+      "completed_at": "2025-09-07T14:00:00Z",
+      "split_info": {
+        "was_split": true,
+        "split_count": 2,
+        "total_lines": 1600
+      }
+    },
+    {
       "effort_id": "E1.2.1-cert-validation",
       "phase": 1,
       "wave": 2,
@@ -74,6 +109,25 @@
     }
   ],
   "split_tracking": {
+    "registry-auth-types": {
+      "split_count": 2,
+      "splits": [
+        {
+          "split_id": "001",
+          "status": "completed",
+          "lines": 800,
+          "branch": "phase1/wave1/registry-auth-types-split-001",
+          "working_dir": "efforts/phase1/wave1/registry-auth-types-split-001"
+        },
+        {
+          "split_id": "002",
+          "status": "completed",
+          "lines": 800,
+          "branch": "phase1/wave1/registry-auth-types--split-002",
+          "working_dir": "efforts/phase1/wave1/registry-auth-types-split-002"
+        }
+      ]
+    },
     "cert-validation": {
       "split_count": 3,
       "splits": [
@@ -124,10 +178,10 @@
     "phase1": {
       "status": "COMPLETE",
       "waves": {
-        "wave1": "SKIPPED",
+        "wave1": "COMPLETE",
         "wave2": "COMPLETE"
       },
-      "notes": "Phase 1 wave 1 was skipped, wave 2 was implemented with cert-validation (split into 3) and fallback-strategies"
+      "notes": "Phase 1 both waves completed. Wave 1 had 3 efforts (registry-auth-types split into 2), Wave 2 had 2 efforts (cert-validation split into 3)"
     },
     "phase2": {
       "status": "IN_PROGRESS",
@@ -166,6 +220,26 @@
   },
   "waves_completed": {
     "phase1": {
+      "wave1": {
+        "status": "COMPLETE",
+        "efforts_count": 3,
+        "efforts": [
+          "E1.1.1-kind-cert-extraction",
+          "E1.1.2-registry-tls-trust",
+          "E1.1.3-registry-auth-types"
+        ],
+        "integration_pending": false,
+        "all_completed": true,
+        "all_reviews_passed": true,
+        "completed_at": "2025-09-06T21:00:00Z",
+        "splits": {
+          "registry-auth-types": {
+            "split_count": 2,
+            "all_completed": true,
+            "total_lines": 1600
+          }
+        }
+      },
       "wave2": {
         "status": "COMPLETE",
         "efforts_count": 2,
