@@ -1,0 +1,28 @@
+## Orchestrator TODOs - Phase 1 Wave 2 Integration Setup
+Timestamp: 2025-09-11 16:42:00 UTC
+Agent: orchestrator
+State: INTEGRATION (Phase 1 Wave 2)
+
+### Pending Tasks:
+1. Setup Phase 1 Wave 2 integration infrastructure
+2. Clone target repository with phase1/wave1/integration as base branch
+3. Create phase1/wave2/integration branch
+4. Spawn Code Reviewer to create Wave 2 merge plan
+5. Wait for merge plan completion
+6. Spawn Integration Agent to execute merges
+7. Monitor integration progress
+
+### Context:
+- Base Branch: phase1/wave1/integration (Wave 1 already integrated)
+- Target Branch: phase1/wave2/integration (new)
+- Efforts to Integrate:
+  * cert-validation-split-001 (207 lines)
+  * cert-validation-split-002 (800 lines) 
+  * cert-validation-split-003 (800 lines)
+  * fallback-strategies (560 lines)
+- Total: ~2367 lines
+
+### Critical Notes:
+- Wave 1 is COMPLETE - do not re-integrate
+- Wave 2 efforts are all reviewed and ready
+- Use phase1/wave1/integration as the base (NOT main)

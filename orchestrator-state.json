@@ -3,8 +3,8 @@
   "previous_state": "WAVE_REVIEW",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-11T16:35:25Z",
-  "transition_reason": "Wave 1 review approved, proceeding to integrate Wave 2",
+  "transition_time": "2025-09-11T16:40:00Z",
+  "transition_reason": "Phase 1 Wave 2 ready for integration - all efforts completed and reviewed",
   "integration_required": true,
   "efforts_completed": [
     {
@@ -207,8 +207,8 @@
       }
     }
   },
-  "next_action": "Setup Phase 1 Wave 2 integration infrastructure",
-  "notes": "Phase 1 Wave 1 integration completed at 13:08:00Z. Now requires code review before architect can perform wave review. Phase 1 Wave 2 efforts are complete and ready for their own integration after P1W1 review completes.",
+  "next_action": "IMMEDIATE: Setup Phase 1 Wave 2 integration infrastructure - DO NOT SPAWN ANY OTHER AGENTS",
+  "notes": "CRITICAL: Phase 1 Wave 2 integration starting. Wave 1 already done. Focus ONLY on Wave 2 integration.",
   "phases_planned": 3,
   "waves_per_phase": {
     "phase1": 2,
@@ -226,15 +226,12 @@
   "integration_infrastructure": {
     "type": "wave",
     "phase": 1,
-    "wave": 1,
-    "branch": "phase1/wave1/integration",
-    "base_branch": "main",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
-    "status": "integration_complete",
-    "created_at": "2025-09-11T05:33:00Z",
-    "merge_plan_ready": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
-    "integration_completed_at": "2025-09-11T13:08:00Z"
+    "wave": 2,
+    "branch": "phase1/wave2/integration",
+    "base_branch": "phase1/wave1/integration",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
+    "status": "pending_setup",
+    "note": "Wave 2 integration infrastructure needs to be created"
   },
   "last_reset": {
     "timestamp": "2025-09-11T01:13:34Z",
@@ -326,27 +323,6 @@
     ],
     "r300_compliant": true
   },
-  "current_review": {
-    "type": "WAVE_INTEGRATION",
-    "phase": 1,
-    "wave": 1,
-    "requested_at": "2025-09-11T13:44:49Z",
-    "integration_branch": "phase1/wave1/integration",
-    "status": "APPROVED",
-    "integration_directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
-    "completed_at": "2025-09-11T16:34:53Z",
-    "decision": "PROCEED_NEXT_WAVE",
-    "feedback": "Phase 1 Wave 1 architecture approved. Score: 96.7/100. Excellent patterns, security, and multi-tenancy. Ready for Wave 2.",
-    "note": "Phase 1 Wave 1 integration needs code review"
-  },
-  "wave_review": {
-    "phase": 1,
-    "wave": 1,
-    "status": "APPROVED",
-    "note": "Awaiting integration code review completion before architect wave review",
-    "report_file": "/home/vscode/workspaces/idpbuilder-oci-build-push/wave-reviews/phase1/wave1/PHASE-1-WAVE-1-REVIEW-REPORT.md",
-    "decision": "PROCEED_NEXT_WAVE"
-  },
   "integration_planning": {
     "phase1_wave2": {
       "status": "READY",
@@ -408,5 +384,56 @@
       "registry-auth-types-split-001 (800 lines)",
       "registry-auth-types-split-002 (800 lines)"
     ]
+  },
+  "CRITICAL_NEXT_ACTIONS": {
+    "1_IMMEDIATE": "Setup Phase 1 Wave 2 integration infrastructure",
+    "2_INFRASTRUCTURE": "Clone target repo from phase1/wave1/integration branch as base",
+    "3_BRANCH": "Create phase1/wave2/integration branch",
+    "4_MERGE_PLAN": "Spawn Code Reviewer to create WAVE-MERGE-PLAN.md",
+    "5_INTEGRATION": "Spawn Integration Agent to execute merges",
+    "6_VALIDATION": "Validate integrated code builds and tests pass",
+    "NOTE": "DO NOT confuse with Wave 1 - that's already integrated and reviewed"
+  },
+  "integration_context": {
+    "WHAT_TO_INTEGRATE": "Phase 1 Wave 2 efforts",
+    "BASE_BRANCH": "phase1/wave1/integration",
+    "TARGET_BRANCH": "phase1/wave2/integration",
+    "INTEGRATION_DIR": "efforts/phase1/wave2/integration-workspace",
+    "EFFORTS_TO_MERGE": [
+      "cert-validation-split-001 (207 lines)",
+      "cert-validation-split-002 (800 lines)",
+      "cert-validation-split-003 (800 lines)",
+      "fallback-strategies (560 lines)"
+    ],
+    "TOTAL_LINES": "~2367 lines",
+    "STATUS": "READY_TO_START"
+  },
+  "wave1_status": {
+    "COMPLETED": true,
+    "INTEGRATED": true,
+    "CODE_REVIEWED": true,
+    "ARCHITECT_REVIEWED": true,
+    "INTEGRATION_BRANCH": "phase1/wave1/integration",
+    "NOTE": "Wave 1 is DONE - do not re-integrate"
+  },
+  "wave2_status": {
+    "EFFORTS_COMPLETED": true,
+    "ALL_REVIEWED": true,
+    "READY_FOR_INTEGRATION": true,
+    "INTEGRATION_STARTED": false,
+    "NOTE": "Wave 2 needs integration NOW"
+  },
+  "pending_integration": {
+    "phase": 1,
+    "wave": 2,
+    "efforts": [
+      "cert-validation-split-001",
+      "cert-validation-split-002",
+      "cert-validation-split-003",
+      "fallback-strategies"
+    ],
+    "base_from": "phase1/wave1/integration",
+    "target_branch": "phase1/wave2/integration",
+    "ready": true
   }
 }
