@@ -1,10 +1,10 @@
 {
-  "current_state": "WAVE_REVIEW",
-  "previous_state": "SPAWN_ARCHITECT",
+  "current_state": "INTEGRATION_CODE_REVIEW",
+  "previous_state": "INTEGRATION_COMPLETE",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-11T15:24:39Z",
-  "transition_reason": "Architect review complete for P1W2, approved to proceed",
+  "transition_time": "2025-09-11T15:30:00Z",
+  "transition_reason": "P1W2 integration complete, ready for code review of integrated branch",
   "integration_required": true,
   "efforts_completed": [
     {
@@ -341,15 +341,12 @@
   "wave_review": {
     "phase": 1,
     "wave": 2,
-    "status": "APPROVED",
-    "decision": "PROCEED_PHASE_ASSESSMENT",
-    "score": "96.7/100",
-    "report_file": "wave-reviews/phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md",
-    "reviewed_at": "2025-09-11T15:24:39Z"
+    "status": "PENDING",
+    "note": "Awaiting integration code review completion before architect wave review"
   },
   "integration_planning": {
     "phase1_wave2": {
-      "status": "PENDING",
+      "status": "COMPLETED",
       "base_branch": "phase1/wave1/integration",
       "target_branch": "phase1/wave2/integration",
       "efforts_to_integrate": [
@@ -391,5 +388,11 @@
     }
   },
   "integration_status": "completed",
-  "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration"
+  "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+  "integration_code_review": {
+    "status": "PENDING",
+    "branch_to_review": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "requested_at": "2025-09-11T15:30:00Z",
+    "note": "Integration branch needs code review before proceeding to architect wave review"
+  }
 }
