@@ -6,6 +6,31 @@
   "transition_time": "2025-09-11T01:35:11Z",
   "efforts_completed": [
     {
+      "effort_id": "E1.2.1-cert-validation",
+      "phase": 1,
+      "wave": 2,
+      "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation",
+      "review_status": "SPLIT",
+      "lines_changed": 2400,
+      "working_dir": "efforts/phase1/wave2/cert-validation",
+      "completed_at": "2025-09-08T12:00:00Z",
+      "split_info": {
+        "was_split": true,
+        "split_count": 3,
+        "total_lines": 2400
+      }
+    },
+    {
+      "effort_id": "E1.2.2-fallback-strategies",
+      "phase": 1,
+      "wave": 2,
+      "branch": "idpbuilder-oci-build-push/phase1/wave2/fallback-strategies",
+      "review_status": "PASSED",
+      "lines_changed": 600,
+      "working_dir": "efforts/phase1/wave2/fallback-strategies",
+      "completed_at": "2025-09-08T14:00:00Z"
+    },
+    {
       "effort_id": "E2.1.1-image-builder",
       "phase": 2,
       "wave": 1,
@@ -49,6 +74,32 @@
     }
   ],
   "split_tracking": {
+    "cert-validation": {
+      "split_count": 3,
+      "splits": [
+        {
+          "split_id": "001",
+          "status": "completed",
+          "lines": 800,
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001",
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-001"
+        },
+        {
+          "split_id": "002",
+          "status": "completed",
+          "lines": 800,
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002",
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-002"
+        },
+        {
+          "split_id": "003",
+          "status": "completed",
+          "lines": 800,
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003",
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-003"
+        }
+      ]
+    },
     "gitea-client": {
       "split_count": 2,
       "splits": [
@@ -71,12 +122,12 @@
   },
   "phase_status": {
     "phase1": {
-      "status": "PLANNED",
+      "status": "COMPLETE",
       "waves": {
-        "wave1": "PLANNED",
-        "wave2": "PLANNED"
+        "wave1": "SKIPPED",
+        "wave2": "COMPLETE"
       },
-      "notes": "Phase 1 was planned but not implemented - only planning documents exist"
+      "notes": "Phase 1 wave 1 was skipped, wave 2 was implemented with cert-validation (split into 3) and fallback-strategies"
     },
     "phase2": {
       "status": "IN_PROGRESS",
@@ -114,6 +165,20 @@
     "reset_from_state": "RETROFIT_COMPLETE"
   },
   "waves_completed": {
+    "phase1": {
+      "wave2": {
+        "status": "COMPLETE",
+        "efforts_count": 2,
+        "efforts": [
+          "E1.2.1-cert-validation",
+          "E1.2.2-fallback-strategies"
+        ],
+        "integration_pending": false,
+        "all_completed": true,
+        "all_reviews_passed": true,
+        "completed_at": "2025-09-08T14:30:00Z"
+      }
+    },
     "phase2": {
       "wave1": {
         "completed_at": "2025-09-11T01:34:46Z",
