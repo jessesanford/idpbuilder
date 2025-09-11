@@ -208,7 +208,16 @@
     "language": "golang",
     "target": "idpbuilder"
   },
-  "integration_infrastructure": {},
+  "integration_infrastructure": {
+    "type": "wave",
+    "phase": 1,
+    "wave": 1,
+    "branch": "phase1/wave1/integration",
+    "base_branch": "main",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
+    "status": "infrastructure_ready",
+    "created_at": "2025-09-11T05:33:00Z"
+  },
   "last_reset": {
     "timestamp": "2025-09-11T01:13:34Z",
     "reason": "Phase 2 Wave 1 integration reset for fresh attempt",
