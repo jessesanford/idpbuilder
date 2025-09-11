@@ -1,9 +1,9 @@
 {
-  "current_state": "WAVE_COMPLETE",
-  "previous_state": "RETROFIT_COMPLETE",
+  "current_state": "INTEGRATION",
+  "previous_state": "WAVE_COMPLETE",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-11T01:13:34Z",
+  "transition_time": "2025-09-11T01:35:11Z",
   "efforts_completed": [
     "E1.1.1-kind-certificate-extraction",
     "E1.1.2-registry-tls-trust-integration",
@@ -46,9 +46,9 @@
       }
     }
   },
-  "next_action": "Create fresh integration infrastructure and spawn Code Reviewer for merge plan",
+  "next_action": "Create integration infrastructure and spawn Code Reviewer for merge plan",
   "notes": "Code Reviewer has completed WAVE-MERGE-PLAN.md creation for Phase 2 Wave 1",
-  "transition_reason": "Phase 2 Wave 1 integration reset for fresh attempt",
+  "transition_reason": "Phase 2 Wave 1 complete, all reviews passed, ready for integration per R009",
   "phases_planned": 3,
   "waves_per_phase": {
     "phase1": 2,
@@ -67,5 +67,28 @@
     "timestamp": "2025-09-11T01:13:34Z",
     "reason": "Phase 2 Wave 1 integration reset for fresh attempt",
     "reset_from_state": "RETROFIT_COMPLETE"
+  },
+  "waves_completed": {
+    "phase2": {
+      "wave1": {
+        "completed_at": "2025-09-11T01:34:46Z",
+        "status": "COMPLETE",
+        "efforts_count": 2,
+        "all_reviews_passed": true,
+        "size_compliant": true,
+        "integration_pending": true,
+        "efforts": [
+          "E2.1.1-image-builder",
+          "E2.1.2-gitea-client"
+        ],
+        "splits": {
+          "gitea-client": {
+            "split_count": 2,
+            "all_completed": true,
+            "total_lines": 1100
+          }
+        }
+      }
+    }
   }
 }
