@@ -1,0 +1,32 @@
+# Orchestrator TODO State - SPAWN_CODE_REVIEWER_MERGE_PLAN
+# Generated: 2025-09-11T22:20:26Z
+
+## ✅ Completed Tasks:
+1. Read state-specific rules for SETUP_INTEGRATION_INFRASTRUCTURE
+2. Read R308 - Incremental Branching Strategy
+3. Read R250 - Integration Isolation Requirement
+4. Read R034 - Integration Requirements
+5. Read R014 - Branch Naming Convention
+6. Read R271 - Mandatory Production-Ready Validation
+7. Read R006 - Orchestrator Never Writes Code
+8. Read R329 - Orchestrator Never Performs Merges
+9. Read R307 - Independent Branch Mergeability
+10. Read R216 - Bash Execution Syntax Protocol
+11. Read R288 - State File Update and Commit Protocol
+12. Acknowledge all rules and create R290 verification marker
+13. Create integration workspace for Phase 1 Wave 2
+14. Clone target repository into integration workspace
+15. Create integration branch for Phase 1 Wave 2
+16. Update orchestrator state to SPAWN_CODE_REVIEWER_MERGE_PLAN
+
+## 📋 Next Tasks (for SPAWN_CODE_REVIEWER_MERGE_PLAN state):
+1. Spawn Code Reviewer to create merge plan for Phase 1 Wave 2
+2. Wait for Code Reviewer to complete merge plan
+3. Transition to WAITING_FOR_MERGE_PLAN state
+
+## Integration Infrastructure Created:
+- Type: wave
+- Phase: 1, Wave: 2
+- Branch: idpbuilder-oci-build-push/phase1/wave2/integration
+- Base: idpbuilder-oci-build-push/phase1/wave1/integration (R308 compliant)
+- Directory: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace
