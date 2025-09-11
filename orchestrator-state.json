@@ -1,10 +1,10 @@
 {
-  "current_state": "ERROR_RECOVERY",
+  "current_state": "MONITORING_INTEGRATION",
   "previous_state": "SPAWN_INTEGRATION_AGENT",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-11T19:22:07Z",
-  "transition_reason": "R291 VIOLATION: Integration demos missing - all efforts lack demo-features.sh scripts",
+  "transition_time": "2025-09-11T19:49:02Z",
+  "transition_reason": "Reverting to re-run integration with correct R291 understanding (wave-level demos only)",
   "integration_required": true,
   "efforts_completed": [
     {
@@ -207,7 +207,7 @@
       }
     }
   },
-  "next_action": "CRITICAL: Must add demo scripts to all Phase 1 Wave 2 efforts before re-integration",
+  "next_action": "Monitor Integration Agent creating wave-level demo in integration workspace",
   "notes": "CRITICAL: Phase 1 Wave 2 integration starting. Wave 1 already done. Focus ONLY on Wave 2 integration.",
   "phases_planned": 3,
   "waves_per_phase": {
@@ -230,11 +230,11 @@
     "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
     "base_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
     "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
-    "status": "merge_plan_ready",
+    "status": "merges_complete_demo_pending",
     "setup_at": "2025-09-11T21:10:00Z",
     "merge_plan_created_at": "2025-09-11T21:12:00Z",
     "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md",
-    "note": "Wave 2 integration infrastructure ready, merge plan created by Code Reviewer"
+    "note": "Technical merges complete, need wave-level demo in integration workspace per R291"
   },
   "last_reset": {
     "timestamp": "2025-09-11T01:13:34Z",
@@ -438,24 +438,5 @@
     "base_from": "phase1/wave1/integration",
     "target_branch": "phase1/wave2/integration",
     "ready": true
-  },
-  "error_recovery_details": {
-    "error_type": "R291_DEMO_GATE_FAILURE",
-    "detected_at": "2025-09-11T19:22:07Z",
-    "phase": 1,
-    "wave": 2,
-    "integration_status": "TECHNICAL_SUCCESS_DEMO_FAILURE",
-    "merges_completed": true,
-    "build_passes": true,
-    "tests_pass": true,
-    "demos_exist": false,
-    "affected_efforts": [
-      "cert-validation-split-001",
-      "cert-validation-split-002",
-      "cert-validation-split-003",
-      "fallback-strategies"
-    ],
-    "required_action": "Add demo-features.sh to all effort branches",
-    "error_report": "efforts/phase1/wave2/integration-workspace/ERROR-REPORT-R291.md"
   }
 }
