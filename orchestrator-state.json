@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_INTEGRATION_AGENT",
-  "previous_state": "INTEGRATION",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "SPAWN_INTEGRATION_AGENT",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-11T21:13:00Z",
-  "transition_reason": "Integration infrastructure ready, merge plan created, ready to spawn Integration Agent",
+  "transition_time": "2025-09-11T19:22:07Z",
+  "transition_reason": "R291 VIOLATION: Integration demos missing - all efforts lack demo-features.sh scripts",
   "integration_required": true,
   "efforts_completed": [
     {
@@ -207,7 +207,7 @@
       }
     }
   },
-  "next_action": "IMMEDIATE: Setup Phase 1 Wave 2 integration infrastructure - DO NOT SPAWN ANY OTHER AGENTS",
+  "next_action": "CRITICAL: Must add demo scripts to all Phase 1 Wave 2 efforts before re-integration",
   "notes": "CRITICAL: Phase 1 Wave 2 integration starting. Wave 1 already done. Focus ONLY on Wave 2 integration.",
   "phases_planned": 3,
   "waves_per_phase": {
@@ -438,5 +438,24 @@
     "base_from": "phase1/wave1/integration",
     "target_branch": "phase1/wave2/integration",
     "ready": true
+  },
+  "error_recovery_details": {
+    "error_type": "R291_DEMO_GATE_FAILURE",
+    "detected_at": "2025-09-11T19:22:07Z",
+    "phase": 1,
+    "wave": 2,
+    "integration_status": "TECHNICAL_SUCCESS_DEMO_FAILURE",
+    "merges_completed": true,
+    "build_passes": true,
+    "tests_pass": true,
+    "demos_exist": false,
+    "affected_efforts": [
+      "cert-validation-split-001",
+      "cert-validation-split-002",
+      "cert-validation-split-003",
+      "fallback-strategies"
+    ],
+    "required_action": "Add demo-features.sh to all effort branches",
+    "error_report": "efforts/phase1/wave2/integration-workspace/ERROR-REPORT-R291.md"
   }
 }
