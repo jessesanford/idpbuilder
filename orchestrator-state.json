@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "current_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-11T04:35:45Z",
-  "transition_reason": "Integration infrastructure setup complete, ready to spawn Code Reviewer for merge plan",
+  "transition_time": "2025-09-11T05:27:31Z",
+  "transition_reason": "User requested reset to SETUP_INTEGRATION_INFRASTRUCTURE",
   "efforts_completed": [
     {
       "effort_id": "E1.1.1-kind-cert-extraction",
@@ -191,9 +191,8 @@
       }
     }
   },
-  "next_action": "Create integration infrastructure and spawn Code Reviewer for merge plan",
+  "next_action": "Set up integration infrastructure for Phase 2 Wave 1",
   "notes": "Phase 1 efforts removed as they don't exist on disk. Only Phase 2 Wave 1 efforts are present. Integration workspace exists at efforts/phase2/wave1/integration-workspace",
-  "transition_reason": "User requested transition to new SETUP_INTEGRATION_INFRASTRUCTURE state",
   "phases_planned": 3,
   "waves_per_phase": {
     "phase1": 2,
@@ -208,19 +207,7 @@
     "language": "golang",
     "target": "idpbuilder"
   },
-  "integration_infrastructure": {
-    "phase2_wave1": {
-      "type": "wave",
-      "phase": 2,
-      "wave": 1,
-      "branch": "idpbuilder-oci-build-push/phase2/wave1-integration",
-      "base_branch": "main",
-      "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace",
-      "status": "infrastructure_ready",
-      "created_at": "2025-09-11T04:35:00Z",
-      "note": "Phase1-integration branch not found, using main as base per fallback strategy"
-    }
-  },
+  "integration_infrastructure": {},
   "last_reset": {
     "timestamp": "2025-09-11T01:13:34Z",
     "reason": "Phase 2 Wave 1 integration reset for fresh attempt",
