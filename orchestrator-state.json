@@ -1,5 +1,5 @@
 {
-  "current_state": "DEMO_IMPLEMENTATION",
+  "current_state": "DEMO_VERIFICATION",
   "previous_state": "RETROFIT_PLANNING",
   "current_phase": 2,
   "current_wave": 1,
@@ -98,7 +98,15 @@
     "status": "IN_PROGRESS",
     "engineers_spawned": 4,
     "spawn_time": "2025-09-10T20:14:00Z",
-    "parallel_spawn_compliance": "R151_COMPLIANT"
+    "parallel_spawn_compliance": "R151_COMPLIANT",
+    "complete": true,
+    "completion_time": "2025-09-11T00:29:40Z",
+    "demos_created": [
+      "image-builder",
+      "gitea-client",
+      "gitea-client-split-001",
+      "gitea-client-split-002"
+    ]
   },
   "error_recovery": {
     "trigger": "R291_DEMO_GATE_FAILURE",
