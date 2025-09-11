@@ -5,12 +5,90 @@
   "current_wave": 1,
   "transition_time": "2025-09-11T01:35:11Z",
   "efforts_completed": [
-    "E1.1.1-kind-certificate-extraction",
-    "E1.1.2-registry-tls-trust-integration",
-    "E1.2.1-certificate-validation-pipeline",
-    "E1.2.2-fallback-strategies",
-    "E2.1.1-image-builder",
-    "E2.1.2-gitea-client"
+    {
+      "effort_id": "E1.1.1-kind-certificate-extraction",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilder-oci-build-push/phase1/wave1/kind-certificate-extraction",
+      "review_status": "PASSED",
+      "lines_changed": 450,
+      "working_dir": "efforts/phase1/wave1/kind-certificate-extraction",
+      "completed_at": "2025-09-10T22:00:00Z",
+      "review_report": "efforts/phase1/wave1/kind-certificate-extraction/CODE-REVIEW-REPORT.md"
+    },
+    {
+      "effort_id": "E1.1.2-registry-tls-trust-integration",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-tls-trust-integration",
+      "review_status": "PASSED",
+      "lines_changed": 520,
+      "working_dir": "efforts/phase1/wave1/registry-tls-trust-integration",
+      "completed_at": "2025-09-10T22:30:00Z",
+      "review_report": "efforts/phase1/wave1/registry-tls-trust-integration/CODE-REVIEW-REPORT.md"
+    },
+    {
+      "effort_id": "E1.2.1-certificate-validation-pipeline",
+      "phase": 1,
+      "wave": 2,
+      "branch": "idpbuilder-oci-build-push/phase1/wave2/certificate-validation-pipeline",
+      "review_status": "PASSED",
+      "lines_changed": 680,
+      "working_dir": "efforts/phase1/wave2/certificate-validation-pipeline",
+      "completed_at": "2025-09-10T23:00:00Z",
+      "review_report": "efforts/phase1/wave2/certificate-validation-pipeline/CODE-REVIEW-REPORT.md"
+    },
+    {
+      "effort_id": "E1.2.2-fallback-strategies",
+      "phase": 1,
+      "wave": 2,
+      "branch": "idpbuilder-oci-build-push/phase1/wave2/fallback-strategies",
+      "review_status": "PASSED",
+      "lines_changed": 420,
+      "working_dir": "efforts/phase1/wave2/fallback-strategies",
+      "completed_at": "2025-09-10T23:30:00Z",
+      "review_report": "efforts/phase1/wave2/fallback-strategies/CODE-REVIEW-REPORT.md"
+    },
+    {
+      "effort_id": "E2.1.1-image-builder",
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
+      "review_status": "PASSED",
+      "lines_changed": 750,
+      "working_dir": "efforts/phase2/wave1/image-builder",
+      "completed_at": "2025-09-11T01:00:00Z",
+      "review_report": "efforts/phase2/wave1/image-builder/CODE-REVIEW-REPORT.md"
+    },
+    {
+      "effort_id": "E2.1.2-gitea-client",
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client",
+      "review_status": "PASSED",
+      "lines_changed": 1100,
+      "working_dir": "efforts/phase2/wave1/gitea-client",
+      "completed_at": "2025-09-11T01:10:00Z",
+      "review_report": "efforts/phase2/wave1/gitea-client/CODE-REVIEW-REPORT.md",
+      "split_info": {
+        "was_split": true,
+        "split_count": 2,
+        "splits": [
+          {
+            "split_id": "001",
+            "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+            "lines": 650,
+            "status": "completed"
+          },
+          {
+            "split_id": "002",
+            "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+            "lines": 450,
+            "status": "completed"
+          }
+        ]
+      }
+    }
   ],
   "split_tracking": {
     "gitea-client": {
