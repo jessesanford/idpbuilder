@@ -1,0 +1,20 @@
+# Code Reviewer TODOs - Trigger: ERROR_RECOVERY_COMPLETE
+# State: ERROR_RECOVERY
+# Effort: integration-workspace
+# Timestamp: 2025-09-11T06:35:00Z
+
+## Completed Tasks
+✅ Analyzed duplicate TLSConfig definitions between registry-tls-trust and registry-auth-types-split-002
+✅ Identified field differences between the two TLSConfig structs
+✅ Determined registry-auth-types-split-002 should own consolidated TLSConfig
+✅ Analyzed duplicate test helper functions (createTestCertificate, createExpiredTestCertificate)
+✅ Created FIX-PLAN-BUILD-FAILURE.md with detailed fix instructions
+✅ Created FIX-ASSIGNMENTS.yaml with effort branch assignments  
+✅ Validated fix plan against R300 (all fixes to effort branches only)
+
+## Fix Plan Summary
+- Owner of TLSConfig: registry-auth-types-split-002
+- Phase 1: Fix split-002 by consolidating all TLSConfig fields
+- Phase 2: Fix registry-tls-trust by removing duplicate and importing from split-002
+- All fixes comply with R300 (effort branches only)
+- No integration branch modifications
