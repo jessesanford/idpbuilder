@@ -97,11 +97,11 @@ check_prerequisites() {
     if [ -z "$TARGET_REPO" ]; then
         log "${YELLOW}" "⚠️  No target repository URL provided. Attempting to detect from state file..."
         
-        # First, try to get target_repository field from state file (efforts go to TARGET repo!)
-        local target_repo=$(jq -r '.project_info.target_repository // ""' "$STATE_FILE" 2>/dev/null)
-        if [ -n "$target_repo" ] && [ "$target_repo" != "null" ]; then
-            TARGET_REPO="$target_repo"
-            log "${GREEN}" "✅ Detected TARGET repository from state file: $TARGET_REPO"
+        # First, try to get project_repository field from state file (new format)
+        local project_repo=$(jq -r '.project_info.project_repository // ""' "$STATE_FILE" 2>/dev/null)
+        if [ -n "$project_repo" ] && [ "$project_repo" != "null" ]; then
+            TARGET_REPO="$project_repo"
+            log "${GREEN}" "✅ Detected target repository from state file: $TARGET_REPO"
         else
             # Try legacy repository field
             project_repo=$(jq -r '.project_info.repository // ""' "$STATE_FILE" 2>/dev/null)
