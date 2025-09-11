@@ -137,6 +137,7 @@
   "efforts_pending": [],
   "project_info": {
     "repository": "https://github.com/jessesanford/idpbuilder.git",
+    "project_repository": "https://github.com/jessesanford/idpbuilder-oci-build-push.git",
     "language": "golang",
     "target": "idpbuilder-oci-build-push"
   },

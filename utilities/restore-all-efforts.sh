@@ -87,8 +87,16 @@ check_prerequisites() {
     if [ -z "$TARGET_REPO" ]; then
         log "${YELLOW}" "⚠️  No target repository URL provided. Attempting to detect from state file..."
         
-        # Try to extract from state file or git remote
-        if git remote -v 2>/dev/null | grep -q origin; then
+        # First try to extract project_repository from state file
+        if [ -f "$STATE_FILE" ]; then
+            TARGET_REPO=$(jq -r '.project_info.project_repository // empty' "$STATE_FILE" 2>/dev/null)
+            if [ -n "$TARGET_REPO" ]; then
+                log "${GREEN}" "✅ Detected target repository from project_repository field: $TARGET_REPO"
+            fi
+        fi
+        
+        # If not found, try to extract from git remote
+        if [ -z "$TARGET_REPO" ] && git remote -v 2>/dev/null | grep -q origin; then
             TARGET_REPO=$(git remote get-url origin 2>/dev/null | sed 's/software-factory-template.*//' | sed 's/.git$//')
             if [ -n "$TARGET_REPO" ]; then
                 # Guess the project repo name from state file
