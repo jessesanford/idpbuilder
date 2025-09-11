@@ -9,7 +9,7 @@
       "effort_id": "E1.1.1-kind-cert-extraction",
       "phase": 1,
       "wave": 1,
-      "branch": "phase1/wave1/effort-kind-cert-extraction",
+      "branch": "idpbuilder-oci-build-push/phase1/wave1/effort-kind-cert-extraction",
       "review_status": "PASSED",
       "lines_changed": 650,
       "working_dir": "efforts/phase1/wave1/kind-cert-extraction",
@@ -19,7 +19,7 @@
       "effort_id": "E1.1.2-registry-tls-trust",
       "phase": 1,
       "wave": 1,
-      "branch": "phase1/wave1/effort-registry-tls-trust",
+      "branch": "idpbuilder-oci-build-push/phase1/wave1/effort-registry-tls-trust",
       "review_status": "PASSED",
       "lines_changed": 700,
       "working_dir": "efforts/phase1/wave1/registry-tls-trust",
@@ -29,7 +29,7 @@
       "effort_id": "E1.1.3-registry-auth-types",
       "phase": 1,
       "wave": 1,
-      "branch": "phase1/wave1/registry-auth-types",
+      "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types",
       "review_status": "SPLIT",
       "lines_changed": 1600,
       "working_dir": "efforts/phase1/wave1/registry-auth-types",
@@ -116,14 +116,14 @@
           "split_id": "001",
           "status": "completed",
           "lines": 800,
-          "branch": "phase1/wave1/registry-auth-types-split-001",
+          "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001",
           "working_dir": "efforts/phase1/wave1/registry-auth-types-split-001"
         },
         {
           "split_id": "002",
           "status": "completed",
           "lines": 800,
-          "branch": "phase1/wave1/registry-auth-types--split-002",
+          "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002",
           "working_dir": "efforts/phase1/wave1/registry-auth-types-split-002"
         }
       ]
