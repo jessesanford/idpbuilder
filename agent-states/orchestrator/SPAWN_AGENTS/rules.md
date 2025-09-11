@@ -197,8 +197,23 @@ The system will check for this marker. No marker = Immediate failure.
     - File: `$CLAUDE_PROJECT_DIR/rule-library/R216-bash-execution-syntax.md`
     - Criticality: BLOCKING - Incorrect syntax causes failures
     - Summary: Use parentheses for subshells, proper variable syntax
+
+12. **🚨🚨🚨 R013** - Git Operations Protocol (BLOCKING)
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R013-git-operations.md`
+    - Criticality: BLOCKING - Improper git operations can corrupt repositories
+    - Summary: Verify state, commit atomically, push immediately
+
+13. **⚠️⚠️⚠️ R017** - Checkpoint Creation Protocol (WARNING)
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R017-checkpoint-creation.md`
+    - Criticality: WARNING - Missing checkpoints can lead to work loss
+    - Summary: Create checkpoints before transitions, spawns, and risky operations
+
+14. **🚨🚨🚨 R060** - Test Implementation Protocol (BLOCKING)
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R060-test-implementation.md`
+    - Criticality: BLOCKING - Untested code cannot be integrated
+    - Summary: All code must have tests before being marked complete
     
-12. **🚨🚨🚨 R235** - Pre-flight Verification Checklist (BLOCKING)
+15. **🚨🚨🚨 R235** - Pre-flight Verification Checklist (BLOCKING)
     - File: `$CLAUDE_PROJECT_DIR/rule-library/R235-MANDATORY-PREFLIGHT-VERIFICATION-SUPREME-LAW.md`
     - Criticality: BLOCKING - Must verify environment before spawning
     - Summary: Check directories, permissions, branches before agent spawn
@@ -491,7 +506,7 @@ STARTUP REQUIREMENTS:
 1. Print: "AGENT STARTUP: $(date '+%Y-%m-%d %H:%M:%S %Z')"
 2. Verify pwd matches WORKING_DIR
 3. Verify branch matches BRANCH
-4. Acknowledge rules R054, R007, R013, R060, R017, R152, R295
+4. Acknowledge rules R054, R007, R152, R295
 
 DELIVERABLES:
 - Implementation complete per IMPLEMENTATION-PLAN.md

@@ -1,7 +1,7 @@
 version: 2.0
-upgraded_at: 20250911-031200
+upgraded_at: 20250911-042834
 upgraded_from: /home/vscode/software-factory-template
-template_commit: a8d7d6bfbd766d6bc3b139915fd870948b779347
+template_commit: b8b88cc78c8ce92cf65229c6e7c51ec0c6af3e64
 template_branch: orchestrator-rules-to-state-rules
 template_remote: https://github.com/jessesanford/software-factory-template.git
-upgrade_date: 2025-09-11T03:12:00Z
+upgrade_date: 2025-09-11T04:28:34Z

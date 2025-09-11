@@ -42,6 +42,9 @@ Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
 
 **YOU HAVE ENTERED PHASE_COMPLETE STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
 
+### 🚨🚨🚨 R040 - Documentation Requirements
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R040-documentation-requirements.md`
+
 ## 🔴🔴🔴 R290 VERIFICATION REQUIREMENT 🔴🔴🔴
 
 **R290 ENFORCEMENT: CREATE VERIFICATION MARKER AFTER READING**
@@ -169,10 +172,6 @@ The system will check for this marker. No marker = Immediate failure.
 **Criticality**: BLOCKING - All tests must pass
 **Summary**: Run full test suite at phase level before completion
 
-### 🚨🚨🚨 R040 - Documentation Requirements
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R040-documentation-requirements.md`
-**Criticality**: BLOCKING - Complete documentation required
-**Summary**: Generate phase completion report and documentation
 
 ### 🔴🔴🔴 R322 - Mandatory Stop Before State Transitions (SUPREME LAW)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`

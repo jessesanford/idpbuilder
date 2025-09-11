@@ -218,12 +218,12 @@ The system will check for this marker. No marker = Immediate failure.
 **Summary**: ANY fix during integration MUST be immediately backported to source branches before continuing
 
 ### 🚨🚨🚨 R280 - Main Branch Protection Protocol [BLOCKING]
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R280-main-branch-protection-protocol.md`
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R280-main-branch-protection.md`
 **Criticality**: BLOCKING - Direct commits to main/master are forbidden
 **Summary**: All changes must go through PR process with proper reviews
 
-### 🚨🚨🚨 R307 - Branch Mergeability Check [BLOCKING]
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R307-branch-mergeability-check.md`
+### 🚨🚨🚨 R307 - Independent Branch Mergeability [BLOCKING]
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R307-independent-branch-mergeability.md`
 **Criticality**: BLOCKING - Must verify branches are mergeable before attempting
 **Summary**: Check for conflicts and mergeability before integration operations
 
@@ -258,6 +258,9 @@ The system will check for this marker. No marker = Immediate failure.
 - ✅ "INTEGRATION STATE: Creating integration infrastructure NOW..."
 - ✅ "Setting up integration workspace at /efforts/phase${X}/wave${Y}/integration-workspace..."
 - ✅ "Creating integration branch and spawning Code Reviewer for merge plan..."
+
+### ⚠️⚠️⚠️ RULE R020 - State Transitions
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R020-state-transitions.md`
 
 ## State Context
 You are the COORDINATOR of integration, not the executor. Your responsibilities:
@@ -368,92 +371,86 @@ check_integration_branch_purity() {
 **SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R014-branch-naming-convention.md`
 **NOTE**: Use utilities/branch-naming-helpers.sh for automatic prefix handling
 
-## Integration Infrastructure Setup
+## Integration Coordination Protocol
 
-### 🚨🚨🚨 R271 Compliance - Full Repository Checkouts Required
-**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R271-mandatory-production-ready-validation.md`
+### 🔴🔴🔴 CRITICAL: INTEGRATION NOW DELEGATES INFRASTRUCTURE CREATION 🔴🔴🔴
+**Infrastructure creation has been moved to SETUP_INTEGRATION_INFRASTRUCTURE state (R308 enforced)**
 
 ```bash
-# 🔴 CRITICAL: Start from SF instance directory
-SF_INSTANCE_DIR=$(pwd)  # Save SF instance location
+# Check if integration infrastructure exists
+check_integration_infrastructure() {
+    PHASE=$(jq '.current_phase' orchestrator-state.json)
+    WAVE=$(jq '.current_wave' orchestrator-state.json)
+    
+    echo "🔍 Checking for existing integration infrastructure..."
+    
+    # Check state file for infrastructure metadata
+    INFRA_EXISTS=$(jq '.integration_infrastructure // null' orchestrator-state.json)
+    
+    if [ "$INFRA_EXISTS" = "null" ]; then
+        echo "❌ No integration infrastructure found in state file"
+        echo "➡️ Must transition to SETUP_INTEGRATION_INFRASTRUCTURE"
+        return 1
+    fi
+    
+    # Verify infrastructure directory exists
+    INFRA_DIR=$(jq -r '.integration_infrastructure.directory' orchestrator-state.json)
+    if [ ! -d "$INFRA_DIR" ]; then
+        echo "❌ Infrastructure directory missing: $INFRA_DIR"
+        echo "➡️ Must recreate infrastructure via SETUP_INTEGRATION_INFRASTRUCTURE"
+        return 1
+    fi
+    
+    # Verify branch exists on remote
+    INFRA_BRANCH=$(jq -r '.integration_infrastructure.branch' orchestrator-state.json)
+    if ! git ls-remote --heads origin "$INFRA_BRANCH" > /dev/null 2>&1; then
+        echo "❌ Infrastructure branch not on remote: $INFRA_BRANCH"
+        echo "➡️ Must recreate infrastructure via SETUP_INTEGRATION_INFRASTRUCTURE"
+        return 1
+    fi
+    
+    # Verify R308 compliance
+    BASE_BRANCH=$(jq -r '.integration_infrastructure.base_branch' orchestrator-state.json)
+    echo "✅ Integration infrastructure exists and is valid"
+    echo "   - Directory: $INFRA_DIR"
+    echo "   - Branch: $INFRA_BRANCH"
+    echo "   - Base Branch: $BASE_BRANCH (R308 compliant)"
+    echo "   - Type: $(jq -r '.integration_infrastructure.type' orchestrator-state.json)"
+    echo "➡️ Can proceed to SPAWN_CODE_REVIEWER_MERGE_PLAN"
+    return 0
+}
 
-# 0. Source branch naming helpers and get project prefix
-source "$SF_INSTANCE_DIR/utilities/branch-naming-helpers.sh"
-PROJECT_PREFIX=$(jq '.branch_naming.project_prefix' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+# Main coordination logic
+coordinate_integration() {
+    echo "🔧 INTEGRATION STATE: Coordinating integration process"
+    echo "📋 This state determines next action but does NOT create infrastructure"
+    
+    # Load state helpers
+    source "$CLAUDE_PROJECT_DIR/utilities/state-file-update-functions.sh"
+    
+    if check_integration_infrastructure; then
+        echo "📋 Infrastructure ready, proceeding to merge planning"
+        
+        # Update state to spawn Code Reviewer
+        safe_state_transition "SPAWN_CODE_REVIEWER_MERGE_PLAN" "Infrastructure exists, need merge plan"
+        
+        echo "✅ Transitioning to SPAWN_CODE_REVIEWER_MERGE_PLAN"
+    else
+        echo "🏗️ Infrastructure needed, delegating to setup state"
+        echo "🔴 R308 will be enforced in SETUP_INTEGRATION_INFRASTRUCTURE"
+        
+        # Update state to create infrastructure
+        safe_state_transition "SETUP_INTEGRATION_INFRASTRUCTURE" "Need to create integration infrastructure with R308 compliance"
+        
+        echo "✅ Transitioning to SETUP_INTEGRATION_INFRASTRUCTURE"
+    fi
+    
+    echo "✅ Integration coordination complete"
+    echo "🛑 Stopping for state transition per R322"
+}
 
-# THINK about base branch for integration
-echo "🧠 THINKING: Integration needs clean base from main branch"
-BASE_BRANCH=$(jq '.target_repository.base_branch' "$SF_INSTANCE_DIR/target-repo-config.yaml")
-if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
-    BASE_BRANCH="main"  # Default to main
-fi
-echo "📌 Decision: Using '$BASE_BRANCH' as integration base (clean starting point)"
-
-# 1. Create integration workspace under efforts/ directory structure (relative to SF instance)
-WAVE_DIR="${CLAUDE_PROJECT_DIR}/efforts/phase${X}/wave${Y}"
-INTEGRATION_DIR="${WAVE_DIR}/integration-workspace"
-echo "Creating integration workspace at: $INTEGRATION_DIR"
-mkdir -p "$(dirname "$INTEGRATION_DIR")"
-
-# 2. SINGLE-BRANCH FULL clone of TARGET repository (R271 Supreme Law)
-echo "📦 Creating FULL integration clone from branch: $BASE_BRANCH"
-TARGET_REPO_URL=$(jq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
-
-git clone \
-    --single-branch \
-    --branch "$BASE_BRANCH" \
-    "$TARGET_REPO_URL" \
-    "$INTEGRATION_DIR"
-
-if [ $? -ne 0 ]; then
-    echo "❌ Clone failed! Check if base branch '$BASE_BRANCH' exists"
-    exit 1
-fi
-
-cd "$INTEGRATION_DIR"
-
-# Verify FULL checkout (R271 compliance check)
-if [ -f ".git/info/sparse-checkout" ]; then
-    echo "🔴🔴🔴 SUPREME LAW VIOLATION: Sparse checkout detected in integration!"
-    exit 1
-fi
-echo "✅ Full codebase available for integration from $BASE_BRANCH"
-
-# 3. NOW we're in TARGET repo - create integration branch WITH PREFIX
-INTEGRATION_BRANCH=$(get_wave_integration_branch_name "$X" "$Y")
-echo "Creating integration branch: $INTEGRATION_BRANCH"
-git checkout -b "$INTEGRATION_BRANCH"
-
-# 4. Push integration branch to establish remote tracking
-git push -u origin "$INTEGRATION_BRANCH"
-
-# 5. Spawn Code Reviewer for MERGE PLAN creation
-cat > /tmp/code-reviewer-merge-plan-task.md << 'EOF'
-Create MERGE PLAN for Phase ${X} Wave ${Y} integration.
-
-CRITICAL REQUIREMENTS:
-1. Use ONLY original effort branches - NO integration branches!
-2. Analyze branch bases to determine correct merge order
-3. Exclude 'too-large' branches, include only splits
-4. Create WAVE-MERGE-PLAN.md with exact merge instructions
-5. DO NOT execute merges - only plan them!
-
-CRITICAL LOCATION REQUIREMENT:
-- CD to integration directory FIRST: cd ${INTEGRATION_DIR}
-- Create WAVE-MERGE-PLAN.md IN the integration directory
-- Full path for the file: ${INTEGRATION_DIR}/WAVE-MERGE-PLAN.md
-
-Integration Directory: ${INTEGRATION_DIR}
-Target Branch: ${INTEGRATION_BRANCH}
-EOF
-
-# Spawn Code Reviewer
-/spawn code-reviewer WAVE_MERGE_PLANNING "$(cat /tmp/code-reviewer-merge-plan-task.md)"
-
-# 6. Transition to waiting for merge plan
-echo "✅ Integration infrastructure setup complete"
-echo "📋 Waiting for Code Reviewer to create MERGE PLAN..."
-# Transition to WAITING_FOR_MERGE_PLAN state
+# Execute coordination immediately
+coordinate_integration
 ```
 
 ## Spawning Code Reviewer for Merge Plan
@@ -675,9 +672,6 @@ integration_records:
 ```
 
 ## Phase Transition Protocol
-
-### ⚠️⚠️⚠️ RULE R020 - State Transition Requirements
-**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R020-state-transitions.md`
 
 ## Size Validation During Integration
 

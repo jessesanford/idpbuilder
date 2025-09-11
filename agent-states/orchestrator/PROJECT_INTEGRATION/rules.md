@@ -88,12 +88,12 @@ echo "$(date +%s) - Rules read and acknowledged for PROJECT_INTEGRATION" > .stat
 **Summary**: When integration issues are found, must stop and backport fixes to original branches
 
 ### 🚨🚨🚨 R280 - Main Branch Protection Protocol [BLOCKING]
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R280-main-branch-protection-protocol.md`
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R280-main-branch-protection.md`
 **Criticality**: BLOCKING - Direct commits to main/master are forbidden
 **Summary**: All changes must go through PR process with proper reviews
 
 ### 🚨🚨🚨 R307 - Branch Mergeability Check [BLOCKING]
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R307-branch-mergeability-check.md`
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R307-independent-branch-mergeability.md`
 **Criticality**: BLOCKING - Must verify branches are mergeable before attempting
 **Summary**: Check for conflicts and mergeability before integration operations
 
