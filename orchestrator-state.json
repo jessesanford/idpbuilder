@@ -1,12 +1,21 @@
 {
-  "current_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
-  "previous_state": "INTEGRATION",
+  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-11T22:10:45Z",
-  "transition_reason": "Infrastructure is null, need to create integration workspace per R308",
+  "transition_time": "2025-09-11T22:20:07Z",
+  "transition_reason": "Integration infrastructure ready, need merge plan from Code Reviewer",
   "wave_2_implementation_status": "COMPLETE",
-  "integration_infrastructure": null,
+  "integration_infrastructure": {
+    "type": "wave",
+    "phase": 1,
+    "wave": 2,
+    "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
+    "status": "infrastructure_ready",
+    "created_at": "2025-09-11T22:19:58Z"
+  },
   "efforts_completed": [
     {
       "effort_id": "E1.1.1-kind-cert-extraction",
