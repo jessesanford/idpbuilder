@@ -292,10 +292,17 @@ process_completed_efforts() {
         # Extract values directly from state file using proper jq paths
         local phase=$(jq -r ".efforts_completed[$i].phase" "$STATE_FILE")
         local wave=$(jq -r ".efforts_completed[$i].wave" "$STATE_FILE")
-        local name=$(jq -r ".efforts_completed[$i].name" "$STATE_FILE")
+        local effort_id=$(jq -r ".efforts_completed[$i].effort_id" "$STATE_FILE")
         local branch=$(jq -r ".efforts_completed[$i].branch" "$STATE_FILE")
         local base_branch=$(jq -r ".efforts_completed[$i].base_branch // \"main\"" "$STATE_FILE")
         local status=$(jq -r ".efforts_completed[$i].status" "$STATE_FILE")
+        
+        # Extract effort name from effort_id (e.g., E2.1.1-image-builder -> image-builder)
+        local name="${effort_id#*-}"  # Remove everything before and including the first dash
+        if [ "$name" == "$effort_id" ] || [ -z "$name" ] || [ "$name" == "null" ]; then
+            # If no dash found or empty, try extracting from branch name
+            name=$(echo "$branch" | sed 's|.*/||')  # Get last part after /
+        fi
         
         # Handle split efforts
         if [ "$status" == "SPLIT_DEPRECATED" ]; then
@@ -336,9 +343,16 @@ process_in_progress_efforts() {
         # Extract values directly from state file using proper jq paths
         local phase=$(jq -r ".efforts_in_progress[$i].phase" "$STATE_FILE")
         local wave=$(jq -r ".efforts_in_progress[$i].wave" "$STATE_FILE")
-        local name=$(jq -r ".efforts_in_progress[$i].name" "$STATE_FILE")
+        local effort_id=$(jq -r ".efforts_in_progress[$i].effort_id" "$STATE_FILE")
         local branch=$(jq -r ".efforts_in_progress[$i].branch" "$STATE_FILE")
         local base_branch=$(jq -r ".efforts_in_progress[$i].base_branch // \"main\"" "$STATE_FILE")
+        
+        # Extract effort name from effort_id (e.g., E2.1.1-image-builder -> image-builder)
+        local name="${effort_id#*-}"  # Remove everything before and including the first dash
+        if [ "$name" == "$effort_id" ] || [ -z "$name" ] || [ "$name" == "null" ]; then
+            # If no dash found or empty, try extracting from branch name
+            name=$(echo "$branch" | sed 's|.*/||')  # Get last part after /
+        fi
         
         local dir_path=$(create_directory_structure "$phase" "$wave" "$name")
         clone_or_update_effort "$branch" "$dir_path" "$name" "$base_branch"
@@ -370,14 +384,14 @@ process_split_tracking() {
             for j in $(seq 0 $((split_count - 1))); do
                 local split_branch=$(jq -r ".split_tracking[\"${effort_name}\"].splits[$j].branch" "$STATE_FILE")
                 local split_status=$(jq -r ".split_tracking[\"${effort_name}\"].splits[$j].status" "$STATE_FILE")
-                local split_number=$(jq -r ".split_tracking[\"${effort_name}\"].splits[$j].number" "$STATE_FILE")
+                local split_id=$(jq -r ".split_tracking[\"${effort_name}\"].splits[$j].split_id" "$STATE_FILE")
                 local base_branch=$(jq -r ".split_tracking[\"${effort_name}\"].splits[$j].base_branch // \"main\"" "$STATE_FILE")
                 
                 # Extract phase and wave from branch name
                 if [[ "$split_branch" =~ phase([0-9]+)/wave([0-9]+)/ ]]; then
                     local phase="${BASH_REMATCH[1]}"
                     local wave="${BASH_REMATCH[2]}"
-                    local split_name="${effort_name}-split-$(printf "%03d" "$split_number")"
+                    local split_name="${effort_name}-split-${split_id}"
                     
                     local dir_path=$(create_directory_structure "$phase" "$wave" "$split_name")
                     
