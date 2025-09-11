@@ -1,2 +1,2 @@
-efforts/
+# efforts/  # Commented out - efforts contain actual implementation that should be tracked
 .state_rules_*

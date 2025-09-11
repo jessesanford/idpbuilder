@@ -97,10 +97,10 @@
   "efforts_in_progress": [],
   "efforts_pending": [],
   "project_info": {
-    "repository": "https://github.com/jessesanford/idpbuilder.git",
-    "project_repository": "https://github.com/jessesanford/idpbuilder-oci-build-push.git",
+    "target_repository": "https://github.com/jessesanford/idpbuilder.git",
+    "planning_repository": "https://github.com/jessesanford/idpbuilder-oci-build-push.git",
     "language": "golang",
-    "target": "idpbuilder-oci-build-push"
+    "target": "idpbuilder"
   },
   "integration_infrastructure": {
     "phase2_wave1": {
