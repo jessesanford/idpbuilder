@@ -1,10 +1,10 @@
 {
-  "current_state": "INTEGRATION",
-  "previous_state": "WAVE_REVIEW",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "INTEGRATION",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-11T16:40:00Z",
-  "transition_reason": "Phase 1 Wave 2 ready for integration - all efforts completed and reviewed",
+  "transition_time": "2025-09-11T21:13:00Z",
+  "transition_reason": "Integration infrastructure ready, merge plan created, ready to spawn Integration Agent",
   "integration_required": true,
   "efforts_completed": [
     {
@@ -227,11 +227,14 @@
     "type": "wave",
     "phase": 1,
     "wave": 2,
-    "branch": "phase1/wave2/integration",
-    "base_branch": "phase1/wave1/integration",
+    "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
     "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
-    "status": "pending_setup",
-    "note": "Wave 2 integration infrastructure needs to be created"
+    "status": "merge_plan_ready",
+    "setup_at": "2025-09-11T21:10:00Z",
+    "merge_plan_created_at": "2025-09-11T21:12:00Z",
+    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md",
+    "note": "Wave 2 integration infrastructure ready, merge plan created by Code Reviewer"
   },
   "last_reset": {
     "timestamp": "2025-09-11T01:13:34Z",
