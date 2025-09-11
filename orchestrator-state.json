@@ -1,9 +1,10 @@
 {
-  "current_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
-  "previous_state": "INTEGRATION",
+  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-11T04:23:02Z",
+  "transition_time": "2025-09-11T04:35:45Z",
+  "transition_reason": "Integration infrastructure setup complete, ready to spawn Code Reviewer for merge plan",
   "efforts_completed": [
     {
       "effort_id": "E1.1.1-kind-cert-extraction",
@@ -209,8 +210,15 @@
   },
   "integration_infrastructure": {
     "phase2_wave1": {
-      "integration_workspace": "efforts/phase2/wave1/integration-workspace",
-      "created_at": "2025-09-11T01:35:00Z"
+      "type": "wave",
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilder-oci-build-push/phase2/wave1-integration",
+      "base_branch": "main",
+      "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace",
+      "status": "infrastructure_ready",
+      "created_at": "2025-09-11T04:35:00Z",
+      "note": "Phase1-integration branch not found, using main as base per fallback strategy"
     }
   },
   "last_reset": {
