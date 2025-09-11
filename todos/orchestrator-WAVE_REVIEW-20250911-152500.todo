@@ -1,0 +1,11 @@
+[
+  {"content": "Understand current state and next actions", "status": "completed", "activeForm": "Understanding current state and next actions"},
+  {"content": "Check Phase 1 Wave 2 integration status", "status": "completed", "activeForm": "Checking Phase 1 Wave 2 integration status"},
+  {"content": "Spawn integration agent for Phase 1 Wave 2", "status": "completed", "activeForm": "Spawning integration agent for Phase 1 Wave 2"},
+  {"content": "Monitor integration agent progress", "status": "completed", "activeForm": "Monitoring integration agent progress"},
+  {"content": "Save TODO state per R287", "status": "completed", "activeForm": "Saving TODO state per R287"},
+  {"content": "Update orchestrator state file to SPAWN_ARCHITECT", "status": "completed", "activeForm": "Updating orchestrator state file to SPAWN_ARCHITECT"},
+  {"content": "Spawn architect for wave review", "status": "completed", "activeForm": "Spawning architect for wave review"},
+  {"content": "Update state to WAVE_REVIEW", "status": "completed", "activeForm": "Updating state to WAVE_REVIEW"},
+  {"content": "Save final TODO state and commit", "status": "completed", "activeForm": "Saving final TODO state and commit"}
+]
