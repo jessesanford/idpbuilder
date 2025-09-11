@@ -1,9 +1,9 @@
 {
-  "current_state": "RETROFIT_COMPLETE",
-  "previous_state": "INTEGRATION_DEMO_TESTING",
+  "current_state": "WAVE_COMPLETE",
+  "previous_state": "RETROFIT_COMPLETE",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-10T21:49:05Z",
+  "transition_time": "2025-09-11T01:13:34Z",
   "efforts_completed": [
     "E1.1.1-kind-certificate-extraction",
     "E1.1.2-registry-tls-trust-integration",
@@ -46,9 +46,9 @@
       }
     }
   },
-  "next_action": "Review merge plan and spawn Integration Agent to execute merges",
+  "next_action": "Create fresh integration infrastructure and spawn Code Reviewer for merge plan",
   "notes": "Code Reviewer has completed WAVE-MERGE-PLAN.md creation for Phase 2 Wave 1",
-  "transition_reason": "Demo retrofit planning complete for all Phase 1 and Phase 2 efforts",
+  "transition_reason": "Phase 2 Wave 1 integration reset for fresh attempt",
   "phases_planned": 3,
   "waves_per_phase": {
     "phase1": 2,
@@ -62,74 +62,10 @@
     "language": "golang",
     "target": "idpbuilder-oci-build-push"
   },
-  "wave_integration": {
-    "merge_plan": "./WAVE-MERGE-PLAN.md",
-    "merge_plan_created": "2025-09-10T18:18:10Z",
-    "plan_validation": "PARTIAL",
-    "status": "COMPLETED",
-    "integration_completed": "2025-09-10T18:39:01Z",
-    "agent_report": "Integration successful - 3 efforts merged"
-  },
-  "gate_failure": {
-    "type": "R291_DEMO_GATE",
-    "details": "Demo was not run during integration",
-    "build_status": "SUCCESS",
-    "test_status": "PASSING",
-    "demo_status": "NOT_RUN",
-    "integration_status": "COMPLETE"
-  },
-  "retrofit_context": {
-    "purpose": "Add R330 demo requirements to completed efforts",
-    "timestamp": "2025-09-10T21:29:27Z",
-    "phase": "DEMO_IMPLEMENTATION",
-    "reviewers_spawned": 3,
-    "spawn_time": "2025-09-10T19:36:33Z",
-    "demo_plans_complete": true,
-    "completion_time": "2025-09-11T00:47:41Z",
-    "validation_complete": true,
-    "all_demos_passing": true
-  },
-  "demo_implementation": {
-    "start_time": "2025-09-11T00:17:10Z",
-    "efforts_requiring_demos": [
-      "image-builder",
-      "gitea-client",
-      "gitea-client-split-001",
-      "gitea-client-split-002"
-    ],
-    "status": "IN_PROGRESS",
-    "engineers_spawned": 4,
-    "spawn_time": "2025-09-10T20:14:00Z",
-    "parallel_spawn_compliance": "R151_COMPLIANT",
-    "complete": true,
-    "completion_time": "2025-09-11T00:29:40Z",
-    "demos_created": [
-      "image-builder",
-      "gitea-client",
-      "gitea-client-split-001",
-      "gitea-client-split-002"
-    ]
-  },
-  "error_recovery": {
-    "trigger": "R291_DEMO_GATE_FAILURE",
-    "reason": "Demo implementations not completed - no demo-features.sh files found in any effort",
-    "timestamp": "2025-09-10T21:22:55Z",
-    "action": "Spawned 4 SW Engineers for demo implementation recovery",
-    "engineers_spawned": 4,
-    "spawn_time": "2025-09-10T21:25:51Z",
-    "recovery_status": "IN_PROGRESS",
-    "instruction_files": [
-      "DEMO-RECOVERY-INSTRUCTIONS-image-builder.md",
-      "DEMO-RECOVERY-INSTRUCTIONS-gitea-client.md",
-      "DEMO-RECOVERY-INSTRUCTIONS-gitea-client-split-001.md",
-      "DEMO-RECOVERY-INSTRUCTIONS-gitea-client-split-002.md"
-    ],
-    "parallel_spawn_compliance": "R151_COMPLIANT"
-  },
-  "integration_testing": {
-    "purpose": "R291 gate verification",
-    "start_time": "2025-09-11T00:41:52Z",
-    "complete": true,
-    "all_gates_passed": true
+  "integration_infrastructure": {},
+  "last_reset": {
+    "timestamp": "2025-09-11T01:13:34Z",
+    "reason": "Phase 2 Wave 1 integration reset for fresh attempt",
+    "reset_from_state": "RETROFIT_COMPLETE"
   }
 }
