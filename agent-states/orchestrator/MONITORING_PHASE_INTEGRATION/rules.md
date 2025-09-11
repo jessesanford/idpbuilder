@@ -130,7 +130,7 @@ else
         UPDATE_STATE="IMMEDIATE_BACKPORT_REQUIRED"
         UPDATE_REASON="R321: Phase integration failed ($INTEGRATION_STATUS) - fix sources immediately"
         
-    # ALL GATES PASSED - PHASE CAN BE ASSESSED
+    # ALL GATES PASSED - PHASE NEEDS CODE REVIEW
     else
         echo "✅✅✅ ALL PHASE R291 GATES PASSED ✅✅✅"
         echo "  ✅ Phase Build: $BUILD_STATUS"
@@ -138,9 +138,9 @@ else
         echo "  ✅ Phase Demo: $DEMO_STATUS (if run)"
         echo "  ✅ Phase Integration: $INTEGRATION_STATUS"
         echo "  ✅ Conflicts: $CONFLICTS"
-        echo "Phase is ready for architect assessment!"
-        UPDATE_STATE="SPAWN_ARCHITECT_PHASE_ASSESSMENT"
-        UPDATE_REASON="All phase gates passed - ready for assessment"
+        echo "Phase integration successful - needs code review!"
+        UPDATE_STATE="PHASE_INTEGRATION_CODE_REVIEW"
+        UPDATE_REASON="All phase gates passed - need code review of integrated phase"
     fi
 fi
 

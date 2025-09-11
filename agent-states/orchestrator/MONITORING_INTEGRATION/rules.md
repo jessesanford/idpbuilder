@@ -178,8 +178,8 @@ else
         echo "  ✅ Tests: $TEST_STATUS"
         echo "  ✅ Demo: $DEMO_STATUS"
         echo "  ✅ Integration: $INTEGRATION_STATUS"
-        UPDATE_STATE="WAVE_REVIEW"
-        UPDATE_REASON="All gates passed - integration successful"
+        UPDATE_STATE="INTEGRATION_CODE_REVIEW"
+        UPDATE_REASON="All gates passed - need code review of integrated result"
     fi
 fi
 
@@ -210,8 +210,9 @@ echo "When restarted with /continue-orchestrating, will continue from $UPDATE_ST
 
 Based on integration report analysis:
 
-1. **SUCCESS Path**: `MONITORING_INTEGRATION` → `WAVE_REVIEW`
+1. **SUCCESS Path**: `MONITORING_INTEGRATION` → `INTEGRATION_CODE_REVIEW`
    - When: Integration, build, and tests all pass
+   - Need code review of integrated result
    
 2. **FAILURE Path**: `MONITORING_INTEGRATION` → `INTEGRATION_FEEDBACK_REVIEW`
    - When: Integration failed, build blocked, or tests fail

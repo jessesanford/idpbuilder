@@ -165,6 +165,43 @@ EOF
 - **Base:** main at ${commit}
 - **Location:** /efforts/phase${PHASE}/wave${WAVE}/integration-workspace
 
+## 🎬 Demo Execution Plan (R330/R291 Compliance)
+
+### Demo Requirements Overview
+Per R330 and R291, ALL integrations MUST demonstrate working functionality.
+
+### Demo Execution Sequence
+1. **After Each Effort Merge:**
+   - Run effort-specific demo script if exists
+   - Capture output in `demo-results/effort-X-demo.log`
+   - Continue even if individual demo fails (document for review)
+
+2. **After All Merges Complete:**
+   - Run integrated wave demo: `./wave-demo.sh`
+   - Verify all effort features work together
+   - Capture evidence in `demo-results/wave-integration-demo.log`
+
+3. **Demo Validation Gates (R291):**
+   - ✅ BUILD GATE: Code must compile
+   - ✅ TEST GATE: All tests must pass
+   - ✅ DEMO GATE: Demo scripts must execute
+   - ✅ ARTIFACT GATE: Build outputs must exist
+
+### Demo Files Expected
+Based on effort plans (R330), these demos should exist:
+- [ ] effort1/demo-features.sh (from effort plan)
+- [ ] effort2/demo-features.sh (from effort plan)
+- [ ] effort3/demo-features.sh (from effort plan)
+- [ ] WAVE-DEMO.md (integration demo documentation)
+- [ ] wave-demo.sh (integrated demo script)
+
+### Demo Failure Protocol
+If ANY demo fails during integration:
+1. Document failure in INTEGRATION_REPORT.md
+2. Mark Demo Status: FAILED
+3. This will trigger ERROR_RECOVERY per R291
+4. Fixes must be made in effort branches (R292)
+
 ## Branches to Merge (IN ORDER)
 
 ### 1. phase${PHASE}/wave${WAVE}/effort1-api-types
@@ -226,17 +263,42 @@ Based on branch analysis, conflicts are likely in:
 ## Validation Steps
 1. After each merge:
    ```bash
+   # Test the code
    go test ./...
+   
+   # Run effort demo if exists (R330 compliance)
+   EFFORT_NAME="[effort-name-from-merge]"
+   if [ -f "${EFFORT_NAME}/demo-features.sh" ]; then
+       echo "🎬 Running ${EFFORT_NAME} demo..."
+       bash "${EFFORT_NAME}/demo-features.sh" > "demo-results/${EFFORT_NAME}-demo.log" 2>&1
+       echo "Demo exit code: $?"
+   fi
    ```
 2. After all merges:
    ```bash
+   # Run integration tests
    make test-integration
+   
+   # Check size compliance
    $PROJECT_ROOT/tools/line-counter.sh -c $(git branch --show-current)
+   
+   # Run integrated wave demo (R291 requirement)
+   echo "🎬 Running integrated wave demo..."
+   if [ -f "./wave-demo.sh" ]; then
+       bash ./wave-demo.sh > demo-results/wave-integration-demo.log 2>&1
+       DEMO_STATUS=$?
+       echo "Wave demo status: $DEMO_STATUS"
+   else
+       echo "⚠️ WARNING: No wave-demo.sh found - creating basic demo"
+       # Integration agent should create basic demo if missing
+   fi
    ```
 3. Final validation:
    - Verify all effort features are present
    - Confirm no effort was missed
    - Check combined size is reasonable
+   - ✅ Verify all demos executed (R291)
+   - ✅ Capture demo evidence for review
 
 ## Risk Assessment
 - **Low Risk:** Sequential splits should merge cleanly

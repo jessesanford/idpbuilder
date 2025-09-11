@@ -112,8 +112,8 @@ locate_integration_workspace() {
    fi
    cd "$SF_INSTANCE_DIR"
    ```
-   - If bugs found, MUST fix them before proceeding
-   - Transition to SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING if any bugs documented
+   - If bugs found, will be detected during code review
+   - Transition to PROJECT_INTEGRATION_CODE_REVIEW for comprehensive review
 
 3. **Validate Integration Success**:
    ```bash
@@ -137,8 +137,7 @@ locate_integration_workspace() {
 
 ## Valid State Transitions
 
-- **SUCCESS + NO BUGS** → SPAWN_CODE_REVIEWER_PROJECT_VALIDATION (all phases merged, no bugs found)
-- **SUCCESS + BUGS FOUND** → SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING (R266: bugs documented, must fix before proceeding)
+- **SUCCESS** → PROJECT_INTEGRATION_CODE_REVIEW (all phases merged, need code review)
 - **FAILURE** → ERROR_RECOVERY (integration failed catastrophically)
 - **CONFLICTS** → IMMEDIATE_BACKPORT_REQUIRED (R321 enforcement)
 

@@ -271,8 +271,21 @@ CRITICAL REQUIREMENTS (R260):
 7. Run tests after each merge
 8. Document everything in work-log.md
 
+🎬 DEMO REQUIREMENTS (R291/R330):
+9. Execute effort demos after each merge (see merge plan)
+10. Run integrated wave demo after all merges
+11. Capture all demo outputs in demo-results/
+12. Document demo status in INTEGRATION_REPORT.md
+13. If ANY demo fails, mark Demo Status: FAILED (triggers ERROR_RECOVERY)
+
+R291 GATES YOU MUST ENFORCE:
+- BUILD GATE: Code must compile
+- TEST GATE: All tests must pass
+- DEMO GATE: Demo scripts must execute
+- ARTIFACT GATE: Build outputs must exist
+
 GRADING CRITERIA (R267):
-- 50% Completeness of Integration
+- 50% Completeness of Integration (including demos)
 - 50% Meticulous Tracking and Documentation
 
 Your working directory: ${INTEGRATION_DIR}
