@@ -1,10 +1,10 @@
 {
-  "current_state": "WAVE_START",
-  "previous_state": "WAVE_REVIEW",
+  "current_state": "WAVE_COMPLETE",
+  "previous_state": "WAVE_START",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-11T13:55:19Z",
-  "transition_reason": "Architect approved Wave 1 with PROCEED_NEXT_WAVE - starting Wave 2",
+  "transition_time": "2025-09-11T14:56:12Z",
+  "transition_reason": "Phase 1 Wave 2 all efforts complete, rebased, and ready for integration",
   "integration_required": true,
   "efforts_completed": [
     {
@@ -63,9 +63,13 @@
       "wave": 2,
       "branch": "idpbuilder-oci-build-push/phase1/wave2/fallback-strategies",
       "review_status": "PASSED",
-      "lines_changed": 600,
+      "lines_changed": 560,
       "working_dir": "efforts/phase1/wave2/fallback-strategies",
-      "completed_at": "2025-09-08T14:00:00Z"
+      "completed_at": "2025-09-08T14:00:00Z",
+      "base_branch": "phase1/wave1/integration",
+      "base_commit": "5435ac1",
+      "rebased_on": "2025-09-11T14:45:00Z",
+      "notes": "Parallelizable with cert-validation, rebased on P1W1 integration"
     },
     {
       "effort_id": "E2.1.1-image-builder",
@@ -132,27 +136,38 @@
     },
     "cert-validation": {
       "split_count": 3,
+      "base_integration": "phase1/wave1/integration",
+      "rebased_on": "2025-09-11T14:30:00Z",
       "splits": [
         {
           "split_id": "001",
           "status": "completed",
-          "lines": 800,
+          "lines": 207,
           "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001",
-          "working_dir": "efforts/phase1/wave2/cert-validation-split-001"
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-001",
+          "base_branch": "phase1/wave1/integration",
+          "base_commit": "5435ac1",
+          "notes": "Base split, directly on P1W1 integration"
         },
         {
           "split_id": "002",
           "status": "completed",
           "lines": 800,
           "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002",
-          "working_dir": "efforts/phase1/wave2/cert-validation-split-002"
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-002",
+          "base_branch": "cert-validation-split-001",
+          "dependency": "split-001",
+          "notes": "Sequential dependency on split-001"
         },
         {
           "split_id": "003",
           "status": "completed",
           "lines": 800,
           "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003",
-          "working_dir": "efforts/phase1/wave2/cert-validation-split-003"
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-003",
+          "base_branch": "cert-validation-split-002",
+          "dependency": "split-002",
+          "notes": "Sequential dependency on split-002"
         }
       ]
     },
@@ -192,8 +207,8 @@
       }
     }
   },
-  "next_action": "Setup Wave 2 infrastructure and spawn agents for implementation",
-  "notes": "Phase 1 efforts removed as they don't exist on disk. Only Phase 2 Wave 1 efforts are present. Integration workspace exists at efforts/phase2/wave1/integration-workspace",
+  "next_action": "Setup Phase 1 Wave 2 integration infrastructure, then spawn Code Reviewer for merge planning, then Integration Agent for execution",
+  "notes": "Phase 1 Wave 2 complete. All efforts rebased on phase1/wave1/integration. Cert-validation splits follow proper sequential dependencies. Fallback-strategies parallelizable with cert-validation. Ready for integration.",
   "phases_planned": 3,
   "waves_per_phase": {
     "phase1": 2,
@@ -255,10 +270,26 @@
           "E1.2.1-cert-validation",
           "E1.2.2-fallback-strategies"
         ],
-        "integration_pending": false,
+        "integration_pending": true,
         "all_completed": true,
         "all_reviews_passed": true,
-        "completed_at": "2025-09-08T14:30:00Z"
+        "completed_at": "2025-09-11T14:56:00Z",
+        "splits": {
+          "cert-validation": {
+            "split_count": 3,
+            "all_completed": true,
+            "total_lines": 1807,
+            "split_dependencies": "sequential (001→002→003)",
+            "base_branch": "phase1/wave1/integration"
+          }
+        },
+        "rebase_status": {
+          "completed": true,
+          "rebased_on": "phase1/wave1/integration",
+          "rebased_at": "2025-09-11T14:45:00Z",
+          "all_efforts_rebased": true
+        },
+        "ready_for_integration": true
       }
     },
     "phase2": {
@@ -311,5 +342,48 @@
     "report_file": "wave-reviews/phase1/wave1/PHASE-1-WAVE-1-REVIEW-REPORT.md",
     "decision": "PROCEED_NEXT_WAVE",
     "reviewed_at": "2025-09-11T13:54:41Z"
+  },
+  "integration_planning": {
+    "phase1_wave2": {
+      "status": "PENDING",
+      "base_branch": "phase1/wave1/integration",
+      "target_branch": "phase1/wave2/integration",
+      "efforts_to_integrate": [
+        {
+          "effort": "cert-validation-split-001",
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001",
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-001",
+          "order": 1
+        },
+        {
+          "effort": "cert-validation-split-002",
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002",
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-002",
+          "order": 2,
+          "depends_on": "cert-validation-split-001"
+        },
+        {
+          "effort": "cert-validation-split-003",
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003",
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-003",
+          "order": 3,
+          "depends_on": "cert-validation-split-002"
+        },
+        {
+          "effort": "fallback-strategies",
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/fallback-strategies",
+          "working_dir": "efforts/phase1/wave2/fallback-strategies",
+          "order": 4,
+          "parallel_with": "cert-validation"
+        }
+      ],
+      "next_steps": [
+        "1. Setup integration infrastructure (clone from phase1/wave1/integration)",
+        "2. Spawn Code Reviewer to create merge plan",
+        "3. Spawn Integration Agent to execute merges",
+        "4. Validate integrated build and tests",
+        "5. Request architect review of Wave 2 integration"
+      ]
+    }
   }
 }
