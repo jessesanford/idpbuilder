@@ -1,0 +1,22 @@
+# Orchestrator TODO State
+# State: SPAWN_INTEGRATION_AGENT
+# Created: 2025-09-11 22:34:25 UTC
+# Agent: orchestrator
+
+## Completed Tasks
+- [x] Check if merge plan exists in integration workspace
+- [x] Validate merge plan contents if it exists
+- [x] Update state file per R324 to SPAWN_INTEGRATION_AGENT
+- [x] Save TODOs and commit state per R287
+
+## In Progress Tasks
+- [ ] Display R322 checkpoint message and stop
+
+## Next Actions (After User Review)
+- [ ] Spawn Integration Agent to execute merge plan
+- [ ] Monitor integration progress
+- [ ] Handle any merge conflicts
+
+## Notes
+- Merge plan validated at: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md
+- R322 checkpoint enforced before SPAWN_INTEGRATION_AGENT transition
