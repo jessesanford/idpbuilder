@@ -1,0 +1,11 @@
+[
+  {"content": "Check for existing Wave 1 integration infrastructure", "status": "completed"},
+  {"content": "Coordinate Wave 1 integration per R327 re-integration", "status": "completed"},
+  {"content": "Update state to SETUP_INTEGRATION_INFRASTRUCTURE", "status": "completed"},
+  {"content": "Save TODOs per R287 before state transition", "status": "completed"},
+  {"content": "Commit and push state file per R324/R288", "status": "in_progress"},
+  {"content": "Setup Wave 1 integration infrastructure", "status": "pending"},
+  {"content": "Create fresh clone for Wave 1 integration", "status": "pending"},
+  {"content": "Create Wave 1 integration branch", "status": "pending"},
+  {"content": "Transition to SPAWN_CODE_REVIEWER_MERGE_PLAN", "status": "pending"}
+]
