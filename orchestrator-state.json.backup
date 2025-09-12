@@ -1,22 +1,22 @@
 {
-  "current_state": "WAITING_FOR_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
   "current_phase": 1,
-  "current_wave": 2,
-  "transition_time": "2025-09-11T22:29:58Z",
-  "transition_reason": "Code Reviewer spawned for merge plan creation, waiting for completion",
+  "current_wave": 1,
+  "transition_time": "2025-09-12T03:25:12Z",
+  "transition_reason": "Integration infrastructure ready, need merge plan for Wave 1 re-integration",
   "wave_2_implementation_status": "COMPLETE",
   "integration_infrastructure": {
     "type": "wave",
     "phase": 1,
-    "wave": 2,
-    "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "base_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
+    "wave": 1,
+    "branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
+    "base_branch": "main",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
     "status": "infrastructure_ready",
-    "created_at": "2025-09-11T22:19:58Z",
-    "merge_plan_created": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md"
+    "created_at": "2025-09-12T03:24:38Z",
+    "r327_reintegration": true,
+    "reason": "R327 mandatory re-integration after R321 fixes"
   },
   "efforts_completed": [
     {
@@ -172,10 +172,17 @@
         "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration"
       },
       "wave2": {
-        "status": "IMPLEMENTATION_COMPLETE",
+        "status": "REVIEW_COMPLETE",
         "all_efforts_complete": true,
         "all_reviews_passed": true,
-        "ready_for_integration": true
+        "ready_for_integration": true,
+        "integration_complete": true,
+        "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+        "all_merges_successful": true,
+        "build_passing": true,
+        "tests_passing": true,
+        "architect_review": "APPROVED",
+        "review_decision": "PROCEED_PHASE_ASSESSMENT"
       }
     }
   },
@@ -185,8 +192,17 @@
     "language": "golang",
     "target": "idpbuilder"
   },
-  "next_action": "Check for integration infrastructure and transition to SETUP_INTEGRATION_INFRASTRUCTURE",
-  "notes": "Reset to INTEGRATION state for Phase 1 Wave 2. Infrastructure is null, will need to create it.",
+  "wave_review": {
+    "report_file": "wave-reviews/phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md",
+    "decision": "PROCEED_PHASE_ASSESSMENT",
+    "status": "APPROVED",
+    "completed_at": "2025-09-12T00:31:00Z",
+    "architect_spawned": "2025-09-12T00:29:00Z",
+    "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "feedback": "Wave 2 integration successful. Excellent certificate validation architecture. Ready for phase assessment."
+  },
+  "next_action": "Transition to PHASE_INTEGRATION per R285 - must integrate all waves before phase assessment",
+  "notes": "Wave 2 review complete. Decision: PROCEED_PHASE_ASSESSMENT. Must integrate phases before assessment.",
   "agents_spawned": [
     {
       "agent": "code-reviewer",
@@ -194,5 +210,73 @@
       "spawned_at": "2025-09-11T22:29:42Z",
       "state": "WAVE_MERGE_PLANNING"
     }
-  ]
+  ],
+  "integration_status": {
+    "agent_spawned": true,
+    "spawned_at": "2025-09-11T22:50:34Z",
+    "integration_complete": true,
+    "critical_issues_found": false,
+    "integration_successful": true,
+    "r291_violations": false,
+    "completed_at": "2025-09-11T23:34:46Z"
+  },
+  "error_recovery": {
+    "recovery_started": "2025-09-11T23:04:21Z",
+    "recovery_completed": "2025-09-11T23:15:33Z",
+    "fixes_applied": {
+      "cert-validation-split-001": "Restored deleted project files, added demo",
+      "cert-validation-split-002": "Added demo-chain-validation.sh",
+      "cert-validation-split-003": "Added demo-validators.sh",
+      "fallback-strategies": "Added demo-fallback.sh"
+    },
+    "r300_verified": true,
+    "ready_for_reintegration": true
+  },
+  "current_wave_integration": {
+    "phase": 1,
+    "wave": 1,
+    "branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+    "status": "needs_reintegration",
+    "created_at": "2025-09-11T23:31:00Z",
+    "type": "normal",
+    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
+    "r327_reintegration_required": true,
+    "reason": "Wave 1 efforts have new fixes that must be integrated"
+  },
+  "current_phase_integration": {
+    "phase": 1,
+    "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-013009",
+    "status": "active",
+    "created_at": "2025-09-12T01:30:27Z",
+    "type": "post_fixes_reintegration",
+    "from_state": "PHASE_INTEGRATION",
+    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace",
+    "r327_reintegration": true,
+    "reason": "R321 fixes completed - mandatory reintegration per R327"
+  },
+  "phase_integration_status": {
+    "phase": 1,
+    "integration_branch": "idpbuilder-oci-build-push/phase1/integration",
+    "status": "ready_for_reintegration",
+    "r321_issue": {
+      "detected_at": "2025-09-12T00:56:55Z",
+      "issue": "Wave 1 integration has duplicate test helpers",
+      "action_required": "SW Engineer must fix source branches",
+      "integration_paused_at": "Wave 1 test validation",
+      "fixes_completed_at": "2025-09-12T01:23:00Z",
+      "fixed_by": "SW Engineer - R321 compliance"
+    },
+    "wave1_merged": false,
+    "wave2_merged": false,
+    "tests_passing": false,
+    "r327_reintegration_required": true,
+    "notes": "R321 fixes complete - must delete and recreate phase integration per R327"
+  },
+  "phases_planned": 2,
+  "waves_per_phase": {
+    "phase1": 2,
+    "phase2": 2
+  },
+  "efforts_in_progress": [],
+  "efforts_pending": []
 }
