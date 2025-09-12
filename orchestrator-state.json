@@ -1,10 +1,10 @@
 {
-  "current_state": "MONITORING_BACKPORT_PROGRESS",
-  "previous_state": "SPAWN_SW_ENGINEER_BACKPORT_FIXES",
+  "current_state": "PHASE_INTEGRATION",
+  "previous_state": "MONITORING_BACKPORT_PROGRESS",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-12T20:54:54Z",
-  "transition_reason": "SW Engineers spawned for R321 backport fixes",
+  "transition_time": "2025-09-12T21:02:00Z",
+  "transition_reason": "R321 backports complete - R327 mandatory re-integration required",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -375,9 +375,10 @@
     "validated": true,
     "ready_for_integration": true
   },
-  "r321_backport_required": true,
+  "r321_backport_required": false,
   "backport_manifest": "/home/vscode/workspaces/idpbuilder-oci-build-push/FIX-MANIFEST-FOR-BACKPORT.md",
-  "backport_status": "IN_PROGRESS",
+  "backport_status": "COMPLETE",
+  "backport_completed_at": "2025-09-12T21:00:00Z",
   "backport_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/BACKPORT-PLAN.md",
   "r151_compliance": {
     "parallel_spawn": true,
@@ -392,6 +393,8 @@
     "completed": 5,
     "in_progress": 0,
     "blocked": 0,
+    "all_complete": true,
+    "verification_passed": true,
     "efforts": [
       "kind-cert-extraction",
       "cert-validation-split-001",
@@ -399,5 +402,8 @@
       "cert-validation-split-003",
       "fallback-strategies"
     ]
-  }
+  },
+  "next_action": "Delete existing phase integration branch and re-run integration per R327",
+  "r327_reintegration_required": true,
+  "backport_completion_report": "/home/vscode/workspaces/idpbuilder-oci-build-push/BACKPORT-COMPLETION-REPORT.md"
 }
