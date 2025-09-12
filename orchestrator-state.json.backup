@@ -1,23 +1,11 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "current_state": "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE",
+  "previous_state": "PHASE_INTEGRATION",
   "current_phase": 1,
-  "current_wave": 1,
-  "transition_time": "2025-09-12T03:25:12Z",
-  "transition_reason": "Integration infrastructure ready, need merge plan for Wave 1 re-integration",
+  "current_wave": 2,
+  "transition_time": "2025-09-12T21:23:23Z",
+  "transition_reason": "R327 requires delete and recreate phase integration after backports",
   "wave_2_implementation_status": "COMPLETE",
-  "integration_infrastructure": {
-    "type": "wave",
-    "phase": 1,
-    "wave": 1,
-    "branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
-    "base_branch": "main",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
-    "status": "infrastructure_ready",
-    "created_at": "2025-09-12T03:24:38Z",
-    "r327_reintegration": true,
-    "reason": "R327 mandatory re-integration after R321 fixes"
-  },
   "efforts_completed": [
     {
       "effort_id": "E1.1.1-kind-cert-extraction",
@@ -169,20 +157,17 @@
       "wave1": {
         "status": "COMPLETE",
         "integration_complete": true,
-        "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration"
+        "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401"
       },
       "wave2": {
-        "status": "REVIEW_COMPLETE",
+        "status": "COMPLETE",
         "all_efforts_complete": true,
         "all_reviews_passed": true,
         "ready_for_integration": true,
-        "integration_complete": true,
-        "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-        "all_merges_successful": true,
-        "build_passing": true,
-        "tests_passing": true,
-        "architect_review": "APPROVED",
-        "review_decision": "PROCEED_PHASE_ASSESSMENT"
+        "integration_complete": false,
+        "all_rebases_complete": true,
+        "notes": "All Wave 2 efforts rebased onto Wave 1 integration - ready for fresh integration",
+        "completed_at": "2025-09-12T13:51:04Z"
       }
     }
   },
@@ -192,33 +177,80 @@
     "language": "golang",
     "target": "idpbuilder"
   },
-  "wave_review": {
-    "report_file": "wave-reviews/phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md",
-    "decision": "PROCEED_PHASE_ASSESSMENT",
-    "status": "APPROVED",
-    "completed_at": "2025-09-12T00:31:00Z",
-    "architect_spawned": "2025-09-12T00:29:00Z",
-    "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "feedback": "Wave 2 integration successful. Excellent certificate validation architecture. Ready for phase assessment."
-  },
-  "next_action": "Transition to PHASE_INTEGRATION per R285 - must integrate all waves before phase assessment",
-  "notes": "Wave 2 review complete. Decision: PROCEED_PHASE_ASSESSMENT. Must integrate phases before assessment.",
+  "wave_review": null,
+  "next_action": "Monitor SW Engineer progress on backport fixes",
+  "notes": "Wave 2 efforts all rebased and ready for fresh integration process.",
   "agents_spawned": [
     {
       "agent": "code-reviewer",
       "task": "wave_merge_plan",
       "spawned_at": "2025-09-11T22:29:42Z",
       "state": "WAVE_MERGE_PLANNING"
+    },
+    {
+      "agent": "integration",
+      "task": "phase_1_integration_execution",
+      "spawned_at": "2025-09-12T19:42:08Z",
+      "completed_at": "2025-09-12T20:25:59Z",
+      "state": "PHASE_INTEGRATION_EXECUTION",
+      "result": "SUCCESS - BACKPORT-PLAN.md created"
+    },
+    {
+      "agent": "sw-engineer-kind-fix",
+      "task": "KIND test compilation fix",
+      "spawned_at": "2025-09-12T20:37:45Z",
+      "state": "BACKPORT_IMPLEMENTATION",
+      "effort": "kind-cert-extraction",
+      "priority": "HIGHEST"
+    },
+    {
+      "agent": "sw-engineer-cert-split-001",
+      "task": "Certificate test fix split-001",
+      "spawned_at": "2025-09-12T20:37:45Z",
+      "state": "BACKPORT_IMPLEMENTATION",
+      "effort": "cert-validation-split-001",
+      "priority": "MEDIUM"
+    },
+    {
+      "agent": "sw-engineer-cert-split-002",
+      "task": "Certificate test fix split-002",
+      "spawned_at": "2025-09-12T20:37:45Z",
+      "state": "BACKPORT_IMPLEMENTATION",
+      "effort": "cert-validation-split-002",
+      "priority": "MEDIUM"
+    },
+    {
+      "agent": "sw-engineer-cert-split-003",
+      "task": "Certificate test fix split-003",
+      "spawned_at": "2025-09-12T20:37:45Z",
+      "state": "BACKPORT_IMPLEMENTATION",
+      "effort": "cert-validation-split-003",
+      "priority": "MEDIUM"
+    },
+    {
+      "agent": "sw-engineer-fallback",
+      "task": "Fallback strategies test fix",
+      "spawned_at": "2025-09-12T20:37:45Z",
+      "state": "BACKPORT_IMPLEMENTATION",
+      "effort": "fallback-strategies",
+      "priority": "MEDIUM"
     }
   ],
   "integration_status": {
-    "agent_spawned": true,
-    "spawned_at": "2025-09-11T22:50:34Z",
-    "integration_complete": true,
-    "critical_issues_found": false,
-    "integration_successful": true,
-    "r291_violations": false,
-    "completed_at": "2025-09-11T23:34:46Z"
+    "phase": 1,
+    "wave": 2,
+    "infrastructure_ready": true,
+    "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
+    "merge_plan_requested": true,
+    "merge_plan_ready": true,
+    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md",
+    "waiting_for": "user_review",
+    "merge_plan_validated": true,
+    "integration_agent_spawned": true,
+    "integration_completed_at": "2025-09-12T17:53:39Z",
+    "integration_status": "COMPLETE",
+    "integration_agent_result": "SUCCESS - All Wave 2 efforts integrated and demos passing"
   },
   "error_recovery": {
     "recovery_started": "2025-09-11T23:04:21Z",
@@ -232,45 +264,49 @@
     "r300_verified": true,
     "ready_for_reintegration": true
   },
-  "current_wave_integration": {
-    "phase": 1,
-    "wave": 1,
-    "branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-    "status": "needs_reintegration",
-    "created_at": "2025-09-11T23:31:00Z",
-    "type": "normal",
-    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
-    "r327_reintegration_required": true,
-    "reason": "Wave 1 efforts have new fixes that must be integrated"
-  },
+  "current_wave_integration": null,
   "current_phase_integration": {
     "phase": 1,
     "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-013009",
-    "status": "active",
-    "created_at": "2025-09-12T01:30:27Z",
-    "type": "post_fixes_reintegration",
-    "from_state": "PHASE_INTEGRATION",
-    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace",
-    "r327_reintegration": true,
-    "reason": "R321 fixes completed - mandatory reintegration per R327"
+    "status": "deprecated",
+    "created_at": "2025-09-12T01:30:09Z",
+    "deprecated_at": "2025-09-12T21:23:23Z",
+    "deprecated_reason": "R327 mandatory re-integration after backport fixes",
+    "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace",
+    "type": "initial"
   },
+  "deprecated_phase_integrations": [
+    {
+      "phase": 1,
+      "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-013009",
+      "status": "deprecated",
+      "deprecated_at": "2025-09-12T21:23:23Z",
+      "reason": "R327 mandatory re-integration after backport fixes"
+    }
+  ],
   "phase_integration_status": {
-    "phase": 1,
-    "integration_branch": "idpbuilder-oci-build-push/phase1/integration",
-    "status": "ready_for_reintegration",
-    "r321_issue": {
-      "detected_at": "2025-09-12T00:56:55Z",
-      "issue": "Wave 1 integration has duplicate test helpers",
-      "action_required": "SW Engineer must fix source branches",
-      "integration_paused_at": "Wave 1 test validation",
-      "fixes_completed_at": "2025-09-12T01:23:00Z",
-      "fixed_by": "SW Engineer - R321 compliance"
+    "status": "COMPLETED",
+    "integration_agent_spawned": true,
+    "integration_agent_completed": true,
+    "result": "SUCCESS",
+    "wave1_merged": true,
+    "wave2_merged": true,
+    "branch_pushed": true,
+    "test_issues": [
+      "pkg/kind/cluster_test.go compilation",
+      "certificate test setup"
+    ],
+    "r321_backport_needed": false,
+    "completed_at": "2025-09-12T19:51:06Z",
+    "reports": {
+      "integration_report": "efforts/phase1/phase-integration-workspace/PHASE-INTEGRATION-REPORT.md",
+      "issues_report": "efforts/phase1/phase-integration-workspace/INTEGRATION-ISSUES.md",
+      "work_log": "efforts/phase1/phase-integration-workspace/work-log.md"
     },
-    "wave1_merged": false,
-    "wave2_merged": false,
-    "tests_passing": false,
-    "r327_reintegration_required": true,
-    "notes": "R321 fixes complete - must delete and recreate phase integration per R327"
+    "test_failures": [
+      "pkg/kind/cluster_test.go - undefined types.ContainerListOptions",
+      "pkg/cert* tests - setup failed"
+    ]
   },
   "phases_planned": 2,
   "waves_per_phase": {
@@ -278,5 +314,107 @@
     "phase2": 2
   },
   "efforts_in_progress": [],
-  "efforts_pending": []
+  "efforts_pending": [],
+  "integration_code_review": {
+    "status": "COMPLETED",
+    "result": "PASS",
+    "quality_score": "98/100",
+    "reviewer": "code-reviewer",
+    "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "completed_at": "2025-09-12T18:18:00Z",
+    "findings": {
+      "integration_quality": "EXCELLENT",
+      "code_quality": "VERIFIED",
+      "demo_compliance": "FULLY_COMPLIANT",
+      "build_status": "SUCCESS",
+      "test_status": "ALL_PASSING",
+      "r330_r291_gates": "ALL_PASSED",
+      "r308_incremental": "VERIFIED",
+      "r327_compliance": "CONFIRMED"
+    },
+    "report_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/INTEGRATION_CODE_REVIEW_REPORT.md"
+  },
+  "wave_2_rebases": {
+    "cert-validation-split-001": {
+      "status": "complete",
+      "rebased_onto": "wave1-integration",
+      "completed_at": "2025-09-12T07:10:00Z"
+    },
+    "cert-validation-split-002": {
+      "status": "complete",
+      "rebased_onto": "cert-validation-split-001",
+      "completed_at": "2025-09-12T07:11:00Z"
+    },
+    "cert-validation-split-003": {
+      "status": "complete",
+      "rebased_onto": "cert-validation-split-002",
+      "completed_at": "2025-09-12T07:12:00Z"
+    },
+    "fallback-strategies": {
+      "status": "complete",
+      "rebased_onto": "wave1-integration-updated",
+      "completed_at": "2025-09-12T07:14:00Z"
+    }
+  },
+  "integration_infrastructure_needed": true,
+  "integration_infrastructure": {
+    "type": "wave",
+    "phase": 1,
+    "wave": 2,
+    "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
+    "status": "infrastructure_ready",
+    "created_at": "2025-09-12T16:51:01Z",
+    "r308_compliant": true,
+    "notes": "Based on Wave 1 integration as per R308 incremental branching"
+  },
+  "phase_integration_needed": true,
+  "phase_1_status": {
+    "waves_completed": 2,
+    "total_waves": 2,
+    "wave1_integration": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
+    "wave2_integration": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "ready_for_phase_integration": true,
+    "completed_at": "2025-09-12T19:00:21Z"
+  },
+  "phase_merge_plan_status": {
+    "requested": true,
+    "spawned_at": "2025-09-12T19:23:26Z",
+    "plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace/PHASE-MERGE-PLAN.md",
+    "ready": true,
+    "validated": true,
+    "ready_for_integration": true
+  },
+  "r321_backport_required": false,
+  "backport_manifest": "/home/vscode/workspaces/idpbuilder-oci-build-push/FIX-MANIFEST-FOR-BACKPORT.md",
+  "backport_status": "COMPLETE",
+  "backport_completed_at": "2025-09-12T21:00:00Z",
+  "backport_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/BACKPORT-PLAN.md",
+  "r151_compliance": {
+    "parallel_spawn": true,
+    "spawn_method": "single_message",
+    "spawn_start": "2025-09-12T20:37:45Z",
+    "spawn_end": "2025-09-12T20:53:52Z",
+    "agents_count": 5,
+    "compliant": true
+  },
+  "backport_efforts": {
+    "total": 5,
+    "completed": 5,
+    "in_progress": 0,
+    "blocked": 0,
+    "all_complete": true,
+    "verification_passed": true,
+    "efforts": [
+      "kind-cert-extraction",
+      "cert-validation-split-001",
+      "cert-validation-split-002",
+      "cert-validation-split-003",
+      "fallback-strategies"
+    ]
+  },
+  "next_action": "Delete existing phase integration branch and re-run integration per R327",
+  "r327_reintegration_required": true,
+  "backport_completion_report": "/home/vscode/workspaces/idpbuilder-oci-build-push/BACKPORT-COMPLETION-REPORT.md"
 }

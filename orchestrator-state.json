@@ -1,10 +1,10 @@
 {
-  "current_state": "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE",
-  "previous_state": "PHASE_INTEGRATION",
+  "current_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "previous_state": "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-12T21:23:23Z",
-  "transition_reason": "R327 requires delete and recreate phase integration after backports",
+  "transition_time": "2025-09-12T21:40:09Z",
+  "transition_reason": "R327 requires recreating Wave 2 integration before Phase 1 integration (R308 dependency)",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -178,8 +178,8 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Monitor SW Engineer progress on backport fixes",
-  "notes": "Wave 2 efforts all rebased and ready for fresh integration process.",
+  "next_action": "Create Wave 2 integration infrastructure, then integrate Wave 2 efforts",
+  "notes": "Must recreate Wave 2 integration first (deleted per R327), then use as base for Phase 1 integration per R308",
   "agents_spawned": [
     {
       "agent": "code-reviewer",
@@ -414,7 +414,7 @@
       "fallback-strategies"
     ]
   },
-  "next_action": "Delete existing phase integration branch and re-run integration per R327",
   "r327_reintegration_required": true,
-  "backport_completion_report": "/home/vscode/workspaces/idpbuilder-oci-build-push/BACKPORT-COMPLETION-REPORT.md"
+  "backport_completion_report": "/home/vscode/workspaces/idpbuilder-oci-build-push/BACKPORT-COMPLETION-REPORT.md",
+  "wave_integration_needed": true
 }
