@@ -1,0 +1,27 @@
+# Orchestrator TODO State - SPAWN_SW_ENGINEER_BACKPORT_FIXES
+# Saved at: 2025-09-12T20:54:00Z
+
+## Completed:
+- ✅ Acknowledge state rules and create R290 verification marker
+- ✅ Analyze BACKPORT-PLAN.md for fix requirements and dependencies
+- ✅ Prepare spawn instructions for KIND test compilation fix (highest priority)
+- ✅ Prepare spawn instructions for Wave 2 certificate test fixes
+- ✅ Check Wave 1 duplicate helpers fix status (Wave 1 already fixed)
+- ✅ Spawn SW Engineers with parallel timing (R151 compliance)
+
+## In Progress:
+- 🔄 Save TODOs to file (R287 requirement)
+
+## Pending:
+- ⏳ Update orchestrator-state.json to MONITORING_BACKPORT_PROGRESS
+- ⏳ Commit and push state changes
+- ⏳ STOP per R322 and await continuation
+
+## Spawned Agents:
+1. SW Engineer - KIND test compilation fix (Wave 1)
+2. SW Engineer - cert-validation-split-001 (Wave 2)  
+3. SW Engineer - cert-validation-split-002 (Wave 2)
+4. SW Engineer - cert-validation-split-003 (Wave 2)
+5. SW Engineer - fallback-strategies (Wave 2)
+
+All agents spawned in parallel per R151 compliance.

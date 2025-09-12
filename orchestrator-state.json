@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_SW_ENGINEER_BACKPORT_FIXES",
-  "previous_state": "WAITING_FOR_BACKPORT_PLAN",
+  "current_state": "MONITORING_BACKPORT_PROGRESS",
+  "previous_state": "SPAWN_SW_ENGINEER_BACKPORT_FIXES",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-12T20:34:06Z",
-  "transition_reason": "Backport plan reviewed and ready for implementation",
+  "transition_time": "2025-09-12T20:54:54Z",
+  "transition_reason": "SW Engineers spawned for R321 backport fixes",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -178,7 +178,7 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Spawn SW Engineers to implement backport fixes per BACKPORT-PLAN.md",
+  "next_action": "Monitor SW Engineer progress on backport fixes",
   "notes": "Wave 2 efforts all rebased and ready for fresh integration process.",
   "agents_spawned": [
     {
@@ -194,6 +194,46 @@
       "completed_at": "2025-09-12T20:25:59Z",
       "state": "PHASE_INTEGRATION_EXECUTION",
       "result": "SUCCESS - BACKPORT-PLAN.md created"
+    },
+    {
+      "agent": "sw-engineer-kind-fix",
+      "task": "KIND test compilation fix",
+      "spawned_at": "2025-09-12T20:37:45Z",
+      "state": "BACKPORT_IMPLEMENTATION",
+      "effort": "kind-cert-extraction",
+      "priority": "HIGHEST"
+    },
+    {
+      "agent": "sw-engineer-cert-split-001",
+      "task": "Certificate test fix split-001",
+      "spawned_at": "2025-09-12T20:37:45Z",
+      "state": "BACKPORT_IMPLEMENTATION",
+      "effort": "cert-validation-split-001",
+      "priority": "MEDIUM"
+    },
+    {
+      "agent": "sw-engineer-cert-split-002",
+      "task": "Certificate test fix split-002",
+      "spawned_at": "2025-09-12T20:37:45Z",
+      "state": "BACKPORT_IMPLEMENTATION",
+      "effort": "cert-validation-split-002",
+      "priority": "MEDIUM"
+    },
+    {
+      "agent": "sw-engineer-cert-split-003",
+      "task": "Certificate test fix split-003",
+      "spawned_at": "2025-09-12T20:37:45Z",
+      "state": "BACKPORT_IMPLEMENTATION",
+      "effort": "cert-validation-split-003",
+      "priority": "MEDIUM"
+    },
+    {
+      "agent": "sw-engineer-fallback",
+      "task": "Fallback strategies test fix",
+      "spawned_at": "2025-09-12T20:37:45Z",
+      "state": "BACKPORT_IMPLEMENTATION",
+      "effort": "fallback-strategies",
+      "priority": "MEDIUM"
     }
   ],
   "integration_status": {
@@ -337,6 +377,27 @@
   },
   "r321_backport_required": true,
   "backport_manifest": "/home/vscode/workspaces/idpbuilder-oci-build-push/FIX-MANIFEST-FOR-BACKPORT.md",
-  "backport_status": "READY_TO_SPAWN_ENGINEERS",
-  "backport_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/BACKPORT-PLAN.md"
+  "backport_status": "IN_PROGRESS",
+  "backport_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/BACKPORT-PLAN.md",
+  "r151_compliance": {
+    "parallel_spawn": true,
+    "spawn_method": "single_message",
+    "spawn_start": "2025-09-12T20:37:45Z",
+    "spawn_end": "2025-09-12T20:53:52Z",
+    "agents_count": 5,
+    "compliant": true
+  },
+  "backport_efforts": {
+    "total": 5,
+    "completed": 5,
+    "in_progress": 0,
+    "blocked": 0,
+    "efforts": [
+      "kind-cert-extraction",
+      "cert-validation-split-001",
+      "cert-validation-split-002",
+      "cert-validation-split-003",
+      "fallback-strategies"
+    ]
+  }
 }
