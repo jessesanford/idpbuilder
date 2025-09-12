@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_BACKPORT_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_BACKPORT_PLAN",
+  "current_state": "SPAWN_SW_ENGINEER_BACKPORT_FIXES",
+  "previous_state": "WAITING_FOR_BACKPORT_PLAN",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-12T20:25:59Z",
-  "transition_reason": "Code Reviewer spawned and completed BACKPORT-PLAN.md creation",
+  "transition_time": "2025-09-12T20:34:06Z",
+  "transition_reason": "Backport plan reviewed and ready for implementation",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -178,7 +178,7 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Review backport plan and spawn SW Engineers to implement fixes",
+  "next_action": "Spawn SW Engineers to implement backport fixes per BACKPORT-PLAN.md",
   "notes": "Wave 2 efforts all rebased and ready for fresh integration process.",
   "agents_spawned": [
     {
@@ -337,6 +337,6 @@
   },
   "r321_backport_required": true,
   "backport_manifest": "/home/vscode/workspaces/idpbuilder-oci-build-push/FIX-MANIFEST-FOR-BACKPORT.md",
-  "backport_status": "PLAN_CREATED",
+  "backport_status": "READY_TO_SPAWN_ENGINEERS",
   "backport_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/BACKPORT-PLAN.md"
 }
