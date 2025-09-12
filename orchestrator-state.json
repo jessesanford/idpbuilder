@@ -157,7 +157,7 @@
       "wave1": {
         "status": "COMPLETE",
         "integration_complete": true,
-        "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration"
+        "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401"
       },
       "wave2": {
         "status": "COMPLETE",
