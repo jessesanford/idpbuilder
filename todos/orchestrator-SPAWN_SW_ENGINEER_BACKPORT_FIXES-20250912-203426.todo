@@ -1,0 +1,22 @@
+[
+  {
+    "content": "Read state-specific rules for WAITING_FOR_BACKPORT_PLAN state (R290)",
+    "status": "completed"
+  },
+  {
+    "content": "Review BACKPORT-PLAN.md created by Code Reviewer",
+    "status": "completed"
+  },
+  {
+    "content": "Determine next steps based on backport plan",
+    "status": "completed"
+  },
+  {
+    "content": "Update state file to SPAWN_SW_ENGINEER_BACKPORT_FIXES (R324 before stop)",
+    "status": "completed"
+  },
+  {
+    "content": "Display R322 checkpoint message and stop",
+    "status": "in_progress"
+  }
+]
