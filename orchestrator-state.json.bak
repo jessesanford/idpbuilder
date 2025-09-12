@@ -1,87 +1,238 @@
 {
-  "current_state": "MONITOR_IMPLEMENTATION",
-  "previous_state": "SPAWN_AGENTS",
-  "current_phase": 2,
+  "current_state": "INTEGRATION",
+  "previous_state": "WAVE_COMPLETE",
+  "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-10T05:30:28Z",
-  "efforts_in_progress": [
-    "E2.2.1-cli-commands-implementation"
-  ],
+  "transition_time": "2025-09-12T13:51:21Z",
+  "transition_reason": "Wave 2 complete, all reviews passed, ready for integration",
+  "wave_2_implementation_status": "COMPLETE",
+  "integration_infrastructure": null,
   "efforts_completed": [
-    "E1.1.1-kind-certificate-extraction",
-    "E1.1.2-registry-tls-trust-integration",
-    "E1.2.1-certificate-validation-pipeline",
-    "E1.2.2-fallback-strategies",
-    "E2.1.1-image-builder",
-    "E2.1.2-gitea-client"
+    {
+      "effort_id": "E1.1.1-kind-cert-extraction",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction",
+      "review_status": "PASSED",
+      "lines_changed": 650,
+      "working_dir": "efforts/phase1/wave1/kind-cert-extraction",
+      "completed_at": "2025-09-07T10:00:00Z"
+    },
+    {
+      "effort_id": "E1.1.2-registry-tls-trust",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-tls-trust",
+      "review_status": "PASSED",
+      "lines_changed": 700,
+      "working_dir": "efforts/phase1/wave1/registry-tls-trust",
+      "completed_at": "2025-09-07T12:00:00Z"
+    },
+    {
+      "effort_id": "E1.1.3-registry-auth-types",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types",
+      "review_status": "SPLIT",
+      "lines_changed": 1600,
+      "working_dir": "efforts/phase1/wave1/registry-auth-types",
+      "completed_at": "2025-09-07T14:00:00Z",
+      "split_info": {
+        "was_split": true,
+        "split_count": 2,
+        "splits": [
+          {
+            "split_id": "001",
+            "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001",
+            "lines": 800,
+            "status": "completed",
+            "working_dir": "efforts/phase1/wave1/registry-auth-types-split-001"
+          },
+          {
+            "split_id": "002",
+            "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002",
+            "lines": 800,
+            "status": "completed",
+            "working_dir": "efforts/phase1/wave1/registry-auth-types-split-002"
+          }
+        ]
+      }
+    },
+    {
+      "effort_id": "E1.2.1-cert-validation",
+      "phase": 1,
+      "wave": 2,
+      "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation",
+      "review_status": "SPLIT",
+      "lines_changed": 1807,
+      "working_dir": "efforts/phase1/wave2/cert-validation",
+      "completed_at": "2025-09-11T14:56:00Z",
+      "split_info": {
+        "was_split": true,
+        "split_count": 3,
+        "splits": [
+          {
+            "split_id": "001",
+            "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001",
+            "lines": 207,
+            "status": "completed",
+            "working_dir": "efforts/phase1/wave2/cert-validation-split-001"
+          },
+          {
+            "split_id": "002",
+            "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002",
+            "lines": 800,
+            "status": "completed",
+            "working_dir": "efforts/phase1/wave2/cert-validation-split-002"
+          },
+          {
+            "split_id": "003",
+            "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003",
+            "lines": 800,
+            "status": "completed",
+            "working_dir": "efforts/phase1/wave2/cert-validation-split-003"
+          }
+        ]
+      }
+    },
+    {
+      "effort_id": "E1.2.2-fallback-strategies",
+      "phase": 1,
+      "wave": 2,
+      "branch": "idpbuilder-oci-build-push/phase1/wave2/fallback-strategies",
+      "review_status": "PASSED",
+      "lines_changed": 560,
+      "working_dir": "efforts/phase1/wave2/fallback-strategies",
+      "completed_at": "2025-09-11T14:56:00Z"
+    }
   ],
   "split_tracking": {
-    "gitea-client": {
+    "registry-auth-types": {
       "split_count": 2,
       "splits": [
         {
           "split_id": "001",
           "status": "completed",
-          "lines": 650,
-          "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001"
+          "lines": 800,
+          "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001",
+          "working_dir": "efforts/phase1/wave1/registry-auth-types-split-001"
         },
         {
           "split_id": "002",
           "status": "completed",
-          "lines": 450,
-          "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002"
+          "lines": 800,
+          "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002",
+          "working_dir": "efforts/phase1/wave1/registry-auth-types-split-002"
+        }
+      ]
+    },
+    "cert-validation": {
+      "split_count": 3,
+      "splits": [
+        {
+          "split_id": "001",
+          "status": "completed",
+          "lines": 207,
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001",
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-001"
+        },
+        {
+          "split_id": "002",
+          "status": "completed",
+          "lines": 800,
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002",
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-002"
+        },
+        {
+          "split_id": "003",
+          "status": "completed",
+          "lines": 800,
+          "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003",
+          "working_dir": "efforts/phase1/wave2/cert-validation-split-003"
         }
       ]
     }
   },
-  "phase_status": {
+  "waves_completed": {
     "phase1": {
-      "status": "COMPLETE",
-      "waves": {
-        "wave1": "COMPLETE",
-        "wave2": "COMPLETE"
-      }
-    },
-    "phase2": {
-      "status": "IN_PROGRESS",
-      "waves": {
-        "wave1": "COMPLETE",
-        "wave2": "IN_PROGRESS"
+      "wave1": {
+        "status": "COMPLETE",
+        "integration_complete": true,
+        "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration"
+      },
+      "wave2": {
+        "status": "COMPLETE",
+        "all_efforts_complete": true,
+        "all_reviews_passed": true,
+        "ready_for_integration": true,
+        "integration_complete": false,
+        "all_rebases_complete": true,
+        "notes": "All Wave 2 efforts rebased onto Wave 1 integration - ready for fresh integration",
+        "completed_at": "2025-09-12T13:51:04Z"
       }
     }
   },
-  "next_action": "Verify all effort plans complete, then transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-  "notes": "E2.2.1 effort plan found at efforts/phase2/wave2/E2.2.1-cli-commands/IMPLEMENTATION-PLAN.md. Plan already exists and is complete.",
-  "transition_reason": "SW Engineer spawned for E2.2.1-cli-commands implementation",
-  "sw_engineer_parallelization_plan": {
-    "wave": 2,
-    "phase": 2,
-    "analysis_timestamp": "2025-09-10T05:18:01+00:00",
-    "blocking_implementations": [
-      {
-        "effort_id": "E2.2.1",
-        "name": "cli-commands",
-        "implementation_plan": "efforts/phase2/wave2/E2.2.1-cli-commands/IMPLEMENTATION-PLAN.md",
-        "can_parallelize": false,
-        "reason": "Single effort in wave, marked as non-parallelizable",
-        "dependencies": [
-          "Phase 1 certificates",
-          "Phase 2 Wave 1 packages"
-        ]
-      }
-    ],
-    "parallel_groups": [],
-    "spawn_sequence": [
-      {
-        "step": 1,
-        "action": "spawn_single",
-        "agent_type": "sw-engineer",
-        "efforts": [
-          "E2.2.1-cli-commands"
-        ],
-        "wait_for_completion": true,
-        "expected_duration": "2 days"
-      }
-    ]
+  "project_info": {
+    "target_repository": "https://github.com/jessesanford/idpbuilder.git",
+    "planning_repository": "https://github.com/jessesanford/idpbuilder-oci-build-push.git",
+    "language": "golang",
+    "target": "idpbuilder"
+  },
+  "wave_review": null,
+  "next_action": "Create Wave 2 integration branch and merge all efforts",
+  "notes": "Wave 2 efforts all rebased and ready for fresh integration process.",
+  "agents_spawned": [
+    {
+      "agent": "code-reviewer",
+      "task": "wave_merge_plan",
+      "spawned_at": "2025-09-11T22:29:42Z",
+      "state": "WAVE_MERGE_PLANNING"
+    }
+  ],
+  "integration_status": null,
+  "error_recovery": {
+    "recovery_started": "2025-09-11T23:04:21Z",
+    "recovery_completed": "2025-09-11T23:15:33Z",
+    "fixes_applied": {
+      "cert-validation-split-001": "Restored deleted project files, added demo",
+      "cert-validation-split-002": "Added demo-chain-validation.sh",
+      "cert-validation-split-003": "Added demo-validators.sh",
+      "fallback-strategies": "Added demo-fallback.sh"
+    },
+    "r300_verified": true,
+    "ready_for_reintegration": true
+  },
+  "current_wave_integration": null,
+  "current_phase_integration": null,
+  "phase_integration_status": null,
+  "phases_planned": 2,
+  "waves_per_phase": {
+    "phase1": 2,
+    "phase2": 2
+  },
+  "efforts_in_progress": [],
+  "efforts_pending": [],
+  "integration_code_review": null,
+  "wave_2_rebases": {
+    "cert-validation-split-001": {
+      "status": "complete",
+      "rebased_onto": "wave1-integration",
+      "completed_at": "2025-09-12T07:10:00Z"
+    },
+    "cert-validation-split-002": {
+      "status": "complete",
+      "rebased_onto": "cert-validation-split-001",
+      "completed_at": "2025-09-12T07:11:00Z"
+    },
+    "cert-validation-split-003": {
+      "status": "complete",
+      "rebased_onto": "cert-validation-split-002",
+      "completed_at": "2025-09-12T07:12:00Z"
+    },
+    "fallback-strategies": {
+      "status": "complete",
+      "rebased_onto": "wave1-integration-updated",
+      "completed_at": "2025-09-12T07:14:00Z"
+    }
   }
 }

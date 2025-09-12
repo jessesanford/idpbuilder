@@ -1,11 +1,12 @@
 {
-  "current_state": "MONITORING_PHASE_INTEGRATION",
-  "previous_state": "SPAWN_INTEGRATION_AGENT_PHASE",
+  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "previous_state": "INTEGRATION",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-12T19:51:45Z",
-  "transition_reason": "Phase integration completed successfully - transitioning to monitor phase (R322/R324)",
+  "transition_time": "2025-09-12T14:43:53Z",
+  "transition_reason": "Infrastructure check complete - need to create infrastructure and merge plan",
   "wave_2_implementation_status": "COMPLETE",
+  "integration_infrastructure": null,
   "efforts_completed": [
     {
       "effort_id": "E1.1.1-kind-cert-extraction",
@@ -157,7 +158,7 @@
       "wave1": {
         "status": "COMPLETE",
         "integration_complete": true,
-        "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401"
+        "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration"
       },
       "wave2": {
         "status": "COMPLETE",
@@ -178,7 +179,7 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Wave 2 finalized. Determine if more waves in Phase 1 or proceed to phase assessment.",
+  "next_action": "Create Wave 2 integration branch and merge all efforts",
   "notes": "Wave 2 efforts all rebased and ready for fresh integration process.",
   "agents_spawned": [
     {
@@ -186,32 +187,9 @@
       "task": "wave_merge_plan",
       "spawned_at": "2025-09-11T22:29:42Z",
       "state": "WAVE_MERGE_PLANNING"
-    },
-    {
-      "agent": "integration",
-      "task": "phase_1_integration_execution",
-      "spawned_at": "2025-09-12T19:42:08Z",
-      "completed_at": "2025-09-12T19:51:06Z",
-      "state": "PHASE_INTEGRATION_EXECUTION",
-      "result": "SUCCESS"
     }
   ],
-  "integration_status": {
-    "phase": 1,
-    "wave": 2,
-    "infrastructure_ready": true,
-    "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
-    "merge_plan_requested": true,
-    "merge_plan_ready": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md",
-    "waiting_for": "user_review",
-    "merge_plan_validated": true,
-    "integration_agent_spawned": true,
-    "integration_completed_at": "2025-09-12T17:53:39Z",
-    "integration_status": "COMPLETE",
-    "integration_agent_result": "SUCCESS - All Wave 2 efforts integrated and demos passing"
-  },
+  "integration_status": null,
   "error_recovery": {
     "recovery_started": "2025-09-11T23:04:21Z",
     "recovery_completed": "2025-09-11T23:15:33Z",
@@ -225,34 +203,8 @@
     "ready_for_reintegration": true
   },
   "current_wave_integration": null,
-  "current_phase_integration": {
-    "phase": 1,
-    "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-013009",
-    "status": "active",
-    "created_at": "2025-09-12T01:30:09Z",
-    "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace",
-    "type": "initial"
-  },
-  "phase_integration_status": {
-    "status": "COMPLETED",
-    "integration_agent_spawned": true,
-    "integration_agent_completed": true,
-    "result": "SUCCESS",
-    "wave1_merged": true,
-    "wave2_merged": true,
-    "branch_pushed": true,
-    "test_issues": [
-      "pkg/kind/cluster_test.go compilation",
-      "certificate test setup"
-    ],
-    "r321_backport_needed": false,
-    "completed_at": "2025-09-12T19:51:06Z",
-    "reports": {
-      "integration_report": "efforts/phase1/phase-integration-workspace/PHASE-INTEGRATION-REPORT.md",
-      "issues_report": "efforts/phase1/phase-integration-workspace/INTEGRATION-ISSUES.md",
-      "work_log": "efforts/phase1/phase-integration-workspace/work-log.md"
-    }
-  },
+  "current_phase_integration": null,
+  "phase_integration_status": null,
   "phases_planned": 2,
   "waves_per_phase": {
     "phase1": 2,
@@ -260,25 +212,7 @@
   },
   "efforts_in_progress": [],
   "efforts_pending": [],
-  "integration_code_review": {
-    "status": "COMPLETED",
-    "result": "PASS",
-    "quality_score": "98/100",
-    "reviewer": "code-reviewer",
-    "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "completed_at": "2025-09-12T18:18:00Z",
-    "findings": {
-      "integration_quality": "EXCELLENT",
-      "code_quality": "VERIFIED",
-      "demo_compliance": "FULLY_COMPLIANT",
-      "build_status": "SUCCESS",
-      "test_status": "ALL_PASSING",
-      "r330_r291_gates": "ALL_PASSED",
-      "r308_incremental": "VERIFIED",
-      "r327_compliance": "CONFIRMED"
-    },
-    "report_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/INTEGRATION_CODE_REVIEW_REPORT.md"
-  },
+  "integration_code_review": null,
   "wave_2_rebases": {
     "cert-validation-split-001": {
       "status": "complete",
@@ -301,34 +235,5 @@
       "completed_at": "2025-09-12T07:14:00Z"
     }
   },
-  "integration_infrastructure_needed": true,
-  "integration_infrastructure": {
-    "type": "wave",
-    "phase": 1,
-    "wave": 2,
-    "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "base_branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
-    "status": "infrastructure_ready",
-    "created_at": "2025-09-12T16:51:01Z",
-    "r308_compliant": true,
-    "notes": "Based on Wave 1 integration as per R308 incremental branching"
-  },
-  "phase_integration_needed": true,
-  "phase_1_status": {
-    "waves_completed": 2,
-    "total_waves": 2,
-    "wave1_integration": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
-    "wave2_integration": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "ready_for_phase_integration": true,
-    "completed_at": "2025-09-12T19:00:21Z"
-  },
-  "phase_merge_plan_status": {
-    "requested": true,
-    "spawned_at": "2025-09-12T19:23:26Z",
-    "plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace/PHASE-MERGE-PLAN.md",
-    "ready": true,
-    "validated": true,
-    "ready_for_integration": true
-  }
+  "integration_infrastructure_needed": true
 }
