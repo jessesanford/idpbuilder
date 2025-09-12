@@ -1,0 +1,9 @@
+[
+  {"content": "Acknowledge critical rules per R217", "status": "completed"},
+  {"content": "Verify phase integration infrastructure exists", "status": "completed"},
+  {"content": "Gather wave branch information for merge plan", "status": "completed"},
+  {"content": "Spawn Code Reviewer for phase merge planning", "status": "completed"},
+  {"content": "Update state file and transition to WAITING_FOR_PHASE_MERGE_PLAN", "status": "completed"},
+  {"content": "Save TODOs and commit state changes per R287/R288", "status": "completed"},
+  {"content": "Stop per R322 Part A after spawning", "status": "pending"}
+]

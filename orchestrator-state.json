@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
-  "previous_state": "PHASE_INTEGRATION",
+  "current_state": "WAITING_FOR_PHASE_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-12T19:14:10Z",
-  "transition_reason": "Phase integration infrastructure exists - ready to create merge plan",
+  "transition_time": "2025-09-12T19:23:26Z",
+  "transition_reason": "Code Reviewer spawned for phase merge planning (R322 Part A)",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -295,5 +295,11 @@
     "wave2_integration": "idpbuilder-oci-build-push/phase1/wave2/integration",
     "ready_for_phase_integration": true,
     "completed_at": "2025-09-12T19:00:21Z"
+  },
+  "phase_merge_plan_status": {
+    "requested": true,
+    "spawned_at": "2025-09-12T19:23:26Z",
+    "plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace/PHASE-MERGE-PLAN.md",
+    "ready": true
   }
 }
