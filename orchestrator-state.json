@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_PHASE_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
+  "current_state": "WAVE_INTEGRATION",
+  "previous_state": "WAITING_FOR_PHASE_MERGE_PLAN",
   "current_phase": 1,
-  "current_wave": 2,
-  "transition_time": "2025-09-12T01:32:45Z",
-  "transition_reason": "Code Reviewer completed PHASE-MERGE-PLAN.md - ready for user review per R322",
+  "current_wave": 1,
+  "transition_time": "2025-09-12T02:57:45Z",
+  "transition_reason": "R327 mandatory re-integration: Wave 1 has new fixes that must be integrated before Wave 2 rebase",
   "wave_2_implementation_status": "COMPLETE",
   "integration_infrastructure": {
     "type": "wave",
@@ -237,10 +237,12 @@
     "phase": 1,
     "wave": 1,
     "branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-    "status": "completed",
+    "status": "needs_reintegration",
     "created_at": "2025-09-11T23:31:00Z",
     "type": "normal",
-    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace"
+    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
+    "r327_reintegration_required": true,
+    "reason": "Wave 1 efforts have new fixes that must be integrated"
   },
   "current_phase_integration": {
     "phase": 1,
