@@ -1,0 +1,15 @@
+# Code Reviewer TODOs - Trigger: WAVE_MERGE_PLANNING_COMPLETE
+# State: WAVE_MERGE_PLANNING
+# Effort: Wave 2 Integration Planning
+# Timestamp: 2025-09-12T17:03:00Z
+
+## Completed Tasks:
+✅ Analyze Wave 2 effort branch relationships and dependencies
+✅ Determine correct merge order based on split sequencing
+✅ Document expected conflicts for each merge
+✅ Create WAVE-MERGE-PLAN.md with detailed instructions
+✅ Include validation steps and testing requirements
+
+## Deliverable:
+- Created: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md
+- Status: Complete and ready for orchestrator execution
