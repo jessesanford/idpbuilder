@@ -1,0 +1,19 @@
+# Orchestrator TODO State
+# State: SPAWN_CODE_REVIEWER_MERGE_PLAN
+# Saved: 2025-09-12T15:30:00Z
+
+## Completed Tasks:
+- [x] Read state-specific rules for SETUP_INTEGRATION_INFRASTRUCTURE
+- [x] Acknowledge all rules individually
+- [x] Create R290 verification marker
+- [x] Create Wave 2 integration infrastructure (workspace, branch, remote tracking)
+- [x] Handle R308 deviation - Wave 1 integration missing, use main as base
+- [x] Verify integration workspace is ready with proper git configuration
+- [x] Update orchestrator state file with integration metadata
+- [x] Update state to SPAWN_CODE_REVIEWER_MERGE_PLAN
+- [x] Save TODOs and commit state files
+
+## Next State Tasks:
+- [ ] Spawn Code Reviewer to create merge plan for Wave 2 integration
+- [ ] Include both Wave 1 and Wave 2 efforts in merge plan (since Wave 1 was never integrated)
+- [ ] Wait for merge plan completion
