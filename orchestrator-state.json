@@ -9,15 +9,14 @@
   "integration_infrastructure": {
     "type": "wave",
     "phase": 1,
-    "wave": 2,
-    "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "base_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
-    "status": "integration_complete",
-    "created_at": "2025-09-11T22:19:58Z",
-    "merge_plan_created": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md",
-    "integration_report_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/INTEGRATION-REPORT.md"
+    "wave": 1,
+    "branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
+    "base_branch": "main",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
+    "status": "infrastructure_ready",
+    "created_at": "2025-09-12T03:24:38Z",
+    "r327_reintegration": true,
+    "reason": "R327 mandatory re-integration after R321 fixes"
   },
   "efforts_completed": [
     {
@@ -272,5 +271,12 @@
     "tests_passing": false,
     "r327_reintegration_required": true,
     "notes": "R321 fixes complete - must delete and recreate phase integration per R327"
-  }
+  },
+  "phases_planned": 2,
+  "waves_per_phase": {
+    "phase1": 2,
+    "phase2": 2
+  },
+  "efforts_in_progress": [],
+  "efforts_pending": []
 }
