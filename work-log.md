@@ -47,3 +47,22 @@ MERGED: idpbuilder-oci-build-push/phase1/wave1/integration at 2025-01-12 00:54:0
 - Total Wave 1: ~1,222 lines
 - Status: All tests passing, no duplicate declarations
 - Upstream Bug: pkg/kind/cluster_test.go:232 - undefined: types.ContainerListOptions (documented, not fixed)
+
+## Step 3: Test Wave 1 Integration
+Date: 2025-01-12 00:55:00 UTC
+Command: go build ./...
+Result: SUCCESS - Build completed
+
+Command: go test ./pkg/certs/... ./pkg/registrytls/...
+Result: FAILED - Duplicate declarations and undefined references
+Errors:
+- pkg/certs/trust_test.go:16:6: createTestCertificate redeclared
+- pkg/certs/trust_test.go:75:6: undefined: isFeatureEnabled
+- pkg/certs/utilities_test.go: multiple undefined: NewCertValidator
+
+## R321 DELEGATION TRIGGERED
+Date: 2025-01-12 00:56:00 UTC
+Issue: Build failure due to duplicate test helper functions
+Action: Created INTEGRATION-ISSUE-REPORT.md for orchestrator
+Status: PAUSED - Awaiting fix delegation per R321
+Note: Integration Agent cannot proceed until fixes are applied to Wave 1 integration branch
