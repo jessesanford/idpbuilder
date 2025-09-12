@@ -233,6 +233,15 @@
     "r300_verified": true,
     "ready_for_reintegration": true
   },
+  "current_wave_integration": {
+    "phase": 1,
+    "wave": 1,
+    "branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+    "status": "completed",
+    "created_at": "2025-09-11T23:31:00Z",
+    "type": "normal",
+    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace"
+  },
   "current_phase_integration": {
     "phase": 1,
     "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-013009",
