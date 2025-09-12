@@ -1,0 +1,39 @@
+# Code Reviewer TODOs - Trigger: BACKPORT_PLAN_COMPLETE
+# State: EFFORT_PLAN_CREATION (Backport Planning)
+# Purpose: Created comprehensive backport plan per R321
+# Timestamp: $(date -Iseconds)
+
+## Completed Tasks:
+1. ✅ Read FIX-MANIFEST-FOR-BACKPORT.md to understand all required fixes
+2. ✅ Analyzed which fixes need to go to which effort branches
+3. ✅ Created comprehensive BACKPORT-PLAN.md with clear instructions
+4. ✅ Created state marker file (code-reviewer-backport-status.txt)
+
+## Key Deliverables:
+- BACKPORT-PLAN.md: Comprehensive plan with:
+  - PART 1: KIND test compilation fix (HIGHEST priority)
+  - PART 2: Certificate test setup fixes for Wave 2
+  - PART 3: Wave 1 duplicate test helpers (existing plan reference)
+  - Implementation order and dependencies
+  - Verification protocol
+  - Success criteria checklist
+
+## Critical Fixes Identified:
+1. KIND Test Compilation Error (Wave 1):
+   - Location: pkg/kind/cluster_test.go:232
+   - Fix: Add container subpackage import, update ContainerListOptions
+   
+2. Certificate Test Setup Failures (Wave 2):
+   - Affects: All cert-validation splits and fallback-strategies
+   - Fix: Add test fixtures, fix test initialization
+
+3. Duplicate Test Helpers (Wave 1):
+   - Status: Already planned in R321-IMMEDIATE-BACKPORT-WAVE1-FIX-PLAN.md
+   - Action: Verify if R321_FIXES_COMPLETE.flag exists
+
+## R321 Compliance Achieved:
+- ✅ All fixes mapped to source branches
+- ✅ No fixes to integration branches
+- ✅ Clear unambiguous instructions
+- ✅ Verification steps provided
+- ✅ Dependencies documented
