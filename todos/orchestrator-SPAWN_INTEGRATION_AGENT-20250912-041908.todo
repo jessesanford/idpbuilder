@@ -1,0 +1,21 @@
+# Orchestrator TODO State - SPAWN_INTEGRATION_AGENT
+# Saved: 2025-09-12T04:19:00Z
+# R287 Compliance: Saving before state transition
+
+## Completed Tasks
+- [x] Load state-specific rules for WAITING_FOR_MERGE_PLAN
+- [x] Check if Wave 1 merge plan is complete
+- [x] Update state file to SPAWN_INTEGRATION_AGENT (R324/R288)
+
+## Next Tasks (After User Review)
+- [ ] Spawn Integration Agent to execute Wave 1 re-integration 
+- [ ] Monitor integration progress
+- [ ] Handle any merge conflicts if they arise
+- [ ] Verify build and tests pass after integration
+- [ ] Transition to next state based on integration outcome
+
+## Context
+- Phase 1, Wave 1 re-integration per R327
+- Merge plan ready at: efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md
+- Integration branch: idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401
+- State: SPAWN_INTEGRATION_AGENT (awaiting user continuation)

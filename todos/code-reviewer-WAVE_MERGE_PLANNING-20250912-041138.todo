@@ -1,0 +1,27 @@
+# Code Reviewer TODOs - Trigger: WAVE_MERGE_PLAN_COMPLETE
+# State: WAVE_MERGE_PLANNING
+# Effort: Phase 1 Wave 1 Integration
+# Timestamp: 2025-09-12T03:30:00Z
+
+## Completed Tasks
+✅ Acknowledged rules and verified environment
+✅ Analyzed effort branches and determined dependencies
+✅ Checked Wave 2 effort branches  
+✅ Analyzed branch commit history for dependencies
+✅ Examined file changes in each effort
+✅ Determined optimal merge order based on dependencies
+✅ Identified potential conflicts between branches
+✅ Created WAVE-MERGE-PLAN.md with exact instructions
+
+## Plan Summary
+- Created comprehensive merge plan for 8 effort branches
+- Documented optimal merge order: kind-cert -> tls-trust -> auth-splits -> validation-splits -> fallback
+- Identified potential conflicts in pkg/testutil, pkg/certs, go.mod
+- Provided exact git commands for Integration Agent
+- Included conflict resolution strategies
+
+## Key Decisions
+- Excluded parent branches for split efforts (R269)
+- Used only original effort branches (R270)
+- Ordered merges by dependency chain
+- Documented R327 re-integration context
