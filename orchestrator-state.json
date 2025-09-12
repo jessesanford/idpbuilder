@@ -3,8 +3,8 @@
   "previous_state": "WAVE_REVIEW",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-12T00:34:00Z",
-  "transition_reason": "Wave review approved with PROCEED_PHASE_ASSESSMENT - integrating all phase waves per R285",
+  "transition_time": "2025-09-12T01:24:00Z",
+  "transition_reason": "R321 fixes completed - continuing phase integration with fixed sources per R327",
   "wave_2_implementation_status": "COMPLETE",
   "integration_infrastructure": {
     "type": "wave",
@@ -245,15 +245,19 @@
   "phase_integration_status": {
     "phase": 1,
     "integration_branch": "idpbuilder-oci-build-push/phase1/integration",
-    "status": "paused_for_fixes",
+    "status": "ready_for_reintegration",
     "r321_issue": {
       "detected_at": "2025-09-12T00:56:55Z",
       "issue": "Wave 1 integration has duplicate test helpers",
       "action_required": "SW Engineer must fix source branches",
-      "integration_paused_at": "Wave 1 test validation"
+      "integration_paused_at": "Wave 1 test validation",
+      "fixes_completed_at": "2025-09-12T01:23:00Z",
+      "fixed_by": "SW Engineer - R321 compliance"
     },
-    "wave1_merged": true,
+    "wave1_merged": false,
     "wave2_merged": false,
-    "tests_passing": false
+    "tests_passing": false,
+    "r327_reintegration_required": true,
+    "notes": "R321 fixes complete - must delete and recreate phase integration per R327"
   }
 }
