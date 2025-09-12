@@ -234,5 +234,17 @@
       "completed_at": "2025-09-12T07:14:00Z"
     }
   },
-  "integration_infrastructure_needed": true
+  "integration_infrastructure_needed": true,
+  "integration_infrastructure": {
+    "type": "wave",
+    "phase": 1,
+    "wave": 2,
+    "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
+    "status": "infrastructure_ready",
+    "created_at": "2025-09-12T16:51:01Z",
+    "r308_compliant": true,
+    "notes": "Based on Wave 1 integration as per R308 incremental branching"
+  }
 }
