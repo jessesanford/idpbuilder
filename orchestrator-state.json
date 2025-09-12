@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "WAITING_FOR_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-12T17:08:36Z",
-  "transition_reason": "Code Reviewer spawned and created Wave 2 merge plan",
+  "transition_time": "2025-09-12T17:30:05Z",
+  "transition_reason": "R322 checkpoint - merge plan ready for user review",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -178,7 +178,7 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Create Wave 2 integration branch and merge all efforts",
+  "next_action": "User review of merge plan before spawning integration agent",
   "notes": "Wave 2 efforts all rebased and ready for fresh integration process.",
   "agents_spawned": [
     {
@@ -197,7 +197,8 @@
     "merge_plan_requested": true,
     "merge_plan_ready": true,
     "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md",
-    "waiting_for": "merge_plan_review"
+    "waiting_for": "user_review",
+    "merge_plan_validated": true
   },
   "error_recovery": {
     "recovery_started": "2025-09-11T23:04:21Z",

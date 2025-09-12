@@ -1,0 +1,21 @@
+# Orchestrator TODO State - WAITING_FOR_MERGE_PLAN
+# Saved: 2025-09-12T17:13:00Z
+# Reason: R322 checkpoint before SPAWN_INTEGRATION_AGENT transition
+
+## Completed:
+✅ Check if WAVE-MERGE-PLAN.md exists and is ready
+✅ Read and validate the merge plan contents
+
+## In Progress:
+🔄 Apply R322 checkpoint - update state and stop for user review
+🔄 Save TODOs before state transition (R287)
+
+## Pending:
+⏳ Update state file to SPAWN_INTEGRATION_AGENT (R324)
+⏳ Commit state changes and TODOs
+⏳ Display R322 checkpoint message and stop
+
+## Context:
+- Merge plan validated at: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md
+- Next state: SPAWN_INTEGRATION_AGENT (pending user review)
+- Wave 2 integration ready for execution
