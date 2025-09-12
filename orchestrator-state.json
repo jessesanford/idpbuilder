@@ -1,10 +1,10 @@
 {
-  "current_state": "IMMEDIATE_BACKPORT_REQUIRED",
-  "previous_state": "MONITORING_PHASE_INTEGRATION",
+  "current_state": "SPAWN_CODE_REVIEWER_BACKPORT_PLAN",
+  "previous_state": "IMMEDIATE_BACKPORT_REQUIRED",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-12T19:55:26Z",
-  "transition_reason": "R291 PHASE TEST GATE FAILURE + R321 backport requirement - test infrastructure failures need fixing in source branches",
+  "transition_time": "2025-09-12T20:08:45Z",
+  "transition_reason": "Fix manifest created, ready for Code Reviewer to create backport plan",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -178,7 +178,7 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Wave 2 finalized. Determine if more waves in Phase 1 or proceed to phase assessment.",
+  "next_action": "Spawn Code Reviewer to analyze manifest and create BACKPORT-PLAN.md",
   "notes": "Wave 2 efforts all rebased and ready for fresh integration process.",
   "agents_spawned": [
     {
@@ -335,5 +335,6 @@
     "validated": true,
     "ready_for_integration": true
   },
-  "r321_backport_required": true
+  "r321_backport_required": true,
+  "backport_manifest": "/home/vscode/workspaces/idpbuilder-oci-build-push/FIX-MANIFEST-FOR-BACKPORT.md"
 }
