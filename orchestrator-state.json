@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_PHASE_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
+  "current_state": "SPAWN_INTEGRATION_AGENT_PHASE",
+  "previous_state": "WAITING_FOR_PHASE_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-12T19:23:26Z",
-  "transition_reason": "Code Reviewer spawned for phase merge planning (R322 Part A)",
+  "transition_time": "2025-09-12T19:34:24Z",
+  "transition_reason": "Phase merge plan ready - transitioning to spawn integration agent (R322/R324)",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -300,6 +300,8 @@
     "requested": true,
     "spawned_at": "2025-09-12T19:23:26Z",
     "plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace/PHASE-MERGE-PLAN.md",
-    "ready": true
+    "ready": true,
+    "validated": true,
+    "ready_for_integration": true
   }
 }
