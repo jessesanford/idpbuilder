@@ -1,10 +1,10 @@
 {
-  "current_state": "INTEGRATION",
-  "previous_state": "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
+  "current_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "previous_state": "INTEGRATION",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-13T00:22:04Z",
-  "transition_reason": "R327 CASCADE: Starting Wave 1 re-integration due to stale integrations",
+  "transition_time": "2025-09-13T00:30:02Z",
+  "transition_reason": "R327 CASCADE: Need fresh Wave 1 integration infrastructure after backport fixes",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -178,7 +178,7 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Delete and recreate Wave 1 integration with backport fixes",
+  "next_action": "Create fresh Wave 1 integration workspace and branch",
   "notes": "R327 CASCADE ENFORCEMENT: All integrations are stale due to backport fixes. Must recreate in cascade order starting with Wave 1.",
   "agents_spawned": [
     {
@@ -264,7 +264,14 @@
     "r300_verified": true,
     "ready_for_reintegration": true
   },
-  "current_wave_integration": null,
+  "current_wave_integration": {
+    "wave": 1,
+    "phase": 1,
+    "type": "fresh_recreation",
+    "reason": "R327 mandatory re-integration after backport fixes",
+    "old_branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
+    "status": "infrastructure_needed"
+  },
   "current_phase_integration": {
     "phase": 1,
     "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
