@@ -1,9 +1,9 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "current_state": "WAITING_FOR_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-13T00:38:02Z",
+  "transition_time": "2025-09-13T00:49:36Z",
   "transition_reason": "Wave 1 integration infrastructure ready - need merge plan",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
@@ -238,19 +238,15 @@
   ],
   "integration_status": {
     "phase": 1,
-    "wave": 2,
+    "wave": 1,
     "infrastructure_ready": true,
-    "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
+    "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo",
     "merge_plan_requested": true,
     "merge_plan_ready": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md",
-    "waiting_for": "user_review",
-    "merge_plan_validated": true,
-    "integration_agent_spawned": true,
-    "integration_completed_at": "2025-09-12T17:53:39Z",
-    "integration_status": "COMPLETE",
-    "integration_agent_result": "SUCCESS - All Wave 2 efforts integrated and demos passing"
+    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
+    "waiting_for": "merge_plan_review",
+    "critical_finding": "All efforts exceed 800-line limit - splits required"
   },
   "error_recovery": {
     "recovery_started": "2025-09-11T23:04:21Z",

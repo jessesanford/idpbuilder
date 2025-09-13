@@ -1,0 +1,17 @@
+## Orchestrator TODO State - WAITING_FOR_MERGE_PLAN
+Saved: 2025-09-13T00:50:00Z
+
+### Completed:
+- [x] Read state-specific rules for SPAWN_CODE_REVIEWER_MERGE_PLAN
+- [x] Verify integration infrastructure exists
+- [x] Spawn Code Reviewer for creating wave 1 integration merge plan
+- [x] Update state to WAITING_FOR_MERGE_PLAN
+
+### In Progress:
+- [ ] Save TODO state and commit changes (R287/R288)
+
+### Pending:
+- [ ] Stop and await continuation (R322)
+
+### Critical Finding:
+Code Reviewer has created WAVE-MERGE-PLAN.md identifying that ALL Wave 1 efforts exceed the 800-line limit and require splitting before integration can proceed.
