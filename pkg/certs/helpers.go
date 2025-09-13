@@ -40,6 +40,11 @@ func isFeatureEnabled(flag string) bool {
 	return value == "true" || value == "1" || value == "enabled"
 }
 
+// isKindFeatureEnabled checks if a Kind-specific feature flag is enabled
+func isKindFeatureEnabled(flag string) bool {
+	return isFeatureEnabled(flag)
+}
+
 // findGiteaPod locates the Gitea pod in the cluster
 func (e *KindCertExtractor) findGiteaPod(ctx context.Context, clusterName string) (string, error) {
 	// Default namespace and labels for Gitea
