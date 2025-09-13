@@ -1,10 +1,36 @@
 {
-  "current_state": "INIT",
+  "current_state": "PHASE_2_REBASE_REQUIRED",
   "previous_state": "PHASE_COMPLETE",
   "current_phase": 2,
   "current_wave": 1,
   "transition_time": "2025-09-13T20:01:03Z",
-  "transition_reason": "Phase 1 complete - transitioning to Phase 2 INIT state",
+  "transition_reason": "Phase 2 Wave 1 exists but needs rebasing onto fresh Phase 1 integration",
+  "phase_2_rebase_required": {
+    "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
+    "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
+    "efforts_to_rebase": [
+      {
+        "effort": "gitea-client",
+        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client",
+        "status": "needs_rebase",
+        "working_dir": "efforts/phase2/wave1/gitea-client"
+      },
+      {
+        "effort": "gitea-client-split-001",
+        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+        "status": "needs_rebase",
+        "working_dir": "efforts/phase2/wave1/gitea-client-split-001"
+      },
+      {
+        "effort": "gitea-client-split-002",
+        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+        "status": "needs_rebase",
+        "working_dir": "efforts/phase2/wave1/gitea-client-split-002"
+      }
+    ],
+    "rebase_strategy": "sequential_with_conflict_resolution",
+    "next_action": "spawn_sw_engineers_for_rebase"
+  },
   "phase_1_completion": {
     "completed_at": "2025-09-13T20:01:03Z",
     "waves_completed": 2,
