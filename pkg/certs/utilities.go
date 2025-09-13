@@ -126,50 +126,8 @@ func (c *TransportConfigurer) buildTLSConfig(registry string) (*tls.Config, erro
 	}, nil
 }
 
-// TLSConfig holds TLS configuration
-type TLSConfig struct {
-	Registry           string
-	InsecureSkipVerify bool
-	MinVersion         uint16
-	ValidateHostname   bool
-	Timeout            time.Duration
-}
 
-// DefaultTLSConfig returns default TLS config
-func DefaultTLSConfig() *TLSConfig {
-	return &TLSConfig{
-		MinVersion:       tls.VersionTLS12,
-		ValidateHostname: true,
-		Timeout:          10 * time.Second,
-	}
-}
 
-// LoadConfigFromEnv loads configuration from environment
-func (c *TLSConfig) LoadConfigFromEnv() {
-	if os.Getenv("IDPBUILDER_TLS_INSECURE") == "true" {
-		c.InsecureSkipVerify = true
-	}
-	
-	if timeout := os.Getenv("IDPBUILDER_TLS_TIMEOUT"); timeout != "" {
-		if d, err := time.ParseDuration(timeout); err == nil {
-			c.Timeout = d
-		}
-	}
-}
-
-// ToGoTLSConfig converts to standard tls.Config
-func (c *TLSConfig) ToGoTLSConfig() *tls.Config {
-	config := &tls.Config{
-		InsecureSkipVerify: c.InsecureSkipVerify,
-		MinVersion:         c.MinVersion,
-	}
-	
-	if c.ValidateHostname && c.Registry != "" {
-		config.ServerName = extractHostname(c.Registry)
-	}
-	
-	return config
-}
 
 // SecurityLogger handles security audit logging
 type SecurityLogger struct {
@@ -225,16 +183,21 @@ type ValidationResult struct {
 	Actions []string
 }
 
-// CertValidator provides certificate validation
-type CertValidator struct{}
+// RegistryCertValidator provides certificate validation
+type RegistryCertValidator struct{}
 
-// NewCertValidator creates a certificate validator
-func NewCertValidator() *CertValidator {
-	return &CertValidator{}
+// NewRegistryCertValidator creates a certificate validator
+func NewRegistryCertValidator() *RegistryCertValidator {
+	return &RegistryCertValidator{}
+}
+
+// NewCertValidator creates a certificate validator (alias for NewRegistryCertValidator)
+func NewCertValidator() *RegistryCertValidator {
+	return NewRegistryCertValidator()
 }
 
 // ValidateCertificate validates a certificate
-func (v *CertValidator) ValidateCertificate(cert *x509.Certificate) *ValidationResult {
+func (v *RegistryCertValidator) ValidateCertificate(cert *x509.Certificate) *ValidationResult {
 	now := time.Now()
 	
 	if now.Before(cert.NotBefore) {
