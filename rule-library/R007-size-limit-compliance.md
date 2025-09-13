@@ -6,7 +6,9 @@
 
 ## Rule Statement
 
-NO effort may EVER exceed 800 lines. Soft warning at 700 lines. Automatic split required at violation.
+NO effort may EVER exceed 800 lines of IMPLEMENTATION CODE. Soft warning at 700 lines. Automatic split required at violation.
+
+**CRITICAL**: Line counts ONLY include critical path implementation files. Tests, demos, docs, configs, and generated code do NOT count toward the limit.
 
 ### 🔴🔴🔴 PARAMOUNT REQUIREMENT (Per R307) 🔴🔴🔴
 **EVERY effort AND split must be independently mergeable!**
@@ -27,6 +29,14 @@ NO effort may EVER exceed 800 lines. Soft warning at 700 lines. Automatic split 
 | >800 merged | CATASTROPHIC FAILURE | -100% FAIL |
 
 ## Measurement Requirements
+
+### 🔴🔴🔴 CRITICAL: ONLY IMPLEMENTATION CODE COUNTS 🔴🔴🔴
+**The 800-line limit applies ONLY to critical path implementation code!**
+- Tests do NOT count (write as many as needed!)
+- Demos do NOT count (R330 demo requirements are separate)
+- Documentation does NOT count
+- Configuration files do NOT count
+- Generated code does NOT count
 
 ### 🚨 CRITICAL: Check Splits First (R297)
 **BEFORE measuring ANY effort, check if it was already split!**
@@ -158,19 +168,25 @@ Split 3: Tests (400 lines)
 
 ## Size Calculation Details
 
-### What Counts
-- All source code lines
-- Comments in source files
-- Test files
-- Generated code that you modified
-- Configuration as code
+### ✅ What Counts (IMPLEMENTATION ONLY)
+- Core business logic source code
+- API endpoint implementations  
+- Service layer code
+- Critical algorithms and data structures
+- Production code comments
+- Modified generated code (if you edited it)
 
-### What Doesn't Count
-- Pure generated code (untouched)
-- Markdown documentation
-- YAML/JSON configs (unless executable)
-- Binary files
-- Vendor/node_modules
+### ❌ What NEVER Counts (EXCLUDED)
+- **Demo files**: demos/*, demo-*, DEMO.md, example-*
+- **Test files**: *_test.go, test/*, tests/*, *.test.*, fixtures/*
+- **Documentation**: *.md, docs/*, README*, LICENSE*
+- **Generated code**: *.pb.go, *_generated.*, *.gen.go
+- **Configuration**: *.json, *.yaml, *.yml, *.toml, *.ini
+- **Dependencies**: vendor/*, node_modules/*, .cache/*
+- **Build artifacts**: bin/*, dist/*, build/*, *.o, *.so
+- **Lock files**: *.lock, go.sum, package-lock.json
+- **CI/CD**: .github/*, Jenkinsfile, .gitlab-ci.yml
+- **Temporary**: *.tmp, *.bak, *.swp
 
 ## Grading Formula
 

@@ -35,6 +35,7 @@
 23. **R312.0.0** - Git Config Immutability Protocol (SUPREME LAW - ROOT-OWNED + READONLY CONFIGS FOR DOUBLE PROTECTION!)
 24. **R323.0.0** - Mandatory Final Artifact Build (NO PROJECT SUCCESS WITHOUT DELIVERABLE!)
 25. **R329.0.0** - Orchestrator Never Performs Git Merges (SUPREME LAW - INTEGRATION AGENT HANDLES ALL MERGES!)
+26. **R337.0.0** - Base Branch Single Source of Truth (SUPREME LAW - ORCHESTRATOR-STATE.JSON IS SOLE ARBITER!)
 
 ## Rule Categories
 
@@ -264,9 +265,11 @@
 - R324.0.0 - State File Update Before Stop | 🔴🔴🔴 SUPREME LAW | MUST update current_state to new state BEFORE stopping to prevent infinite loops (-100% for violations)
 - R325.0.0 - Atomic State Transitions | 🔴🔴🔴 SUPREME LAW | State transitions must be atomic operations
 - R326.0.0 - Split File Placement Protocol | 🔴🔴🔴 SUPREME LAW | NEVER create split-XXX/ subdirectories - files go in standard project directories (-100% for violations)
-- R327.0.0 - Mandatory Re-Integration After Fixes | 🔴🔴🔴 SUPREME LAW | After ANY fixes to source branches, MUST delete and re-run ENTIRE integration from scratch (-100% for violations)
+- R327.0.0 - Mandatory CASCADE Re-Integration After Fixes | 🔴🔴🔴 SUPREME LAW | After ANY fix: effort fix → wave recreation → phase recreation → project recreation - CASCADE IS MANDATORY (-100% AUTOMATIC FAILURE)
 - R328.0.0 - Integration Freshness Validation | 🚨🚨🚨 BLOCKING | MUST verify integration branch freshness before merging - stale branches cause lost fixes (-30% to -50% penalty)
 - R329.0.0 - Orchestrator Never Performs Git Merges | 🚨🚨🚨 BLOCKING | Orchestrator MUST spawn Integration Agent for ALL merges - NO EXCEPTIONS (-100% for violations)
 - R330.0.0 - Demo Planning Requirements | 🚨🚨🚨 BLOCKING | EVERY effort plan MUST include explicit demo requirements with size impact (-25% to -50% for violations)
 - R331.0.0 through R335.0.0 - Reserved for future rules
 - R336.0.0 - [DEPRECATED - Merged into R009] Mandatory Wave Integration Before Next Wave | Was SUPREME LAW | Now part of comprehensive R009
+- R337.0.0 - Base Branch Single Source of Truth | 🔴🔴🔴 SUPREME LAW | orchestrator-state.json is SOLE ARBITER of all base branch decisions - NO calculations, NO guessing (-100% for violations)
+- R338.0.0 - Mandatory Line Count State Tracking | 🚨🚨🚨 BLOCKING | EVERY effort/split MUST have comprehensive line_count_tracking in orchestrator-state.json - orchestrator records, code reviewer measures (-50% per missing, -100% if none)

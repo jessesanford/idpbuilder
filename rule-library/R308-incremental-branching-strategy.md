@@ -45,56 +45,94 @@ main
 
 ## Mandatory Implementation
 
-### 1. Orchestrator MUST Determine Base Branch
+### 1. Orchestrator MUST Record Base Branch in State (R337)
 
 ```bash
-determine_effort_base_branch() {
+# 🔴🔴🔴 CRITICAL: Write to state file, don't return values! 🔴🔴🔴
+record_incremental_base_branch() {
     local PHASE=$1
     local WAVE=$2
+    local EFFORT=$3
+    
+    # Determine base per incremental strategy
+    local BASE=""
+    local REASON=""
     
     # Phase 1, Wave 1: Start from main
     if [[ $PHASE -eq 1 && $WAVE -eq 1 ]]; then
-        echo "main"
-        return
-    fi
-    
+        BASE="main"
+        REASON="Phase 1 Wave 1 starts from main per R308"
     # First wave of new phase: From previous phase integration
-    if [[ $WAVE -eq 1 ]]; then
+    elif [[ $WAVE -eq 1 ]]; then
         PREV_PHASE=$((PHASE - 1))
         BASE="phase${PREV_PHASE}-integration"
+        REASON="Phase $PHASE Wave 1 builds on Phase $PREV_PHASE integration per R308"
         
         # Verify it exists
-        if git ls-remote --heads origin "$BASE" > /dev/null 2>&1; then
-            echo "$BASE"
-        else
+        if ! git ls-remote --heads origin "$BASE" > /dev/null 2>&1; then
             echo "❌ FATAL: Previous phase integration not found: $BASE" >&2
             exit 1
         fi
-        return
-    fi
-    
     # Subsequent waves: From previous wave integration
-    PREV_WAVE=$((WAVE - 1))
-    BASE="phase${PHASE}-wave${PREV_WAVE}-integration"
-    
-    # Verify it exists
-    if git ls-remote --heads origin "$BASE" > /dev/null 2>&1; then
-        echo "$BASE"
     else
-        echo "❌ FATAL: Previous wave integration not found: $BASE" >&2
-        exit 1
+        PREV_WAVE=$((WAVE - 1))
+        BASE="phase${PHASE}-wave${PREV_WAVE}-integration"
+        REASON="Wave $WAVE builds on Wave $PREV_WAVE integration per R308"
+        
+        # Verify it exists
+        if ! git ls-remote --heads origin "$BASE" > /dev/null 2>&1; then
+            echo "❌ FATAL: Previous wave integration not found: $BASE" >&2
+            exit 1
+        fi
     fi
+    
+    # RECORD IN STATE FILE (R337 MANDATORY)
+    jq --arg effort "$EFFORT" \
+       --arg base "$BASE" \
+       --arg reason "$REASON" \
+       --arg timestamp "$(date -Iseconds)" \
+       '.base_branch_decisions.decision_log += [{
+          "timestamp": $timestamp,
+          "effort": $effort,
+          "decision": "Base branch for \($effort): \($base)",
+          "reason": $reason,
+          "decided_by": "orchestrator-R308"
+       }] |
+       .efforts_in_progress += [{
+          "name": $effort,
+          "base_branch_tracking": {
+            "planned_base": $base,
+            "actual_base": $base,
+            "branched_at": $timestamp,
+            "reason": $reason
+          }
+       }]' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+    
+    echo "✅ Base branch recorded in state: $EFFORT will use $BASE"
+    echo "   Reason: $REASON"
 }
 ```
 
-### 2. Clone MUST Use Correct Base
+### 2. Clone MUST Use Base from State File (R337)
 
 ```bash
 # WRONG - Always using main
 git clone --branch main "$REPO" "$EFFORT_DIR"
 
-# CORRECT - Using incremental base
+# WRONG - Calculating base
 BASE=$(determine_effort_base_branch $PHASE $WAVE)
+
+# CORRECT - Reading from state file per R337
+BASE=$(jq -r --arg e "$EFFORT" '
+    (.efforts_in_progress[] | select(.name == $e) | .base_branch_tracking.actual_base) //
+    .base_branch_decisions.current_wave_base
+' orchestrator-state.json)
+
+if [ -z "$BASE" ] || [ "$BASE" = "null" ]; then
+    echo "❌ FATAL: No base branch in state for $EFFORT (R337 violation)"
+    exit 1
+fi
+
 git clone --branch "$BASE" "$REPO" "$EFFORT_DIR"
 ```
 
@@ -136,6 +174,44 @@ Create phase1-integration (merge all P1 waves)
     ↓
 P2W1 efforts START from phase1-integration
 ```
+
+## 🔴🔴🔴 RE-INTEGRATION HANDLING (DETERMINISTIC) 🔴🔴🔴
+
+### When Integration Fails and Must Be Redone:
+
+**DETERMINISTIC RE-INTEGRATION PROTOCOL:**
+
+1. **Directory Handling:**
+   ```bash
+   # Archive old integration workspace
+   mv integration-workspace integration-workspace-archived-N
+   # Create fresh integration workspace
+   mkdir -p integration-workspace
+   ```
+
+2. **Branch Handling:**
+   ```bash
+   # Use SAME branch name, force-push updates
+   BRANCH_NAME="phase2-wave1-integration"  # Same name
+   git checkout -b "$BRANCH_NAME"
+   git push --force-with-lease origin "$BRANCH_NAME"
+   ```
+
+3. **Base Branch Remains Same:**
+   ```bash
+   # Re-integration uses SAME base as original attempt
+   BASE_BRANCH=$(determine_integration_base_branch)  # Same logic
+   ```
+
+**NEVER:**
+- ❌ Create numbered integration branches (phase2-wave1-integration-v2)
+- ❌ Leave old integration workspace in place
+- ❌ Change the base branch for re-integration
+
+**ALWAYS:**
+- ✅ Archive old workspace with numbered suffix
+- ✅ Force-push to same branch name
+- ✅ Use exact same base branch determination
 
 ## Serial/Dependent Efforts (Sequential Chaining)
 

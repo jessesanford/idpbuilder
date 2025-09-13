@@ -245,35 +245,46 @@ The system will check for this marker. No marker = Immediate failure.
 **Criticality**: BLOCKING - Push within 60 seconds
 **Summary**: Commit and push state file immediately
 
-## 🚨 PHASE_INTEGRATION IS A VERB - START INTEGRATING IMMEDIATELY! 🚨
+## 🚨 PHASE_INTEGRATION IS A VERB - COORDINATE PHASE INTEGRATION NOW! 🚨
 
 ### IMMEDIATE ACTIONS UPON ENTERING PHASE_INTEGRATION
 
 **THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
-1. Create phase-level integration branch NOW
-2. Merge all wave integration branches into phase branch
-3. Merge all ERROR_RECOVERY fix branches  
-4. Verify all architect-identified issues are addressed
-5. Push phase integration branch for re-review
+1. Check if phase integration infrastructure exists NOW
+2. If NO infrastructure: Transition to SETUP_PHASE_INTEGRATION_INFRASTRUCTURE
+3. If infrastructure EXISTS: Transition to SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN
+4. Update state file with the appropriate next state
+5. Stop per R322 for state transition
 
 **FORBIDDEN - AUTOMATIC FAILURE:**
 - ❌ "STATE TRANSITION COMPLETE: Now in PHASE_INTEGRATION" [stops]
 - ❌ "Successfully entered PHASE_INTEGRATION state" [waits]
 - ❌ "Ready to start phase integration" [pauses]
 - ❌ "I'm in PHASE_INTEGRATION state" [does nothing]
+- ❌ Creating infrastructure yourself (PHASE_INTEGRATION only coordinates!)
+- ❌ Merging branches yourself (R329 violation!)
 
 **REQUIRED - IMMEDIATE ACTION:**
-- ✅ "Entering PHASE_INTEGRATION, creating phase3-integration branch NOW..."
-- ✅ "START PHASE_INTEGRATION, merging all wave branches immediately..."
-- ✅ "PHASE_INTEGRATION: Merging ERROR_RECOVERY fixes from fix branches..."
+- ✅ "PHASE_INTEGRATION STATE: Checking for existing phase integration infrastructure..."
+- ✅ "No infrastructure found, transitioning to SETUP_PHASE_INTEGRATION_INFRASTRUCTURE..."
+- ✅ "Infrastructure exists, transitioning to SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN..."
 
 ## Primary Purpose
 
-Create a clean phase-level integration branch that includes:
-- All wave integration branches from the phase
-- All fixes from ERROR_RECOVERY addressing phase assessment issues
-- Ready for architect phase reassessment
-- Comprehensive integration of all phase work
+**THIS STATE IS FOR COORDINATION ONLY!**
+
+The PHASE_INTEGRATION state is a decision point that:
+1. **CHECKS** if phase integration infrastructure exists
+2. **TRANSITIONS** to SETUP_PHASE_INTEGRATION_INFRASTRUCTURE if no infrastructure
+3. **TRANSITIONS** to SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN if infrastructure exists
+
+**THIS STATE NEVER:**
+- ❌ Creates phase integration workspace itself
+- ❌ Sets up branches or directories itself
+- ❌ Performs any actual integration work
+- ❌ Executes git merges (R329 violation!)
+
+You are the COORDINATOR of phase integration flow.
 
 ## 🔴 CRITICAL: Locating Effort Branches for Integration
 

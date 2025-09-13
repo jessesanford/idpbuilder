@@ -1,10 +1,10 @@
 {
-  "current_state": "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE",
-  "previous_state": "PHASE_INTEGRATION",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "WAITING_FOR_MERGE_PLAN",
   "current_phase": 1,
-  "current_wave": 2,
-  "transition_time": "2025-09-12T21:23:23Z",
-  "transition_reason": "R327 requires delete and recreate phase integration after backports",
+  "current_wave": 1,
+  "transition_time": "2025-09-13T00:57:13Z",
+  "transition_reason": "INTEGRATION BLOCKED: All Wave 1 efforts exceed 800-line limit",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -178,8 +178,8 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Monitor SW Engineer progress on backport fixes",
-  "notes": "Wave 2 efforts all rebased and ready for fresh integration process.",
+  "next_action": "Create fresh Wave 1 integration workspace and branch",
+  "notes": "R327 CASCADE ENFORCEMENT: All integrations are stale due to backport fixes. Must recreate in cascade order starting with Wave 1.",
   "agents_spawned": [
     {
       "agent": "code-reviewer",
@@ -238,19 +238,17 @@
   ],
   "integration_status": {
     "phase": 1,
-    "wave": 2,
+    "wave": 1,
     "infrastructure_ready": true,
-    "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
+    "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo",
     "merge_plan_requested": true,
     "merge_plan_ready": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/WAVE-MERGE-PLAN.md",
-    "waiting_for": "user_review",
-    "merge_plan_validated": true,
-    "integration_agent_spawned": true,
-    "integration_completed_at": "2025-09-12T17:53:39Z",
-    "integration_status": "COMPLETE",
-    "integration_agent_result": "SUCCESS - All Wave 2 efforts integrated and demos passing"
+    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
+    "waiting_for": "merge_plan_review",
+    "critical_finding": "All efforts exceed 800-line limit - splits required",
+    "blocked": true,
+    "blocking_reason": "All efforts exceed 800-line limit per merge plan analysis"
   },
   "error_recovery": {
     "recovery_started": "2025-09-11T23:04:21Z",
@@ -262,18 +260,42 @@
       "fallback-strategies": "Added demo-fallback.sh"
     },
     "r300_verified": true,
-    "ready_for_reintegration": true
+    "ready_for_reintegration": true,
+    "issue_type": "SIZE_VIOLATIONS",
+    "detected_at": "2025-09-13T00:57:13Z",
+    "blocking_issues": [
+      "kind-cert-extraction: 3170 lines (396% of limit)",
+      "registry-tls-trust: 2413 lines (301% of limit)",
+      "registry-auth-types: 1406 lines (176% of limit)",
+      "registry-auth-types splits also exceed limits",
+      "Split branch corruption detected"
+    ],
+    "required_actions": [
+      "Create proper split plans for all Wave 1 efforts",
+      "Implement splits with <800 lines each",
+      "Get code review approval for each split",
+      "Recreate integration with compliant splits"
+    ]
   },
-  "current_wave_integration": null,
+  "current_wave_integration": {
+    "wave": 1,
+    "phase": 1,
+    "type": "fresh_recreation",
+    "reason": "R327 mandatory re-integration after backport fixes",
+    "old_branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
+    "status": "infrastructure_needed"
+  },
   "current_phase_integration": {
     "phase": 1,
-    "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-013009",
-    "status": "deprecated",
-    "created_at": "2025-09-12T01:30:09Z",
-    "deprecated_at": "2025-09-12T21:23:23Z",
-    "deprecated_reason": "R327 mandatory re-integration after backport fixes",
+    "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
     "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace",
-    "type": "initial"
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "status": "infrastructure_ready",
+    "created_at": "2025-09-12T21:50:46Z",
+    "type": "fresh",
+    "r308_compliant": true,
+    "last_freshness_check": "2025-09-13T00:20:46+00:00",
+    "is_stale": false
   },
   "deprecated_phase_integrations": [
     {
@@ -360,14 +382,15 @@
   "integration_infrastructure": {
     "type": "wave",
     "phase": 1,
-    "wave": 2,
-    "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "base_branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace",
+    "wave": 1,
+    "branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+    "base_branch": "main",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo",
     "status": "infrastructure_ready",
-    "created_at": "2025-09-12T16:51:01Z",
+    "created_at": "2025-09-13T00:37:36Z",
     "r308_compliant": true,
-    "notes": "Based on Wave 1 integration as per R308 incremental branching"
+    "r327_cascade": true,
+    "notes": "Fresh Wave 1 integration infrastructure created per R327 cascade re-integration"
   },
   "phase_integration_needed": true,
   "phase_1_status": {
@@ -414,7 +437,94 @@
       "fallback-strategies"
     ]
   },
-  "next_action": "Delete existing phase integration branch and re-run integration per R327",
   "r327_reintegration_required": true,
-  "backport_completion_report": "/home/vscode/workspaces/idpbuilder-oci-build-push/BACKPORT-COMPLETION-REPORT.md"
+  "backport_completion_report": "/home/vscode/workspaces/idpbuilder-oci-build-push/BACKPORT-COMPLETION-REPORT.md",
+  "wave_integration_needed": false,
+  "phase_integration_infrastructure": {
+    "ready": true,
+    "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
+    "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace",
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave2/integration"
+  },
+  "stale_integration_tracking": {
+    "analysis_timestamp": "2025-09-13T00:21:26Z",
+    "r327_cascade_required": true,
+    "integrations": {
+      "phase1-wave1-integration": {
+        "integration_id": "phase1-wave1-integration",
+        "branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
+        "created_at": "2025-09-12T03:24:01Z",
+        "became_stale_at": "2025-09-12T21:00:00Z",
+        "stale_reason": "Backport fixes applied to Wave 1 effort branches after integration",
+        "triggering_fixes": [
+          "kind-cert-extraction - KIND test compilation fix"
+        ],
+        "affected_downstream": [
+          "phase1-wave2-integration",
+          "phase1-integration"
+        ],
+        "recreation_required": true,
+        "recreation_completed": false
+      },
+      "phase1-wave2-integration": {
+        "integration_id": "phase1-wave2-integration",
+        "branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+        "created_at": "2025-09-12T16:51:01Z",
+        "became_stale_at": "2025-09-12T21:00:00Z",
+        "stale_reason": "Backport fixes applied to Wave 2 effort branches after integration",
+        "triggering_fixes": [
+          "cert-validation-split-001 - Certificate test fix",
+          "cert-validation-split-002 - Certificate test fix",
+          "cert-validation-split-003 - Certificate test fix",
+          "fallback-strategies - Fallback test fix"
+        ],
+        "affected_downstream": [
+          "phase1-integration"
+        ],
+        "recreation_required": true,
+        "recreation_completed": false
+      },
+      "phase1-integration": {
+        "integration_id": "phase1-integration",
+        "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
+        "created_at": "2025-09-12T21:50:46Z",
+        "became_stale_at": null,
+        "stale_reason": "Created after backports but based on stale Wave 2 integration",
+        "triggering_fixes": [],
+        "affected_downstream": [
+          "project-integration"
+        ],
+        "recreation_required": true,
+        "recreation_completed": false,
+        "note": "Although created after backports, it was based on stale Wave 2 which lacks fixes"
+      }
+    },
+    "cascade_dependencies": {
+      "wave1_stale_affects": [
+        "wave2",
+        "phase1",
+        "project"
+      ],
+      "wave2_stale_affects": [
+        "phase1",
+        "project"
+      ],
+      "phase1_stale_affects": [
+        "project"
+      ]
+    },
+    "cascade_sequence": [
+      "wave1",
+      "wave2",
+      "phase1"
+    ],
+    "cascade_starting_point": "wave1"
+  },
+  "cascade_reintegration_in_progress": true,
+  "cascade_sequence": [
+    "wave1",
+    "wave2",
+    "phase1"
+  ],
+  "cascade_current_step": "wave1"
 }

@@ -1,7 +1,7 @@
 # Rule R196: Base Branch Selection and Clone Creation Protocol
 
 ## Rule Statement
-The ORCHESTRATOR MUST create all effort clones with proper branches BEFORE spawning agents. The orchestrator MUST determine the correct INCREMENTAL base branch per R308 (not just use target-repo-config.yaml). Agents MUST NEVER create their own clones.
+The ORCHESTRATOR MUST create all effort clones with proper branches BEFORE spawning agents. The orchestrator MUST read the base branch from orchestrator-state.json per R337 (NEVER calculate or determine independently). The state file is the SOLE SOURCE OF TRUTH for base branches. Agents MUST NEVER create their own clones.
 
 ## Criticality Level
 **BLOCKING** - Incorrect branch/clone setup causes cascading failures
@@ -30,23 +30,26 @@ The ORCHESTRATOR MUST create all effort clones with proper branches BEFORE spawn
 
 ### 1. ORCHESTRATOR: Complete Clone Creation Workflow
 
-#### 🔴🔴🔴 CRITICAL: Use R308 Incremental Branching 🔴🔴🔴
-**The base branch is NOT always from target-repo-config.yaml!**
-- Phase 1, Wave 1: Use main (from config)
-- Phase 1, Wave 2+: Use previous wave's integration branch
-- Phase 2+, Wave 1: Use previous phase's integration branch
-- See R308 for complete incremental branching requirements
+#### 🔴🔴🔴 CRITICAL: Use R337 State File as Truth 🔴🔴🔴
+**The base branch MUST come from orchestrator-state.json!**
+- NEVER calculate base branches
+- NEVER use functions to determine bases
+- ALWAYS read from state file
+- See R337 for mandatory state file structure
 
 ```bash
-# Step 1: Determine incremental base branch per R308
-source /path/to/determine_effort_base_branch.sh  # From R308
-PHASE=$(jq '.current_phase' orchestrator-state.json)
-WAVE=$(jq '.current_wave' orchestrator-state.json)
-BASE_BRANCH=$(determine_effort_base_branch $PHASE $WAVE)
+# Step 1: Read base branch from state file per R337
+EFFORT_NAME="$1"
+BASE_BRANCH=$(jq -r --arg e "$EFFORT_NAME" '
+    (.efforts_in_progress[] | select(.name == $e) | .base_branch_tracking.actual_base) //
+    (.efforts_planned[] | select(.name == $e) | .base_branch_tracking.planned_base) //
+    .base_branch_decisions.current_wave_base
+' orchestrator-state.json)
 
-# Fallback to config only for Phase 1, Wave 1
-if [ -z "$BASE_BRANCH" ]; then
-    BASE_BRANCH=$(grep "base_branch:" target-repo-config.yaml | awk '{print $2}' | tr -d '"')
+if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
+    echo "❌ FATAL: No base branch in state file for $EFFORT_NAME (R337 violation)"
+    echo "Base branches MUST be in orchestrator-state.json!"
+    exit 1
 fi
 
 TARGET_REPO_URL=$(grep "url:" target-repo-config.yaml | head -1 | awk '{print $2}' | tr -d '"')
@@ -237,10 +240,11 @@ git ls-remote --heads "$TARGET_REPO_URL" "feature-branch" || echo "Oh well, tryi
 
 ## Integration with Other Rules
 
-- **R308**: Incremental branching strategy (DETERMINES the base branch)
-- **R191**: Target repository configuration (provides default for P1W1 only)
-- **R193**: Effort clone protocol (uses this branch selection)
-- **R194**: Remote branch tracking (tracks against correct base)
+- **R337**: Base branch single source of truth (STATE FILE is authority)
+- **R308**: Incremental branching strategy (DEFINES the strategy, recorded in state)
+- **R191**: Target repository configuration (provides initial config only)
+- **R193**: Effort clone protocol (uses base from state file)
+- **R194**: Remote branch tracking (tracks against base from state)
 - **R007**: Size limits (applies after correct clone)
 
 ## Grading Impact
@@ -300,8 +304,17 @@ verify_effort_workspace() {
 prepare_effort_workspace() {
     local phase=$1 wave=$2 effort=$3
     
-    # Read config
-    BASE_BRANCH=$(grep "base_branch:" target-repo-config.yaml | awk '{print $2}' | tr -d '"')
+    # Read base from state file per R337
+    BASE_BRANCH=$(jq -r --arg e "$effort" '
+        (.efforts_in_progress[] | select(.name == $e) | .base_branch_tracking.actual_base) //
+        .base_branch_decisions.current_wave_base
+    ' orchestrator-state.json)
+    
+    if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
+        echo "❌ FATAL: No base branch in state for $effort (R337 violation)"
+        exit 1
+    fi
+    
     TARGET_REPO_URL=$(grep "url:" target-repo-config.yaml | head -1 | awk '{print $2}' | tr -d '"')
     
     # Create sparse clone

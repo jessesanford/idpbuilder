@@ -3,6 +3,8 @@
 ## Rule Statement
 Agents MUST use the line counter tool for all size measurements. The tool AUTOMATICALLY detects the correct base branch - no manual specification needed! Manual counting = AUTOMATIC -100% FAILURE.
 
+**CRITICAL**: The tool ONLY counts implementation code! Tests, demos, docs, configs are automatically excluded.
+
 **CRITICAL FOR SPARSE CLONES**: The tool is in the orchestrator's project root, NOT in your sparse clone! You must find the project root first (where `orchestrator-state.json` lives), then use `${PROJECT_ROOT}/tools/line-counter.sh [BRANCH_TO_MEASURE]`.
 
 ## Criticality Level
@@ -53,7 +55,7 @@ $PROJECT_ROOT/tools/line-counter.sh phase1/wave1/api-types
 # 🎯 Detected base:    phase1-wave1-integration
 # 🏷️  Project prefix:  idpbuilder-oci-go-cr (from current directory)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# ✅ Total non-generated lines: 245
+# ✅ Total implementation lines: 245 (excludes tests/demos/docs)
 ```
 
 ### ❌❌❌ WRONG USAGE - AUTOMATIC -100% FAILURE
@@ -84,8 +86,16 @@ The line counter tool:
 1. **AUTOMATICALLY** detects the correct base branch from naming conventions
 2. **OPTIONALLY** accepts a branch name to measure (default: current branch)
 3. **Compares** branch against auto-detected base
-4. **Excludes** generated code (zz_generated*, *.pb.go, etc.)
+4. **EXCLUDES** all non-implementation files automatically:
+   - Test files (*_test.go, test/*, tests/*, *.test.*)
+   - Demo files (demos/*, demo-*, DEMO.md, example-*)
+   - Documentation (*.md, docs/*, README*, LICENSE*)
+   - Generated code (*.pb.go, *_generated.*, *.gen.go)
+   - Configuration (*.json, *.yaml, *.yml, *.toml)
+   - Dependencies (vendor/*, node_modules/*, .cache/*)
+   - Build artifacts (bin/*, dist/*, build/*, *.o, *.so)
 5. **Shows** what base branch was detected in output
+6. **ONLY COUNTS** critical path implementation code
 
 ### How Auto-Detection Works
 ```bash

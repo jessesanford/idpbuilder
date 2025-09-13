@@ -16,19 +16,30 @@
 
 **This ensures demos are properly planned BEFORE implementation begins, preventing scope creep and ensuring consistent quality.**
 
-## 🔴🔴🔴 SUPREME REQUIREMENT: DEMOS ARE PART OF SCOPE 🔴🔴🔴
+## 🔴🔴🔴 SUPREME REQUIREMENT: DEMOS ARE SEPARATE FROM LINE LIMITS 🔴🔴🔴
 
-**Demo artifacts COUNT toward the 800-line limit and MUST be included in size planning!**
+**CRITICAL CLARIFICATION: Demo artifacts do NOT count toward the 800-line implementation limit!**
+
+The line counter tool automatically excludes:
+- Demo scripts (demo-*, demos/*, example-*)
+- Demo documentation (DEMO.md)
+- Test files (*_test.go, test/*, tests/*)
+- All non-implementation files
 
 ```bash
-# MANDATORY SIZE CALCULATION INCLUDING DEMOS
+# CORRECT SIZE CALCULATION - DEMOS TRACKED SEPARATELY
 echo "📊 Effort Size Breakdown:"
-echo "  Production Code: 500 lines"
-echo "  Test Code: 150 lines"
-echo "  Demo Script: 50 lines"    # ← MUST INCLUDE
-echo "  Demo Docs: 80 lines"      # ← MUST INCLUDE
-echo "  TOTAL: 780 lines (under 800 limit ✅)"
+echo "  Implementation Code: 500 lines"  # ← ONLY THIS COUNTS for 800 limit
+echo "  -------------------------------"
+echo "  Test Code: 150 lines"            # ← Does NOT count
+echo "  Demo Script: 50 lines"           # ← Does NOT count
+echo "  Demo Docs: 80 lines"             # ← Does NOT count
+echo "  -------------------------------"
+echo "  Implementation: 500/800 ✅"
+echo "  (Tests/demos excluded per R007)"
 ```
+
+**However, demos MUST still be planned and sized to ensure effort completeness!**
 
 ## Requirements
 
@@ -102,33 +113,34 @@ echo "  TOTAL: 780 lines (under 800 limit ✅)"
 - Specify expected outputs precisely
 - Count lines for size estimation
 
-### 3. 📏 Demo Size Impact Section (MANDATORY)
+### 3. 📏 Demo Size Planning Section (MANDATORY)
 
-**MUST calculate and include demo overhead in total size:**
+**MUST plan demo artifacts but they DON'T count toward 800-line limit:**
 
 ```markdown
-### Demo Size Impact
+### Demo Size Planning
 
-#### Demo Artifacts Breakdown
+#### Demo Artifacts (Excluded from line count per R007)
 ```
 demo-features.sh:     50 lines  # Executable script
 DEMO.md:             80 lines  # Documentation
 test-data/:          20 lines  # Sample data files
 integration-hook.sh: 10 lines  # For wave integration
 ────────────────────────────────
-TOTAL DEMO OVERHEAD: 160 lines
+TOTAL DEMO FILES:   160 lines (NOT counted)
 ```
 
-#### Impact on Effort Size
+#### Effort Size Summary
 ```
-Production Code:     450 lines
-Test Code:          150 lines
-Demo Artifacts:     160 lines  # ← COUNTS TOWARD LIMIT!
+Implementation:     450 lines  # ← ONLY this counts toward 800
 ────────────────────────────────
-GRAND TOTAL:        760 lines (✅ under 800)
+Tests:             150 lines  # Excluded per R007
+Demos:             160 lines  # Excluded per R007
+────────────────────────────────
+Implementation:    450/800 ✅ (within limit)
 ```
 
-**WARNING**: Excluding demo size = automatic -50% penalty!
+**NOTE**: While demos don't count toward the line limit, they MUST still be planned and implemented as specified!
 ```
 
 ### 4. 🎬 Demo Deliverables Section (MANDATORY)
@@ -221,9 +233,9 @@ plan_integration_demo() {
 
 ### Critical Violations (-50% penalty)
 - 🚨 No demo requirements in effort plan
-- 🚨 Demo size not included in total calculation
-- 🚨 Demo causes effort to exceed 800 lines
+- 🚨 Demo size not planned/estimated
 - 🚨 No demo scenarios defined
+- 🚨 Demo deliverables not specified
 
 ### Major Violations (-25% penalty)
 - ⚠️ Fewer than 3 demo objectives
@@ -329,8 +341,8 @@ Total: 790 lines  <!-- WRONG! Forgot demo artifacts! -->
 
 ## Remember
 
-**"A demo without a plan is just hoping it works"**
-**"Demo artifacts are CODE and count toward limits"**
-**"Plan the demo, size the demo, implement the demo"**
+**"Every integration needs a demo, no exceptions"**
+**"Single-effort waves still integrate and demo"**
+**"Integration demos prove the whole is greater than the parts"**
 
-Every effort needs a demo, every demo needs a plan, and every plan needs to account for demo size. This is how we ensure quality, consistency, and successful integrations!
+Integration demos are MANDATORY at wave, phase, and project levels. Even seemingly trivial integrations (single-effort waves, single-wave phases) MUST have demos to ensure the integration process works correctly and nothing breaks when components combine!

@@ -1,7 +1,8 @@
 #!/bin/bash
 # Line counter for Software Factory 2.0
 # Automatically determines correct base branch - no manual specification needed
-# Excludes generated code, tests, and documentation
+# CRITICAL: ONLY counts critical path implementation files
+# Excludes: tests, demos, docs, generated code, configs, build artifacts, etc.
 
 set -euo pipefail
 
@@ -69,13 +70,25 @@ AUTO-DETECTION LOGIC:
     
     Fallback: Uses git merge-base with main/master
 
-EXCLUDED PATTERNS:
-    - Generated code: *.pb.go, *_generated.go, zz_generated*, *.gen.go
-    - Vendored code: vendor/*
-    - Documentation: *.md
-    - Test files: *_test.go
-    - CRD YAML: *.crd.yaml, *.crd.yml
-    - Build artifacts: bin/*, dist/*, build/*
+EXCLUDED PATTERNS (Line counts ONLY include critical path implementation):
+    NEVER COUNTED (Non-implementation files):
+    - Demo files: demos/*, examples/*, demo-*, DEMO.md, demo*.sh
+    - Test files: *_test.go, *.test.*, test/*, tests/*, __tests__/*, *_test.*, test-*
+    - Documentation: *.md, docs/*, README*, CHANGELOG*, LICENSE*, CONTRIBUTING*
+    - Generated code: *.pb.go, *_generated.go, zz_generated*, *.gen.go, *.generated.*
+    - Build artifacts: bin/*, dist/*, build/*, obj/*, *.o, *.so, *.dll, *.exe
+    - Cache/Dependencies: vendor/*, node_modules/*, .cache/*, .next/*, venv/*, .venv/*
+    - Configuration: *.json, *.yaml, *.yml, *.toml, *.ini, *.conf, *.config
+    - Lock files: *.lock, package-lock.json, yarn.lock, go.sum, Cargo.lock
+    - CRD/Schema: *.crd.yaml, *.crd.yml, *.schema.json, *.xsd
+    - CI/CD: .github/*, .gitlab-ci.yml, Jenkinsfile, .circleci/*
+    - Temporary: *.tmp, *.temp, *.bak, *.swp, *~
+    
+    ONLY COUNTED (Critical path implementation):
+    - Source code that implements business logic
+    - API implementations  
+    - Core algorithms and data structures
+    - Service integrations (not test harnesses)
 
 BASE BRANCH DETECTION:
     No need to specify base branch - automatically determined from branch name!
@@ -782,29 +795,143 @@ fi
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# Define exclusion patterns
+# Define exclusion patterns - CRITICAL: Only count implementation files!
+# Everything else is excluded to ensure accurate size measurement
 EXCLUSIONS=(
+    # Demo files - NEVER count toward line limits
+    ':(exclude)demos/*'
+    ':(exclude)examples/*'
+    ':(exclude)demo-*'
+    ':(exclude)DEMO.md'
+    ':(exclude)demo*.sh'
+    ':(exclude)example-*'
+    ':(exclude)sample-*'
+    
+    # Test files - NEVER count toward line limits
+    ':(exclude)*_test.go'
+    ':(exclude)*.test.*'
+    ':(exclude)test/*'
+    ':(exclude)tests/*'
+    ':(exclude)__tests__/*'
+    ':(exclude)*_test.*'
+    ':(exclude)test-*'
+    ':(exclude)*.spec.*'
+    ':(exclude)*_spec.*'
+    ':(exclude)testdata/*'
+    ':(exclude)fixtures/*'
+    
+    # Documentation - NEVER count
+    ':(exclude)*.md'
+    ':(exclude)docs/*'
+    ':(exclude)README*'
+    ':(exclude)CHANGELOG*'
+    ':(exclude)LICENSE*'
+    ':(exclude)CONTRIBUTING*'
+    ':(exclude)*.rst'
+    ':(exclude)*.txt'
+    ':(exclude)*.adoc'
+    
+    # Generated code - NEVER count
     ':(exclude)*.pb.go'
     ':(exclude)*_generated.go'
     ':(exclude)zz_generated*'
     ':(exclude)*.gen.go'
-    ':(exclude)vendor/*'
-    ':(exclude)*.md'
-    ':(exclude)*_test.go'
-    ':(exclude)*.crd.yaml'
-    ':(exclude)*.crd.yml'
+    ':(exclude)*.generated.*'
+    ':(exclude)*_gen.*'
+    ':(exclude)generated/*'
+    
+    # Build artifacts - NEVER count
     ':(exclude)bin/*'
     ':(exclude)dist/*'
     ':(exclude)build/*'
+    ':(exclude)obj/*'
+    ':(exclude)*.o'
+    ':(exclude)*.so'
+    ':(exclude)*.dll'
+    ':(exclude)*.exe'
+    ':(exclude)*.out'
+    ':(exclude)*.a'
+    ':(exclude)*.lib'
+    
+    # Dependencies/Cache - NEVER count
+    ':(exclude)vendor/*'
+    ':(exclude)node_modules/*'
+    ':(exclude).cache/*'
+    ':(exclude).next/*'
+    ':(exclude)venv/*'
+    ':(exclude).venv/*'
+    ':(exclude)__pycache__/*'
+    ':(exclude)*.pyc'
+    
+    # Configuration files - NEVER count
+    ':(exclude)*.json'
+    ':(exclude)*.yaml'
+    ':(exclude)*.yml'
+    ':(exclude)*.toml'
+    ':(exclude)*.ini'
+    ':(exclude)*.conf'
+    ':(exclude)*.config'
+    ':(exclude).env*'
+    ':(exclude)*.properties'
+    
+    # Lock files - NEVER count
+    ':(exclude)*.lock'
+    ':(exclude)package-lock.json'
+    ':(exclude)yarn.lock'
+    ':(exclude)go.sum'
+    ':(exclude)Cargo.lock'
+    ':(exclude)Gemfile.lock'
+    ':(exclude)poetry.lock'
+    
+    # CRD/Schema files - NEVER count
+    ':(exclude)*.crd.yaml'
+    ':(exclude)*.crd.yml'
+    ':(exclude)*.schema.json'
+    ':(exclude)*.xsd'
+    ':(exclude)*.proto'
+    
+    # CI/CD - NEVER count
+    ':(exclude).github/*'
+    ':(exclude).gitlab-ci.yml'
+    ':(exclude)Jenkinsfile'
+    ':(exclude).circleci/*'
+    ':(exclude).travis.yml'
+    ':(exclude)azure-pipelines.yml'
+    
+    # Temporary/backup files - NEVER count
+    ':(exclude)*.tmp'
+    ':(exclude)*.temp'
+    ':(exclude)*.bak'
+    ':(exclude)*.swp'
+    ':(exclude)*~'
+    ':(exclude).DS_Store'
+    ':(exclude)Thumbs.db'
 )
 
 # Show exclusions in verbose mode
 if [ "$VERBOSE" = true ]; then
     echo ""
-    echo "Excluding patterns:"
-    for pattern in "${EXCLUSIONS[@]}"; do
-        echo "  - ${pattern#:(exclude)}"
-    done
+    echo "📋 CRITICAL: Line counts ONLY include implementation files!"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "❌ EXCLUDED from line counts (non-implementation):"
+    echo "  Demo files:     demos/*, demo-*, DEMO.md, example-*"
+    echo "  Test files:     *_test.go, test/*, tests/*, *.test.*"
+    echo "  Documentation:  *.md, docs/*, README*, LICENSE*"
+    echo "  Generated:      *.pb.go, *_generated.*, *.gen.go"
+    echo "  Dependencies:   vendor/*, node_modules/*, .cache/*"
+    echo "  Configuration:  *.json, *.yaml, *.yml, *.toml"
+    echo "  Build output:   bin/*, dist/*, build/*, *.o, *.so"
+    echo "  Lock files:     *.lock, go.sum, package-lock.json"
+    echo ""
+    echo "✅ INCLUDED in line counts (implementation only):"
+    echo "  - Core business logic source code"
+    echo "  - API endpoint implementations"
+    echo "  - Service integrations (not test harnesses)"
+    echo "  - Critical algorithms and data structures"
+    echo ""
+    echo "⚠️  WARNING: If demo/test files are being counted, this is a BUG!"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
 fi
 
@@ -829,27 +956,31 @@ NET_LINES=$((TOTAL_LINES - TOTAL_DELETIONS))
 
 # Display results
 echo ""
-echo "📈 Line Count Summary:"
+echo "📈 Line Count Summary (IMPLEMENTATION FILES ONLY):"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  Insertions:  +$TOTAL_LINES"
 echo "  Deletions:   -$TOTAL_DELETIONS"
 echo "  Net change:   $NET_LINES"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "⚠️  Note: Tests, demos, docs, configs NOT included"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
 # Size limit checks
 if [ "$TOTAL_LINES" -gt 800 ]; then
-    echo "🚨 HARD LIMIT VIOLATION: Branch exceeds 800 lines!"
+    echo "🚨 HARD LIMIT VIOLATION: Branch exceeds 800 lines of IMPLEMENTATION code!"
     echo "   This branch MUST be split immediately."
+    echo "   Remember: Only implementation files count, NOT tests/demos/docs."
     echo ""
-    echo "✅ Total non-generated lines: $TOTAL_LINES"
+    echo "✅ Total implementation lines: $TOTAL_LINES"
 elif [ "$TOTAL_LINES" -gt 700 ]; then
     echo "⚠️  WARNING: Branch exceeds 700 line soft limit!"
     echo "   Consider splitting into multiple efforts."
+    echo "   Remember: Only implementation files count, NOT tests/demos/docs."
     echo ""
-    echo "✅ Total non-generated lines: $TOTAL_LINES"
+    echo "✅ Total implementation lines: $TOTAL_LINES"
 else
-    echo "✅ Total non-generated lines: $TOTAL_LINES"
+    echo "✅ Total implementation lines: $TOTAL_LINES (excludes tests/demos/docs)"
 fi
 
 # Show detailed breakdown if requested

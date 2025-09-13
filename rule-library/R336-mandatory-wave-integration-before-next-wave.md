@@ -10,6 +10,12 @@
 
 **EVERY wave MUST be fully integrated and its integration branch created BEFORE the next wave can start. The next wave's efforts MUST use the previous wave's integration branch as their base per R308. This creates TRUE trunk-based development.**
 
+**CRITICAL CLARIFICATION:**
+- Single-effort waves STILL require integration (the integration might be trivial but is MANDATORY)
+- Single-wave phases STILL require phase integration (may duplicate wave integration but is MANDATORY)
+- The number of efforts/waves does NOT affect integration requirements
+- Integration and demos are ALWAYS required at wave/phase/project levels
+
 ### 🔴 THE MANDATORY INTEGRATION FLOW 🔴
 
 ```

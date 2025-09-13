@@ -259,7 +259,10 @@ stateDiagram-v2
     SPAWN_CODE_REVIEWER_MERGE_PLAN --> WAITING_FOR_MERGE_PLAN: Creating plan
     WAITING_FOR_MERGE_PLAN --> SPAWN_INTEGRATION_AGENT: Plan ready
     SPAWN_INTEGRATION_AGENT --> MONITORING_INTEGRATION: Executing merges
-    MONITORING_INTEGRATION --> WAVE_REVIEW: Request architect review
+    MONITORING_INTEGRATION --> INTEGRATION_CODE_REVIEW: Integration complete, need review
+    INTEGRATION_CODE_REVIEW --> WAITING_FOR_INTEGRATION_CODE_REVIEW: Spawning reviewer
+    WAITING_FOR_INTEGRATION_CODE_REVIEW --> WAVE_REVIEW: Code review passed
+    WAITING_FOR_INTEGRATION_CODE_REVIEW --> SPAWN_CODE_REVIEWER_INTEGRATION_FIX_PLAN: Code review failed
     WAVE_REVIEW --> WAVE_START: Approved, next wave
     WAVE_REVIEW --> PHASE_INTEGRATION: Last wave complete (R285)
     PHASE_INTEGRATION --> SETUP_PHASE_INTEGRATION_INFRASTRUCTURE: Need infrastructure
@@ -267,7 +270,10 @@ stateDiagram-v2
     SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN --> WAITING_FOR_PHASE_MERGE_PLAN: Creating plan
     WAITING_FOR_PHASE_MERGE_PLAN --> SPAWN_INTEGRATION_AGENT_PHASE: Plan ready
     SPAWN_INTEGRATION_AGENT_PHASE --> MONITORING_PHASE_INTEGRATION: Executing merges
-    MONITORING_PHASE_INTEGRATION --> SPAWN_ARCHITECT_PHASE_ASSESSMENT: Integration success
+    MONITORING_PHASE_INTEGRATION --> PHASE_INTEGRATION_CODE_REVIEW: Phase integration complete
+    PHASE_INTEGRATION_CODE_REVIEW --> WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW: Spawning reviewer
+    WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW --> SPAWN_ARCHITECT_PHASE_ASSESSMENT: Code review passed
+    WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW --> SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN: Code review failed
     MONITORING_PHASE_INTEGRATION --> PHASE_INTEGRATION_FEEDBACK_REVIEW: Integration failed
     PHASE_INTEGRATION_FEEDBACK_REVIEW --> SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN: Fixes needed
     SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN --> WAITING_FOR_PHASE_FIX_PLANS: Creating fix plans
@@ -281,9 +287,11 @@ stateDiagram-v2
     SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN --> WAITING_FOR_PROJECT_MERGE_PLAN: Creating plan
     WAITING_FOR_PROJECT_MERGE_PLAN --> SPAWN_INTEGRATION_AGENT_PROJECT: Plan ready
     SPAWN_INTEGRATION_AGENT_PROJECT --> MONITORING_PROJECT_INTEGRATION: Merging all phases
-    MONITORING_PROJECT_INTEGRATION --> SPAWN_CODE_REVIEWER_PROJECT_VALIDATION: Integration success, no bugs
-    MONITORING_PROJECT_INTEGRATION --> SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING: Bugs found (R266)
-    MONITORING_PROJECT_INTEGRATION --> ERROR_RECOVERY: Integration failed
+    MONITORING_PROJECT_INTEGRATION --> PROJECT_INTEGRATION_CODE_REVIEW: Project integration complete
+    PROJECT_INTEGRATION_CODE_REVIEW --> WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW: Spawning reviewer
+    WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW --> SPAWN_CODE_REVIEWER_PROJECT_VALIDATION: Code review passed
+    WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW --> SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING: Code review failed
+    MONITORING_PROJECT_INTEGRATION --> ERROR_RECOVERY: Integration failed catastrophically
     SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING --> WAITING_FOR_PROJECT_FIX_PLANS: Creating fix plans
     WAITING_FOR_PROJECT_FIX_PLANS --> SPAWN_SW_ENGINEER_PROJECT_FIXES: Fix plans ready
     SPAWN_SW_ENGINEER_PROJECT_FIXES --> MONITORING_PROJECT_FIXES: Engineers fixing
@@ -662,13 +670,14 @@ The orchestrator coordinates all work and manages the overall flow.
   - Creates ONLY the next split's directory, clone, and branch
   - Bases new split on previously completed split (sequential dependency)
 - **WAVE_COMPLETE** - All efforts completed AND all reviews passed (BLOCKED if any fail)
-- **INTEGRATION** - Coordinating integration process (DEPRECATED infrastructure creation - use SETUP_INTEGRATION_INFRASTRUCTURE)
-- **SETUP_INTEGRATION_INFRASTRUCTURE** - Creating integration workspace, branch, and remote tracking (R308 enforced)
+- **INTEGRATION** - Coordinating wave integration process (coordination only - infrastructure via SETUP_INTEGRATION_INFRASTRUCTURE)
+- **SETUP_INTEGRATION_INFRASTRUCTURE** - Creating wave integration workspace, branch, and remote tracking (R308 enforced)
 - **SPAWN_CODE_REVIEWER_MERGE_PLAN** - Spawning Code Reviewer to create merge plan
 - **WAITING_FOR_MERGE_PLAN** - Waiting for Code Reviewer merge plan completion
 - **SPAWN_INTEGRATION_AGENT** - Spawning Integration Agent to execute merges
 - **MONITORING_INTEGRATION** - Monitoring Integration Agent progress and checking for reports (R238)
-- **INTEGRATION_FEEDBACK_REVIEW** - Analyzing integration failure reports to identify fixes needed
+- **INTEGRATION_CODE_REVIEW** - Spawning Code Reviewer to review integrated code quality
+- **WAITING_FOR_INTEGRATION_CODE_REVIEW** - Waiting for integration code review completion
 - **SPAWN_CODE_REVIEWER_FIX_PLAN** - Spawning Code Reviewer to create fix plans for failures
 - **WAITING_FOR_FIX_PLANS** - Waiting for Code Reviewer to complete fix plans
 - **DISTRIBUTE_FIX_PLANS** - Distributing fix plans to effort directories (R239)
@@ -679,14 +688,16 @@ The orchestrator coordinates all work and manages the overall flow.
 - **SPAWN_ARCHITECT_PHASE_ASSESSMENT** - Request architect to assess complete phase (last wave only)
 - **WAITING_FOR_PHASE_ASSESSMENT** - Waiting for architect phase assessment decision
 - **PHASE_COMPLETE** - Phase assessment passed, handling phase-level integration
-- **PHASE_INTEGRATION** - Coordinating phase integration process (DEPRECATED infrastructure - use SETUP_INTEGRATION_INFRASTRUCTURE)
-- **SETUP_PHASE_INTEGRATION_INFRASTRUCTURE** - Creating phase integration workspace with R308 base
-- **PROJECT_INTEGRATION** - Coordinating project integration process (DEPRECATED infrastructure - use SETUP_INTEGRATION_INFRASTRUCTURE)
-- **SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE** - Creating project integration workspace with R308 base
+- **PHASE_INTEGRATION** - Coordinating phase integration process (coordination only - infrastructure via SETUP_PHASE_INTEGRATION_INFRASTRUCTURE)
+- **SETUP_PHASE_INTEGRATION_INFRASTRUCTURE** - Creating phase integration workspace with R308 incremental base
+- **PROJECT_INTEGRATION** - Coordinating project integration process (coordination only - infrastructure via SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE)
+- **SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE** - Creating project integration workspace with R308 incremental base
 - **SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN** - Spawning Code Reviewer to create project merge plan
 - **WAITING_FOR_PROJECT_MERGE_PLAN** - Waiting for Code Reviewer project merge plan
 - **SPAWN_INTEGRATION_AGENT_PROJECT** - Spawning Integration Agent to merge all phases
 - **MONITORING_PROJECT_INTEGRATION** - Monitoring project-level integration progress
+- **PROJECT_INTEGRATION_CODE_REVIEW** - Spawning Code Reviewer to review project integrated code quality
+- **WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW** - Waiting for project integration code review completion
 - **SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING** - Spawning Code Reviewer to create fix plans for bugs (R266 follow-up)
 - **WAITING_FOR_PROJECT_FIX_PLANS** - Waiting for Code Reviewer to complete project fix plans
 - **SPAWN_SW_ENGINEER_PROJECT_FIXES** - Spawning SW Engineers to fix project integration bugs
@@ -697,11 +708,9 @@ The orchestrator coordinates all work and manages the overall flow.
 - **INTEGRATION_TESTING** - Final validation in integration-testing branch (R271)
 - **PRODUCTION_READY_VALIDATION** - Validating software is production-ready (R273-R275)
 - **BUILD_VALIDATION** - Final build and deployment verification (R277)
-- **FIX_BUILD_ISSUES** - (DEPRECATED - Split into specialized states) Coordinating fixes for build failures
 - **ANALYZE_BUILD_FAILURES** - Orchestrator analyzing build errors and categorizing failures
 - **COORDINATE_BUILD_FIXES** - Orchestrator distributing fix work to SW Engineers with proper tracking
 - **IMMEDIATE_BACKPORT_REQUIRED** - R321 enforcement: fixing source branches immediately when integration issues found
-- **BACKPORT_FIXES** - (FULLY DEPRECATED - use new backport flow) Legacy state - DO NOT USE
 - **SPAWN_CODE_REVIEWER_BACKPORT_PLAN** - Spawn Code Reviewer to create backport plan
 - **WAITING_FOR_BACKPORT_PLAN** - Waiting for Code Reviewer to complete backport plan
 - **SPAWN_SW_ENGINEER_BACKPORT_FIXES** - Spawn SW Engineers to implement backport fixes
@@ -711,7 +720,8 @@ The orchestrator coordinates all work and manages the overall flow.
 - **WAITING_FOR_PHASE_MERGE_PLAN** - Waiting for Code Reviewer phase merge plan
 - **SPAWN_INTEGRATION_AGENT_PHASE** - Spawning Integration Agent for phase merges
 - **MONITORING_PHASE_INTEGRATION** - Monitoring Integration Agent phase progress and checking reports (R238)
-- **PHASE_INTEGRATION_FEEDBACK_REVIEW** - Analyzing phase integration failures (R282)
+- **PHASE_INTEGRATION_CODE_REVIEW** - Spawning Code Reviewer to review phase integrated code quality
+- **WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW** - Waiting for phase integration code review completion
 - **SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN** - Spawning Code Reviewer for phase-level fix plans
 - **WAITING_FOR_PHASE_FIX_PLANS** - Waiting for phase-level fix plans
 - **ERROR_RECOVERY** - Handling errors and issues
@@ -755,11 +765,12 @@ SETUP_INTEGRATION_INFRASTRUCTURE → SPAWN_CODE_REVIEWER_MERGE_PLAN
 SPAWN_CODE_REVIEWER_MERGE_PLAN → WAITING_FOR_MERGE_PLAN
 WAITING_FOR_MERGE_PLAN → SPAWN_INTEGRATION_AGENT (R322: MANDATORY CHECKPOINT - User must review plan!)
 SPAWN_INTEGRATION_AGENT → MONITORING_INTEGRATION
-MONITORING_INTEGRATION → WAVE_REVIEW (integration success)
+MONITORING_INTEGRATION → INTEGRATION_CODE_REVIEW (integration complete, need review)
+INTEGRATION_CODE_REVIEW → WAITING_FOR_INTEGRATION_CODE_REVIEW
+WAITING_FOR_INTEGRATION_CODE_REVIEW → WAVE_REVIEW (code review passed)
+WAITING_FOR_INTEGRATION_CODE_REVIEW → SPAWN_CODE_REVIEWER_INTEGRATION_FIX_PLAN (code review failed)
 MONITORING_INTEGRATION → IMMEDIATE_BACKPORT_REQUIRED (integration failed - R321)
 IMMEDIATE_BACKPORT_REQUIRED → SPAWN_ENGINEERS_FOR_FIXES (spawn engineers for source fixes)
-INTEGRATION_FEEDBACK_REVIEW → SPAWN_CODE_REVIEWER_FIX_PLAN (DEPRECATED - use IMMEDIATE_BACKPORT_REQUIRED)
-INTEGRATION_FEEDBACK_REVIEW → ERROR_RECOVERY (DEPRECATED - use IMMEDIATE_BACKPORT_REQUIRED)
 SPAWN_CODE_REVIEWER_FIX_PLAN → WAITING_FOR_FIX_PLANS
 WAITING_FOR_FIX_PLANS → DISTRIBUTE_FIX_PLANS (plans ready)
 WAITING_FOR_FIX_PLANS → ERROR_RECOVERY (timeout)
@@ -780,8 +791,10 @@ SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE → SPAWN_CODE_REVIEWER_PROJECT_MERGE_P
 SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN → WAITING_FOR_PROJECT_MERGE_PLAN
 WAITING_FOR_PROJECT_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PROJECT (R322: MANDATORY CHECKPOINT - Review project plan!)
 SPAWN_INTEGRATION_AGENT_PROJECT → MONITORING_PROJECT_INTEGRATION
-MONITORING_PROJECT_INTEGRATION → SPAWN_CODE_REVIEWER_PROJECT_VALIDATION (integration success, no bugs)
-MONITORING_PROJECT_INTEGRATION → SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING (bugs found, need fixes per R266)
+MONITORING_PROJECT_INTEGRATION → PROJECT_INTEGRATION_CODE_REVIEW (project integration complete)
+PROJECT_INTEGRATION_CODE_REVIEW → WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW
+WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW → SPAWN_CODE_REVIEWER_PROJECT_VALIDATION (code review passed)
+WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW → SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING (code review failed)
 MONITORING_PROJECT_INTEGRATION → ERROR_RECOVERY (integration failed catastrophically)
 SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING → WAITING_FOR_PROJECT_FIX_PLANS (spawned reviewer)
 WAITING_FOR_PROJECT_FIX_PLANS → SPAWN_SW_ENGINEER_PROJECT_FIXES (fix plans ready)
@@ -794,18 +807,17 @@ WAITING_FOR_PROJECT_VALIDATION → ERROR_RECOVERY (validation failed)
 CREATE_INTEGRATION_TESTING → INTEGRATION_TESTING
 INTEGRATION_TESTING → PRODUCTION_READY_VALIDATION
 PRODUCTION_READY_VALIDATION → BUILD_VALIDATION (tests pass)
-PRODUCTION_READY_VALIDATION → FIX_BUILD_ISSUES (test failures or issues found)
+PRODUCTION_READY_VALIDATION → ANALYZE_BUILD_FAILURES (test failures or issues found)
 BUILD_VALIDATION → PR_PLAN_CREATION (build successful, no fixes needed)
-BUILD_VALIDATION → FIX_BUILD_ISSUES (build failures found)
+BUILD_VALIDATION → ANALYZE_BUILD_FAILURES (build failures found)
 BUILD_VALIDATION → SPAWN_CODE_REVIEWER_BACKPORT_PLAN (build succeeded after inline fixes)
-FIX_BUILD_ISSUES → BUILD_VALIDATION (retry after fixes)
-FIX_BUILD_ISSUES → IMMEDIATE_BACKPORT_REQUIRED (fixes need immediate backporting - R321)
+ANALYZE_BUILD_FAILURES → COORDINATE_BUILD_FIXES (categorized failures)
+COORDINATE_BUILD_FIXES → BUILD_VALIDATION (fixes coordinated)
 SPAWN_CODE_REVIEWER_BACKPORT_PLAN → WAITING_FOR_BACKPORT_PLAN (reviewer spawned)
 WAITING_FOR_BACKPORT_PLAN → SPAWN_SW_ENGINEER_BACKPORT_FIXES (plan ready)
 SPAWN_SW_ENGINEER_BACKPORT_FIXES → MONITORING_BACKPORT_PROGRESS (engineers spawned)
 MONITORING_BACKPORT_PROGRESS → PR_PLAN_CREATION (backports complete)
 MONITORING_BACKPORT_PROGRESS → ERROR_RECOVERY (backports failed)
-BACKPORT_FIXES → PR_PLAN_CREATION (FULLY DEPRECATED - DO NOT USE)
 IMMEDIATE_BACKPORT_REQUIRED → SPAWN_CODE_REVIEWER_BACKPORT_PLAN (need plan first)
 IMMEDIATE_BACKPORT_REQUIRED → SPAWN_ENGINEERS_FOR_FIXES (legacy direct spawn)
 PR_PLAN_CREATION → SUCCESS (MASTER-PR-PLAN.md ready)
@@ -818,10 +830,11 @@ SETUP_PHASE_INTEGRATION_INFRASTRUCTURE → SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN
 SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN → WAITING_FOR_PHASE_MERGE_PLAN
 WAITING_FOR_PHASE_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PHASE (R322: MANDATORY CHECKPOINT - Review phase plan!)
 SPAWN_INTEGRATION_AGENT_PHASE → MONITORING_PHASE_INTEGRATION
-MONITORING_PHASE_INTEGRATION → SPAWN_ARCHITECT_PHASE_ASSESSMENT (integration success)
+MONITORING_PHASE_INTEGRATION → PHASE_INTEGRATION_CODE_REVIEW (phase integration complete)
+PHASE_INTEGRATION_CODE_REVIEW → WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW
+WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW → SPAWN_ARCHITECT_PHASE_ASSESSMENT (code review passed)
+WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW → SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN (code review failed)
 MONITORING_PHASE_INTEGRATION → IMMEDIATE_BACKPORT_REQUIRED (integration failed - R321)
-PHASE_INTEGRATION_FEEDBACK_REVIEW → SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN (DEPRECATED - use IMMEDIATE_BACKPORT_REQUIRED)
-PHASE_INTEGRATION_FEEDBACK_REVIEW → ERROR_RECOVERY (DEPRECATED - use IMMEDIATE_BACKPORT_REQUIRED)
 SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN → WAITING_FOR_PHASE_FIX_PLANS
 WAITING_FOR_PHASE_FIX_PLANS → ERROR_RECOVERY (complex phase fixes needed)
 ANY → ERROR_RECOVERY (on error)

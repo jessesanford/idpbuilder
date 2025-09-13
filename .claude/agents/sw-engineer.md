@@ -1100,6 +1100,10 @@ handle_all_splits_sequentially() {
 **Source:** rule-library/R198-line-counter-usage.md
 **Criticality:** BLOCKING - Wrong usage = wrong measurements = failures
 
+**CRITICAL: Line counter ONLY counts implementation code!**
+- ✅ INCLUDED: Business logic, APIs, core algorithms
+- ❌ EXCLUDED: Tests (*_test.go), demos (demo-*), docs (*.md), configs (*.yaml), generated code
+
 **IMPORTANT: The line counter is in PROJECT_ROOT/tools folder!**
 **NOT at /workspaces/kcp-shared-tools/ (outdated!)**
 **NOT at ./tools/ relative path (won't work!)**
@@ -1126,8 +1130,8 @@ $LINE_COUNTER  # NO PARAMETERS!
 # That's it! NO FLAGS, NO ARGUMENTS, NOTHING ELSE
 
 # Output will be:
-# Counting lines in phase1/wave1/your-effort (excluding generated code)...
-# Total non-generated lines: 245
+# Counting lines in phase1/wave1/your-effort (implementation only)...
+# ✅ Total implementation lines: 245 (excludes tests/demos/docs)
 
 # ❌❌❌ WRONG - NEVER DO THIS:
 ./tools/line-counter.sh -c phase1/wave1/api-types  # WRONG! No parameters!
@@ -1160,16 +1164,18 @@ check_size() {
     SIZE=$(./tools/line-counter.sh | grep "Total" | awk '{print $NF}')
     
     if [ "$SIZE" -gt 700 ]; then 
-        echo "⚠️ WARNING: $SIZE/800 lines - approaching limit!"; 
+        echo "⚠️ WARNING: $SIZE/800 implementation lines - approaching limit!"; 
+        echo "(Remember: tests/demos/docs don't count)"; 
     fi
     
     if [ "$SIZE" -gt 800 ]; then 
-        echo "❌ STOP: $SIZE lines - OVER LIMIT!"; 
+        echo "❌ STOP: $SIZE implementation lines - OVER LIMIT!"; 
         echo "Must request split from orchestrator"; 
+        echo "(Only implementation code counts, not tests/demos)"; 
         exit 1; 
     fi
     
-    echo "✅ Size OK: $SIZE/800 lines"
+    echo "✅ Size OK: $SIZE/800 implementation lines"
 }
 
 # Run frequently during development

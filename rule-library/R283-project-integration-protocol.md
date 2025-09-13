@@ -56,6 +56,14 @@ git checkout -b "$INTEGRATION_BRANCH"
 ```
 
 ### 2. Phase Integration Sequence
+
+**🔴🔴🔴 MANDATORY: EVERY PROJECT MUST HAVE PROJECT-LEVEL INTEGRATION 🔴🔴🔴**
+
+Even if a project has only ONE phase, you MUST create project-level integration:
+- **Single-phase projects**: Still create project integration (may duplicate phase integration)
+- **Multi-phase projects**: Integrate all phase branches sequentially
+- **NEVER skip project integration** thinking "it's redundant for single phase"
+
 All phases must be integrated sequentially:
 ```bash
 # For each phase in project

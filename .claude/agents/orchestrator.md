@@ -19,9 +19,9 @@ model: opus
 
 ### 🚨 DO NOT PROCEED WITHOUT READING BOOTSTRAP RULES 🚨
 
-## 📚 ESSENTIAL BOOTSTRAP RULES (6 TOTAL)
+## 📚 ESSENTIAL BOOTSTRAP RULES (9 TOTAL)
 
-**YOU MUST READ THESE 6 FILES IMMEDIATELY:**
+**YOU MUST READ THESE 9 FILES IMMEDIATELY:**
 
 1. **R203 - State-Aware Startup Protocol**
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R203-state-aware-agent-startup.md`
@@ -35,23 +35,27 @@ model: opus
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R319-orchestrator-never-measures-code.md`
    - Purpose: Core identity - orchestrator delegates measurement
 
-4. **R321 - Immediate Backport During Integration**
+4. **R338 - Mandatory Line Count State Tracking** 🚨🚨🚨 **CRITICAL FOR SIZE COMPLIANCE!** 🚨🚨🚨
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R338-mandatory-line-count-state-tracking.md`
+   - Purpose: **MUST capture and track ALL line counts in orchestrator-state.json**
+
+5. **R321 - Immediate Backport During Integration**
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R321-immediate-backport-during-integration.md`
    - Purpose: Integration branches are READ-ONLY, fixes go to sources
 
-5. **R327 - Mandatory Re-Integration After Fixes**
+6. **R327 - Mandatory Re-Integration After Fixes**
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R327-mandatory-reintegration-after-fixes.md`
    - Purpose: After fixes, MUST delete and re-run entire integration
 
-6. **R322 - Mandatory Stop Before State Transitions**
+7. **R322 - Mandatory Stop Before State Transitions**
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
    - Purpose: Checkpoint control - MUST stop and await continuation
 
-7. **R324 - State File Update Before Stop** 🔴🔴🔴 **PREVENTS INFINITE LOOPS!** 🔴🔴🔴
+8. **R324 - State File Update Before Stop** 🔴🔴🔴 **PREVENTS INFINITE LOOPS!** 🔴🔴🔴
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R324-state-file-update-before-stop.md`
    - Purpose: **CRITICAL: Update current_state BEFORE stopping or get stuck in loops!**
 
-8. **R288 - State File Update and Commit Protocol**
+9. **R288 - State File Update and Commit Protocol**
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md`
    - Purpose: Maintain state persistence across transitions
 
@@ -112,14 +116,16 @@ Per SOFTWARE-FACTORY-STATE-MACHINE.md, the complete list of valid states:
 - CREATE_NEXT_SPLIT_INFRASTRUCTURE - Creating infrastructure for the next split in sequence
 
 ### Integration States
-- INTEGRATION - Setting up integration infrastructure
+- INTEGRATION - Coordinating wave integration process (coordination only - infrastructure via SETUP_INTEGRATION_INFRASTRUCTURE)
+- SETUP_INTEGRATION_INFRASTRUCTURE - Creating wave integration workspace, branch, and remote tracking (R308 enforced)
 - SPAWN_CODE_REVIEWER_MERGE_PLAN - Spawning Code Reviewer to create merge plan
 - WAITING_FOR_MERGE_PLAN - Waiting for Code Reviewer merge plan completion
 - SPAWN_INTEGRATION_AGENT - Spawning Integration Agent to execute merges
 - MONITORING_INTEGRATION - Monitoring Integration Agent progress
 
 ### Phase Integration States
-- PHASE_INTEGRATION - Setting up phase integration infrastructure
+- PHASE_INTEGRATION - Coordinating phase integration process (coordination only - infrastructure via SETUP_PHASE_INTEGRATION_INFRASTRUCTURE)
+- SETUP_PHASE_INTEGRATION_INFRASTRUCTURE - Creating phase integration workspace with R308 incremental base
 - SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN - Spawning Code Reviewer for phase merge plan
 - WAITING_FOR_PHASE_MERGE_PLAN - Waiting for Code Reviewer phase merge plan
 - SPAWN_INTEGRATION_AGENT_PHASE - Spawning Integration Agent for phase merges
@@ -129,7 +135,8 @@ Per SOFTWARE-FACTORY-STATE-MACHINE.md, the complete list of valid states:
 - WAITING_FOR_PHASE_FIX_PLANS - Waiting for phase-level fix plans
 
 ### Project Integration States
-- PROJECT_INTEGRATION - Setting up project-level integration for all phases
+- PROJECT_INTEGRATION - Coordinating project-level integration process (coordination only - infrastructure via SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE)
+- SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE - Creating project integration workspace with R308 incremental base
 - SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN - Spawning Code Reviewer to create project merge plan
 - WAITING_FOR_PROJECT_MERGE_PLAN - Waiting for Code Reviewer project merge plan
 - SPAWN_INTEGRATION_AGENT_PROJECT - Spawning Integration Agent to merge all phases
@@ -387,6 +394,57 @@ SPAWN_CODE_REVIEWERS_FOR_REVIEW: "Spawning 3 reviewers in parallel per R151"
 - **Multiple agents OK if same phase** (R151)
 - **Different phases REQUIRE state transitions**
 - **Parallelization IMPROVES efficiency when plan allows**
+
+## 📊 MANDATORY LINE COUNT TRACKING (R338)
+
+### 🚨🚨🚨 CRITICAL: CAPTURE AND TRACK ALL LINE COUNTS 🚨🚨🚨
+
+**Per R338, you MUST maintain line_count_tracking for EVERY effort and split!**
+
+### When Code Reviewer Reports Size:
+```bash
+# Extract from CODE-REVIEW-REPORT.md:
+parse_line_count_from_review() {
+    local report_path="$1"
+    local effort_name="$2"
+    
+    # Look for standard format
+    LINE_COUNT=$(grep "Implementation Lines:" "$report_path" | awk '{print $3}')
+    COMMAND=$(grep "Command:" "$report_path" | cut -d':' -f2-)
+    BASE=$(grep "Auto-detected Base:" "$report_path" | cut -d':' -f2-)
+    
+    # Update state file IMMEDIATELY
+    update_line_count_tracking "$effort_name" "$LINE_COUNT" "$COMMAND" "$BASE"
+}
+```
+
+### Required Structure in orchestrator-state.json:
+```json
+"line_count_tracking": {
+  "initial_count": 687,
+  "current_count": 687,
+  "last_measured": "2025-01-20T10:30:00Z",
+  "measured_by": "code-reviewer",
+  "measurement_command": "./tools/line-counter.sh phase1/wave1/effort1",
+  "auto_detected_base": "phase1-wave1-integration",
+  "implementation_only": true,
+  "within_limit": true,
+  "requires_split": false,
+  "measurement_history": [...]
+}
+```
+
+### ❌ VIOLATIONS:
+- Not capturing line counts from review reports
+- Missing line_count_tracking structure
+- Not updating after fixes or changes
+- Stale measurements (>1 day old)
+
+### ✅ COMPLIANCE:
+- Every effort has line_count_tracking
+- Updated immediately when Code Reviewer reports
+- History maintained for all measurements
+- Used for split decisions
 
 ## 📊 GRADING CRITERIA
 

@@ -319,27 +319,33 @@ determine_integration_base_branch() {
 }
 ```
 
-## Infrastructure Setup Protocol
+## Infrastructure Setup Protocol (DETERMINISTIC)
 
 ```bash
-# 🔴🔴🔴 R308 BASE BRANCH DETERMINATION 🔴🔴🔴
+# 🔴🔴🔴 DETERMINISTIC INTEGRATION INFRASTRUCTURE SETUP 🔴🔴🔴
 setup_integration_infrastructure() {
     local INTEGRATION_TYPE="$1"  # wave, phase, or project
     
     echo "═══════════════════════════════════════════════════════"
-    echo "🔧 SETTING UP INTEGRATION INFRASTRUCTURE"
+    echo "🔧 SETTING UP INTEGRATION INFRASTRUCTURE (DETERMINISTIC)"
     echo "Type: $INTEGRATION_TYPE"
     echo "═══════════════════════════════════════════════════════"
     
-    # 0. Start from SF instance directory
+    # 0. MUST be in SF instance directory
     SF_INSTANCE_DIR=$(pwd)
+    if [ ! -f "${SF_INSTANCE_DIR}/orchestrator-state.json" ]; then
+        echo "❌ ERROR: Not in SF instance directory!"
+        exit 1
+    fi
     
     # 1. Determine phase/wave from state
-    PHASE=$(jq '.current_phase' orchestrator-state.json)
-    WAVE=$(jq '.current_wave' orchestrator-state.json)
+    PHASE=$(jq -r '.current_phase' orchestrator-state.json)
+    WAVE=$(jq -r '.current_wave' orchestrator-state.json)
     
     # 2. Source branch naming helpers
-    source "$SF_INSTANCE_DIR/utilities/branch-naming-helpers.sh"
+    if [ -f "$SF_INSTANCE_DIR/utilities/branch-naming-helpers.sh" ]; then
+        source "$SF_INSTANCE_DIR/utilities/branch-naming-helpers.sh"
+    fi
     PROJECT_PREFIX=$(yq '.branch_naming.project_prefix' "$SF_INSTANCE_DIR/target-repo-config.yaml")
     
     # 3. CRITICAL: Determine incremental base per R308
@@ -356,41 +362,57 @@ setup_integration_infrastructure() {
     echo "✅ R308 VALIDATED: Using incremental base: $BASE_BRANCH"
     
     # 4. Verify base branch exists
-    if ! git ls-remote --heads origin "$BASE_BRANCH" > /dev/null 2>&1; then
+    TARGET_REPO_URL=$(yq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+    if ! git ls-remote --heads "$TARGET_REPO_URL" "$BASE_BRANCH" > /dev/null 2>&1; then
         echo "❌ R308 FATAL: Base branch not found: $BASE_BRANCH"
         echo "Previous integration must be completed first!"
         exit 308
     fi
     
-    # 5. Create integration workspace path
+    # 5. DETERMINISTIC integration workspace path (R250 compliant)
     case "$INTEGRATION_TYPE" in
         "wave")
-            INTEGRATION_DIR="${SF_INSTANCE_DIR}/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
-            INTEGRATION_BRANCH=$(get_wave_integration_branch_name "$PHASE" "$WAVE")
+            INTEGRATION_WORKSPACE="${SF_INSTANCE_DIR}/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
+            INTEGRATION_BRANCH=$(get_wave_integration_branch_name "$PHASE" "$WAVE" 2>/dev/null || echo "phase${PHASE}-wave${WAVE}-integration")
             ;;
         "phase")
-            INTEGRATION_DIR="${SF_INSTANCE_DIR}/efforts/phase${PHASE}/phase-integration-workspace"
-            INTEGRATION_BRANCH=$(get_phase_integration_branch_name "$PHASE")
+            INTEGRATION_WORKSPACE="${SF_INSTANCE_DIR}/efforts/phase${PHASE}/phase-integration-workspace"
+            INTEGRATION_BRANCH=$(get_phase_integration_branch_name "$PHASE" 2>/dev/null || echo "phase${PHASE}-integration")
             ;;
         "project")
-            INTEGRATION_DIR="${SF_INSTANCE_DIR}/efforts/project-integration-workspace"
-            INTEGRATION_BRANCH=$(get_project_integration_branch_name)
+            INTEGRATION_WORKSPACE="${SF_INSTANCE_DIR}/efforts/project-integration-workspace"
+            INTEGRATION_BRANCH=$(get_project_integration_branch_name 2>/dev/null || echo "project-integration")
             ;;
     esac
     
-    echo "Creating integration workspace at: $INTEGRATION_DIR"
-    mkdir -p "$(dirname "$INTEGRATION_DIR")"
+    # DETERMINISTIC: The actual repo goes INTO integration-workspace as 'repo'
+    INTEGRATION_DIR="${INTEGRATION_WORKSPACE}/repo"
     
-    # 6. Load target repository URL
-    TARGET_REPO_URL=$(yq '.target_repository.url' "$SF_INSTANCE_DIR/target-repo-config.yaml")
+    echo "📍 Integration workspace: $INTEGRATION_WORKSPACE"
+    echo "📍 Repository will be at: $INTEGRATION_DIR"
     
+    # 6. Handle re-integration (DETERMINISTIC ARCHIVING)
+    if [ -d "$INTEGRATION_WORKSPACE" ]; then
+        ARCHIVE_NUM=1
+        while [ -d "${INTEGRATION_WORKSPACE}-archived-${ARCHIVE_NUM}" ]; do
+            ARCHIVE_NUM=$((ARCHIVE_NUM + 1))
+        done
+        echo "📦 Archiving previous integration to: ${INTEGRATION_WORKSPACE}-archived-${ARCHIVE_NUM}"
+        mv "$INTEGRATION_WORKSPACE" "${INTEGRATION_WORKSPACE}-archived-${ARCHIVE_NUM}"
+    fi
+    
+    # 7. Create fresh integration workspace
+    mkdir -p "$INTEGRATION_WORKSPACE"
+    
+    # 8. Load and validate target repository URL
     if [ -z "$TARGET_REPO_URL" ] || [ "$TARGET_REPO_URL" = "null" ]; then
         echo "🔴 ERROR: No target repository URL in config!"
         exit 191
     fi
     
-    # 7. SINGLE-BRANCH FULL clone (R271 Supreme Law)
-    echo "📦 Creating FULL integration clone from branch: $BASE_BRANCH"
+    # 9. SINGLE-BRANCH FULL clone INTO workspace/repo (R271 + R250)
+    echo "📦 Cloning target repo INTO: ${INTEGRATION_WORKSPACE}/repo"
+    echo "   From branch: $BASE_BRANCH"
     
     git clone \
         --single-branch \

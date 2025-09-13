@@ -203,6 +203,12 @@ The system will check for this marker. No marker = Immediate failure.
    - Criticality: SUPREME LAW - CD to correct directory before spawn
    - Summary: Must change to agent's working directory before spawning
 
+6. **🚨🚨🚨 R338** - Mandatory Line Count State Tracking
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R338-mandatory-line-count-state-tracking.md`
+   - Criticality: BLOCKING - -50% per missing tracking, -100% if none
+   - Summary: TELL Code Reviewers to use standardized SIZE MEASUREMENT REPORT format
+   - **CRITICAL**: Tell Code Reviewers: "Report 'Implementation Lines:' in standardized format per R338"
+
 **Note**: Additional TODO persistence rules (R287) apply from orchestrator.md.
 
 ## 🚨 SPAWN_CODE_REVIEWERS_FOR_REVIEW IS A VERB - START SPAWNING IMMEDIATELY! 🚨

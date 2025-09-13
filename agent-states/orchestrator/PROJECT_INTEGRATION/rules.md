@@ -102,27 +102,29 @@ echo "$(date +%s) - Rules read and acknowledged for PROJECT_INTEGRATION" > .stat
 **Criticality**: BLOCKING - Stale integrations cause failed merges and lost fixes
 **Summary**: MUST verify all phase branches are fresh before creating project integration
 
-## 🚨 PROJECT_INTEGRATION IS A VERB - SET UP INFRASTRUCTURE NOW! 🚨
+## 🚨 PROJECT_INTEGRATION IS A VERB - COORDINATE PROJECT INTEGRATION NOW! 🚨
 
 ### IMMEDIATE ACTIONS UPON ENTERING PROJECT_INTEGRATION
 
 **THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
-1. Create project integration workspace per R283
-2. Set up isolated integration environment
-3. Prepare for Code Reviewer merge plan creation
-4. Document integration infrastructure
-5. Transition to SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN
+1. Check if project integration infrastructure exists NOW
+2. If NO infrastructure: Transition to SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE
+3. If infrastructure EXISTS: Transition to SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN
+4. Update state file with the appropriate next state
+5. Stop per R322 for state transition
 
 **FORBIDDEN - AUTOMATIC FAILURE:**
 - ❌ "STATE TRANSITION COMPLETE: Now in PROJECT_INTEGRATION" [stops]
 - ❌ "Successfully entered PROJECT_INTEGRATION state" [waits]
 - ❌ "Ready to set up project integration" [pauses]
 - ❌ "I'm in PROJECT_INTEGRATION state" [does nothing]
+- ❌ Creating infrastructure yourself (PROJECT_INTEGRATION only coordinates!)
+- ❌ Merging branches yourself (R329 violation!)
 
 **REQUIRED - IMMEDIATE ACTION:**
-- ✅ "Entering PROJECT_INTEGRATION, creating isolated workspace NOW..."
-- ✅ "START PROJECT INTEGRATION SETUP per R283..."
-- ✅ "PROJECT_INTEGRATION: Setting up integration infrastructure..."
+- ✅ "PROJECT_INTEGRATION STATE: Checking for existing project integration infrastructure..."
+- ✅ "No infrastructure found, transitioning to SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE..."
+- ✅ "Infrastructure exists, transitioning to SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN..."
 
 ## State Context
 
@@ -133,12 +135,20 @@ echo "$(date +%s) - Rules read and acknowledged for PROJECT_INTEGRATION" > .stat
 - Ready for project-wide integration
 
 **Purpose:**
-PROJECT_INTEGRATION creates the infrastructure for merging ALL phases:
-1. Create isolated project integration workspace (R283)
-2. Clone target repository (NOT software-factory)
-3. Create project-integration branch
-4. Prepare for merging all phase integration branches
-5. Document project integration plan
+**THIS STATE IS FOR COORDINATION ONLY!**
+
+The PROJECT_INTEGRATION state is a decision point that:
+1. **CHECKS** if project integration infrastructure exists
+2. **TRANSITIONS** to SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE if no infrastructure
+3. **TRANSITIONS** to SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN if infrastructure exists
+
+**THIS STATE NEVER:**
+- ❌ Creates project integration workspace itself
+- ❌ Sets up branches or directories itself
+- ❌ Performs any actual integration work
+- ❌ Executes git merges (R329 violation!)
+
+You are the COORDINATOR of project integration flow.
 
 ## 🔴🔴🔴 CRITICAL: VERIFY PHASE BRANCH FRESHNESS FIRST! 🔴🔴🔴
 

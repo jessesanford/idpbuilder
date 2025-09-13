@@ -46,6 +46,21 @@ Bash: cd $EFFORT_DIR && git diff --stat      # CD in EVERY command!
 
 **NO EXCEPTIONS - CD EVERY TIME OR FAIL!**
 
+### 🚨🚨🚨 SUPREME LAW #3: R338 - MANDATORY LINE COUNT REPORTING 🚨🚨🚨
+
+**YOU MUST REPORT LINE COUNTS IN STANDARDIZED FORMAT FOR ORCHESTRATOR!**
+
+**RULE R338 REQUIRES:**
+- ✅ Use standardized "📊 SIZE MEASUREMENT REPORT" section
+- ✅ Include exact command, base branch, timestamp
+- ✅ Include raw tool output for verification
+- ✅ Report "Implementation Lines:" for orchestrator parsing
+- ✅ NEVER omit or abbreviate size reporting
+
+**ORCHESTRATOR DEPENDS ON YOUR FORMAT TO UPDATE STATE FILE!**
+
+**See: rule-library/R338-mandatory-line-count-state-tracking.md**
+
 ### 🔴🔴🔴 SUPREME LAW #4: R235 - MANDATORY PRE-FLIGHT VERIFICATION 🔴🔴🔴
 
 **VIOLATION = -100% GRADE (AUTOMATIC FAILURE)**
@@ -157,6 +172,11 @@ echo "Type: $(file "$ARTIFACT")"
 
 **🔴🔴🔴 ABSOLUTE REQUIREMENT: ONLY LINE-COUNTER.SH IS VALID! 🔴🔴🔴**
 
+**CRITICAL: The tool ONLY counts implementation code!**
+- ✅ INCLUDED: Business logic, APIs, core algorithms
+- ❌ EXCLUDED: Tests (*_test.go), demos (demo-*), docs (*.md), configs (*.yaml)
+- ❌ EXCLUDED: Generated code (*.pb.go, *_generated.*), dependencies (vendor/*)
+
 **YOU MUST USE THE LINE COUNTER TOOL - NO OTHER METHOD IS ALLOWED!**
 - ✅ **MANDATORY**: Use `${PROJECT_ROOT}/tools/line-counter.sh`
 - ✅ **AUTO-DETECTION**: Tool automatically finds correct base branch
@@ -188,7 +208,8 @@ $PROJECT_ROOT/tools/line-counter.sh
 # Tool output will show:
 # 🎯 Detected base: [automatically determined]
 # 📦 Analyzing branch: [current branch]
-# ✅ Total non-generated lines: [THE ONLY NUMBER THAT MATTERS]
+# ✅ Total implementation lines: [THE ONLY NUMBER THAT MATTERS]
+# ⚠️  Note: Tests, demos, docs, configs NOT included
 ```
 
 ### ❌❌❌ THESE ARE IMMEDIATE -100% FAILURES:
@@ -1000,11 +1021,24 @@ NEEDS_SPLIT:
 - **Reviewer**: Code Reviewer Agent
 - **Decision**: [ACCEPTED/NEEDS_FIXES/NEEDS_SPLIT]
 
+## 📊 SIZE MEASUREMENT REPORT
+**Implementation Lines:** [count]
+**Command:** ${PROJECT_ROOT}/tools/line-counter.sh [branch_name]
+**Auto-detected Base:** [base_branch_from_tool_output]
+**Timestamp:** [ISO_8601_timestamp]
+**Within Limit:** ✅/❌ [Yes/No] ([count] < 800)
+**Excludes:** tests/demos/docs per R007
+
+### Raw Output:
+```
+[PASTE EXACT TOOL OUTPUT HERE]
+```
+
 ## Size Analysis
-- **Current Lines**: [count from designated tool]
+- **Current Lines**: [count from tool]
 - **Limit**: 800 lines
 - **Status**: [COMPLIANT/WARNING/EXCEEDS]
-- **Tool Used**: ${PROJECT_ROOT}/tools/line-counter.sh (NO parameters)
+- **Requires Split**: [YES/NO]
 
 ## Functionality Review
 - ✅/❌ Requirements implemented correctly

@@ -12,17 +12,39 @@
 
 ## Requirements
 
-### 1. Workspace Location (MANDATORY)
-Integration MUST happen in isolated workspace under:
-```
-/efforts/phase{X}/wave{Y}/integration-workspace/
+### 1. Workspace Location (MANDATORY - EXACT SPECIFICATIONS)
+
+#### 🔴🔴🔴 DETERMINISTIC DIRECTORY STRUCTURE 🔴🔴🔴
+
+**EXACT STRUCTURE (NO AMBIGUITY):**
+```bash
+# SF_INSTANCE_DIR is the Software Factory instance directory
+SF_INSTANCE_DIR="/home/vscode/software-factory-template"  # Or wherever SF is installed
+
+# Integration workspace is ALWAYS a subdirectory, target repo cloned AS subdirectory
+INTEGRATION_WORKSPACE="${SF_INSTANCE_DIR}/efforts/phase{X}/wave{Y}/integration-workspace"
+
+# The actual clone goes INTO integration-workspace as 'repo' subdirectory
+INTEGRATION_REPO="${INTEGRATION_WORKSPACE}/repo"
+
+# EXACT STRUCTURE:
+${SF_INSTANCE_DIR}/
+└── efforts/
+    └── phase2/
+        └── wave1/
+            └── integration-workspace/     # Created by mkdir -p
+                └── repo/                   # Target repo cloned here
+                    ├── .git/
+                    ├── src/
+                    └── ... (target repo contents)
 ```
 
 **NEVER perform integration in:**
 - ❌ The orchestrator's main directory (`/home/vscode/software-factory-template/`)
 - ❌ Any effort development workspace
-- ❌ The Software Factory instance directory
+- ❌ The Software Factory instance directory root
 - ❌ Any shared or common directories
+- ❌ Directly as `integration-workspace` (must be `integration-workspace/repo`)
 
 ### 2. Fresh Clone Requirements
 The integration workspace MUST be:
@@ -31,49 +53,126 @@ The integration workspace MUST be:
 - Based on the correct base branch (main/develop)
 - Completely separate from all effort workspaces
 
-### 3. Directory Structure
+### 3. Directory Structure (DETERMINISTIC)
+
+#### First Integration Attempt:
 ```
-/efforts/
+${SF_INSTANCE_DIR}/efforts/
 ├── phase1/
 │   └── wave1/
-│       ├── effort1/              # Development workspace
-│       ├── effort2/              # Development workspace  
-│       └── integration-workspace/ # ISOLATED integration (fresh clone)
+│       ├── effort1/                    # Development workspace
+│       ├── effort2/                    # Development workspace  
+│       └── integration-workspace/      # Integration directory
+│           └── repo/                   # Target repo cloned here
+│               ├── .git/
+│               ├── INTEGRATION-METADATA.md
+│               └── ... (project files)
 ```
 
-### 4. Integration Setup Protocol (FOLLOWS R104)
+#### Re-integration After Fixes (DETERMINISTIC HANDLING):
+```
+${SF_INSTANCE_DIR}/efforts/
+├── phase1/
+│   └── wave1/
+│       ├── effort1/                           # Development workspace
+│       ├── effort2/                           # Development workspace  
+│       ├── integration-workspace-archived-1/  # Previous attempt (renamed)
+│       │   └── repo/                         # Old integration preserved
+│       └── integration-workspace/             # Fresh re-integration
+│           └── repo/                         # New clean clone
+│               ├── .git/
+│               ├── INTEGRATION-METADATA.md
+│               └── ... (project files)
+```
+
+**RE-INTEGRATION PROTOCOL (DETERMINISTIC):**
+1. If `integration-workspace` exists, rename to `integration-workspace-archived-N`
+2. Create fresh `integration-workspace` directory
+3. Clone target repo as `integration-workspace/repo`
+4. Use SAME branch name (force-push if exists)
+
+### 4. Integration Setup Protocol (DETERMINISTIC AND EXACT)
 ```bash
-# CORRECT approach - Per R104, integration branches in TARGET repository
-PHASE=1
-WAVE=1
-INTEGRATION_DIR="$CLAUDE_PROJECT_DIR/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
-
-# Read target repository configuration (R104 requirement)
-TARGET_CONFIG="$CLAUDE_PROJECT_DIR/target-repo-config.yaml"
-TARGET_REPO_PATH=$(yq '.repository_path' "$TARGET_CONFIG")
-TARGET_REPO_NAME=$(yq '.repository_name' "$TARGET_CONFIG")
-
-# Clean any previous integration
-rm -rf "$INTEGRATION_DIR"
-
-# Create fresh clone of TARGET repository (per R104)
-mkdir -p "$INTEGRATION_DIR"
-cd "$INTEGRATION_DIR"
-
-# Clone the TARGET repository (not software-factory!)
-git clone "$TARGET_REPO_PATH" "$TARGET_REPO_NAME"
-cd "$TARGET_REPO_NAME"
-
-# CRITICAL SAFETY CHECK - Verify correct repository
-REMOTE_URL=$(git remote get-url origin)
-if [[ "$REMOTE_URL" == *"software-factory"* ]]; then
-    echo "❌ CRITICAL: Cloned orchestrator repository instead of target!"
-    echo "Expected: Target project repository"
-    echo "Got: $REMOTE_URL"
-    exit 1
-fi
-
-git checkout -b "wave-${WAVE}-integration"  # Per R104 naming convention
+# 🔴🔴🔴 DETERMINISTIC INTEGRATION SETUP 🔴🔴🔴
+setup_integration_infrastructure() {
+    local PHASE=$1
+    local WAVE=$2
+    local INTEGRATION_TYPE=$3  # "wave", "phase", or "project"
+    
+    # EXACT PATHS (NO AMBIGUITY)
+    SF_INSTANCE_DIR="$(pwd)"  # Must be in SF instance root
+    INTEGRATION_BASE_DIR="${SF_INSTANCE_DIR}/efforts"
+    
+    # Determine exact integration path based on type
+    case "$INTEGRATION_TYPE" in
+        "wave")
+            INTEGRATION_DIR="${INTEGRATION_BASE_DIR}/phase${PHASE}/wave${WAVE}/integration-workspace"
+            BRANCH_NAME="phase${PHASE}-wave${WAVE}-integration"
+            ;;
+        "phase")
+            INTEGRATION_DIR="${INTEGRATION_BASE_DIR}/phase${PHASE}/phase-integration-workspace"
+            BRANCH_NAME="phase${PHASE}-integration"
+            ;;
+        "project")
+            INTEGRATION_DIR="${INTEGRATION_BASE_DIR}/project-integration-workspace"
+            BRANCH_NAME="project-integration"
+            ;;
+    esac
+    
+    # Handle re-integration (DETERMINISTIC)
+    if [ -d "$INTEGRATION_DIR" ]; then
+        # Archive old integration attempt
+        ARCHIVE_NUM=1
+        while [ -d "${INTEGRATION_DIR}-archived-${ARCHIVE_NUM}" ]; do
+            ARCHIVE_NUM=$((ARCHIVE_NUM + 1))
+        done
+        echo "📦 Archiving previous integration attempt to ${INTEGRATION_DIR}-archived-${ARCHIVE_NUM}"
+        mv "$INTEGRATION_DIR" "${INTEGRATION_DIR}-archived-${ARCHIVE_NUM}"
+    fi
+    
+    # Create fresh integration directory
+    mkdir -p "$INTEGRATION_DIR"
+    
+    # Read target repository configuration
+    TARGET_REPO_URL=$(yq '.target_repository.url' "${SF_INSTANCE_DIR}/target-repo-config.yaml")
+    
+    # Determine base branch per R308
+    BASE_BRANCH=$(determine_integration_base_branch "$INTEGRATION_TYPE" "$PHASE" "$WAVE")
+    
+    # Clone INTO integration-workspace as 'repo' subdirectory (DETERMINISTIC)
+    echo "📦 Cloning target repo INTO ${INTEGRATION_DIR}/repo"
+    git clone \
+        --single-branch \
+        --branch "$BASE_BRANCH" \
+        "$TARGET_REPO_URL" \
+        "${INTEGRATION_DIR}/repo"
+    
+    # Change to the repo directory
+    cd "${INTEGRATION_DIR}/repo"
+    
+    # CRITICAL SAFETY CHECK - Verify correct repository
+    REMOTE_URL=$(git remote get-url origin)
+    if [[ "$REMOTE_URL" == *"software-factory"* ]]; then
+        echo "❌ CRITICAL: Cloned orchestrator repository instead of target!"
+        echo "Expected: Target project repository"
+        echo "Got: $REMOTE_URL"
+        exit 250
+    fi
+    
+    # Create or force-update integration branch
+    git checkout -b "$BRANCH_NAME"
+    
+    # Force push if branch exists (re-integration case)
+    if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
+        echo "⚠️ Branch exists, will force-push after integration"
+        git push --force-with-lease -u origin "$BRANCH_NAME"
+    else
+        git push -u origin "$BRANCH_NAME"
+    fi
+    
+    echo "✅ Integration infrastructure ready at: ${INTEGRATION_DIR}/repo"
+    echo "✅ Branch: $BRANCH_NAME (base: $BASE_BRANCH)"
+}
 ```
 
 ### 5. Prohibited Actions

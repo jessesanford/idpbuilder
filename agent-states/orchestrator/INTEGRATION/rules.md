@@ -227,24 +227,23 @@ The system will check for this marker. No marker = Immediate failure.
 **Criticality**: BLOCKING - Must verify branches are mergeable before attempting
 **Summary**: Check for conflicts and mergeability before integration operations
 
-## 🚨 INTEGRATION IS A VERB - SETUP INTEGRATION INFRASTRUCTURE NOW! 🚨
+## 🚨 INTEGRATION IS A VERB - COORDINATE INTEGRATION NOW! 🚨
 
 ### 🔴🔴🔴 CRITICAL: YOU ARE ALREADY IN INTEGRATION STATE! 🔴🔴🔴
 
 **If current_state = "INTEGRATION" in orchestrator-state.json, you MUST:**
-1. **IMMEDIATELY** start creating integration infrastructure
-2. **NO ANNOUNCEMENTS** - just start working
-3. **NO WAITING** - integration work begins NOW
+1. **IMMEDIATELY** check if integration infrastructure exists
+2. **NO ANNOUNCEMENTS** - just start checking
+3. **NO WAITING** - coordination begins NOW
 
 ### IMMEDIATE ACTIONS UPON ENTERING INTEGRATION
 
 **THE MOMENT YOU SEE current_state: INTEGRATION, YOU MUST:**
-1. Create integration working directory NOW (no delay)
-2. Create integration branch immediately
-3. Push integration branch to remote
-4. CD into integration directory
-5. Spawn Code Reviewer for MERGE PLAN creation
-6. After MERGE PLAN ready, spawn Integration Agent for execution
+1. Check if integration infrastructure exists NOW (no delay)
+2. If NO infrastructure: Transition to SETUP_INTEGRATION_INFRASTRUCTURE
+3. If infrastructure EXISTS: Transition to SPAWN_CODE_REVIEWER_MERGE_PLAN
+4. Update state file with the appropriate next state
+5. Stop per R322 for state transition
 
 **FORBIDDEN - AUTOMATIC FAILURE:**
 - ❌ "STATE TRANSITION COMPLETE: Now in INTEGRATION" [stops]
@@ -253,23 +252,37 @@ The system will check for this marker. No marker = Immediate failure.
 - ❌ "I'm in INTEGRATION state" [does nothing]
 - ❌ "Preparing to setup integration..." [delays]
 - ❌ "I see we're in INTEGRATION state..." [announces]
+- ❌ Creating infrastructure yourself (INTEGRATION only coordinates!)
 
 **REQUIRED - IMMEDIATE ACTION:**
-- ✅ "INTEGRATION STATE: Creating integration infrastructure NOW..."
-- ✅ "Setting up integration workspace at /efforts/phase${X}/wave${Y}/integration-workspace..."
-- ✅ "Creating integration branch and spawning Code Reviewer for merge plan..."
+- ✅ "INTEGRATION STATE: Checking for existing integration infrastructure..."
+- ✅ "No infrastructure found, transitioning to SETUP_INTEGRATION_INFRASTRUCTURE..."
+- ✅ "Infrastructure exists, transitioning to SPAWN_CODE_REVIEWER_MERGE_PLAN..."
 
 ### ⚠️⚠️⚠️ RULE R020 - State Transitions
 **SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R020-state-transitions.md`
 
 ## State Context
-You are the COORDINATOR of integration, not the executor. Your responsibilities:
-1. **CREATE** integration workspace infrastructure
-2. **SPAWN** Code Reviewer to create merge plans
-3. **SPAWN** Integration Agent to execute ALL merges (R329 MANDATORY)
-4. **SPAWN** Code Reviewer to validate builds/tests
-5. **MONITOR** progress via reports
-6. **COORDINATE** fixes through SW Engineers if needed
+
+### 🔴🔴🔴 INTEGRATION IS A COORDINATION-ONLY STATE 🔴🔴🔴
+
+**THIS STATE ONLY DETERMINES THE NEXT TRANSITION - IT DOES NOT CREATE INFRASTRUCTURE!**
+
+The INTEGRATION state is a decision point that:
+1. **CHECKS** if integration infrastructure exists
+2. **TRANSITIONS** to SETUP_INTEGRATION_INFRASTRUCTURE if no infrastructure
+3. **TRANSITIONS** to SPAWN_CODE_REVIEWER_MERGE_PLAN if infrastructure exists
+
+**THIS STATE NEVER:**
+- ❌ Creates integration workspace itself
+- ❌ Sets up branches or directories itself
+- ❌ Performs any actual integration work
+
+You are the COORDINATOR of integration flow. Your ONLY responsibilities in this state:
+1. **CHECK** if integration infrastructure already exists
+2. **DECIDE** which state to transition to based on infrastructure status
+3. **UPDATE** state file with appropriate next state
+4. **STOP** per R322 for state transition
 
 **YOU MUST NEVER (R329 + R006 ENFORCEMENT):**
 - ❌ Execute git merges yourself (R329 VIOLATION = IMMEDIATE FAILURE)

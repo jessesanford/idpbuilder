@@ -73,6 +73,12 @@ echo "$(date +%s) - Rules read and acknowledged for MONITOR_REVIEWS" > .state_ru
 **Criticality**: BLOCKING - Orchestrator MUST NOT use line-counter.sh
 **Summary**: Code Reviewers measure code size, NOT orchestrators
 
+### 🚨🚨🚨 R338 - MANDATORY LINE COUNT STATE TRACKING (BLOCKING)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R338-mandatory-line-count-state-tracking.md`
+**Criticality**: BLOCKING - -50% per missing tracking, -100% if none
+**Summary**: MUST capture line counts from Code Reviewer reports and update orchestrator-state.json
+**Action Required**: When Code Reviewer completes, extract "Implementation Lines:" and update line_count_tracking
+
 ### ⚠️⚠️⚠️ R317 - Working Directory Restrictions (WARNING)
 **File**: `$CLAUDE_PROJECT_DIR/rule-library/R317-working-directory-restrictions.md`
 **Criticality**: WARNING - -25% for violations

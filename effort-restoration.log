@@ -1,0 +1,175 @@
+Starting effort restoration at 2025-09-11 21:40:28 UTC
+═══════════════════════════════════════════════════════════════════════════
+🏭 SOFTWARE FACTORY 2.0 - EFFORT RESTORATION UTILITY
+═══════════════════════════════════════════════════════════════════════════
+Timestamp: 2025-09-11 21:40:28 UTC
+═══════════════════════════════════════════════════════════════════════════
+[0;36m
+📋 Checking prerequisites...[0m
+[0;32m✅ All prerequisites met[0m
+[1m[0;36m
+🏭 Starting effort restoration from: ./orchestrator-state.json[0m
+[0;34m📍 Target repository: https://github.com/jessesanford/idpbuilder.git[0m
+[1m[0;36m
+📋 Processing COMPLETED efforts...[0m
+[0;34m  Found 7 completed efforts[0m
+[0;36m
+🔄 Processing effort: kind-cert-extraction[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction[0m
+[0;34m  Path: efforts/phase1/wave1/kind-cert-extraction[0m
+[0;34m  Base: main[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase1/wave1/kind-cert-extraction'...
+[0;32m  ✅ Successfully cloned kind-cert-extraction[0m
+[0;36m
+🔄 Processing effort: registry-tls-trust[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase1/wave1/registry-tls-trust[0m
+[0;34m  Path: efforts/phase1/wave1/registry-tls-trust[0m
+[0;34m  Base: main[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase1/wave1/registry-tls-trust'...
+[0;32m  ✅ Successfully cloned registry-tls-trust[0m
+[0;36m
+🔄 Processing effort: registry-auth-types[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase1/wave1/registry-auth-types[0m
+[0;34m  Path: efforts/phase1/wave1/registry-auth-types[0m
+[0;34m  Base: main[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase1/wave1/registry-auth-types'...
+[0;32m  ✅ Successfully cloned registry-auth-types[0m
+[0;34m  📁 Created directory structure: efforts/phase1/wave2[0m
+[0;36m
+🔄 Processing effort: cert-validation[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase1/wave2/cert-validation[0m
+[0;34m  Path: [0;34m  📁 Created directory structure: efforts/phase1/wave2[0m
+efforts/phase1/wave2/cert-validation[0m
+[0;34m  Base: main[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into '[0;34m  📁 Created directory structure: efforts/phase1/wave2[0m
+efforts/phase1/wave2/cert-validation'...
+[0;32m  ✅ Successfully cloned cert-validation[0m
+[0;36m
+🔄 Processing effort: fallback-strategies[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase1/wave2/fallback-strategies[0m
+[0;34m  Path: efforts/phase1/wave2/fallback-strategies[0m
+[0;34m  Base: phase1/wave1/integration[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase1/wave2/fallback-strategies'...
+[0;32m  ✅ Successfully cloned fallback-strategies[0m
+[0;34m  📁 Created directory structure: efforts/phase2/wave1[0m
+[0;36m
+🔄 Processing effort: image-builder[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase2/wave1/image-builder[0m
+[0;34m  Path: [0;34m  📁 Created directory structure: efforts/phase2/wave1[0m
+efforts/phase2/wave1/image-builder[0m
+[0;34m  Base: main[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into '[0;34m  📁 Created directory structure: efforts/phase2/wave1[0m
+efforts/phase2/wave1/image-builder'...
+[0;32m  ✅ Successfully cloned image-builder[0m
+[0;36m
+🔄 Processing effort: gitea-client[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase2/wave1/gitea-client[0m
+[0;34m  Path: efforts/phase2/wave1/gitea-client[0m
+[0;34m  Base: main[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase2/wave1/gitea-client'...
+[0;32m  ✅ Successfully cloned gitea-client[0m
+[1m[0;36m
+📋 Processing IN-PROGRESS efforts...[0m
+[1;33m  No in-progress efforts found[0m
+[1m[0;36m
+📋 Processing SPLIT TRACKING efforts...[0m
+[0;34m  Processing splits for: cert-validation[0m
+[0;36m
+🔄 Processing effort: cert-validation-split-001[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001[0m
+[0;34m  Path: efforts/phase1/wave2/cert-validation-split-001[0m
+[0;34m  Base: phase1/wave1/integration[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase1/wave2/cert-validation-split-001'...
+[0;32m  ✅ Successfully cloned cert-validation-split-001[0m
+[0;36m
+🔄 Processing effort: cert-validation-split-002[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002[0m
+[0;34m  Path: efforts/phase1/wave2/cert-validation-split-002[0m
+[0;34m  Base: cert-validation-split-001[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase1/wave2/cert-validation-split-002'...
+[0;32m  ✅ Successfully cloned cert-validation-split-002[0m
+[0;36m
+🔄 Processing effort: cert-validation-split-003[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003[0m
+[0;34m  Path: efforts/phase1/wave2/cert-validation-split-003[0m
+[0;34m  Base: cert-validation-split-002[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase1/wave2/cert-validation-split-003'...
+[0;32m  ✅ Successfully cloned cert-validation-split-003[0m
+[0;34m  Processing splits for: gitea-client[0m
+[0;36m
+🔄 Processing effort: gitea-client-split-001[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001[0m
+[0;34m  Path: efforts/phase2/wave1/gitea-client-split-001[0m
+[0;34m  Base: main[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase2/wave1/gitea-client-split-001'...
+[0;32m  ✅ Successfully cloned gitea-client-split-001[0m
+[0;36m
+🔄 Processing effort: gitea-client-split-002[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002[0m
+[0;34m  Path: efforts/phase2/wave1/gitea-client-split-002[0m
+[0;34m  Base: main[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase2/wave1/gitea-client-split-002'...
+[0;32m  ✅ Successfully cloned gitea-client-split-002[0m
+[0;34m  Processing splits for: registry-auth-types[0m
+[0;36m
+🔄 Processing effort: registry-auth-types-split-001[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001[0m
+[0;34m  Path: efforts/phase1/wave1/registry-auth-types-split-001[0m
+[0;34m  Base: main[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase1/wave1/registry-auth-types-split-001'...
+[0;32m  ✅ Successfully cloned registry-auth-types-split-001[0m
+[0;36m
+🔄 Processing effort: registry-auth-types-split-002[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002[0m
+[0;34m  Path: efforts/phase1/wave1/registry-auth-types-split-002[0m
+[0;34m  Base: main[0m
+[0;34m  📥 Cloning fresh effort...[0m
+Cloning into 'efforts/phase1/wave1/registry-auth-types-split-002'...
+[0;32m  ✅ Successfully cloned registry-auth-types-split-002[0m
+[1m[0;36m
+📋 Processing INTEGRATION workspaces...[0m
+[1;33m  No integration branches found[0m
+[1m[0;36m
+🔍 Verifying restoration...[0m
+[0;34m  Total git repositories restored: 12[0m
+[0;32m  ✅ Efforts root directory exists[0m
+[0;34m  📁 Phases found: 2[0m
+[0;36m
+📂 Restored structure:[0m
+[1m[0;36m
+═══════════════════════════════════════════════════════════════════════════[0m
+[1m[0;36m📊 RESTORATION SUMMARY[0m
+[1m[0;36m═══════════════════════════════════════════════════════════════════════════[0m
+[0;32m
+✅ Successful: 14 efforts[0m
+[0;32m    • kind-cert-extraction (cloned)[0m
+[0;32m    • registry-tls-trust (cloned)[0m
+[0;32m    • registry-auth-types (cloned)[0m
+[0;32m    • cert-validation (cloned)[0m
+[0;32m    • fallback-strategies (cloned)[0m
+[0;32m    • image-builder (cloned)[0m
+[0;32m    • gitea-client (cloned)[0m
+[0;32m    • cert-validation-split-001 (cloned)[0m
+[0;32m    • cert-validation-split-002 (cloned)[0m
+[0;32m    • cert-validation-split-003 (cloned)[0m
+[0;32m    • gitea-client-split-001 (cloned)[0m
+[0;32m    • gitea-client-split-002 (cloned)[0m
+[0;32m    • registry-auth-types-split-001 (cloned)[0m
+[0;32m    • registry-auth-types-split-002 (cloned)[0m
+[0;36m
+📝 Full log saved to: effort-restoration.log[0m
+[0;36m⏰ Completed at: 2025-09-11 21:40:48 UTC[0m
+[0;32m📊 Restoration state saved to: effort-restoration-state.json[0m

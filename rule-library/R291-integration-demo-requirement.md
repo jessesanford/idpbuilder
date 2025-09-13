@@ -13,11 +13,11 @@
 ## 🔴🔴🔴 SUPREME GATE: BUILD/TEST/DEMO MUST PASS OR ERROR_RECOVERY 🔴🔴🔴
 
 **ABSOLUTE REQUIREMENT - NO EXCEPTIONS:**
-Every integration at EVERY level (effort/wave/phase/project) MUST:
+Every integration at wave/phase/project level MUST:
 1. ✅ **BUILD SUCCESSFULLY** - Compilation completes without errors
 2. ✅ **PASS ALL TESTS** - Unit, integration, and E2E tests pass
 3. ✅ **PRODUCE WORKING OUTPUT** - Binary/package/dist created
-4. ✅ **DEMO FUNCTIONALITY** - Features actually work
+4. ✅ **DEMO FUNCTIONALITY** - Integrated features actually work
 
 **🚨🚨🚨 MANDATORY ERROR_RECOVERY TRIGGERS 🚨🚨🚨**
 
@@ -245,7 +245,7 @@ EOF
 
 ### 4. Level-Specific Requirements
 
-#### Wave Integration Demo
+#### Wave Integration Demo (MANDATORY even for single-effort waves)
 ```bash
 # Wave level requirements
 - Demonstrate wave-specific features
@@ -253,9 +253,11 @@ EOF
 - Verify no regression in previous features
 - Create WAVE-DEMO.md
 - Create wave-test-harness.sh
+# NOTE: Single-effort waves STILL need integration demos!
+# The integration might be trivial but MUST be validated
 ```
 
-#### Phase Integration Demo
+#### Phase Integration Demo (MANDATORY even for single-wave phases)
 ```bash
 # Phase level requirements
 - Demonstrate all waves integrated
@@ -264,6 +266,8 @@ EOF
 - Create PHASE-${N}-DEMO.md
 - Create phase${N}-test-harness.sh
 - Verify against phase plan deliverables
+# NOTE: Single-wave phases STILL need integration demos!
+# May reuse wave demo content but MUST run at phase level
 ```
 
 #### Project Integration Demo
@@ -565,16 +569,19 @@ echo "Integration complete"  # NO BUILD, NO TESTS, NO DEMO!
 ## Enforcement
 
 This rule is enforced at:
-1. **Wave Integration** - Every wave must demo
-2. **Phase Integration** - Every phase must demo
+1. **Wave Integration** - Every wave must demo (including single-effort waves)
+2. **Phase Integration** - Every phase must demo (including single-wave phases)
 3. **Project Integration** - Final project must demo
 4. **PR Reviews** - No merge without demo evidence
 5. **State Transitions** - Cannot proceed without demo
+
+**CRITICAL**: Demos are NOT required at individual effort level, only at integration points!
 
 ## Remember
 
 **"If it doesn't build, it doesn't work"**
 **"If it doesn't test, it's not verified"**
 **"If it doesn't demo, it's not complete"**
+**"Every integration needs a demo, even trivial ones"**
 
-Every integration MUST prove the code actually works through building, testing, and demonstration. No exceptions!
+Integration demos happen at wave/phase/project levels ONLY. Individual efforts don't need demos, but their integrations ALWAYS do - even single-effort waves and single-wave phases!

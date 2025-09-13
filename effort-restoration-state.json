@@ -1,0 +1,28 @@
+{
+  "restoration_timestamp": "2025-09-11 21:40:48 UTC",
+  "state_file_used": "./orchestrator-state.json",
+  "target_repository": "https://github.com/jessesanford/idpbuilder.git",
+  "successful_count": 14,
+  "failed_count": 0,
+  "skipped_count": 0,
+  "successful_efforts": [
+    "kind-cert-extraction (cloned)",
+    "registry-tls-trust (cloned)",
+    "registry-auth-types (cloned)",
+    "cert-validation (cloned)",
+    "fallback-strategies (cloned)",
+    "image-builder (cloned)",
+    "gitea-client (cloned)",
+    "cert-validation-split-001 (cloned)",
+    "cert-validation-split-002 (cloned)",
+    "cert-validation-split-003 (cloned)",
+    "gitea-client-split-001 (cloned)",
+    "gitea-client-split-002 (cloned)",
+    "registry-auth-types-split-001 (cloned)",
+    "registry-auth-types-split-002 (cloned)"
+  ],
+  "failed_efforts": [
+  ],
+  "skipped_efforts": [
+  ]
+}
