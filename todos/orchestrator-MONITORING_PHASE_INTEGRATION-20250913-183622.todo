@@ -1,0 +1,6 @@
+[{"content": "Verify Phase 1 merge plan exists", "activeForm": "Verifying Phase 1 merge plan exists", "status": "completed"}, 
+ {"content": "Verify Phase 1 integration infrastructure ready", "activeForm": "Verifying Phase 1 integration infrastructure ready", "status": "completed"}, 
+ {"content": "Spawn Integration Agent for Phase 1 merges", "activeForm": "Spawning Integration Agent for Phase 1 merges", "status": "completed"}, 
+ {"content": "Update state to MONITORING_PHASE_INTEGRATION", "activeForm": "Updating state to MONITORING_PHASE_INTEGRATION", "status": "completed"}, 
+ {"content": "Save TODOs and commit state changes", "activeForm": "Saving TODOs and committing state changes", "status": "completed"}, 
+ {"content": "Stop per R322 Part A", "activeForm": "Stopping per R322 Part A", "status": "pending"}]
