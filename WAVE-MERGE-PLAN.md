@@ -15,7 +15,7 @@ This plan outlines the merge strategy for integrating Phase 1, Wave 1 efforts in
 ## Integration Metadata
 - **Integration Branch**: `idpbuilder-oci-build-push/phase1/wave1/integration`
 - **Base Branch**: `main`
-- **Integration Directory**: `/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo`
+- **Integration Directory**: `/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace`
 - **Created By**: Code Reviewer Agent (WAVE_MERGE_PLANNING state)
 - **Compliance**: R269, R270, R307, R327
 
@@ -150,7 +150,7 @@ go mod verify
 
 ```bash
 # Prerequisites
-cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo
+cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace
 git checkout idpbuilder-oci-build-push/phase1/wave1/integration
 git pull origin idpbuilder-oci-build-push/phase1/wave1/integration
 
