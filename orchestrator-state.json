@@ -1,10 +1,10 @@
 {
-  "current_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
-  "previous_state": "PHASE_COMPLETE",
+  "current_state": "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
+  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-13T17:22:36Z",
-  "transition_reason": "Manual cascade correction - Phase 1 integration needed after Wave 2 fresh integration",
+  "transition_time": "2025-09-13T17:40:33Z",
+  "transition_reason": "Phase 1 integration infrastructure ready, need merge plan",
   "restart_instructions": {
     "CRITICAL": "CONTINUING R327 CASCADE",
     "current_task": "Setup Phase 1 integration infrastructure",
@@ -254,7 +254,7 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Create Phase 1 integration infrastructure combining fresh Wave 1 + fresh Wave 2",
+  "next_action": "Spawn Code Reviewer to create Phase 1 merge plan",
   "notes": "Wave 1 R327 cascade re-integration successful. All gates passed. Ready for code review.",
   "agents_spawned": [
     {
