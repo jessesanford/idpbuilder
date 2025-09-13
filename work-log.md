@@ -41,3 +41,12 @@ Conflicts resolved: Test files kept from split-002 with R321 fixes
 MERGED: kind-cert-extraction at Sat Sep 13 05:01:47 AM UTC 2025
 Status: SUCCESS - Certificate extraction functionality merged
 Conflicts resolved: pkg/util/git_repository_test.go kept with R321 fixes
+
+## Operation: Merge registry-tls-trust
+MERGED: registry-tls-trust at Sat Sep 13 05:02:14 AM UTC 2025
+Status: SUCCESS - Trust integration functionality merged
+Conflicts resolved: work-log.md (kept ours), go.mod/go.sum (kept from branch)
+
+## Integration Complete
+Timestamp: $(date)
+All merges successful, tests passing, documentation complete

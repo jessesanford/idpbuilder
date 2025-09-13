@@ -17,3 +17,8 @@ Sat Sep 13 05:01:20 AM UTC 2025
 MERGED: kind-cert-extraction at Sat Sep 13 05:01:47 AM UTC 2025
 === Step 4: Merging registry-tls-trust ===
 Sat Sep 13 05:01:53 AM UTC 2025
+MERGED: registry-tls-trust at Sat Sep 13 05:02:14 AM UTC 2025
+=== Post-merge cleanup ===
+=== Running build validation ===
+=== Running tests ===
+=== R291: Checking for demo scripts ===
