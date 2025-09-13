@@ -1,31 +1,45 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
-  "current_phase": 1,
-  "current_wave": 2,
-  "transition_time": "2025-09-13T14:01:24Z",
-  "transition_reason": "Integration infrastructure setup complete",
-  "restart_instructions": {
-    "CRITICAL": "ON RESTART - EXECUTE THIS SEQUENCE",
-    "current_task": "Spawn code-reviewer to create Wave 1 re-integration merge plan",
-    "context": "Wave 1 integration is STALE - needs R321 fixes from 2025-09-12 01:21:45 UTC integrated",
-    "sequence": [
-      "1. SPAWN_CODE_REVIEWER_MERGE_PLAN (current) - Create merge plan for Wave 1 with R321 fixes",
-      "2. WAITING_FOR_MERGE_PLAN - Wait for code-reviewer to complete",
-      "3. SPAWN_ENGINEERS_FOR_FIXES - Implement the Wave 1 re-integration",
-      "4. MONITOR_INTEGRATION - Monitor integration progress",
-      "5. SPAWN_CODE_REVIEWER - Review the integrated Wave 1",
-      "6. INTEGRATION_COMPLETE - Mark Wave 1 re-integration done",
-      "7. Cascade to Wave 2 re-integration (built on fixed Wave 1)",
-      "8. Cascade to Phase 1 re-integration (built on fixed Wave 2)"
+  "current_state": "WAITING_FOR_EFFORT_PLANS",
+  "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+  "current_phase": 2,
+  "current_wave": 1,
+  "transition_time": "2025-09-13T20:55:00Z",
+  "transition_reason": "Code Reviewers spawned for effort planning - waiting for completion",
+  "phase_2_rebase_required": {
+    "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
+    "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
+    "efforts_to_rebase": [
+      {
+        "effort": "gitea-client",
+        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client",
+        "status": "needs_rebase",
+        "working_dir": "efforts/phase2/wave1/gitea-client"
+      },
+      {
+        "effort": "gitea-client-split-001",
+        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+        "status": "needs_rebase",
+        "working_dir": "efforts/phase2/wave1/gitea-client-split-001"
+      },
+      {
+        "effort": "gitea-client-split-002",
+        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+        "status": "needs_rebase",
+        "working_dir": "efforts/phase2/wave1/gitea-client-split-002"
+      }
     ],
-    "critical_requirements": [
-      "R321 fixes MUST be included from all effort branches",
-      "Integration order: registry-tls-trust first (has shared testutil)",
-      "Fresh branch from main per R308",
-      "Update stale_integrations.wave1.recreation_completed when done"
-    ],
-    "DO_NOT_SKIP": "This cascade is MANDATORY per R327 - reviews were done on stale integrations"
+    "rebase_strategy": "code_reviewer_merge_plan_first",
+    "next_action": "spawn_code_reviewer_for_rebase_merge_plan",
+    "follows_pattern": "R327 cascade - same as wave/phase integration rebases"
+  },
+  "phase_1_completion": {
+    "completed_at": "2025-09-13T20:01:03Z",
+    "waves_completed": 2,
+    "efforts_completed": 5,
+    "total_branches": 11,
+    "integration_branch": "idpbuilder-oci-build-push/phase1/integration",
+    "assessment_score": 85,
+    "completion_report": "PHASE-1-COMPLETION-REPORT.md"
   },
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
@@ -264,7 +278,7 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Spawn code reviewer to review integrated Wave 1 code",
+  "next_action": "Spawn architect for Phase 1 assessment",
   "notes": "Wave 1 R327 cascade re-integration successful. All gates passed. Ready for code review.",
   "agents_spawned": [
     {
@@ -320,34 +334,35 @@
       "state": "BACKPORT_IMPLEMENTATION",
       "effort": "fallback-strategies",
       "priority": "MEDIUM"
+    },
+    {
+      "agent": "code-reviewer",
+      "task": "wave1_cascade_merge_plan",
+      "spawned_at": "2025-09-13T14:12:44Z",
+      "state": "WAVE_MERGE_PLANNING",
+      "purpose": "R327 cascade re-integration merge plan"
+    },
+    {
+      "agent": "integration",
+      "task": "phase_1_integration_execution",
+      "spawned_at": "2025-09-13T18:36:02Z",
+      "completed_at": "2025-09-13T18:36:02Z",
+      "state": "PHASE_INTEGRATION_EXECUTION",
+      "result": "SUCCESS - Phase 1 integration complete with test issues documented"
+    },
+    {
+      "agent": "architect",
+      "task": "phase_1_assessment",
+      "spawned_at": "2025-09-13T19:42:55Z",
+      "state": "PHASE_ASSESSMENT",
+      "result": "PHASE_COMPLETE - Score 85/100"
     }
   ],
   "integration_status": {
     "phase": 1,
     "wave": 2,
-    "infrastructure_ready": true,
-    "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
-    "merge_plan_requested": true,
-    "merge_plan_ready": true,
-    "waiting_for": "integration-agent-completion",
-    "r327_cascade_id": "WAVE1-CASCADE-20250913",
-    "r327_cascade_reason": "Previous integration invalidated by fixes to source branches",
-    "merge_plan_path": "efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
-    "merge_plan_created_at": "2025-09-13T04:37:09Z",
-    "integration_agent_spawned": true,
-    "integration_started_at": "2025-09-13T05:04:39Z",
-    "notes": "Wave 2 cascade re-integration required per R327 - building on fixed Wave 1",
-    "status": "infrastructure_needed",
-    "r327_cascade_completed": true,
-    "integration_completed_at": "2025-09-13T05:10:46Z",
-    "report_path": "efforts/phase1/wave1/integration-workspace/CASCADE-INTEGRATION-REPORT.md",
-    "gates_passed": {
-      "build": "PASSED",
-      "test": "PASSED",
-      "demo": "NOT_APPLICABLE",
-      "integration": "SUCCESS"
-    }
+    "status": "COMPLETE",
+    "completed_at": "2025-09-13T14:54:38Z"
   },
   "error_recovery": {
     "recovery_started": "2025-09-11T23:04:21Z",
@@ -394,15 +409,11 @@
   },
   "current_phase_integration": {
     "phase": 1,
-    "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
-    "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace",
-    "base_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "status": "infrastructure_ready",
-    "created_at": "2025-09-12T21:50:46Z",
-    "type": "fresh",
-    "r308_compliant": true,
-    "last_freshness_check": "2025-09-13T00:20:46+00:00",
-    "is_stale": false
+    "status": "pending_recreation",
+    "old_branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
+    "reason": "R327 cascade - needs fresh Wave 1 + Wave 2",
+    "wave1_base": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
+    "wave2_base": "idpbuilder-oci-build-push/phase1/wave2/integration"
   },
   "deprecated_phase_integrations": [
     {
@@ -426,7 +437,7 @@
       "certificate test setup"
     ],
     "r321_backport_needed": false,
-    "completed_at": "2025-09-12T19:51:06Z",
+    "completed_at": "2025-09-13T18:36:02Z",
     "reports": {
       "integration_report": "efforts/phase1/phase-integration-workspace/PHASE-INTEGRATION-REPORT.md",
       "issues_report": "efforts/phase1/phase-integration-workspace/INTEGRATION-ISSUES.md",
@@ -435,14 +446,63 @@
     "test_failures": [
       "pkg/kind/cluster_test.go - undefined types.ContainerListOptions",
       "pkg/cert* tests - setup failed"
-    ]
+    ],
+    "integration_completed": true,
+    "report_reviewed": true,
+    "upstream_issues_documented": true,
+    "ready_for_code_review": true
   },
   "phases_planned": 2,
   "waves_per_phase": {
     "phase1": 2,
     "phase2": 2
   },
-  "efforts_in_progress": [],
+  "efforts_in_progress": [
+    {
+      "name": "gitea-client",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client",
+      "base_branch_tracking": {
+        "planned_base": "idpbuilder-oci-build-push/phase1/integration",
+        "actual_base": "needs_rebase",
+        "reason": "R308: Phase 2 Wave 1 builds on Phase 1 integration"
+      },
+      "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client",
+      "phase": 2,
+      "wave": 1,
+      "status": "infrastructure_ready",
+      "needs_rebase": true
+    },
+    {
+      "name": "gitea-client-split-001",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+      "base_branch_tracking": {
+        "planned_base": "gitea-client",
+        "actual_base": "needs_rebase",
+        "reason": "Sequential split - depends on gitea-client"
+      },
+      "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-001",
+      "phase": 2,
+      "wave": 1,
+      "status": "infrastructure_ready",
+      "needs_rebase": true,
+      "depends_on": "gitea-client"
+    },
+    {
+      "name": "gitea-client-split-002",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+      "base_branch_tracking": {
+        "planned_base": "gitea-client-split-001",
+        "actual_base": "needs_rebase",
+        "reason": "Sequential split - depends on split-001"
+      },
+      "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-002",
+      "phase": 2,
+      "wave": 1,
+      "status": "infrastructure_ready",
+      "needs_rebase": true,
+      "depends_on": "gitea-client-split-001"
+    }
+  ],
   "efforts_pending": [],
   "integration_code_review": {
     "status": "COMPLETED",
@@ -487,14 +547,14 @@
   },
   "integration_infrastructure_needed": true,
   "integration_infrastructure": {
-    "type": "wave",
+    "type": "phase",
     "phase": 1,
     "wave": 2,
-    "branch": "idpbuilder-oci-build-push/phase1/wave2-integration",
-    "base_branch": "idpbuilder-oci-build-push/phase1/wave1-integration",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/repo",
+    "branch": "idpbuilder-oci-build-push/phase1/integration",
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace/repo",
     "status": "infrastructure_ready",
-    "created_at": "2025-09-13T14:00:45Z"
+    "created_at": "2025-09-13T17:39:15Z"
   },
   "phase_integration_needed": true,
   "phase_1_status": {
@@ -546,9 +606,10 @@
   "wave_integration_needed": false,
   "phase_integration_infrastructure": {
     "ready": true,
-    "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
+    "branch": "idpbuilder-oci-build-push/phase1/integration",
     "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace",
-    "base_branch": "idpbuilder-oci-build-push/phase1/wave2/integration"
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
+    "created_at": "2025-09-13T17:39:15Z"
   },
   "stale_integration_tracking": {
     "analysis_timestamp": "2025-09-13T00:21:26Z",
@@ -587,7 +648,8 @@
           "phase1-integration"
         ],
         "recreation_required": true,
-        "recreation_completed": false
+        "recreation_completed": true,
+        "recreation_completed_at": "2025-09-13T14:54:38Z"
       },
       "phase1-integration": {
         "integration_id": "phase1-integration",
@@ -623,7 +685,9 @@
       "wave2",
       "phase1"
     ],
-    "cascade_starting_point": "wave1"
+    "cascade_starting_point": "wave1",
+    "cascade_current_step": "phase1",
+    "note": "Wave 1 and Wave 2 fresh integrations complete, Phase 1 cascade in progress"
   },
   "cascade_reintegration_in_progress": true,
   "cascade_sequence": [
@@ -631,7 +695,7 @@
     "wave2",
     "phase1"
   ],
-  "cascade_current_step": "wave2",
+  "cascade_current_step": "phase1",
   "phases_completed": {
     "phase1": {
       "status": "COMPLETE",
@@ -687,13 +751,21 @@
       "wave": {
         "phase1_wave1": {
           "file_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
-          "created_at": "2025-09-13T04:07:00Z",
+          "created_at": "2025-09-13T14:12:44Z",
           "created_by": "code-reviewer",
           "target_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-          "status": "ready_for_review"
+          "status": "created"
         }
       },
-      "phase": {},
+      "phase": {
+        "phase1": {
+          "file_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace/repo/PHASE-1-MERGE-PLAN.md",
+          "created_by": "code-reviewer",
+          "created_at": "2025-09-13T18:05:27Z",
+          "status": "validated",
+          "target_branch": "idpbuilder-oci-build-push/phase1/integration"
+        }
+      },
       "project": {}
     },
     "split_plans": {},
@@ -711,5 +783,157 @@
     "result": "PASSED",
     "reviewed_at": "2025-09-13T13:45:10Z",
     "report_path": "efforts/phase1/wave1/integration-workspace/INTEGRATION_CODE_REVIEW_REPORT.md"
+  },
+  "state_transition_history": [
+    {
+      "from": "MONITORING_INTEGRATION",
+      "to": "WAVE_COMPLETE",
+      "timestamp": "2025-09-13T15:19:59Z",
+      "reason": "All R291 gates passed - build SUCCESS, tests 14/15 (upstream issue), demos PASSED, integration COMPLETE"
+    },
+    {
+      "from": "MONITORING_PHASE_INTEGRATION",
+      "to": "PHASE_INTEGRATION_CODE_REVIEW",
+      "timestamp": "2025-09-13T18:46:17Z",
+      "reason": "Phase 1 integration complete with upstream issues documented per R266. All demos pass. Needs code review before phase assessment."
+    },
+    {
+      "from": "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+      "to": "WAITING_FOR_PHASE_ASSESSMENT",
+      "timestamp": "2025-09-13T19:43:16Z",
+      "reason": "Architect assessment complete - Phase 1 scored 85/100 and certified PHASE_COMPLETE"
+    }
+  ],
+  "cascade_in_progress": true,
+  "spawned_agents": [
+    {
+      "agent": "code-reviewer",
+      "task": "phase_1_merge_planning",
+      "timestamp": "2025-09-13T17:51:45Z",
+      "status": "completed",
+      "output": "PHASE-1-MERGE-PLAN.md"
+    },
+    {
+      "agent": "code-reviewer",
+      "task": "phase2_wave1_rebase_planning",
+      "timestamp": "2025-09-13T20:43:04Z",
+      "status": "completed",
+      "output": "REBASE-MERGE-PLAN.md",
+      "directory": "efforts/phase2/wave1/rebase-planning"
+    },
+    {
+      "agent": "code-reviewer",
+      "task": "effort_planning_image_builder",
+      "effort": "image-builder",
+      "phase": 2,
+      "wave": 1,
+      "timestamp": "2025-09-13T20:45:00Z",
+      "status": "spawned",
+      "directory": "efforts/phase2/wave1/image-builder",
+      "parallel_with": "gitea-client"
+    },
+    {
+      "agent": "code-reviewer",
+      "task": "effort_planning_gitea_client",
+      "effort": "gitea-client",
+      "phase": 2,
+      "wave": 1,
+      "timestamp": "2025-09-13T20:49:00Z",
+      "status": "spawned",
+      "directory": "efforts/phase2/wave1/gitea-client",
+      "parallel_with": "image-builder"
+    }
+  ],
+  "phase_integration_review": {
+    "reviewer": "code-reviewer",
+    "branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
+    "focus": "phase_integration_quality",
+    "waves_integrated": [
+      "wave1",
+      "wave2"
+    ],
+    "started_at": "2025-09-13T19:20:51Z",
+    "status": "complete",
+    "decision": "PASS",
+    "quality_score": "85/100",
+    "feature_completeness": "100%",
+    "report_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace/repo/PHASE_INTEGRATION_CODE_REVIEW_REPORT.md",
+    "completed_at": "2025-09-13T19:20:51Z"
+  },
+  "phase_assessment": {
+    "phase": 1,
+    "requested_at": "2025-09-13T19:42:55Z",
+    "expected_report": "phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md",
+    "type": "COMPLETE_PHASE",
+    "phase_branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
+    "wave_count": 2,
+    "status": "COMPLETE",
+    "decision": "PHASE_COMPLETE",
+    "score": 85,
+    "report_created": true,
+    "completed_at": "2025-09-13T19:53:12Z",
+    "report_file": "phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md"
+  },
+  "base_branch_decisions": {
+    "phase2_wave1_base": "idpbuilder-oci-build-push/phase1/integration",
+    "reason": "R308: Phase 2 Wave 1 must build on Phase 1 integration (NOT main)",
+    "decided_at": "2025-09-13T20:21:18+00:00",
+    "decided_by": "orchestrator-R308"
+  },
+  "code_reviewer_parallelization_plan": {
+    "phase": 2,
+    "wave": 1,
+    "analysis_timestamp": "2025-09-13T20:27:00Z",
+    "rebase_required": true,
+    "rebase_reason": "Phase 2 Wave 1 created before Phase 1 integration was finalized",
+    "base_branch_target": "idpbuilder-oci-build-push/phase1/integration",
+    "spawn_sequence": [
+      {
+        "step": 1,
+        "action": "spawn_sequential",
+        "type": "rebase_planning",
+        "efforts": [
+          "phase2-wave1-rebase-plan"
+        ],
+        "wait_for_completion": true,
+        "reason": "Must create rebase plan before effort planning per R327"
+      },
+      {
+        "step": 2,
+        "action": "spawn_parallel",
+        "type": "effort_planning",
+        "efforts": [
+          "image-builder",
+          "gitea-client"
+        ],
+        "r151_requirement": "All in ONE message with <5s delta",
+        "reason": "Both efforts marked 'Can Parallelize: Yes' in wave plan"
+      }
+    ],
+    "effort_details": {
+      "image-builder": {
+        "effort_id": "E2.1.1",
+        "name": "go-containerregistry-image-builder",
+        "can_parallelize": true,
+        "parallel_with": [
+          "E2.1.2"
+        ],
+        "estimated_lines": 600
+      },
+      "gitea-client": {
+        "effort_id": "E2.1.2",
+        "name": "gitea-registry-client",
+        "can_parallelize": true,
+        "parallel_with": [
+          "E2.1.1"
+        ],
+        "estimated_lines": 600,
+        "existing_splits": [
+          "001",
+          "002"
+        ],
+        "requires_rebase": true
+      }
+    }
   }
 }
