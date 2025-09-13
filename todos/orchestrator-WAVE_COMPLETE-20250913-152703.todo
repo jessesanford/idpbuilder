@@ -1,0 +1,24 @@
+# Orchestrator TODO State - WAVE_COMPLETE
+# Saved: 2025-09-13 15:27:00 UTC
+# State Transition: WAVE_COMPLETE → SETUP_INTEGRATION_INFRASTRUCTURE
+
+## Completed Tasks:
+✅ Verify Wave 2 integration status
+✅ Load state-specific rules for WAVE_COMPLETE  
+✅ Update state to SETUP_INTEGRATION_INFRASTRUCTURE
+✅ Commit and push state file
+✅ Save TODOs per R287
+
+## Next Tasks (for SETUP_INTEGRATION_INFRASTRUCTURE state):
+- [ ] Create Wave 2 re-integration infrastructure
+- [ ] Spawn code reviewer for Wave 2 re-integration merge plan
+- [ ] Wait for merge plan completion
+- [ ] Spawn integration agent for Wave 2 re-integration
+- [ ] Monitor Wave 2 integration progress
+- [ ] Create Phase 1 re-integration (cascade)
+
+## Context:
+- Wave 1 re-integration: COMPLETE
+- Wave 2 re-integration: NEEDED (stale - based on old Wave 1)
+- Phase 1 re-integration: NEEDED (will cascade after Wave 2)
+- R327 cascade requirement in effect
