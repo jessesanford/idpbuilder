@@ -489,15 +489,12 @@
   "integration_infrastructure": {
     "type": "wave",
     "phase": 1,
-    "wave": 1,
-    "branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-    "base_branch": "main",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
+    "wave": 2,
+    "branch": "idpbuilder-oci-build-push/phase1/wave2-integration",
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave1-integration",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/repo",
     "status": "infrastructure_ready",
-    "created_at": "2025-09-13T00:37:36Z",
-    "r308_compliant": true,
-    "r327_cascade": true,
-    "notes": "Fresh Wave 1 integration infrastructure created per R327 cascade re-integration"
+    "created_at": "2025-09-13T14:00:45Z"
   },
   "phase_integration_needed": true,
   "phase_1_status": {
