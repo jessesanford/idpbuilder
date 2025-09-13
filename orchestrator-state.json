@@ -1,10 +1,10 @@
 {
-  "current_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-  "previous_state": "WAITING_FOR_EFFORT_PLANS",
+  "current_state": "SPAWN_AGENTS",
+  "previous_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-13T21:03:01Z",
-  "transition_reason": "All effort plans complete and tracked per R340",
+  "transition_time": "2025-09-13T21:24:59Z",
+  "transition_reason": "SW Engineer parallelization analysis complete per R340",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -935,5 +935,100 @@
         "requires_rebase": true
       }
     }
+  },
+  "sw_engineer_parallelization_plan": {
+    "wave": 1,
+    "phase": 2,
+    "analysis_timestamp": "2025-09-13T21:24:21Z",
+    "rebase_required": true,
+    "rebase_details": {
+      "reason": "Phase 2 Wave 1 created before Phase 1 integration finalized",
+      "strategy": "code_reviewer_merge_plan_first",
+      "must_complete_before_implementation": true
+    },
+    "blocking_implementations": [
+      {
+        "effort_id": "gitea-client",
+        "name": "gitea-client",
+        "implementation_plan": "efforts/phase2/wave1/gitea-client/IMPLEMENTATION-PLAN.md",
+        "can_parallelize": false,
+        "reason": "Original effort - must complete before splits",
+        "dependencies": [],
+        "needs_rebase": true
+      },
+      {
+        "effort_id": "gitea-client-split-001",
+        "name": "gitea-client-split-001",
+        "implementation_plan": "efforts/phase2/wave1/gitea-client-split-001/IMPLEMENTATION-PLAN.md",
+        "can_parallelize": false,
+        "reason": "First split - depends on main effort completion",
+        "dependencies": [
+          "gitea-client"
+        ],
+        "needs_rebase": true
+      },
+      {
+        "effort_id": "gitea-client-split-002",
+        "name": "gitea-client-split-002",
+        "implementation_plan": "efforts/phase2/wave1/gitea-client-split-002/IMPLEMENTATION-PLAN.md",
+        "can_parallelize": false,
+        "reason": "Second split - depends on first split completion",
+        "dependencies": [
+          "gitea-client-split-001"
+        ],
+        "needs_rebase": true
+      }
+    ],
+    "parallel_groups": [],
+    "pending_efforts": [
+      {
+        "effort_id": "image-builder",
+        "name": "image-builder",
+        "status": "awaiting_effort_planning",
+        "reason": "No implementation plan created yet"
+      }
+    ],
+    "spawn_sequence": [
+      {
+        "step": 0,
+        "action": "address_rebase_requirement",
+        "description": "Spawn Code Reviewer for rebase merge plan",
+        "agent_type": "code-reviewer",
+        "critical": true
+      },
+      {
+        "step": 1,
+        "action": "spawn_sequential",
+        "agent_type": "sw-engineer",
+        "efforts": [
+          "gitea-client"
+        ],
+        "wait_for_completion": true,
+        "expected_duration": "2-3 hours",
+        "prerequisite": "rebase_complete"
+      },
+      {
+        "step": 2,
+        "action": "spawn_sequential",
+        "agent_type": "sw-engineer",
+        "efforts": [
+          "gitea-client-split-001"
+        ],
+        "wait_for_completion": true,
+        "expected_duration": "2-3 hours",
+        "prerequisite": "gitea-client_complete"
+      },
+      {
+        "step": 3,
+        "action": "spawn_sequential",
+        "agent_type": "sw-engineer",
+        "efforts": [
+          "gitea-client-split-002"
+        ],
+        "wait_for_completion": true,
+        "expected_duration": "2-3 hours",
+        "prerequisite": "gitea-client-split-001_complete"
+      }
+    ]
   }
 }
