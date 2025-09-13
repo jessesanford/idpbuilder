@@ -555,14 +555,14 @@
   },
   "integration_infrastructure_needed": true,
   "integration_infrastructure": {
-    "type": "phase",
-    "phase": 1,
-    "wave": 2,
-    "branch": "idpbuilder-oci-build-push/phase1/integration",
-    "base_branch": "idpbuilder-oci-build-push/phase1/wave2/integration",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace/repo",
+    "type": "wave",
+    "phase": 2,
+    "wave": 1,
+    "branch": "idpbuilder-oci-build-push/phase2/wave1/integration",
+    "base_branch": "idpbuilder-oci-build-push/phase1/integration",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo",
     "status": "infrastructure_ready",
-    "created_at": "2025-09-13T17:39:15Z"
+    "created_at": "2025-09-13T23:19:48Z"
   },
   "phase_integration_needed": true,
   "phase_1_status": {
