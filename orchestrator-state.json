@@ -1,10 +1,10 @@
 {
-  "current_state": "PHASE_2_REBASE_REQUIRED",
-  "previous_state": "PHASE_COMPLETE",
+  "current_state": "SPAWN_CODE_REVIEWER_REBASE_PLAN",
+  "previous_state": "PHASE_2_REBASE_REQUIRED",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-13T20:01:03Z",
-  "transition_reason": "Phase 2 Wave 1 exists but needs rebasing onto fresh Phase 1 integration",
+  "transition_time": "2025-09-13T20:10:00Z",
+  "transition_reason": "Ready to spawn Code Reviewer to create rebase merge plan per R327 cascade pattern",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -28,8 +28,9 @@
         "working_dir": "efforts/phase2/wave1/gitea-client-split-002"
       }
     ],
-    "rebase_strategy": "sequential_with_conflict_resolution",
-    "next_action": "spawn_sw_engineers_for_rebase"
+    "rebase_strategy": "code_reviewer_merge_plan_first",
+    "next_action": "spawn_code_reviewer_for_rebase_merge_plan",
+    "follows_pattern": "R327 cascade - same as wave/phase integration rebases"
   },
   "phase_1_completion": {
     "completed_at": "2025-09-13T20:01:03Z",
