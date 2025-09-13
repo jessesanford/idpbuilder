@@ -3,35 +3,25 @@
   "previous_state": "ERROR_RECOVERY",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-13T22:02:13Z",
-  "transition_reason": "Phase 2 Wave 1 rebase complete - proceeding with integration (skipping validation per user request)",
+  "transition_time": "2025-09-13T22:27:21Z",
+  "transition_reason": "Preparing to rebase image-builder effort onto Phase 1 integration",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
     "efforts_to_rebase": [
       {
-        "effort": "gitea-client",
-        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client",
+        "effort": "image-builder",
+        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
         "status": "needs_rebase",
-        "working_dir": "efforts/phase2/wave1/gitea-client"
-      },
-      {
-        "effort": "gitea-client-split-001",
-        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
-        "status": "needs_rebase",
-        "working_dir": "efforts/phase2/wave1/gitea-client-split-001"
-      },
-      {
-        "effort": "gitea-client-split-002",
-        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
-        "status": "needs_rebase",
-        "working_dir": "efforts/phase2/wave1/gitea-client-split-002"
+        "working_dir": "efforts/phase2/wave1/image-builder",
+        "base_branch": "idpbuilder-oci-build-push/phase1/integration",
+        "reason": "Created before Phase 1 integration was finalized"
       }
     ],
     "rebase_strategy": "code_reviewer_merge_plan_first",
-    "next_action": "spawn_code_reviewer_for_rebase_merge_plan",
+    "next_action": "rebase_image_builder",
     "follows_pattern": "R327 cascade - same as wave/phase integration rebases",
-    "status": "complete",
+    "status": "pending",
     "completed_at": "2025-09-13T21:50:59Z"
   },
   "phase_1_completion": {
@@ -280,7 +270,7 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Spawn architect for Phase 1 assessment",
+  "next_action": "clone_and_rebase_image_builder",
   "notes": "Wave 1 R327 cascade re-integration successful. All gates passed. Ready for code review.",
   "agents_spawned": [
     {
@@ -1042,5 +1032,18 @@
         "prerequisite": "gitea-client-split-001_complete"
       }
     ]
+  },
+  "image_builder_rebase": {
+    "status": "pending",
+    "effort": "image-builder",
+    "current_base": "main (likely)",
+    "target_base": "idpbuilder-oci-build-push/phase1/integration",
+    "branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
+    "working_dir": "efforts/phase2/wave1/image-builder",
+    "created_at": "2025-09-11T00:27:32Z",
+    "last_commit": "todo: orchestrator - DEMO_IMPLEMENTATION checkpoint per R287",
+    "requires_clone": true,
+    "clone_from": "https://github.com/jessesanford/idpbuilder.git",
+    "note": "Must clone from target repo as branch only exists there"
   }
 }
