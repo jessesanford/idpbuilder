@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "current_state": "WAITING_FOR_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-13T23:20:44Z",
-  "transition_reason": "Integration infrastructure ready, need Code Reviewer to create merge plan",
+  "transition_time": "2025-09-13T23:33:14Z",
+  "transition_reason": "Merge plan created by Code Reviewer, ready for review",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -562,7 +562,11 @@
     "base_branch": "idpbuilder-oci-build-push/phase1/integration",
     "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo",
     "status": "infrastructure_ready",
-    "created_at": "2025-09-13T23:19:48Z"
+    "created_at": "2025-09-13T23:19:48Z",
+    "merge_plan_requested": true,
+    "merge_plan_ready": true,
+    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
+    "merge_plan_created_at": "2025-09-13T23:32:21Z"
   },
   "phase_integration_needed": true,
   "phase_1_status": {
@@ -783,10 +787,18 @@
     "merge_plans": {
       "wave": {
         "phase2_wave1": {
-          "file_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/rebase-planning/REBASE-MERGE-PLAN-20250913-204028.md",
-          "created_by": "code-reviewer",
-          "created_at": "2025-09-13T20:40:28Z",
-          "type": "rebase_merge_plan"
+          "path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
+          "type": "merge_plan",
+          "phase": 2,
+          "wave": 1,
+          "efforts_count": 3,
+          "efforts": [
+            "image-builder",
+            "gitea-client-split-001",
+            "gitea-client-split-002"
+          ],
+          "created_at": "2025-09-13T23:32:21Z",
+          "created_by": "code-reviewer"
         }
       }
     }

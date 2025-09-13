@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Verify Phase 2 Wave 1 integration infrastructure",
+    "status": "completed",
+    "activeForm": "Verifying Phase 2 Wave 1 integration infrastructure"
+  },
+  {
+    "content": "Spawn Code Reviewer for wave merge plan creation",
+    "status": "completed",
+    "activeForm": "Spawning Code Reviewer for wave merge plan creation"
+  },
+  {
+    "content": "Update orchestrator-state.json with merge plan request status",
+    "status": "completed", 
+    "activeForm": "Updating orchestrator-state.json with merge plan request status"
+  },
+  {
+    "content": "Transition to WAITING_FOR_MERGE_PLAN state",
+    "status": "completed",
+    "activeForm": "Transitioning to WAITING_FOR_MERGE_PLAN state"
+  },
+  {
+    "content": "Save TODOs and commit state per R287/R288",
+    "status": "in_progress",
+    "activeForm": "Saving TODOs and committing state per R287/R288"
+  },
+  {
+    "content": "Stop and await continuation per R322",
+    "status": "pending",
+    "activeForm": "Stopping and awaiting continuation per R322"
+  }
+]
