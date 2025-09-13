@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_INTEGRATION_AGENT",
-  "previous_state": "WAITING_FOR_MERGE_PLAN",
+  "current_state": "MONITORING_INTEGRATION",
+  "previous_state": "SPAWN_INTEGRATION_AGENT",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-13T14:37:59Z",
-  "transition_reason": "R322 checkpoint - merge plan ready for user review",
+  "transition_time": "2025-09-13T14:54:38Z",
+  "transition_reason": "Integration Agent completed Wave 2 successfully",
   "restart_instructions": {
     "CRITICAL": "ON RESTART - EXECUTE THIS SEQUENCE",
     "current_task": "Spawn code-reviewer to create Wave 1 re-integration merge plan",
@@ -332,29 +332,8 @@
   "integration_status": {
     "phase": 1,
     "wave": 2,
-    "infrastructure_ready": true,
-    "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
-    "merge_plan_requested": true,
-    "merge_plan_ready": true,
-    "waiting_for": "integration-agent-completion",
-    "r327_cascade_id": "WAVE1-CASCADE-20250913",
-    "r327_cascade_reason": "Previous integration invalidated by fixes to source branches",
-    "merge_plan_path": "efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
-    "merge_plan_created_at": "2025-09-13T04:37:09Z",
-    "integration_agent_spawned": true,
-    "integration_started_at": "2025-09-13T05:04:39Z",
-    "notes": "Wave 2 cascade re-integration required per R327 - building on fixed Wave 1",
-    "status": "infrastructure_needed",
-    "r327_cascade_completed": true,
-    "integration_completed_at": "2025-09-13T05:10:46Z",
-    "report_path": "efforts/phase1/wave1/integration-workspace/CASCADE-INTEGRATION-REPORT.md",
-    "gates_passed": {
-      "build": "PASSED",
-      "test": "PASSED",
-      "demo": "NOT_APPLICABLE",
-      "integration": "SUCCESS"
-    }
+    "status": "COMPLETE",
+    "completed_at": "2025-09-13T14:54:38Z"
   },
   "error_recovery": {
     "recovery_started": "2025-09-11T23:04:21Z",
