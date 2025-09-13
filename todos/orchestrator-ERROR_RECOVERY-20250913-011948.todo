@@ -1,0 +1,35 @@
+## Orchestrator ERROR_RECOVERY TODOs - COMPLETED
+
+### ✅ Completed Tasks:
+1. [completed] Diagnose the error from orchestrator-state.json
+   - Identified: All Wave 1 efforts exceed 800-line limit
+   
+2. [completed] Analyze Wave 1 size violations
+   - kind-cert-extraction: 3170 lines (396%)
+   - registry-tls-trust: 2413 lines (301%)
+   - registry-auth-types: 1406 lines (176%)
+   
+3. [completed] Create recovery plan for oversized efforts
+   - Created WAVE-1-SIZE-VIOLATION-RECOVERY-PLAN.md
+   
+4. [completed] Check if R327 cascade integration is required
+   - YES: Must recreate integration after fixes
+   
+5. [completed] Spawn Code Reviewers for split planning (parallel)
+   - All three Code Reviewers spawned in parallel per R151
+   - Split plans created successfully
+   
+6. [completed] Monitor split plan creation
+   - kind-cert-extraction: 5 splits planned
+   - registry-tls-trust: 4 splits planned
+   - registry-auth-types: 3 splits revised
+   
+7. [completed] Update state file and transition to next state
+   - State updated to SPAWN_ENGINEERS_FOR_FIXES
+   - Ready for checkpoint
+
+### 📋 Next State Tasks (SPAWN_ENGINEERS_FOR_FIXES):
+- Spawn SW Engineers to implement the splits
+- Each effort needs sequential split implementation
+- Measure each split with line-counter.sh
+- Verify all splits <800 lines

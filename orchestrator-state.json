@@ -1,10 +1,10 @@
 {
-  "current_state": "ERROR_RECOVERY",
-  "previous_state": "WAITING_FOR_MERGE_PLAN",
+  "current_state": "SPAWN_ENGINEERS_FOR_FIXES",
+  "previous_state": "ERROR_RECOVERY",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-13T00:57:13Z",
-  "transition_reason": "INTEGRATION BLOCKED: All Wave 1 efforts exceed 800-line limit",
+  "transition_time": "2025-09-13T01:19:35Z",
+  "transition_reason": "Split plans created for all Wave 1 efforts - ready to implement splits",
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -275,7 +275,15 @@
       "Implement splits with <800 lines each",
       "Get code review approval for each split",
       "Recreate integration with compliant splits"
-    ]
+    ],
+    "split_plans_created": true,
+    "split_plan_timestamp": "2025-09-13T01:19:26Z",
+    "split_plans": {
+      "kind-cert-extraction": "5 splits planned",
+      "registry-tls-trust": "4 splits planned",
+      "registry-auth-types": "3 splits revised"
+    },
+    "next_action": "Implement splits via SW Engineers"
   },
   "current_wave_integration": {
     "wave": 1,
