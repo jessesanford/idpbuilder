@@ -15,7 +15,30 @@
       "review_status": "PASSED",
       "lines_changed": 650,
       "working_dir": "efforts/phase1/wave1/kind-cert-extraction",
-      "completed_at": "2025-09-07T10:00:00Z"
+      "completed_at": "2025-09-07T10:00:00Z",
+      "line_count_tracking": {
+        "initial_count": 841,
+        "current_count": 841,
+        "last_measured": "2025-09-13T03:18:09Z",
+        "measured_by": "orchestrator-r338-compliance",
+        "measurement_command": "./tools/line-counter.sh -b main",
+        "auto_detected_base": "main",
+        "implementation_only": true,
+        "within_limit": false,
+        "requires_split": true,
+        "measurement_history": [
+          {
+            "timestamp": "2025-09-13T03:18:09Z",
+            "count": 841,
+            "measured_by": "orchestrator-r338-compliance",
+            "reason": "R338 mandatory compliance audit",
+            "command": "./tools/line-counter.sh",
+            "auto_detected_base": "main",
+            "excludes": "tests/demos/docs per R007",
+            "within_limit": false
+          }
+        ]
+      }
     },
     {
       "effort_id": "E1.1.2-registry-tls-trust",
@@ -45,14 +68,54 @@
             "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001",
             "lines": 800,
             "status": "completed",
-            "working_dir": "efforts/phase1/wave1/registry-auth-types-split-001"
+            "working_dir": "efforts/phase1/wave1/registry-auth-types-split-001",
+            "line_count_tracking": {
+              "initial_count": 604,
+              "current_count": 604,
+              "last_measured": "2025-09-13T03:18:19Z",
+              "measured_by": "orchestrator-r338-compliance",
+              "measurement_command": "./tools/line-counter.sh -b origin/main",
+              "auto_detected_base": "main",
+              "implementation_only": true,
+              "within_limit": true,
+              "requires_split": false,
+              "measurement_history": [
+                {
+                  "timestamp": "2025-09-13T03:18:19Z",
+                  "count": 604,
+                  "measured_by": "orchestrator-r338-compliance",
+                  "reason": "R338 compliance audit",
+                  "within_limit": true
+                }
+              ]
+            }
           },
           {
             "split_id": "002",
             "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002",
             "lines": 800,
             "status": "completed",
-            "working_dir": "efforts/phase1/wave1/registry-auth-types-split-002"
+            "working_dir": "efforts/phase1/wave1/registry-auth-types-split-002",
+            "line_count_tracking": {
+              "initial_count": 875,
+              "current_count": 875,
+              "last_measured": "2025-09-13T03:18:28Z",
+              "measured_by": "orchestrator-r338-compliance",
+              "measurement_command": "./tools/line-counter.sh -b origin/main",
+              "auto_detected_base": "main",
+              "implementation_only": true,
+              "within_limit": false,
+              "requires_split": true,
+              "measurement_history": [
+                {
+                  "timestamp": "2025-09-13T03:18:28Z",
+                  "count": 875,
+                  "measured_by": "orchestrator-r338-compliance",
+                  "reason": "R338 compliance audit - EXCEEDS LIMIT",
+                  "within_limit": false
+                }
+              ]
+            }
           }
         ]
       }
