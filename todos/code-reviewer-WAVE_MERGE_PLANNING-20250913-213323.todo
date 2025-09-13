@@ -1,0 +1,28 @@
+# Code Reviewer TODOs - Trigger: Task Completion
+# State: WAVE_MERGE_PLANNING
+# Task: Phase 2 Wave 1 Rebase Merge Plan
+# Timestamp: 2025-09-13T21:33:00Z
+
+## Completed Tasks:
+✅ Navigate to rebase-planning directory
+✅ Analyze current base commits for all efforts
+✅ Check for potential conflicts with Phase 1 integration
+✅ Create REBASE-MERGE-PLAN.md with detailed strategy
+✅ Define verification checklist for post-rebase state
+✅ Save and commit the merge plan
+
+## Deliverables:
+- REBASE-MERGE-PLAN.md created at phase2-wave1-rebase/
+- Comprehensive rebase strategy for 3 efforts
+- Sequential dependency order defined
+- Detailed SW Engineer instructions provided
+- Conflict resolution guidelines included
+- Post-rebase verification checklist added
+
+## Key Findings:
+- All three efforts share same outdated base commit
+- 94 commits behind Phase 1 integration
+- Must rebase in strict order: main → split-001 → split-002
+- Phase 1 integration branch successfully fetched and verified
+
+## Status: COMPLETE
