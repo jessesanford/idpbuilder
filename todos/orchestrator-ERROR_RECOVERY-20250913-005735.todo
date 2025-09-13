@@ -1,0 +1,24 @@
+# Orchestrator TODO State - ERROR_RECOVERY
+# Saved: 2025-09-13T00:57:30Z
+# Trigger: State transition to ERROR_RECOVERY
+
+## Completed Tasks:
+- [x] Load state-specific rules for WAITING_FOR_MERGE_PLAN state  
+- [x] Check if merge plan exists at specified path
+- [x] Determine next state transition based on merge plan status
+- [x] Transition to ERROR_RECOVERY due to size violations
+- [x] Update state file with blocking issue details
+- [x] Save TODOs and commit state per R287/R288
+
+## Critical Issue Detected:
+ALL Wave 1 efforts exceed 800-line limit:
+- kind-cert-extraction: 3,170 lines (396% of limit)
+- registry-tls-trust: 2,413 lines (301% of limit)  
+- registry-auth-types: 1,406 lines (176% of limit)
+
+## Required Actions in ERROR_RECOVERY State:
+- [ ] Spawn Code Reviewer to create proper split plans for Wave 1 efforts
+- [ ] Ensure each split is <800 lines
+- [ ] Implement splits with SW Engineers
+- [ ] Get code review approval for each split
+- [ ] Recreate Wave 1 integration with compliant splits
