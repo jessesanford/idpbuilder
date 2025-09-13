@@ -1,0 +1,9 @@
+R327 CASCADE: Starting Wave 1 re-integration
+2025-09-13 04:59:30 UTC
+CASCADE ID: WAVE1-CASCADE-20250913
+Integration Branch: idpbuilder-oci-build-push/phase1/wave1/integration
+Previous Integration: 2025-09-12T03:24:01Z (STALE due to R321 fixes)
+
+PURPOSE: Re-integrate Wave 1 with all R321 backport fixes applied
+STRATEGY: Fresh integration from scratch with updated branches=== Step 1: Merging registry-auth-types-split-001 ===
+Sat Sep 13 04:59:52 AM UTC 2025
