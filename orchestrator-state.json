@@ -849,5 +849,61 @@
     "reason": "R308: Phase 2 Wave 1 must build on Phase 1 integration (NOT main)",
     "decided_at": "2025-09-13T20:21:18+00:00",
     "decided_by": "orchestrator-R308"
+  },
+  "code_reviewer_parallelization_plan": {
+    "phase": 2,
+    "wave": 1,
+    "analysis_timestamp": "2025-09-13T20:27:00Z",
+    "rebase_required": true,
+    "rebase_reason": "Phase 2 Wave 1 created before Phase 1 integration was finalized",
+    "base_branch_target": "idpbuilder-oci-build-push/phase1/integration",
+    "spawn_sequence": [
+      {
+        "step": 1,
+        "action": "spawn_sequential",
+        "type": "rebase_planning",
+        "efforts": [
+          "phase2-wave1-rebase-plan"
+        ],
+        "wait_for_completion": true,
+        "reason": "Must create rebase plan before effort planning per R327"
+      },
+      {
+        "step": 2,
+        "action": "spawn_parallel",
+        "type": "effort_planning",
+        "efforts": [
+          "image-builder",
+          "gitea-client"
+        ],
+        "r151_requirement": "All in ONE message with <5s delta",
+        "reason": "Both efforts marked 'Can Parallelize: Yes' in wave plan"
+      }
+    ],
+    "effort_details": {
+      "image-builder": {
+        "effort_id": "E2.1.1",
+        "name": "go-containerregistry-image-builder",
+        "can_parallelize": true,
+        "parallel_with": [
+          "E2.1.2"
+        ],
+        "estimated_lines": 600
+      },
+      "gitea-client": {
+        "effort_id": "E2.1.2",
+        "name": "gitea-registry-client",
+        "can_parallelize": true,
+        "parallel_with": [
+          "E2.1.1"
+        ],
+        "estimated_lines": 600,
+        "existing_splits": [
+          "001",
+          "002"
+        ],
+        "requires_rebase": true
+      }
+    }
   }
 }
