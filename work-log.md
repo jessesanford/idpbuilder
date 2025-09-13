@@ -27,3 +27,17 @@ Status: READY for merges
 
 ## Pre-Integration Setup
 Command: git pull origin idpbuilder-oci-build-push/phase1/wave1/integration
+## Operation: Merge registry-auth-types-split-001
+MERGED: registry-auth-types-split-001 at Sat Sep 13 05:00:39 AM UTC 2025
+Status: SUCCESS - Foundation OCI types merged with conflict resolution
+Conflicts resolved: work-log.md (kept ours), devcontainer files (kept theirs), pkg/kind/cluster_test.go (deleted as per split)
+
+## Operation: Merge registry-auth-types-split-002
+MERGED: registry-auth-types-split-002 at Sat Sep 13 05:01:14 AM UTC 2025
+Status: SUCCESS - Certificate types merged
+Conflicts resolved: Test files kept from split-002 with R321 fixes
+
+## Operation: Merge kind-cert-extraction
+MERGED: kind-cert-extraction at Sat Sep 13 05:01:47 AM UTC 2025
+Status: SUCCESS - Certificate extraction functionality merged
+Conflicts resolved: pkg/util/git_repository_test.go kept with R321 fixes

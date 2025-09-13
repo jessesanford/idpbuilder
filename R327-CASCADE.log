@@ -8,3 +8,12 @@ PURPOSE: Re-integrate Wave 1 with all R321 backport fixes applied
 STRATEGY: Fresh integration from scratch with updated branches=== Step 1: Merging registry-auth-types-split-001 ===
 Sat Sep 13 04:59:52 AM UTC 2025
 === Step 1 (Retry): Merging registry-auth-types-split-001 ===
+MERGED: registry-auth-types-split-001 at $(date)
+=== Step 2: Merging registry-auth-types-split-002 ===
+Sat Sep 13 05:00:46 AM UTC 2025
+MERGED: registry-auth-types-split-002 at Sat Sep 13 05:01:14 AM UTC 2025
+=== Step 3: Merging kind-cert-extraction ===
+Sat Sep 13 05:01:20 AM UTC 2025
+MERGED: kind-cert-extraction at Sat Sep 13 05:01:47 AM UTC 2025
+=== Step 4: Merging registry-tls-trust ===
+Sat Sep 13 05:01:53 AM UTC 2025
