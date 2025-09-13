@@ -1,9 +1,9 @@
 {
-  "current_state": "WAITING_FOR_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "WAITING_FOR_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-13T04:08:35Z",
+  "transition_time": "2025-09-13T04:53:40Z",
   "transition_reason": "Code Reviewer spawned for Wave 1 R327 cascade merge plan",
   "restart_instructions": {
     "CRITICAL": "ON RESTART - EXECUTE THIS SEQUENCE",
@@ -327,12 +327,14 @@
     "wave": 1,
     "infrastructure_ready": true,
     "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo",
+    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
     "merge_plan_requested": true,
-    "merge_plan_ready": false,
-    "waiting_for": "code-reviewer-merge-plan",
+    "merge_plan_ready": true,
+    "waiting_for": "user-review-per-r322",
     "r327_cascade_id": "WAVE1-CASCADE-20250913",
-    "r327_cascade_reason": "Previous integration invalidated by fixes to source branches"
+    "r327_cascade_reason": "Previous integration invalidated by fixes to source branches",
+    "merge_plan_path": "efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+    "merge_plan_created_at": "2025-09-13T04:37:09Z"
   },
   "error_recovery": {
     "recovery_started": "2025-09-11T23:04:21Z",
@@ -477,7 +479,7 @@
     "wave": 1,
     "branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
     "base_branch": "main",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
     "status": "infrastructure_ready",
     "created_at": "2025-09-13T00:37:36Z",
     "r308_compliant": true,
@@ -667,5 +669,30 @@
         ]
       }
     }
+  },
+  "planning_files": {
+    "effort_plans": {},
+    "merge_plans": {
+      "wave": {
+        "phase1_wave1": {
+          "file_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+          "created_at": "2025-09-13T04:07:00Z",
+          "created_by": "code-reviewer",
+          "target_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+          "status": "ready_for_review"
+        }
+      },
+      "phase": {},
+      "project": {}
+    },
+    "split_plans": {},
+    "fix_plans": {},
+    "architecture_plans": {},
+    "review_reports": {}
+  },
+  "wave_integration": {
+    "merge_plan": "efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+    "cascade_id": "WAVE1-CASCADE-20250913",
+    "cascade_reason": "R327 re-integration after R321 fixes"
   }
 }

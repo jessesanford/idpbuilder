@@ -1,0 +1,7 @@
+[
+  {"content":"Acknowledge state-specific rules for WAITING_FOR_MERGE_PLAN","status":"completed"},
+  {"content":"Check integration workspace location for Phase 1 Wave 1","status":"completed"},
+  {"content":"Look for WAVE-MERGE-PLAN.md in integration workspace","status":"completed"},
+  {"content":"Validate merge plan contents if found","status":"completed"},
+  {"content":"Execute R322 checkpoint protocol if plan is ready","status":"completed"}
+]
