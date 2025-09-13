@@ -1,0 +1,23 @@
+# Orchestrator TODO State - WAITING_FOR_MERGE_PLAN
+# Generated: 2025-09-13T04:08:35Z
+# R287 Compliance: State transition checkpoint
+
+## ✅ Completed Tasks:
+1. Read state rules for SPAWN_CODE_REVIEWER_MERGE_PLAN
+2. Verify integration infrastructure
+3. Spawn Code Reviewer to create merge plan for Wave 1 R327 cascade re-integration
+4. Update state to WAITING_FOR_MERGE_PLAN after spawning
+5. Save TODOs and commit state changes per R287/R288
+
+## 🔄 Next State Tasks (WAITING_FOR_MERGE_PLAN):
+1. Wait for Code Reviewer to complete merge plan
+2. Verify WAVE-MERGE-PLAN.md exists and is complete
+3. Analyze plan for any issues or conflicts
+4. Transition to SPAWN_INTEGRATION_AGENT when ready
+5. Execute R327 cascade re-integration for Wave 1
+
+## 📋 Context:
+- Phase: 1, Wave: 1
+- R327 Cascade ID: WAVE1-CASCADE-20250913
+- Integration branch: idpbuilder-oci-build-push/phase1/wave1/integration
+- Merge plan location: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md

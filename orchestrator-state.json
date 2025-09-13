@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "current_state": "WAITING_FOR_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-13T04:32:15Z",
-  "transition_reason": "R327 cascade re-integration: Ready to create Wave 1 merge plan with R321 fixes",
+  "transition_time": "2025-09-13T04:08:35Z",
+  "transition_reason": "Code Reviewer spawned for Wave 1 R327 cascade merge plan",
   "restart_instructions": {
     "CRITICAL": "ON RESTART - EXECUTE THIS SEQUENCE",
     "current_task": "Spawn code-reviewer to create Wave 1 re-integration merge plan",
@@ -13,7 +13,7 @@
       "1. SPAWN_CODE_REVIEWER_MERGE_PLAN (current) - Create merge plan for Wave 1 with R321 fixes",
       "2. WAITING_FOR_MERGE_PLAN - Wait for code-reviewer to complete",
       "3. SPAWN_ENGINEERS_FOR_FIXES - Implement the Wave 1 re-integration",
-      "4. MONITOR_INTEGRATION - Monitor integration progress", 
+      "4. MONITOR_INTEGRATION - Monitor integration progress",
       "5. SPAWN_CODE_REVIEWER - Review the integrated Wave 1",
       "6. INTEGRATION_COMPLETE - Mark Wave 1 re-integration done",
       "7. Cascade to Wave 2 re-integration (built on fixed Wave 1)",
@@ -329,12 +329,10 @@
     "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
     "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo",
     "merge_plan_requested": true,
-    "merge_plan_ready": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
-    "waiting_for": "merge_plan_review",
-    "critical_finding": "All efforts exceed 800-line limit - splits required",
-    "blocked": true,
-    "blocking_reason": "All efforts exceed 800-line limit per merge plan analysis"
+    "merge_plan_ready": false,
+    "waiting_for": "code-reviewer-merge-plan",
+    "r327_cascade_id": "WAVE1-CASCADE-20250913",
+    "r327_cascade_reason": "Previous integration invalidated by fixes to source branches"
   },
   "error_recovery": {
     "recovery_started": "2025-09-11T23:04:21Z",
