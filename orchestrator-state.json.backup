@@ -1,10 +1,32 @@
 {
-  "current_state": "ERROR_RECOVERY",
-  "previous_state": "WAITING_FOR_MERGE_PLAN",
+  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
   "current_phase": 1,
-  "current_wave": 1,
-  "transition_time": "2025-09-13T00:57:13Z",
-  "transition_reason": "INTEGRATION BLOCKED: All Wave 1 efforts exceed 800-line limit",
+  "current_wave": 2,
+  "transition_time": "2025-09-13T14:01:24Z",
+  "transition_reason": "Integration infrastructure setup complete",
+  "restart_instructions": {
+    "CRITICAL": "ON RESTART - EXECUTE THIS SEQUENCE",
+    "current_task": "Spawn code-reviewer to create Wave 1 re-integration merge plan",
+    "context": "Wave 1 integration is STALE - needs R321 fixes from 2025-09-12 01:21:45 UTC integrated",
+    "sequence": [
+      "1. SPAWN_CODE_REVIEWER_MERGE_PLAN (current) - Create merge plan for Wave 1 with R321 fixes",
+      "2. WAITING_FOR_MERGE_PLAN - Wait for code-reviewer to complete",
+      "3. SPAWN_ENGINEERS_FOR_FIXES - Implement the Wave 1 re-integration",
+      "4. MONITOR_INTEGRATION - Monitor integration progress",
+      "5. SPAWN_CODE_REVIEWER - Review the integrated Wave 1",
+      "6. INTEGRATION_COMPLETE - Mark Wave 1 re-integration done",
+      "7. Cascade to Wave 2 re-integration (built on fixed Wave 1)",
+      "8. Cascade to Phase 1 re-integration (built on fixed Wave 2)"
+    ],
+    "critical_requirements": [
+      "R321 fixes MUST be included from all effort branches",
+      "Integration order: registry-tls-trust first (has shared testutil)",
+      "Fresh branch from main per R308",
+      "Update stale_integrations.wave1.recreation_completed when done"
+    ],
+    "DO_NOT_SKIP": "This cascade is MANDATORY per R327 - reviews were done on stale integrations"
+  },
   "wave_2_implementation_status": "COMPLETE",
   "efforts_completed": [
     {
@@ -15,7 +37,30 @@
       "review_status": "PASSED",
       "lines_changed": 650,
       "working_dir": "efforts/phase1/wave1/kind-cert-extraction",
-      "completed_at": "2025-09-07T10:00:00Z"
+      "completed_at": "2025-09-07T10:00:00Z",
+      "line_count_tracking": {
+        "initial_count": 841,
+        "current_count": 841,
+        "last_measured": "2025-09-13T03:18:09Z",
+        "measured_by": "orchestrator-r338-compliance",
+        "measurement_command": "./tools/line-counter.sh -b main",
+        "auto_detected_base": "main",
+        "implementation_only": true,
+        "within_limit": false,
+        "requires_split": true,
+        "measurement_history": [
+          {
+            "timestamp": "2025-09-13T03:18:09Z",
+            "count": 841,
+            "measured_by": "orchestrator-r338-compliance",
+            "reason": "R338 mandatory compliance audit",
+            "command": "./tools/line-counter.sh",
+            "auto_detected_base": "main",
+            "excludes": "tests/demos/docs per R007",
+            "within_limit": false
+          }
+        ]
+      }
     },
     {
       "effort_id": "E1.1.2-registry-tls-trust",
@@ -45,14 +90,54 @@
             "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001",
             "lines": 800,
             "status": "completed",
-            "working_dir": "efforts/phase1/wave1/registry-auth-types-split-001"
+            "working_dir": "efforts/phase1/wave1/registry-auth-types-split-001",
+            "line_count_tracking": {
+              "initial_count": 604,
+              "current_count": 604,
+              "last_measured": "2025-09-13T03:18:19Z",
+              "measured_by": "orchestrator-r338-compliance",
+              "measurement_command": "./tools/line-counter.sh -b origin/main",
+              "auto_detected_base": "main",
+              "implementation_only": true,
+              "within_limit": true,
+              "requires_split": false,
+              "measurement_history": [
+                {
+                  "timestamp": "2025-09-13T03:18:19Z",
+                  "count": 604,
+                  "measured_by": "orchestrator-r338-compliance",
+                  "reason": "R338 compliance audit",
+                  "within_limit": true
+                }
+              ]
+            }
           },
           {
             "split_id": "002",
             "branch": "idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002",
             "lines": 800,
             "status": "completed",
-            "working_dir": "efforts/phase1/wave1/registry-auth-types-split-002"
+            "working_dir": "efforts/phase1/wave1/registry-auth-types-split-002",
+            "line_count_tracking": {
+              "initial_count": 875,
+              "current_count": 875,
+              "last_measured": "2025-09-13T03:18:28Z",
+              "measured_by": "orchestrator-r338-compliance",
+              "measurement_command": "./tools/line-counter.sh -b origin/main",
+              "auto_detected_base": "main",
+              "implementation_only": true,
+              "within_limit": false,
+              "requires_split": true,
+              "measurement_history": [
+                {
+                  "timestamp": "2025-09-13T03:18:28Z",
+                  "count": 875,
+                  "measured_by": "orchestrator-r338-compliance",
+                  "reason": "R338 compliance audit - EXCEEDS LIMIT",
+                  "within_limit": false
+                }
+              ]
+            }
           }
         ]
       }
@@ -164,10 +249,11 @@
         "all_efforts_complete": true,
         "all_reviews_passed": true,
         "ready_for_integration": true,
-        "integration_complete": false,
+        "integration_complete": true,
         "all_rebases_complete": true,
         "notes": "All Wave 2 efforts rebased onto Wave 1 integration - ready for fresh integration",
-        "completed_at": "2025-09-12T13:51:04Z"
+        "completed_at": "2025-09-12T13:51:04Z",
+        "integration_branch": "idpbuilder-oci-build-push/phase1/wave2/integration"
       }
     }
   },
@@ -178,8 +264,8 @@
     "target": "idpbuilder"
   },
   "wave_review": null,
-  "next_action": "Create fresh Wave 1 integration workspace and branch",
-  "notes": "R327 CASCADE ENFORCEMENT: All integrations are stale due to backport fixes. Must recreate in cascade order starting with Wave 1.",
+  "next_action": "Spawn code reviewer to review integrated Wave 1 code",
+  "notes": "Wave 1 R327 cascade re-integration successful. All gates passed. Ready for code review.",
   "agents_spawned": [
     {
       "agent": "code-reviewer",
@@ -238,17 +324,30 @@
   ],
   "integration_status": {
     "phase": 1,
-    "wave": 1,
+    "wave": 2,
     "infrastructure_ready": true,
     "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo",
+    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace",
     "merge_plan_requested": true,
     "merge_plan_ready": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
-    "waiting_for": "merge_plan_review",
-    "critical_finding": "All efforts exceed 800-line limit - splits required",
-    "blocked": true,
-    "blocking_reason": "All efforts exceed 800-line limit per merge plan analysis"
+    "waiting_for": "integration-agent-completion",
+    "r327_cascade_id": "WAVE1-CASCADE-20250913",
+    "r327_cascade_reason": "Previous integration invalidated by fixes to source branches",
+    "merge_plan_path": "efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+    "merge_plan_created_at": "2025-09-13T04:37:09Z",
+    "integration_agent_spawned": true,
+    "integration_started_at": "2025-09-13T05:04:39Z",
+    "notes": "Wave 2 cascade re-integration required per R327 - building on fixed Wave 1",
+    "status": "infrastructure_needed",
+    "r327_cascade_completed": true,
+    "integration_completed_at": "2025-09-13T05:10:46Z",
+    "report_path": "efforts/phase1/wave1/integration-workspace/CASCADE-INTEGRATION-REPORT.md",
+    "gates_passed": {
+      "build": "PASSED",
+      "test": "PASSED",
+      "demo": "NOT_APPLICABLE",
+      "integration": "SUCCESS"
+    }
   },
   "error_recovery": {
     "recovery_started": "2025-09-11T23:04:21Z",
@@ -275,7 +374,15 @@
       "Implement splits with <800 lines each",
       "Get code review approval for each split",
       "Recreate integration with compliant splits"
-    ]
+    ],
+    "split_plans_created": true,
+    "split_plan_timestamp": "2025-09-13T01:19:26Z",
+    "split_plans": {
+      "kind-cert-extraction": "5 splits planned",
+      "registry-tls-trust": "4 splits planned",
+      "registry-auth-types": "3 splits revised"
+    },
+    "next_action": "Implement splits via SW Engineers"
   },
   "current_wave_integration": {
     "wave": 1,
@@ -382,15 +489,12 @@
   "integration_infrastructure": {
     "type": "wave",
     "phase": 1,
-    "wave": 1,
-    "branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-    "base_branch": "main",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo",
+    "wave": 2,
+    "branch": "idpbuilder-oci-build-push/phase1/wave2-integration",
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave1-integration",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/repo",
     "status": "infrastructure_ready",
-    "created_at": "2025-09-13T00:37:36Z",
-    "r308_compliant": true,
-    "r327_cascade": true,
-    "notes": "Fresh Wave 1 integration infrastructure created per R327 cascade re-integration"
+    "created_at": "2025-09-13T14:00:45Z"
   },
   "phase_integration_needed": true,
   "phase_1_status": {
@@ -464,7 +568,8 @@
           "phase1-integration"
         ],
         "recreation_required": true,
-        "recreation_completed": false
+        "recreation_completed": true,
+        "recreation_completed_at": "2025-09-13T13:45:10Z"
       },
       "phase1-wave2-integration": {
         "integration_id": "phase1-wave2-integration",
@@ -526,5 +631,85 @@
     "wave2",
     "phase1"
   ],
-  "cascade_current_step": "wave1"
+  "cascade_current_step": "wave2",
+  "phases_completed": {
+    "phase1": {
+      "status": "COMPLETE",
+      "integration_branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
+      "waves": 2,
+      "efforts": 5,
+      "phase_assessment": {
+        "assessment_completed": true,
+        "assessment_date": "2025-09-12T00:35:00Z",
+        "assessor": "architect",
+        "decision": "PROCEED_PHASE_ASSESSMENT",
+        "wave_reviews": [
+          {
+            "wave": 1,
+            "review_date": "2025-09-07T06:26:00Z",
+            "reviewer": "architect",
+            "decision": "PROCEED_NEXT_WAVE",
+            "report_location": "wave-reviews/phase1/wave1/PHASE-1-WAVE-1-REVIEW-REPORT.md",
+            "score": "N/A"
+          },
+          {
+            "wave": 2,
+            "review_date": "2025-09-11T15:22:00Z",
+            "reviewer": "architect",
+            "decision": "PROCEED_PHASE_ASSESSMENT",
+            "report_location": "wave-reviews/phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md",
+            "score": "96.7/100"
+          },
+          {
+            "wave": 2,
+            "review_type": "post-integration",
+            "review_date": "2025-09-12T00:35:00Z",
+            "reviewer": "architect",
+            "decision": "PROCEED_PHASE_ASSESSMENT",
+            "report_location": "wave-reviews/phase1/wave2/PHASE-1-WAVE-2-POST-INTEGRATION-REVIEW-REPORT.md",
+            "score": "96.9/100"
+          }
+        ],
+        "overall_score": "96.9/100",
+        "assessment_summary": "Phase 1 Complete with excellent architectural quality. All waves successfully integrated with proper certificate validation, trust management, and fallback strategies. Ready for Phase 2.",
+        "recommendations": [
+          "Ensure go.mod/go.sum properly maintained across all efforts",
+          "Establish minimum test coverage requirements (suggest 70%)",
+          "Create comprehensive API documentation",
+          "Establish performance benchmarks for certificate operations"
+        ]
+      }
+    }
+  },
+  "planning_files": {
+    "effort_plans": {},
+    "merge_plans": {
+      "wave": {
+        "phase1_wave1": {
+          "file_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+          "created_at": "2025-09-13T04:07:00Z",
+          "created_by": "code-reviewer",
+          "target_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+          "status": "ready_for_review"
+        }
+      },
+      "phase": {},
+      "project": {}
+    },
+    "split_plans": {},
+    "fix_plans": {},
+    "architecture_plans": {},
+    "review_reports": {}
+  },
+  "wave_integration": {
+    "merge_plan": "efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+    "cascade_id": "WAVE1-CASCADE-20250913",
+    "cascade_reason": "R327 re-integration after R321 fixes"
+  },
+  "wave1_integration_review": {
+    "status": "COMPLETE",
+    "result": "PASSED",
+    "reviewed_at": "2025-09-13T13:45:10Z",
+    "report_path": "efforts/phase1/wave1/integration-workspace/INTEGRATION_CODE_REVIEW_REPORT.md"
+  }
 }

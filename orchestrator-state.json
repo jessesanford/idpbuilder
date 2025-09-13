@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "current_state": "WAITING_FOR_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-13T14:01:24Z",
-  "transition_reason": "Integration infrastructure setup complete",
+  "transition_time": "2025-09-13T14:12:44Z",
+  "transition_reason": "Code Reviewer spawned for Wave 1 cascade re-integration merge plan",
   "restart_instructions": {
     "CRITICAL": "ON RESTART - EXECUTE THIS SEQUENCE",
     "current_task": "Spawn code-reviewer to create Wave 1 re-integration merge plan",
@@ -320,6 +320,13 @@
       "state": "BACKPORT_IMPLEMENTATION",
       "effort": "fallback-strategies",
       "priority": "MEDIUM"
+    },
+    {
+      "agent": "code-reviewer",
+      "task": "wave1_cascade_merge_plan",
+      "spawned_at": "2025-09-13T14:12:44Z",
+      "state": "WAVE_MERGE_PLANNING",
+      "purpose": "R327 cascade re-integration merge plan"
     }
   ],
   "integration_status": {
@@ -687,10 +694,10 @@
       "wave": {
         "phase1_wave1": {
           "file_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
-          "created_at": "2025-09-13T04:07:00Z",
+          "created_at": "2025-09-13T14:12:44Z",
           "created_by": "code-reviewer",
           "target_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-          "status": "ready_for_review"
+          "status": "created"
         }
       },
       "phase": {},
