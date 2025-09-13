@@ -1,0 +1,22 @@
+# Orchestrator TODO State
+Agent: orchestrator
+State: SPAWN_INTEGRATION_AGENT
+Timestamp: 2025-09-13T21:38:11Z
+Trigger: R322_CHECKPOINT_MERGE_PLAN_READY
+
+## Completed Tasks:
+✅ Load state-specific rules for WAITING_FOR_MERGE_PLAN state
+✅ Check Code Reviewer's progress on merge plan  
+✅ Determine next state transition based on merge plan completion
+✅ Update orchestrator state file per R324 before stopping
+✅ Save TODO state per R287
+
+## Next Actions (After User Review):
+- Spawn Integration Agent to execute the rebase merge plan
+- Monitor integration progress
+- Handle any conflicts or issues
+
+## Context:
+- Phase 2 Wave 1 Rebase Merge Plan Location: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/rebase-planning/REBASE-MERGE-PLAN-20250913-204028.md
+- Plan tracked in orchestrator-state.json per R340
+- R322 checkpoint completed - awaiting user review

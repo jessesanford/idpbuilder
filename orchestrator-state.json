@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_MERGE_PLAN",
-  "previous_state": "SPAWN_AGENTS",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "WAITING_FOR_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-13T21:34:08Z",
-  "transition_reason": "Code Reviewer spawned for Phase 2 Wave 1 rebase plan per R327",
+  "transition_time": "2025-09-13T21:38:11Z",
+  "transition_reason": "R322 checkpoint - rebase merge plan ready for user review",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -770,6 +770,16 @@
         "phase": 2,
         "wave": 1,
         "status": "complete"
+      }
+    },
+    "merge_plans": {
+      "wave": {
+        "phase2_wave1": {
+          "file_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/rebase-planning/REBASE-MERGE-PLAN-20250913-204028.md",
+          "created_by": "code-reviewer",
+          "created_at": "2025-09-13T20:40:28Z",
+          "type": "rebase_merge_plan"
+        }
       }
     }
   },
