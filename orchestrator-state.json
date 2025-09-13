@@ -1,9 +1,9 @@
 {
-  "current_state": "SETUP_EFFORT_INFRASTRUCTURE",
-  "previous_state": "INIT",
+  "current_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+  "previous_state": "SETUP_EFFORT_INFRASTRUCTURE",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-13T20:10:00Z",
+  "transition_time": "2025-09-13T20:21:52+00:00",
   "transition_reason": "Phase 2 Wave 1 needs fresh infrastructure with Phase 1 integration as base per R327",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
@@ -457,7 +457,52 @@
     "phase1": 2,
     "phase2": 2
   },
-  "efforts_in_progress": [],
+  "efforts_in_progress": [
+    {
+      "name": "gitea-client",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client",
+      "base_branch_tracking": {
+        "planned_base": "idpbuilder-oci-build-push/phase1/integration",
+        "actual_base": "needs_rebase",
+        "reason": "R308: Phase 2 Wave 1 builds on Phase 1 integration"
+      },
+      "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client",
+      "phase": 2,
+      "wave": 1,
+      "status": "infrastructure_ready",
+      "needs_rebase": true
+    },
+    {
+      "name": "gitea-client-split-001",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+      "base_branch_tracking": {
+        "planned_base": "gitea-client",
+        "actual_base": "needs_rebase",
+        "reason": "Sequential split - depends on gitea-client"
+      },
+      "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-001",
+      "phase": 2,
+      "wave": 1,
+      "status": "infrastructure_ready",
+      "needs_rebase": true,
+      "depends_on": "gitea-client"
+    },
+    {
+      "name": "gitea-client-split-002",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+      "base_branch_tracking": {
+        "planned_base": "gitea-client-split-001",
+        "actual_base": "needs_rebase",
+        "reason": "Sequential split - depends on split-001"
+      },
+      "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/gitea-client-split-002",
+      "phase": 2,
+      "wave": 1,
+      "status": "infrastructure_ready",
+      "needs_rebase": true,
+      "depends_on": "gitea-client-split-001"
+    }
+  ],
   "efforts_pending": [],
   "integration_code_review": {
     "status": "COMPLETED",
@@ -798,5 +843,11 @@
     "report_created": true,
     "completed_at": "2025-09-13T19:53:12Z",
     "report_file": "phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md"
+  },
+  "base_branch_decisions": {
+    "phase2_wave1_base": "idpbuilder-oci-build-push/phase1/integration",
+    "reason": "R308: Phase 2 Wave 1 must build on Phase 1 integration (NOT main)",
+    "decided_at": "2025-09-13T20:21:18+00:00",
+    "decided_by": "orchestrator-R308"
   }
 }
