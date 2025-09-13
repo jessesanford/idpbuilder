@@ -1,0 +1,24 @@
+[
+  {
+    "content": "Spawn code reviewer to review integrated Wave 1 code",
+    "activeForm": "Spawning code reviewer for Wave 1 integration review",
+    "status": "pending",
+    "notes": "Need to review the Wave 1 R327 cascade re-integration result"
+  },
+  {
+    "content": "Wait for code review completion",
+    "activeForm": "Waiting for code review completion",
+    "status": "pending"
+  },
+  {
+    "content": "Process code review results",
+    "activeForm": "Processing code review results",
+    "status": "pending"
+  },
+  {
+    "content": "Continue Wave 2 cascade re-integration if Wave 1 passes",
+    "activeForm": "Continuing Wave 2 cascade re-integration",
+    "status": "pending",
+    "notes": "Per R327, must cascade Wave 2 after Wave 1 is verified"
+  }
+]
