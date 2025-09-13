@@ -1,0 +1,18 @@
+## Orchestrator TODOs - State: SPAWN_INTEGRATION_AGENT
+## Saved: 2025-09-13T14:38:20Z
+
+### Completed:
+- [x] Monitor Code Reviewer merge plan creation for Wave 1 cascade re-integration
+- [x] Validate merge plan when detected (per R269)
+- [x] Execute R322 checkpoint when plan is ready
+- [x] Update state file to SPAWN_INTEGRATION_AGENT before stopping
+
+### Next Actions (after user review):
+- [ ] Spawn Integration Agent to execute Wave 1 cascade re-integration
+- [ ] Monitor integration progress
+- [ ] Verify build and test gates pass
+
+### Context:
+- R327 cascade re-integration in progress
+- Wave 1 merge plan ready at: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md
+- Next: Spawn Integration Agent after user reviews merge plan
