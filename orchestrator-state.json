@@ -12,17 +12,18 @@
       {
         "effort": "image-builder",
         "current_branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
-        "status": "needs_rebase",
+        "status": "completed",
         "working_dir": "efforts/phase2/wave1/image-builder",
         "base_branch": "idpbuilder-oci-build-push/phase1/integration",
         "reason": "Created before Phase 1 integration was finalized"
       }
     ],
     "rebase_strategy": "code_reviewer_merge_plan_first",
-    "next_action": "rebase_image_builder",
+    "next_action": "proceed_with_integration",
     "follows_pattern": "R327 cascade - same as wave/phase integration rebases",
-    "status": "pending",
-    "completed_at": "2025-09-13T21:50:59Z"
+    "status": "completed",
+    "completed_at": "2025-09-13T21:50:59Z",
+    "notes": "Image-builder was successfully rebased onto Phase 1 integration at 2025-09-13T21:50:59Z"
   },
   "phase_1_completion": {
     "completed_at": "2025-09-13T20:01:03Z",
@@ -493,6 +494,21 @@
       "status": "infrastructure_ready",
       "needs_rebase": true,
       "depends_on": "gitea-client-split-001"
+    },
+    {
+      "name": "image-builder",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
+      "base_branch_tracking": {
+        "planned_base": "idpbuilder-oci-build-push/phase1/integration",
+        "actual_base": "idpbuilder-oci-build-push/phase1/integration",
+        "reason": "Phase 2 Wave 1 effort based on Phase 1 integration"
+      },
+      "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/image-builder",
+      "phase": 2,
+      "wave": 1,
+      "status": "implementation_complete",
+      "rebased": true,
+      "rebase_completed_at": "2025-09-13T21:50:59Z"
     }
   ],
   "efforts_pending": [],
