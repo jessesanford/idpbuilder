@@ -1,0 +1,19 @@
+# Orchestrator TODOs - SPAWN_INTEGRATION_AGENT State
+# Generated: 2025-09-13T23:40:00Z
+# R322 Checkpoint: Ready to spawn integration agent
+
+## Completed Tasks
+✅ Verify merge plan exists and is tracked per R340
+✅ Validate merge plan contents meet R269 requirements
+✅ Update state to SPAWN_INTEGRATION_AGENT for R322 checkpoint
+
+## Current Task
+🔄 Save TODOs and commit state per R287/R288
+
+## Pending Tasks
+⏳ Display R322 checkpoint message and stop
+
+## Next Actions (After User Review)
+- Spawn integration agent to execute merge plan
+- Monitor integration progress
+- Run demos per R330/R291
