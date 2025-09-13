@@ -1,0 +1,28 @@
+# Orchestrator TODOs - SPAWN_CODE_REVIEWER_REBASE_PLAN State
+# Saved: 2025-09-13T20:11:00Z
+# Reason: R322 checkpoint before spawning Code Reviewer for rebase merge plan
+
+## Completed Tasks
+✅ Analyze Phase 2 Wave 1 existing efforts and their current state
+✅ Setup rebase infrastructure for Phase 2 Wave 1 efforts
+✅ Create rebase plan document (PHASE-2-REBASE-PLAN.md)
+✅ Update orchestrator-state.json for SPAWN_CODE_REVIEWER_REBASE_PLAN
+
+## Pending Tasks
+⏸️ Spawn Code Reviewer to create Phase 2 Wave 1 rebase merge plan
+⏸️ Stop for R322 checkpoint
+
+## Context
+- Following R327 cascade pattern for rebases
+- Phase 2 Wave 1 efforts need rebasing onto Phase 1 integration
+- Code Reviewer will create merge plan first (not direct SW Engineer rebase)
+- Efforts to rebase:
+  * gitea-client
+  * gitea-client-split-001
+  * gitea-client-split-002
+
+## Next Actions
+1. Spawn Code Reviewer with task to create rebase merge plan
+2. Wait for merge plan completion
+3. Review merge plan
+4. Then spawn Integration Agent to execute rebases
