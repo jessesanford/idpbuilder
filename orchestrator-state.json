@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
-  "previous_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+  "current_state": "WAITING_FOR_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-14T16:02:13Z",
-  "transition_reason": "Infrastructure created for image-builder-split-001, need Code Reviewer to create split plans",
+  "transition_time": "2025-09-14T16:06:43Z",
+  "transition_reason": "Code Reviewer creating Phase 2 Wave 1 rebase plan for cascading R327 integration",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -972,6 +972,13 @@
           "created_by": "code-reviewer",
           "created_at": "2025-09-14T12:00:36Z",
           "validated": true
+        },
+        "phase2_wave1_rebase": {
+          "file_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/PHASE-2-WAVE-1-REBASE-PLAN.md",
+          "created_by": "code-reviewer",
+          "created_at": "2025-09-14T16:06:43Z",
+          "type": "rebase_plan",
+          "purpose": "R327 cascade rebase for Phase 2 Wave 1"
         }
       },
       "phase": {
