@@ -1,0 +1,22 @@
+[
+  {
+    "content": "Check if merge plan is tracked in orchestrator-state.json per R340",
+    "status": "completed",
+    "activeForm": "Checking if merge plan is tracked in state file"
+  },
+  {
+    "content": "Validate merge plan contents if found",
+    "status": "completed", 
+    "activeForm": "Validating merge plan contents"
+  },
+  {
+    "content": "Update state to SPAWN_INTEGRATION_AGENT if plan validated",
+    "status": "completed",
+    "activeForm": "Updating state to SPAWN_INTEGRATION_AGENT"
+  },
+  {
+    "content": "Execute R322 mandatory checkpoint stop",
+    "status": "in_progress",
+    "activeForm": "Executing R322 mandatory checkpoint stop"
+  }
+]

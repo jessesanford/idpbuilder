@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "WAITING_FOR_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-14T03:38:16Z",
-  "transition_reason": "Code Reviewer confirmed merge plan ready",
+  "transition_time": "2025-09-14T07:32:12Z",
+  "transition_reason": "R322 checkpoint - merge plan ready for user review",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -494,7 +494,9 @@
     "type": "fresh_recreation",
     "reason": "R327 mandatory re-integration after backport fixes",
     "old_branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
-    "status": "infrastructure_needed"
+    "status": "infrastructure_needed",
+    "merge_plan": "/home/vscode/workspaces/idpbuilder-oci-build-push/R327-CASCADE-WAVE-REINTEGRATION-PLAN.md",
+    "merge_plan_validated": true
   },
   "current_phase_integration": {
     "phase": 1,
