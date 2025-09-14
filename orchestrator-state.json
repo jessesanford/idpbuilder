@@ -1570,5 +1570,76 @@
     "integration_status": "PARTIAL_SUCCESS",
     "upstream_bugs_found": true,
     "report_file": "efforts/phase2/wave1/integration-workspace/repo/INTEGRATION-REPORT.md"
+  },
+  "error_recovery_context": {
+    "issue": "Duplicate type declarations in pkg/certs blocking build",
+    "root_cause": "Phase 1 latent bug - TLSConfig declared in both types.go and utilities.go",
+    "discovery": "Phase 2 Wave 1 integration exposed the issue when registry imported certs",
+    "fix_required": {
+      "package": "pkg/certs",
+      "files_to_fix": [
+        {
+          "file": "pkg/certs/utilities.go",
+          "line": 130,
+          "issue": "Duplicate TLSConfig struct declaration",
+          "action": "Remove duplicate - keep only in types.go"
+        },
+        {
+          "file": "pkg/certs/utilities.go",
+          "line": 139,
+          "issue": "Duplicate DefaultTLSConfig function",
+          "action": "Remove duplicate - keep only in types.go"
+        }
+      ],
+      "source_branch": "Phase 1 effort branch containing pkg/certs"
+    },
+    "r327_cascade_required": {
+      "description": "After fix, MUST re-integrate everything per R327",
+      "sequence": [
+        "1. Fix in Phase 1 source branch",
+        "2. Re-integrate Phase 1 Wave 1",
+        "3. Re-integrate Phase 1 Wave 2",
+        "4. Re-integrate Phase 1 (phase-level)",
+        "5. Rebase Phase 2 efforts onto fixed Phase 1",
+        "6. Re-integrate Phase 2 Wave 1",
+        "7. Verify build passes"
+      ],
+      "critical": "EVERY integration must be deleted and recreated from scratch"
+    },
+    "next_state_after_recovery": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+    "recovery_started": "2025-09-14T18:04:32Z"
+  },
+  "phase1_pkg_certs_fix": {
+    "status": "PENDING",
+    "identified_issue": {
+      "description": "Duplicate type declarations in pkg/certs",
+      "files": {
+        "pkg/certs/utilities.go": {
+          "line_130": "type TLSConfig struct - DUPLICATE TO REMOVE",
+          "line_139": "func DefaultTLSConfig - DUPLICATE TO REMOVE"
+        },
+        "pkg/certs/types.go": {
+          "line_55": "type TLSConfig struct - KEEP THIS ONE",
+          "line_150": "func DefaultTLSConfig - KEEP THIS ONE"
+        }
+      }
+    },
+    "fix_sequence": {
+      "step_1": "Find Phase 1 source branch with pkg/certs",
+      "step_2": "Fix duplicates in source branch",
+      "step_3": "Re-integrate Phase 1 Wave 1",
+      "step_4": "Re-integrate Phase 1 Wave 2",
+      "step_5": "Re-integrate Phase 1 (phase-level)",
+      "step_6": "Rebase Phase 2 efforts onto fixed Phase 1",
+      "step_7": "Re-integrate Phase 2 Wave 1"
+    },
+    "r327_cascade_tracking": {
+      "phase1_wave1_reintegration": "PENDING",
+      "phase1_wave2_reintegration": "PENDING",
+      "phase1_integration": "PENDING",
+      "phase2_rebases": "PENDING",
+      "phase2_wave1_reintegration": "PENDING"
+    },
+    "critical_reminder": "DO NOT SKIP ANY REINTEGRATION - R327 MANDATORY"
   }
 }
