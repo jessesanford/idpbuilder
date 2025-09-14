@@ -1,10 +1,10 @@
 {
-  "current_state": "MONITOR_REVIEWS",
-  "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+  "current_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+  "previous_state": "MONITOR_REVIEWS",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-14T15:49:01Z",
-  "transition_reason": "Code Reviewers completed - 2 efforts need splits, 1 approved",
+  "transition_time": "2025-09-14T15:53:21Z",
+  "transition_reason": "Code Reviewers completed - 2 efforts need splits (image-builder: 6 splits, gitea-client-split-001: 2 splits)",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -292,6 +292,31 @@
           "rebase_reason": "Sequential split - must rebase after split-001 is rebased"
         }
       ]
+    },
+    "image-builder": {
+      "original_base": "idpbuilder-oci-build-push/phase1/integration",
+      "target_base": "idpbuilder-oci-build-push/phase1/integration",
+      "split_count": 6,
+      "created_at": "2025-09-14T15:52:53Z",
+      "reason": "Effort exceeded 800 line limit - 3646 lines total",
+      "status": "split_plans_created",
+      "current_split": 0,
+      "splits": [],
+      "original_branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
+      "working_dir": "efforts/phase2/wave1/image-builder"
+    },
+    "gitea-client-split-001-resplit": {
+      "original_base": "idpbuilder-oci-build-push/phase1/integration",
+      "target_base": "idpbuilder-oci-build-push/phase1/integration",
+      "split_count": 2,
+      "created_at": "2025-09-14T15:53:02Z",
+      "reason": "Split effort itself exceeded 800 line limit - 1378 lines total",
+      "status": "split_plans_created",
+      "current_split": 0,
+      "splits": [],
+      "original_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+      "working_dir": "efforts/phase2/wave1/gitea-client-split-001",
+      "note": "This is a split that itself needs splitting (boundary violation)"
     }
   },
   "waves_completed": {
