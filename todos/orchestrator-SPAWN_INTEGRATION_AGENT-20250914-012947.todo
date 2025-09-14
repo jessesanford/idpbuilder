@@ -1,0 +1,18 @@
+## Orchestrator TODOs - R322 Checkpoint
+State: SPAWN_INTEGRATION_AGENT
+Time: 2025-09-14T01:29:32Z
+
+### Completed:
+✅ Verified WAITING_FOR_MERGE_PLAN state-specific rules loaded
+✅ Checked orchestrator-state.json for merge plan tracking (R340)
+✅ Monitored Code Reviewer agent status
+✅ Found correct Phase 2 Wave 1 merge plan
+✅ Updated state file to track merge plan (R340)
+✅ Validated merge plan contents
+✅ Updated state to SPAWN_INTEGRATION_AGENT with R322 checkpoint
+
+### Next Actions (after user review):
+- [ ] Spawn Integration Agent to execute Phase 2 Wave 1 merge plan
+- [ ] Monitor integration progress
+- [ ] Handle any merge conflicts
+- [ ] Run demo validation per R330/R291
