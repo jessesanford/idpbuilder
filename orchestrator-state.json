@@ -293,28 +293,6 @@
         }
       ]
     },
-    "image-builder": {
-      "original_base": "idpbuilder-oci-build-push/phase1/integration",
-      "target_base": "idpbuilder-oci-build-push/phase1/integration",
-      "split_count": 6,
-      "created_at": "2025-09-14T15:52:53Z",
-      "reason": "Effort exceeded 800 line limit - 3646 lines total",
-      "status": "split_plans_created",
-      "current_split": 1,
-      "splits": [
-        {
-          "split_number": 1,
-          "branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder-split-001",
-          "base_branch": "idpbuilder-oci-build-push/phase1/integration",
-          "working_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/image-builder-split-001",
-          "status": "infrastructure_ready",
-          "created_at": "2025-09-14T16:02:00Z",
-          "needs_split_plan": true
-        }
-      ],
-      "original_branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
-      "working_dir": "efforts/phase2/wave1/image-builder"
-    },
     "gitea-client-split-001-resplit": {
       "original_base": "idpbuilder-oci-build-push/phase1/integration",
       "target_base": "idpbuilder-oci-build-push/phase1/integration",
@@ -1563,7 +1541,6 @@
     "gitea_client_split_001": "up-to-date",
     "gitea_client_split_002": "up-to-date",
     "image_builder": "up-to-date",
-    "image_builder_split_001": "up-to-date",
     "verified_at": "2025-09-14T16:38:34Z"
   }
 }
