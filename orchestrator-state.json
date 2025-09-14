@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "INTEGRATION",
+  "current_state": "WAITING_FOR_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-14T03:30:12Z",
-  "transition_reason": "Infrastructure exists, need merge plan",
+  "transition_time": "2025-09-14T03:38:16Z",
+  "transition_reason": "Code Reviewer confirmed merge plan ready",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -903,6 +903,17 @@
           "created_by": "code-reviewer",
           "created_at": "2025-09-14T01:28:31Z",
           "validated": true
+        },
+        "phase1_wave1": {
+          "type": "merge_plan",
+          "path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+          "phase": 1,
+          "wave": 1,
+          "target_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+          "efforts_count": 4,
+          "created_at": "2025-09-13T14:08:00Z",
+          "updated_at": "2025-09-14T03:38:00Z",
+          "status": "ready"
         }
       }
     }
