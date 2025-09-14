@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_PHASE_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
+  "current_state": "SPAWN_INTEGRATION_AGENT_PHASE",
+  "previous_state": "WAITING_FOR_PHASE_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-14T14:05:56Z",
-  "transition_reason": "Code Reviewer spawned for phase merge planning - merge plan created at worktrees/phase1-integration/PHASE-1-MERGE-PLAN.md",
+  "transition_time": "2025-09-14T14:13:59Z",
+  "transition_reason": "Phase merge plan validated - ready to spawn integration agent for Phase 1 final integration",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -943,7 +943,13 @@
         }
       },
       "phase": {
-        "phase1": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/integration-workspace/PHASE-1-MERGE-PLAN.md"
+        "phase1": {
+          "file_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/worktrees/phase1-integration/PHASE-1-MERGE-PLAN.md",
+          "created_by": "code-reviewer",
+          "created_at": "2025-09-14T14:03:30Z",
+          "validated": true,
+          "ready_for_integration": true
+        }
       }
     }
   },
