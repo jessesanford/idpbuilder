@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-14T17:17:11Z",
-  "transition_reason": "Integration infrastructure ready, need merge plan for R327 cascade",
+  "transition_time": "2025-09-14T17:33:34Z",
+  "transition_reason": "Merge plan created successfully, ready to spawn integration agent for R327 cascade",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -1536,5 +1536,18 @@
     "gitea_client_split_002": "up-to-date",
     "image_builder": "up-to-date",
     "verified_at": "2025-09-14T16:38:34Z"
+  },
+  "r327_cascade_integration": {
+    "status": "merge_plan_created",
+    "phase": 2,
+    "wave": 1,
+    "infrastructure_ready": true,
+    "integration_branch": "idpbuilder-oci-build-push/phase2/wave1/integration",
+    "integration_dir": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo",
+    "merge_plan_requested": true,
+    "merge_plan_ready": true,
+    "merge_plan_file": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
+    "waiting_for": "integration_agent",
+    "created_at": "2025-09-14T17:33:12Z"
   }
 }
