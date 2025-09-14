@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_PHASE_ASSESSMENT",
-  "previous_state": "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "WAITING_FOR_PHASE_ASSESSMENT",
   "current_phase": 2,
   "current_wave": "phase_integration",
-  "transition_time": "2025-09-14T23:16:07Z",
-  "transition_reason": "Architect has completed Phase 2 assessment - decision: NEEDS_WORK",
+  "transition_time": "2025-09-14T23:20:53Z",
+  "transition_reason": "Phase 2 assessment returned NEEDS_WORK - missing core implementation",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -539,64 +539,11 @@
     "build_blocked_by": "upstream_bug_duplicate_types"
   },
   "error_recovery": {
-    "recovery_started": "2025-09-11T23:04:21Z",
-    "recovery_completed": "2025-09-11T23:15:33Z",
-    "fixes_applied": {
-      "cert-validation-split-001": "Restored deleted project files, added demo",
-      "cert-validation-split-002": "Added demo-chain-validation.sh",
-      "cert-validation-split-003": "Added demo-validators.sh",
-      "fallback-strategies": "Added demo-fallback.sh"
-    },
-    "r300_verified": true,
-    "ready_for_reintegration": true,
-    "issue_type": "SIZE_VIOLATIONS",
-    "detected_at": "2025-09-13T00:57:13Z",
-    "blocking_issues": [
-      "kind-cert-extraction: 3170 lines (396% of limit)",
-      "registry-tls-trust: 2413 lines (301% of limit)",
-      "registry-auth-types: 1406 lines (176% of limit)",
-      "registry-auth-types splits also exceed limits",
-      "Split branch corruption detected"
-    ],
-    "required_actions": [
-      "Create proper split plans for all Wave 1 efforts",
-      "Implement splits with <800 lines each",
-      "Get code review approval for each split",
-      "Recreate integration with compliant splits"
-    ],
-    "split_plans_created": true,
-    "split_plan_timestamp": "2025-09-13T01:19:26Z",
-    "split_plans": {
-      "kind-cert-extraction": "5 splits planned",
-      "registry-tls-trust": "4 splits planned",
-      "registry-auth-types": "3 splits revised"
-    },
-    "next_action": "Implement splits via SW Engineers",
-    "phase2_wave1_bugs": {
-      "bug1": {
-        "type": "undefined_type",
-        "location": "pkg/registry/list.go, push.go",
-        "issue": "giteaRegistryImpl undefined",
-        "effort_to_fix": "gitea-client-split-001 or gitea-client-split-002",
-        "severity": "CRITICAL"
-      },
-      "bug2": {
-        "type": "syntax_error",
-        "location": "pkg/certs/utilities.go:131,159",
-        "issue": "Non-declaration statements outside function body",
-        "effort_to_fix": "Phase 1 cert-related effort (inherited)",
-        "severity": "CRITICAL"
-      }
-    },
-    "r291_gates": {
-      "BUILD_GATE": "FAILED",
-      "TEST_GATE": "PARTIAL",
-      "DEMO_GATE": "PARTIAL",
-      "ARTIFACT_GATE": "FAILED",
-      "triggered_at": "2025-09-14T00:22:44Z"
-    },
-    "recovery_completed_at": "2025-09-14T02:12:14Z",
-    "recovery_result": "SUCCESS - Fixed Docker import and format string issues in kind-cert-extraction effort branch"
+    "source": "PHASE_ASSESSMENT_NEEDS_WORK",
+    "report_to_read": "phase-assessments/phase2/PHASE-2-ASSESSMENT-REPORT.md",
+    "error_type": "MISSING_IMPLEMENTATION",
+    "priority": "CRITICAL",
+    "description": "Phase 2 build and push functionality not implemented"
   },
   "current_wave_integration": {
     "wave": 1,
@@ -1130,14 +1077,26 @@
   },
   "phase_assessment": {
     "phase": 2,
-    "requested_at": "2025-09-14T23:15:48Z",
-    "expected_report": "phase-assessments/phase2/PHASE-2-ASSESSMENT-REPORT.md",
-    "type": "COMPLETE_PHASE",
-    "phase_branch": "idpbuilder-oci-build-push/phase2/integration-20250914-221126",
-    "wave_count": 2,
-    "status": "PENDING",
-    "report_created": true,
-    "architect_decision": "NEEDS_WORK"
+    "requested_at": "2025-09-14T23:10:00Z",
+    "architect_spawned": "architect-phase2-assessment",
+    "report_file": "phase-assessments/phase2/PHASE-2-ASSESSMENT-REPORT.md",
+    "decision": "NEEDS_WORK",
+    "status": "NEEDS_WORK",
+    "completed_at": "2025-09-14T23:20:53Z",
+    "key_findings": [
+      "Phase 2 core functionality (OCI build/push) is MISSING",
+      "Integration branch contains only Phase 1 code",
+      "Size violations acknowledged but not resolved",
+      "MVP cannot function without Phase 2 implementation"
+    ],
+    "required_actions": [
+      "Implement E2.1.1 - Image Builder (<800 lines)",
+      "Implement E2.1.2 - Registry Client (<800 lines)",
+      "Implement E2.2.1 - CLI Commands",
+      "Enforce size compliance strictly",
+      "Re-run full phase integration after implementation"
+    ],
+    "next_action": "ERROR_RECOVERY"
   },
   "base_branch_decisions": {
     "phase2_wave1_base": "idpbuilder-oci-build-push/phase1/integration",
