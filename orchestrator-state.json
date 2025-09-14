@@ -1112,60 +1112,59 @@
     "decided_by": "orchestrator-R308"
   },
   "code_reviewer_parallelization_plan": {
-    "phase": 2,
     "wave": 1,
-    "analysis_timestamp": "2025-09-13T20:27:00Z",
-    "rebase_required": true,
-    "rebase_reason": "Phase 2 Wave 1 created before Phase 1 integration was finalized",
-    "base_branch_target": "idpbuilder-oci-build-push/phase1/integration",
+    "phase": 2,
+    "analysis_timestamp": "2025-09-14T21:16:05Z",
+    "plan_source": "efforts/phase2/wave1/gitea-client/SPLIT-PLAN.md",
+    "blocking_efforts": [
+      {
+        "effort_id": "gitea-client-split-001",
+        "name": "Core Interfaces and Authentication",
+        "reason": "First split - foundation components",
+        "can_parallelize": false,
+        "action_needed": "Create re-split plan (1378 lines exceeds 800 limit)",
+        "depends_on": []
+      },
+      {
+        "effort_id": "gitea-client-split-002",
+        "name": "Operations and Utilities",
+        "reason": "Sequential split - depends on split-001",
+        "can_parallelize": false,
+        "action_needed": "Create effort implementation plan",
+        "depends_on": [
+          "gitea-client-split-001"
+        ]
+      }
+    ],
+    "parallel_groups": [],
     "spawn_sequence": [
       {
         "step": 1,
         "action": "spawn_sequential",
-        "type": "rebase_planning",
         "efforts": [
-          "phase2-wave1-rebase-plan"
+          "gitea-client-split-001"
         ],
+        "purpose": "Create re-split plan for oversized split",
         "wait_for_completion": true,
-        "reason": "Must create rebase plan before effort planning per R327"
+        "reasoning": "Split-001 exceeded 800 lines (1378) and needs re-splitting"
       },
       {
         "step": 2,
-        "action": "spawn_parallel",
-        "type": "effort_planning",
+        "action": "spawn_sequential",
         "efforts": [
-          "image-builder",
-          "gitea-client"
+          "gitea-client-split-002"
         ],
-        "r151_requirement": "All in ONE message with <5s delta",
-        "reason": "Both efforts marked 'Can Parallelize: Yes' in wave plan"
+        "purpose": "Create effort implementation plan",
+        "wait_for_completion": true,
+        "reasoning": "Sequential dependency on split-001"
       }
     ],
-    "effort_details": {
-      "image-builder": {
-        "effort_id": "E2.1.1",
-        "name": "go-containerregistry-image-builder",
-        "can_parallelize": true,
-        "parallel_with": [
-          "E2.1.2"
-        ],
-        "estimated_lines": 600
-      },
-      "gitea-client": {
-        "effort_id": "E2.1.2",
-        "name": "gitea-registry-client",
-        "can_parallelize": true,
-        "parallel_with": [
-          "E2.1.1"
-        ],
-        "estimated_lines": 600,
-        "existing_splits": [
-          "001",
-          "002"
-        ],
-        "requires_rebase": true
-      }
-    }
+    "notes": [
+      "All splits MUST be sequential - no parallelization possible",
+      "Split-001 needs special handling for re-split (1378 lines)",
+      "Split-002 can only proceed after split-001 is complete",
+      "This follows standard split protocol where each split depends on previous"
+    ]
   },
   "sw_engineer_parallelization_plan": {
     "wave": 1,
