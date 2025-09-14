@@ -1,0 +1,19 @@
+# Orchestrator TODOs - WAITING_FOR_MERGE_PLAN State
+# Saved at: 2025-09-14T01:23:20Z
+
+## Completed:
+- ✅ Load state-specific rules for SPAWN_CODE_REVIEWER_MERGE_PLAN
+- ✅ Create R290 verification marker
+- ✅ Verify integration infrastructure (Phase 2 Wave 1)
+- ✅ Spawn code reviewer for merge plan creation
+- ✅ Update state file with planning file info per R340
+- ✅ Save TODOs per R287
+
+## In Progress:
+- None
+
+## Next State Actions:
+- Wait for merge plan to be ready
+- Verify WAVE-MERGE-PLAN.md exists
+- Spawn Integration Agent to execute merges
+- Monitor integration progress
