@@ -27,3 +27,9 @@ Command: git merge origin/idpbuilder-oci-build-push/phase1/wave1/kind-cert-extra
 MERGED: kind-cert-extraction at Sun Sep 14 08:44:19 AM UTC 2025
 Result: SUCCESS - Docker API fixes included
 Files added: 14 new files including pkg/certs package
+
+## Operation 5: Merge registry-tls-trust
+Command: git merge origin/idpbuilder-oci-build-push/phase1/wave1/registry-tls-trust --no-ff
+MERGED: registry-tls-trust at Sun Sep 14 08:45:00 AM UTC 2025
+Result: SUCCESS - Trust integration functionality merged
+Conflicts resolved: work-log.md (kept ours for CASCADE tracking)
