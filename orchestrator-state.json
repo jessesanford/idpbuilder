@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_INTEGRATION_AGENT",
-  "previous_state": "WAITING_FOR_MERGE_PLAN",
+  "current_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "previous_state": "SPAWN_INTEGRATION_AGENT",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-14T16:19:34Z",
-  "transition_reason": "Code Reviewer creating Phase 2 Wave 1 rebase plan for cascading R327 integration",
+  "transition_time": "2025-09-14T17:08:42Z",
+  "transition_reason": "R327 cascade re-integration after rebasing branches",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -973,10 +973,10 @@
   "wave_integration": {
     "merge_plan": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
     "cascade_id": "WAVE1-CASCADE-20250913",
-    "cascade_reason": "R327 re-integration after R321 fixes",
+    "cascade_reason": "Branches rebased - need fresh integration per R327",
     "merge_plan_created": "2025-09-14T12:00:36Z",
     "plan_validation": "READY",
-    "status": "INTEGRATION_COMPLETE",
+    "status": "PENDING_RE_INTEGRATION",
     "completed_at": "2025-09-14T12:12:59Z",
     "r291_gates": {
       "build": "PASSED",
