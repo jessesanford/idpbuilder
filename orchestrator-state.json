@@ -749,10 +749,11 @@
     "base_branch": "idpbuilder-oci-build-push/phase1/wave2-integration",
     "type": "phase",
     "phase": 1,
-    "created_at": "2025-09-14T02:28:33Z",
+    "created_at": "2025-09-14T13:54:34Z",
     "ready": true,
     "r308_compliant": true,
-    "r308_validation": "Using last wave (wave2) integration as base"
+    "r308_validation": "Using last wave (wave2) integration as base",
+    "status": "recreated"
   },
   "stale_integration_tracking": {
     "analysis_timestamp": "2025-09-13T00:21:26Z",
