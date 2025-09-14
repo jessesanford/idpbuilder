@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
-  "previous_state": "MONITORING_PHASE_INTEGRATION",
+  "current_state": "WAITING_FOR_PHASE_ASSESSMENT",
+  "previous_state": "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
   "current_phase": 2,
   "current_wave": "phase_integration",
-  "transition_time": "2025-09-14T23:04:02Z",
-  "transition_reason": "Phase 2 integration complete and successful - ready for architect assessment",
+  "transition_time": "2025-09-14T23:16:07Z",
+  "transition_reason": "Architect has completed Phase 2 assessment - decision: NEEDS_WORK",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -1129,18 +1129,15 @@
     "completed_at": "2025-09-13T19:20:51Z"
   },
   "phase_assessment": {
-    "phase": 1,
-    "requested_at": "2025-09-13T19:42:55Z",
-    "expected_report": "phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md",
+    "phase": 2,
+    "requested_at": "2025-09-14T23:15:48Z",
+    "expected_report": "phase-assessments/phase2/PHASE-2-ASSESSMENT-REPORT.md",
     "type": "COMPLETE_PHASE",
-    "phase_branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
+    "phase_branch": "idpbuilder-oci-build-push/phase2/integration-20250914-221126",
     "wave_count": 2,
-    "status": "COMPLETE",
-    "decision": "PHASE_COMPLETE",
-    "score": 85,
+    "status": "PENDING",
     "report_created": true,
-    "completed_at": "2025-09-13T19:53:12Z",
-    "report_file": "phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md"
+    "architect_decision": "NEEDS_WORK"
   },
   "base_branch_decisions": {
     "phase2_wave1_base": "idpbuilder-oci-build-push/phase1/integration",
