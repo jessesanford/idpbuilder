@@ -1,10 +1,17 @@
 {
-  "current_state": "WAVE_REVIEW",
-  "previous_state": "WAITING_FOR_INTEGRATION_CODE_REVIEW",
+  "current_state": "WAVE_START",
+  "previous_state": "WAVE_REVIEW",
   "current_phase": 1,
-  "current_wave": 1,
-  "transition_time": "2025-09-14T10:48:48Z",
-  "transition_reason": "Integration code review completed with PASS verdict - ready for architect review",
+  "current_wave": 2,
+  "transition_time": "2025-09-14T11:27:00Z",
+  "transition_reason": "Wave 1 review completed with PROCEED_NEXT_WAVE - starting Wave 2",
+  "wave_1_review": {
+    "completed_at": "2025-09-14T11:27:00Z",
+    "decision": "PROCEED_NEXT_WAVE",
+    "report_file": "wave-reviews/phase1/wave1/PHASE-1-WAVE-1-REVIEW-REPORT.md",
+    "reviewed_by": "architect",
+    "status": "APPROVED"
+  },
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
