@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_WAVE_MERGE_PLAN",
-  "previous_state": "WAVE_REVIEW",
+  "current_state": "WAITING_FOR_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_WAVE_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-14T11:42:00Z",
-  "transition_reason": "R327 cascade - Need merge plan for Phase 1 Wave 2 rebase onto re-integrated Wave 1",
+  "transition_time": "2025-09-14T11:45:00Z",
+  "transition_reason": "Code Reviewer completed Wave 2 rebase plan - ready for execution",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -1326,7 +1326,9 @@
         "cert-validation-split-002",
         "cert-validation-split-003"
       ],
-      "plan_path": "R327-CASCADE-WAVE-REINTEGRATION-PLAN.md"
+      "plan_path": "R327-CASCADE-WAVE-REINTEGRATION-PLAN.md",
+      "rebase_plan_created": "2025-09-14T11:45:00Z",
+      "rebase_plan_path": "WAVE-2-REBASE-PLAN.md"
     },
     "phase_reintegration": {
       "status": "pending",
