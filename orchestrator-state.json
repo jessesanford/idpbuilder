@@ -1,10 +1,10 @@
 {
-  "current_state": "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE",
-  "previous_state": "PHASE_INTEGRATION",
+  "current_state": "R327_CASCADE_ENFORCEMENT",
+  "previous_state": "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-14T02:22:47Z",
-  "transition_reason": "Phase integration infrastructure incomplete - need proper setup (R259 post-error-recovery flow)",
+  "transition_time": "2025-09-14T03:15:44Z",
+  "transition_reason": "R327 CASCADE LAW: Must recreate wave integrations before phase integration",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -1271,5 +1271,37 @@
     "demos_passed": true,
     "tests_passed": true,
     "only_build_failed": true
+  },
+  "r327_cascade_enforcement": {
+    "detected_at": "2025-09-14T03:15:44Z",
+    "violation": "Attempted phase integration with stale wave integrations",
+    "required_actions": [
+      "DELETE and RECREATE Phase 1 Wave 1 integration",
+      "DELETE and RECREATE Phase 1 Wave 2 integration",
+      "CASCADE to Phase 1 integration after waves complete"
+    ],
+    "wave1_reintegration": {
+      "status": "pending",
+      "deleted_stale": true,
+      "efforts_with_fixes": [
+        "kind-cert-extraction"
+      ],
+      "plan_path": "R327-CASCADE-WAVE-REINTEGRATION-PLAN.md"
+    },
+    "wave2_reintegration": {
+      "status": "pending",
+      "deleted_stale": true,
+      "efforts_with_fixes": [
+        "cert-validation-split-001",
+        "cert-validation-split-002",
+        "cert-validation-split-003"
+      ],
+      "plan_path": "R327-CASCADE-WAVE-REINTEGRATION-PLAN.md"
+    },
+    "phase_reintegration": {
+      "status": "pending",
+      "deleted_stale": true,
+      "will_recreate_after_waves": true
+    }
   }
 }
