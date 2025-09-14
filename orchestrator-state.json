@@ -1,9 +1,9 @@
 {
-  "current_state": "PHASE_INTEGRATION",
-  "previous_state": "WAVE_COMPLETE",
+  "current_state": "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
+  "previous_state": "PHASE_INTEGRATION",
   "current_phase": 2,
   "current_wave": "phase_integration",
-  "transition_time": "2025-09-14T22:20:00Z",
+  "transition_time": "2025-09-14T22:26:45Z",
   "transition_reason": "R327 cascade - Phase 2 waves complete, starting Phase 2 phase-level re-integration",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
@@ -611,12 +611,11 @@
     "completed_at": "2025-09-14T08:49:19Z"
   },
   "current_phase_integration": {
-    "phase": 1,
-    "status": "pending_recreation",
-    "old_branch": "idpbuilder-oci-build-push/phase1/integration-20250912-215031",
-    "reason": "R327 cascade - needs fresh Wave 1 + Wave 2",
-    "wave1_base": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
-    "wave2_base": "idpbuilder-oci-build-push/phase1/wave2/integration"
+    "phase": 2,
+    "branch": "idpbuilder-oci-build-push/phase2/integration-20250914-221126",
+    "status": "active",
+    "created_at": "2025-09-14T22:11:26Z",
+    "type": "initial"
   },
   "deprecated_phase_integrations": [
     {
