@@ -464,8 +464,4 @@ func TestFindCertificatesBySubject(t *testing.T) {
 	if len(matches) != 0 {
 		t.Errorf("Expected 0 matches for 'nonexistent.com', got %d", len(matches))
 	}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002

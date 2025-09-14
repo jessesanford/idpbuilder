@@ -8,15 +8,9 @@ import (
 
 // InsecureHandler manages the --insecure flag behavior
 type InsecureHandler struct {
-<<<<<<< HEAD
-	enabled    bool
-	registries map[string]bool
-	warnOnce   map[string]bool
-=======
 	enabled     bool
 	registries  map[string]bool
 	warnOnce    map[string]bool
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 }
 
 // NewInsecureHandler creates a new insecure mode handler
@@ -104,8 +98,4 @@ func (h *InsecureHandler) WarnRegistry(registry string) {
 		fmt.Fprintf(os.Stderr, "⚠️  WARNING: Certificate validation disabled for %s\n", registry)
 		h.warnOnce[registry] = true
 	}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002

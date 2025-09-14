@@ -1,0 +1,21 @@
+🎬 Demo: Phase 2 Wave 1 Integrated Features
+Timestamp: 2025-09-14 18:56:39
+================================
+🚀 Running integrated demo...
+
+=== Image Builder Features ===
+Building image...
+✅ Built: demo-app:latest
+
+=== Gitea Client Features ===
+Authenticating with Gitea...
+✅ Authenticated as: demo-user
+Listing repositories...
+✅ Found 3 repositories
+Pushing to Gitea registry...
+✅ Pushed: gitea.example.com/demo-org/app1:latest
+
+=== Integration Complete ===
+✅ All Phase 2 Wave 1 features demonstrated
+
+Demo completed at 2025-09-14 18:56:39

@@ -250,8 +250,4 @@ func TestInsecureHandler_MultipleRegistries(t *testing.T) {
 	if len(insecureRegistries) != len(registries) {
 		t.Errorf("Expected %d registries, got %d", len(registries), len(insecureRegistries))
 	}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002

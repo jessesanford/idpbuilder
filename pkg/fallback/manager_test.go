@@ -9,19 +9,11 @@ import (
 
 // MockTrustStore for testing
 type MockTrustStore struct {
-<<<<<<< HEAD
-	setInsecureCalls    []SetInsecureCall
-	useSystemCertsCalls []UseSystemCertsCall
-	addCertificateCalls []AddCertificateCall
-	shouldFail          bool
-	failMessage         string
-=======
 	setInsecureCalls     []SetInsecureCall
 	useSystemCertsCalls  []UseSystemCertsCall
 	addCertificateCalls  []AddCertificateCall
 	shouldFail           bool
 	failMessage          string
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 }
 
 type SetInsecureCall struct {
@@ -90,15 +82,6 @@ func (m *MockTrustStore) SetShouldFail(shouldFail bool, message string) {
 
 // MockStrategy for testing
 type MockStrategy struct {
-<<<<<<< HEAD
-	name        string
-	priority    int
-	shouldFail  bool
-	failCount   int
-	attempts    int
-	shouldRetry bool
-	executed    bool
-=======
 	name         string
 	priority     int
 	shouldFail   bool
@@ -106,7 +89,6 @@ type MockStrategy struct {
 	attempts     int
 	shouldRetry  bool
 	executed     bool
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 }
 
 func NewMockStrategy(name string, priority int) *MockStrategy {
@@ -150,27 +132,6 @@ func (m *MockStrategy) SetShouldFail(fail bool, failCount int, retry bool) {
 
 func TestNewFallbackManager(t *testing.T) {
 	mockStore := NewMockTrustStore()
-<<<<<<< HEAD
-
-	fm := NewFallbackManager(mockStore)
-
-	if fm == nil {
-		t.Fatal("Expected fallback manager to be created")
-	}
-
-	if fm.trustStore != mockStore {
-		t.Error("Expected trust store to be set")
-	}
-
-	if fm.maxRetries != 3 {
-		t.Errorf("Expected default max retries to be 3, got %d", fm.maxRetries)
-	}
-
-	if fm.retryDelay != time.Second {
-		t.Errorf("Expected default retry delay to be 1s, got %v", fm.retryDelay)
-	}
-
-=======
 	
 	fm := NewFallbackManager(mockStore)
 	
@@ -190,7 +151,6 @@ func TestNewFallbackManager(t *testing.T) {
 		t.Errorf("Expected default retry delay to be 1s, got %v", fm.retryDelay)
 	}
 	
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	if len(fm.strategies) != 3 {
 		t.Errorf("Expected 3 default strategies, got %d", len(fm.strategies))
 	}
@@ -223,11 +183,7 @@ func TestFallbackManager_InsecureMode(t *testing.T) {
 				// Replace strategies with failing ones to test the "all strategies fail" path
 				failingStrategy1 := NewMockStrategy("fail1", 1)
 				failingStrategy1.SetShouldFail(true, 0, false)
-<<<<<<< HEAD
-				failingStrategy2 := NewMockStrategy("fail2", 2)
-=======
 				failingStrategy2 := NewMockStrategy("fail2", 2) 
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 				failingStrategy2.SetShouldFail(true, 0, false)
 				fm.strategies = []FallbackStrategy{failingStrategy1, failingStrategy2}
 			}
@@ -284,11 +240,7 @@ func TestFallbackManager_RetryLogic(t *testing.T) {
 	if err != nil {
 		t.Errorf("Expected no error after retry success, got: %v", err)
 	}
-<<<<<<< HEAD
-
-=======
 	
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	if mockStrategy.attempts != 3 {
 		t.Errorf("Expected 3 attempts, got %d", mockStrategy.attempts)
 	}
@@ -316,11 +268,7 @@ func TestFallbackManager_AllStrategiesFail(t *testing.T) {
 	// Replace strategies with failing mock strategies
 	mockStrategy1 := NewMockStrategy("strategy1", 1)
 	mockStrategy1.SetShouldFail(true, 0, false) // Always fail, no retry
-<<<<<<< HEAD
-
-=======
 	
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	mockStrategy2 := NewMockStrategy("strategy2", 2)
 	mockStrategy2.SetShouldFail(true, 0, false) // Always fail, no retry
 
@@ -344,11 +292,7 @@ func TestFallbackManager_AllStrategiesFail(t *testing.T) {
 
 func TestFallbackManager_Options(t *testing.T) {
 	mockStore := NewMockTrustStore()
-<<<<<<< HEAD
-
-=======
 	
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	customWarningCalled := false
 	customWarning := func(msg string) {
 		customWarningCalled = true
@@ -439,8 +383,4 @@ func TestFallbackManager_ValidateConfiguration(t *testing.T) {
 			}
 		})
 	}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
