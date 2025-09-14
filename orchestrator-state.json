@@ -1535,6 +1535,14 @@
       "status": "already_based_on_split_001",
       "verified_at": "2025-09-14T16:38:34Z",
       "note": "Split-002 was already correctly based on split-001, no rebase needed"
+    },
+    "image_builder": {
+      "status": "completed",
+      "rebased_to": "idpbuilder-oci-build-push/phase1/integration",
+      "old_base": "4f0e259",
+      "new_base": "2c39501",
+      "completed_at": "2025-09-14T16:59:37Z",
+      "performed_by": "software-engineer"
     }
   },
   "branch_push_status": {
