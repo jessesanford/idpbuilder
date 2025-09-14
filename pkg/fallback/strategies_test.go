@@ -324,4 +324,8 @@ func TestNewCachedCertStrategy(t *testing.T) {
 	if !strings.Contains(strategy.cacheDir, "cert-cache") {
 		t.Error("Expected cache directory to contain cert-cache")
 	}
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002

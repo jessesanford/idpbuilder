@@ -131,7 +131,11 @@ func (fm *FallbackManager) executeWithRetry(ctx context.Context, strategy Fallba
 			break
 		}
 
+<<<<<<< HEAD
 		fm.warningCallback(fmt.Sprintf("⚠️  Strategy '%s' attempt %d failed for %s: %v",
+=======
+		fm.warningCallback(fmt.Sprintf("⚠️  Strategy '%s' attempt %d failed for %s: %v", 
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 			strategy.Name(), attempt+1, registry, lastErr))
 	}
 
@@ -205,4 +209,8 @@ func (fm *FallbackManager) ValidateConfiguration() error {
 	}
 
 	return nil
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002

@@ -18,4 +18,8 @@ type CertificateManager interface {
 	TrustStoreManager
 	// AddCertificate adds a certificate for a specific registry
 	AddCertificate(registry string, certData []byte) error
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002

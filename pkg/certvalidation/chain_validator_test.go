@@ -303,4 +303,8 @@ func TestChainValidator_GetChainInfoExpired(t *testing.T) {
 	if len(info.Issues) == 0 {
 		t.Error("Expected issues to be reported for expired certificate")
 	}
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002

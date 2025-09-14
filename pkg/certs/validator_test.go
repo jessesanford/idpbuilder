@@ -50,11 +50,19 @@ func createTestCertificateWithTimes(t *testing.T, notBefore, notAfter time.Time)
 
 func TestDefaultCertValidator_ValidateCertificate_ValidCert(t *testing.T) {
 	validator := &DefaultCertValidator{}
+<<<<<<< HEAD
 
 	// Create a valid certificate for testing
 	cert := createTestCertificateWithTimes(t, time.Now().Add(-24*time.Hour), time.Now().Add(24*time.Hour))
 	cert.Subject.CommonName = "test.example.com"
 
+=======
+	
+	// Create a valid certificate for testing
+	cert := createTestCertificateWithTimes(t, time.Now().Add(-24*time.Hour), time.Now().Add(24*time.Hour))
+	cert.Subject.CommonName = "test.example.com"
+	
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	err := validator.ValidateCertificate(cert)
 	if err != nil {
 		t.Fatalf("Expected no error for valid certificate, got: %v", err)
@@ -63,12 +71,20 @@ func TestDefaultCertValidator_ValidateCertificate_ValidCert(t *testing.T) {
 
 func TestDefaultCertValidator_ValidateCertificate_NilCert(t *testing.T) {
 	validator := &DefaultCertValidator{}
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	err := validator.ValidateCertificate(nil)
 	if err == nil {
 		t.Fatal("Expected error for nil certificate")
 	}
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	expectedMsg := "certificate is nil"
 	if err.Error() != expectedMsg {
 		t.Fatalf("Expected error message '%s', got: %s", expectedMsg, err.Error())
@@ -77,11 +93,19 @@ func TestDefaultCertValidator_ValidateCertificate_NilCert(t *testing.T) {
 
 func TestDefaultCertValidator_ValidateCertificate_ExpiredCert(t *testing.T) {
 	validator := &DefaultCertValidator{}
+<<<<<<< HEAD
 
 	// Create expired certificate
 	cert := createTestCertificateWithTimes(t, time.Now().Add(-48*time.Hour), time.Now().Add(-24*time.Hour))
 	cert.Subject.CommonName = "expired.example.com"
 
+=======
+	
+	// Create expired certificate
+	cert := createTestCertificateWithTimes(t, time.Now().Add(-48*time.Hour), time.Now().Add(-24*time.Hour))
+	cert.Subject.CommonName = "expired.example.com"
+	
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	err := validator.ValidateCertificate(cert)
 	if err == nil {
 		t.Fatal("Expected error for expired certificate")
@@ -90,7 +114,11 @@ func TestDefaultCertValidator_ValidateCertificate_ExpiredCert(t *testing.T) {
 
 func TestDefaultCertValidator_ValidateCertificate_NoSubjectNames(t *testing.T) {
 	validator := &DefaultCertValidator{}
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	// Create certificate with no subject names by modifying the template
 	privKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
@@ -105,8 +133,13 @@ func TestDefaultCertValidator_ValidateCertificate_NoSubjectNames(t *testing.T) {
 			Locality:     []string{"San Francisco"},
 			// No CommonName
 		},
+<<<<<<< HEAD
 		NotBefore:   time.Now().Add(-24 * time.Hour),
 		NotAfter:    time.Now().Add(24 * time.Hour),
+=======
+		NotBefore:   time.Now().Add(-24*time.Hour),
+		NotAfter:    time.Now().Add(24*time.Hour),
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 		KeyUsage:    x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
 		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		// No DNS names or IP addresses
@@ -121,14 +154,26 @@ func TestDefaultCertValidator_ValidateCertificate_NoSubjectNames(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to parse certificate: %v", err)
 	}
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	err = validator.ValidateCertificate(cert)
 	if err == nil {
 		t.Fatal("Expected error for certificate with no subject names")
 	}
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	expectedMsg := "certificate has no valid subject names"
 	if err.Error() != expectedMsg {
 		t.Fatalf("Expected error message '%s', got: %s", expectedMsg, err.Error())
 	}
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002

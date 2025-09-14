@@ -172,4 +172,8 @@ type ChainInfo struct {
 	IsValid   bool
 	ExpiresAt time.Time
 	Issues    []string
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002

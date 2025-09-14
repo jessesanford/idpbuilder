@@ -12,6 +12,7 @@ type ValidationErrorType int
 const (
 	// InvalidCertificate indicates the certificate is malformed or invalid
 	InvalidCertificate ValidationErrorType = iota
+<<<<<<< HEAD
 
 	// Expired indicates the certificate has expired
 	Expired
@@ -58,6 +59,54 @@ const (
 	// PathLengthExceeded indicates path length constraint exceeded
 	PathLengthExceeded
 
+=======
+	
+	// Expired indicates the certificate has expired
+	Expired
+	
+	// NotYetValid indicates the certificate is not yet valid
+	NotYetValid
+	
+	// UntrustedCA indicates the certificate authority is not trusted
+	UntrustedCA
+	
+	// HostnameMismatch indicates the certificate hostname does not match
+	HostnameMismatch
+	
+	// KeyUsageMismatch indicates the certificate key usage is incorrect
+	KeyUsageMismatch
+	
+	// ExtendedKeyUsageMismatch indicates extended key usage is incorrect
+	ExtendedKeyUsageMismatch
+	
+	// ChainTooLong indicates the certificate chain exceeds maximum length
+	ChainTooLong
+	
+	// ChainIncomplete indicates the certificate chain is incomplete
+	ChainIncomplete
+	
+	// SignatureVerificationFailed indicates signature verification failed
+	SignatureVerificationFailed
+	
+	// WeakSignatureAlgorithm indicates the signature algorithm is weak
+	WeakSignatureAlgorithm
+	
+	// InvalidKeySize indicates the key size is invalid or too small
+	InvalidKeySize
+	
+	// CertificateRevoked indicates the certificate has been revoked
+	CertificateRevoked
+	
+	// PolicyConstraintViolation indicates certificate policy constraints violated
+	PolicyConstraintViolation
+	
+	// NameConstraintViolation indicates certificate name constraints violated
+	NameConstraintViolation
+	
+	// PathLengthExceeded indicates path length constraint exceeded
+	PathLengthExceeded
+	
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	// UnknownCriticalExtension indicates an unknown critical extension
 	UnknownCriticalExtension
 )
@@ -94,6 +143,7 @@ func (ve *ValidationError) String() string {
 	for key, value := range ve.Details {
 		details = append(details, fmt.Sprintf("%s: %v", key, value))
 	}
+<<<<<<< HEAD
 
 	result := fmt.Sprintf("ValidationError{Type: %s, Message: %s, Certificate: %s, Timestamp: %s",
 		ve.Type.String(), ve.Message, ve.Certificate, ve.Timestamp.Format(time.RFC3339))
@@ -102,6 +152,16 @@ func (ve *ValidationError) String() string {
 		result += fmt.Sprintf(", Details: {%s}", strings.Join(details, ", "))
 	}
 
+=======
+	
+	result := fmt.Sprintf("ValidationError{Type: %s, Message: %s, Certificate: %s, Timestamp: %s",
+		ve.Type.String(), ve.Message, ve.Certificate, ve.Timestamp.Format(time.RFC3339))
+	
+	if len(details) > 0 {
+		result += fmt.Sprintf(", Details: {%s}", strings.Join(details, ", "))
+	}
+	
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 	return result + "}"
 }
 
@@ -169,4 +229,8 @@ func (vet ValidationErrorType) IsFatal() bool {
 	default:
 		return false
 	}
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
