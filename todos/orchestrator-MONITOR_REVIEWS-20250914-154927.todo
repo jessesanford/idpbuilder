@@ -1,0 +1,31 @@
+# Orchestrator TODO State - MONITOR_REVIEWS
+# Generated: 2025-09-14T15:49:00Z
+# Agent: orchestrator
+# Current State: MONITOR_REVIEWS
+# Previous State: SPAWN_CODE_REVIEWERS_FOR_REVIEW
+
+## Completed Tasks
+- [x] Read and acknowledge all state-specific rules per R290
+- [x] Create R290 verification marker after rules acknowledgment  
+- [x] Check orchestrator-state.json for Phase 2 Wave 1 effort details
+- [x] Spawn Code Reviewers for Phase 2 Wave 1 efforts in parallel (R151)
+- [x] Update orchestrator-state.json with spawn information
+- [x] Transition to MONITOR_REVIEWS state per R324
+- [x] Save TODOs and commit state changes per R287/R288
+
+## Current Tasks (MONITOR_REVIEWS state)
+- [ ] Monitor review results - 2 efforts need splits, 1 approved
+- [ ] Spawn Code Reviewers for split planning (image-builder needs 6 splits)
+- [ ] Spawn Code Reviewers for split planning (gitea-client-split-001 needs restructuring)
+- [ ] Track split planning progress
+- [ ] Coordinate split implementations
+
+## Review Results Summary
+- image-builder: SPLIT_REQUIRED (3646 lines - needs 6 splits)
+- gitea-client-split-001: SPLIT_REQUIRED (1378 lines - boundary violation)
+- gitea-client-split-002: APPROVED (542 lines)
+
+## Next Actions
+1. Transition to CREATE_SPLIT_PLAN state for blocked efforts
+2. Spawn Code Reviewers to create split plans
+3. Execute splits sequentially per R199

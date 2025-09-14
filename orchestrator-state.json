@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
-  "previous_state": "INIT",
+  "current_state": "MONITOR_REVIEWS",
+  "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-14T15:38:57Z",
-  "transition_reason": "Phase 2 Wave 1 implementations complete, need review",
+  "transition_time": "2025-09-14T15:49:01Z",
+  "transition_reason": "Code Reviewers completed - 2 efforts need splits, 1 approved",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -1410,6 +1410,96 @@
       "tag": "phase1-complete-v1.0",
       "test_status": "PASSED_WITH_MINOR_ISSUES",
       "assessment_score": 85
+    }
+  },
+  "phase_2_wave_1_review_results": {
+    "review_timestamp": "2025-09-14T15:49:01Z",
+    "image_builder": {
+      "review_status": "SPLIT_REQUIRED",
+      "line_count_tracking": {
+        "initial_count": 3646,
+        "current_count": 3646,
+        "last_measured": "2025-09-14T15:49:01Z",
+        "measured_by": "code-reviewer",
+        "measurement_command": "./tools/line-counter.sh",
+        "auto_detected_base": "main",
+        "implementation_only": true,
+        "within_limit": false,
+        "requires_split": true,
+        "split_plan_path": null,
+        "measurement_history": [
+          {
+            "timestamp": "2025-09-14T15:49:01Z",
+            "count": 3646,
+            "measured_by": "code-reviewer",
+            "reason": "initial review",
+            "command": "./tools/line-counter.sh",
+            "within_limit": false
+          }
+        ]
+      },
+      "report_path": "efforts/phase2/wave1/image-builder/CODE-REVIEW-REPORT-20250914-154703.md",
+      "required_splits": 6
+    },
+    "gitea_client_split_001": {
+      "review_status": "SPLIT_REQUIRED",
+      "line_count_tracking": {
+        "initial_count": 1378,
+        "current_count": 1378,
+        "last_measured": "2025-09-14T15:49:01Z",
+        "measured_by": "code-reviewer",
+        "measurement_command": "./tools/line-counter.sh",
+        "auto_detected_base": "main",
+        "implementation_only": true,
+        "within_limit": false,
+        "requires_split": true,
+        "split_plan_path": null,
+        "measurement_history": [
+          {
+            "timestamp": "2025-09-14T15:49:01Z",
+            "count": 1378,
+            "measured_by": "code-reviewer",
+            "reason": "initial review",
+            "command": "./tools/line-counter.sh",
+            "within_limit": false
+          }
+        ]
+      },
+      "report_path": "efforts/phase2/wave1/gitea-client-split-001/CODE-REVIEW-REPORT-20250914-154500.md",
+      "boundary_violation": true
+    },
+    "gitea_client_split_002": {
+      "review_status": "APPROVED",
+      "line_count_tracking": {
+        "initial_count": 542,
+        "current_count": 542,
+        "last_measured": "2025-09-14T15:49:01Z",
+        "measured_by": "code-reviewer",
+        "measurement_command": "./tools/line-counter.sh",
+        "auto_detected_base": "main",
+        "implementation_only": true,
+        "within_limit": true,
+        "requires_split": false,
+        "split_plan_path": null,
+        "measurement_history": [
+          {
+            "timestamp": "2025-09-14T15:49:01Z",
+            "count": 542,
+            "measured_by": "code-reviewer",
+            "reason": "initial review",
+            "command": "./tools/line-counter.sh",
+            "within_limit": true
+          }
+        ]
+      },
+      "report_path": "efforts/phase2/wave1/gitea-client-split-002/CODE-REVIEW-REPORT-20250914-154400.md"
+    },
+    "summary": {
+      "total_reviewed": 3,
+      "approved": 1,
+      "needs_split": 2,
+      "needs_fixes": 0,
+      "next_action": "CREATE_SPLIT_PLANS"
     }
   }
 }
