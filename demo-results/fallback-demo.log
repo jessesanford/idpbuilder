@@ -44,7 +44,7 @@ This demonstrates the FallbackManager functionality:
     --- PASS: TestFallbackManager_ValidateConfiguration/zero_max_retries (0.00s)
     --- PASS: TestFallbackManager_ValidateConfiguration/negative_retry_delay (0.00s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/fallback	0.038s
+ok  	github.com/cnoe-io/idpbuilder/pkg/fallback	(cached)
 ✅ Fallback manager tests passed
 
 🧪 Running fallback strategies tests...
@@ -65,7 +65,7 @@ This reduces security. Use --insecure flag to suppress this warning.
 === RUN   TestNewCachedCertStrategy
 --- PASS: TestNewCachedCertStrategy (0.00s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/fallback	0.026s
+ok  	github.com/cnoe-io/idpbuilder/pkg/fallback	(cached)
 ✅ Fallback strategy tests passed
 
 🧪 Running insecure handler tests...
@@ -117,7 +117,7 @@ This should ONLY be used in development environments
 ⚠️  WARNING: Certificate validation disabled for my-registry.local
 --- PASS: TestInsecureHandler_MultipleRegistries (0.00s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/insecure	0.010s
+ok  	github.com/cnoe-io/idpbuilder/pkg/insecure	(cached)
 ✅ Insecure handler tests passed
 
 🧪 Running retry logic tests...
@@ -129,7 +129,7 @@ This demonstrates retry and backoff mechanisms:
 ✅ Fallback strategy 'test-strategy' succeeded for test.registry
 --- PASS: TestFallbackManager_RetryLogic (0.03s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/fallback	0.036s
+ok  	github.com/cnoe-io/idpbuilder/pkg/fallback	(cached)
 ✅ Retry logic tests passed
 
 🧪 Running comprehensive fallback package tests...
@@ -256,7 +256,7 @@ This should ONLY be used in development environments
 ⚠️  WARNING: Certificate validation disabled for my-registry.local
 --- PASS: TestInsecureHandler_MultipleRegistries (0.00s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/insecure	0.007s
+ok  	github.com/cnoe-io/idpbuilder/pkg/insecure	(cached)
 ✅ All insecure package tests passed
 
 🧪 Running certificate fallback integration tests...
@@ -264,7 +264,7 @@ This demonstrates integration with certificate validation:
 
 testing: warning: no tests to run
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/certs	0.006s [no tests to run]
+ok  	github.com/cnoe-io/idpbuilder/pkg/certs	(cached) [no tests to run]
 ✅ Certificate fallback integration tests passed
 
 🎯 Demo Summary
