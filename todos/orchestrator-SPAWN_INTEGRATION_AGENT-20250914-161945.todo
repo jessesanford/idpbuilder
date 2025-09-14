@@ -1,0 +1,1 @@
+[{"content": "Check if merge plan is tracked in orchestrator-state.json per R340", "status": "completed"}, {"content": "Validate merge plan contents if found", "status": "completed"}, {"content": "Execute R322 checkpoint before transitioning to SPAWN_INTEGRATION_AGENT", "status": "completed"}]
