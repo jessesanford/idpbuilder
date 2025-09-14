@@ -1,10 +1,10 @@
 {
-  "current_state": "WAVE_START",
+  "current_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
   "previous_state": "WAVE_REVIEW",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-14T11:27:00Z",
-  "transition_reason": "Wave 1 review completed with PROCEED_NEXT_WAVE - starting Wave 2",
+  "transition_time": "2025-09-14T11:35:00Z",
+  "transition_reason": "R327 cascade - Phase 1 Wave 2 needs re-integration after fixes",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -1319,7 +1319,7 @@
       "plan_path": "R327-CASCADE-WAVE-REINTEGRATION-PLAN.md"
     },
     "wave2_reintegration": {
-      "status": "pending",
+      "status": "in_progress",
       "deleted_stale": true,
       "efforts_with_fixes": [
         "cert-validation-split-001",
