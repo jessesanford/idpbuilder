@@ -1,9 +1,9 @@
 {
-  "current_state": "MONITOR_FIXES",
-  "previous_state": "SPAWN_ENGINEERS_FOR_FIXES",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "MONITORING_INTEGRATION",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-14T00:58:18Z",
+  "transition_time": "2025-09-14T00:04:27Z",
   "transition_reason": "R291 BUILD GATE FAILURE: Compilation errors in pkg/registry (undefined giteaRegistryImpl) and pkg/certs (syntax errors) - cannot proceed without successful build",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
@@ -360,50 +360,6 @@
       "phase": 2,
       "wave": 1,
       "upstream_bugs_found": 2
-    },
-    {
-      "agent": "sw-engineer",
-      "task": "fix_giteaRegistryImpl",
-      "spawned_at": "2025-09-14T00:37:15Z",
-      "state": "FIX_ISSUES",
-      "result": "COMPLETED - Fixed in effort branch",
-      "effort": "gitea-client-split-001"
-    },
-    {
-      "type": "sw-engineer",
-      "task": "fix_integration",
-      "effort": "gitea-client",
-      "state": "FIX_INTEGRATION_ISSUES",
-      "timestamp": "2025-09-14T00:57:57Z",
-      "status": "completed",
-      "command_file": "efforts/phase2/wave1/gitea-client/sw-engineer-fix-command.md"
-    },
-    {
-      "type": "sw-engineer",
-      "task": "fix_integration",
-      "effort": "gitea-client-split-001",
-      "state": "FIX_INTEGRATION_ISSUES",
-      "timestamp": "2025-09-14T00:57:57Z",
-      "status": "completed",
-      "command_file": "efforts/phase2/wave1/gitea-client-split-001/sw-engineer-fix-command.md"
-    },
-    {
-      "type": "sw-engineer",
-      "task": "fix_integration",
-      "effort": "gitea-client-split-002",
-      "state": "FIX_INTEGRATION_ISSUES",
-      "timestamp": "2025-09-14T00:57:57Z",
-      "status": "workspace_violation",
-      "command_file": "efforts/phase2/wave1/gitea-client-split-002/sw-engineer-fix-command.md"
-    },
-    {
-      "type": "sw-engineer",
-      "task": "fix_integration",
-      "effort": "image-builder",
-      "state": "FIX_INTEGRATION_ISSUES",
-      "timestamp": "2025-09-14T00:57:57Z",
-      "status": "workspace_violation",
-      "command_file": "efforts/phase2/wave1/image-builder/sw-engineer-fix-command.md"
     }
   ],
   "integration_status": {
@@ -445,30 +401,7 @@
       "registry-tls-trust": "4 splits planned",
       "registry-auth-types": "3 splits revised"
     },
-    "next_action": "Implement splits via SW Engineers",
-    "phase2_wave1_bugs": {
-      "bug1": {
-        "type": "undefined_type",
-        "location": "pkg/registry/list.go, push.go",
-        "issue": "giteaRegistryImpl undefined",
-        "effort_to_fix": "gitea-client-split-001 or gitea-client-split-002",
-        "severity": "CRITICAL"
-      },
-      "bug2": {
-        "type": "syntax_error",
-        "location": "pkg/certs/utilities.go:131,159",
-        "issue": "Non-declaration statements outside function body",
-        "effort_to_fix": "Phase 1 cert-related effort (inherited)",
-        "severity": "CRITICAL"
-      }
-    },
-    "r291_gates": {
-      "BUILD_GATE": "FAILED",
-      "TEST_GATE": "PARTIAL",
-      "DEMO_GATE": "PARTIAL",
-      "ARTIFACT_GATE": "FAILED",
-      "triggered_at": "2025-09-14T00:22:44Z"
-    }
+    "next_action": "Implement splits via SW Engineers"
   },
   "current_wave_integration": {
     "wave": 1,
@@ -924,12 +857,6 @@
       "to": "ERROR_RECOVERY",
       "timestamp": "2025-09-14T00:04:34Z",
       "reason": "R291 BUILD GATE FAILURE: Integration completed but build failed with compilation errors in pkg/registry and pkg/certs"
-    },
-    {
-      "from": "SPAWN_ENGINEERS_FOR_FIXES",
-      "to": "MONITOR_FIXES",
-      "timestamp": "2025-09-14T00:58:18Z",
-      "reason": "Spawned 4 SW Engineers for integration fixes - 2 completed, 2 had workspace violations"
     }
   ],
   "cascade_in_progress": true,
@@ -1206,21 +1133,5 @@
       "Re-run integration after fixes"
     ],
     "integration_status": "MECHANICALLY_SUCCESSFUL_BUILD_FAILED"
-  },
-  "fix_tracking": {
-    "phase2_wave1": {
-      "spawn_timestamp": "2025-09-14T00:57:57Z",
-      "efforts_fixed": [
-        "gitea-client",
-        "gitea-client-split-001"
-      ],
-      "efforts_pending": [
-        "gitea-client-split-002",
-        "image-builder"
-      ],
-      "total_efforts": 4,
-      "completed": 2,
-      "pending": 2
-    }
   }
 }

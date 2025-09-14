@@ -1,10 +1,10 @@
 {
-  "current_state": "MONITOR_FIXES",
-  "previous_state": "SPAWN_ENGINEERS_FOR_FIXES",
+  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-14T00:58:18Z",
-  "transition_reason": "R291 BUILD GATE FAILURE: Compilation errors in pkg/registry (undefined giteaRegistryImpl) and pkg/certs (syntax errors) - cannot proceed without successful build",
+  "transition_time": "2025-09-13T23:20:44Z",
+  "transition_reason": "Integration infrastructure ready, need Code Reviewer to create merge plan",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -349,61 +349,6 @@
       "spawned_at": "2025-09-13T19:42:55Z",
       "state": "PHASE_ASSESSMENT",
       "result": "PHASE_COMPLETE - Score 85/100"
-    },
-    {
-      "agent": "integration",
-      "task": "phase2_wave1_integration",
-      "spawned_at": "2025-09-13T23:59:55Z",
-      "completed_at": "2025-09-13T23:59:55Z",
-      "state": "INTEGRATION_EXECUTION",
-      "result": "MERGES_COMPLETE_BUILD_FAILED",
-      "phase": 2,
-      "wave": 1,
-      "upstream_bugs_found": 2
-    },
-    {
-      "agent": "sw-engineer",
-      "task": "fix_giteaRegistryImpl",
-      "spawned_at": "2025-09-14T00:37:15Z",
-      "state": "FIX_ISSUES",
-      "result": "COMPLETED - Fixed in effort branch",
-      "effort": "gitea-client-split-001"
-    },
-    {
-      "type": "sw-engineer",
-      "task": "fix_integration",
-      "effort": "gitea-client",
-      "state": "FIX_INTEGRATION_ISSUES",
-      "timestamp": "2025-09-14T00:57:57Z",
-      "status": "completed",
-      "command_file": "efforts/phase2/wave1/gitea-client/sw-engineer-fix-command.md"
-    },
-    {
-      "type": "sw-engineer",
-      "task": "fix_integration",
-      "effort": "gitea-client-split-001",
-      "state": "FIX_INTEGRATION_ISSUES",
-      "timestamp": "2025-09-14T00:57:57Z",
-      "status": "completed",
-      "command_file": "efforts/phase2/wave1/gitea-client-split-001/sw-engineer-fix-command.md"
-    },
-    {
-      "type": "sw-engineer",
-      "task": "fix_integration",
-      "effort": "gitea-client-split-002",
-      "state": "FIX_INTEGRATION_ISSUES",
-      "timestamp": "2025-09-14T00:57:57Z",
-      "status": "workspace_violation",
-      "command_file": "efforts/phase2/wave1/gitea-client-split-002/sw-engineer-fix-command.md"
-    },
-    {
-      "type": "sw-engineer",
-      "task": "fix_integration",
-      "effort": "image-builder",
-      "state": "FIX_INTEGRATION_ISSUES",
-      "timestamp": "2025-09-14T00:57:57Z",
-      "status": "workspace_violation",
-      "command_file": "efforts/phase2/wave1/image-builder/sw-engineer-fix-command.md"
     }
   ],
   "integration_status": {
@@ -445,30 +390,7 @@
       "registry-tls-trust": "4 splits planned",
       "registry-auth-types": "3 splits revised"
     },
-    "next_action": "Implement splits via SW Engineers",
-    "phase2_wave1_bugs": {
-      "bug1": {
-        "type": "undefined_type",
-        "location": "pkg/registry/list.go, push.go",
-        "issue": "giteaRegistryImpl undefined",
-        "effort_to_fix": "gitea-client-split-001 or gitea-client-split-002",
-        "severity": "CRITICAL"
-      },
-      "bug2": {
-        "type": "syntax_error",
-        "location": "pkg/certs/utilities.go:131,159",
-        "issue": "Non-declaration statements outside function body",
-        "effort_to_fix": "Phase 1 cert-related effort (inherited)",
-        "severity": "CRITICAL"
-      }
-    },
-    "r291_gates": {
-      "BUILD_GATE": "FAILED",
-      "TEST_GATE": "PARTIAL",
-      "DEMO_GATE": "PARTIAL",
-      "ARTIFACT_GATE": "FAILED",
-      "triggered_at": "2025-09-14T00:22:44Z"
-    }
+    "next_action": "Implement splits via SW Engineers"
   },
   "current_wave_integration": {
     "wave": 1,
@@ -640,19 +562,7 @@
     "base_branch": "idpbuilder-oci-build-push/phase1/integration",
     "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo",
     "status": "infrastructure_ready",
-    "created_at": "2025-09-13T23:19:48Z",
-    "merge_plan_requested": true,
-    "merge_plan_ready": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
-    "merge_plan_created_at": "2025-09-13T23:32:21Z",
-    "integration_completed": true,
-    "integration_result": "FAILED_BUILD_GATES",
-    "build_failures": [
-      "giteaRegistryImpl undefined in pkg/registry",
-      "Syntax errors in pkg/certs/utilities.go"
-    ],
-    "r291_gate_status": "FAILED",
-    "completed_at": "2025-09-13T23:59:48Z"
+    "created_at": "2025-09-13T23:19:48Z"
   },
   "phase_integration_needed": true,
   "phase_1_status": {
@@ -873,18 +783,10 @@
     "merge_plans": {
       "wave": {
         "phase2_wave1": {
-          "path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
-          "type": "merge_plan",
-          "phase": 2,
-          "wave": 1,
-          "efforts_count": 3,
-          "efforts": [
-            "image-builder",
-            "gitea-client-split-001",
-            "gitea-client-split-002"
-          ],
-          "created_at": "2025-09-13T23:32:21Z",
-          "created_by": "code-reviewer"
+          "file_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/rebase-planning/REBASE-MERGE-PLAN-20250913-204028.md",
+          "created_by": "code-reviewer",
+          "created_at": "2025-09-13T20:40:28Z",
+          "type": "rebase_merge_plan"
         }
       }
     }
@@ -918,18 +820,6 @@
       "to": "WAITING_FOR_PHASE_ASSESSMENT",
       "timestamp": "2025-09-13T19:43:16Z",
       "reason": "Architect assessment complete - Phase 1 scored 85/100 and certified PHASE_COMPLETE"
-    },
-    {
-      "from": "MONITORING_INTEGRATION",
-      "to": "ERROR_RECOVERY",
-      "timestamp": "2025-09-14T00:04:34Z",
-      "reason": "R291 BUILD GATE FAILURE: Integration completed but build failed with compilation errors in pkg/registry and pkg/certs"
-    },
-    {
-      "from": "SPAWN_ENGINEERS_FOR_FIXES",
-      "to": "MONITOR_FIXES",
-      "timestamp": "2025-09-14T00:58:18Z",
-      "reason": "Spawned 4 SW Engineers for integration fixes - 2 completed, 2 had workspace violations"
     }
   ],
   "cascade_in_progress": true,
@@ -1171,56 +1061,5 @@
     "requires_clone": true,
     "clone_from": "https://github.com/jessesanford/idpbuilder.git",
     "note": "Must clone from target repo as branch only exists there"
-  },
-  "integration_failures": {
-    "phase": 2,
-    "wave": 1,
-    "detected_at": "2025-09-14T00:04:46Z",
-    "integration_report": "efforts/phase2/wave1/integration-workspace/repo/INTEGRATION-REPORT-20250913.md",
-    "r291_gates": {
-      "build": "FAILED",
-      "test": "PARTIAL",
-      "demo": "PARTIAL",
-      "artifact": "FAILED"
-    },
-    "upstream_bugs": [
-      {
-        "id": "BUG-001",
-        "location": "pkg/registry/list.go and push.go",
-        "issue": "undefined type giteaRegistryImpl",
-        "lines_affected": "list.go:16,39,89,94,107,135,155,180; push.go:17,53",
-        "severity": "CRITICAL",
-        "blocks_build": true
-      },
-      {
-        "id": "BUG-002",
-        "location": "pkg/certs/utilities.go:131,159",
-        "issue": "Non-declaration statements outside function body and invalid octal literal",
-        "severity": "CRITICAL",
-        "blocks_build": true
-      }
-    ],
-    "required_actions": [
-      "Define giteaRegistryImpl type in pkg/registry",
-      "Fix syntax errors in pkg/certs/utilities.go",
-      "Re-run integration after fixes"
-    ],
-    "integration_status": "MECHANICALLY_SUCCESSFUL_BUILD_FAILED"
-  },
-  "fix_tracking": {
-    "phase2_wave1": {
-      "spawn_timestamp": "2025-09-14T00:57:57Z",
-      "efforts_fixed": [
-        "gitea-client",
-        "gitea-client-split-001"
-      ],
-      "efforts_pending": [
-        "gitea-client-split-002",
-        "image-builder"
-      ],
-      "total_efforts": 4,
-      "completed": 2,
-      "pending": 2
-    }
   }
 }
