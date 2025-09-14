@@ -1,287 +1,169 @@
-# Phase 1 Wave 1 Integration Merge Plan
-
-## Critical Context (R327 Re-Integration)
-- **Integration Branch**: `idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401`
-- **Integration Directory**: `/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace`
-- **Base**: Fresh from main branch (post-R321 fixes)
-- **Created**: 2025-09-12 03:24:01
-- **Purpose**: Re-integrate Wave 1 with proper R321 fixes applied
-
-## Critical Requirements (R269, R270)
-- ✅ Use ONLY original effort branches (no integration branches)
-- ✅ Exclude parent 'too-large' branches for split efforts
-- ✅ Include only split branches for efforts that were split
-- ✅ Determine merge order based on dependencies
-- ✅ Document conflict resolution strategies
-
-## Effort Summary
-
-### Wave 1 Efforts
-1. **E1.1.1-kind-cert-extraction** [650 lines]
-   - Branch: `idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction`
-   - Status: Within limit, use main branch
-   - Location: `/efforts/phase1/wave1/kind-cert-extraction`
-
-2. **E1.1.2-registry-tls-trust** [700 lines]
-   - Branch: `idpbuilder-oci-build-push/phase1/wave1/registry-tls-trust`
-   - Status: Within limit, use main branch
-   - Location: `/efforts/phase1/wave1/registry-tls-trust`
-
-3. **E1.1.3-registry-auth-types** [SPLIT]
-   - DO NOT USE: Parent branch (too large)
-   - Split-001: `idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001`
-   - Split-002: `idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002`
-   - Location: `/efforts/phase1/wave1/registry-auth-types-split-00X`
-
-### Wave 2 Efforts (Part of Wave 1 Completion)
-4. **E1.2.1-cert-validation** [SPLIT]
-   - DO NOT USE: Parent branch (too large)
-   - Split-001: `idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001`
-   - Split-002: `idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002`
-   - Split-003: `idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003`
-   - Location: `/efforts/phase1/wave2/cert-validation-split-00X`
-
-5. **E1.2.2-fallback-strategies** [560 lines]
-   - Branch: `idpbuilder-oci-build-push/phase1/wave2/fallback-strategies`
-   - Status: Within limit, use main branch
-   - Location: `/efforts/phase1/wave2/fallback-strategies`
-
-## Optimal Merge Order
-
-Based on dependency analysis and file modifications:
-
-### Merge Sequence
-1. **kind-cert-extraction** (Foundation - Kind cluster certificate extraction)
-2. **registry-tls-trust** (Builds on cert extraction - TLS trust management)
-3. **registry-auth-types-split-001** (Types and constants)
-4. **registry-auth-types-split-002** (Implementation using types)
-5. **cert-validation-split-001** (Validation foundations)
-6. **cert-validation-split-002** (Validation implementation)
-7. **cert-validation-split-003** (Validation completion)
-8. **fallback-strategies** (Uses all previous functionality)
-
-## Potential Conflicts Analysis
-
-### Expected Conflicts
-
-1. **pkg/testutil/** (Multiple efforts add test utilities)
-   - Affected: kind-cert-extraction, registry-tls-trust, cert-validation splits
-   - Resolution: Accept all additions, they should be complementary
-
-2. **pkg/certs/** (Modified by multiple efforts)
-   - registry-tls-trust: Adds trust.go, utilities.go
-   - cert-validation-split-001: Adds validation_errors.go, storage.go, extractor.go
-   - Resolution: These are additive changes, should merge cleanly
-
-3. **go.mod/go.sum** (Dependency additions)
-   - Multiple efforts may add dependencies
-   - Resolution: Accept all additions, run `go mod tidy` after each merge
-
-4. **pkg/util/** (Shared utilities)
-   - kind-cert-extraction modifies pkg/util/env
-   - Resolution: Accept all changes, they should be independent
-
-### Low Conflict Risk Areas
-- **pkg/kind/**: Only modified by kind-cert-extraction
-- **pkg/oci/**: Only modified by registry-auth-types splits
-- **pkg/controllers/**: Minimal modifications, should merge cleanly
-
-## Exact Git Commands for Integration Agent
-
-### Prerequisites
-```bash
-# Navigate to integration workspace
-cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace
-
-# Verify clean state
-git status --short
-
-# Ensure on integration branch
-git checkout idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401
-
-# Fetch all remotes to ensure latest
-git fetch --all
-```
-
-### Merge Commands (Execute in Order)
-
-#### 1. Merge kind-cert-extraction
-```bash
-# Add remote for effort (if not exists)
-git remote add kind-cert-extraction ../kind-cert-extraction || true
-
-# Fetch the effort
-git fetch kind-cert-extraction
-
-# Merge the effort branch
-git merge kind-cert-extraction/idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction \
-  --no-ff \
-  -m "merge: integrate E1.1.1-kind-cert-extraction (650 lines) into Wave 1 integration"
-
-# If conflicts, resolve and continue
-# Expected: No conflicts (first merge)
-```
-
-#### 2. Merge registry-tls-trust
-```bash
-# Add remote for effort
-git remote add registry-tls-trust ../registry-tls-trust || true
-
-# Fetch the effort
-git fetch registry-tls-trust
-
-# Merge the effort branch
-git merge registry-tls-trust/idpbuilder-oci-build-push/phase1/wave1/registry-tls-trust \
-  --no-ff \
-  -m "merge: integrate E1.1.2-registry-tls-trust (700 lines) into Wave 1 integration"
-
-# If conflicts in pkg/testutil:
-# git add pkg/testutil/
-# git commit --no-edit
-```
-
-#### 3. Merge registry-auth-types-split-001
-```bash
-# Add remote for split
-git remote add registry-auth-types-split-001 ../registry-auth-types-split-001 || true
-
-# Fetch the split
-git fetch registry-auth-types-split-001
-
-# Merge the split branch
-git merge registry-auth-types-split-001/idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001 \
-  --no-ff \
-  -m "merge: integrate E1.1.3-registry-auth-types-split-001 (types/constants) into Wave 1 integration"
-
-# Expected: Clean merge (new pkg/oci directory)
-```
-
-#### 4. Merge registry-auth-types-split-002
-```bash
-# Add remote for split
-git remote add registry-auth-types-split-002 ../registry-auth-types-split-002 || true
-
-# Fetch the split
-git fetch registry-auth-types-split-002
-
-# Merge the split branch
-git merge registry-auth-types-split-002/idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002 \
-  --no-ff \
-  -m "merge: integrate E1.1.3-registry-auth-types-split-002 (implementation) into Wave 1 integration"
-
-# Expected: Clean merge (extends pkg/oci)
-```
-
-#### 5. Merge cert-validation-split-001
-```bash
-# Add remote for split
-git remote add cert-validation-split-001 ../../wave2/cert-validation-split-001 || true
-
-# Fetch the split
-git fetch cert-validation-split-001
-
-# Merge the split branch
-git merge cert-validation-split-001/idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001 \
-  --no-ff \
-  -m "merge: integrate E1.2.1-cert-validation-split-001 (validation foundations) into Wave 1 integration"
-
-# If conflicts in pkg/certs:
-# Review both versions, likely additive
-# git add pkg/certs/
-# git commit --no-edit
-```
-
-#### 6. Merge cert-validation-split-002
-```bash
-# Add remote for split
-git remote add cert-validation-split-002 ../../wave2/cert-validation-split-002 || true
-
-# Fetch the split
-git fetch cert-validation-split-002
-
-# Merge the split branch
-git merge cert-validation-split-002/idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002 \
-  --no-ff \
-  -m "merge: integrate E1.2.1-cert-validation-split-002 (validation implementation) into Wave 1 integration"
-
-# Expected: Clean merge or minor conflicts in pkg/certs
-```
-
-#### 7. Merge cert-validation-split-003
-```bash
-# Add remote for split
-git remote add cert-validation-split-003 ../../wave2/cert-validation-split-003 || true
-
-# Fetch the split
-git fetch cert-validation-split-003
-
-# Merge the split branch
-git merge cert-validation-split-003/idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003 \
-  --no-ff \
-  -m "merge: integrate E1.2.1-cert-validation-split-003 (validation completion) into Wave 1 integration"
-
-# Expected: Clean merge
-```
-
-#### 8. Merge fallback-strategies
-```bash
-# Add remote for effort
-git remote add fallback-strategies ../../wave2/fallback-strategies || true
-
-# Fetch the effort
-git fetch fallback-strategies
-
-# Merge the effort branch
-git merge fallback-strategies/idpbuilder-oci-build-push/phase1/wave2/fallback-strategies \
-  --no-ff \
-  -m "merge: integrate E1.2.2-fallback-strategies (560 lines) into Wave 1 integration"
-
-# Expected: Clean merge (uses previous functionality)
-```
-
-### Post-Merge Validation
-```bash
-# After all merges, validate the integration
-go mod tidy
-go build ./...
-go test ./...
-
-# Verify all efforts integrated
-git log --oneline --graph -20
-
-# Check final size
-find pkg -name "*.go" | xargs wc -l | tail -1
-```
-
-## Conflict Resolution Strategies
-
-### General Resolution Approach
-1. **Additive Changes**: Accept both sides when adding new files/functions
-2. **Import Conflicts**: Merge all imports, remove duplicates
-3. **Test Utilities**: Keep all test helpers from different efforts
-4. **go.mod Conflicts**: Accept all dependency additions, run `go mod tidy`
-
-### Specific File Resolution
-
-#### pkg/testutil/* conflicts:
-```go
-// Accept all test utility additions
-// These are helper functions that shouldn't conflict functionally
-```
-
-#### pkg/certs/* conflicts:
-```go
-// registry-tls-trust adds: trust.go, utilities.go
-// cert-validation adds: validation_errors.go, storage.go, extractor.go
-// These should be additive - accept all
-```
-
-#### go.mod conflicts:
-```bash
-# Accept all require statements
-# Then run:
-go mod tidy
-```
+# Phase 2 Wave 1 Integration Merge Plan
+
+**Generated:** 2025-09-14T18:52:00Z
+**Code Reviewer:** code-reviewer
+**State:** WAVE_MERGE_PLANNING
+
+## Target Integration Branch
+- **Branch Name:** idpbuilder-oci-build-push/phase2/wave1/integration
+- **Base:** idpbuilder-oci-build-push/phase1/integration
+- **Location:** /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo
+
+## 🎬 Demo Execution Plan (R330/R291 Compliance)
+
+### Demo Requirements Overview
+Per R330 and R291, ALL integrations MUST demonstrate working functionality.
+
+### Demo Execution Sequence
+1. **After Each Effort Merge:**
+   - Run effort-specific demo script if exists
+   - Capture output in `demo-results/effort-X-demo.log`
+   - Continue even if individual demo fails (document for review)
+
+2. **After All Merges Complete:**
+   - Run integrated wave demo: `./wave-demo.sh`
+   - Verify all effort features work together
+   - Capture evidence in `demo-results/wave-integration-demo.log`
+
+3. **Demo Validation Gates (R291):**
+   - ✅ BUILD GATE: Code must compile
+   - ✅ TEST GATE: All tests must pass
+   - ✅ DEMO GATE: Demo scripts must execute
+   - ✅ ARTIFACT GATE: Build outputs must exist
+
+### Demo Files Expected
+Based on effort plans (R330), these demos should exist:
+- [ ] image-builder/demo-features.sh (from effort plan)
+- [ ] gitea-client-split-001/demo-features.sh (from effort plan)
+- [ ] gitea-client-split-002/demo-features.sh (from effort plan)
+- [ ] WAVE-DEMO.md (integration demo documentation)
+- [ ] wave-demo.sh (integrated demo script)
+
+### Demo Failure Protocol
+If ANY demo fails during integration:
+1. Document failure in INTEGRATION_REPORT.md
+2. Mark Demo Status: FAILED
+3. This will trigger ERROR_RECOVERY per R291
+4. Fixes must be made in effort branches (R292)
+
+## Branches to Merge (IN ORDER)
+
+### 1. idpbuilder-oci-build-push/phase2/wave1/image-builder
+- **Type:** Original effort branch (with duplicate fix applied)
+- **Base:** idpbuilder-oci-build-push/phase1/integration
+- **Size:** ~600 lines (estimated)
+- **Dependencies:** None (foundational image builder)
+- **Conflicts Expected:** None (new functionality)
+- **Special Notes:** Contains emergency fix for duplicate TLSConfig struct
+- **Merge Command:**
+  ```bash
+  git fetch origin idpbuilder-oci-build-push/phase2/wave1/image-builder
+  git merge origin/idpbuilder-oci-build-push/phase2/wave1/image-builder --no-ff \
+    -m "Integrate E2.1.1-image-builder into Phase 2 Wave 1"
+  ```
+
+### 2. idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001
+- **Type:** Split branch (1 of 2)
+- **Base:** idpbuilder-oci-build-push/phase1/integration
+- **Size:** ~400 lines (first part of gitea client)
+- **Dependencies:** May depend on image-builder types
+- **Conflicts Expected:** Possible in go.mod/go.sum
+- **Special Notes:** First split of gitea-client effort
+- **Merge Command:**
+  ```bash
+  git fetch origin idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001
+  git merge origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001 --no-ff \
+    -m "Integrate E2.1.2-gitea-client-split-001 into Phase 2 Wave 1"
+  ```
+
+### 3. idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
+- **Type:** Split branch (2 of 2)
+- **Base:** Follows gitea-client-split-001
+- **Size:** ~400 lines (completion of gitea client)
+- **Dependencies:** Must merge after split-001
+- **Conflicts Expected:** None (sequential splits)
+- **Special Notes:** Final split of gitea-client effort
+- **Merge Command:**
+  ```bash
+  git fetch origin idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
+  git merge origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002 --no-ff \
+    -m "Integrate E2.1.2-gitea-client-split-002 into Phase 2 Wave 1"
+  ```
+
+## Excluded Branches (Too Large)
+These original branches were split and should NOT be merged:
+- idpbuilder-oci-build-push/phase2/wave1/gitea-client (original, exceeded limit - replaced by splits)
+
+## Merge Strategy
+1. **Merge Type:** --no-ff (preserve branch history)
+2. **Conflict Resolution:** Favor newer implementation when conflicts occur
+3. **Testing:** Run unit tests after each merge
+4. **Validation:** Check total size after all merges
+
+## Expected Conflicts
+Based on branch analysis, conflicts are likely in:
+- `go.mod/go.sum` - Multiple efforts adding dependencies
+- Minimal other conflicts expected as Phase 2 adds new functionality
+
+## Validation Steps
+1. After each merge:
+   ```bash
+   # Test the code
+   go test ./...
+
+   # Run effort demo if exists (R330 compliance)
+   EFFORT_NAME="[effort-name-from-merge]"
+   if [ -f "${EFFORT_NAME}/demo-features.sh" ]; then
+       echo "🎬 Running ${EFFORT_NAME} demo..."
+       bash "${EFFORT_NAME}/demo-features.sh" > "demo-results/${EFFORT_NAME}-demo.log" 2>&1
+       echo "Demo exit code: $?"
+   fi
+   ```
+2. After all merges:
+   ```bash
+   # Run integration tests
+   make test-integration || go test ./...
+
+   # Check size compliance
+   PROJECT_ROOT=$(pwd)
+   while [ "$PROJECT_ROOT" != "/" ]; do
+       [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break
+       PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
+   done
+   $PROJECT_ROOT/tools/line-counter.sh
+
+   # Run integrated wave demo (R291 requirement)
+   echo "🎬 Running integrated wave demo..."
+   if [ -f "./wave-demo.sh" ]; then
+       bash ./wave-demo.sh > demo-results/wave-integration-demo.log 2>&1
+       DEMO_STATUS=$?
+       echo "Wave demo status: $DEMO_STATUS"
+   else
+       echo "⚠️ WARNING: No wave-demo.sh found - creating basic demo"
+       # Integration agent should create basic demo if missing
+   fi
+   ```
+3. Final validation:
+   - Verify all effort features are present
+   - Confirm no effort was missed
+   - Check combined size is reasonable
+   - ✅ Verify all demos executed (R291)
+   - ✅ Capture demo evidence for review
+
+## Risk Assessment
+- **Low Risk:** Sequential splits should merge cleanly
+- **Low Risk:** New Phase 2 functionality unlikely to conflict with Phase 1
+- **Medium Risk:** Dependency management in go.mod
+- **Mitigation:** Test after each merge to catch issues early
+
+## Integration Agent Instructions
+1. CD to integration directory before starting
+2. Execute merges in the EXACT order specified
+3. Run tests after EACH merge
+4. Document any conflicts encountered
+5. Create work-log.md with all operations
+6. Generate INTEGRATION-REPORT.md when complete
+7. DO NOT merge the original gitea-client branch (use splits only)
 
 ## Validation Checklist
 
@@ -293,31 +175,32 @@ After each merge:
 - [ ] Dependencies resolved (`go mod tidy`)
 
 After all merges:
-- [ ] All 8 efforts integrated
-- [ ] Total size within expectations (~4,000 lines)
+- [ ] All 3 branches integrated (image-builder + 2 gitea-client splits)
+- [ ] Total size within expectations (~1,400 lines estimated)
 - [ ] Integration tests pass
 - [ ] No missing functionality
 - [ ] Clean commit history
+- [ ] Demo scripts executed and documented
 
 ## Notes for Integration Agent
 
-1. **DO NOT** merge the parent 'registry-auth-types' branch - only splits
-2. **DO NOT** merge the parent 'cert-validation' branch - only splits
-3. **ALWAYS** use `--no-ff` to preserve merge history
-4. **RESOLVE** conflicts conservatively - when in doubt, accept both
-5. **TEST** after each merge to catch issues early
-6. **DOCUMENT** any unexpected conflicts in the integration report
+1. **DO NOT** merge the parent 'gitea-client' branch - only splits
+2. **ALWAYS** use `--no-ff` to preserve merge history
+3. **RESOLVE** conflicts conservatively - when in doubt, accept both
+4. **TEST** after each merge to catch issues early
+5. **DOCUMENT** any unexpected conflicts in the integration report
+6. **VERIFY** the duplicate TLSConfig fix is preserved from image-builder
 
 ## Expected Final State
 
 After successful integration:
-- Branch: `idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401`
-- Contains: All Wave 1 and Wave 2 efforts (8 total branches merged)
-- Size: Approximately 4,000 lines of new code
-- Status: Ready for architect review and main branch merge
+- Branch: `idpbuilder-oci-build-push/phase2/wave1/integration`
+- Contains: All Phase 2 Wave 1 efforts (3 branches total: image-builder + 2 gitea-client splits)
+- Size: Approximately 1,400 lines of new code
+- Status: Ready for architect review and further integration
 
 ---
 
-**Created**: 2025-09-12 03:30:00 UTC
+**Created**: 2025-09-14T18:52:00Z
 **Created By**: Code Reviewer Agent (WAVE_MERGE_PLANNING state)
-**Integration Target**: idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401
+**Integration Target**: idpbuilder-oci-build-push/phase2/wave1/integration
