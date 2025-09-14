@@ -1,0 +1,17 @@
+[
+  {
+    "content": "Wait for Code Reviewer to complete Phase 2 merge plan",
+    "status": "pending",
+    "activeForm": "Waiting for merge plan completion"
+  },
+  {
+    "content": "Check merge plan output",
+    "status": "pending",
+    "activeForm": "Checking merge plan results"
+  },
+  {
+    "content": "Transition to next state based on plan results",
+    "status": "pending",
+    "activeForm": "Transitioning to next state"
+  }
+]
