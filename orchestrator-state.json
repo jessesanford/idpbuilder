@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
-  "previous_state": "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE",
+  "current_state": "WAITING_FOR_PHASE_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-14T13:55:10Z",
-  "transition_reason": "Phase integration infrastructure ready - proceeding to spawn Code Reviewer for merge plan",
+  "transition_time": "2025-09-14T14:05:56Z",
+  "transition_reason": "Code Reviewer spawned for phase merge planning - merge plan created at worktrees/phase1-integration/PHASE-1-MERGE-PLAN.md",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -1010,40 +1010,11 @@
   "spawned_agents": [
     {
       "agent": "code-reviewer",
-      "task": "phase_1_merge_planning",
-      "timestamp": "2025-09-13T17:51:45Z",
+      "task": "phase_merge_planning",
+      "directory": "worktrees/phase1-integration",
+      "timestamp": "2025-09-14T14:05:56Z",
       "status": "completed",
-      "output": "PHASE-1-MERGE-PLAN.md"
-    },
-    {
-      "agent": "code-reviewer",
-      "task": "phase2_wave1_rebase_planning",
-      "timestamp": "2025-09-13T20:43:04Z",
-      "status": "completed",
-      "output": "REBASE-MERGE-PLAN.md",
-      "directory": "efforts/phase2/wave1/rebase-planning"
-    },
-    {
-      "agent": "code-reviewer",
-      "task": "effort_planning_image_builder",
-      "effort": "image-builder",
-      "phase": 2,
-      "wave": 1,
-      "timestamp": "2025-09-13T20:45:00Z",
-      "status": "spawned",
-      "directory": "efforts/phase2/wave1/image-builder",
-      "parallel_with": "gitea-client"
-    },
-    {
-      "agent": "code-reviewer",
-      "task": "effort_planning_gitea_client",
-      "effort": "gitea-client",
-      "phase": 2,
-      "wave": 1,
-      "timestamp": "2025-09-13T20:49:00Z",
-      "status": "spawned",
-      "directory": "efforts/phase2/wave1/gitea-client",
-      "parallel_with": "image-builder"
+      "deliverable": "PHASE-1-MERGE-PLAN.md"
     }
   ],
   "phase_integration_review": {
