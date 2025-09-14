@@ -333,7 +333,32 @@
     "language": "golang",
     "target": "idpbuilder"
   },
-  "wave_review": null,
+  "wave_review": {
+    "phase": 2,
+    "wave": 1,
+    "reviewed_at": "2025-09-14T19:10:00Z",
+    "reviewer": "architect",
+    "decision": "REQUIRE_SPLITS_BEFORE_PROCEED",
+    "report_file": "wave-reviews/phase2/wave1/PHASE-2-WAVE-1-REVIEW-REPORT.md",
+    "critical_findings": {
+      "image_builder_size": "3646 lines (456% of limit)",
+      "gitea_split_001_size": "1378 lines (172% of limit - boundary violation)",
+      "gitea_split_002_size": "542 lines (compliant)",
+      "violations_percentage": "67% of efforts violate size limits"
+    },
+    "required_actions": [
+      "Split image-builder into 6 efforts (<800 lines each)",
+      "Split gitea-client-split-001 into 2 efforts",
+      "Re-integrate after splits complete",
+      "Verify independent mergeability"
+    ],
+    "technical_quality": "GOOD",
+    "size_compliance": "FAILED",
+    "r307_compliance": "VIOLATED",
+    "r308_compliance": "COMPLIANT",
+    "can_proceed": false,
+    "blocking_reason": "Severe size violations prevent trunk-based development"
+  },
   "next_action": "clone_and_rebase_image_builder",
   "notes": "Wave 1 R327 cascade re-integration successful. All gates passed. Ready for code review.",
   "agents_spawned": [
