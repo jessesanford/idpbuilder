@@ -32,7 +32,7 @@ This demonstrates the ChainValidator functionality:
 === RUN   TestBasicCertificateValidatorValidateChain
 --- PASS: TestBasicCertificateValidatorValidateChain (1.53s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/certs	4.177s
+ok  	github.com/cnoe-io/idpbuilder/pkg/certs	(cached)
 ✅ Chain validator tests passed
 
 🧪 Running certificate validator tests...
@@ -84,7 +84,7 @@ This demonstrates the DefaultCertificateValidator functionality:
 === RUN   TestDefaultCertValidator_ValidateCertificate_NoSubjectNames
 --- PASS: TestDefaultCertValidator_ValidateCertificate_NoSubjectNames (0.38s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/certs	6.312s
+ok  	github.com/cnoe-io/idpbuilder/pkg/certs	(cached)
 ✅ Certificate validator tests passed
 
 🧪 Running validation error tests...
@@ -111,7 +111,7 @@ This demonstrates the validation error handling:
 === RUN   TestCertificateError
 --- PASS: TestCertificateError (0.00s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/certs	0.009s
+ok  	github.com/cnoe-io/idpbuilder/pkg/certs	(cached)
 ✅ Validation error tests passed
 
 🧪 Running certificate validation modes tests...
@@ -126,7 +126,7 @@ This demonstrates the ValidationMode functionality (Strict/Lenient/Insecure):
     --- PASS: TestChainValidator_ValidationModes/Lenient_Mode (0.00s)
     --- PASS: TestChainValidator_ValidationModes/Insecure_Mode (0.00s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/certs	0.011s
+ok  	github.com/cnoe-io/idpbuilder/pkg/certs	(cached)
 ✅ Validation mode tests passed
 
 🧪 Running comprehensive certificate validation tests...
@@ -411,13 +411,13 @@ ok  	github.com/cnoe-io/idpbuilder/pkg/certvalidation	(cached)
 🧪 Running validator-specific tests...
 testing: warning: no tests to run
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/certs	0.004s [no tests to run]
+ok  	github.com/cnoe-io/idpbuilder/pkg/certs	(cached) [no tests to run]
 ✅ Validator-specific tests passed
 
 🧪 Running chain validator comprehensive tests...
 testing: warning: no tests to run
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/certs	0.006s [no tests to run]
+ok  	github.com/cnoe-io/idpbuilder/pkg/certs	(cached) [no tests to run]
 ✅ Chain validator comprehensive tests passed
 
 🎯 Demo Summary

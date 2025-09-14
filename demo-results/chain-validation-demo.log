@@ -16,7 +16,7 @@ This demonstrates the TrustStoreManager functionality:
 === RUN   TestNewDefaultTrustStoreManager
 --- PASS: TestNewDefaultTrustStoreManager (0.00s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/certs	0.006s
+ok  	github.com/cnoe-io/idpbuilder/pkg/certs	(cached)
 ✅ Trust store tests passed
 
 🧪 Running certificate validation tests...
@@ -78,7 +78,7 @@ This demonstrates certificate chain validation:
 === RUN   TestDefaultCertValidator_ValidateCertificate_NoSubjectNames
 --- PASS: TestDefaultCertValidator_ValidateCertificate_NoSubjectNames (0.29s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/certs	8.737s
+ok  	github.com/cnoe-io/idpbuilder/pkg/certs	(cached)
 ✅ Certificate validation tests passed
 
 🧪 Running certificate extractor tests...
@@ -101,7 +101,7 @@ This demonstrates Kind cluster certificate extraction:
 === RUN   TestExtractHostname
 --- PASS: TestExtractHostname (0.00s)
 PASS
-ok  	github.com/cnoe-io/idpbuilder/pkg/certs	1.415s
+ok  	github.com/cnoe-io/idpbuilder/pkg/certs	(cached)
 ✅ Certificate extractor tests passed
 
 📊 Running all certificate package tests...
