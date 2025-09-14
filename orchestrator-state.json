@@ -23,6 +23,22 @@
         "working_dir": "efforts/phase2/wave1/image-builder",
         "base_branch": "idpbuilder-oci-build-push/phase1/integration",
         "reason": "Created before Phase 1 integration was finalized"
+      },
+      {
+        "effort": "gitea-client-split-001",
+        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+        "target_base": "idpbuilder-oci-build-push/phase1/integration",
+        "status": "pending",
+        "working_dir": "efforts/phase2/wave1/gitea-client-split-001",
+        "reason": "Split 001 needs Phase 1 integration as base"
+      },
+      {
+        "effort": "gitea-client-split-002",
+        "current_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+        "target_base": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+        "status": "pending",
+        "working_dir": "efforts/phase2/wave1/gitea-client-split-002",
+        "reason": "Split 002 must be based on split 001 (sequential dependency)"
       }
     ],
     "rebase_strategy": "code_reviewer_merge_plan_first",
@@ -247,6 +263,33 @@
           "lines": 800,
           "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003",
           "working_dir": "efforts/phase1/wave2/cert-validation-split-003"
+        }
+      ]
+    },
+    "gitea-client": {
+      "original_base": "main",
+      "target_base": "idpbuilder-oci-build-push/phase1/integration",
+      "split_count": 2,
+      "created_at": "2025-09-14T15:14:17Z",
+      "reason": "Effort exceeded 800 line limit",
+      "splits": [
+        {
+          "split_number": 1,
+          "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+          "base_branch": "idpbuilder-oci-build-push/phase1/integration",
+          "working_dir": "efforts/phase2/wave1/gitea-client-split-001",
+          "status": "completed",
+          "needs_rebase": true,
+          "rebase_reason": "Created before Phase 1 integration was complete"
+        },
+        {
+          "split_number": 2,
+          "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+          "base_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+          "working_dir": "efforts/phase2/wave1/gitea-client-split-002",
+          "status": "completed",
+          "needs_rebase": true,
+          "rebase_reason": "Sequential split - must rebase after split-001 is rebased"
         }
       ]
     }
