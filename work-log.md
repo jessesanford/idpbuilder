@@ -18,4 +18,11 @@ Result: idpbuilder-oci-build-push/phase2/wave2/integration-20250914-200305
 Command: git status
 Result: Clean working tree (only untracked merge plan files)
 
-✅ Fetched cli-commands branch
+## Operation 2: Fetch cli-commands branch
+Command: git fetch origin idpbuilder-oci-build-push/phase2/wave2/cli-commands
+Result: ✅ Fetched cli-commands branch
+
+## Operation 3: Merge cli-commands branch
+Command: git merge idpbuilder-oci-build-push/phase2/wave2/cli-commands --no-ff
+Result: Conflict in work-log.md (resolved by keeping integration log)
+Resolution: Kept integration work log, discarded old Phase 1 log from cli-commands branch
