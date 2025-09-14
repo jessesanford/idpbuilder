@@ -1,0 +1,39 @@
+=========================================
+Phase 2 Wave 2 Integration Demo
+Date: Sun Sep 14 08:25:59 PM UTC 2025
+=========================================
+
+1. Building idpbuilder binary...
+✅ Binary built successfully
+
+2. Verifying build command is available...
+✅ Build command is available
+Assemble a single-layer OCI image from a directory using go-containerregistry.
+Certificate handling is applied during the push phase, not during build.
+
+Examples:
+  # Build from current directory
+
+3. Verifying push command is available...
+✅ Push command is available
+Push a container image to the builtin Gitea registry with certificate support.
+The command automatically handles certificate extraction and configuration unless
+the --insecure flag is specified.
+
+Examples:
+
+4. Testing version command with new capabilities...
+idpbuilder unknown go1.24.7 linux/amd64
+
+5. Cleaning up demo binary...
+✅ Cleanup complete
+
+=========================================
+✅ DEMO COMPLETED SUCCESSFULLY
+=========================================
+
+Summary:
+- Build command integrated: ✅
+- Push command integrated: ✅
+- Commands accessible via CLI: ✅
+- Integration with Wave 1 preserved: ✅
