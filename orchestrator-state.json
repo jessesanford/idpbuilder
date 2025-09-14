@@ -1,10 +1,10 @@
 {
-  "current_state": "MONITORING_INTEGRATION",
-  "previous_state": "SPAWN_INTEGRATION_AGENT",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "MONITORING_INTEGRATION",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-14T17:48:04Z",
-  "transition_reason": "Integration agent spawned successfully for R327 cascade re-integration",
+  "transition_time": "2025-09-14T17:52:51Z",
+  "transition_reason": "R291 BUILD GATE FAILURE: Build failed due to upstream duplicate declarations - cannot proceed without successful build",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -1561,5 +1561,14 @@
       "time": "2025-09-14T17:48:04Z",
       "reason": "R324 state transition - integration agent spawned"
     }
-  ]
+  ],
+  "integration_report_status": {
+    "report_found": true,
+    "build_status": "FAILED",
+    "test_status": "PARTIAL",
+    "demo_status": "INDIVIDUAL_PASS",
+    "integration_status": "PARTIAL_SUCCESS",
+    "upstream_bugs_found": true,
+    "report_file": "efforts/phase2/wave1/integration-workspace/repo/INTEGRATION-REPORT.md"
+  }
 }
