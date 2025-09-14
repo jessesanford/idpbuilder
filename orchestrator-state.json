@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_INTEGRATION_AGENT",
-  "previous_state": "WAITING_FOR_MERGE_PLAN",
+  "current_state": "MONITORING_INTEGRATION",
+  "previous_state": "SPAWN_INTEGRATION_AGENT",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-14T07:32:12Z",
-  "transition_reason": "R322 checkpoint - merge plan ready for user review",
+  "transition_time": "2025-09-14T08:49:38Z",
+  "transition_reason": "Integration agent completed R327 cascade successfully",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -420,6 +420,14 @@
         "demo": "PASSED",
         "artifact": "PASSED"
       }
+    },
+    {
+      "agent": "integration",
+      "task": "phase1_wave1_r327_cascade",
+      "spawned_at": "2025-09-14T08:49:18Z",
+      "completed_at": "2025-09-14T08:49:18Z",
+      "state": "COMPLETED",
+      "result": "SUCCESS - R327 cascade integration complete"
     }
   ],
   "integration_status": {
@@ -494,9 +502,11 @@
     "type": "fresh_recreation",
     "reason": "R327 mandatory re-integration after backport fixes",
     "old_branch": "idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401",
-    "status": "infrastructure_needed",
+    "status": "complete",
     "merge_plan": "/home/vscode/workspaces/idpbuilder-oci-build-push/R327-CASCADE-WAVE-REINTEGRATION-PLAN.md",
-    "merge_plan_validated": true
+    "merge_plan_validated": true,
+    "integration_branch": "idpbuilder-oci-build-push/phase1/wave1-integration",
+    "completed_at": "2025-09-14T08:49:19Z"
   },
   "current_phase_integration": {
     "phase": 1,
