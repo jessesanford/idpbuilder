@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_INTEGRATION_AGENT",
-  "previous_state": "WAITING_FOR_MERGE_PLAN",
+  "current_state": "MONITORING_INTEGRATION",
+  "previous_state": "SPAWN_INTEGRATION_AGENT",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-13T23:40:21Z",
-  "transition_reason": "Merge plan created by Code Reviewer, ready for review",
+  "transition_time": "2025-09-13T23:59:40Z",
+  "transition_reason": "Integration agent spawned and completed with upstream build failures requiring ERROR_RECOVERY",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -349,6 +349,17 @@
       "spawned_at": "2025-09-13T19:42:55Z",
       "state": "PHASE_ASSESSMENT",
       "result": "PHASE_COMPLETE - Score 85/100"
+    },
+    {
+      "agent": "integration",
+      "task": "phase2_wave1_integration",
+      "spawned_at": "2025-09-13T23:59:55Z",
+      "completed_at": "2025-09-13T23:59:55Z",
+      "state": "INTEGRATION_EXECUTION",
+      "result": "MERGES_COMPLETE_BUILD_FAILED",
+      "phase": 2,
+      "wave": 1,
+      "upstream_bugs_found": 2
     }
   ],
   "integration_status": {
@@ -566,7 +577,15 @@
     "merge_plan_requested": true,
     "merge_plan_ready": true,
     "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
-    "merge_plan_created_at": "2025-09-13T23:32:21Z"
+    "merge_plan_created_at": "2025-09-13T23:32:21Z",
+    "integration_completed": true,
+    "integration_result": "FAILED_BUILD_GATES",
+    "build_failures": [
+      "giteaRegistryImpl undefined in pkg/registry",
+      "Syntax errors in pkg/certs/utilities.go"
+    ],
+    "r291_gate_status": "FAILED",
+    "completed_at": "2025-09-13T23:59:48Z"
   },
   "phase_integration_needed": true,
   "phase_1_status": {
