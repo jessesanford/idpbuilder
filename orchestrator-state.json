@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-  "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+  "current_state": "PHASE_INTEGRATION",
+  "previous_state": "WAVE_COMPLETE",
   "current_phase": 2,
-  "current_wave": 2,
-  "transition_time": "2025-09-14T21:18:18Z",
-  "transition_reason": "Parallelization analysis complete, ready to spawn Code Reviewers",
+  "current_wave": "phase_integration",
+  "transition_time": "2025-09-14T22:20:00Z",
+  "transition_reason": "R327 cascade - Phase 2 waves complete, starting Phase 2 phase-level re-integration",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -1053,6 +1053,12 @@
       "to": "INTEGRATION_CODE_REVIEW",
       "timestamp": "2025-09-14T12:34:23Z",
       "reason": "All R291 gates passed - Wave 2 R327 cascade integration complete, ready for code review"
+    },
+    {
+      "from": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+      "to": "PHASE_INTEGRATION",
+      "timestamp": "2025-09-14T22:20:00Z",
+      "reason": "R327 cascade - All wave integrations complete, starting Phase 2 phase-level re-integration"
     }
   ],
   "cascade_in_progress": true,
@@ -1693,6 +1699,17 @@
   },
   "phase_2_wave_1_status": "COMPLETE_WITH_SIZE_VIOLATIONS",
   "phase_2_wave_1_integration_confirmed": true,
+  "phase_2_wave_2_status": "COMPLETE",
+  "phase_2_wave_2_integration_confirmed": true,
+  "r327_cascade_status": {
+    "phase_1_integration": "COMPLETE",
+    "phase_2_wave_1_integration": "COMPLETE",
+    "phase_2_wave_2_integration": "COMPLETE",
+    "phase_2_phase_integration": "PENDING",
+    "project_integration": "PENDING",
+    "reason": "Cascading upstream bug fixes through all integration levels",
+    "next_action": "Phase 2 phase-level integration"
+  },
   "phase_2_wave_2_rebase_required": {
     "cli_commands": {
       "effort": "cli-commands",
@@ -1708,6 +1725,24 @@
     }
   },
   "r308_enforcement": "Wave 2 cannot proceed without proper incremental base",
-  "next_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-  "state_transition_reason": "Phase 2 Wave 2 infrastructure verified complete, ready for next state per R234 mandatory traversal"
+  "next_state": "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE",
+  "state_transition_reason": "In PHASE_INTEGRATION state, next step is to set up integration infrastructure per state machine",
+  "phase_2_integration_infrastructure": {
+    "status": "PENDING",
+    "base_branch": "idpbuilder-oci-build-push/phase2/wave2/integration-20250914-200305",
+    "target_branch": "idpbuilder-oci-build-push/phase2/integration",
+    "workspace_dir": "efforts/phase2/phase-integration-workspace",
+    "note": "R327 cascade re-integration - combining Wave 1 and Wave 2 with upstream fixes"
+  },
+  "project_integration_planning": {
+    "status": "PENDING",
+    "will_start_after": "Phase 2 integration complete",
+    "base_branch": "idpbuilder-oci-build-push/phase2/integration",
+    "target_branch": "idpbuilder-oci-build-push/project/integration",
+    "combines": [
+      "Phase 1 integration",
+      "Phase 2 integration"
+    ],
+    "note": "Final R327 cascade step - complete project integration"
+  }
 }
