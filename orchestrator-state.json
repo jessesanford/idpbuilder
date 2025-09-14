@@ -940,6 +940,9 @@
           "created_at": "2025-09-14T12:00:36Z",
           "validated": true
         }
+      },
+      "phase": {
+        "phase1": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/integration-workspace/PHASE-1-MERGE-PLAN.md"
       }
     }
   },
@@ -1402,5 +1405,7 @@
     "report_file": "wave-reviews/phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md",
     "reviewed_at": "2025-09-14T13:26:08Z",
     "status": "APPROVED"
-  }
+  },
+  "phase_integration_merge_plan": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/integration-workspace/PHASE-1-MERGE-PLAN.md",
+  "phase_integration_merge_plan_created_at": "2025-09-14T13:35:00Z"
 }
