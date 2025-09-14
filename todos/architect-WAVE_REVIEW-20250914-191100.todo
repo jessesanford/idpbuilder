@@ -1,0 +1,20 @@
+# Architect TODOs - Trigger: WAVE_REVIEW_COMPLETE
+# State: WAVE_REVIEW
+# Timestamp: 2025-09-14T19:11:00Z
+
+## Completed Tasks
+✅ Assess size violations (image-builder: 3646 lines, gitea-split-001: 1378 lines)
+✅ Review integration quality and build status
+✅ Evaluate R307 and R308 compliance for independent mergeability
+✅ Create wave review report at wave-reviews/phase2/wave1/PHASE-2-WAVE-1-REVIEW-REPORT.md
+✅ Update orchestrator-state.json with decision
+✅ Save and commit all changes
+
+## Review Summary
+- Phase 2 Wave 1 reviewed
+- Decision: REQUIRE_SPLITS_BEFORE_PROCEED
+- Critical finding: 67% of efforts have severe size violations
+- image-builder needs 6 splits
+- gitea-client-split-001 needs 2 more splits (boundary violation)
+- Report created and committed
+- State file updated with decision
