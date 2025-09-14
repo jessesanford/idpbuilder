@@ -1,10 +1,10 @@
 {
-  "current_state": "WAVE_COMPLETE",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
   "previous_state": "ERROR_RECOVERY",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-14T18:24:49Z",
-  "transition_reason": "Error recovery complete - duplicate declarations resolved, Phase 2 Wave 1 can proceed",
+  "transition_time": "2025-09-14T18:32:08Z",
+  "transition_reason": "Duplicate declarations fixed - ready to re-integrate Phase 2 Wave 1",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -1608,8 +1608,16 @@
     },
     "next_state_after_recovery": "SPAWN_CODE_REVIEWER_FIX_PLAN",
     "recovery_started": "2025-09-14T18:04:32Z",
-    "recovery_completed": "2025-09-14T18:40:00Z",
-    "resolution": "Duplicate declarations already resolved - build passes successfully"
+    "recovery_completed": "2025-09-14T18:31:58Z",
+    "resolution": "Duplicate declarations fixed in image-builder effort - removed from utilities.go",
+    "fix_applied": {
+      "effort": "image-builder",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
+      "files_fixed": [
+        "pkg/certs/utilities.go"
+      ],
+      "build_status": "PASSING"
+    }
   },
   "phase1_pkg_certs_fix": {
     "status": "PENDING",
