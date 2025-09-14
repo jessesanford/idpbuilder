@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_INTEGRATION_AGENT",
-  "previous_state": "WAITING_FOR_MERGE_PLAN",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "SPAWN_INTEGRATION_AGENT",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-14T01:29:32Z",
-  "transition_reason": "Infrastructure exists, proceeding to spawn Code Reviewer for merge plan",
+  "transition_time": "2025-09-14T01:45:58Z",
+  "transition_reason": "R327 re-integration completed but upstream bug from Phase 1 prevents build - duplicate TLSConfig declarations",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -404,6 +404,22 @@
       "timestamp": "2025-09-14T00:57:57Z",
       "status": "workspace_violation",
       "command_file": "efforts/phase2/wave1/image-builder/sw-engineer-fix-command.md"
+    },
+    {
+      "agent": "integration",
+      "task": "phase2_wave1_r327_reintegration",
+      "spawned_at": "2025-09-14T01:34:00Z",
+      "state": "INTEGRATION_EXECUTION",
+      "phase": 2,
+      "wave": 1,
+      "result": "COMPLETED_WITH_UPSTREAM_BUG",
+      "completed_at": "2025-09-14T01:38:00Z",
+      "r291_gates": {
+        "build": "FAILED_UPSTREAM",
+        "test": "PASSED",
+        "demo": "PASSED",
+        "artifact": "PASSED"
+      }
     }
   ],
   "integration_status": {
@@ -652,7 +668,11 @@
       "Syntax errors in pkg/certs/utilities.go"
     ],
     "r291_gate_status": "FAILED",
-    "completed_at": "2025-09-13T23:59:48Z"
+    "completed_at": "2025-09-13T23:59:48Z",
+    "r327_reintegration_completed": true,
+    "r327_reintegration_at": "2025-09-14T01:38:00Z",
+    "r327_result": "COMPLETED_WITH_UPSTREAM_BUG",
+    "upstream_bug_from_phase1": true
   },
   "phase_integration_needed": true,
   "phase_1_status": {
@@ -1228,5 +1248,22 @@
     ],
     "fixes_summary": "Fixed giteaRegistryImpl and pkg/fallback issues",
     "next_action": "Fresh integration with fixed branches"
+  },
+  "current_error_recovery": {
+    "type": "upstream_bug",
+    "detected_at": "2025-09-14T01:38:00Z",
+    "source": "Phase 1 integration",
+    "blocking_build": true,
+    "issue": "Duplicate TLSConfig and DefaultTLSConfig declarations",
+    "files_affected": [
+      "pkg/certs/utilities.go",
+      "pkg/certs/types.go"
+    ],
+    "impact": "Cannot compile project",
+    "suggested_fix": "Remove duplicate declarations from one of the files",
+    "integration_mechanically_successful": true,
+    "demos_passed": true,
+    "tests_passed": true,
+    "only_build_failed": true
   }
 }
