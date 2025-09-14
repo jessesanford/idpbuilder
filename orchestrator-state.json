@@ -1,10 +1,10 @@
 {
-  "current_state": "MONITOR_FIXES",
-  "previous_state": "SPAWN_ENGINEERS_FOR_FIXES",
+  "current_state": "INTEGRATION",
+  "previous_state": "MONITOR_FIXES",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-14T00:58:18Z",
-  "transition_reason": "R291 BUILD GATE FAILURE: Compilation errors in pkg/registry (undefined giteaRegistryImpl) and pkg/certs (syntax errors) - cannot proceed without successful build",
+  "transition_time": "2025-09-14T01:07:00Z",
+  "transition_reason": "R327: Fixes completed for 2/4 efforts - mandatory re-integration required after fixes",
   "phase_2_rebase_required": {
     "reason": "Phase 2 Wave 1 was created before Phase 1 integration was finalized",
     "phase_1_integration_branch": "idpbuilder-oci-build-push/phase1/integration",
@@ -1222,5 +1222,17 @@
       "completed": 2,
       "pending": 2
     }
+  },
+  "fix_monitoring_results": {
+    "completed_fixes": [
+      "gitea-client",
+      "gitea-client-split-001"
+    ],
+    "workspace_violations": [
+      "gitea-client-split-002",
+      "image-builder"
+    ],
+    "fixes_summary": "Fixed giteaRegistryImpl and pkg/fallback issues",
+    "next_action": "Fresh integration with fixed branches"
   }
 }
