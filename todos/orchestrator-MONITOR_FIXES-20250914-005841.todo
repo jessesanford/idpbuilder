@@ -1,0 +1,25 @@
+# Orchestrator TODOs - MONITOR_FIXES State
+Timestamp: 2025-09-14T00:58:18Z
+State: MONITOR_FIXES
+Phase: 2, Wave: 1
+
+## Completed Tasks
+✅ Identified efforts that need fixes from orchestrator-state.json
+✅ Checked for INTEGRATION-REPORT.md files in effort directories
+✅ Created command files for each effort needing fixes
+✅ Spawned SW Engineers for fixes (parallel per R151)
+✅ Updated orchestrator-state.json with spawn information
+✅ Transitioned to MONITOR_FIXES state
+
+## Next Tasks (for MONITOR_FIXES state)
+- Monitor fix progress for gitea-client (completed)
+- Monitor fix progress for gitea-client-split-001 (completed)
+- Respawn SW Engineer for gitea-client-split-002 (workspace violation)
+- Respawn SW Engineer for image-builder (workspace violation)
+- Verify all fixes complete before re-integration
+
+## Fix Status
+- gitea-client: ✅ COMPLETED
+- gitea-client-split-001: ✅ COMPLETED
+- gitea-client-split-002: ⚠️ WORKSPACE VIOLATION - needs respawn
+- image-builder: ⚠️ WORKSPACE VIOLATION - needs respawn
