@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_INTEGRATION_AGENT",
-  "previous_state": "WAITING_FOR_MERGE_PLAN",
+  "current_state": "MONITORING_INTEGRATION",
+  "previous_state": "SPAWN_INTEGRATION_AGENT",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-14T12:00:47Z",
-  "transition_reason": "Wave 2 merge plan ready for execution - R322 checkpoint",
+  "transition_time": "2025-09-14T12:12:59Z",
+  "transition_reason": "Integration agent spawned for Wave 2 R327 cascade - per R322 checkpoint",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -948,7 +948,15 @@
     "cascade_id": "WAVE1-CASCADE-20250913",
     "cascade_reason": "R327 re-integration after R321 fixes",
     "merge_plan_created": "2025-09-14T12:00:36Z",
-    "plan_validation": "READY"
+    "plan_validation": "READY",
+    "status": "INTEGRATION_COMPLETE",
+    "completed_at": "2025-09-14T12:12:59Z",
+    "r291_gates": {
+      "build": "PASSED",
+      "test": "PASSED",
+      "demo": "PASSED",
+      "artifact": "PASSED"
+    }
   },
   "wave1_integration_review": {
     "status": "COMPLETE",
