@@ -33,3 +33,15 @@ Command: git merge origin/idpbuilder-oci-build-push/phase1/wave1/registry-tls-tr
 MERGED: registry-tls-trust at Sun Sep 14 08:45:00 AM UTC 2025
 Result: SUCCESS - Trust integration functionality merged
 Conflicts resolved: work-log.md (kept ours for CASCADE tracking)
+
+## Operation 6: Merge registry-auth-types-split-001
+Command: git merge origin/idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001 --no-ff
+MERGED: registry-auth-types-split-001 at Sun Sep 14 08:45:42 AM UTC 2025
+Result: SUCCESS - OCI types foundation merged
+Conflicts resolved: Kept existing files, added OCI package types
+
+## Operation 7: Merge registry-auth-types-split-002
+Command: git merge origin/idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002 --no-ff
+MERGED: registry-auth-types-split-002 at Sun Sep 14 08:46:04 AM UTC 2025
+Result: SUCCESS - Certificate types merged
+Files added: 5 new certificate type files and 3 split plan documents
