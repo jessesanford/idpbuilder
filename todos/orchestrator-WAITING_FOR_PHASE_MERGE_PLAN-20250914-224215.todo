@@ -1,0 +1,19 @@
+TODO STATE: orchestrator - WAITING_FOR_PHASE_MERGE_PLAN
+Saved: 2025-09-14T22:42:00Z
+Trigger: State transition (R287)
+
+COMPLETED:
+✅ Load state-specific rules for WAITING_FOR_PHASE_MERGE_PLAN state (R290)
+✅ Check if Code Reviewer has completed Phase 2 merge plan
+✅ Review Phase 2 merge plan report if completed
+✅ Update orchestrator state with plan location per R340
+✅ Save TODO state per R287 before any state transition
+
+PENDING:
+⏳ Transition to SPAWN_INTEGRATION_AGENT_PHASE per R322/R324
+
+CONTEXT:
+- Phase 2 merge plan completed and validated
+- Plan location tracked in state per R340
+- Ready to spawn Integration Agent for Phase 2 integration
+- Following R327 cascade re-integration protocol
