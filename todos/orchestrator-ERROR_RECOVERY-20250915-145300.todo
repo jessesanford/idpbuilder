@@ -1,0 +1,34 @@
+# Orchestrator TODO State - ERROR_RECOVERY
+# Generated: 2025-09-15 14:53:00 UTC
+# Previous State: MONITORING_INTEGRATION
+# Current State: ERROR_RECOVERY
+# Phase: 2, Wave: 1
+
+## Completed Tasks
+✅ Check for Phase 2 Wave 1 integration report
+✅ Evaluate integration status from report (build, test, demo gates)
+✅ Enforce R291 build/test/demo gates
+✅ Determine next state transition based on integration results
+✅ Update orchestrator-state.json with new state
+✅ Commit and push state file changes
+✅ Save TODOs before state transition (R287)
+
+## Pending Tasks for ERROR_RECOVERY State
+⏸️ Stop and wait for user continuation (R322)
+
+## Context for Next Continuation
+- R291 TEST GATE FAILURE detected
+- Tests were NOT RUN during integration (per R265)
+- Build: PASSING ✅
+- Test: NOT_RUN ❌
+- Demo: PASSING ✅
+- Integration branch: idpbuilder-oci-build-push/phase2/wave1/integration
+- Integration directory: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo
+- Required action: Run tests in integration workspace and ensure they pass
+
+## Next Steps in ERROR_RECOVERY
+1. Navigate to integration workspace
+2. Run test suite on integrated code
+3. If tests pass, update state to continue
+4. If tests fail, spawn SW Engineer to fix issues
+5. Re-run integration after fixes (R327)
