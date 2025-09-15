@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_INTEGRATION_AGENT",
-  "previous_state": "WAITING_FOR_MERGE_PLAN",
+  "current_state": "MONITORING_INTEGRATION",
+  "previous_state": "SPAWN_INTEGRATION_AGENT",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-15T23:05:39Z",
-  "transition_reason": "Merge plan validated and ready. R322 checkpoint for user review before spawning integration agent.",
+  "transition_time": "2025-09-15T23:21:14Z",
+  "transition_reason": "Integration Agent spawned and completed. Build failures detected - will need ERROR_RECOVERY.",
   "effort_creation_context": {
     "effort_id": "E2.2.2-B",
     "effort_name": "image-operations",
@@ -119,7 +119,7 @@
     "notes": "Successfully re-integrated with test fixes"
   },
   "phase2_wave2_integration": {
-    "status": "PENDING_EFFORT_COMPLETION",
+    "status": "INTEGRATION_COMPLETE_WITH_ERRORS",
     "old_branch": "idpbuilder-oci-build-push/phase2/wave2/integration-20250914-200305",
     "old_base": "unknown",
     "new_base": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
@@ -128,10 +128,12 @@
       "credential-management",
       "image-operations"
     ],
-    "notes": "Waiting for E2.2.2-A (credential-management) and E2.2.2-B (image-operations) to complete before integration. All three efforts will be integrated together to form complete Phase 2 Wave 2.",
+    "notes": "Mechanically complete but build failures require ERROR_RECOVERY",
     "merge_plan_requested": true,
     "merge_plan_ready": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/integration-workspace/repo/WAVE-MERGE-PLAN.md"
+    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/integration-workspace/repo/WAVE-MERGE-PLAN.md",
+    "integration_completed_at": "2025-09-15T23:21:14Z",
+    "build_status": "FAILED"
   },
   "efforts_completed": [
     "phase2/wave1/image-builder",
