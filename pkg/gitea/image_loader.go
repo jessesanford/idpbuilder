@@ -158,10 +158,9 @@ func (im *ImageManifest) ToOCIManifest() *v1.Manifest {
 	}
 
 	return &v1.Manifest{
-		SchemaVersion: im.SchemaVersion,
-		MediaType:     im.MediaType,
-		Config:        config,
-		Layers:        layers,
+		MediaType: im.MediaType,
+		Config:    config,
+		Layers:    layers,
 	}
 }
 

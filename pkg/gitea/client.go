@@ -3,7 +3,6 @@ package gitea
 import (
 	"context"
 	"fmt"
-	"io"
 	"time"
 
 	"github.com/cnoe-io/idpbuilder/pkg/certs"

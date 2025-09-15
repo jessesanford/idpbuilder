@@ -57,34 +57,8 @@ func TestGetRegistryPassword(t *testing.T) {
 	assert.Equal(t, "", password)
 }
 
-func TestGetImageContentForReference(t *testing.T) {
-	registryURL := "https://gitea.example.com"
-	certManager := certs.NewTrustStore()
-
-	client, err := NewClient(registryURL, certManager)
-	require.NoError(t, err)
-	require.NotNil(t, client)
-
-	// Test getting image content (placeholder implementation)
-	imageRef := "myapp:latest"
-	content, err := client.getImageContentForReference(imageRef)
-
-	require.NoError(t, err)
-	require.NotNil(t, content)
-
-	// Read the content to verify it's a valid JSON manifest
-	buffer := make([]byte, 1024)
-	n, err := content.Read(buffer)
-	require.NoError(t, err)
-	require.Greater(t, n, 0)
-
-	// Verify it looks like a Docker manifest
-	contentStr := string(buffer[:n])
-	assert.Contains(t, contentStr, "mediaType")
-	assert.Contains(t, contentStr, "schemaVersion")
-	assert.Contains(t, contentStr, "config")
-	assert.Contains(t, contentStr, "layers")
-}
+// Note: TestGetImageContentForReference removed as the method was replaced
+// with real Docker daemon integration in the new implementation
 
 func TestPushProgressStruct(t *testing.T) {
 	// Test PushProgress struct

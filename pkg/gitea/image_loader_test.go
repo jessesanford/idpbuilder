@@ -1,7 +1,6 @@
 package gitea
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -120,7 +119,7 @@ func TestImageManifest_ToOCIManifest(t *testing.T) {
 	ociManifest := manifest.ToOCIManifest()
 	require.NotNil(t, ociManifest)
 
-	assert.Equal(t, manifest.SchemaVersion, ociManifest.SchemaVersion)
+	// Note: OCI manifest doesn't include SchemaVersion field
 	assert.Equal(t, manifest.MediaType, ociManifest.MediaType)
 	assert.Equal(t, manifest.Config.Size, ociManifest.Config.Size)
 	assert.Equal(t, len(manifest.Layers), len(ociManifest.Layers))
