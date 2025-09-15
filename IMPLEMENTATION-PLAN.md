@@ -781,7 +781,31 @@ go tool cover -html=coverage.out
 - Registry-specific: Clear indication of affected registry
 - Self-signed acceptance: Explain security implications
 
+<<<<<<< HEAD
 ## 📝 Notes for SW Engineer
+=======
+## 🎬 Demo Requirements (R330)
+
+### Demo Objectives
+1. Demonstrate image push operations with progress tracking
+2. Showcase repository listing with pagination
+3. Illustrate retry logic with exponential backoff
+4. Display repository deletion capabilities
+5. Prove integration with Split-001 authentication
+
+### Demo Deliverables
+- **demo-features.sh** (executable) - Main demo script with 4 scenarios
+- **DEMO.md** (documentation) - Complete operation guide
+- **test-data/** (sample files) - Test images and configurations
+
+### Demo Scenarios Summary
+1. **Push with Progress** - Multi-layer image upload with tracking
+2. **List Repositories** - Paginated repository discovery
+3. **Retry Logic** - Network resilience demonstration
+4. **Delete Repo** - Repository cleanup operations
+
+## 📚 References
+>>>>>>> gitea-split-002/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 
 1. **Start with the manager.go** - It's the core orchestrator
 2. **Keep strategies simple** - Each does one thing well
@@ -791,7 +815,16 @@ go tool cover -html=coverage.out
 6. **Use feature flag** - `FALLBACK_STRATEGIES_ENABLED` for safe rollout
 7. **Monitor line count** - Check after each major component
 
+<<<<<<< HEAD
 ## 🎯 Success Criteria
+=======
+### Related Documentation
+- Phase 1 Architecture Plan: `phase-plans/PHASE-1-PLAN.md`
+- Certificate Handling Guide: (to be created)
+- Security Best Practices: (to be created)
+- Demo Retrofit Plan: `DEMO-RETROFIT-PLAN.md`
+- Split-001 Integration: `../gitea-client-split-001/DEMO-RETROFIT-PLAN.md`
+>>>>>>> gitea-split-002/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
 
 - [ ] All fallback strategies implemented and tested
 - [ ] --insecure flag works globally and per-registry
