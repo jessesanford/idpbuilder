@@ -1,44 +1,50 @@
 {
-  "current_state": "MONITOR_REVIEWS",
-  "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+  "current_state": "SETUP_EFFORT_INFRASTRUCTURE",
+  "previous_state": "MONITOR_REVIEWS",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-15T20:01:12Z",
-  "transition_reason": "Code Reviewer spawned for E2.2.2-A - CRITICAL size violation found (7492 lines)",
+  "transition_time": "2025-09-15T21:00:00Z",
+  "transition_reason": "E2.2.2-A review passed after measurement correction. Ready to setup E2.2.2-B infrastructure.",
   "effort_creation_context": {
-    "effort_id": "E2.2.2-A",
-    "effort_name": "credential-management",
-    "purpose": "Implement real credential management and remove placeholder authentication code",
-    "base_branch": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
-    "target_branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
-    "effort_path": "efforts/phase2/wave2/credential-management",
+    "effort_id": "E2.2.2-B",
+    "effort_name": "image-operations",
+    "purpose": "Implement real image loading, push operations, and remove all remaining placeholders",
+    "base_branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
+    "target_branch": "idpbuilder-oci-build-push/phase2/wave2/image-operations",
+    "effort_path": "efforts/phase2/wave2/image-operations",
     "dependencies": [
-      "cli-commands"
+      "cli-commands",
+      "credential-management"
     ],
     "estimated_size": "500 lines",
     "scope": [
-      "Create pkg/gitea/credentials.go with full credential management",
-      "Environment variable support (GITEA_USERNAME, GITEA_PASSWORD)",
-      "Config file parsing (~/.idpbuilder/config)",
-      "System keyring integration for secure storage",
-      "Update getRegistryUsername/Password to return real values",
-      "Remove credential-related TODOs from client.go",
-      "Add comprehensive credential tests"
+      "Create pkg/gitea/image_loader.go for real OCI image loading",
+      "Docker daemon API integration",
+      "Real manifest generation with actual SHA256 digests",
+      "Replace placeholder manifest (lines 121-136)",
+      "Real progress tracking (replace simulated progress)",
+      "Remove ALL feature flags",
+      "Production error handling"
     ],
     "implementation_details": {
       "new_files": [
-        "pkg/gitea/credentials.go (150 lines)",
-        "pkg/gitea/credentials_test.go (80 lines)",
-        "pkg/gitea/config.go (70 lines)",
-        "pkg/gitea/config_test.go (50 lines)"
+        "pkg/gitea/image_loader.go (200 lines)",
+        "pkg/gitea/image_loader_test.go (80 lines)",
+        "pkg/gitea/progress.go (50 lines)"
       ],
       "modified_files": [
-        "pkg/gitea/client.go (update credential functions, ~50 lines)",
-        "pkg/gitea/client_test.go (update tests, ~50 lines)"
+        "pkg/gitea/client.go (replace placeholder code, ~100 lines)",
+        "pkg/cmd/build.go (remove feature flag checks, ~20 lines)",
+        "pkg/cmd/push.go (update for real operations, ~20 lines)"
+      ],
+      "files_to_delete": [
+        "pkg/build/feature_flags.go"
       ],
       "removed_code": [
-        "TODO comments at lines 30, 145, 151",
-        "Empty string returns from credential functions"
+        "placeholderManifest entire block (lines 121-136)",
+        "Simulated progress loop (lines 98-108)",
+        "All 'placeholder' strings",
+        "All feature flag checks"
       ]
     }
   },
@@ -135,7 +141,7 @@
       "effort": "phase2/wave2/credential-management",
       "effort_id": "E2.2.2-A",
       "branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
-      "status": "REVIEW_PASSED",
+      "status": "COMPLETE",
       "base_branch": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
       "location": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/credential-management",
       "estimated_size": "500 lines",
@@ -185,11 +191,12 @@
       "effort": "phase2/wave2/image-operations",
       "effort_id": "E2.2.2-B",
       "branch": "idpbuilder-oci-build-push/phase2/wave2/image-operations",
-      "status": "PENDING_CREATION",
+      "status": "READY_FOR_CREATION",
       "base_branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
       "location": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/image-operations",
       "estimated_size": "500 lines",
-      "notes": "Second part of E2.2.2 - Implements real image operations, removes all placeholders and feature flags"
+      "notes": "Second part of E2.2.2 - Implements real image operations, removes all placeholders and feature flags",
+      "important": "This is an intra-wave dependency - E2.2.2-B depends on E2.2.2-A within Wave 2. Line counter must use credential-management as base, NOT wave1-integration."
     }
   ],
   "split_tracking": {
