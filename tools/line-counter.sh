@@ -78,6 +78,7 @@ EXCLUDED PATTERNS (Line counts ONLY include critical path implementation):
     - Generated code: *.pb.go, *_generated.go, zz_generated*, *.gen.go, *.generated.*
     - Build artifacts: bin/*, dist/*, build/*, obj/*, *.o, *.so, *.dll, *.exe
     - Cache/Dependencies: vendor/*, node_modules/*, .cache/*, .next/*, venv/*, .venv/*
+    - Software Factory metadata: .software-factory/* (R343 compliance)
     - Configuration: *.json, *.yaml, *.yml, *.toml, *.ini, *.conf, *.config
     - Lock files: *.lock, package-lock.json, yarn.lock, go.sum, Cargo.lock
     - CRD/Schema: *.crd.yaml, *.crd.yml, *.schema.json, *.xsd
@@ -348,9 +349,28 @@ get_branch_ref() {
 detect_base_branch() {
     local current="$1"
     local base=""
-    
+
     [ "$VERBOSE" = true ] && echo "Analyzing branch pattern: $current" >&2
-    
+
+    # CRITICAL: Check orchestrator-state.json FIRST as single source of truth (R337)
+    # This MUST come before any pattern matching to ensure we use the authoritative source
+    local state_file=$(find_orchestrator_state)
+    if [ -n "$state_file" ] && [ -f "$state_file" ]; then
+        [ "$VERBOSE" = true ] && echo "  📋 Checking orchestrator-state.json for base branch (R337 compliance)..." >&2
+
+        # Try to get base from state file
+        local base_from_state=$(lookup_base_from_state "$current")
+        if [ -n "$base_from_state" ]; then
+            [ "$VERBOSE" = true ] && echo "  ✅ Base branch from orchestrator-state.json: $base_from_state" >&2
+            echo "$base_from_state"
+            return 0
+        else
+            [ "$VERBOSE" = true ] && echo "  ⚠️ Branch not found in orchestrator-state.json, falling back to pattern detection" >&2
+        fi
+    else
+        [ "$VERBOSE" = true ] && echo "  ⚠️ orchestrator-state.json not found, using pattern detection fallback" >&2
+    fi
+
     # If we have a configured prefix, use it to parse more accurately
     local detected_prefix=""
     if [ -n "$PROJECT_PREFIX" ] && [ "$PREFIX_SOURCE" != "pattern detection" ]; then
@@ -667,17 +687,35 @@ find_orchestrator_state() {
 lookup_base_from_state() {
     local branch="$1"
     local state_file=$(find_orchestrator_state)
-    
+
     if [ -z "$state_file" ]; then
         return 1
     fi
-    
+
     [ "$VERBOSE" = true ] && echo "  Checking orchestrator state file: $state_file" >&2
-    
-    # Extract effort or split name from branch
+
+    # FIRST: Try to find by exact branch name match (most reliable)
+    local base=""
+
+    # Check efforts_in_progress for exact branch match
+    base=$(jq -r --arg branch "$branch" '.efforts_in_progress[] | select(.branch == $branch) | .base_branch // empty' "$state_file" 2>/dev/null | head -1)
+
+    # Check efforts_completed if not found
+    if [ -z "$base" ] || [ "$base" = "null" ]; then
+        base=$(jq -r --arg branch "$branch" '.efforts_completed[] | select(.branch == $branch) | .base_branch // empty' "$state_file" 2>/dev/null | head -1)
+    fi
+
+    # If exact match found, return it immediately
+    if [ -n "$base" ] && [ "$base" != "null" ]; then
+        [ "$VERBOSE" = true ] && echo "  Found exact branch match in state file: $base" >&2
+        echo "$base"
+        return 0
+    fi
+
+    # FALLBACK: Extract effort or split name from branch pattern
     local effort_name=""
     local split_num=""
-    
+
     # Check if it's a split branch
     if [[ "$branch" =~ ^(.*/)?phase[0-9]+/wave[0-9]+/([^/]+)(--|-split-)([0-9]+)$ ]]; then
         effort_name="${BASH_REMATCH[2]}"
@@ -687,13 +725,13 @@ lookup_base_from_state() {
         effort_name="${BASH_REMATCH[2]}"
         [ "$VERBOSE" = true ] && echo "  Detected effort branch: effort=$effort_name" >&2
     fi
-    
+
     if [ -z "$effort_name" ]; then
         return 1
     fi
-    
-    # Try to find base branch in state file
-    local base=""
+
+    # Try to find base branch in state file by effort name
+    base=""
     
     if [ -n "$split_num" ]; then
         # For splits, check split_tracking
@@ -729,21 +767,13 @@ if [ -n "$BASE_OVERRIDE" ]; then
     BASE="$BASE_OVERRIDE"
     [ "$VERBOSE" = true ] && echo "Using manually specified base branch: $BASE" >&2
 else
-    # Try auto-detection first
+    # Detect base branch (checks orchestrator-state.json first per R337, then pattern detection)
     BASE=$(detect_base_branch "$BRANCH")
-    
+
     if [ -z "$BASE" ]; then
-        # Try to lookup from orchestrator state file
-        [ "$VERBOSE" = true ] && echo "Auto-detection failed. Checking orchestrator-state.json..." >&2
-        
-        BASE_FROM_STATE=$(lookup_base_from_state "$BRANCH")
-        if [ -n "$BASE_FROM_STATE" ]; then
-            BASE="$BASE_FROM_STATE"
-            [ "$VERBOSE" = true ] && echo "Found base branch in orchestrator state: $BASE" >&2
-        else
-            echo "Error: Could not determine base branch for '$BRANCH'"
-            echo ""
-            echo "Auto-detection failed and base branch not found in orchestrator-state.json"
+        echo "Error: Could not determine base branch for '$BRANCH'"
+        echo ""
+        echo "Neither orchestrator-state.json nor pattern detection could determine the base branch."
             echo ""
             echo "Debugging information:"
             echo "  Current branch: $BRANCH"
@@ -772,7 +802,6 @@ else
             echo ""
             echo "Run with -v flag for verbose pattern matching details."
             exit 1
-        fi
     fi
 fi
 
@@ -830,6 +859,9 @@ EXCLUSIONS=(
     ':(exclude)*.rst'
     ':(exclude)*.txt'
     ':(exclude)*.adoc'
+    
+    # Software Factory metadata (R343) - NEVER count
+    ':(exclude).software-factory/*'
     
     # Generated code - NEVER count
     ':(exclude)*.pb.go'
