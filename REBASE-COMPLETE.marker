@@ -1,20 +1,8 @@
-# Rebase Completion Markers
-
-## cert-validation-split-003
-Completed at: 2025-09-12 06:04:22 UTC
-Operation: Rebase cert-validation-split-003 onto cert-validation-split-002
-Source Branch: idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003
-Target Base: idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002
-Result: Fast-forward rebase (28 commits advanced)
-Final Commit: 87195820cab1e7dbdf75448f0c2a9008ca1baff7
-Status: REBASE COMPLETE - NO CONFLICTS
-Pushed: Successfully force-pushed with --force-with-lease
-
-## fallback-strategies
-Rebase completed at: 2025-09-12 13:40:37 UTC
-Source branch: idpbuilder-oci-build-push/phase1/wave2/fallback-strategies
-Target integration: idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401
-New HEAD commit: 87195820cab1e7dbdf75448f0c2a9008ca1baff7
-Commit message: 8719582 docs: complete Phase 1 Wave 1 integration with Wave 2 efforts per R327
-Includes cert-validation integrations: splits-001, splits-002, splits-003
-Status: REBASE COMPLETE - Up to date with Wave 1 + cert-validation work
+Completed at: 2025-09-14 16:59:09 UTC
+Effort: image-builder
+Branch: idpbuilder-oci-build-push/phase2/wave1/image-builder
+Previous base: 4f0e259 (old phase1/integration)
+New base: 2c39501 (latest phase1/integration - Integrate Wave 2 into Phase 1)
+Commits processed: 21 of 21
+Final commit: 04f5026 chore: commit working files before rebase
+Status: REBASE COMPLETE
