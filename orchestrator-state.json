@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "WAITING_FOR_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-15T14:19:09Z",
-  "transition_reason": "Merge plan updated, ready for integration",
+  "transition_time": "2025-09-15T14:22:50Z",
+  "transition_reason": "Merge plan validated, ready for integration agent",
   "integration_context": {
     "type": "wave",
     "phase": 2,
@@ -38,7 +38,8 @@
     "note": "Split-002 rebased with all split-001 commits. Merge plan needs update for simpler integration.",
     "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
     "merge_plan_created": true,
-    "merge_plan_needs_update": false
+    "merge_plan_needs_update": false,
+    "plan_validation": "PASSED"
   },
   "efforts_completed": [],
   "efforts_in_progress": [],
@@ -51,5 +52,5 @@
       "purpose": "Create merge plan for Phase 2 Wave 1"
     }
   ],
-  "notes": "Merge plan updated. Integration ready with simple merges."
+  "notes": "R322 checkpoint: Merge plan ready for user review before spawning integration agent"
 }

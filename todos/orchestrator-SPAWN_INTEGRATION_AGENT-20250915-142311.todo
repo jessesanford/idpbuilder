@@ -1,0 +1,20 @@
+# Orchestrator TODO State
+# State: SPAWN_INTEGRATION_AGENT
+# Timestamp: 2025-09-15 14:23:00 UTC
+
+## Completed Tasks
+✅ Verify merge plan exists at integration workspace
+✅ Validate merge plan contents for completeness
+✅ Update state to SPAWN_INTEGRATION_AGENT with R322 checkpoint
+✅ Save TODOs and commit state changes (in progress)
+
+## Next Tasks (after user review)
+- [ ] Spawn integration agent to execute merge plan
+- [ ] Monitor integration agent progress
+- [ ] Validate integration results
+
+## Context
+- Phase: 2, Wave: 1
+- Merge plan: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md
+- Integration branches: image-builder, gitea-client-split-001, gitea-client-split-002
+- R322 checkpoint: STOPPED for user review
