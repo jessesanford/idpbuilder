@@ -1,0 +1,22 @@
+[
+  {
+    "content": "Distribute fix plans to effort directories",
+    "status": "pending",
+    "activeForm": "Distributing fix plans to effort directories"
+  },
+  {
+    "content": "Create marker files in each effort directory",
+    "status": "pending",
+    "activeForm": "Creating marker files in each effort directory"
+  },
+  {
+    "content": "Commit and push fix plans to effort branches",
+    "status": "pending",
+    "activeForm": "Committing and pushing fix plans to effort branches"
+  },
+  {
+    "content": "Spawn SW Engineers to implement fixes",
+    "status": "pending",
+    "activeForm": "Spawning SW Engineers to implement fixes"
+  }
+]
