@@ -1,9 +1,9 @@
 {
-  "current_state": "INTEGRATION",
-  "previous_state": "WAVE_COMPLETE",
+  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "previous_state": "INTEGRATION",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-15T22:34:58Z",
+  "transition_time": "2025-09-15T22:44:16Z",
   "transition_reason": "Phase 2 Wave 2 complete - all 3 efforts reviewed and passed (E2.2.1, E2.2.2-A, E2.2.2-B). Ready for wave integration per R009.",
   "effort_creation_context": {
     "effort_id": "E2.2.2-B",
@@ -319,5 +319,13 @@
       }
     ],
     "summary": "Only E2.2.2-B (image-operations) ready for implementation. No parallelization opportunities."
-  }
+  },
+  "integration_infrastructure": {
+    "directory": "efforts/phase2/wave2/integration-workspace/repo",
+    "branch": "idpbuilder-oci-build-push/phase2/wave2/integration-20250914-200305",
+    "type": "wave",
+    "created_at": "2025-09-14T20:03:05Z",
+    "status": "ready"
+  },
+  "state_transition_reason": "Integration infrastructure exists, ready to spawn Code Reviewer for merge plan"
 }

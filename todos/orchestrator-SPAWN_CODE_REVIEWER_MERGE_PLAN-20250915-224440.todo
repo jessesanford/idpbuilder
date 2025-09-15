@@ -1,0 +1,26 @@
+# Orchestrator TODO State - SPAWN_CODE_REVIEWER_MERGE_PLAN
+# Saved: 2025-09-15 22:44 UTC
+
+## Completed Tasks:
+✅ Read all PRIMARY DIRECTIVE rule files for INTEGRATION state
+✅ Acknowledge each rule individually with number and description  
+✅ Create R290 verification marker after reading rules
+✅ Check if integration infrastructure exists for Phase 2 Wave 2
+✅ Transition to appropriate next state based on infrastructure check
+✅ Update state file with new state per R324/R288
+✅ Save TODOs and commit before stopping per R287/R322
+
+## State Context:
+- Transitioned from: INTEGRATION
+- Current state: SPAWN_CODE_REVIEWER_MERGE_PLAN
+- Phase: 2, Wave: 2
+- Integration infrastructure exists and ready
+- Integration workspace: efforts/phase2/wave2/integration-workspace/repo
+- Integration branch: idpbuilder-oci-build-push/phase2/wave2/integration-20250914-200305
+
+## Next Actions (for SPAWN_CODE_REVIEWER_MERGE_PLAN state):
+- Spawn Code Reviewer to create merge plan for Phase 2 Wave 2
+- Code Reviewer should analyze all completed efforts
+- Code Reviewer should create WAVE-MERGE-PLAN.md
+- Monitor Code Reviewer progress
+- Transition to WAITING_FOR_MERGE_PLAN

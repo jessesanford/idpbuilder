@@ -1,10 +1,10 @@
 {
-  "current_state": "SETUP_EFFORT_INFRASTRUCTURE",
-  "previous_state": "MONITOR_REVIEWS",
+  "current_state": "INTEGRATION",
+  "previous_state": "WAVE_COMPLETE",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-15T21:00:00Z",
-  "transition_reason": "E2.2.2-A review passed after measurement correction. Ready to setup E2.2.2-B infrastructure.",
+  "transition_time": "2025-09-15T22:34:58Z",
+  "transition_reason": "Phase 2 Wave 2 complete - all 3 efforts reviewed and passed (E2.2.1, E2.2.2-A, E2.2.2-B). Ready for wave integration per R009.",
   "effort_creation_context": {
     "effort_id": "E2.2.2-B",
     "effort_name": "image-operations",
@@ -134,71 +134,11 @@
     "phase2/wave1/image-builder",
     "phase2/wave1/gitea-client-split-001",
     "phase2/wave1/gitea-client-split-002",
-    "phase2/wave2/cli-commands"
+    "phase2/wave2/cli-commands",
+    "phase2/wave2/credential-management",
+    "phase2/wave2/image-operations"
   ],
-  "efforts_in_progress": [
-    {
-      "effort": "phase2/wave2/credential-management",
-      "effort_id": "E2.2.2-A",
-      "branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
-      "status": "COMPLETE",
-      "base_branch": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
-      "location": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/credential-management",
-      "estimated_size": "500 lines",
-      "notes": "First part of E2.2.2 - Implements real credential management, removes auth TODOs",
-      "branch_status": "Branch properly based on cli-commands and pushed to remote (2025-09-15T18:45:00Z)",
-      "implementation_completed_at": "2025-09-15T19:49:46Z",
-      "lines_implemented": 301,
-      "completion_marker_found": true,
-      "review_status": "PASSED",
-      "review_completed_at": "2025-09-15T20:01:12Z",
-      "review_findings": {
-        "status": "PASSED_AFTER_CORRECTION",
-        "lines_measured": 7492,
-        "lines_actual": 335,
-        "size_violation": false,
-        "violation_severity": "NONE",
-        "summary": "CRITICAL MEASUREMENT ERROR: line-counter.sh incorrectly used phase2/wave1-integration as base instead of cli-commands. Actual implementation is 335 lines (WITHIN LIMIT). No split needed.",
-        "report_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/credential-management/CODE-REVIEW-REPORT-20250915-195800.md",
-        "measurement_issue": "line-counter.sh doesn't support intra-wave dependencies. It assumes all wave2 efforts branch from wave1-integration, but E2.2.2-A branches from E2.2.1 (cli-commands) in the SAME wave."
-      },
-      "line_count_tracking": {
-        "initial_count": 7492,
-        "current_count": 335,
-        "last_measured": "2025-09-15T20:45:00Z",
-        "measured_by": "manual-verification",
-        "measurement_command": "git diff --numstat cli-commands..HEAD | grep -v _test.go | awk sum",
-        "correct_base": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
-        "incorrect_base_detected": "origin/idpbuilder-oci-build-push/phase2/wave1-integration",
-        "implementation_only": true,
-        "within_limit": true,
-        "requires_split": false,
-        "measurement_history": [
-          {
-            "timestamp": "2025-09-15T20:01:12Z",
-            "count": 7492,
-            "measured_by": "code-reviewer",
-            "reason": "initial review",
-            "command": "../../tools/line-counter.sh",
-            "auto_detected_base": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
-            "excludes": "tests/demos/docs per R007",
-            "within_limit": false
-          }
-        ]
-      }
-    },
-    {
-      "effort": "phase2/wave2/image-operations",
-      "effort_id": "E2.2.2-B",
-      "branch": "idpbuilder-oci-build-push/phase2/wave2/image-operations",
-      "status": "READY_FOR_CREATION",
-      "base_branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
-      "location": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/image-operations",
-      "estimated_size": "500 lines",
-      "notes": "Second part of E2.2.2 - Implements real image operations, removes all placeholders and feature flags",
-      "important": "This is an intra-wave dependency - E2.2.2-B depends on E2.2.2-A within Wave 2. Line counter must use credential-management as base, NOT wave1-integration."
-    }
-  ],
+  "efforts_in_progress": [],
   "split_tracking": {
     "phase2_wave1_gitea_client": {
       "original_effort": "gitea-client",
@@ -241,6 +181,24 @@
       "state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
       "time": "2025-09-15T20:01:12Z",
       "purpose": "Review E2.2.2-A credential-management implementation"
+    },
+    {
+      "agent": "code-reviewer",
+      "state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+      "time": "2025-09-15T21:33:00Z",
+      "purpose": "Create implementation plan for E2.2.2-B image-operations"
+    },
+    {
+      "agent": "software-engineer",
+      "state": "SPAWN_AGENTS",
+      "time": "2025-09-15T22:07:23Z",
+      "purpose": "Implement E2.2.2-B image-operations production features"
+    },
+    {
+      "agent": "code-reviewer",
+      "state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+      "time": "2025-09-15T22:19:50Z",
+      "purpose": "Review E2.2.2-B image-operations implementation"
     }
   ],
   "notes": "CRITICAL: E2.2.2-A is based on E2.2.1 (cli-commands), NOT on wave1-integration! This is an intra-wave dependency. The line-counter.sh tool doesn't support this pattern and will incorrectly measure against wave1-integration. Always verify the base_branch in orchestrator-state.json and measure manually if needed. E2.2.1 (cli-commands) was intentionally a prototype with TODOs and placeholders. E2.2.2-A and E2.2.2-B will implement ALL production features needed for real-world usage.",
@@ -286,5 +244,80 @@
       "✓ ALL TODOs resolved"
     ],
     "final_state": "100% production-ready binary with NO stubs, placeholders, or TODOs"
+  },
+  "code_reviewer_parallelization_plan": {
+    "wave": 2,
+    "phase": 2,
+    "analysis_timestamp": "2025-09-15T21:11:00Z",
+    "analysis_result": "SINGLE_EFFORT_ONLY",
+    "blocking_efforts": [],
+    "parallel_groups": {
+      "group_1": {
+        "can_start_after": [],
+        "efforts": [
+          {
+            "effort_id": "E2.2.2-B",
+            "name": "image-operations",
+            "dependencies": [
+              "E2.2.2-A"
+            ],
+            "can_parallelize": false,
+            "reason": "Only effort ready for planning"
+          }
+        ]
+      }
+    },
+    "spawn_sequence": [
+      {
+        "step": 1,
+        "action": "spawn_single",
+        "efforts": [
+          "E2.2.2-B"
+        ],
+        "wait_for_completion": false,
+        "reason": "Single effort - no parallelization possible"
+      }
+    ],
+    "summary": "Only E2.2.2-B ready for planning. E2.2.2-A already complete. No parallelization opportunities."
+  },
+  "effort_plan_paths": {
+    "image-operations": "efforts/phase2/wave2/image-operations/.software-factory/phase2/wave2/image-operations/IMPLEMENTATION-PLAN-20250915-212957.md"
+  },
+  "sw_engineer_parallelization_plan": {
+    "wave": 2,
+    "phase": 2,
+    "analysis_timestamp": "2025-09-15T21:50:16Z",
+    "analysis_result": "SINGLE_EFFORT_ONLY",
+    "blocking_implementations": [],
+    "parallel_groups": {
+      "group_1": {
+        "can_start_after": [],
+        "efforts": [
+          {
+            "effort_id": "E2.2.2-B",
+            "name": "image-operations",
+            "implementation_plan": "efforts/phase2/wave2/image-operations/.software-factory/phase2/wave2/image-operations/IMPLEMENTATION-PLAN-20250915-212957.md",
+            "can_parallelize": false,
+            "dependencies": [
+              "E2.2.1",
+              "E2.2.2-A"
+            ],
+            "reason": "Single effort - no parallelization possible"
+          }
+        ]
+      }
+    },
+    "spawn_sequence": [
+      {
+        "step": 1,
+        "action": "spawn_single",
+        "efforts": [
+          "E2.2.2-B"
+        ],
+        "wait_for_completion": true,
+        "reason": "Single effort for final production implementation"
+      }
+    ],
+    "summary": "Only E2.2.2-B (image-operations) ready for implementation. No parallelization opportunities."
   }
 }
