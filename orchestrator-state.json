@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "INTEGRATION",
+  "current_state": "WAITING_FOR_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-15T22:44:16Z",
-  "transition_reason": "Phase 2 Wave 2 complete - all 3 efforts reviewed and passed (E2.2.1, E2.2.2-A, E2.2.2-B). Ready for wave integration per R009.",
+  "transition_time": "2025-09-15T22:58:07Z",
+  "transition_reason": "Code Reviewer spawned to create Phase 2 Wave 2 merge plan. Plan created successfully.",
   "effort_creation_context": {
     "effort_id": "E2.2.2-B",
     "effort_name": "image-operations",
@@ -128,7 +128,10 @@
       "credential-management",
       "image-operations"
     ],
-    "notes": "Waiting for E2.2.2-A (credential-management) and E2.2.2-B (image-operations) to complete before integration. All three efforts will be integrated together to form complete Phase 2 Wave 2."
+    "notes": "Waiting for E2.2.2-A (credential-management) and E2.2.2-B (image-operations) to complete before integration. All three efforts will be integrated together to form complete Phase 2 Wave 2.",
+    "merge_plan_requested": true,
+    "merge_plan_ready": true,
+    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/integration-workspace/repo/WAVE-MERGE-PLAN.md"
   },
   "efforts_completed": [
     "phase2/wave1/image-builder",
@@ -199,6 +202,12 @@
       "state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
       "time": "2025-09-15T22:19:50Z",
       "purpose": "Review E2.2.2-B image-operations implementation"
+    },
+    {
+      "agent": "code-reviewer",
+      "state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+      "time": "2025-09-15T22:58:07Z",
+      "purpose": "Create Phase 2 Wave 2 integration merge plan"
     }
   ],
   "notes": "CRITICAL: E2.2.2-A is based on E2.2.1 (cli-commands), NOT on wave1-integration! This is an intra-wave dependency. The line-counter.sh tool doesn't support this pattern and will incorrectly measure against wave1-integration. Always verify the base_branch in orchestrator-state.json and measure manually if needed. E2.2.1 (cli-commands) was intentionally a prototype with TODOs and placeholders. E2.2.2-A and E2.2.2-B will implement ALL production features needed for real-world usage.",
