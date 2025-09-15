@@ -1,0 +1,19 @@
+# Code Reviewer TODOs - Trigger: WAVE_MERGE_PLANNING_COMPLETE
+# State: WAVE_MERGE_PLANNING
+# Effort: Phase 2 Wave 1 Re-Integration
+# Timestamp: 2025-09-15T05:30:00Z
+
+## Completed Tasks
+- ✅ Analyze branch bases for all Phase 2 Wave 1 efforts
+- ✅ Determine correct merge order based on dependencies
+- ✅ Check for potential conflicts between branches
+- ✅ Create WAVE-MERGE-PLAN.md with detailed instructions
+- ✅ Include verification steps for each merge
+
+## Wave Merge Plan Summary
+- Created comprehensive merge plan for Phase 2 Wave 1 re-integration
+- Identified 3 branches to merge (excluding original gitea-client)
+- Correct order: image-builder, gitea-client-split-001, gitea-client-split-002
+- Documented expected conflicts and resolution strategies
+- Included post-merge verification steps
+- File location: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md
