@@ -14,6 +14,8 @@ import (
 var (
 	pushInsecure bool
 	pushRegistry string
+	pushUsername string
+	pushToken    string
 
 	PushCmd = &cobra.Command{
 		Use:   "push IMAGE[:TAG]",
@@ -25,10 +27,13 @@ the --insecure flag is specified.
 Examples:
   # Push with automatic certificate handling
   idpbuilder push myapp:latest
-  
+
   # Push to specific registry
   idpbuilder push --registry gitea.cnoe.localtest.me:8443 myapp:latest
-  
+
+  # Push with explicit credentials
+  idpbuilder push --username admin --token mytoken myapp:latest
+
   # Push without certificate verification (not recommended)
   idpbuilder push --insecure myapp:latest`,
 		Args: cobra.ExactArgs(1),
@@ -39,6 +44,8 @@ Examples:
 func init() {
 	PushCmd.Flags().BoolVar(&pushInsecure, "insecure", false, "Skip certificate verification (not recommended)")
 	PushCmd.Flags().StringVar(&pushRegistry, "registry", getDefaultRegistry(), "Target registry")
+	PushCmd.Flags().StringVar(&pushUsername, "username", "", "Registry username")
+	PushCmd.Flags().StringVar(&pushToken, "token", "", "Registry token/password")
 }
 
 func runPush(cmd *cobra.Command, args []string) error {
@@ -71,6 +78,11 @@ func runPush(cmd *cobra.Command, args []string) error {
 
 	if err != nil {
 		return fmt.Errorf("failed to create registry client: %w", err)
+	}
+
+	// Set CLI credentials if provided
+	if pushUsername != "" && pushToken != "" {
+		client.SetCredentials(pushUsername, pushToken)
 	}
 
 	// Setup progress reporting
