@@ -1,5 +1,5 @@
 {
-  "current_state": "INTEGRATION_TESTING",
+  "current_state": "SPAWN_SW_ENGINEER_E2_2_2",
   "previous_state": "CREATE_INTEGRATION_TESTING",
   "current_phase": 2,
   "current_wave": "phase_integration",
@@ -228,7 +228,9 @@
       "lines_changed": 600,
       "working_dir": "efforts/phase2/wave2/cli-commands",
       "completed_at": "2025-09-14T20:00:00Z"
-    }
+    },
+    "E2.2.1-cli-commands",
+    "E2.2.1-cli-commands"
   ],
   "split_tracking": {
     "registry-auth-types": {
@@ -1843,5 +1845,24 @@
     "created_by": "code-reviewer",
     "integration_branch": "idpbuilder-oci-build-push/project-integration",
     "target_repo_worktree": "worktrees/target-repo-integration"
+  },
+  "e2_2_1": {
+    "status": "COMPLETED",
+    "type": "base-implementation",
+    "description": "CLI command structure established",
+    "completed_at": "2025-09-15T04:26:11Z",
+    "note": "Base structure complete, production implementation follows in E2.2.2"
+  },
+  "efforts_planned": [
+    "E2.2.2-image-persistence-push",
+    "E2.2.2-image-persistence-push"
+  ],
+  "e2_2_2": {
+    "status": "PLANNED",
+    "type": "production-implementation",
+    "description": "Image persistence and real push functionality",
+    "prerequisite": "E2.2.1",
+    "estimated_lines": 600,
+    "planned_at": "2025-09-15T04:26:11Z"
   }
 }

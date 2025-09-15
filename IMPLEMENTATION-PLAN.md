@@ -65,7 +65,7 @@ This MVP implementation plan focuses exclusively on solving the self-signed cert
 | **Team Size** | 4 agents |
 | **Parallel Capacity** | 3 concurrent efforts |
 | **Phase 1 Efforts** | 4 (Certificate Infrastructure - Week 1) |
-| **Phase 2 Efforts** | 4 (Build & Push Implementation - Week 2) |
+| **Phase 2 Efforts** | 5 (Build & Push Implementation - Week 2, including E2.2.2) |
 | **Average Lines/Effort** | ~250 |
 
 ## 🏗️ Technology Stack
@@ -174,7 +174,7 @@ project:
   name: "idpbuilder-oci-mvp"
   phases: 2  # Phase 1: Certificate, Phase 2: Build & Push
   waves: 4
-  efforts: 7  # Was 8, but integration-testing is process not effort
+  efforts: 8  # Including E2.2.2 for production push implementation
   estimated_lines: 2000
   
 phase_distribution:
@@ -443,12 +443,18 @@ type GiteaRegistry interface {
 - Test cert integration
 - Test error handling
 
-### Wave 2: CLI Integration (Days 8-9)
-**Goal**: User-friendly CLI commands
+### Wave 2: CLI Integration (Days 8-10)
+**Goal**: User-friendly CLI commands with production implementation
 
-#### Effort 2.2.1: CLI Commands (Days 8-9)
-**Size**: ~500 lines  
-**Owner**: SW Engineer 2  
+#### Effort 2.2.1: CLI Commands - Base Implementation (Days 8-9)
+**Size**: ~500 lines
+**Owner**: SW Engineer 2
+**Status**: COMPLETED (base structure established)
+
+#### Effort 2.2.2: Image Persistence & Production Push (Day 10)
+**Size**: ~600 lines
+**Owner**: SW Engineer 3
+**Type**: Follow-on Enhancement to E2.2.1  
 
 ```go
 // cmd/build.go
@@ -487,9 +493,40 @@ var pushCmd = &cobra.Command{
 - Test error output
 - Test help text
 
+**E2.2.2 Implementation Details**:
+
+```go
+// pkg/storage/image_store.go - NEW in E2.2.2
+type ImageStore interface {
+    Save(tag string, image v1.Image) error
+    Load(tag string) (v1.Image, error)
+    List() ([]string, error)
+}
+
+// pkg/gitea/client.go - PRODUCTION implementation in E2.2.2
+func (c *Client) Push(imageRef string, progressChan chan<- PushProgress) error {
+    // Load REAL image from storage (not placeholder!)
+    img, err := storage.Load(imageRef)
+    if err != nil {
+        return fmt.Errorf("image not found: %w", err)
+    }
+
+    // Send ACTUAL image to registry
+    return remote.Write(ref, img, remote.WithAuth(auth))
+}
+```
+
+**E2.2.2 Key Requirements**:
+- NO stub implementations (R320 compliance)
+- Real image persistence after build
+- Real image loading for push
+- Actual OCI manifest transmission
+- Environment variable authentication
+- Production-ready code ONLY
+
 ## Note: Integration Testing
 
-Integration testing is part of the Software Factory process, not a separate effort. Tests are executed during the INTEGRATION state when efforts are merged. The original plan incorrectly listed this as Effort 2.2.2, but this has been corrected.
+Integration testing is part of the Software Factory process, not a separate effort. Tests are executed during the INTEGRATION state when efforts are merged.
 
 ## Software Factory 2.0 Agents
 
@@ -926,7 +963,7 @@ idpbuilder push myapp:v1
 **Total Waves**: 4 (2 waves per phase)  
 **Effort Distribution**:
 - Phase 1 (Certificate Infrastructure): 4 efforts (~1,000 lines) - Week 1
-- Phase 2 (Build & Push Implementation): 4 efforts (~1,000 lines) - Week 2
+- Phase 2 (Build & Push Implementation): 5 efforts (~1,600 lines) - Week 2
 
 **Lines per Effort**: Average ~250 lines (well within 800-line limit)
 
