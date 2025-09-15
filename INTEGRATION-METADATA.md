@@ -19,12 +19,17 @@
 - **Previous Integration**: Archived as integration-workspace-archived-2
 
 ## Efforts to Integrate
-1. image-builder (with fixes)
-2. gitea-client-split-001
-3. gitea-client-split-002
+1. image-builder (with fixes) - MERGED
+2. gitea-client-split-001 - IN PROGRESS
+3. gitea-client-split-002 - PENDING
+
+## Integration Progress
+- image-builder: ✅ Merged at 2025-09-15 11:40:30 UTC
+- gitea-client-split-001: 🔄 Merging with conflict resolution
+- gitea-client-split-002: ⏳ Pending
 
 ## Next Steps
-1. Spawn Code Reviewer to create merge plan
-2. Spawn Integration Agent to execute merges
-3. Monitor integration progress
-4. Spawn Code Reviewer for validation
+1. Complete gitea-client-split-001 merge
+2. Merge gitea-client-split-002
+3. Run integration tests
+4. Execute demos per R291

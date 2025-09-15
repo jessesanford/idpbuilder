@@ -41,3 +41,15 @@ Note: The image-builder branch was rebased on 2025-09-14T16:46:15Z
 Timestamp: 2025-09-15 11:39:53 UTC
 Command: git merge origin/idpbuilder-oci-build-push/phase2/wave1/image-builder --no-ff
 Status: Conflict in work-log.md (resolving)
+## Merge 1 Completed: image-builder
+Timestamp: 2025-09-15 11:40:30 UTC
+Result: Successfully merged with conflict resolution
+Conflict: work-log.md (resolved by keeping both histories)
+Commit: e7f7cb6
+
+### Post-Merge Test 1: Build Verification
+### Post-Merge Test 1: Unit Tests
+### R291 Demo Check for image-builder
+
+## Merge 2: gitea-client-split-001
+Timestamp: 2025-09-15 11:41:13 UTC
