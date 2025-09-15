@@ -38,10 +38,9 @@ func NewBuilder(storageDir string) (*Builder, error) {
 
 // BuildImage builds an OCI image from a directory context
 func (b *Builder) BuildImage(ctx context.Context, opts BuildOptions) (*BuildResult, error) {
-	// Check feature flag
-	if !IsImageBuilderEnabled() {
-		return nil, ErrFeatureDisabled
-	}
+	// Feature flag check removed - build is always enabled in production
+	// Previous check: if !IsImageBuilderEnabled() { return nil, ErrFeatureDisabled }
+	// Removed per upstream fix requirement
 
 	// Validate options
 	if opts.ContextPath == "" {
