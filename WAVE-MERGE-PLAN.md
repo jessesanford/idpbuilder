@@ -1,11 +1,22 @@
-# Phase 1 Wave 1 Integration Merge Plan
+# Phase 2 Wave 1 Integration Merge Plan
 
-## Critical Context (R327 Re-Integration)
-- **Integration Branch**: `idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401`
-- **Integration Directory**: `/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace`
-- **Base**: Fresh from main branch (post-R321 fixes)
-- **Created**: 2025-09-12 03:24:01
-- **Purpose**: Re-integrate Wave 1 with proper R321 fixes applied
+## 🎉 UPDATE: Split-002 Successfully Rebased - Integration Simplified!
+
+**Key Change**: `gitea-client-split-002` has been successfully rebased onto the current `gitea-client-split-001`, creating a clean linear history. This dramatically simplifies the integration process - what was previously a complex merge is now straightforward!
+
+## Summary
+This plan outlines the merge sequence for integrating Phase 2 Wave 1 efforts into the integration branch.
+
+**Created**: 2025-01-15
+**Updated**: 2025-01-15 (Split-002 rebase completed)
+**Created By**: Code Reviewer Agent (WAVE_MERGE_PLANNING state)
+**Target Branch**: `idpbuilder-oci-build-push/phase2/wave1/integration`
+**Base Branch**: `idpbuilder-oci-build-push/phase1/integration`
+**Integration Directory**: `/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo`
+
+### Integration Complexity: ✅ REDUCED
+- **Before**: Complex merge required for split-002 (based on old split-001)
+- **After**: Simple, clean merges for all branches (linear history achieved)
 
 ## Critical Requirements (R269, R270)
 - ✅ Use ONLY original effort branches (no integration branches)
@@ -14,310 +25,439 @@
 - ✅ Determine merge order based on dependencies
 - ✅ Document conflict resolution strategies
 
-## Effort Summary
+## Branches to Integrate
 
-### Wave 1 Efforts
-1. **E1.1.1-kind-cert-extraction** [650 lines]
-   - Branch: `idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction`
-   - Status: Within limit, use main branch
-   - Location: `/efforts/phase1/wave1/kind-cert-extraction`
+### Original Effort Branches (per R269/R270)
+1. **image-builder**: `idpbuilder-oci-build-push/phase2/wave1/image-builder`
+   - Status: Ready for merge
+   - Size: Within limits (no splits needed)
+   - Base: phase1/integration (with rebase completed)
+   - Last commit: 8c68910 (marker: feature flag fix complete)
 
-2. **E1.1.2-registry-tls-trust** [700 lines]
-   - Branch: `idpbuilder-oci-build-push/phase1/wave1/registry-tls-trust`
-   - Status: Within limit, use main branch
-   - Location: `/efforts/phase1/wave1/registry-tls-trust`
+2. **gitea-client-split-001**: `idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001`
+   - Status: Split from original gitea-client (too large)
+   - Size: Within limits after split
+   - Base: phase1/integration (rebased)
+   - Last commit: 4fb2931 (marker: rebase onto phase1/integration complete)
 
-3. **E1.1.3-registry-auth-types** [SPLIT]
-   - DO NOT USE: Parent branch (too large)
-   - Split-001: `idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001`
-   - Split-002: `idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002`
-   - Location: `/efforts/phase1/wave1/registry-auth-types-split-00X`
+3. **gitea-client-split-002**: `idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002`
+   - Status: Second split of gitea-client
+   - Size: Within limits
+   - Base: **UPDATED** - Now rebased onto CURRENT split-001 (commit 4fb2931)
+   - Last commit: Updated with cherry-picked fixes from split-001
+   - Contains commits: 4aeb3ec, 2a407b7, 1304ef9 (cherry-picked versions of split-001's recent fixes)
 
-### Wave 2 Efforts (Part of Wave 1 Completion)
-4. **E1.2.1-cert-validation** [SPLIT]
-   - DO NOT USE: Parent branch (too large)
-   - Split-001: `idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001`
-   - Split-002: `idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002`
-   - Split-003: `idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003`
-   - Location: `/efforts/phase1/wave2/cert-validation-split-00X`
+### Excluded Branches
+- **gitea-client**: `idpbuilder-oci-build-push/phase2/wave1/gitea-client`
+  - Reason: Original effort exceeded size limits, replaced by splits
+  - Status: DO NOT MERGE (parent branch of splits)
 
-5. **E1.2.2-fallback-strategies** [560 lines]
-   - Branch: `idpbuilder-oci-build-push/phase1/wave2/fallback-strategies`
-   - Status: Within limit, use main branch
-   - Location: `/efforts/phase1/wave2/fallback-strategies`
+## Dependency Analysis
 
-## Optimal Merge Order
+### Branch Relationships
+1. **image-builder**: Independent, can be merged first
+   - Implements build command functionality
+   - No dependencies on other Wave 1 efforts
 
-Based on dependency analysis and file modifications:
+2. **gitea-client-split-001**: Independent from image-builder
+   - Provides core registry infrastructure
+   - Authentication and basic operations
 
-### Merge Sequence
-1. **kind-cert-extraction** (Foundation - Kind cluster certificate extraction)
-2. **registry-tls-trust** (Builds on cert extraction - TLS trust management)
-3. **registry-auth-types-split-001** (Types and constants)
-4. **registry-auth-types-split-002** (Implementation using types)
-5. **cert-validation-split-001** (Validation foundations)
-6. **cert-validation-split-002** (Validation implementation)
-7. **cert-validation-split-003** (Validation completion)
-8. **fallback-strategies** (Uses all previous functionality)
+3. **gitea-client-split-002**: Depends on split-001
+   - ✅ **RESOLVED**: Now properly rebased onto the CURRENT split-001 (commit 4fb2931)
+   - Enhances push/list operations from split-001
+   - Adds retry logic and test improvements
+   - Contains all split-001 fixes via cherry-picked commits
 
-## Potential Conflicts Analysis
+### Integration Status Update
+✅ **SIMPLIFIED**: gitea-client-split-002 has been successfully rebased onto the current split-001. The commit history is now LINEAR (phase1/integration → split-001 → split-002), eliminating the complex merge requirements.
 
-### Expected Conflicts
+## Merge Sequence
 
-1. **pkg/testutil/** (Multiple efforts add test utilities)
-   - Affected: kind-cert-extraction, registry-tls-trust, cert-validation splits
-   - Resolution: Accept all additions, they should be complementary
+### Order of Operations
+1. **First**: image-builder (independent, clean base)
+2. **Second**: gitea-client-split-001 (rebased, clean)
+3. **Third**: gitea-client-split-002 (simple merge - now properly based on split-001)
 
-2. **pkg/certs/** (Modified by multiple efforts)
-   - registry-tls-trust: Adds trust.go, utilities.go
-   - cert-validation-split-001: Adds validation_errors.go, storage.go, extractor.go
-   - Resolution: These are additive changes, should merge cleanly
+## Detailed Merge Instructions
 
-3. **go.mod/go.sum** (Dependency additions)
-   - Multiple efforts may add dependencies
-   - Resolution: Accept all additions, run `go mod tidy` after each merge
-
-4. **pkg/util/** (Shared utilities)
-   - kind-cert-extraction modifies pkg/util/env
-   - Resolution: Accept all changes, they should be independent
-
-### Low Conflict Risk Areas
-- **pkg/kind/**: Only modified by kind-cert-extraction
-- **pkg/oci/**: Only modified by registry-auth-types splits
-- **pkg/controllers/**: Minimal modifications, should merge cleanly
-
-## Exact Git Commands for Integration Agent
-
-### Prerequisites
+### Pre-merge Setup
 ```bash
-# Navigate to integration workspace
-cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace
+# 1. Navigate to integration directory
+cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo
 
-# Verify clean state
-git status --short
+# 2. Ensure clean working directory
+git status
+# Expected: "nothing to commit, working tree clean"
 
-# Ensure on integration branch
-git checkout idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401
+# 3. Verify current branch
+git branch --show-current
+# Expected: "idpbuilder-oci-build-push/phase2/wave1/integration"
 
-# Fetch all remotes to ensure latest
-git fetch --all
+# 4. Fetch all remote branches
+git fetch origin
+
+# 5. Create backup tag before starting
+git tag phase2-wave1-integration-backup-$(date +%Y%m%d-%H%M%S)
+
+# 6. Verify base is phase1/integration
+git log --oneline -1
+# Should show phase1/integration as base
 ```
 
-### Merge Commands (Execute in Order)
-
-#### 1. Merge kind-cert-extraction
+### Merge 1: image-builder
 ```bash
-# Add remote for effort (if not exists)
-git remote add kind-cert-extraction ../kind-cert-extraction || true
+# 1. Start merge
+git merge origin/idpbuilder-oci-build-push/phase2/wave1/image-builder --no-ff \
+  -m "merge: integrate image-builder effort into Phase 2 Wave 1"
 
-# Fetch the effort
-git fetch kind-cert-extraction
+# 2. Expected conflicts (if any)
+# - demo-features.sh (likely different demo implementations)
+# - work-log.md (different work histories)
+# - DEMO-IMPLEMENTATION-COMPLETE.marker
+# - DEMO.md, DEMO-RETROFIT-PLAN.md
 
-# Merge the effort branch
-git merge kind-cert-extraction/idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction \
-  --no-ff \
-  -m "merge: integrate E1.1.1-kind-cert-extraction (650 lines) into Wave 1 integration"
+# 3. Conflict resolution strategy
+# For demo-features.sh: Keep both sets of demos, merge content
+# For work-log.md: Append both histories chronologically
+# For marker files: Keep all markers
+# For DEMO files: Merge content, keeping all demonstrations
 
-# If conflicts, resolve and continue
-# Expected: No conflicts (first merge)
-```
-
-#### 2. Merge registry-tls-trust
-```bash
-# Add remote for effort
-git remote add registry-tls-trust ../registry-tls-trust || true
-
-# Fetch the effort
-git fetch registry-tls-trust
-
-# Merge the effort branch
-git merge registry-tls-trust/idpbuilder-oci-build-push/phase1/wave1/registry-tls-trust \
-  --no-ff \
-  -m "merge: integrate E1.1.2-registry-tls-trust (700 lines) into Wave 1 integration"
-
-# If conflicts in pkg/testutil:
-# git add pkg/testutil/
+# 4. If conflicts occur:
+# git status  # Check conflicted files
+# [resolve conflicts manually]
+# git add [resolved files]
 # git commit --no-edit
-```
 
-#### 3. Merge registry-auth-types-split-001
-```bash
-# Add remote for split
-git remote add registry-auth-types-split-001 ../registry-auth-types-split-001 || true
+# 5. Verify after merge
+git diff HEAD~1 --stat
+# Should show image-builder implementation files in pkg/build/
 
-# Fetch the split
-git fetch registry-auth-types-split-001
-
-# Merge the split branch
-git merge registry-auth-types-split-001/idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001 \
-  --no-ff \
-  -m "merge: integrate E1.1.3-registry-auth-types-split-001 (types/constants) into Wave 1 integration"
-
-# Expected: Clean merge (new pkg/oci directory)
-```
-
-#### 4. Merge registry-auth-types-split-002
-```bash
-# Add remote for split
-git remote add registry-auth-types-split-002 ../registry-auth-types-split-002 || true
-
-# Fetch the split
-git fetch registry-auth-types-split-002
-
-# Merge the split branch
-git merge registry-auth-types-split-002/idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002 \
-  --no-ff \
-  -m "merge: integrate E1.1.3-registry-auth-types-split-002 (implementation) into Wave 1 integration"
-
-# Expected: Clean merge (extends pkg/oci)
-```
-
-#### 5. Merge cert-validation-split-001
-```bash
-# Add remote for split
-git remote add cert-validation-split-001 ../../wave2/cert-validation-split-001 || true
-
-# Fetch the split
-git fetch cert-validation-split-001
-
-# Merge the split branch
-git merge cert-validation-split-001/idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001 \
-  --no-ff \
-  -m "merge: integrate E1.2.1-cert-validation-split-001 (validation foundations) into Wave 1 integration"
-
-# If conflicts in pkg/certs:
-# Review both versions, likely additive
-# git add pkg/certs/
-# git commit --no-edit
-```
-
-#### 6. Merge cert-validation-split-002
-```bash
-# Add remote for split
-git remote add cert-validation-split-002 ../../wave2/cert-validation-split-002 || true
-
-# Fetch the split
-git fetch cert-validation-split-002
-
-# Merge the split branch
-git merge cert-validation-split-002/idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002 \
-  --no-ff \
-  -m "merge: integrate E1.2.1-cert-validation-split-002 (validation implementation) into Wave 1 integration"
-
-# Expected: Clean merge or minor conflicts in pkg/certs
-```
-
-#### 7. Merge cert-validation-split-003
-```bash
-# Add remote for split
-git remote add cert-validation-split-003 ../../wave2/cert-validation-split-003 || true
-
-# Fetch the split
-git fetch cert-validation-split-003
-
-# Merge the split branch
-git merge cert-validation-split-003/idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003 \
-  --no-ff \
-  -m "merge: integrate E1.2.1-cert-validation-split-003 (validation completion) into Wave 1 integration"
-
-# Expected: Clean merge
-```
-
-#### 8. Merge fallback-strategies
-```bash
-# Add remote for effort
-git remote add fallback-strategies ../../wave2/fallback-strategies || true
-
-# Fetch the effort
-git fetch fallback-strategies
-
-# Merge the effort branch
-git merge fallback-strategies/idpbuilder-oci-build-push/phase1/wave2/fallback-strategies \
-  --no-ff \
-  -m "merge: integrate E1.2.2-fallback-strategies (560 lines) into Wave 1 integration"
-
-# Expected: Clean merge (uses previous functionality)
-```
-
-### Post-Merge Validation
-```bash
-# After all merges, validate the integration
-go mod tidy
+# 6. Test compilation
 go build ./...
-go test ./...
-
-# Verify all efforts integrated
-git log --oneline --graph -20
-
-# Check final size
-find pkg -name "*.go" | xargs wc -l | tail -1
 ```
 
-## Conflict Resolution Strategies
-
-### General Resolution Approach
-1. **Additive Changes**: Accept both sides when adding new files/functions
-2. **Import Conflicts**: Merge all imports, remove duplicates
-3. **Test Utilities**: Keep all test helpers from different efforts
-4. **go.mod Conflicts**: Accept all dependency additions, run `go mod tidy`
-
-### Specific File Resolution
-
-#### pkg/testutil/* conflicts:
-```go
-// Accept all test utility additions
-// These are helper functions that shouldn't conflict functionally
-```
-
-#### pkg/certs/* conflicts:
-```go
-// registry-tls-trust adds: trust.go, utilities.go
-// cert-validation adds: validation_errors.go, storage.go, extractor.go
-// These should be additive - accept all
-```
-
-#### go.mod conflicts:
+### Merge 2: gitea-client-split-001
 ```bash
-# Accept all require statements
-# Then run:
-go mod tidy
+# 1. Start merge
+git merge origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001 --no-ff \
+  -m "merge: integrate gitea-client-split-001 into Phase 2 Wave 1"
+
+# 2. Expected conflicts
+# - demo-features.sh (both branches add demos)
+# - work-log.md (both have different histories)
+# - go.mod (potential dependency conflicts)
+# - DEMO-related files (both efforts have demos)
+
+# 3. Conflict resolution strategy
+# For demo-features.sh:
+#   - Create sections for image-builder and gitea-client demos
+#   - Preserve all demo functionality
+# For work-log.md:
+#   - Append histories chronologically
+#   - Keep all entries for audit trail
+# For go.mod:
+#   - Keep all dependencies
+#   - Resolve version conflicts by taking latest version
+
+# 4. If conflicts occur:
+# git status
+# [resolve conflicts]
+# git add [resolved files]
+# git commit --no-edit
+
+# 5. Verify after merge
+git diff HEAD~1 --stat
+# Should show new files in pkg/registry/
+# Should show auth.go, gitea.go, interface.go, etc.
+
+# 6. Test compilation
+go build ./...
+go test ./pkg/registry/...
 ```
 
-## Validation Checklist
+### Merge 3: gitea-client-split-002 (SIMPLE MERGE - Now Rebased!)
+```bash
+# 1. ✅ SIMPLIFIED: This merge is now straightforward
+# Split-002 has been rebased onto the current split-001
+# Linear history: phase1/integration → split-001 → split-002
+# Conflicts should be minimal or non-existent
 
-After each merge:
-- [ ] No uncommitted changes (`git status`)
-- [ ] Build succeeds (`go build ./...`)
-- [ ] Tests pass (`go test ./...`)
-- [ ] No duplicate declarations
-- [ ] Dependencies resolved (`go mod tidy`)
+# 2. Start merge (expect clean or minimal conflicts)
+git merge origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002 --no-ff \
+  -m "merge: integrate gitea-client-split-002 into Phase 2 Wave 1"
 
-After all merges:
-- [ ] All 8 efforts integrated
-- [ ] Total size within expectations (~4,000 lines)
-- [ ] Integration tests pass
-- [ ] No missing functionality
-- [ ] Clean commit history
+# 3. Expected conflicts (MINIMAL)
+# Since split-002 now contains all split-001 commits:
+# - Possibly demo-features.sh (if modified in multiple branches)
+# - Possibly work-log.md (different histories)
+# - Most code conflicts should be resolved by the rebase
 
-## Notes for Integration Agent
+# 4. Resolution strategy (if any conflicts)
+# For demo-features.sh:
+#   - Merge demo sections from all branches
+#   - Keep all demo functionality
+# For work-log.md:
+#   - Append histories chronologically
+#
+# Code conflicts should be rare since split-002 includes split-001
 
-1. **DO NOT** merge the parent 'registry-auth-types' branch - only splits
-2. **DO NOT** merge the parent 'cert-validation' branch - only splits
-3. **ALWAYS** use `--no-ff` to preserve merge history
-4. **RESOLVE** conflicts conservatively - when in doubt, accept both
-5. **TEST** after each merge to catch issues early
-6. **DOCUMENT** any unexpected conflicts in the integration report
+# 5. If minimal conflicts occur:
+git status  # Should show few if any conflicts
+# [resolve any remaining conflicts]
+git add [resolved files if any]
+git commit --no-edit
 
-## Expected Final State
+# 6. Verify the merge
+git diff HEAD~1 --stat
+# Should show:
+# - Enhanced push/list in pkg/registry/
+# - New retry.go file
+# - Mocks moved to test files (R320 compliance)
+# - Additional test coverage from split-002
 
-After successful integration:
-- Branch: `idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401`
-- Contains: All Wave 1 and Wave 2 efforts (8 total branches merged)
-- Size: Approximately 4,000 lines of new code
-- Status: Ready for architect review and main branch merge
+# 7. Test to confirm everything works
+go build ./...
+go test ./pkg/registry/... -v
+```
+
+## Conflict Resolution Guidelines
+
+### General Principles
+1. **Functionality First**: Ensure all implemented features are preserved
+2. **No Duplication**: Remove duplicate implementations, especially from older bases
+3. **Test Coverage**: Keep all test cases from all branches
+4. **Demo Completeness**: Merge all demo scripts into organized sections
+5. **R320 Compliance**: Ensure no stub implementations remain
+
+### Specific File Strategies
+
+#### demo-features.sh
+```bash
+# Merge strategy: Combine all demos with clear sections
+# Structure:
+echo "=== Image Builder Demos ==="
+# [image-builder demo code]
+
+echo "=== Gitea Registry Client Demos ==="
+# [gitea-client demo code]
+
+echo "=== Integration Demos ==="
+# [combined functionality demos]
+```
+
+#### work-log.md
+```bash
+# Merge strategy: Chronological append
+# Keep all entries for complete audit trail
+# Format: newest entries at top or bottom (be consistent)
+```
+
+#### go.mod
+```bash
+# Merge strategy: Latest versions win
+# After merge:
+go mod tidy
+# This will resolve any dependency conflicts
+```
+
+#### pkg/registry/* files
+```bash
+# Merge strategy for split conflicts:
+# 1. split-001 provides base infrastructure (already merged)
+# 2. split-002 provides enhancements
+# 3. When the same function exists in both:
+#    - Take split-002's version (more complete)
+# 4. For new files in split-002 (like retry.go):
+#    - Keep entirely
+```
+
+## Verification Steps
+
+### After Each Merge
+```bash
+# 1. Compilation check
+go build ./...
+
+# 2. Test execution
+go test ./... -v
+
+# 3. Line count verification
+PROJECT_ROOT=/home/vscode/workspaces/idpbuilder-oci-build-push
+$PROJECT_ROOT/tools/line-counter.sh
+
+# 4. Demo validation (if demos exist)
+if [ -f demo-features.sh ]; then
+  bash demo-features.sh
+fi
+
+# 5. Commit verification
+git log --oneline -5
+```
+
+### Final Integration Verification
+```bash
+# 1. Full test suite with coverage
+go test ./... -v -cover
+
+# 2. Specific package tests
+go test ./pkg/build/... -v     # image-builder
+go test ./pkg/registry/... -v  # gitea-client
+
+# 3. Size compliance check
+$PROJECT_ROOT/tools/line-counter.sh
+# Total should be reasonable for Wave 1
+
+# 4. Check all branches are integrated
+git log --oneline --graph -20
+# Should show merge commits for all three branches
+
+# 5. Verify no stub implementations (R320)
+grep -r "panic.*not.*implemented" pkg/
+grep -r "TODO.*implement" pkg/
+# Should return no results
+
+# 6. Push to remote
+git push origin idpbuilder-oci-build-push/phase2/wave1/integration
+```
+
+## Rollback Procedures
+
+### If Merge Fails
+```bash
+# 1. Abort current merge
+git merge --abort
+
+# 2. Reset to backup tag
+git reset --hard phase2-wave1-integration-backup-[timestamp]
+
+# 3. Investigate issue
+git diff origin/[branch-name] --stat
+git log origin/[branch-name] --oneline -10
+
+# 4. Retry with adjusted strategy
+```
+
+### If Tests Fail After Merge
+```bash
+# 1. Identify failing tests
+go test ./... -v 2>&1 | grep -E "FAIL|Error"
+
+# 2. Check recent changes
+git diff HEAD~1
+
+# 3. Decision point:
+# Option A: Fix issues in place
+# [make fixes]
+git add [fixed files]
+git commit -m "fix: resolve test failures after merge"
+
+# Option B: Revert if critical
+git revert HEAD
+```
+
+## Expected Outcomes
+
+### Success Criteria
+✅ All three branches merged successfully
+✅ No compilation errors
+✅ All tests passing
+✅ Demo scripts functional (if present)
+✅ Size within limits per effort
+✅ Clean git history with clear merge commits
+✅ No stub implementations (R320 compliance)
+
+### Files Expected After Integration
+```
+pkg/
+├── build/           # Image builder implementation
+│   ├── builder.go
+│   ├── command.go
+│   └── ...
+├── registry/        # Complete Gitea registry client
+│   ├── auth.go
+│   ├── gitea.go
+│   ├── interface.go
+│   ├── list.go      # Enhanced version from split-002
+│   ├── push.go      # Enhanced version from split-002
+│   ├── retry.go     # New from split-002
+│   ├── mocks_test.go # Mocks moved to tests (R320)
+│   └── ...
+└── [other packages]
+
+demo-features.sh     # Combined demo suite
+go.mod              # Updated dependencies
+work-log.md         # Complete history
+```
+
+## Risk Assessment
+
+### ✅ UPDATED: Risk Level Reduced
+1. **Split-002 merge**: ~~Based on older split-001, high conflict probability~~
+   - **RESOLVED**: Now rebased on current split-001, LOW conflict probability
+   - Expect straightforward, clean merge
+
+2. **Registry functionality**: Split-002 properly extends split-001
+   - Since split-002 now has all split-001 changes, no overlap issues
+   - Test to confirm all functionality works together
+
+3. **Test mock refactoring**: Split-002 moves mocks to comply with R320
+   - This refactoring is clean and should merge without issues
+   - Verify all tests still pass after merge
+
+### Medium Risk Areas
+1. **Demo script conflicts**: Multiple demo implementations
+   - Mitigation: Organize into clear sections
+   - Test each demo section independently
+
+2. **Dependency versions**: Different go.mod requirements
+   - Mitigation: Use go mod tidy to resolve
+   - Test with final dependency set
+
+## Notes for Orchestrator
+
+✅ **UPDATED GUIDANCE**:
+1. This is a PLAN only - actual merge execution by orchestrator/integration agent
+2. **Split-002 is now SIMPLE to merge** - properly rebased on split-001
+3. Test after each merge to confirm functionality
+4. Document the smooth integration in your report
+5. The rebase has eliminated the need for complex manual merging
+
+## Appendix: Branch Analysis Details
+
+### image-builder Key Changes
+- Build command implementation (~4000 lines total)
+- Demo implementations for R291 compliance
+- Feature flag fixes (removed blocking flags)
+- TLS configuration improvements
+- Fixed duplicate TLSConfig struct issues
+
+### gitea-client-split-001 Key Changes
+- Core registry infrastructure (~5000 lines added)
+- Authentication implementation (auth.go)
+- Basic Gitea client (gitea.go)
+- Interface definitions (interface.go)
+- Basic push/pull operations
+- Remote options configuration
+
+### gitea-client-split-002 Key Changes
+- Enhanced push/list operations (improved versions)
+- Retry logic implementation (retry.go - new file)
+- Mock refactoring for R320 compliance (moved to test files)
+- Additional test coverage
+- Removed redundant oci/types.go
+- Test infrastructure improvements
+- **NOW INCLUDES**: All fixes from split-001 via rebase
+  - Commit 4aeb3ec: Cherry-picked fix from split-001
+  - Commit 2a407b7: Cherry-picked fix from split-001
+  - Commit 1304ef9: Cherry-picked fix from split-001
+
+### Known Issues Resolved
+- image-builder: Feature flag blocking issue fixed
+- image-builder: Duplicate TLSConfig resolved
+- gitea-client-split-001: Rebased onto phase1/integration
+- gitea-client-split-002: R320 compliance (no stubs in production)
 
 ---
-
-**Created**: 2025-09-12 03:30:00 UTC
-**Created By**: Code Reviewer Agent (WAVE_MERGE_PLANNING state)
-**Integration Target**: idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401
+*End of Phase 2 Wave 1 Merge Plan*
+*Next Steps: Execute merges according to this plan*
