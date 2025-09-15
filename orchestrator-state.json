@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_SW_ENGINEER_E2_2_2",
-  "previous_state": "ERROR_RECOVERY",
+  "current_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "previous_state": "SPAWN_SW_ENGINEER_E2_2_2",
   "current_phase": 2,
-  "current_wave": "phase_integration",
-  "transition_time": "2025-09-15T05:03:32Z",
-  "transition_reason": "Upstream fixes complete - ready to implement E2.2.2 production code",
+  "current_wave": 1,
+  "transition_time": "2025-09-15T05:06:35Z",
+  "transition_reason": "R327 mandatory re-integration after E2.1.1 fixes",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -1852,5 +1852,36 @@
       "4. Already fixed in project integration"
     ],
     "next_action": "SPAWN_SW_ENGINEER_FIX_CLI_COMMANDS"
+  },
+  "phase_2_wave_1_reintegration": {
+    "triggered_by": "E2.1.1 feature flag fix",
+    "fix_commit": "7b682e6",
+    "effort_branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
+    "old_integration_branch": "TBD - need to check",
+    "status": "pending",
+    "reason": "R327 - fixes in effort branch require fresh integration",
+    "efforts_to_integrate": [
+      {
+        "effort": "image-builder",
+        "branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
+        "has_fixes": true,
+        "fix_commits": [
+          "7b682e6"
+        ],
+        "status": "ready"
+      },
+      {
+        "effort": "gitea-client-split-001",
+        "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+        "has_fixes": false,
+        "status": "ready"
+      },
+      {
+        "effort": "gitea-client-split-002",
+        "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+        "has_fixes": false,
+        "status": "ready"
+      }
+    ]
   }
 }
