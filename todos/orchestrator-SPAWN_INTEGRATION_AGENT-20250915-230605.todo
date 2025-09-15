@@ -1,0 +1,28 @@
+=== ORCHESTRATOR TODO STATE ===
+State: SPAWN_INTEGRATION_AGENT
+Time: 2025-09-15T23:05:39Z
+Phase: 2
+Wave: 2
+
+COMPLETED:
+✅ Verify merge plan exists at expected location
+✅ Read and validate WAVE-MERGE-PLAN.md contents
+✅ Check merge plan has all required sections per R269
+✅ Update state file to SPAWN_INTEGRATION_AGENT per R324
+✅ Save TODOs per R287 before transition
+
+IN PROGRESS:
+→ Commit state changes and push
+→ Display R322 checkpoint message and stop
+
+NEXT ACTIONS (After user approval):
+1. Spawn Integration Agent to execute merge plan
+2. Monitor integration progress
+3. Verify build and tests pass
+4. Transition to WAVE_COMPLETE if successful
+
+CONTEXT:
+- Merge plan location: efforts/phase2/wave2/integration-workspace/repo/WAVE-MERGE-PLAN.md
+- Integration branch: idpbuilder-oci-build-push/phase2/wave2/integration-20250914-200305
+- Efforts to integrate: E2.2.1 (cli-commands), E2.2.2-A (credential-management), E2.2.2-B (image-operations)
+- Strategy: Single merge of E2.2.2-B (contains all Wave 2 changes)

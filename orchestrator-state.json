@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "WAITING_FOR_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-15T22:58:07Z",
-  "transition_reason": "Code Reviewer spawned to create Phase 2 Wave 2 merge plan. Plan created successfully.",
+  "transition_time": "2025-09-15T23:05:39Z",
+  "transition_reason": "Merge plan validated and ready. R322 checkpoint for user review before spawning integration agent.",
   "effort_creation_context": {
     "effort_id": "E2.2.2-B",
     "effort_name": "image-operations",
