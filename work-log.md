@@ -40,7 +40,23 @@
 - Conflict Resolution:
   - WAVE-MERGE-PLAN.md: Kept integration version (ours)
   - work-log.md: Merged both logs preserving history
-- Status: IN PROGRESS
+- Build Test: `go build ./...` - PASSED
+- Demo Test: demo-features.sh present and functional
+- Status: COMPLETED
+- MERGED: image-builder at 2025-09-15 14:31:03 UTC
+
+### Merge 2: gitea-client-split-001
+- Time: 2025-09-15 14:31:43 UTC
+- Command: `git merge origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001 --no-ff -m "merge: integrate gitea-client-split-001 into Phase 2 Wave 1"`
+- Result: CONFLICTS in demo-features.sh, DEMO.md, DEMO-RETROFIT-PLAN.md, marker files
+- Conflict Resolution:
+  - demo-features.sh: Created integrated demo script with both components
+  - DEMO files: Renamed to component-specific names
+  - Marker files: Merged content from both branches
+- Build Issue: Missing retryWithExponentialBackoff function (expected - will come from split-002)
+- Demo: Integrated demo script created
+- Status: COMPLETED
+- MERGED: gitea-client-split-001 at 2025-09-15 14:34:35 UTC
 
 ---
 
