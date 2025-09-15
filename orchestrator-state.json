@@ -727,13 +727,13 @@
     "type": "wave",
     "phase": 2,
     "wave": 1,
-    "branch": "idpbuilder-oci-build-push/phase2/wave1/integration",
+    "branch": "phase2/wave1/integration",
     "base_branch": "idpbuilder-oci-build-push/phase1/integration",
     "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo",
     "status": "infrastructure_ready",
-    "created_at": "2025-09-14T17:16:45Z",
-    "r327_cascade": true,
-    "purpose": "R327 cascade re-integration after rebasing branches"
+    "created_at": "2025-09-15T05:16:27Z",
+    "re_integration": true,
+    "archive_number": 2
   },
   "phase_integration_needed": true,
   "phase_1_status": {
