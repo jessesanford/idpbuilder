@@ -44,7 +44,9 @@ E2.2.2 completes the implementation by adding:
    - Load real images from storage
    - Send actual manifests and layers
    - Real progress tracking
-   - Environment variable authentication
+   - CLI authentication flags (--username, --token)
+   - Authentication priority: CLI args > env vars > config
+   - Support both password and token authentication
 
 ### R320 Compliance
 - NO stub implementations
