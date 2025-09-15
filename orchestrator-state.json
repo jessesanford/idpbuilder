@@ -1,10 +1,10 @@
 {
-  "current_state": "MONITORING_INTEGRATION",
-  "previous_state": "SPAWN_INTEGRATION_AGENT",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "MONITORING_INTEGRATION",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-15T14:41:03Z",
-  "transition_reason": "Integration agent spawned and completed successfully",
+  "transition_time": "2025-09-15T14:51:00Z",
+  "transition_reason": "R291 TEST GATE FAILURE - Tests not run during integration, cannot proceed without passing tests",
   "integration_context": {
     "type": "wave",
     "phase": 2,
@@ -37,6 +37,7 @@
     "demo_script_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/demo-features.sh",
     "integration_completed_at": "2025-09-15T14:41:03Z",
     "build_status": "PASSING",
+    "test_status": "NOT_RUN",
     "demo_status": "FUNCTIONAL",
     "documentation_status": "COMPLETE"
   },
@@ -61,5 +62,13 @@
       "purpose": "Execute Phase 2 Wave 1 integration"
     }
   ],
-  "notes": "Integration completed successfully. All efforts merged, builds passing, demos functional."
+  "notes": "Integration completed successfully. All efforts merged, builds passing, demos functional.",
+  "error_context": {
+    "error_type": "R291_GATE_FAILURE",
+    "gate_failed": "TEST",
+    "details": "Tests were not run during integration (per R265 - document but don't fix). R291 requires all gates (build, test, demo) to pass.",
+    "required_action": "Run tests on the integrated branch and ensure they pass",
+    "integration_branch": "idpbuilder-oci-build-push/phase2/wave1/integration",
+    "integration_directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo"
+  }
 }
