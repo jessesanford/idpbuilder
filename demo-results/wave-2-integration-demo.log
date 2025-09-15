@@ -1,0 +1,16 @@
+=========================================
+Phase 2 Wave 2 Integration Demo
+Date: Mon Sep 15 11:17:47 PM UTC 2025
+=========================================
+
+1. Building idpbuilder binary...
+# github.com/cnoe-io/idpbuilder/pkg/cmd
+pkg/cmd/push.go:9:2: "github.com/cnoe-io/idpbuilder/pkg/cmd/helpers" imported and not used
+pkg/cmd/push.go:62:22: undefined: certs.ExtractCertificate
+pkg/cmd/push.go:87:61: too many arguments in call to gitea.NewClient
+	have (string, string, string, string)
+	want (string, *certs.DefaultTrustStore)
+pkg/cmd/push.go:90:23: undefined: gitea.NewClientAutoDetect
+pkg/cmd/push.go:98:19: client.ValidateCredentials undefined (type *"github.com/cnoe-io/idpbuilder/pkg/gitea".Client has no field or method ValidateCredentials)
+pkg/cmd/push.go:105:19: client.PushImage undefined (type *"github.com/cnoe-io/idpbuilder/pkg/gitea".Client has no field or method PushImage)
+Build failed!

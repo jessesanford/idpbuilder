@@ -1,0 +1,17 @@
+🎬 Demo: Phase 2 Wave 1 Integration Features
+Timestamp: 2025-09-15 23:17:56
+================================
+
+Usage: ./demo-features.sh <component> [command] [options]
+
+Components:
+  image-builder    Image building and certificate features
+  gitea-client     Gitea registry client operations
+  integrated       Combined workflow demonstrations
+
+Use './demo-features.sh <component> help' for component-specific options
+
+Examples:
+  ./demo-features.sh image-builder build-image --context ./test-data/sample-app --tag myapp:v1.0
+  ./demo-features.sh gitea-client auth --registry https://gitea.local:3000 --token $GITEA_TOKEN
+  ./demo-features.sh integrated full-workflow
