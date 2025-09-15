@@ -1,6 +1,6 @@
 {
-  "current_state": "SPAWN_SW_ENGINEER_E2_2_2",
-  "previous_state": "CREATE_INTEGRATION_TESTING",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "SPAWN_SW_ENGINEER_E2_2_2",
   "current_phase": 2,
   "current_wave": "phase_integration",
   "transition_time": "2025-09-15T02:02:08Z",
@@ -1864,5 +1864,36 @@
     "prerequisite": "E2.2.1",
     "estimated_lines": 600,
     "planned_at": "2025-09-15T04:26:11Z"
+  },
+  "upstream_fixes_required": {
+    "status": "PENDING",
+    "detected_at": "2025-09-15T04:45:00Z",
+    "reason": "Feature flag and hardcoded credentials found in upstream branches",
+    "branches_to_fix": [
+      {
+        "branch": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
+        "issues": [
+          "ENABLE_IMAGE_BUILDER feature flag in pkg/build/image_builder.go",
+          "Hardcoded 'admin' in pkg/gitea/client.go"
+        ],
+        "effort": "E2.2.1",
+        "status": "pending"
+      },
+      {
+        "branch": "idpbuilder-oci-build-push/phase2/wave2/integration-20250914-200305",
+        "issues": [
+          "ENABLE_IMAGE_BUILDER feature flag in pkg/build/image_builder.go"
+        ],
+        "wave": "Wave 2 integration",
+        "status": "pending"
+      }
+    ],
+    "fix_protocol": [
+      "1. Fix cli-commands branch (effort level)",
+      "2. Fix wave2 integration branch (wave level)",
+      "3. Cascade to phase2 integration (phase level)",
+      "4. Already fixed in project integration"
+    ],
+    "next_action": "SPAWN_SW_ENGINEER_FIX_CLI_COMMANDS"
   }
 }
