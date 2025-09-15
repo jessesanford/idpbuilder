@@ -1,0 +1,27 @@
+## Orchestrator TODOs - SPAWN_INTEGRATION_AGENT State
+## Saved: 2025-09-15T11:25:00Z
+
+### Completed Tasks:
+- ✅ Load state-specific rules for WAITING_FOR_MERGE_PLAN
+- ✅ Review the completed merge plan
+- ✅ Update orchestrator-state.json with merge plan details
+- ✅ Save TODOs per R287 before state transition
+
+### Pending Tasks (After User Review):
+- [ ] Spawn Integration Agent to execute merge plan
+- [ ] Monitor integration progress
+- [ ] Handle any merge conflicts
+- [ ] Verify R291 gates pass after integration
+- [ ] Transition to next appropriate state
+
+## State Context:
+- Current State: SPAWN_INTEGRATION_AGENT (pending user review)
+- Previous State: WAITING_FOR_MERGE_PLAN
+- Phase: 2, Wave: 1
+- Integration Type: R327 cascade re-integration
+- Merge Plan: Created and ready at efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md
+
+## R322 Checkpoint:
+- Stopped for mandatory user review of merge plan
+- User must review merge order and conflict resolution strategy
+- Continue with: /continue-orchestrating

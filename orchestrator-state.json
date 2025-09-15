@@ -1,9 +1,9 @@
 {
-  "current_state": "WAITING_FOR_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "WAITING_FOR_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-15T05:31:50Z",
+  "transition_time": "2025-09-15T11:24:49Z",
   "transition_reason": "Code Reviewer spawned and merge plan created",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
@@ -742,7 +742,10 @@
     "status": "infrastructure_ready",
     "created_at": "2025-09-15T05:16:27Z",
     "re_integration": true,
-    "archive_number": 2
+    "archive_number": 2,
+    "merge_plan": "efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
+    "merge_plan_created": "2025-09-15T11:24:49Z",
+    "plan_validation": "PASSED"
   },
   "phase_integration_needed": true,
   "phase_1_status": {
