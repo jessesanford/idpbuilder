@@ -14,6 +14,8 @@ import (
 var (
 	pushInsecure bool
 	pushRegistry string
+	pushUsername string
+	pushToken    string
 
 	PushCmd = &cobra.Command{
 		Use:   "push IMAGE[:TAG]",
@@ -25,10 +27,13 @@ the --insecure flag is specified.
 Examples:
   # Push with automatic certificate handling
   idpbuilder push myapp:latest
-  
+
   # Push to specific registry
   idpbuilder push --registry gitea.cnoe.localtest.me:8443 myapp:latest
-  
+
+  # Push with explicit credentials
+  idpbuilder push --username admin --token mytoken myapp:latest
+
   # Push without certificate verification (not recommended)
   idpbuilder push --insecure myapp:latest`,
 		Args: cobra.ExactArgs(1),
@@ -38,97 +43,69 @@ Examples:
 
 func init() {
 	PushCmd.Flags().BoolVar(&pushInsecure, "insecure", false, "Skip certificate verification (not recommended)")
-	PushCmd.Flags().StringVar(&pushRegistry, "registry", getDefaultRegistry(), "Target registry")
+	PushCmd.Flags().StringVar(&pushRegistry, "registry", "gitea.cnoe.localtest.me:8443", "Registry endpoint")
+	PushCmd.Flags().StringVar(&pushUsername, "username", "", "Registry username (if not provided, will attempt auto-detection)")
+	PushCmd.Flags().StringVar(&pushToken, "token", "", "Registry token/password (if not provided, will attempt auto-detection)")
 }
 
 func runPush(cmd *cobra.Command, args []string) error {
-	imageRef := args[0]
-
-	// Validate image reference
-	if err := validateImageReference(imageRef); err != nil {
-		return fmt.Errorf("invalid image reference: %w", err)
+	imageName := args[0]
+	
+	// Ensure image has a tag
+	if !strings.Contains(imageName, ":") {
+		imageName = imageName + ":latest"
 	}
 
-	// Progress feedback
-	helpers.PrintColoredOutput("Pushing image: %s\n", imageRef)
-	helpers.PrintColoredOutput("Target registry: %s\n", pushRegistry)
+	// Extract certificate unless insecure mode
+	var certPath string
+	if !pushInsecure {
+		cert, err := certs.ExtractCertificate(cmd.Context())
+		if err != nil {
+			return fmt.Errorf("failed to extract certificate: %w", err)
+		}
+		
+		certPath = cert.FilePath
+		defer func() {
+			// Clean up temp cert file
+			if certPath != "" {
+				os.Remove(certPath)
+			}
+		}()
+		
+		fmt.Printf("✓ Certificate extracted from ingress controller\n")
+		fmt.Printf("✓ Registry: %s\n", pushRegistry)
+	} else {
+		fmt.Printf("⚠ Warning: Running in insecure mode - certificate verification disabled\n")
+	}
 
-	// Initialize Gitea client with certificate handling
+	// Create Gitea client with appropriate configuration
 	var client *gitea.Client
 	var err error
-
-	if pushInsecure {
-		helpers.PrintColoredOutput("Warning: Running in insecure mode, skipping certificate verification\n")
-		client, err = gitea.NewInsecureClient(pushRegistry)
+	
+	if pushUsername != "" && pushToken != "" {
+		// Use explicit credentials
+		client, err = gitea.NewClient(pushRegistry, pushUsername, pushToken, certPath)
 	} else {
-		// Use certificate infrastructure from Phase 1
-		helpers.PrintColoredOutput("Configuring certificates for secure connection...\n")
-		certManager := certs.NewTrustStore()
-		// Note: Certificate extraction/configuration is handled internally by registry
-		
-		client, err = gitea.NewClient(pushRegistry, certManager)
+		// Attempt auto-detection of credentials
+		client, err = gitea.NewClientAutoDetect(pushRegistry, certPath)
 	}
-
+	
 	if err != nil {
 		return fmt.Errorf("failed to create registry client: %w", err)
 	}
 
-	// Setup progress reporting
-	progressChan := make(chan gitea.PushProgress, 10)
-	progressDone := make(chan bool)
+	// Validate credentials before push
+	if err := client.ValidateCredentials(cmd.Context()); err != nil {
+		return fmt.Errorf("failed to validate credentials: %w", err)
+	}
+	fmt.Printf("✓ Credentials validated\n")
 
-	// Start progress reporter goroutine
-	go func() {
-		defer close(progressDone)
-		for progress := range progressChan {
-			if progress.TotalLayers > 0 {
-				helpers.PrintColoredOutput("Pushing layer %d/%d: %d%%\n",
-					progress.CurrentLayer, progress.TotalLayers, progress.Percentage)
-			} else {
-				helpers.PrintColoredOutput("Pushing: %d%% complete\n", progress.Percentage)
-			}
-		}
-	}()
-
-	// Perform the push operation
-	helpers.PrintColoredOutput("Starting push operation...\n")
-	if err := client.Push(imageRef, progressChan); err != nil {
-		close(progressChan)
-		<-progressDone
-		return fmt.Errorf("push failed: %w", err)
+	// Push the image
+	fmt.Printf("Pushing %s to %s...\n", imageName, pushRegistry)
+	if err := client.PushImage(cmd.Context(), imageName); err != nil {
+		return fmt.Errorf("failed to push image: %w", err)
 	}
 
-	// Wait for progress reporting to complete
-	close(progressChan)
-	<-progressDone
-
-	helpers.PrintColoredOutput("Successfully pushed %s to %s\n", imageRef, pushRegistry)
+	fmt.Printf("✓ Image pushed successfully\n")
 	return nil
-}
-
-// validateImageReference ensures the image reference format is valid
-func validateImageReference(ref string) error {
-	if ref == "" {
-		return fmt.Errorf("image reference cannot be empty")
-	}
-
-	// Basic validation - should not start/end with special characters
-	if strings.HasPrefix(ref, ":") || strings.HasSuffix(ref, ":") {
-		return fmt.Errorf("invalid image reference format: %s", ref)
-	}
-
-	// Should not contain double colons
-	if strings.Contains(ref, "::") {
-		return fmt.Errorf("invalid image reference format: %s", ref)
-	}
-
-	return nil
-}
-
-// getDefaultRegistry returns the default Gitea registry URL
-func getDefaultRegistry() string {
-	if env := os.Getenv("IDPBUILDER_REGISTRY"); env != "" {
-		return env
-	}
-	return "gitea.cnoe.localtest.me:8443"
 }

@@ -94,3 +94,10 @@ func (r *WithRetry) Delete(ctx context.Context, repository string) error {
 }
 
 func (r *WithRetry) Close() error { return r.registry.Close() }
+// retryWithExponentialBackoff is a wrapper for backward compatibility
+// This function is used by split-001 code
+func retryWithExponentialBackoff(operation func() error, operationName string, details string) error {
+	ctx := context.Background()
+	policy := DefaultRetryPolicy()
+	return RetryWithPolicy(ctx, policy, operation)
+}

@@ -1,803 +1,761 @@
-# E1.2.2 - Fallback Strategies Implementation Plan
+# Credential Management Implementation Plan
 
-## 🚨 CRITICAL EFFORT METADATA (FROM WAVE PLAN)
-**Effort ID**: E1.2.2  
-**Effort Name**: Fallback Strategies  
-**Branch**: `phase1/wave2/fallback-strategies`  
-**Can Parallelize**: Yes  
-**Parallel With**: [E1.2.1 - Certificate Validation]  
-**Size Estimate**: 700 lines  
-**Dependencies**: [E1.1.1 - Kind Certificate Extraction, E1.1.2 - Registry TLS Trust]  
-**Feature Flag**: `FALLBACK_STRATEGIES_ENABLED`  
+## Effort ID: E2.2.2-A
 
 ## Overview
-- **Effort**: Implement fallback handling mechanisms and --insecure flag support for certificate validation
-- **Phase**: 1 (Certificate Infrastructure), Wave: 2 (Certificate Validation & Fallback)
-- **Estimated Size**: 700 lines (under 800 line limit)
-- **Implementation Time**: 6-8 hours
+- **Effort**: Implement real credential management for Gitea registry authentication
+- **Phase**: 2, Wave: 2
+- **Estimated Size**: 450-500 lines (excluding tests)
+- **Implementation Time**: 4-6 hours
+- **Dependencies**: E2.2.1 cli-commands (complete)
 
-## 🎯 Mission Statement
-Establish robust fallback mechanisms for certificate validation failures, implement the --insecure flag functionality to bypass certificate checks when explicitly requested, and provide graceful degradation when certificates cannot be validated. This ensures the system remains usable in development environments while maintaining security in production.
+## Scope
+Replace placeholder authentication with a comprehensive credential management system supporting:
+1. CLI flags for username and token (--username, --token)
+2. Environment variable credential loading (fallback)
+3. Configuration file parsing (fallback)
+4. System keyring integration for secure storage (fallback)
+5. Proper credential retrieval functions
+6. Removal of all credential-related TODOs
 
-## 📋 Technical Architecture
+## File Structure
 
-### Core Components
-1. **Fallback Strategy Manager**: Orchestrates fallback mechanisms based on configuration
-2. **Insecure Mode Handler**: Manages --insecure flag state and behavior
-3. **Retry Logic**: Implements exponential backoff for transient failures
-4. **Graceful Degradation**: Provides progressive fallback options
-5. **Warning System**: Clear user notifications about security implications
+### New Files to Create
+1. **pkg/gitea/credentials.go** (150 lines)
+   - Core credential management logic
+   - Credential provider interface
+   - Credential resolution chain
 
-### Integration Points
-- **Wave 1 E1.1.1**: Uses KindCertExtractor for certificate retrieval attempts
-- **Wave 1 E1.1.2**: Extends DefaultTrustStore with fallback capabilities
-- **Wave 2 E1.2.1**: Coordinates with validation logic for failure handling
+2. **pkg/gitea/config.go** (70 lines)
+   - Configuration file parsing
+   - Config structure definitions
+   - Config validation
 
-## 📁 File Structure
+3. **pkg/gitea/keyring.go** (80 lines)
+   - System keyring integration
+   - Secure credential storage/retrieval
+   - Fallback handling
 
-```
-efforts/phase1/wave2/fallback-strategies/
-├── pkg/
-│   ├── fallback/
-│   │   ├── manager.go           # Core fallback strategy manager (200 lines)
-│   │   ├── manager_test.go      # Unit tests for manager (150 lines)
-│   │   ├── strategies.go        # Fallback strategy implementations (150 lines)
-│   │   └── strategies_test.go   # Strategy tests (100 lines)
-│   └── insecure/
-│       ├── handler.go           # Insecure mode implementation (50 lines)
-│       └── handler_test.go      # Insecure mode tests (50 lines)
-└── IMPLEMENTATION-PLAN-20250907-064500.md
-```
+4. **pkg/gitea/credentials_test.go** (100 lines)
+   - Unit tests for credential providers
+   - Mock implementations
+   - Test coverage for all scenarios
 
-## 🔧 Implementation Steps
+5. **pkg/gitea/config_test.go** (50 lines)
+   - Config parsing tests
+   - Validation tests
+   - Error handling tests
 
-### Step 1: Create Fallback Manager Core (200 lines)
-**File**: `pkg/fallback/manager.go`
+6. **pkg/gitea/keyring_test.go** (50 lines)
+   - Keyring integration tests
+   - Mock keyring provider
+   - Fallback scenario tests
 
+### Files to Modify
+1. **pkg/gitea/client.go** (~60 line changes)
+   - Update getRegistryUsername() function
+   - Update getRegistryPassword() function
+   - Remove TODO comments at lines 30, 145, 151
+   - Add credential manager initialization
+   - Add methods to set CLI-provided credentials
+
+2. **pkg/gitea/client_test.go** (~50 line changes)
+   - Update tests to use real credential system
+   - Add environment variable tests
+   - Remove hardcoded credential expectations
+
+3. **pkg/cmd/push.go** (~30 line changes)
+   - Add --username and --token flags
+   - Pass CLI credentials to client
+   - Update help text and examples
+
+4. **pkg/cmd/build.go** (~30 line changes)
+   - Add --username and --token flags for registry operations
+   - Pass CLI credentials to builder
+   - Update help text
+
+## Implementation Steps
+
+### Step 1: Create Credential Provider Interface (credentials.go)
 ```go
-package fallback
+// Create pkg/gitea/credentials.go with:
+
+package gitea
 
 import (
-    "context"
-    "crypto/x509"
     "fmt"
-    "time"
-    
-    "github.com/jessesanford/idpbuilder/pkg/certs"
+    "os"
+    "path/filepath"
 )
 
-// FallbackStrategy defines the interface for fallback mechanisms
-type FallbackStrategy interface {
-    Name() string
+// CredentialProvider defines interface for credential sources
+type CredentialProvider interface {
+    GetUsername() (string, error)
+    GetPassword() (string, error)
+    IsAvailable() bool
     Priority() int
-    Execute(ctx context.Context, registry string) error
-    ShouldRetry(err error) bool
 }
 
-// FallbackManager coordinates fallback strategies
-type FallbackManager struct {
-    strategies      []FallbackStrategy
-    trustStore      certs.TrustStoreManager
-    insecureMode    bool
-    maxRetries      int
-    retryDelay      time.Duration
-    warningCallback func(string)
+// CredentialManager manages multiple credential providers
+type CredentialManager struct {
+    providers []CredentialProvider
+    cliUsername string
+    cliPassword string
 }
 
-// NewFallbackManager creates a new fallback manager
-func NewFallbackManager(trustStore certs.TrustStoreManager, opts ...Option) *FallbackManager {
-    fm := &FallbackManager{
-        trustStore:  trustStore,
-        strategies:  make([]FallbackStrategy, 0),
-        maxRetries:  3,
-        retryDelay:  time.Second,
-        warningCallback: defaultWarning,
-    }
-    
-    // Apply options
-    for _, opt := range opts {
-        opt(fm)
-    }
-    
-    // Initialize default strategies
-    fm.initDefaultStrategies()
-    return fm
-}
-
-// Option configures the FallbackManager
-type Option func(*FallbackManager)
-
-// WithInsecureMode enables insecure mode
-func WithInsecureMode(insecure bool) Option {
-    return func(fm *FallbackManager) {
-        fm.insecureMode = insecure
+// NewCredentialManager creates a credential manager with default providers
+func NewCredentialManager() *CredentialManager {
+    return &CredentialManager{
+        providers: []CredentialProvider{
+            NewCLICredentialProvider(),
+            NewEnvCredentialProvider(),
+            NewConfigFileProvider(),
+            NewKeyringProvider(),
+        },
     }
 }
 
-// WithMaxRetries sets maximum retry attempts
-func WithMaxRetries(max int) Option {
-    return func(fm *FallbackManager) {
-        fm.maxRetries = max
+// SetCLICredentials sets credentials provided via CLI flags
+func (cm *CredentialManager) SetCLICredentials(username, password string) {
+    if cliProvider, ok := cm.providers[0].(*CLICredentialProvider); ok {
+        cliProvider.SetCredentials(username, password)
     }
 }
 
-// HandleValidationFailure processes certificate validation failures
-func (fm *FallbackManager) HandleValidationFailure(ctx context.Context, registry string, err error) error {
-    // Check if insecure mode is enabled
-    if fm.insecureMode {
-        fm.warningCallback(fmt.Sprintf("⚠️  INSECURE MODE: Bypassing certificate validation for %s", registry))
-        return fm.trustStore.SetInsecure(registry, true)
-    }
-    
-    // Try fallback strategies in order of priority
-    for _, strategy := range fm.strategies {
-        select {
-        case <-ctx.Done():
-            return ctx.Err()
-        default:
-            if err := fm.executeWithRetry(ctx, strategy, registry); err == nil {
-                return nil
+// GetCredentials retrieves credentials from the first available provider
+func (cm *CredentialManager) GetCredentials() (username, password string, err error) {
+    for _, provider := range cm.providers {
+        if provider.IsAvailable() {
+            username, err = provider.GetUsername()
+            if err != nil {
+                continue
             }
-        }
-    }
-    
-    return fmt.Errorf("all fallback strategies failed for %s: %w", registry, err)
-}
-
-// executeWithRetry executes a strategy with retry logic
-func (fm *FallbackManager) executeWithRetry(ctx context.Context, strategy FallbackStrategy, registry string) error {
-    var lastErr error
-    
-    for attempt := 0; attempt < fm.maxRetries; attempt++ {
-        if attempt > 0 {
-            // Exponential backoff
-            delay := fm.retryDelay * time.Duration(1<<uint(attempt-1))
-            select {
-            case <-time.After(delay):
-            case <-ctx.Done():
-                return ctx.Err()
+            password, err = provider.GetPassword()
+            if err != nil {
+                continue
             }
-        }
-        
-        lastErr = strategy.Execute(ctx, registry)
-        if lastErr == nil {
-            return nil
-        }
-        
-        if !strategy.ShouldRetry(lastErr) {
-            break
+            return username, password, nil
         }
     }
-    
-    return lastErr
+    return "", "", fmt.Errorf("no credentials available from any provider")
 }
 
-// initDefaultStrategies sets up the default fallback strategies
-func (fm *FallbackManager) initDefaultStrategies() {
-    fm.strategies = []FallbackStrategy{
-        NewSystemCertStrategy(fm.trustStore),
-        NewCachedCertStrategy(fm.trustStore),
-        NewSelfSignedAcceptStrategy(fm.trustStore),
+// EnvCredentialProvider reads from environment variables
+type EnvCredentialProvider struct{}
+
+func NewEnvCredentialProvider() *EnvCredentialProvider {
+    return &EnvCredentialProvider{}
+}
+
+func (e *EnvCredentialProvider) GetUsername() (string, error) {
+    username := os.Getenv("GITEA_USERNAME")
+    if username == "" {
+        return "", fmt.Errorf("GITEA_USERNAME not set")
     }
-    
-    // Sort by priority
-    sortStrategies(fm.strategies)
+    return username, nil
+}
+
+func (e *EnvCredentialProvider) GetPassword() (string, error) {
+    password := os.Getenv("GITEA_PASSWORD")
+    if password == "" {
+        return "", fmt.Errorf("GITEA_PASSWORD not set")
+    }
+    return password, nil
+}
+
+func (e *EnvCredentialProvider) IsAvailable() bool {
+    return os.Getenv("GITEA_USERNAME") != "" && os.Getenv("GITEA_PASSWORD") != ""
+}
+
+func (e *EnvCredentialProvider) Priority() int {
+    return 2 // Second priority after CLI
+}
+
+// CLICredentialProvider holds credentials from command-line flags
+type CLICredentialProvider struct {
+    username string
+    password string
+}
+
+func NewCLICredentialProvider() *CLICredentialProvider {
+    return &CLICredentialProvider{}
+}
+
+func (c *CLICredentialProvider) SetCredentials(username, password string) {
+    c.username = username
+    c.password = password
+}
+
+func (c *CLICredentialProvider) GetUsername() (string, error) {
+    if c.username == "" {
+        return "", fmt.Errorf("no CLI username provided")
+    }
+    return c.username, nil
+}
+
+func (c *CLICredentialProvider) GetPassword() (string, error) {
+    if c.password == "" {
+        return "", fmt.Errorf("no CLI password/token provided")
+    }
+    return c.password, nil
+}
+
+func (c *CLICredentialProvider) IsAvailable() bool {
+    return c.username != "" && c.password != ""
+}
+
+func (c *CLICredentialProvider) Priority() int {
+    return 1 // Highest priority
 }
 ```
 
-### Step 2: Implement Fallback Strategies (150 lines)
-**File**: `pkg/fallback/strategies.go`
-
+### Step 2: Create Configuration File Support (config.go)
 ```go
-package fallback
+// Create pkg/gitea/config.go with:
+
+package gitea
 
 import (
-    "context"
-    "crypto/x509"
+    "encoding/json"
     "fmt"
     "os"
     "path/filepath"
-    
-    "github.com/jessesanford/idpbuilder/pkg/certs"
 )
 
-// SystemCertStrategy tries to use system certificate store
-type SystemCertStrategy struct {
-    trustStore certs.TrustStoreManager
-    priority   int
+// Config represents the configuration file structure
+type Config struct {
+    Registries map[string]RegistryCredentials `json:"registries"`
 }
 
-func NewSystemCertStrategy(ts certs.TrustStoreManager) *SystemCertStrategy {
-    return &SystemCertStrategy{
-        trustStore: ts,
-        priority:   1,
-    }
+// RegistryCredentials holds credentials for a specific registry
+type RegistryCredentials struct {
+    Username string `json:"username"`
+    Password string `json:"password"`
+    URL      string `json:"url"`
 }
 
-func (s *SystemCertStrategy) Name() string { return "system-cert-fallback" }
-func (s *SystemCertStrategy) Priority() int { return s.priority }
-
-func (s *SystemCertStrategy) Execute(ctx context.Context, registry string) error {
-    // Try to load certificates from system store
-    systemPool, err := x509.SystemCertPool()
-    if err != nil {
-        return fmt.Errorf("failed to load system cert pool: %w", err)
-    }
-    
-    // Add system certs to trust store for this registry
-    for _, cert := range systemPool.Subjects() {
-        // Parse and add certificate
-        // Implementation details...
-    }
-    
-    return nil
+// ConfigFileProvider reads from ~/.idpbuilder/config
+type ConfigFileProvider struct {
+    configPath string
+    config     *Config
 }
 
-func (s *SystemCertStrategy) ShouldRetry(err error) bool {
-    // Don't retry system cert loading failures
-    return false
-}
-
-// CachedCertStrategy uses previously cached certificates
-type CachedCertStrategy struct {
-    trustStore certs.TrustStoreManager
-    cacheDir   string
-    priority   int
-}
-
-func NewCachedCertStrategy(ts certs.TrustStoreManager) *CachedCertStrategy {
+func NewConfigFileProvider() *ConfigFileProvider {
     homeDir, _ := os.UserHomeDir()
-    return &CachedCertStrategy{
-        trustStore: ts,
-        cacheDir:   filepath.Join(homeDir, ".idpbuilder", "cert-cache"),
-        priority:   2,
+    configPath := filepath.Join(homeDir, ".idpbuilder", "config")
+    return &ConfigFileProvider{
+        configPath: configPath,
     }
 }
 
-func (c *CachedCertStrategy) Name() string { return "cached-cert-fallback" }
-func (c *CachedCertStrategy) Priority() int { return c.priority }
+func (c *ConfigFileProvider) loadConfig() error {
+    if c.config != nil {
+        return nil
+    }
 
-func (c *CachedCertStrategy) Execute(ctx context.Context, registry string) error {
-    // Look for cached certificates for this registry
-    cacheFile := filepath.Join(c.cacheDir, fmt.Sprintf("%s.pem", sanitizeFilename(registry)))
-    
-    if _, err := os.Stat(cacheFile); os.IsNotExist(err) {
-        return fmt.Errorf("no cached certificate found for %s", registry)
-    }
-    
-    // Load and validate cached certificate
-    certData, err := os.ReadFile(cacheFile)
+    data, err := os.ReadFile(c.configPath)
     if err != nil {
-        return fmt.Errorf("failed to read cached cert: %w", err)
+        return err
     }
-    
-    // Parse and add to trust store
-    // Implementation details...
-    
+
+    var config Config
+    if err := json.Unmarshal(data, &config); err != nil {
+        return err
+    }
+
+    c.config = &config
     return nil
 }
 
-func (c *CachedCertStrategy) ShouldRetry(err error) bool {
-    // Retry on transient file system errors
-    return os.IsTimeout(err)
-}
-
-// SelfSignedAcceptStrategy accepts self-signed certificates with user warning
-type SelfSignedAcceptStrategy struct {
-    trustStore certs.TrustStoreManager
-    priority   int
-}
-
-func NewSelfSignedAcceptStrategy(ts certs.TrustStoreManager) *SelfSignedAcceptStrategy {
-    return &SelfSignedAcceptStrategy{
-        trustStore: ts,
-        priority:   10, // Lowest priority
+func (c *ConfigFileProvider) GetUsername() (string, error) {
+    if err := c.loadConfig(); err != nil {
+        return "", err
     }
+
+    // Look for gitea registry config
+    for name, creds := range c.config.Registries {
+        if name == "gitea" || name == "default" {
+            return creds.Username, nil
+        }
+    }
+
+    return "", fmt.Errorf("no gitea credentials in config")
 }
 
-func (s *SelfSignedAcceptStrategy) Name() string { return "self-signed-accept" }
-func (s *SelfSignedAcceptStrategy) Priority() int { return s.priority }
+func (c *ConfigFileProvider) GetPassword() (string, error) {
+    if err := c.loadConfig(); err != nil {
+        return "", err
+    }
 
-func (s *SelfSignedAcceptStrategy) Execute(ctx context.Context, registry string) error {
-    // Warn user about accepting self-signed certificate
-    fmt.Printf("⚠️  WARNING: Accepting self-signed certificate for %s\n", registry)
-    fmt.Println("This reduces security. Use --insecure flag to suppress this warning.")
-    
-    // Configure trust store to accept self-signed for this registry
-    return s.trustStore.SetInsecure(registry, true)
+    for name, creds := range c.config.Registries {
+        if name == "gitea" || name == "default" {
+            return creds.Password, nil
+        }
+    }
+
+    return "", fmt.Errorf("no gitea credentials in config")
 }
 
-func (s *SelfSignedAcceptStrategy) ShouldRetry(err error) bool {
-    return false
+func (c *ConfigFileProvider) IsAvailable() bool {
+    if _, err := os.Stat(c.configPath); err != nil {
+        return false
+    }
+    return true
 }
 
-// Helper functions
-func sortStrategies(strategies []FallbackStrategy) {
-    // Sort strategies by priority (lower number = higher priority)
-    // Implementation...
-}
-
-func sanitizeFilename(s string) string {
-    // Sanitize registry name for filesystem
-    // Implementation...
+func (c *ConfigFileProvider) Priority() int {
+    return 3 // Third priority
 }
 ```
 
-### Step 3: Implement Insecure Mode Handler (50 lines)
-**File**: `pkg/insecure/handler.go`
-
+### Step 3: Create Keyring Integration (keyring.go)
 ```go
-package insecure
+// Create pkg/gitea/keyring.go with:
+
+package gitea
 
 import (
     "fmt"
+    "github.com/zalando/go-keyring"
+)
+
+const (
+    keyringService = "idpbuilder"
+    keyringUser    = "gitea"
+)
+
+// KeyringProvider provides credentials from system keyring
+type KeyringProvider struct {
+    service string
+    user    string
+}
+
+func NewKeyringProvider() *KeyringProvider {
+    return &KeyringProvider{
+        service: keyringService,
+        user:    keyringUser,
+    }
+}
+
+func (k *KeyringProvider) GetUsername() (string, error) {
+    username, err := keyring.Get(k.service, k.user+"_username")
+    if err != nil {
+        return "", fmt.Errorf("failed to get username from keyring: %w", err)
+    }
+    return username, nil
+}
+
+func (k *KeyringProvider) GetPassword() (string, error) {
+    password, err := keyring.Get(k.service, k.user+"_password")
+    if err != nil {
+        return "", fmt.Errorf("failed to get password from keyring: %w", err)
+    }
+    return password, nil
+}
+
+func (k *KeyringProvider) IsAvailable() bool {
+    // Check if keyring is accessible
+    _, err := keyring.Get(k.service, k.user+"_username")
+    return err == nil || err == keyring.ErrNotFound
+}
+
+func (k *KeyringProvider) Priority() int {
+    return 4 // Lowest priority
+}
+
+// SetCredentials stores credentials in the keyring
+func (k *KeyringProvider) SetCredentials(username, password string) error {
+    if err := keyring.Set(k.service, k.user+"_username", username); err != nil {
+        return fmt.Errorf("failed to store username: %w", err)
+    }
+    if err := keyring.Set(k.service, k.user+"_password", password); err != nil {
+        return fmt.Errorf("failed to store password: %w", err)
+    }
+    return nil
+}
+
+// DeleteCredentials removes credentials from the keyring
+func (k *KeyringProvider) DeleteCredentials() error {
+    keyring.Delete(k.service, k.user+"_username")
+    keyring.Delete(k.service, k.user+"_password")
+    return nil
+}
+```
+
+### Step 4: Update push.go and build.go for CLI flags
+
+#### Update pkg/cmd/push.go:
+```go
+// Add to var declarations:
+var (
+    pushUsername string
+    pushToken    string
+    // ... existing vars
+)
+
+// Update init function:
+func init() {
+    PushCmd.Flags().BoolVar(&pushInsecure, "insecure", false, "Skip certificate verification (not recommended)")
+    PushCmd.Flags().StringVar(&pushRegistry, "registry", getDefaultRegistry(), "Target registry")
+    PushCmd.Flags().StringVar(&pushUsername, "username", "", "Registry username")
+    PushCmd.Flags().StringVar(&pushToken, "token", "", "Registry token/password")
+}
+
+// Update runPush function to pass credentials:
+func runPush(cmd *cobra.Command, args []string) error {
+    // ... existing code ...
+
+    // After creating client, set CLI credentials if provided
+    if pushUsername != "" && pushToken != "" {
+        client.SetCredentials(pushUsername, pushToken)
+    }
+
+    // ... rest of function
+}
+```
+
+#### Update pkg/cmd/build.go:
+```go
+// Add similar flags for build command if it needs registry access
+var (
+    buildUsername string
+    buildToken    string
+    // ... existing vars
+)
+
+func init() {
+    // ... existing flags ...
+    BuildCmd.Flags().StringVar(&buildUsername, "username", "", "Registry username for base image pulls")
+    BuildCmd.Flags().StringVar(&buildToken, "token", "", "Registry token/password for base image pulls")
+}
+```
+
+### Step 5: Update client.go
+```go
+// Modify pkg/gitea/client.go:
+
+// Add at package level:
+var credentialManager *CredentialManager
+
+func init() {
+    credentialManager = NewCredentialManager()
+}
+
+// SetCredentials sets credentials from CLI flags
+func (c *Client) SetCredentials(username, password string) {
+    credentialManager.SetCLICredentials(username, password)
+}
+
+// Update getRegistryUsername function (line ~144):
+func getRegistryUsername() string {
+    username, password, err := credentialManager.GetCredentials()
+    if err != nil {
+        // Log warning and return empty string for backward compatibility
+        // In production, this should probably return an error
+        return ""
+    }
+    return username
+}
+
+// Update getRegistryPassword function (line ~150):
+func getRegistryPassword() string {
+    username, password, err := credentialManager.GetCredentials()
+    if err != nil {
+        // Log warning and return empty string for backward compatibility
+        // In production, this should probably return an error
+        return ""
+    }
+    return password
+}
+
+// Remove TODO comments at lines 30, 145, 151
+```
+
+### Step 6: Create Test Files
+
+#### credentials_test.go
+```go
+package gitea
+
+import (
     "os"
-    "strings"
-)
-
-// InsecureHandler manages the --insecure flag behavior
-type InsecureHandler struct {
-    enabled     bool
-    registries  map[string]bool
-    warnOnce    map[string]bool
-}
-
-// NewInsecureHandler creates a new insecure mode handler
-func NewInsecureHandler() *InsecureHandler {
-    return &InsecureHandler{
-        enabled:    false,
-        registries: make(map[string]bool),
-        warnOnce:   make(map[string]bool),
-    }
-}
-
-// Enable activates insecure mode
-func (h *InsecureHandler) Enable(registries ...string) {
-    h.enabled = true
-    
-    if len(registries) == 0 {
-        // Global insecure mode
-        h.WarnGlobal()
-    } else {
-        // Registry-specific insecure mode
-        for _, reg := range registries {
-            h.registries[reg] = true
-            h.WarnRegistry(reg)
-        }
-    }
-}
-
-// IsInsecure checks if insecure mode is enabled for a registry
-func (h *InsecureHandler) IsInsecure(registry string) bool {
-    if h.enabled && len(h.registries) == 0 {
-        // Global insecure mode
-        return true
-    }
-    return h.registries[registry]
-}
-
-// WarnGlobal displays a warning for global insecure mode
-func (h *InsecureHandler) WarnGlobal() {
-    if !h.warnOnce["_global"] {
-        fmt.Fprintln(os.Stderr, strings.Repeat("⚠", 10))
-        fmt.Fprintln(os.Stderr, "WARNING: Running in INSECURE mode")
-        fmt.Fprintln(os.Stderr, "Certificate validation is DISABLED for ALL registries")
-        fmt.Fprintln(os.Stderr, "This should ONLY be used in development environments")
-        fmt.Fprintln(os.Stderr, strings.Repeat("⚠", 10))
-        h.warnOnce["_global"] = true
-    }
-}
-
-// WarnRegistry displays a warning for registry-specific insecure mode
-func (h *InsecureHandler) WarnRegistry(registry string) {
-    if !h.warnOnce[registry] {
-        fmt.Fprintf(os.Stderr, "⚠️  WARNING: Certificate validation disabled for %s\n", registry)
-        h.warnOnce[registry] = true
-    }
-}
-```
-
-### Step 4: Create Unit Tests for Manager (150 lines)
-**File**: `pkg/fallback/manager_test.go`
-
-```go
-package fallback
-
-import (
-    "context"
-    "errors"
     "testing"
-    "time"
-    
     "github.com/stretchr/testify/assert"
-    "github.com/stretchr/testify/mock"
+    "github.com/stretchr/testify/require"
 )
 
-// MockTrustStore for testing
-type MockTrustStore struct {
-    mock.Mock
+func TestEnvCredentialProvider(t *testing.T) {
+    // Save and restore environment
+    oldUsername := os.Getenv("GITEA_USERNAME")
+    oldPassword := os.Getenv("GITEA_PASSWORD")
+    defer func() {
+        os.Setenv("GITEA_USERNAME", oldUsername)
+        os.Setenv("GITEA_PASSWORD", oldPassword)
+    }()
+
+    // Test with environment variables set
+    os.Setenv("GITEA_USERNAME", "testuser")
+    os.Setenv("GITEA_PASSWORD", "testpass")
+
+    provider := NewEnvCredentialProvider()
+    assert.True(t, provider.IsAvailable())
+
+    username, err := provider.GetUsername()
+    require.NoError(t, err)
+    assert.Equal(t, "testuser", username)
+
+    password, err := provider.GetPassword()
+    require.NoError(t, err)
+    assert.Equal(t, "testpass", password)
+
+    // Test with environment variables not set
+    os.Unsetenv("GITEA_USERNAME")
+    os.Unsetenv("GITEA_PASSWORD")
+
+    assert.False(t, provider.IsAvailable())
 }
 
-func (m *MockTrustStore) SetInsecure(registry string, insecure bool) error {
-    args := m.Called(registry, insecure)
-    return args.Error(0)
+func TestCredentialManager(t *testing.T) {
+    // Test with mock providers
+    manager := NewCredentialManager()
+
+    // Set environment variables for testing
+    os.Setenv("GITEA_USERNAME", "envuser")
+    os.Setenv("GITEA_PASSWORD", "envpass")
+    defer func() {
+        os.Unsetenv("GITEA_USERNAME")
+        os.Unsetenv("GITEA_PASSWORD")
+    }()
+
+    username, password, err := manager.GetCredentials()
+    require.NoError(t, err)
+    assert.Equal(t, "envuser", username)
+    assert.Equal(t, "envpass", password)
 }
-
-// Additional mock methods...
-
-func TestFallbackManager_InsecureMode(t *testing.T) {
-    tests := []struct {
-        name         string
-        insecureMode bool
-        expectBypass bool
-    }{
-        {
-            name:         "insecure mode enabled",
-            insecureMode: true,
-            expectBypass: true,
-        },
-        {
-            name:         "insecure mode disabled",
-            insecureMode: false,
-            expectBypass: false,
-        },
-    }
-    
-    for _, tt := range tests {
-        t.Run(tt.name, func(t *testing.T) {
-            mockStore := new(MockTrustStore)
-            fm := NewFallbackManager(mockStore, WithInsecureMode(tt.insecureMode))
-            
-            if tt.expectBypass {
-                mockStore.On("SetInsecure", "test.registry", true).Return(nil)
-            }
-            
-            ctx := context.Background()
-            err := fm.HandleValidationFailure(ctx, "test.registry", errors.New("cert error"))
-            
-            if tt.expectBypass {
-                assert.NoError(t, err)
-                mockStore.AssertExpectations(t)
-            } else {
-                assert.Error(t, err)
-            }
-        })
-    }
-}
-
-func TestFallbackManager_RetryLogic(t *testing.T) {
-    mockStore := new(MockTrustStore)
-    fm := NewFallbackManager(mockStore, 
-        WithMaxRetries(3),
-        WithRetryDelay(10*time.Millisecond))
-    
-    // Create a mock strategy that fails twice then succeeds
-    mockStrategy := &MockStrategy{
-        failCount: 2,
-    }
-    fm.strategies = []FallbackStrategy{mockStrategy}
-    
-    ctx := context.Background()
-    err := fm.HandleValidationFailure(ctx, "test.registry", errors.New("initial error"))
-    
-    assert.NoError(t, err)
-    assert.Equal(t, 3, mockStrategy.attempts)
-}
-
-func TestFallbackManager_ContextCancellation(t *testing.T) {
-    mockStore := new(MockTrustStore)
-    fm := NewFallbackManager(mockStore)
-    
-    // Create a context that's already cancelled
-    ctx, cancel := context.WithCancel(context.Background())
-    cancel()
-    
-    err := fm.HandleValidationFailure(ctx, "test.registry", errors.New("cert error"))
-    
-    assert.Equal(t, context.Canceled, err)
-}
-
-// Additional test cases...
 ```
 
-### Step 5: Create Strategy Tests (100 lines)
-**File**: `pkg/fallback/strategies_test.go`
-
+#### config_test.go
 ```go
-package fallback
+package gitea
 
 import (
-    "context"
+    "encoding/json"
     "os"
     "path/filepath"
     "testing"
-    
     "github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/require"
 )
 
-func TestSystemCertStrategy(t *testing.T) {
-    mockStore := new(MockTrustStore)
-    strategy := NewSystemCertStrategy(mockStore)
-    
-    assert.Equal(t, "system-cert-fallback", strategy.Name())
-    assert.Equal(t, 1, strategy.Priority())
-    
-    // Test execution
-    ctx := context.Background()
-    err := strategy.Execute(ctx, "test.registry")
-    
-    // System cert loading may fail in test environment
-    // Just verify it attempts the operation
-    assert.NotNil(t, err)
-}
-
-func TestCachedCertStrategy(t *testing.T) {
-    // Create temp directory for cache
+func TestConfigFileProvider(t *testing.T) {
+    // Create temporary config file
     tmpDir := t.TempDir()
-    
-    mockStore := new(MockTrustStore)
-    strategy := &CachedCertStrategy{
-        trustStore: mockStore,
-        cacheDir:   tmpDir,
-        priority:   2,
+    configPath := filepath.Join(tmpDir, ".idpbuilder", "config")
+    os.MkdirAll(filepath.Dir(configPath), 0755)
+
+    config := Config{
+        Registries: map[string]RegistryCredentials{
+            "gitea": {
+                Username: "configuser",
+                Password: "configpass",
+                URL:      "https://gitea.example.com",
+            },
+        },
     }
-    
-    // Test with no cached cert
-    ctx := context.Background()
-    err := strategy.Execute(ctx, "test.registry")
-    assert.Error(t, err)
-    assert.Contains(t, err.Error(), "no cached certificate found")
-    
-    // Create a cached cert file
-    cacheFile := filepath.Join(tmpDir, "test.registry.pem")
-    testCert := []byte("-----BEGIN CERTIFICATE-----\ntest\n-----END CERTIFICATE-----")
-    assert.NoError(t, os.WriteFile(cacheFile, testCert, 0644))
-    
-    // Test with cached cert
-    err = strategy.Execute(ctx, "test.registry")
-    // Will fail on parse but shows it reads the file
-    assert.Error(t, err)
-}
 
-func TestSelfSignedAcceptStrategy(t *testing.T) {
-    mockStore := new(MockTrustStore)
-    mockStore.On("SetInsecure", "test.registry", true).Return(nil)
-    
-    strategy := NewSelfSignedAcceptStrategy(mockStore)
-    
-    assert.Equal(t, "self-signed-accept", strategy.Name())
-    assert.Equal(t, 10, strategy.Priority()) // Lowest priority
-    
-    ctx := context.Background()
-    err := strategy.Execute(ctx, "test.registry")
-    
-    assert.NoError(t, err)
-    mockStore.AssertExpectations(t)
-}
+    data, err := json.Marshal(config)
+    require.NoError(t, err)
 
-// Additional test cases...
+    err = os.WriteFile(configPath, data, 0600)
+    require.NoError(t, err)
+
+    // Test provider
+    provider := &ConfigFileProvider{
+        configPath: configPath,
+    }
+
+    assert.True(t, provider.IsAvailable())
+
+    username, err := provider.GetUsername()
+    require.NoError(t, err)
+    assert.Equal(t, "configuser", username)
+
+    password, err := provider.GetPassword()
+    require.NoError(t, err)
+    assert.Equal(t, "configpass", password)
+}
 ```
 
-### Step 6: Create Insecure Handler Tests (50 lines)
-**File**: `pkg/insecure/handler_test.go`
-
+#### keyring_test.go
 ```go
-package insecure
+package gitea
 
 import (
     "testing"
-    
     "github.com/stretchr/testify/assert"
 )
 
-func TestInsecureHandler_GlobalMode(t *testing.T) {
-    handler := NewInsecureHandler()
-    
-    // Initially disabled
-    assert.False(t, handler.IsInsecure("any.registry"))
-    
-    // Enable global insecure mode
-    handler.Enable()
-    
-    // Should be insecure for all registries
-    assert.True(t, handler.IsInsecure("registry1.example.com"))
-    assert.True(t, handler.IsInsecure("registry2.example.com"))
+// MockKeyringProvider for testing
+type MockKeyringProvider struct {
+    username string
+    password string
+    available bool
 }
 
-func TestInsecureHandler_RegistrySpecific(t *testing.T) {
-    handler := NewInsecureHandler()
-    
-    // Enable for specific registries
-    handler.Enable("registry1.example.com", "registry2.example.com")
-    
-    // Should be insecure only for specified registries
-    assert.True(t, handler.IsInsecure("registry1.example.com"))
-    assert.True(t, handler.IsInsecure("registry2.example.com"))
-    assert.False(t, handler.IsInsecure("registry3.example.com"))
+func (m *MockKeyringProvider) GetUsername() (string, error) {
+    if m.username == "" {
+        return "", fmt.Errorf("no username in keyring")
+    }
+    return m.username, nil
 }
 
-func TestInsecureHandler_WarnOnce(t *testing.T) {
-    handler := NewInsecureHandler()
-    
-    // First warning should set the flag
-    handler.WarnRegistry("test.registry")
-    assert.True(t, handler.warnOnce["test.registry"])
-    
-    // Subsequent calls should not change state
-    handler.WarnRegistry("test.registry")
-    assert.True(t, handler.warnOnce["test.registry"])
+func (m *MockKeyringProvider) GetPassword() (string, error) {
+    if m.password == "" {
+        return "", fmt.Errorf("no password in keyring")
+    }
+    return m.password, nil
+}
+
+func (m *MockKeyringProvider) IsAvailable() bool {
+    return m.available
+}
+
+func (m *MockKeyringProvider) Priority() int {
+    return 3
+}
+
+func TestMockKeyringProvider(t *testing.T) {
+    provider := &MockKeyringProvider{
+        username:  "keyringuser",
+        password:  "keyringpass",
+        available: true,
+    }
+
+    assert.True(t, provider.IsAvailable())
+
+    username, err := provider.GetUsername()
+    assert.NoError(t, err)
+    assert.Equal(t, "keyringuser", username)
+
+    password, err := provider.GetPassword()
+    assert.NoError(t, err)
+    assert.Equal(t, "keyringpass", password)
 }
 ```
 
-## 📊 Size Management Strategy
+### Step 7: Update client_test.go
+Update the existing tests to work with the new credential system:
+- Remove hardcoded "admin"/"password" expectations
+- Add tests for environment variable integration
+- Add tests for missing credentials scenarios
+- Update TestClientWithEnvironmentVariables to actually test env vars
 
-### Line Count Breakdown
-- `pkg/fallback/manager.go`: 200 lines
-- `pkg/fallback/strategies.go`: 150 lines
-- `pkg/fallback/manager_test.go`: 150 lines
-- `pkg/fallback/strategies_test.go`: 100 lines
-- `pkg/insecure/handler.go`: 50 lines
-- `pkg/insecure/handler_test.go`: 50 lines
-- **Total**: 700 lines (under 800 limit)
+## Dependencies
 
-### Size Control Measures
-1. **Regular Measurement**: Use `${PROJECT_ROOT}/tools/line-counter.sh` after each file
-2. **Checkpoint at 500 lines**: Verify trajectory
-3. **Warning at 650 lines**: Consider optimization
-4. **Stop at 700 lines**: Complete testing and documentation
-
-### Measurement Commands
-```bash
-# Navigate to effort directory
-cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/fallback-strategies
-
-# Find project root
-PROJECT_ROOT=$(pwd)
-while [ "$PROJECT_ROOT" != "/" ]; do 
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
-    PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
-done
-
-# Measure lines (after implementation)
-$PROJECT_ROOT/tools/line-counter.sh
+### External Libraries
+Add to go.mod:
+```
+github.com/zalando/go-keyring v0.2.3
 ```
 
-## 🧪 Testing Requirements
+### Import Updates
+Update imports in client.go to include the credential manager initialization.
 
-### Unit Test Coverage
-- **Target**: 85% coverage minimum
-- **Critical Paths**: 100% coverage required
-  - Insecure mode activation
-  - Fallback strategy execution
-  - Retry logic
-  - Context cancellation
+## Size Management
+- **Estimated Lines**: 490-540 (excluding tests)
+- **Breakdown**:
+  - credentials.go: 180 lines (added CLI provider)
+  - config.go: 70 lines
+  - keyring.go: 80 lines
+  - client.go updates: 60 lines
+  - push.go updates: 30 lines
+  - build.go updates: 30 lines
+  - Test files: 250 lines (not counted toward limit)
+- **Measurement Tool**: ${PROJECT_ROOT}/tools/line-counter.sh
+- **Check Frequency**: After each file completion
+- **Split Threshold**: N/A (well under 800 line limit)
 
-### Integration Test Scenarios
-1. **Insecure Flag**: Verify --insecure bypasses all validation
-2. **Fallback Chain**: Test strategy execution order
-3. **Retry Behavior**: Verify exponential backoff
-4. **Warning Display**: Ensure warnings shown appropriately
-5. **Registry-Specific**: Test per-registry insecure settings
+## Test Requirements
+- **Unit Tests**: 90% coverage
+- **Integration Tests**: Test all three credential providers
+- **E2E Tests**: Test with actual environment variables
+- **Test Files**:
+  - credentials_test.go
+  - config_test.go
+  - keyring_test.go
+  - Updated client_test.go
 
-### Test Execution
-```bash
-# Run unit tests
-go test ./pkg/fallback/... -v -cover
-go test ./pkg/insecure/... -v -cover
+## Integration Points
 
-# Run with race detection
-go test ./... -race
+### 1. CLI Flags (Highest Priority)
+- --username - Registry username
+- --token - Registry password/token
+- Available on both push and build commands
+- Override all other credential sources
 
-# Generate coverage report
-go test ./... -coverprofile=coverage.out
-go tool cover -html=coverage.out
-```
+### 2. Client Initialization
+- NewClient() and NewInsecureClient() automatically use credential manager
+- SetCredentials() method to set CLI-provided credentials
+- Backward compatible - returns empty strings if no credentials found
 
-## ✅ Validation Checkpoints
+### 3. Environment Variables (Second Priority)
+- GITEA_USERNAME - Gitea registry username
+- GITEA_PASSWORD - Gitea registry password
+- Used when no CLI flags provided
 
-### Checkpoint 1: After Core Implementation (Step 1-3)
-- [ ] FallbackManager compiles and passes basic tests
-- [ ] Strategies implement interface correctly
-- [ ] InsecureHandler manages state properly
-- [ ] Line count under 400
+### 4. Configuration File (Third Priority)
+- Location: ~/.idpbuilder/config
+- JSON format with registry credentials
+- Used when no CLI flags or env vars
 
-### Checkpoint 2: After Test Implementation (Step 4-6)
-- [ ] All unit tests pass
-- [ ] Coverage exceeds 85%
-- [ ] No race conditions detected
-- [ ] Line count under 700
+### 5. System Keyring (Fourth Priority)
+- Service: "idpbuilder"
+- Account: "gitea"
+- Most secure but lowest priority
 
-### Checkpoint 3: Integration Verification
-- [ ] Works with Wave 1 trust store
-- [ ] Coordinates with E1.2.1 validation
-- [ ] --insecure flag functions correctly
-- [ ] Warnings display appropriately
+## Success Criteria
+- ✅ All credential-related TODOs removed from client.go
+- ✅ Environment variables properly read when set
+- ✅ Config file parsed when present
+- ✅ Keyring integration functional (with graceful fallback)
+- ✅ All tests passing with >90% coverage
+- ✅ No hardcoded credentials remaining
+- ✅ Backward compatible with existing code
 
-### Checkpoint 4: Final Review
-- [ ] All tests pass
-- [ ] Documentation complete
-- [ ] Line count verified with tool
-- [ ] Ready for code review
+## Security Considerations
+1. **Credential Storage**: Never log passwords in plaintext
+2. **File Permissions**: Config file should be 0600 (user read/write only)
+3. **Error Messages**: Don't expose credential values in errors
+4. **Keyring Access**: Handle keyring unavailability gracefully
 
-## 🔗 Dependencies and Integration
+## Error Handling Strategy
+1. **Cascade Through Providers**: Try each provider in order
+2. **Graceful Degradation**: Return empty strings if no credentials found
+3. **Logging**: Log warnings when credentials unavailable (not errors)
+4. **Testing**: Ensure all error paths are tested
 
-### From Wave 1:
-- **E1.1.1 (Kind Certificate Extraction)**:
-  - Import: `github.com/jessesanford/idpbuilder/pkg/certs`
-  - Use: Certificate retrieval for fallback attempts
+## Migration Path
+1. **Phase 1**: Implement credential providers
+2. **Phase 2**: Update client.go to use providers
+3. **Phase 3**: Update tests
+4. **Phase 4**: Documentation update (if needed)
+5. **Phase 5**: Remove all TODOs
 
-- **E1.1.2 (Registry TLS Trust)**:
-  - Import: `github.com/jessesanford/idpbuilder/pkg/certs`
-  - Use: `TrustStoreManager` interface for trust configuration
+## Validation Checklist
+- [ ] All TODOs removed from client.go
+- [ ] Environment variables working
+- [ ] Config file parsing working
+- [ ] Keyring integration working
+- [ ] All tests passing
+- [ ] Size under 500 lines
+- [ ] No security vulnerabilities
+- [ ] Backward compatible
 
-### Coordination with E1.2.1:
-- **Certificate Validation**: Fallback manager activated on validation failures
-- **Shared Types**: May share error types and validation interfaces
-- **Parallel Development**: Can proceed independently, integrate during testing
-
-## 🚀 Implementation Sequence
-
-1. **Setup** (30 min)
-   - Create directory structure
-   - Initialize go module if needed
-   - Set up development environment
-
-2. **Core Implementation** (3 hours)
-   - Implement FallbackManager
-   - Create fallback strategies
-   - Add insecure handler
-
-3. **Testing** (2 hours)
-   - Write comprehensive unit tests
-   - Achieve coverage targets
-   - Fix any issues found
-
-4. **Integration** (1 hour)
-   - Test with Wave 1 components
-   - Coordinate with E1.2.1
-   - Verify end-to-end flow
-
-5. **Documentation** (30 min)
-   - Update code comments
-   - Create usage examples
-   - Document security implications
-
-6. **Review Preparation** (30 min)
-   - Run line counter
-   - Ensure all tests pass
-   - Prepare for code review
-
-## 🔒 Security Considerations
-
-### Critical Security Points
-1. **Insecure Mode Warnings**: Must be prominent and clear
-2. **No Silent Failures**: Always notify user of fallback usage
-3. **Audit Logging**: Log all certificate validation bypasses
-4. **Configuration Safety**: Insecure mode should not persist
-5. **Production Guards**: Consider environment-based restrictions
-
-### Warning Messages
-- Global insecure: Full-screen warning with multiple ⚠️ symbols
-- Registry-specific: Clear indication of affected registry
-- Self-signed acceptance: Explain security implications
-
-## 📝 Notes for SW Engineer
-
-1. **Start with the manager.go** - It's the core orchestrator
-2. **Keep strategies simple** - Each does one thing well
-3. **Test retry logic thoroughly** - Edge cases are important
-4. **Make warnings impossible to miss** - Security is critical
-5. **Coordinate with E1.2.1** - Share error types if beneficial
-6. **Use feature flag** - `FALLBACK_STRATEGIES_ENABLED` for safe rollout
-7. **Monitor line count** - Check after each major component
-
-## 🎯 Success Criteria
-
-- [ ] All fallback strategies implemented and tested
-- [ ] --insecure flag works globally and per-registry
-- [ ] Retry logic with exponential backoff functional
-- [ ] Clear security warnings displayed
-- [ ] 85%+ test coverage achieved
-- [ ] Under 800 lines total (target: 700)
-- [ ] Integrates cleanly with Wave 1 components
-- [ ] Code review passed on first submission
+## Notes for Implementation
+1. Start with the credential provider interface to establish the contract
+2. Implement each provider independently for easy testing
+3. Use dependency injection for testability
+4. Keep the credential manager singleton for simplicity
+5. Ensure thread-safety if concurrent access is expected
+6. Consider adding credential caching to avoid repeated lookups
+7. Add appropriate logging for debugging credential issues
