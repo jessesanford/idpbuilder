@@ -31,3 +31,13 @@ Based on INTEGRATION-METADATA.md and R306/R302 protocols:
 2. gitea-client-split-001 (first split, no prior splits)
 3. gitea-client-split-002 (second split, depends on split-001)
 
+## Previous Image Builder Rebase History
+Note: The image-builder branch was rebased on 2025-09-14T16:46:15Z
+- Previous base: old phase1/integration commit 4f0e259
+- New base: origin/idpbuilder-oci-build-push/phase1/integration (commit 2c39501)
+- Status: Successfully rebased with 8 files and 1056 lines
+
+## Merge 1: image-builder
+Timestamp: 2025-09-15 11:39:53 UTC
+Command: git merge origin/idpbuilder-oci-build-push/phase2/wave1/image-builder --no-ff
+Status: Conflict in work-log.md (resolving)
