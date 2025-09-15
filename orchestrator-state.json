@@ -1,74 +1,227 @@
 {
-  "current_state": "ERROR_RECOVERY",
-  "previous_state": "MONITORING_INTEGRATION",
+  "current_state": "SPAWN_AGENTS",
+  "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
   "current_phase": 2,
-  "current_wave": 1,
-  "transition_time": "2025-09-15T14:51:00Z",
-  "transition_reason": "R291 TEST GATE FAILURE - Tests not run during integration, cannot proceed without passing tests",
+  "current_wave": 2,
+  "transition_time": "2025-09-15T19:03:00Z",
+  "transition_reason": "E2.2.2-A planning complete, ready to spawn SW Engineer for implementation",
+  "effort_creation_context": {
+    "effort_id": "E2.2.2-A",
+    "effort_name": "credential-management",
+    "purpose": "Implement real credential management and remove placeholder authentication code",
+    "base_branch": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
+    "target_branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
+    "effort_path": "efforts/phase2/wave2/credential-management",
+    "dependencies": ["cli-commands"],
+    "estimated_size": "500 lines",
+    "scope": [
+      "Create pkg/gitea/credentials.go with full credential management",
+      "Environment variable support (GITEA_USERNAME, GITEA_PASSWORD)",
+      "Config file parsing (~/.idpbuilder/config)",
+      "System keyring integration for secure storage",
+      "Update getRegistryUsername/Password to return real values",
+      "Remove credential-related TODOs from client.go",
+      "Add comprehensive credential tests"
+    ],
+    "implementation_details": {
+      "new_files": [
+        "pkg/gitea/credentials.go (150 lines)",
+        "pkg/gitea/credentials_test.go (80 lines)",
+        "pkg/gitea/config.go (70 lines)",
+        "pkg/gitea/config_test.go (50 lines)"
+      ],
+      "modified_files": [
+        "pkg/gitea/client.go (update credential functions, ~50 lines)",
+        "pkg/gitea/client_test.go (update tests, ~50 lines)"
+      ],
+      "removed_code": [
+        "TODO comments at lines 30, 145, 151",
+        "Empty string returns from credential functions"
+      ]
+    }
+  },
+  "next_effort_context": {
+    "effort_id": "E2.2.2-B",
+    "effort_name": "image-operations",
+    "purpose": "Implement real image loading, push operations, and remove all remaining placeholders",
+    "base_branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
+    "target_branch": "idpbuilder-oci-build-push/phase2/wave2/image-operations",
+    "effort_path": "efforts/phase2/wave2/image-operations",
+    "dependencies": ["cli-commands", "credential-management"],
+    "estimated_size": "500 lines",
+    "scope": [
+      "Create pkg/gitea/image_loader.go for real OCI image loading",
+      "Docker daemon API integration",
+      "Real manifest generation with actual SHA256 digests",
+      "Replace placeholder manifest (lines 121-136)",
+      "Real progress tracking (replace simulated progress)",
+      "Remove ALL feature flags",
+      "Production error handling"
+    ],
+    "implementation_details": {
+      "new_files": [
+        "pkg/gitea/image_loader.go (200 lines)",
+        "pkg/gitea/image_loader_test.go (80 lines)",
+        "pkg/gitea/progress.go (50 lines)"
+      ],
+      "modified_files": [
+        "pkg/gitea/client.go (replace placeholder code, ~100 lines)",
+        "pkg/cmd/build.go (remove feature flag checks, ~20 lines)",
+        "pkg/cmd/push.go (update for real operations, ~20 lines)"
+      ],
+      "files_to_delete": [
+        "pkg/build/feature_flags.go"
+      ],
+      "removed_code": [
+        "placeholderManifest entire block (lines 121-136)",
+        "Simulated progress loop (lines 98-108)",
+        "All 'placeholder' strings",
+        "All feature flag checks"
+      ]
+    }
+  },
   "integration_context": {
     "type": "wave",
     "phase": 2,
-    "wave": 1,
-    "focus": "Phase 2 Wave 1 integration",
-    "status": "INTEGRATION_COMPLETE",
-    "note": "Integration agent successfully merged all efforts"
-  },
-  "integration_infrastructure": {
-    "type": "wave",
-    "phase": 2,
-    "wave": 1,
-    "branch": "idpbuilder-oci-build-push/phase2/wave1/integration",
-    "base_branch": "idpbuilder-oci-build-push/phase1/integration",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo",
-    "status": "infrastructure_ready",
-    "created_at": "2025-09-15T13:28:00Z"
+    "wave": 2,
+    "focus": "Phase 2 Wave 2 integration",
+    "status": "DEFERRED",
+    "note": "Integration deferred until E2.2.2 production-implementation is complete"
   },
   "phase2_wave1_integration": {
     "status": "INTEGRATION_COMPLETE",
     "branch": "idpbuilder-oci-build-push/phase2/wave1/integration",
+    "retry_branch": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
     "base_branch": "idpbuilder-oci-build-push/phase1/integration",
     "efforts_integrated": [
       "image-builder",
       "gitea-client-split-001",
       "gitea-client-split-002"
     ],
-    "integration_report_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/INTEGRATION_REPORT.md",
-    "work_log_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/work-log.md",
-    "demo_script_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/demo-features.sh",
-    "integration_completed_at": "2025-09-15T14:41:03Z",
+    "integration_report_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/worktrees/phase2-wave1-integration/INTEGRATION-REPORT-RETRY.md",
+    "work_log_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/worktrees/phase2-wave1-integration/work-log.md",
+    "integration_completed_at": "2025-09-15T15:10:00Z",
     "build_status": "PASSING",
-    "test_status": "NOT_RUN",
+    "test_status": "PASSING",
     "demo_status": "FUNCTIONAL",
-    "documentation_status": "COMPLETE"
+    "documentation_status": "COMPLETE",
+    "notes": "Successfully re-integrated with test fixes"
+  },
+  "phase2_wave2_integration": {
+    "status": "PENDING_EFFORT_COMPLETION",
+    "old_branch": "idpbuilder-oci-build-push/phase2/wave2/integration-20250914-200305",
+    "old_base": "unknown",
+    "new_base": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
+    "efforts_to_integrate": [
+      "cli-commands",
+      "credential-management",
+      "image-operations"
+    ],
+    "notes": "Waiting for E2.2.2-A (credential-management) and E2.2.2-B (image-operations) to complete before integration. All three efforts will be integrated together to form complete Phase 2 Wave 2."
   },
   "efforts_completed": [
     "phase2/wave1/image-builder",
     "phase2/wave1/gitea-client-split-001",
-    "phase2/wave1/gitea-client-split-002"
+    "phase2/wave1/gitea-client-split-002",
+    "phase2/wave2/cli-commands"
   ],
-  "efforts_in_progress": [],
-  "split_tracking": {},
-  "agents_spawned": [
+  "efforts_in_progress": [
     {
-      "agent": "code-reviewer",
-      "state": "WAVE_MERGE_PLANNING",
-      "time": "2025-09-15T13:43:05Z",
-      "purpose": "Create merge plan for Phase 2 Wave 1"
+      "effort": "phase2/wave2/credential-management",
+      "effort_id": "E2.2.2-A",
+      "branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
+      "status": "PLANNING_IN_PROGRESS",
+      "base_branch": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
+      "location": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/credential-management",
+      "estimated_size": "500 lines",
+      "notes": "First part of E2.2.2 - Implements real credential management, removes auth TODOs",
+      "branch_status": "Branch properly based on cli-commands and pushed to remote (2025-09-15T18:45:00Z)"
     },
     {
-      "agent": "integration",
-      "state": "INIT",
-      "time": "2025-09-15T14:41:03Z",
-      "purpose": "Execute Phase 2 Wave 1 integration"
+      "effort": "phase2/wave2/image-operations",
+      "effort_id": "E2.2.2-B",
+      "branch": "idpbuilder-oci-build-push/phase2/wave2/image-operations",
+      "status": "PENDING_CREATION",
+      "base_branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
+      "location": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/image-operations",
+      "estimated_size": "500 lines",
+      "notes": "Second part of E2.2.2 - Implements real image operations, removes all placeholders and feature flags"
     }
   ],
-  "notes": "Integration completed successfully. All efforts merged, builds passing, demos functional.",
-  "error_context": {
-    "error_type": "R291_GATE_FAILURE",
-    "gate_failed": "TEST",
-    "details": "Tests were not run during integration (per R265 - document but don't fix). R291 requires all gates (build, test, demo) to pass.",
-    "required_action": "Run tests on the integrated branch and ensure they pass",
-    "integration_branch": "idpbuilder-oci-build-push/phase2/wave1/integration",
-    "integration_directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo"
+  "split_tracking": {
+    "phase2_wave1_gitea_client": {
+      "original_effort": "gitea-client",
+      "split_count": 2,
+      "splits": [
+        {
+          "name": "gitea-client-split-001",
+          "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+          "status": "COMPLETE"
+        },
+        {
+          "name": "gitea-client-split-002",
+          "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+          "status": "COMPLETE"
+        }
+      ]
+    }
+  },
+  "agents_spawned": [
+    {
+      "agent": "software-engineer",
+      "state": "REBASE",
+      "time": "2025-09-15T15:25:00Z",
+      "purpose": "Rebase cli-commands onto Wave 1 integration"
+    },
+    {
+      "agent": "code-reviewer",
+      "state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+      "time": "2025-09-15T18:26:00Z",
+      "purpose": "Create implementation plan for E2.2.2-A credential-management"
+    }
+  ],
+  "notes": "Creating E2.2.2-A (credential-management) and E2.2.2-B (image-operations) efforts to complete Phase 2 Wave 2. E2.2.1 (cli-commands) was intentionally a prototype with TODOs and placeholders. These two efforts will implement ALL production features needed for real-world usage.",
+  "next_states_expected": [
+    "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → MONITOR_EFFORT_PLANNING",
+    "MONITOR_EFFORT_PLANNING → SPAWN_SW_ENGINEERS_IMPLEMENTATION",
+    "SPAWN_SW_ENGINEERS_IMPLEMENTATION → MONITOR_IMPLEMENTATION",
+    "MONITOR_IMPLEMENTATION → SETUP_EFFORT_INFRASTRUCTURE (E2.2.2-B)",
+    "SETUP_EFFORT_INFRASTRUCTURE (E2.2.2-B) → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → MONITOR_EFFORT_PLANNING",
+    "MONITOR_EFFORT_PLANNING → SPAWN_SW_ENGINEERS_IMPLEMENTATION",
+    "SPAWN_SW_ENGINEERS_IMPLEMENTATION → MONITOR_IMPLEMENTATION",
+    "MONITOR_IMPLEMENTATION → INTEGRATION (when both complete)",
+    "INTEGRATION → SETUP_INTEGRATION_INFRASTRUCTURE",
+    "SETUP_INTEGRATION_INFRASTRUCTURE → SPAWN_CODE_REVIEWER_MERGE_PLAN",
+    "SPAWN_CODE_REVIEWER_MERGE_PLAN → SPAWN_INTEGRATION_AGENT",
+    "SPAWN_INTEGRATION_AGENT → MONITORING_INTEGRATION",
+    "MONITORING_INTEGRATION → WAVE_COMPLETE (if successful)"
+  ],
+  "e2_2_2_split_rationale": {
+    "reason": "Original E2.2.2 scope was ~850 lines, exceeding 800-line limit",
+    "split_approach": "Divided by functional area to maintain cohesion and R307 compliance",
+    "e2_2_2_a_focus": "Authentication and credential management (500 lines)",
+    "e2_2_2_b_focus": "Image operations and production cleanup (500 lines)",
+    "dependencies": "E2.2.2-B depends on E2.2.2-A (sequential implementation required)",
+    "integration_approach": "All three efforts (E2.2.1, E2.2.2-A, E2.2.2-B) integrate together"
+  },
+  "production_completeness_checklist": {
+    "e2_2_2_a_completes": [
+      "✓ Real credential management implemented",
+      "✓ Environment variable support added",
+      "✓ Config file parsing functional",
+      "✓ Keyring integration complete",
+      "✓ Credential TODOs removed"
+    ],
+    "e2_2_2_b_completes": [
+      "✓ Real image loading from Docker/OCI",
+      "✓ Placeholder manifest removed",
+      "✓ Real progress tracking implemented",
+      "✓ All feature flags removed",
+      "✓ Production error handling added",
+      "✓ ALL 'placeholder' strings eliminated",
+      "✓ ALL TODOs resolved"
+    ],
+    "final_state": "100% production-ready binary with NO stubs, placeholders, or TODOs"
   }
 }
