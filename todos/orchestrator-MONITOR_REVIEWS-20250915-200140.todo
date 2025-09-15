@@ -1,0 +1,25 @@
+# Orchestrator TODOs - MONITOR_REVIEWS State
+# Created: 2025-09-15T20:01:12Z
+# State Transition: SPAWN_CODE_REVIEWERS_FOR_REVIEW → MONITOR_REVIEWS
+
+## Completed Tasks:
+- [x] Read state-specific rules for SPAWN_CODE_REVIEWERS_FOR_REVIEW
+- [x] Read and acknowledge all mandatory rules (R151, R108, R222, R255, R208, R338)
+- [x] Create R290 verification marker
+- [x] Spawn Code Reviewer for E2.2.2-A (credential-management) review
+- [x] Verify review is underway
+- [x] Update state to MONITOR_REVIEWS
+- [x] Save TODOs and commit state (R287/R324)
+
+## Pending for Next State (MONITOR_REVIEWS):
+- [ ] Read MONITOR_REVIEWS state rules
+- [ ] Check review results for E2.2.2-A
+- [ ] Determine next action based on review failure
+- [ ] Likely spawn SW Engineer to fix the workspace contamination issue
+- [ ] Need to recreate credential-management effort from clean base
+
+## Critical Findings:
+- E2.2.2-A has CRITICAL size violation: 7492 lines (936% over limit)
+- Entire project was copied into effort directory
+- Workspace isolation (R176) was violated
+- Branch needs complete recreation from clean base

@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
-  "previous_state": "MONITOR_IMPLEMENTATION",
+  "current_state": "MONITOR_REVIEWS",
+  "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-15T19:49:46Z",
-  "transition_reason": "credential-management implementation complete - ready for code review",
+  "transition_time": "2025-09-15T20:01:12Z",
+  "transition_reason": "Code Reviewer spawned for E2.2.2-A - CRITICAL size violation found (7492 lines)",
   "effort_creation_context": {
     "effort_id": "E2.2.2-A",
     "effort_name": "credential-management",
@@ -143,7 +143,40 @@
       "branch_status": "Branch properly based on cli-commands and pushed to remote (2025-09-15T18:45:00Z)",
       "implementation_completed_at": "2025-09-15T19:49:46Z",
       "lines_implemented": 301,
-      "completion_marker_found": true
+      "completion_marker_found": true,
+      "review_status": "FAILED",
+      "review_completed_at": "2025-09-15T20:01:12Z",
+      "review_findings": {
+        "status": "NEEDS_FIXES",
+        "lines_measured": 7492,
+        "size_violation": true,
+        "violation_severity": "CRITICAL",
+        "summary": "Entire project copied into effort directory - needs complete recreation",
+        "report_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/credential-management/CODE-REVIEW-REPORT-20250915-195800.md"
+      },
+      "line_count_tracking": {
+        "initial_count": 7492,
+        "current_count": 7492,
+        "last_measured": "2025-09-15T20:01:12Z",
+        "measured_by": "code-reviewer",
+        "measurement_command": "../../tools/line-counter.sh",
+        "auto_detected_base": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
+        "implementation_only": true,
+        "within_limit": false,
+        "requires_split": true,
+        "measurement_history": [
+          {
+            "timestamp": "2025-09-15T20:01:12Z",
+            "count": 7492,
+            "measured_by": "code-reviewer",
+            "reason": "initial review",
+            "command": "../../tools/line-counter.sh",
+            "auto_detected_base": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
+            "excludes": "tests/demos/docs per R007",
+            "within_limit": false
+          }
+        ]
+      }
     },
     {
       "effort": "phase2/wave2/image-operations",
@@ -192,6 +225,12 @@
       "state": "IMPLEMENTATION",
       "time": "2025-09-15T19:25:22Z",
       "purpose": "Implement E2.2.2-A credential-management after disconnection recovery"
+    },
+    {
+      "agent": "code-reviewer",
+      "state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+      "time": "2025-09-15T20:01:12Z",
+      "purpose": "Review E2.2.2-A credential-management implementation"
     }
   ],
   "notes": "Creating E2.2.2-A (credential-management) and E2.2.2-B (image-operations) efforts to complete Phase 2 Wave 2. E2.2.1 (cli-commands) was intentionally a prototype with TODOs and placeholders. These two efforts will implement ALL production features needed for real-world usage.",
