@@ -69,6 +69,7 @@ func TestCopyTreeToTree(t *testing.T) {
 }
 
 func testCopiedFiles(t *testing.T, src, dst billy.Filesystem, srcStartPath, dstStartPath string) {
+	// Use shared testutil function with local ReadWorktreeFile implementation
 	files, err := src.ReadDir(srcStartPath)
 	assert.Nil(t, err)
 
@@ -99,7 +100,7 @@ func TestGetWorktreeYamlFiles(t *testing.T) {
 	wt := memfs.New()
 	_, err := git.CloneContext(context.Background(), memory.NewStorage(), wt, cloneOptions)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatalf("%s", err.Error())
 	}
 
 	paths, err := GetWorktreeYamlFiles("./pkg", wt, true)
