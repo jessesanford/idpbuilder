@@ -1,0 +1,25 @@
+# Orchestrator TODOs - INTEGRATION State Setup
+# Saved: 2025-09-15 15:45 UTC
+
+## Completed Tasks
+✅ Analyzed Phase 2 Wave 2 cli-commands dependencies
+✅ Determined cli-commands needed rebasing onto Wave 1 integration
+✅ Spawned SW Engineer to perform git rebase
+✅ Verified successful rebase with Wave 1 commits integrated
+✅ Updated orchestrator-state.json for Wave 2 re-integration
+
+## State File Updates
+- Set current_state to INTEGRATION
+- Updated to Phase 2, Wave 2
+- Marked cli-commands as READY_FOR_INTEGRATION
+- Updated base branch to idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755
+- Documented old Wave 2 integration as obsolete
+
+## Next Steps (when continued)
+The INTEGRATION state will trigger:
+1. SETUP_INTEGRATION_INFRASTRUCTURE - Create new workspace
+2. SPAWN_CODE_REVIEWER_MERGE_PLAN - Plan the merge
+3. WAITING_FOR_MERGE_PLAN - Review plan
+4. SPAWN_INTEGRATION_AGENT - Execute integration
+5. MONITORING_INTEGRATION - Monitor progress
+6. WAVE_COMPLETE - If successful
