@@ -1,10 +1,10 @@
 {
-  "current_state": "MONITORING_INTEGRATION",
-  "previous_state": "SPAWN_INTEGRATION_AGENT",
+  "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+  "previous_state": "ERROR_RECOVERY",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-15T11:47:22Z",
-  "transition_reason": "Integration agent spawned and completed",
+  "transition_time": "2025-09-15T12:05:27Z",
+  "transition_reason": "Need Code Reviewer to analyze stubs and create removal plan",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -1897,5 +1897,13 @@
         "status": "ready"
       }
     ]
+  },
+  "stub_violation": {
+    "detected_at": "2025-09-15T12:05:20Z",
+    "effort": "gitea-client-split-002",
+    "file": "pkg/registry/stubs.go",
+    "lines": 189,
+    "severity": "CRITICAL",
+    "reason": "Stubs are ABSOLUTELY FORBIDDEN - all code must be real implementations"
   }
 }
