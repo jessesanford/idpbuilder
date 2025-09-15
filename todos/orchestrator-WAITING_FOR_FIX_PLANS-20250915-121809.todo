@@ -1,0 +1,7 @@
+[
+  {"content": "Read state-specific rules for SPAWN_CODE_REVIEWER_FIX_PLAN", "status": "completed"},
+  {"content": "Spawn Code Reviewer to analyze stubs and create removal plan", "status": "completed"},
+  {"content": "Update orchestrator state to WAITING_FOR_FIX_PLANS", "status": "completed"},
+  {"content": "Save TODO state and commit changes", "status": "completed"},
+  {"content": "Stop and wait for continuation", "status": "in_progress"}
+]

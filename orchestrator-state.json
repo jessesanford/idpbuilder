@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
-  "previous_state": "ERROR_RECOVERY",
+  "current_state": "WAITING_FOR_FIX_PLANS",
+  "previous_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-15T12:05:27Z",
-  "transition_reason": "Need Code Reviewer to analyze stubs and create removal plan",
+  "transition_time": "2025-09-15T12:17:54Z",
+  "transition_reason": "Code Reviewer spawned to create stub removal fix plan per R320",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -537,6 +537,13 @@
       "completed_at": "2025-09-15T05:31:50Z",
       "result": "MERGE_PLAN_CREATED",
       "deliverable": "WAVE-MERGE-PLAN.md"
+    },
+    {
+      "type": "code-reviewer",
+      "task": "create_stub_removal_fix_plan",
+      "state": "CREATE_INTEGRATION_FIX_PLAN",
+      "timestamp": "2025-09-15T12:17:54Z",
+      "purpose": "R320 violation - stub removal planning"
     }
   ],
   "integration_status": {
