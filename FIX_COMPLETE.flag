@@ -1,16 +1,1 @@
-Completed at: 2025-09-14 02:05:59 UTC
-Branch: idpbuilder-oci-build-push/phase1/wave2/integration
-Fixes applied: 2
-Status: ERROR RECOVERY COMPLETE
-
-Fixed Issues:
-1. Docker client ContainerListOptions import issue in pkg/kind/cluster_test.go
-   - Added missing container package import
-   - Updated ContainerListOptions to container.ListOptions
-2. Go vet format string warnings in pkg/kind/kindlogger.go
-   - Fixed non-constant format strings in fmt.Errorf calls
-   - Added proper %s format specifiers
-
-Build Status: ✅ SUCCESSFUL
-Tests Status: ⚠️ SOME TEST FAILURES (not related to compilation)
-Commit: 97767fe fix: resolve build errors in pkg/kind
+Feature flag fix completed at Mon Sep 15 04:59:55 AM UTC 2025
