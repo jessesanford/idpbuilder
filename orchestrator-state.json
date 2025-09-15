@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "current_state": "WAITING_FOR_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 1,
-  "transition_time": "2025-09-15T05:17:23Z",
-  "transition_reason": "Integration infrastructure ready, need merge plan",
+  "transition_time": "2025-09-15T05:31:50Z",
+  "transition_reason": "Code Reviewer spawned and merge plan created",
   "wave_1_review": {
     "completed_at": "2025-09-14T11:27:00Z",
     "decision": "PROCEED_NEXT_WAVE",
@@ -528,6 +528,15 @@
       "completed_at": "2025-09-14T08:49:18Z",
       "state": "COMPLETED",
       "result": "SUCCESS - R327 cascade integration complete"
+    },
+    {
+      "agent": "code-reviewer",
+      "task": "wave_merge_plan_phase2_wave1_reintegration",
+      "spawned_at": "2025-09-15T05:31:50Z",
+      "state": "WAVE_MERGE_PLANNING",
+      "completed_at": "2025-09-15T05:31:50Z",
+      "result": "MERGE_PLAN_CREATED",
+      "deliverable": "WAVE-MERGE-PLAN.md"
     }
   ],
   "integration_status": {
@@ -1584,8 +1593,10 @@
     "merge_plan_requested": true,
     "merge_plan_ready": true,
     "merge_plan_file": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
-    "waiting_for": "integration_agent",
-    "created_at": "2025-09-14T17:33:12Z"
+    "waiting_for": "integration_execution",
+    "created_at": "2025-09-14T17:33:12Z",
+    "merge_plan_created": true,
+    "merge_plan_created_at": "2025-09-15T05:31:50Z"
   },
   "transition_history": [
     {

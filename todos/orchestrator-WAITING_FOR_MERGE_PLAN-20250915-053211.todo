@@ -1,0 +1,22 @@
+## Orchestrator TODOs - WAITING_FOR_MERGE_PLAN State
+## Saved: 2025-09-15T05:32:00Z
+
+### Completed Tasks:
+- ✅ Acknowledge state rules per R290
+- ✅ Verify Phase 2 Wave 1 integration infrastructure  
+- ✅ Spawn Code Reviewer for Wave 1 merge plan creation
+- ✅ Update orchestrator-state.json with spawn details
+- ✅ Save TODOs per R287 before state transition
+
+### Pending Tasks:
+- [ ] Wait for integration execution
+- [ ] Monitor integration progress
+- [ ] Verify R291 gates pass
+- [ ] Transition to next state based on results
+
+## State Context:
+- Current State: WAITING_FOR_MERGE_PLAN (transitioning from SPAWN_CODE_REVIEWER_MERGE_PLAN)
+- Phase: 2, Wave: 1
+- Integration Type: R327 cascade re-integration
+- Merge Plan: Created at /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md
+- Next Action: Execute integration using merge plan
