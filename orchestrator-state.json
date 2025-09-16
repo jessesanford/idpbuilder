@@ -447,5 +447,16 @@
     "merge_wave1": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
     "merge_wave2": "idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118",
     "verify_credentials": "MUST have --username and --token flags after completion"
+  },
+  "phase_integration_infrastructure": {
+    "branch": "idpbuilder-oci-build-push/phase2-integration",
+    "workspace": "efforts/phase2/integration-workspace/repo",
+    "base_branch": "idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118",
+    "type": "phase",
+    "phase": 2,
+    "created_at": "2025-09-16T02:54:19Z",
+    "ready": true,
+    "r308_compliant": true,
+    "note": "Based on Wave 2 integration (last wave of Phase 2) - corrected location"
   }
 }
