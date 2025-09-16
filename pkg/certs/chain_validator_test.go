@@ -35,19 +35,18 @@ func (m *MockTrustStore) SetInsecure(registry string, insecure bool) {
 	m.insecure[registry] = insecure
 }
 
-
 func TestNewChainValidator(t *testing.T) {
 	trustStore := NewMockTrustStore()
-	
+
 	validator := NewChainValidator(trustStore, StrictMode)
 	if validator == nil {
 		t.Fatal("NewChainValidator returned nil")
 	}
-	
+
 	if validator.trustStore != trustStore {
 		t.Error("Trust store not set correctly")
 	}
-	
+
 	if validator.mode != StrictMode {
 		t.Errorf("Expected StrictMode, got %v", validator.mode)
 	}
@@ -56,12 +55,12 @@ func TestNewChainValidator(t *testing.T) {
 func TestChainValidator_ValidateChain_EmptyChain(t *testing.T) {
 	trustStore := NewMockTrustStore()
 	validator := NewChainValidator(trustStore, StrictMode)
-	
+
 	err := validator.ValidateChain([]*x509.Certificate{}, "test-registry", nil)
 	if err == nil {
 		t.Fatal("Expected error for empty chain")
 	}
-	
+
 	if validationErr, ok := err.(*ValidationError); ok {
 		if validationErr.Type != ChainIncomplete {
 			t.Errorf("Expected ChainIncomplete error, got %v", validationErr.Type)
@@ -74,17 +73,17 @@ func TestChainValidator_ValidateChain_EmptyChain(t *testing.T) {
 func TestChainValidator_ValidateChain_SingleValidCert(t *testing.T) {
 	trustStore := NewMockTrustStore()
 	validator := NewChainValidator(trustStore, InsecureMode) // Use insecure mode to bypass trust checks
-	
+
 	// Create a valid self-signed certificate
 	cert := createTestCertificateWithTimes(t, time.Now().Add(-24*time.Hour), time.Now().Add(24*time.Hour))
 	cert.Subject.CommonName = "test.example.com"
 	chain := []*x509.Certificate{cert}
-	
+
 	options := &ChainValidationOptions{
 		AllowSelfSigned: true,
 		MaxChainLength:  1,
 	}
-	
+
 	err := validator.ValidateChain(chain, "test-registry", options)
 	if err != nil {
 		t.Fatalf("Expected no error for valid single certificate in insecure mode, got: %v", err)
@@ -94,22 +93,22 @@ func TestChainValidator_ValidateChain_SingleValidCert(t *testing.T) {
 func TestChainValidator_ValidateChain_ChainTooLong(t *testing.T) {
 	trustStore := NewMockTrustStore()
 	validator := NewChainValidator(trustStore, StrictMode)
-	
+
 	// Create multiple certificates to exceed limit
 	certs := make([]*x509.Certificate, 5)
 	for i := range certs {
 		certs[i] = createTestCertificateWithTimes(t, time.Now().Add(-24*time.Hour), time.Now().Add(24*time.Hour))
 	}
-	
+
 	options := &ChainValidationOptions{
 		MaxChainLength: 3, // Set limit lower than chain length
 	}
-	
+
 	err := validator.ValidateChain(certs, "test-registry", options)
 	if err == nil {
 		t.Fatal("Expected error for chain too long")
 	}
-	
+
 	if validationErr, ok := err.(*ValidationError); ok {
 		if validationErr.Type != ChainTooLong {
 			t.Errorf("Expected ChainTooLong error, got %v", validationErr.Type)
@@ -129,7 +128,7 @@ func TestChainValidator_ValidationModes(t *testing.T) {
 		{"Lenient Mode", LenientMode, "Lenient"},
 		{"Insecure Mode", InsecureMode, "Insecure"},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.mode.String(); got != tt.want {
@@ -169,5 +168,4 @@ func TestChainValidator_DefaultOptions(t *testing.T) {
 	if options.MaxChainLength != 4 {
 		t.Errorf("Expected default max chain length 4, got %d", options.MaxChainLength)
 	}
-}
 }
