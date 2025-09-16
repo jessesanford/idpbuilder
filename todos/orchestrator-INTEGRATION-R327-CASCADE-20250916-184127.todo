@@ -1,0 +1,35 @@
+# R327 CASCADE RE-INTEGRATION PLAN
+# Created: 2025-09-16T18:41:00Z
+# State: INTEGRATION (Phase 1 Wave 1)
+
+## CASCADE SEQUENCE REQUIRED BY R327:
+
+### 1. Phase 1 Wave 1 Integration ← CURRENT
+   - Delete stale: efforts/phase1/wave1/integration-workspace
+   - Recreate fresh integration
+   - Merge kind-cert-extraction (WITH Bug #2 fix - feature flags removed)
+   - Merge other Wave 1 efforts
+   
+### 2. Phase 1 Wave 2 Integration
+   - Delete stale: efforts/phase1/wave2/integration-workspace  
+   - Recreate fresh integration
+   - Merge cert-validation-split-003 (WITH Bug #1 fix - syntax error)
+   - Merge other Wave 2 efforts and splits
+   
+### 3. Phase 1 Integration
+   - Delete stale: efforts/phase1/phase-integration-workspace
+   - Recreate fresh integration
+   - Merge phase1-wave1-integration (has Bug #2)
+   - Merge phase1-wave2-integration (has Bug #1)
+   
+### 4. Project Integration
+   - Delete stale: efforts/project/project-integration-workspace
+   - Recreate fresh integration
+   - Merge phase1-integration (has BOTH fixes)
+   - Merge phase2-integration (reuse existing)
+
+## R327 ENFORCEMENT:
+- MUST delete ALL stale integrations
+- MUST recreate in CASCADE order
+- MUST validate timestamps
+- Failure to cascade = AUTOMATIC FAILURE (-100%)
