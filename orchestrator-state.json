@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "WAITING_FOR_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-16T00:33:10Z",
-  "transition_reason": "Code Reviewer spawned to create Wave 2 merge plan",
+  "transition_time": "2025-09-16T00:40:03Z",
+  "transition_reason": "R322 Checkpoint: Merge plan ready, awaiting user review",
   "effort_creation_context": {
     "effort_id": "E2.2.2-B",
     "effort_name": "image-operations",
@@ -133,7 +133,8 @@
     "merge_plan_ready": true,
     "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/integration-workspace/repo/PHASE-2-WAVE-2-MERGE-PLAN.md",
     "integration_completed_at": "2025-09-15T23:21:14Z",
-    "build_status": "FAILED"
+    "build_status": "FAILED",
+    "merge_plan_validation": "PASSED"
   },
   "efforts_completed": [
     "phase2/wave1/image-builder",

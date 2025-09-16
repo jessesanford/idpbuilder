@@ -1,0 +1,7 @@
+[
+  {"content": "Validate merge plan exists and contains required sections", "status": "completed", "activeForm": "Validating merge plan existence and contents"},
+  {"content": "Update orchestrator-state.json to SPAWN_INTEGRATION_AGENT per R324", "status": "completed", "activeForm": "Updating state file for R322 checkpoint"},
+  {"content": "Save TODO state before transition per R287", "status": "completed", "activeForm": "Saving TODO state for persistence"},
+  {"content": "Commit state changes and push", "status": "in_progress", "activeForm": "Committing state changes"},
+  {"content": "Display R322 checkpoint message and stop", "status": "pending", "activeForm": "Displaying checkpoint message"}
+]
