@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
-	"github.com/cnoe-io/idpbuilder/pkg/printer/types"
 	"github.com/cnoe-io/idpbuilder/pkg/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -139,7 +138,7 @@ func TestOutput(t *testing.T) {
 	ctx := context.Background()
 	r, _ := labels.NewRequirement(v1alpha1.CLISecretLabelKey, selection.Equals, []string{v1alpha1.CLISecretLabelValue})
 
-	corePkgData := map[string]types.Secret{
+	corePkgData := map[string]testutil.Secret{
 		argoCDInitialAdminSecretName: {
 			IsCore:    true,
 			Name:      argoCDInitialAdminSecretName,
@@ -156,7 +155,7 @@ func TestOutput(t *testing.T) {
 		},
 	}
 
-	packageData := map[string]types.Secret{
+	packageData := map[string]testutil.Secret{
 		"name1": {
 			Name:      "name1",
 			Namespace: "ns1",
@@ -210,7 +209,7 @@ func TestOutput(t *testing.T) {
 	assert.Nil(t, err)
 
 	// verify received json data
-	var received []types.Secret
+	var received []testutil.Secret
 	err = json.Unmarshal(buffer.Bytes(), &received)
 	assert.Nil(t, err)
 	assert.Equal(t, 4, len(received))

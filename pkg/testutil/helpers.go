@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
-	"github.com/cnoe-io/idpbuilder/pkg/printer/types"
 	"github.com/go-git/go-billy/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -20,6 +19,17 @@ import (
 	"k8s.io/apimachinery/pkg/selection"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+// Secret represents test secret data
+type Secret struct {
+	IsCore    bool
+	Username  string
+	Password  string
+	Token     string
+	Data      map[string]string
+	Name      string
+	Namespace string
+}
 
 // FakeKubeClient provides a mock Kubernetes client for testing
 type FakeKubeClient struct {
@@ -44,8 +54,8 @@ func Selector(pkgName string) labels.Selector {
 	return labels.NewSelector().Add(*r1).Add(*r2)
 }
 
-// SecretDataToSecret converts a types.Secret to a v1.Secret for testing
-func SecretDataToSecret(data types.Secret) v1.Secret {
+// SecretDataToSecret converts a Secret to a v1.Secret for testing
+func SecretDataToSecret(data Secret) v1.Secret {
 	d := make(map[string][]byte)
 	if data.IsCore {
 		d["username"] = []byte(data.Username)
