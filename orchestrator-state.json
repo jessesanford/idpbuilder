@@ -756,7 +756,6 @@
   },
   "project_integration_infrastructure": {
     "branch": "idpbuilder-oci-build-push/project-integration-20250916-152718",
-    "worktree": "worktrees/project-integration",
     "base_branch": "origin/idpbuilder-oci-build-push/phase2-integration-20250916-033720",
     "type": "project",
     "total_phases": 2,
@@ -766,7 +765,8 @@
     "base_issue_note": "Branch rebased onto correct phase2-integration-20250916-033720 containing both Wave 1 and Wave 2",
     "merge_plan_committed": true,
     "base_corrected": true,
-    "rebased_at": "2025-09-16T16:36:28Z"
+    "rebased_at": "2025-09-16T16:36:28Z",
+    "note": "Branch exists on target repo, no worktrees used"
   },
   "code_reviewer_project_merge_plan": {
     "spawned_at": "2025-09-16T16:06:49Z",
@@ -789,7 +789,7 @@
     }
   ],
   "project_merge_plan": {
-    "location": "worktrees/project-integration/PROJECT-MERGE-PLAN.md",
+    "location": "PROJECT-MERGE-PLAN.md on branch idpbuilder-oci-build-push/project-integration-20250916-152718",
     "created_at": "2025-09-16T16:06:16Z",
     "updated_at": "2025-09-16T16:18:00Z",
     "phases_to_merge": [
@@ -803,5 +803,14 @@
     "committed": true,
     "commit_sha": "e44283e",
     "base_corrected": true
+  },
+  "cleanup_performed": {
+    "timestamp": "2025-09-16T16:52:47Z",
+    "changes": [
+      "Removed all worktree references",
+      "Updated to use branches on target repo only",
+      "Kept effort directories as they exist on disk",
+      "Cleaned stale references"
+    ]
   }
 }
