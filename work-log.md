@@ -81,3 +81,46 @@ Result: SUCCESS - kind-cert-extraction merged successfully
 
 ### Step 2: Merging registry-auth-types-split-001
 Time: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Resolved work-log.md conflict - kept integration log
+Resolved devcontainer conflicts - kept integration versions
+Kept test files modified by kind-cert-extraction
+
+Result: SUCCESS - registry-auth-types-split-001 merged with conflicts resolved
+Conflicts resolved:
+- Kept integration work-log.md
+- Kept devcontainer files from integration
+- Kept test files modified by kind-cert-extraction
+
+### Build Test After Step 2
+pattern ./...: directory prefix . does not contain main module or its selected dependencies
+
+### UPSTREAM BUG DETECTED (R266 - DO NOT FIX)
+Issue: registry-auth-types-split-001 removed go.mod and go.sum files
+Impact: Build system cannot function without go.mod
+Status: DOCUMENTED BUT NOT FIXED (per R266)
+
+### Step 3: Merging registry-auth-types-split-002
+Time: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Merge made by the 'ort' strategy.
+ SPLIT-MARKER.txt            |   4 +
+ SPLIT-PLAN-001.md           | 153 ++++++++++++++
+ SPLIT-PLAN-002.md           | 158 +++++++++++++++
+ pkg/certs/constants.go      | 211 +++++++++++++++++++
+ pkg/certs/constants_test.go | 243 ++++++++++++++++++++++
+ pkg/certs/test_helpers.go   |  91 +++++++++
+ pkg/certs/types.go          | 432 +++++++++++++++++++++++++++++++++++++++
+ pkg/certs/types_test.go     | 482 ++++++++++++++++++++++++++++++++++++++++++++
+ 8 files changed, 1774 insertions(+)
+ create mode 100644 SPLIT-MARKER.txt
+ create mode 100644 SPLIT-PLAN-001.md
+ create mode 100644 SPLIT-PLAN-002.md
+ create mode 100644 pkg/certs/constants.go
+ create mode 100644 pkg/certs/constants_test.go
+ create mode 100644 pkg/certs/test_helpers.go
+ create mode 100644 pkg/certs/types.go
+ create mode 100644 pkg/certs/types_test.go
+
+Result: SUCCESS - registry-auth-types-split-002 merged successfully
+
+### Step 4: Merging registry-tls-trust
+Time: $(date '+%Y-%m-%d %H:%M:%S %Z')
