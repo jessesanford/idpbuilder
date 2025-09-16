@@ -27,3 +27,57 @@ error: The following untracked working tree files would be overwritten by merge:
 Please move or remove them before you merge.
 Aborting
 Merge with strategy ort failed.
+Files committed
+
+### Step 1: Merging kind-cert-extraction (Attempt 2)
+Time: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Auto-merging work-log.md
+Merge made by the 'ort' strategy.
+ BACKPORT_COMPLETE.flag                  |   23 +
+ CODE-REVIEW-REPORT-20250906-183600.md   |  103 +++
+ CODE-REVIEW-REPORT.md                   |  120 ---
+ FIX-COMPLETE.marker                     |   17 +
+ FIX_COMPLETE.flag                       |   17 +
+ IMPLEMENTATION-PLAN.md                  | 1466 +++++++++++++++++++++++++++++++
+ R290-CODE-REVIEW-VERIFICATION.md        |   16 +
+ idpbuilder-cert-extractor               |  Bin 0 -> 67557492 bytes
+ pkg/certs/errors.go                     |   66 ++
+ pkg/certs/errors_test.go                |  132 +++
+ pkg/certs/extractor.go                  |  188 ++++
+ pkg/certs/extractor_test.go             |  374 ++++++++
+ pkg/certs/helpers.go                    |  105 +++
+ pkg/certs/helpers_test.go               |  181 ++++
+ pkg/certs/kind_client.go                |  165 ++++
+ pkg/certs/storage.go                    |  138 +++
+ pkg/certs/storage_test.go               |  314 +++++++
+ pkg/cmd/get/secrets_test.go             |   35 +-
+ pkg/controllers/localbuild/argo_test.go |   12 +-
+ pkg/kind/kindlogger.go                  |    4 +-
+ pkg/testutil/helpers.go                 |  132 +++
+ pkg/util/git_repository_test.go         |    2 +
+ 22 files changed, 3449 insertions(+), 161 deletions(-)
+ create mode 100644 BACKPORT_COMPLETE.flag
+ create mode 100644 CODE-REVIEW-REPORT-20250906-183600.md
+ delete mode 100644 CODE-REVIEW-REPORT.md
+ create mode 100644 FIX-COMPLETE.marker
+ create mode 100644 FIX_COMPLETE.flag
+ create mode 100644 IMPLEMENTATION-PLAN.md
+ create mode 100644 R290-CODE-REVIEW-VERIFICATION.md
+ create mode 100755 idpbuilder-cert-extractor
+ create mode 100644 pkg/certs/errors.go
+ create mode 100644 pkg/certs/errors_test.go
+ create mode 100644 pkg/certs/extractor.go
+ create mode 100644 pkg/certs/extractor_test.go
+ create mode 100644 pkg/certs/helpers.go
+ create mode 100644 pkg/certs/helpers_test.go
+ create mode 100644 pkg/certs/kind_client.go
+ create mode 100644 pkg/certs/storage.go
+ create mode 100644 pkg/certs/storage_test.go
+ create mode 100644 pkg/testutil/helpers.go
+
+Result: SUCCESS - kind-cert-extraction merged successfully
+
+### Build Test After Step 1
+
+### Step 2: Merging registry-auth-types-split-001
+Time: $(date '+%Y-%m-%d %H:%M:%S %Z')
