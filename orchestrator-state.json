@@ -161,12 +161,72 @@
     }
   },
   "efforts_completed": [
-    "phase2/wave1/image-builder",
-    "phase2/wave1/gitea-client-split-001",
-    "phase2/wave1/gitea-client-split-002",
-    "phase2/wave2/cli-commands",
-    "phase2/wave2/credential-management",
-    "phase2/wave2/image-operations"
+    {
+      "phase": 2,
+      "wave": 1,
+      "effort_id": "E2.1.image-builder",
+      "effort_name": "image-builder",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
+      "base_branch": "idpbuilder-oci-build-push/phase1/integration",
+      "status": "COMPLETE",
+      "lines": 557,
+      "location": "efforts/phase2/wave1/image-builder"
+    },
+    {
+      "phase": 2,
+      "wave": 1,
+      "effort_id": "E2.1.gitea-client-split-001",
+      "effort_name": "gitea-client-split-001",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+      "base_branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
+      "status": "COMPLETE",
+      "lines": 344,
+      "location": "efforts/phase2/wave1/gitea-client-split-001"
+    },
+    {
+      "phase": 2,
+      "wave": 1,
+      "effort_id": "E2.1.gitea-client-split-002",
+      "effort_name": "gitea-client-split-002",
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+      "base_branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+      "status": "COMPLETE",
+      "lines": 458,
+      "location": "efforts/phase2/wave1/gitea-client-split-002"
+    },
+    {
+      "phase": 2,
+      "wave": 2,
+      "effort_id": "E2.2.cli-commands",
+      "effort_name": "cli-commands",
+      "branch": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
+      "base_branch": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
+      "status": "COMPLETE",
+      "lines": 499,
+      "location": "efforts/phase2/wave2/cli-commands"
+    },
+    {
+      "phase": 2,
+      "wave": 2,
+      "effort_id": "E2.2.credential-management",
+      "effort_name": "credential-management",
+      "branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
+      "base_branch": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
+      "status": "COMPLETE",
+      "lines": 384,
+      "location": "efforts/phase2/wave2/credential-management"
+    },
+    {
+      "phase": 2,
+      "wave": 2,
+      "effort_id": "E2.2.image-operations",
+      "effort_name": "image-operations",
+      "branch": "idpbuilder-oci-build-push/phase2/wave2/image-operations",
+      "base_branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
+      "status": "COMPLETE",
+      "lines": 446,
+      "location": "efforts/phase2/wave2/image-operations"
+    }
   ],
   "efforts_in_progress": [],
   "split_tracking": {
@@ -267,20 +327,20 @@
   ],
   "notes": "CRITICAL: E2.2.2-A is based on E2.2.1 (cli-commands), NOT on wave1-integration! This is an intra-wave dependency. The line-counter.sh tool doesn't support this pattern and will incorrectly measure against wave1-integration. Always verify the base_branch in orchestrator-state.json and measure manually if needed. E2.2.1 (cli-commands) was intentionally a prototype with TODOs and placeholders. E2.2.2-A and E2.2.2-B will implement ALL production features needed for real-world usage.",
   "next_states_expected": [
-    "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → MONITOR_EFFORT_PLANNING",
-    "MONITOR_EFFORT_PLANNING → SPAWN_SW_ENGINEERS_IMPLEMENTATION",
-    "SPAWN_SW_ENGINEERS_IMPLEMENTATION → MONITOR_IMPLEMENTATION",
-    "MONITOR_IMPLEMENTATION → SETUP_EFFORT_INFRASTRUCTURE (E2.2.2-B)",
-    "SETUP_EFFORT_INFRASTRUCTURE (E2.2.2-B) → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → MONITOR_EFFORT_PLANNING",
-    "MONITOR_EFFORT_PLANNING → SPAWN_SW_ENGINEERS_IMPLEMENTATION",
-    "SPAWN_SW_ENGINEERS_IMPLEMENTATION → MONITOR_IMPLEMENTATION",
-    "MONITOR_IMPLEMENTATION → INTEGRATION (when both complete)",
-    "INTEGRATION → SETUP_INTEGRATION_INFRASTRUCTURE",
-    "SETUP_INTEGRATION_INFRASTRUCTURE → SPAWN_CODE_REVIEWER_MERGE_PLAN",
-    "SPAWN_CODE_REVIEWER_MERGE_PLAN → SPAWN_INTEGRATION_AGENT",
-    "SPAWN_INTEGRATION_AGENT → MONITORING_INTEGRATION",
-    "MONITORING_INTEGRATION → WAVE_COMPLETE (if successful)"
+    "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING \u2192 MONITOR_EFFORT_PLANNING",
+    "MONITOR_EFFORT_PLANNING \u2192 SPAWN_SW_ENGINEERS_IMPLEMENTATION",
+    "SPAWN_SW_ENGINEERS_IMPLEMENTATION \u2192 MONITOR_IMPLEMENTATION",
+    "MONITOR_IMPLEMENTATION \u2192 SETUP_EFFORT_INFRASTRUCTURE (E2.2.2-B)",
+    "SETUP_EFFORT_INFRASTRUCTURE (E2.2.2-B) \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING \u2192 MONITOR_EFFORT_PLANNING",
+    "MONITOR_EFFORT_PLANNING \u2192 SPAWN_SW_ENGINEERS_IMPLEMENTATION",
+    "SPAWN_SW_ENGINEERS_IMPLEMENTATION \u2192 MONITOR_IMPLEMENTATION",
+    "MONITOR_IMPLEMENTATION \u2192 INTEGRATION (when both complete)",
+    "INTEGRATION \u2192 SETUP_INTEGRATION_INFRASTRUCTURE",
+    "SETUP_INTEGRATION_INFRASTRUCTURE \u2192 SPAWN_CODE_REVIEWER_MERGE_PLAN",
+    "SPAWN_CODE_REVIEWER_MERGE_PLAN \u2192 SPAWN_INTEGRATION_AGENT",
+    "SPAWN_INTEGRATION_AGENT \u2192 MONITORING_INTEGRATION",
+    "MONITORING_INTEGRATION \u2192 WAVE_COMPLETE (if successful)"
   ],
   "e2_2_2_split_rationale": {
     "reason": "Original E2.2.2 scope was ~850 lines, exceeding 800-line limit",
@@ -292,20 +352,20 @@
   },
   "production_completeness_checklist": {
     "e2_2_2_a_completes": [
-      "✓ Real credential management implemented",
-      "✓ Environment variable support added",
-      "✓ Config file parsing functional",
-      "✓ Keyring integration complete",
-      "✓ Credential TODOs removed"
+      "\u2713 Real credential management implemented",
+      "\u2713 Environment variable support added",
+      "\u2713 Config file parsing functional",
+      "\u2713 Keyring integration complete",
+      "\u2713 Credential TODOs removed"
     ],
     "e2_2_2_b_completes": [
-      "✓ Real image loading from Docker/OCI",
-      "✓ Placeholder manifest removed",
-      "✓ Real progress tracking implemented",
-      "✓ All feature flags removed",
-      "✓ Production error handling added",
-      "✓ ALL 'placeholder' strings eliminated",
-      "✓ ALL TODOs resolved"
+      "\u2713 Real image loading from Docker/OCI",
+      "\u2713 Placeholder manifest removed",
+      "\u2713 Real progress tracking implemented",
+      "\u2713 All feature flags removed",
+      "\u2713 Production error handling added",
+      "\u2713 ALL 'placeholder' strings eliminated",
+      "\u2713 ALL TODOs resolved"
     ],
     "final_state": "100% production-ready binary with NO stubs, placeholders, or TODOs"
   },
@@ -630,5 +690,33 @@
       "artifact_tested": true
     },
     "recommendation": "PROCEED_TO_BUILD_VALIDATION"
-  }
+  },
+  "project_repository": "https://github.com/jessesanford/idpbuilder.git",
+  "integration_branches": [
+    {
+      "type": "wave",
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
+      "base_branch": "idpbuilder-oci-build-push/phase1/integration",
+      "status": "INTEGRATION_COMPLETE",
+      "location": "worktrees/phase2-wave1-integration"
+    },
+    {
+      "type": "wave",
+      "phase": 2,
+      "wave": 2,
+      "branch": "idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118",
+      "base_branch": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
+      "status": "INTEGRATION_COMPLETE",
+      "location": "efforts/phase2/wave2/integration-workspace/repo"
+    },
+    {
+      "type": "phase",
+      "phase": 2,
+      "branch": "idpbuilder-oci-build-push/phase2-integration-20250916-033720",
+      "status": "COMPLETE",
+      "location": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/phase-integration-workspace-new/repo"
+    }
+  ]
 }
