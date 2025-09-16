@@ -1,0 +1,11 @@
+[
+  {"content": "Acknowledge all state rules for SPAWN_INTEGRATION_AGENT", "status": "completed", "activeForm": "Acknowledging state rules"},
+  {"content": "Create R290 verification marker", "status": "completed", "activeForm": "Creating verification marker"},
+  {"content": "Verify merge plan exists in integration workspace", "status": "completed", "activeForm": "Verifying merge plan existence"},
+  {"content": "R208: CD to integration directory before spawning", "status": "completed", "activeForm": "CDing to integration directory"},
+  {"content": "Spawn Integration Agent with proper task description", "status": "completed", "activeForm": "Spawning Integration Agent"},
+  {"content": "Update orchestrator-state.json to next state", "status": "completed", "activeForm": "Updating state file"},
+  {"content": "Save TODO state per R287", "status": "completed", "activeForm": "Saving TODO state"},
+  {"content": "Commit and push state changes", "status": "pending", "activeForm": "Committing state changes"},
+  {"content": "Display R322 checkpoint message and stop", "status": "pending", "activeForm": "Displaying checkpoint message"}
+]
