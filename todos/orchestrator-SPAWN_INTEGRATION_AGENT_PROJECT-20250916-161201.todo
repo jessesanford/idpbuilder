@@ -1,0 +1,16 @@
+# Orchestrator TODO State - SPAWN_INTEGRATION_AGENT_PROJECT
+# Saved: 2025-09-16 16:12:00 UTC
+
+## Completed Tasks
+- [x] Load state-specific rules for WAITING_FOR_PROJECT_MERGE_PLAN
+- [x] Check if PROJECT-MERGE-PLAN.md has been created
+- [x] Validate the merge plan if it exists
+- [x] Transition to next state based on findings
+- [x] Update state file to SPAWN_INTEGRATION_AGENT_PROJECT per R324
+- [x] Commit and push state changes
+- [x] Display R322 checkpoint message and stop
+
+## Next State Actions
+- [ ] Spawn Integration Agent to execute PROJECT-MERGE-PLAN.md
+- [ ] Monitor project-level integration progress
+- [ ] Validate integration results
