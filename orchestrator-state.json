@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_PHASE_ASSESSMENT",
-  "previous_state": "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "WAITING_FOR_PHASE_ASSESSMENT",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-16T03:59:24Z",
-  "transition_reason": "Architect spawned for Phase 2 assessment, waiting for completion",
+  "transition_time": "2025-09-16T04:55:43Z",
+  "transition_reason": "Critical authentication bug found - credentials not passed to registry push",
   "integration_agent_spawned": {
     "spawned_at": "2025-09-16T03:38:45Z",
     "completed_at": "2025-09-16T03:39:50Z",
@@ -495,5 +495,18 @@
     "merge_plan_pushed": true,
     "target_repo": "https://github.com/jessesanford/idpbuilder.git",
     "note": "Based on Wave 2 integration (last wave of Phase 2) per R308, merge plan includes Wave 1 and Wave 2 integrations"
+  },
+  "error_recovery": {
+    "type": "STUB_IMPLEMENTATION",
+    "location": "pkg/registry/push.go:93-96",
+    "source_effort": "phase2/wave1/gitea-client-split-002",
+    "fix_request": "AUTH-FIX-REQUEST.md",
+    "discovered_at": "2025-09-16T04:55:43Z",
+    "severity": "CRITICAL",
+    "blocks": "push authentication",
+    "rule_violations": [
+      "R320 - no stub implementations"
+    ],
+    "recovery_plan": "Fix at source per R321, re-integrate all downstream"
   }
 }
