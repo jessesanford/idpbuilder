@@ -18,6 +18,13 @@ type Client struct {
 	config   registry.RegistryConfig
 }
 
+// Global credential manager instance
+var credentialManager *CredentialManager
+
+func init() {
+	credentialManager = NewCredentialManager()
+}
+
 // PushProgress represents progress information during image push operations.
 type PushProgress struct {
 	CurrentLayer int
@@ -27,8 +34,6 @@ type PushProgress struct {
 
 // NewClient creates a new Gitea client with certificate manager integration.
 func NewClient(registryURL string, certManager *certs.DefaultTrustStore) (*Client, error) {
-	// TODO: Extract credentials from environment or configuration
-	// For now, using placeholder values - this would need proper credential handling
 	config := registry.RegistryConfig{
 		URL:      registryURL,
 		Username: getRegistryUsername(),
@@ -142,12 +147,18 @@ func (c *Client) getImageContentForReference(imageRef string) (io.Reader, error)
 
 // getRegistryUsername retrieves the registry username from environment or config.
 func getRegistryUsername() string {
-	// TODO: E2.2.2 will implement proper credential management
-	return ""
+	return credentialManager.GetUsername()
 }
 
 // getRegistryPassword retrieves the registry password from environment or config.
 func getRegistryPassword() string {
-	// TODO: E2.2.2 will implement proper credential management
-	return ""
+	return credentialManager.GetPassword()
+}
+
+// SetCredentials sets credentials from CLI flags
+func (c *Client) SetCredentials(username, password string) {
+	credentialManager.SetCLICredentials(username, password)
+	// Update the config with new credentials
+	c.config.Username = username
+	c.config.Token = password
 }

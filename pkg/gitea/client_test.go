@@ -22,8 +22,9 @@ func TestNewClient(t *testing.T) {
 
 	// Verify client configuration
 	assert.Equal(t, registryURL, client.config.URL)
-	assert.Equal(t, "admin", client.config.Username) // From getRegistryUsername()
-	assert.Equal(t, "password", client.config.Token) // From getRegistryPassword()
+	// With new credential management, defaults are empty when no credentials configured
+	assert.Equal(t, "", client.config.Username) // From getRegistryUsername()
+	assert.Equal(t, "", client.config.Token) // From getRegistryPassword()
 	assert.False(t, client.config.Insecure)
 }
 
@@ -38,21 +39,22 @@ func TestNewInsecureClient(t *testing.T) {
 
 	// Verify client configuration
 	assert.Equal(t, registryURL, client.config.URL)
-	assert.Equal(t, "admin", client.config.Username)
-	assert.Equal(t, "password", client.config.Token)
+	// With new credential management, defaults are empty when no credentials configured
+	assert.Equal(t, "", client.config.Username)
+	assert.Equal(t, "", client.config.Token)
 	assert.True(t, client.config.Insecure)
 }
 
 func TestGetRegistryUsername(t *testing.T) {
-	// Test default username
+	// Test default username (empty when no credentials configured)
 	username := getRegistryUsername()
-	assert.Equal(t, "admin", username)
+	assert.Equal(t, "", username)
 }
 
 func TestGetRegistryPassword(t *testing.T) {
-	// Test default password
+	// Test default password (empty when no credentials configured)
 	password := getRegistryPassword()
-	assert.Equal(t, "password", password)
+	assert.Equal(t, "", password)
 }
 
 func TestGetImageContentForReference(t *testing.T) {
@@ -135,32 +137,34 @@ func TestClientConfiguration(t *testing.T) {
 	}
 }
 
-// Test environment variable integration (if applicable)
+// Test environment variable integration
 func TestClientWithEnvironmentVariables(t *testing.T) {
-	// Save original environment
-	originalUsername := os.Getenv("REGISTRY_USERNAME")
-	originalPassword := os.Getenv("REGISTRY_PASSWORD")
-	
+	// Save original environment - use correct variable names
+	originalUsername := os.Getenv("GITEA_USERNAME")
+	originalPassword := os.Getenv("GITEA_PASSWORD")
+
 	// Clean up after test
 	defer func() {
 		if originalUsername != "" {
-			os.Setenv("REGISTRY_USERNAME", originalUsername)
+			os.Setenv("GITEA_USERNAME", originalUsername)
 		} else {
-			os.Unsetenv("REGISTRY_USERNAME")
+			os.Unsetenv("GITEA_USERNAME")
 		}
 		if originalPassword != "" {
-			os.Setenv("REGISTRY_PASSWORD", originalPassword)
+			os.Setenv("GITEA_PASSWORD", originalPassword)
 		} else {
-			os.Unsetenv("REGISTRY_PASSWORD")
+			os.Unsetenv("GITEA_PASSWORD")
 		}
 	}()
 
-	// Test with current implementation (uses hardcoded values)
-	// This test verifies the current behavior, but the implementation
-	// should be enhanced to read from environment variables
+	// Set environment variables with correct names
+	os.Setenv("GITEA_USERNAME", "envuser")
+	os.Setenv("GITEA_PASSWORD", "envpass")
+
+	// Test that environment variables are now properly read
 	username := getRegistryUsername()
 	password := getRegistryPassword()
 
-	assert.Equal(t, "admin", username)
-	assert.Equal(t, "password", password)
+	assert.Equal(t, "envuser", username)
+	assert.Equal(t, "envpass", password)
 }
