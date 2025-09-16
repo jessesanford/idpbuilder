@@ -762,7 +762,9 @@
     "total_phases": 2,
     "created_at": "2025-09-16T15:33:24Z",
     "ready": true,
-    "r308_compliant": true
+    "r308_compliant": true,
+    "base_issue_note": "Branch was created from old phase2-integration (Wave 1 only), not the complete phase2-integration-20250916-033720. This is OK as merges will bring in correct branches.",
+    "merge_plan_committed": true
   },
   "code_reviewer_project_merge_plan": {
     "spawned_at": "2025-09-16T16:06:49Z",
@@ -786,12 +788,17 @@
   ],
   "project_merge_plan": {
     "location": "worktrees/project-integration/PROJECT-MERGE-PLAN.md",
-    "created_at": "2025-01-16",
+    "created_at": "2025-09-16T16:06:16Z",
+    "updated_at": "2025-09-16T16:18:00Z",
     "phases_to_merge": [
       "origin/idpbuilder-oci-build-push/phase1-integration",
-      "origin/idpbuilder-oci-build-push/phase2-integration"
+      "origin/idpbuilder-oci-build-push/phase2-integration-20250916-033720"
     ],
     "target_branch": "idpbuilder-oci-build-push/project-integration-20250916-152718",
-    "ready_for_execution": true
+    "ready_for_execution": true,
+    "plan_corrected": true,
+    "correction_note": "Updated Phase 2 reference from phase2-integration to phase2-integration-20250916-033720",
+    "committed": true,
+    "commit_sha": "cf14cd9"
   }
 }
