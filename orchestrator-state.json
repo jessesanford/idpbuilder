@@ -507,6 +507,16 @@
     "rule_violations": [
       "R320 - no stub implementations"
     ],
-    "recovery_plan": "Fix at source per R321, re-integrate all downstream"
+    "recovery_plan": "Fix at source per R321, re-integrate all downstream",
+    "fix_effort": "phase2/wave2/image-operations",
+    "recovery_approach": "Fix in Wave 2 E2.2.2-B to avoid Wave 1 re-integration",
+    "re_integration_needed": [
+      "wave2",
+      "phase2"
+    ],
+    "re_integration_not_needed": [
+      "wave1"
+    ],
+    "fix_request_revised": "AUTH-FIX-REQUEST-REVISED.md"
   }
 }
