@@ -1,10 +1,10 @@
 {
-  "current_state": "CREATE_INTEGRATION_TESTING",
-  "previous_state": "WAITING_FOR_PROJECT_VALIDATION",
+  "current_state": "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
+  "previous_state": "CREATE_INTEGRATION_TESTING",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-16T17:52:21Z",
-  "transition_reason": "Project validation PASSED with known issues documented. Binary builds successfully. Proceeding to create integration testing branch.",
+  "transition_time": "2025-09-16T17:57:29Z",
+  "transition_reason": "Project validation found issues that should be fixed before creating integration-testing branch. Transitioning to fix planning state to address: syntax error in chain_validator_test.go:173 and feature flags in pkg/certs.",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -898,5 +898,30 @@
       "Build/test failures documented per R266"
     ],
     "recommendation": "PROCEED - Project fundamentally sound"
+  },
+  "project_fixes_needed": {
+    "identified_at": "2025-09-16T17:57:29Z",
+    "source": "PROJECT_VALIDATION_REPORT",
+    "critical_fixes": [
+      {
+        "file": "pkg/certs/chain_validator_test.go",
+        "line": 173,
+        "issue": "Extra closing brace causing syntax error",
+        "severity": "BLOCKING",
+        "blocks": "make build and make test"
+      }
+    ],
+    "recommended_fixes": [
+      {
+        "files": [
+          "pkg/certs/extractor.go",
+          "pkg/certs/helpers.go"
+        ],
+        "issue": "Feature flags still present",
+        "severity": "MEDIUM",
+        "impact": "Not production ready"
+      }
+    ],
+    "fix_location": "project-integration branch before creating integration-testing"
   }
 }
