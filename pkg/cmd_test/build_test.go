@@ -3,7 +3,6 @@ package cmd_test
 import (
 	"testing"
 
-	"github.com/cnoe-io/idpbuilder/pkg/cmd"
 	"github.com/spf13/cobra"
 )
 
