@@ -1040,5 +1040,41 @@
     "build_status": "failed_upstream_bug",
     "merge_count": 4,
     "conflicts_resolved": 9
+  },
+  "integration_context_stack": [
+    {
+      "level": "PROJECT",
+      "status": "SUSPENDED_FOR_FIXES",
+      "reason": "Backporting fixes from project integration to Phase 1 Wave 1",
+      "return_state": "PROJECT_INTEGRATION",
+      "project_workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
+      "project_branch": "idpbuilder-oci-build-push/project-integration-20250916-152718",
+      "suspended_at": "2025-09-16T20:10:09Z"
+    },
+    {
+      "level": "PHASE1_WAVE1",
+      "status": "ACTIVE_FIXING",
+      "reason": "Upstream bugs found during re-integration: missing import in pkg/testutil/helpers.go",
+      "current_integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+      "bugs_to_fix": [
+        {
+          "file": "pkg/testutil/helpers.go",
+          "issue": "Missing import for pkg/printer/types",
+          "blocking": "build"
+        }
+      ],
+      "started_at": "2025-09-16T20:10:09Z"
+    }
+  ],
+  "CURRENT_FIX_CONTEXT": {
+    "IMPORTANT": "We are in a NESTED fix cycle",
+    "fixing_for": "Phase 1 Wave 1 re-integration (which is itself for Project integration)",
+    "after_fixes_complete": [
+      "1. Re-run Phase 1 Wave 1 integration with fixed branches",
+      "2. Complete Phase 1 Wave 1 integration successfully",
+      "3. Return to PROJECT_INTEGRATION state",
+      "4. Continue project-level integration with fixed Phase 1 Wave 1"
+    ],
+    "do_not_forget": "This is a RE-INTEGRATION due to project-level fixes being backported"
   }
 }
