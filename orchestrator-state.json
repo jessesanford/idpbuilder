@@ -1,10 +1,10 @@
 {
-  "current_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
-  "previous_state": "INTEGRATION",
+  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-16T18:48:12Z",
-  "transition_reason": "R327 re-integration requires fresh infrastructure for Phase 1 Wave 1",
+  "transition_time": "2025-09-16T18:57:42Z",
+  "transition_reason": "Wave integration infrastructure ready, need Code Reviewer for merge plan",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
