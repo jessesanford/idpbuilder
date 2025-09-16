@@ -124,3 +124,31 @@ Result: SUCCESS - registry-auth-types-split-002 merged successfully
 
 ### Step 4: Merging registry-tls-trust
 Time: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Resolved conflicts - kept integration log, accepted go.mod/go.sum from registry-tls-trust
+
+Result: SUCCESS - registry-tls-trust merged with conflicts resolved
+Note: go.mod and go.sum restored from registry-tls-trust branch
+
+## R291 Gate Verification
+
+### BUILD GATE Test
+pkg/testutil/helpers.go:10:2: no required module provides package github.com/cnoe-io/idpbuilder/pkg/printer/types; to add it:
+	go get github.com/cnoe-io/idpbuilder/pkg/printer/types
+
+Build Status: FAILED - Missing dependencies
+
+### UPSTREAM BUG DETECTED (R266 - DO NOT FIX)
+Issue: pkg/testutil/helpers.go imports pkg/printer/types which was removed
+Impact: Build fails due to missing dependency
+File: pkg/testutil/helpers.go line 10
+Status: DOCUMENTED BUT NOT FIXED (per R266)
+
+### Testing Individual Package Builds
+pkg/certs:
+
+pkg/oci:
+
+### ARTIFACT GATE Test
+
+Checking for binary artifacts:
+-rwxrwxr-x 1 vscode vscode 67557492 Sep 16 19:26 idpbuilder-cert-extractor
