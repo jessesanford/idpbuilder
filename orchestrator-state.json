@@ -965,5 +965,24 @@
     ],
     "parallelization": "Both fixes spawned in parallel per R151",
     "completion_status": "ALL_FIXES_COMPLETE"
+  },
+  "project_fixes_corrected": {
+    "corrected_at": "2025-09-16T18:36:13Z",
+    "bug_1_correction": {
+      "issue": "chain_validator_test.go was created during integration, not in source",
+      "resolution": "Added missing files to cert-validation-split-003 source branch",
+      "files_added": [
+        "chain_validator.go",
+        "chain_validator_test.go",
+        "validation_errors.go",
+        "validator_test.go"
+      ],
+      "syntax_error_fixed": true,
+      "commit": "2bb90e6",
+      "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003"
+    },
+    "bug_2_status": "Already fixed by SW Engineer",
+    "ready_for_reintegration": true,
+    "r327_required": "Must delete and recreate all integration branches"
   }
 }
