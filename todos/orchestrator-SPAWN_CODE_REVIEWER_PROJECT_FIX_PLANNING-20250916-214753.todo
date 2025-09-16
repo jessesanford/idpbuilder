@@ -1,0 +1,21 @@
+# Orchestrator TODO State - Tue Sep 16 09:47:53 PM UTC 2025
+State: SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING
+
+## Completed Tasks
+- [x] Read all 10 mandatory rule files for INTEGRATION_FEEDBACK_REVIEW state
+- [x] Acknowledge each rule individually after reading
+- [x] Create R290 verification marker
+- [x] Parse integration report from project integration workspace
+- [x] Identify efforts needing fixes from integration failures
+- [x] Create fix request metadata
+- [x] Distribute integration report to affected efforts per R293
+- [x] Archive old fix plans per R294
+- [x] Update orchestrator-state.json with integration feedback details
+- [x] Commit and push state changes per R288
+- [x] Transition to next state (SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING)
+
+## Next State Tasks
+- [ ] Spawn Code Reviewer for project-level fix planning
+- [ ] Monitor Code Reviewer progress
+- [ ] Receive fix plans
+- [ ] Spawn SW Engineers to implement fixes
