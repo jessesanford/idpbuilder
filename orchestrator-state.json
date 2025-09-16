@@ -15,6 +15,21 @@
     "waves_integrated": ["wave1/integration", "wave2/integration-20250916-002118"],
     "completion_report": "efforts/phase2/phase-integration-workspace-new/repo/PHASE-2-INTEGRATION-COMPLETION-REPORT.md"
   },
+  "phase2_completed_integration_for_architect": {
+    "CRITICAL_FOR_ARCHITECT": "USE THIS EXACT LOCATION - DO NOT LOOK IN WORKTREES",
+    "integration_directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/phase-integration-workspace-new/repo",
+    "integration_branch": "idpbuilder-oci-build-push/phase2-integration-20250916-033720",
+    "how_to_access": "cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/phase-integration-workspace-new/repo",
+    "verify_branch": "git branch --show-current should show: idpbuilder-oci-build-push/phase2-integration-20250916-033720",
+    "remote_status": "PUSHED - available on GitHub",
+    "completion_report": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/phase-integration-workspace-new/repo/PHASE-2-INTEGRATION-COMPLETION-REPORT.md",
+    "note_to_architect": "This is the CORRECT Phase 2 integration. It contains both Wave 1 and Wave 2 merged together. DO NOT use any other worktree or integration branch.",
+    "warning": "DO NOT use efforts/phase2/integration-workspace/repo (old location with issues)",
+    "contains": {
+      "wave1": "image-builder and gitea-client components",
+      "wave2": "cli-commands, credential-management (WITH --username/--token flags), and image-operations"
+    }
+  },
   "effort_creation_context": {
     "effort_id": "E2.2.2-B",
     "effort_name": "image-operations",
