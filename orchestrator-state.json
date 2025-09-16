@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_PHASE_ASSESSMENT",
-  "previous_state": "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+  "current_state": "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE",
+  "previous_state": "PHASE_INTEGRATION",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-16T01:48:17Z",
-  "transition_reason": "Phase 2 integration infrastructure exists and integration is complete. Ready for architect assessment.",
+  "transition_time": "2025-09-16T02:42:06Z",
+  "transition_reason": "Need to create new Phase 2 integration infrastructure with correct setup for re-integration",
   "effort_creation_context": {
     "effort_id": "E2.2.2-B",
     "effort_name": "image-operations",
@@ -101,42 +101,36 @@
   },
   "phase2_wave1_integration": {
     "status": "INTEGRATION_COMPLETE",
-    "branch": "idpbuilder-oci-build-push/phase2/wave1/integration",
-    "retry_branch": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
+    "branch": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
     "base_branch": "idpbuilder-oci-build-push/phase1/integration",
     "efforts_integrated": [
       "image-builder",
       "gitea-client-split-001",
       "gitea-client-split-002"
     ],
-    "integration_report_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/worktrees/phase2-wave1-integration/INTEGRATION-REPORT-RETRY.md",
-    "work_log_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/worktrees/phase2-wave1-integration/work-log.md",
     "integration_completed_at": "2025-09-15T15:10:00Z",
     "build_status": "PASSING",
     "test_status": "PASSING",
-    "demo_status": "FUNCTIONAL",
-    "documentation_status": "COMPLETE",
-    "notes": "Successfully re-integrated with test fixes"
+    "location": "worktrees/phase2-wave1-integration"
   },
   "phase2_wave2_integration": {
     "status": "INTEGRATION_COMPLETE",
-    "old_branch": "idpbuilder-oci-build-push/phase2/wave2/integration-20250914-200305",
-    "old_base": "unknown",
-    "new_base": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
-    "efforts_to_integrate": [
+    "branch": "idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118",
+    "base_branch": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
+    "efforts_integrated": [
       "cli-commands",
       "credential-management",
       "image-operations"
     ],
-    "notes": "Successfully integrated all three efforts with demo verification",
-    "merge_plan_requested": true,
-    "merge_plan_ready": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/integration-workspace/repo/PHASE-2-WAVE-2-MERGE-PLAN.md",
     "integration_completed_at": "2025-09-16T01:06:27Z",
     "build_status": "PASSING",
-    "merge_plan_validation": "PASSED",
-    "test_status": "PARTIAL_PASSING",
-    "demo_status": "FUNCTIONAL"
+    "test_status": "PASSING",
+    "location": "efforts/phase2/wave2/integration-workspace/repo",
+    "critical_features": {
+      "cli_commands": "build and push commands implemented",
+      "credentials": "username and token flags PRESENT",
+      "image_ops": "real image operations implemented"
+    }
   },
   "efforts_completed": [
     "phase2/wave1/image-builder",
@@ -357,12 +351,13 @@
   "phase_integration_context": {
     "phase": 2,
     "type": "phase",
-    "status": "PENDING",
+    "status": "PENDING_REDO",
     "wave1_integration": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
     "wave2_integration": "idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118",
     "base_branch": "idpbuilder-oci-build-push/phase1/integration",
-    "target_branch": "idpbuilder-oci-build-push/phase2/integration",
-    "note": "Ready to merge Wave 1 and Wave 2 integrations of Phase 2"
+    "target_branch": "TO_BE_CREATED",
+    "merge_plan": "/home/vscode/workspaces/idpbuilder-oci-build-push/PHASE-2-INTEGRATION-MERGE-PLAN.md",
+    "note": "Ready to create new Phase 2 integration with correct branches"
   },
   "phase_assessment": {
     "phase": 2,
@@ -378,9 +373,79 @@
   },
   "current_phase_integration": {
     "phase": 2,
-    "branch": "idpbuilder-oci-build-push/phase2-actual-integration",
-    "status": "active",
-    "created_at": "2025-09-16T01:48:02Z",
-    "type": "initial"
+    "branch": "NEEDS_CREATION",
+    "status": "pending",
+    "created_at": null,
+    "type": "corrected",
+    "note": "Previous integration failed - only merged cli-commands. New integration needed with correct branches."
+  },
+  "archived_phase_integrations": [
+    {
+      "phase": 2,
+      "branch": "idpbuilder-oci-build-push/phase2-actual-integration",
+      "reason": "Incorrect merge - only merged cli-commands instead of full Wave 2 integration",
+      "archived_at": "2025-09-16T02:40:26Z",
+      "location": "efforts/phase2/phase-integration-workspace/repo"
+    }
+  ],
+  "phase2_integration_merge_plan": {
+    "path": "/home/vscode/workspaces/idpbuilder-oci-build-push/PHASE-2-INTEGRATION-MERGE-PLAN.md",
+    "created": "2025-09-16T02:40:26Z",
+    "type": "PHASE_LEVEL",
+    "status": "READY",
+    "critical_note": "THIS IS THE CORRECT PLAN - USE THIS ONE",
+    "branches_to_merge": [
+      "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
+      "idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118"
+    ]
+  },
+  "phase2_efforts": {
+    "wave1": {
+      "image-builder": {
+        "branch": "idpbuilder-oci-build-push/phase2/wave1/image-builder",
+        "status": "COMPLETE",
+        "lines": 557
+      },
+      "gitea-client-split-001": {
+        "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+        "status": "COMPLETE",
+        "lines": 344
+      },
+      "gitea-client-split-002": {
+        "branch": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
+        "status": "COMPLETE",
+        "lines": 458
+      }
+    },
+    "wave2": {
+      "cli-commands": {
+        "branch": "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
+        "status": "COMPLETE",
+        "lines": 499,
+        "location": "efforts/phase2/wave2/cli-commands"
+      },
+      "credential-management": {
+        "branch": "idpbuilder-oci-build-push/phase2/wave2/credential-management",
+        "status": "COMPLETE",
+        "lines": 384,
+        "location": "efforts/phase2/wave2/credential-management",
+        "critical_feature": "CONTAINS --username and --token flags"
+      },
+      "image-operations": {
+        "branch": "idpbuilder-oci-build-push/phase2/wave2/image-operations",
+        "status": "COMPLETE",
+        "lines": 446,
+        "location": "efforts/phase2/wave2/image-operations"
+      }
+    }
+  },
+  "integration_instruction": {
+    "critical": "USE THE MERGE PLAN AT phase2_integration_merge_plan.path",
+    "workspace": "Create NEW workspace in efforts/phase2/phase-integration-corrected/",
+    "target_repo": "Clone from https://github.com/jessesanford/idpbuilder.git",
+    "base_branch": "idpbuilder-oci-build-push/phase1/integration",
+    "merge_wave1": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
+    "merge_wave2": "idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118",
+    "verify_credentials": "MUST have --username and --token flags after completion"
   }
 }
