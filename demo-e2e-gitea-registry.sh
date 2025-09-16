@@ -72,7 +72,6 @@ echo "   Command: idpbuilder push --username $GITEA_USERNAME --token \$GITEA_TOK
 ./idpbuilder push \
     --username "$GITEA_USERNAME" \
     --token "$GITEA_TOKEN" \
-    --registry-cert /etc/idpbuilder/certs/gitea-ca.crt \
     "${FULL_IMAGE}"
 
 # Step 5: Verify push
