@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
-  "previous_state": "WAITING_FOR_PROJECT_FIX_PLANS",
+  "current_state": "MONITORING_PROJECT_FIXES",
+  "previous_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-16T22:05:36Z",
-  "transition_reason": "Project fix plans received and validated - ready to spawn SW Engineers (R322 checkpoint)",
+  "transition_time": "2025-09-16T22:20:38Z",
+  "transition_reason": "Engineers spawned (3 successful, 2 workspace errors) - transitioning to monitoring per R313",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -1182,5 +1182,44 @@
     "parallelizable": true,
     "engineers_needed": 5,
     "completed_at": "2025-09-16T22:05:36Z"
-  }
+  },
+  "project_fixes_in_progress": [
+    {
+      "bug_id": 1,
+      "engineer": "sw-engineer-1",
+      "status": "workspace_error",
+      "branch": "phase2/wave1/image-builder",
+      "error": "wrong branch"
+    },
+    {
+      "bug_id": 2,
+      "engineer": "sw-engineer-2",
+      "status": "completed",
+      "branch": "phase2/wave1/image-builder"
+    },
+    {
+      "bug_id": 3,
+      "engineer": "sw-engineer-3",
+      "status": "completed",
+      "branch": "project-integration"
+    },
+    {
+      "bug_id": 4,
+      "engineer": "sw-engineer-4",
+      "status": "completed",
+      "branch": "phase1/wave2/cert-validation-split-003",
+      "note": "already fixed"
+    },
+    {
+      "bug_id": 5,
+      "engineer": "sw-engineer-5",
+      "status": "workspace_error",
+      "branch": "phase1/wave1/kind-cert-extraction",
+      "error": "wrong directory"
+    }
+  ],
+  "spawn_timestamp": "2025-09-16T22:11:05Z",
+  "partial_completion": true,
+  "bugs_remaining": 2,
+  "bugs_fixed": 3
 }
