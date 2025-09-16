@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "current_state": "WAITING_FOR_MERGE_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-16T00:22:10Z",
-  "transition_reason": "Integration infrastructure created successfully - ready for merge plan",
+  "transition_time": "2025-09-16T00:33:10Z",
+  "transition_reason": "Code Reviewer spawned to create Wave 2 merge plan",
   "effort_creation_context": {
     "effort_id": "E2.2.2-B",
     "effort_name": "image-operations",
@@ -131,7 +131,7 @@
     "notes": "Mechanically complete but build failures require ERROR_RECOVERY",
     "merge_plan_requested": true,
     "merge_plan_ready": true,
-    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/integration-workspace/repo/WAVE-MERGE-PLAN.md",
+    "merge_plan_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/wave2/integration-workspace/repo/PHASE-2-WAVE-2-MERGE-PLAN.md",
     "integration_completed_at": "2025-09-15T23:21:14Z",
     "build_status": "FAILED"
   },
@@ -209,6 +209,12 @@
       "agent": "code-reviewer",
       "state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
       "time": "2025-09-15T22:58:07Z",
+      "purpose": "Create Phase 2 Wave 2 integration merge plan"
+    },
+    {
+      "agent": "code-reviewer",
+      "state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+      "time": "2025-09-16T00:33:10Z",
       "purpose": "Create Phase 2 Wave 2 integration merge plan"
     }
   ],
