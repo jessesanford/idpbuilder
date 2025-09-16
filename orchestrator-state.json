@@ -700,7 +700,7 @@
       "branch": "idpbuilder-oci-build-push/phase2/wave1/integration-20250915-125755",
       "base_branch": "idpbuilder-oci-build-push/phase1/integration",
       "status": "INTEGRATION_COMPLETE",
-      "location": "worktrees/phase2-wave1-integration"
+      "location": "efforts/phase2/wave1/integration-workspace/repo"
     },
     {
       "type": "wave",
