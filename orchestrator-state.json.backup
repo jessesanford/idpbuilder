@@ -1,10 +1,10 @@
 {
-  "current_state": "MONITORING_PROJECT_INTEGRATION",
-  "previous_state": "SPAWN_INTEGRATION_AGENT_PROJECT",
+  "current_state": "WAITING_FOR_PROJECT_FIX_PLANS",
+  "previous_state": "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-16T17:36:39Z",
-  "transition_reason": "Integration agent successfully completed project integration with 7 conflicts resolved",
+  "transition_time": "2025-09-16T18:10:16Z",
+  "transition_reason": "R324/R322 compliance: Spawned Code Reviewer to create fix plans for project issues. Now waiting for plan completion.",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -361,6 +361,18 @@
       "fix_plan": "INTEGRATION_FIX_PLAN_20250916-134248.md",
       "status": "COMPLETED",
       "completion_time": "2025-09-16T13:54:07Z"
+    },
+    {
+      "type": "code-reviewer",
+      "task": "project_fix_plan_creation",
+      "state": "CREATE_PROJECT_FIX_PLAN",
+      "timestamp": "2025-09-16T18:09:00Z",
+      "working_directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
+      "purpose": "Create fix plans for syntax error and feature flag issues from project validation",
+      "status": "COMPLETED",
+      "output": "PROJECT-FIX-PLAN.md",
+      "bugs_to_fix": 2,
+      "completion_time": "2025-09-16T18:10:00Z"
     }
   ],
   "notes": "CRITICAL: E2.2.2-A is based on E2.2.1 (cli-commands), NOT on wave1-integration! This is an intra-wave dependency. The line-counter.sh tool doesn't support this pattern and will incorrectly measure against wave1-integration. Always verify the base_branch in orchestrator-state.json and measure manually if needed. E2.2.1 (cli-commands) was intentionally a prototype with TODOs and placeholders. E2.2.2-A and E2.2.2-B will implement ALL production features needed for real-world usage.",
@@ -876,5 +888,55 @@
       "Kept effort directories as they exist on disk",
       "Cleaned stale references"
     ]
+  },
+  "project_validation": {
+    "spawned_at": "2025-09-16T17:46:10Z",
+    "agent_type": "code-reviewer",
+    "purpose": "Comprehensive project validation",
+    "status": "SPAWNED",
+    "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
+    "expected_report": "PROJECT-VALIDATION-REPORT.md"
+  },
+  "project_validation_result": {
+    "completed_at": "2025-09-16T17:52:21Z",
+    "status": "PASS_WITH_FIXES_REQUIRED",
+    "report_path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace/PROJECT-VALIDATION-REPORT.md",
+    "binary_builds": true,
+    "test_coverage": "7 of 10 packages passing (70%)",
+    "phase_integration": "successful",
+    "known_issues": [
+      "Test file syntax error in pkg/certs/chain_validator_test.go:173",
+      "Feature flags still present",
+      "Build/test failures documented per R266"
+    ],
+    "recommendation": "PROCEED - Project fundamentally sound"
+  },
+  "project_fixes_needed": {
+    "identified_at": "2025-09-16T17:57:29Z",
+    "source": "PROJECT_VALIDATION_REPORT",
+    "critical_fixes": [
+      {
+        "file": "pkg/certs/chain_validator_test.go",
+        "line": 173,
+        "issue": "Extra closing brace causing syntax error",
+        "severity": "BLOCKING",
+        "blocks": "make build and make test"
+      }
+    ],
+    "recommended_fixes": [
+      {
+        "files": [
+          "pkg/certs/extractor.go",
+          "pkg/certs/helpers.go"
+        ],
+        "issue": "Feature flags still present",
+        "severity": "MEDIUM",
+        "impact": "Not production ready"
+      }
+    ],
+    "fix_location": "project-integration branch before creating integration-testing",
+    "fix_plan_created": true,
+    "fix_plan_location": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace/PROJECT-FIX-PLAN.md",
+    "fix_plan_created_at": "2025-09-16T18:10:00Z"
   }
 }
