@@ -1,0 +1,28 @@
+fix_request:
+  timestamp: "2025-09-16T21:45:42Z"
+  integration_level: "project"
+  integration_report: "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace/PROJECT-INTEGRATION-COMPLETION-REPORT.md"
+  upstream_bugs_documented:
+    - package: "pkg/build"
+      issue: "Build compilation failure"
+      phase: 2
+      wave: 1
+      likely_effort: "image-builder"
+      status: "NOT_FIXED_PER_R266"
+    - package: "pkg/registry"
+      issue: "Build compilation failure"
+      phase: 2
+      wave: 1
+      likely_effort: "builder"
+      status: "NOT_FIXED_PER_R266"
+    - package: "pkg/certs"
+      issue: "Test setup failure"
+      phase: 1
+      wave: 1
+      likely_effort: "kind-cert-extraction"
+      status: "NOT_FIXED_PER_R266"
+  build_status: "FAILED"
+  test_status: "PARTIAL_FAILURE"
+  demo_status: "NOT_RUN_DUE_TO_BUILD_FAILURE"
+  action_required: "SPAWN_CODE_REVIEWER_FOR_FIX_PLANNING"
+  note: "These are upstream bugs that require code fixes in the respective effort branches"

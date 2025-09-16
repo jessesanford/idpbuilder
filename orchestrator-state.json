@@ -1,10 +1,10 @@
 {
-  "current_state": "MONITORING_INTEGRATION",
-  "previous_state": "SPAWN_INTEGRATION_AGENT",
+  "current_state": "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
+  "previous_state": "INTEGRATION_FEEDBACK_REVIEW",
   "current_phase": 1,
   "current_wave": 1,
-  "transition_time": "2025-09-16T19:31:10Z",
-  "transition_reason": "Integration agent completed Phase 1 Wave 1 merges successfully",
+  "transition_time": "2025-09-16T21:47:19Z",
+  "transition_reason": "Project integration failed with upstream bugs - need Code Reviewer to create fix plans",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -1034,12 +1034,17 @@
     "ready_for_execution": true
   },
   "phase1_wave1_integration": {
-    "status": "completed",
+    "status": "COMPLETE_WITH_FIX",
     "completed_at": "2025-09-16T19:31:10Z",
     "integration_branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
-    "build_status": "failed_upstream_bug",
+    "build_status": "PASSING",
     "merge_count": 4,
-    "conflicts_resolved": 9
+    "conflicts_resolved": 9,
+    "fix_applied": true,
+    "fix_commit": "6e80b35",
+    "ready_for_testing": true,
+    "test_status": "test_deps_missing_but_code_builds",
+    "fix_verified_at": "2025-09-16T20:33:02Z"
   },
   "integration_context_stack": [
     {
@@ -1076,5 +1081,84 @@
       "4. Continue project-level integration with fixed Phase 1 Wave 1"
     ],
     "do_not_forget": "This is a RE-INTEGRATION due to project-level fixes being backported"
+  },
+  "FIX_CASCADE_TRACKER": {
+    "CRITICAL": "TWO-LEVEL FIX CASCADE IN PROGRESS",
+    "level_1": {
+      "name": "PROJECT_INTEGRATION_FIXES",
+      "status": "SUSPENDED",
+      "reason": "Found bugs during project integration that need backporting",
+      "bugs_fixed_at_source": [
+        "Bug 1: cert-validation-split-003 syntax error (FIXED)",
+        "Bug 2: kind-cert-extraction feature flags (FIXED)"
+      ],
+      "return_to": "PROJECT_INTEGRATION after Phase 1 re-integration completes"
+    },
+    "level_2": {
+      "name": "PHASE1_WAVE1_REINTEGRATION_FIXES",
+      "status": "FIX_COMPLETE",
+      "reason": "Found NEW upstream bug during Phase 1 Wave 1 RE-integration",
+      "current_bug": {
+        "file": "pkg/testutil/helpers.go",
+        "issue": "Missing import for pkg/printer/types",
+        "severity": "BLOCKING_BUILD",
+        "fix_plan": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/FIX-PLAN-MISSING-IMPORT.md",
+        "status": "FIXED",
+        "fixed_at": "2025-09-16T20:32:05Z",
+        "commit": "6e80b35"
+      },
+      "cascade_required": [
+        "Fix in Phase 1 Wave 1 integration workspace",
+        "Re-run Phase 1 Wave 1 integration",
+        "If successful, continue to Phase 1 Wave 2",
+        "Complete Phase 1 integration",
+        "Return to PROJECT integration"
+      ],
+      "next_action": "Continue to Phase 1 Wave 2 integration"
+    },
+    "CRITICAL_PATH": [
+      "1. [COMPLETE] Fixed pkg/testutil/helpers.go import issue",
+      "2. [CURRENT] Continue Phase 1 Wave 2 integration",
+      "3. Run Phase 1 Wave 2 integration",
+      "4. Run Phase 1 integration",
+      "5. Return to PROJECT integration",
+      "6. Complete PROJECT integration with all fixes"
+    ]
+  },
+  "integration_feedback": {
+    "project_integration": {
+      "review_timestamp": "2025-09-16T21:46:55Z",
+      "integration_report": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace/PROJECT-INTEGRATION-COMPLETION-REPORT.md",
+      "fix_request_file": "FIX_REQUEST_20250916-214542.yaml",
+      "build_status": "FAILED",
+      "test_status": "PARTIAL_FAILURE",
+      "demo_status": "NOT_RUN_DUE_TO_BUILD_FAILURE",
+      "efforts_needing_fixes": [
+        {
+          "effort": "kind-cert-extraction",
+          "phase": 1,
+          "wave": 1,
+          "package": "pkg/certs",
+          "issue": "Test setup failure"
+        },
+        {
+          "effort": "image-builder",
+          "phase": 2,
+          "wave": 1,
+          "package": "pkg/build",
+          "issue": "Build compilation failure"
+        },
+        {
+          "effort": "builder",
+          "phase": 2,
+          "wave": 1,
+          "package": "pkg/registry",
+          "issue": "Build compilation failure"
+        }
+      ],
+      "integration_report_distributed": true,
+      "old_plans_archived": true,
+      "action_required": "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING"
+    }
   }
 }
