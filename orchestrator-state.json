@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
-  "previous_state": "WAITING_FOR_PROJECT_FIX_PLANS",
+  "current_state": "MONITORING_PROJECT_FIXES",
+  "previous_state": "SPAWN_SW_ENGINEER_PROJECT_FIXES",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-16T18:15:23Z",
-  "transition_reason": "R324/R322 compliance: Fix plan reviewed. Ready to spawn SW Engineers for project fixes.",
+  "transition_time": "2025-09-16T18:27:40Z",
+  "transition_reason": "R324/R322: Project fixes completed. Both bugs fixed successfully. Ready for re-integration per R327.",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -938,5 +938,32 @@
     "fix_plan_created": true,
     "fix_plan_location": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace/PROJECT-FIX-PLAN.md",
     "fix_plan_created_at": "2025-09-16T18:10:00Z"
+  },
+  "project_fixes_spawned": {
+    "spawned_at": "2025-09-16T18:20:11Z",
+    "fixes": [
+      {
+        "bug_id": 1,
+        "priority": "CRITICAL",
+        "engineer": "sw-engineer-1",
+        "branch": "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003",
+        "workspace": "efforts/phase1/wave2/cert-validation-split-003",
+        "status": "COMPLETED",
+        "completed_at": "2025-09-16T18:20:35Z",
+        "result": "File already fixed - no action needed"
+      },
+      {
+        "bug_id": 2,
+        "priority": "MEDIUM",
+        "engineer": "sw-engineer-2",
+        "branch": "idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction",
+        "workspace": "efforts/phase1/wave1/kind-cert-extraction",
+        "status": "COMPLETED",
+        "completed_at": "2025-09-16T18:20:40Z",
+        "result": "Feature flags removed successfully"
+      }
+    ],
+    "parallelization": "Both fixes spawned in parallel per R151",
+    "completion_status": "ALL_FIXES_COMPLETE"
   }
 }
