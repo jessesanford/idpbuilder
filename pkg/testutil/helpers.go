@@ -118,15 +118,15 @@ func NewDeployment(name string) *appsv1.Deployment {
 
 // Contains checks if a string contains a substring (simple helper for tests)
 func Contains(s, substr string) bool {
-	return len(substr) > 0 && len(s) >= len(substr) && 
-		   (s == substr || len(s) > len(substr) && (s[:len(substr)] == substr || 
-		    s[len(s)-len(substr):] == substr || 
-		    func() bool {
-			    for i := 0; i <= len(s)-len(substr); i++ {
-				    if s[i:i+len(substr)] == substr {
-					    return true
-				    }
-			    }
-			    return false
-		    }()))
+	return len(substr) > 0 && len(s) >= len(substr) &&
+		(s == substr || len(s) > len(substr) && (s[:len(substr)] == substr ||
+			s[len(s)-len(substr):] == substr ||
+			func() bool {
+				for i := 0; i <= len(s)-len(substr); i++ {
+					if s[i:i+len(substr)] == substr {
+						return true
+					}
+				}
+				return false
+			}()))
 }

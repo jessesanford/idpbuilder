@@ -165,7 +165,7 @@ func TestProgressTracker_GetProgress(t *testing.T) {
 	tracker.SetLayerStatus("layer-1", "complete")
 
 	progress = tracker.GetProgress()
-	assert.Equal(t, 40, progress.Percentage) // 400/1000
+	assert.Equal(t, 40, progress.Percentage)  // 400/1000
 	assert.Equal(t, 1, progress.CurrentLayer) // 1 complete layer
 	assert.Equal(t, 2, progress.TotalLayers)
 
@@ -174,7 +174,7 @@ func TestProgressTracker_GetProgress(t *testing.T) {
 	tracker.SetLayerStatus("layer-2", "uploading")
 
 	progress = tracker.GetProgress()
-	assert.Equal(t, 70, progress.Percentage) // (400+300)/1000
+	assert.Equal(t, 70, progress.Percentage)  // (400+300)/1000
 	assert.Equal(t, 1, progress.CurrentLayer) // Still 1 complete layer
 
 	// Complete second layer

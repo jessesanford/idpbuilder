@@ -11,57 +11,57 @@ import (
 // RemoteOptions configures the behavior of remote registry operations
 type RemoteOptions struct {
 	// Connection settings
-	Timeout      time.Duration
-	MaxRetries   int
-	RetryDelay   time.Duration
-	UserAgent    string
-	
+	Timeout    time.Duration
+	MaxRetries int
+	RetryDelay time.Duration
+	UserAgent  string
+
 	// TLS/SSL settings
-	Insecure           bool
-	TLSConfig          *tls.Config
-	CertFile           string
-	KeyFile            string
-	CAFile             string
-	SkipTLSVerify      bool
-	
+	Insecure      bool
+	TLSConfig     *tls.Config
+	CertFile      string
+	KeyFile       string
+	CAFile        string
+	SkipTLSVerify bool
+
 	// Proxy settings
-	ProxyURL           string
-	ProxyUsername      string
-	ProxyPassword      string
-	NoProxy            []string
-	
+	ProxyURL      string
+	ProxyUsername string
+	ProxyPassword string
+	NoProxy       []string
+
 	// Authentication settings
 	AuthScope          string
 	AuthService        string
 	TokenRefreshMargin time.Duration
-	
+
 	// Performance settings
 	MaxIdleConns        int
 	MaxIdleConnsPerHost int
 	MaxConnsPerHost     int
 	IdleConnTimeout     time.Duration
-	
+
 	// Registry-specific settings
-	RegistryVersion     string
-	AcceptedMediaTypes  []string
-	CustomHeaders       map[string]string
+	RegistryVersion    string
+	AcceptedMediaTypes []string
+	CustomHeaders      map[string]string
 }
 
 // DefaultRemoteOptions returns a RemoteOptions struct with sensible defaults
 func DefaultRemoteOptions() *RemoteOptions {
 	return &RemoteOptions{
-		Timeout:      30 * time.Second,
-		MaxRetries:   3,
-		RetryDelay:   1 * time.Second,
-		UserAgent:    "idpbuilder-gitea-client/1.0",
-		Insecure:      false,
-		SkipTLSVerify: false,
-		TokenRefreshMargin: 5 * time.Minute,
+		Timeout:             30 * time.Second,
+		MaxRetries:          3,
+		RetryDelay:          1 * time.Second,
+		UserAgent:           "idpbuilder-gitea-client/1.0",
+		Insecure:            false,
+		SkipTLSVerify:       false,
+		TokenRefreshMargin:  5 * time.Minute,
 		MaxIdleConns:        100,
 		MaxIdleConnsPerHost: 10,
 		MaxConnsPerHost:     0,
 		IdleConnTimeout:     90 * time.Second,
-		RegistryVersion: "v2",
+		RegistryVersion:     "v2",
 		AcceptedMediaTypes: []string{
 			"application/vnd.docker.distribution.manifest.v2+json",
 			"application/vnd.docker.distribution.manifest.list.v2+json",
@@ -111,7 +111,7 @@ func (r *RemoteOptions) ApplyToTransport(transport *http.Transport) error {
 	if transport == nil {
 		return fmt.Errorf("transport cannot be nil")
 	}
-	
+
 	// Apply TLS configuration
 	if r.TLSConfig != nil {
 		transport.TLSClientConfig = r.TLSConfig.Clone()
@@ -120,40 +120,40 @@ func (r *RemoteOptions) ApplyToTransport(transport *http.Transport) error {
 			InsecureSkipVerify: r.Insecure || r.SkipTLSVerify,
 		}
 	}
-	
+
 	// Load client certificates if specified
 	if r.CertFile != "" && r.KeyFile != "" {
 		cert, err := tls.LoadX509KeyPair(r.CertFile, r.KeyFile)
 		if err != nil {
 			return fmt.Errorf("failed to load client certificate: %w", err)
 		}
-		
+
 		if transport.TLSClientConfig == nil {
 			transport.TLSClientConfig = &tls.Config{}
 		}
 		transport.TLSClientConfig.Certificates = []tls.Certificate{cert}
 	}
-	
+
 	// Configure proxy
 	if r.ProxyURL != "" {
 		proxyURL, err := url.Parse(r.ProxyURL)
 		if err != nil {
 			return fmt.Errorf("invalid proxy URL: %w", err)
 		}
-		
+
 		if r.ProxyUsername != "" {
 			proxyURL.User = url.UserPassword(r.ProxyUsername, r.ProxyPassword)
 		}
-		
+
 		transport.Proxy = http.ProxyURL(proxyURL)
 	}
-	
+
 	// Configure connection pooling
 	transport.MaxIdleConns = r.MaxIdleConns
 	transport.MaxIdleConnsPerHost = r.MaxIdleConnsPerHost
 	transport.MaxConnsPerHost = r.MaxConnsPerHost
 	transport.IdleConnTimeout = r.IdleConnTimeout
-	
+
 	return nil
 }
 
@@ -162,12 +162,12 @@ func (r *RemoteOptions) CreateHTTPClient() (*http.Client, error) {
 	if err := r.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid remote options: %w", err)
 	}
-	
+
 	transport := &http.Transport{}
 	if err := r.ApplyToTransport(transport); err != nil {
 		return nil, err
 	}
-	
+
 	return &http.Client{
 		Transport: transport,
 		Timeout:   r.Timeout,
@@ -198,23 +198,23 @@ func (r *RemoteOptions) Clone() *RemoteOptions {
 		IdleConnTimeout:     r.IdleConnTimeout,
 		RegistryVersion:     r.RegistryVersion,
 	}
-	
+
 	// Clone TLS config
 	if r.TLSConfig != nil {
 		clone.TLSConfig = r.TLSConfig.Clone()
 	}
-	
+
 	// Clone slices
 	if r.NoProxy != nil {
 		clone.NoProxy = make([]string, len(r.NoProxy))
 		copy(clone.NoProxy, r.NoProxy)
 	}
-	
+
 	if r.AcceptedMediaTypes != nil {
 		clone.AcceptedMediaTypes = make([]string, len(r.AcceptedMediaTypes))
 		copy(clone.AcceptedMediaTypes, r.AcceptedMediaTypes)
 	}
-	
+
 	// Clone map
 	if r.CustomHeaders != nil {
 		clone.CustomHeaders = make(map[string]string, len(r.CustomHeaders))
@@ -222,7 +222,7 @@ func (r *RemoteOptions) Clone() *RemoteOptions {
 			clone.CustomHeaders[k] = v
 		}
 	}
-	
+
 	return clone
 }
 

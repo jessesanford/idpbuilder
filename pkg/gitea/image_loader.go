@@ -117,11 +117,11 @@ func (il *ImageLoader) buildManifestFromInspect(ctx context.Context, inspect typ
 
 // ImageManifest represents an OCI image manifest
 type ImageManifest struct {
-	SchemaVersion int              `json:"schemaVersion"`
-	MediaType     string           `json:"mediaType"`
-	Config        ManifestConfig   `json:"config"`
-	Layers        []ManifestLayer  `json:"layers"`
-	TotalSize     int64            `json:"-"` // Not part of manifest, for progress tracking
+	SchemaVersion int             `json:"schemaVersion"`
+	MediaType     string          `json:"mediaType"`
+	Config        ManifestConfig  `json:"config"`
+	Layers        []ManifestLayer `json:"layers"`
+	TotalSize     int64           `json:"-"` // Not part of manifest, for progress tracking
 }
 
 // ManifestConfig represents the config section of a manifest

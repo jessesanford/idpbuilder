@@ -152,4 +152,3 @@ func (b *Builder) GetStoragePath(tag string) (string, bool) {
 	path, exists := b.images[tag]
 	return path, exists
 }
-

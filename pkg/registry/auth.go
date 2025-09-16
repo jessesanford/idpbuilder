@@ -17,7 +17,7 @@ type AuthManager struct {
 	realm    string
 	service  string
 	scope    string
-	
+
 	// Token management
 	bearerToken    string
 	tokenExpiresAt time.Time
@@ -48,12 +48,12 @@ func (a *AuthManager) GetAuthHeader(ctx context.Context) (string, error) {
 		a.tokenMutex.RUnlock()
 		return fmt.Sprintf("Bearer %s", token), nil
 	}
-	
+
 	// Fall back to basic auth
 	if a.username != "" && a.token != "" {
 		return a.getBasicAuthHeader(), nil
 	}
-	
+
 	return "", fmt.Errorf("no authentication credentials available")
 }
 
@@ -62,45 +62,45 @@ func (a *AuthManager) RefreshToken(ctx context.Context, client *http.Client) err
 	if a.realm == "" {
 		return nil
 	}
-	
+
 	// Check if token needs refresh
 	a.tokenMutex.RLock()
 	needsRefresh := time.Now().After(a.tokenExpiresAt.Add(-5 * time.Minute))
 	a.tokenMutex.RUnlock()
-	
+
 	if !needsRefresh {
 		return nil
 	}
-	
+
 	// Build token request
 	tokenURL := fmt.Sprintf("%s?service=%s&scope=%s", a.realm, a.service, a.scope)
 	req, err := http.NewRequestWithContext(ctx, "GET", tokenURL, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create token request: %w", err)
 	}
-	
+
 	// Add basic auth for token request
 	if a.username != "" && a.token != "" {
 		req.Header.Set("Authorization", a.getBasicAuthHeader())
 	}
-	
+
 	// Execute token request
 	resp, err := client.Do(req)
 	if err != nil {
 		return fmt.Errorf("token request failed: %w", err)
 	}
 	defer resp.Body.Close()
-	
+
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("token request failed with status: %d", resp.StatusCode)
 	}
-	
+
 	// Parse token response (simplified)
 	a.tokenMutex.Lock()
 	a.bearerToken = "dummy-bearer-token"
 	a.tokenExpiresAt = time.Now().Add(1 * time.Hour)
 	a.tokenMutex.Unlock()
-	
+
 	return nil
 }
 
@@ -123,12 +123,12 @@ func (a *AuthManager) HandleAuthChallenge(challenge string) error {
 	if !strings.HasPrefix(challenge, "Bearer ") {
 		return nil
 	}
-	
+
 	// Parse bearer challenge - comma separated key=value pairs
 	challengeStr := challenge[7:] // Remove "Bearer "
 	parts := strings.Split(challengeStr, ",")
 	params := make(map[string]string)
-	
+
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
 		if keyValue := strings.SplitN(part, "=", 2); len(keyValue) == 2 {
@@ -137,7 +137,7 @@ func (a *AuthManager) HandleAuthChallenge(challenge string) error {
 			params[key] = value
 		}
 	}
-	
+
 	// Extract authentication parameters
 	if realm, ok := params["realm"]; ok {
 		a.realm = realm
@@ -148,7 +148,7 @@ func (a *AuthManager) HandleAuthChallenge(challenge string) error {
 	if scope, ok := params["scope"]; ok {
 		a.scope = scope
 	}
-	
+
 	return nil
 }
 

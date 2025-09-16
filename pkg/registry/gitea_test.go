@@ -16,28 +16,28 @@ func TestNewGiteaRegistry(t *testing.T) {
 			Username: "testuser",
 			Token:    "testtoken",
 		}
-		
+
 		registry, err := NewGiteaRegistry(config, nil)
 		if err != nil {
 			t.Fatalf("NewGiteaRegistry() error = %v", err)
 		}
-		
+
 		if registry == nil {
 			t.Fatal("Expected registry to be created")
 		}
-		
+
 		if registry.baseURL != "https://gitea.example.com" {
 			t.Errorf("Expected baseURL https://gitea.example.com, got %s", registry.baseURL)
 		}
 	})
-	
+
 	t.Run("nil config", func(t *testing.T) {
 		_, err := NewGiteaRegistry(nil, nil)
 		if err == nil {
 			t.Error("Expected error for nil config")
 		}
 	})
-	
+
 	t.Run("empty URL", func(t *testing.T) {
 		config := &RegistryConfig{}
 		_, err := NewGiteaRegistry(config, nil)
@@ -45,7 +45,7 @@ func TestNewGiteaRegistry(t *testing.T) {
 			t.Error("Expected error for empty URL")
 		}
 	})
-	
+
 	t.Run("invalid URL", func(t *testing.T) {
 		config := &RegistryConfig{
 			URL: "://invalid-url",
@@ -63,12 +63,12 @@ func TestGiteaRegistry_buildURL(t *testing.T) {
 		Username: "testuser",
 		Token:    "testtoken",
 	}
-	
+
 	registry, err := NewGiteaRegistry(config, nil)
 	if err != nil {
 		t.Fatalf("NewGiteaRegistry() error = %v", err)
 	}
-	
+
 	tests := []struct {
 		name     string
 		apiPath  string
@@ -85,7 +85,7 @@ func TestGiteaRegistry_buildURL(t *testing.T) {
 			expected: "https://gitea.example.com/v2/repo/manifests/latest",
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := registry.buildURL(tt.apiPath)
@@ -102,12 +102,12 @@ func TestGiteaRegistry_Close(t *testing.T) {
 		Username: "testuser",
 		Token:    "testtoken",
 	}
-	
+
 	registry, err := NewGiteaRegistry(config, nil)
 	if err != nil {
 		t.Fatalf("NewGiteaRegistry() error = %v", err)
 	}
-	
+
 	err = registry.Close()
 	if err != nil {
 		t.Errorf("Close() error = %v", err)
@@ -121,7 +121,7 @@ func TestGiteaRegistry_Exists(t *testing.T) {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
-		
+
 		if strings.Contains(r.URL.Path, "exists") {
 			w.WriteHeader(http.StatusOK)
 		} else {
@@ -129,21 +129,21 @@ func TestGiteaRegistry_Exists(t *testing.T) {
 		}
 	}))
 	defer server.Close()
-	
+
 	config := &RegistryConfig{
 		URL:      server.URL,
 		Username: "testuser",
 		Token:    "testtoken",
 	}
-	
+
 	registry, err := NewGiteaRegistry(config, nil)
 	if err != nil {
 		t.Fatalf("NewGiteaRegistry() error = %v", err)
 	}
 	defer registry.Close()
-	
+
 	ctx := context.Background()
-	
+
 	t.Run("repository exists", func(t *testing.T) {
 		exists, err := registry.Exists(ctx, "exists")
 		if err != nil {
@@ -153,7 +153,7 @@ func TestGiteaRegistry_Exists(t *testing.T) {
 			t.Error("Expected repository to exist")
 		}
 	})
-	
+
 	t.Run("repository does not exist", func(t *testing.T) {
 		exists, err := registry.Exists(ctx, "notfound")
 		if err != nil {
@@ -163,7 +163,7 @@ func TestGiteaRegistry_Exists(t *testing.T) {
 			t.Error("Expected repository to not exist")
 		}
 	})
-	
+
 	t.Run("empty repository name", func(t *testing.T) {
 		_, err := registry.Exists(ctx, "")
 		if err == nil {
@@ -174,19 +174,19 @@ func TestGiteaRegistry_Exists(t *testing.T) {
 
 func TestDefaultRemoteOptions(t *testing.T) {
 	opts := DefaultRemoteOptions()
-	
+
 	if opts == nil {
 		t.Fatal("Expected default options to be created")
 	}
-	
+
 	if opts.Timeout != 30*time.Second {
 		t.Errorf("Expected timeout 30s, got %v", opts.Timeout)
 	}
-	
+
 	if opts.MaxRetries != 3 {
 		t.Errorf("Expected max retries 3, got %d", opts.MaxRetries)
 	}
-	
+
 	if opts.UserAgent != "idpbuilder-gitea-client/1.0" {
 		t.Errorf("Expected user agent idpbuilder-gitea-client/1.0, got %s", opts.UserAgent)
 	}

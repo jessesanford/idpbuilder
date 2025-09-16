@@ -30,7 +30,7 @@ func RetryWithPolicy(ctx context.Context, policy *RetryPolicy, operation func() 
 	if policy == nil {
 		policy = DefaultRetryPolicy()
 	}
-	
+
 	var lastErr error
 	for attempt := 0; attempt <= policy.MaxRetries; attempt++ {
 		if err := operation(); err == nil {
@@ -38,11 +38,11 @@ func RetryWithPolicy(ctx context.Context, policy *RetryPolicy, operation func() 
 		} else {
 			lastErr = err
 		}
-		
+
 		if attempt >= policy.MaxRetries || !policy.IsRetryableError(lastErr) {
 			break
 		}
-		
+
 		delay := time.Duration(float64(policy.InitialDelay) * math.Pow(policy.BackoffFactor, float64(attempt)))
 		select {
 		case <-ctx.Done():
@@ -71,7 +71,7 @@ func (r *WithRetry) Push(ctx context.Context, image string, content io.Reader) e
 
 func (r *WithRetry) List(ctx context.Context) ([]string, error) {
 	var result []string
-	err := RetryWithPolicy(ctx, r.policy, func() error { 
+	err := RetryWithPolicy(ctx, r.policy, func() error {
 		var e error
 		result, e = r.registry.List(ctx)
 		return e
@@ -81,7 +81,7 @@ func (r *WithRetry) List(ctx context.Context) ([]string, error) {
 
 func (r *WithRetry) Exists(ctx context.Context, repository string) (bool, error) {
 	var result bool
-	err := RetryWithPolicy(ctx, r.policy, func() error { 
+	err := RetryWithPolicy(ctx, r.policy, func() error {
 		var e error
 		result, e = r.registry.Exists(ctx, repository)
 		return e
@@ -94,6 +94,7 @@ func (r *WithRetry) Delete(ctx context.Context, repository string) error {
 }
 
 func (r *WithRetry) Close() error { return r.registry.Close() }
+
 // retryWithExponentialBackoff is a wrapper for backward compatibility
 // This function is used by split-001 code
 func retryWithExponentialBackoff(operation func() error, operationName string, details string) error {
