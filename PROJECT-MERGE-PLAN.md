@@ -3,7 +3,7 @@
 ## Plan Overview
 **Date Created**: 2025-01-16
 **Target Branch**: `idpbuilder-oci-build-push/project-integration-20250916-152718`
-**Working Directory**: `Clone of target repo on branch idpbuilder-oci-build-push/project-integration-20250916-152718`
+**Working Directory**: `/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace`
 **Merge Strategy**: Sequential Phase Integration (Phase 1 → Phase 2)
 **Estimated Duration**: 30-45 minutes
 
@@ -11,18 +11,20 @@
 1. **Phase 1 Integration**: `origin/idpbuilder-oci-build-push/phase1-integration`
    - Last Commit: 22c9fe4 - docs: finalize R327 CASCADE work log
    - Components: Certificate management, validation, fallback strategies
+   - Source Workspace: `/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/phase-integration-workspace`
 
 2. **Phase 2 Integration**: `origin/idpbuilder-oci-build-push/phase2-integration-20250916-033720`
    - Last Commit: 399be8a - remove: delete Docker workaround script per user request
    - Components: Image builder, Gitea client, registry operations (both Wave 1 and Wave 2)
+   - Source Workspace: `/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase2/phase-integration-workspace-new/repo`
 
 ## Pre-Merge Validation Checklist
 
 ### 1. Environment Verification
 ```bash
 # Verify working directory
-cd Clone of target repo on branch idpbuilder-oci-build-push/project-integration-20250916-152718
-pwd  # Should show: Clone of target repo on branch idpbuilder-oci-build-push/project-integration-20250916-152718
+cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace
+pwd  # Should show: /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace
 
 # Verify current branch
 git branch --show-current  # Should show: idpbuilder-oci-build-push/project-integration-20250916-152718
