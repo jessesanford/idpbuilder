@@ -4,7 +4,7 @@
   "current_phase": 1,
   "current_wave": 1,
   "transition_time": "2025-09-16T18:57:42Z",
-  "transition_reason": "Wave integration infrastructure ready, need Code Reviewer for merge plan",
+  "transition_reason": "Merge plan created, ready to spawn integration agent",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -1010,5 +1010,20 @@
       "efforts/phase1/phase-integration-workspace",
       "efforts/project/project-integration-workspace"
     ]
-  }
+  },
+  "merge_plan_status": {
+    "created_at": "2025-09-16T19:11:12Z",
+    "location": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo/WAVE-MERGE-PLAN.md",
+    "status": "ready",
+    "branches_to_merge": [
+      "kind-cert-extraction",
+      "registry-auth-types-split-001",
+      "registry-auth-types-split-002",
+      "registry-tls-trust"
+    ],
+    "excluded_branches": [
+      "registry-auth-types"
+    ]
+  },
+  "next_state": "SPAWN_INTEGRATION_AGENT"
 }
