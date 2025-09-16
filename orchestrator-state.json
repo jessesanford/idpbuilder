@@ -542,7 +542,9 @@
     "created_at": "2025-09-16T10:45:29Z",
     "base_commit": "354b7d62bbf8803917377ca4ea5857bfcc158fa7",
     "project_integration_to_merge": "idpbuilder-oci-build-push/phase2-integration-20250916-033720",
-    "status": "infrastructure_ready"
+    "status": "fix_applied_ready_to_test",
+    "fix_applied": true,
+    "ready_for_testing": true
   },
   "build_analysis": {
     "total_errors": 1,
@@ -582,5 +584,18 @@
     "agent": "sw-engineer",
     "result": "Build syntax error in pkg/certs/chain_validator_test.go resolved",
     "verification": "Build passes, tests compile"
+  },
+  "next_state_ready": "INTEGRATION_TESTING",
+  "integration_testing_context": {
+    "clear_instruction": "When continuing, transition to INTEGRATION_TESTING state",
+    "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/integration-testing-20250916-104408",
+    "branch": "idpbuilder-oci-build-push/integration-testing-20250916-104408",
+    "fix_status": "Syntax error fixed at line 173 of pkg/certs/chain_validator_test.go",
+    "next_actions": [
+      "cd integration-testing-20250916-104408",
+      "Run make build",
+      "Run make test",
+      "Verify all passes"
+    ]
   }
 }
