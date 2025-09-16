@@ -80,11 +80,12 @@ echo "   Registry: ${REGISTRY}"
 echo "   Image: ${IMAGE_NAME}:${IMAGE_TAG}"
 echo "   User: ${GITEA_USERNAME}"
 echo ""
-echo "   Command: idpbuilder push --username \$GITEA_USERNAME --token \$GITEA_TOKEN ${FULL_IMAGE}"
+echo "   Command: idpbuilder push --username \$GITEA_USERNAME --token \$GITEA_TOKEN --insecure ${FULL_IMAGE}"
 
 ./idpbuilder push \
     --username "${GITEA_USERNAME}" \
     --token "${GITEA_TOKEN}" \
+    --insecure \
     "${FULL_IMAGE}"
 
 if [ $? -eq 0 ]; then
