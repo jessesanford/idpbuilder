@@ -1,0 +1,27 @@
+🎬 PHASE 2 WAVE 2 - INTEGRATED DEMO
+====================================
+Timestamp: 2025-09-16 01:04:32 UTC
+
+✅ EFFORT 1: CLI Commands (E2.2.1)
+-----------------------------------
+Assemble a single-layer OCI image from a directory using go-containerregistry.
+Certificate handling is applied during the push phase, not during build.
+
+
+✅ EFFORT 2A: Credential Management (E2.2.2-A)
+----------------------------------------------
+  idpbuilder push --username admin --token mytoken myapp:latest
+      --token string      Registry token/password
+      --username string   Registry username
+
+✅ EFFORT 2B: Image Operations (E2.2.2-B)
+-----------------------------------------
+Components integrated:
+  - Docker daemon integration
+  - OCI manifest generation
+  - Progress tracking with layers
+  - Production-ready (no feature flags)
+
+🎉 WAVE INTEGRATION COMPLETE!
+All three efforts successfully integrated into:
+Branch: idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118
