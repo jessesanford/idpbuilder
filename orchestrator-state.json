@@ -3,20 +3,39 @@
   "previous_state": "WAITING_FOR_PROJECT_MERGE_PLAN",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-16T16:11:20Z",
-  "transition_reason": "PROJECT-MERGE-PLAN.md validated and ready for execution",
+  "transition_time": "2025-09-16T17:08:00Z",
+  "transition_reason": "PROJECT-MERGE-PLAN.md validated and workspace prepared for execution",
+  "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
+    "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
+    "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
+    "DO_NOT_CHANGE_ANYTHING": "This workspace is ALREADY SET UP. Just cd to it and start work!",
+    "BRANCH_NAME": "idpbuilder-oci-build-push/project-integration-20250916-152718",
+    "MERGE_PLAN": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace/PROJECT-MERGE-PLAN.md",
+    "NO_WORKTREES": "DO NOT USE WORKTREES. DO NOT CREATE WORKTREES. THIS IS A REGULAR GIT CLONE.",
+    "NO_REMOTE_CHANGES": "DO NOT CHANGE THE REMOTE. IT IS ALREADY SET TO THE TARGET REPO.",
+    "JUST_START_MERGING": "cd to the directory above and execute the merge plan. That's it!"
+  },
   "integration_agent_spawned": {
-    "spawned_at": "2025-09-16T03:38:45Z",
-    "completed_at": "2025-09-16T03:39:50Z",
-    "agent_type": "software-engineer",
-    "mode": "PHASE_INTEGRATION",
-    "result": "SUCCESS",
-    "integration_branch": "idpbuilder-oci-build-push/phase2-integration-20250916-033720",
-    "waves_integrated": [
-      "wave1/integration",
-      "wave2/integration-20250916-002118"
-    ],
-    "completion_report": "efforts/phase2/phase-integration-workspace-new/repo/PHASE-2-INTEGRATION-COMPLETION-REPORT.md"
+    "previous_phase2_integration": {
+      "spawned_at": "2025-09-16T03:38:45Z",
+      "completed_at": "2025-09-16T03:39:50Z",
+      "agent_type": "software-engineer",
+      "mode": "PHASE_INTEGRATION",
+      "result": "SUCCESS",
+      "integration_branch": "idpbuilder-oci-build-push/phase2-integration-20250916-033720"
+    },
+    "project_integration_ready": {
+      "status": "READY_TO_SPAWN",
+      "agent_type": "integration",
+      "mode": "PROJECT_INTEGRATION",
+      "workspace": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
+      "merge_plan": "PROJECT-MERGE-PLAN.md exists in workspace",
+      "phases_to_merge": [
+        "origin/idpbuilder-oci-build-push/phase1-integration",
+        "origin/idpbuilder-oci-build-push/phase2-integration-20250916-033720"
+      ],
+      "target_branch": "idpbuilder-oci-build-push/project-integration-20250916-152718"
+    }
   },
   "phase2_completed_integration_for_architect": {
     "CRITICAL_FOR_ARCHITECT": "USE THIS EXACT LOCATION - DO NOT LOOK IN WORKTREES",
@@ -767,7 +786,23 @@
     "base_corrected": true,
     "rebased_at": "2025-09-16T16:36:28Z",
     "note": "Branch exists on target repo, no worktrees used",
-    "working_copy": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace"
+    "working_copy": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
+    "INTEGRATION_AGENT_INSTRUCTIONS": {
+      "CRITICAL": "USE ONLY THE WORKING COPY PATH ABOVE",
+      "DO_NOT": [
+        "DO NOT create any new directories",
+        "DO NOT clone anything",
+        "DO NOT create worktrees",
+        "DO NOT change remotes",
+        "DO NOT look for workspaces elsewhere"
+      ],
+      "JUST_DO": [
+        "cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
+        "Read PROJECT-MERGE-PLAN.md",
+        "Execute the merges as documented",
+        "Commit and push results"
+      ]
+    }
   },
   "code_reviewer_project_merge_plan": {
     "spawned_at": "2025-09-16T16:06:49Z",
@@ -802,6 +837,14 @@
     "ready_for_execution": true,
     "plan_corrected": true,
     "correction_note": "Updated Phase 2 reference from phase2-integration to phase2-integration-20250916-033720",
+    "WORKSPACE_VERIFIED": {
+      "exists": true,
+      "path": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
+      "current_branch": "idpbuilder-oci-build-push/project-integration-20250916-152718",
+      "remote": "https://github.com/jessesanford/idpbuilder.git",
+      "merge_plan_present": true,
+      "ready_for_integration": true
+    },
     "committed": true,
     "commit_sha": "e44283e",
     "base_corrected": true
