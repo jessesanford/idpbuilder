@@ -3,7 +3,7 @@
 ## Plan Overview
 **Date Created**: 2025-01-16
 **Target Branch**: `idpbuilder-oci-build-push/project-integration-20250916-152718`
-**Working Directory**: `/home/vscode/workspaces/idpbuilder-oci-build-push/worktrees/project-integration`
+**Working Directory**: `Clone of target repo on branch idpbuilder-oci-build-push/project-integration-20250916-152718`
 **Merge Strategy**: Sequential Phase Integration (Phase 1 → Phase 2)
 **Estimated Duration**: 30-45 minutes
 
@@ -21,8 +21,8 @@
 ### 1. Environment Verification
 ```bash
 # Verify working directory
-cd /home/vscode/workspaces/idpbuilder-oci-build-push/worktrees/project-integration
-pwd  # Should show: /home/vscode/workspaces/idpbuilder-oci-build-push/worktrees/project-integration
+cd Clone of target repo on branch idpbuilder-oci-build-push/project-integration-20250916-152718
+pwd  # Should show: Clone of target repo on branch idpbuilder-oci-build-push/project-integration-20250916-152718
 
 # Verify current branch
 git branch --show-current  # Should show: idpbuilder-oci-build-push/project-integration-20250916-152718
