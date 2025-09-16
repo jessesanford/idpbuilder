@@ -1,10 +1,10 @@
 {
-  "current_state": "DISTRIBUTE_FIX_PLANS",
-  "previous_state": "WAITING_FOR_FIX_PLANS",
+  "current_state": "SPAWN_ENGINEERS_FOR_FIXES",
+  "previous_state": "DISTRIBUTE_FIX_PLANS",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-16T13:37:54Z",
-  "transition_reason": "Fix plans verified and ready for distribution to effort directories",
+  "transition_time": "2025-09-16T13:43:47Z",
+  "transition_reason": "Fix plans distributed to integration testing, ready to spawn engineer for fixes",
   "integration_agent_spawned": {
     "spawned_at": "2025-09-16T03:38:45Z",
     "completed_at": "2025-09-16T03:39:50Z",
@@ -556,5 +556,14 @@
     "line": 173,
     "severity": "BLOCKING",
     "estimated_fix_time": "10m"
+  },
+  "fix_distribution": {
+    "distributed_at": "2025-09-16T13:43:25Z",
+    "distribution_log": "efforts/phase2/wave2/FIX_DISTRIBUTION_LOG_20250916-134248.md",
+    "target_directory": "integration-testing-20250916-104408",
+    "fix_plan_location": "integration-testing-20250916-104408/INTEGRATION_FIX_PLAN_20250916-134248.md",
+    "fix_plans_distributed": 1,
+    "marker_files_created": true,
+    "status": "distribution_complete"
   }
 }
