@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
-  "previous_state": "ANALYZE_BUILD_FAILURES",
+  "current_state": "WAITING_FOR_FIX_PLANS",
+  "previous_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-16T12:50:02Z",
-  "transition_reason": "Test failures detected during integration testing - need to analyze and create fix plans",
+  "transition_time": "2025-09-16T13:00:34Z",
+  "transition_reason": "Fix plan created by Code Reviewer - waiting for implementation",
   "integration_agent_spawned": {
     "spawned_at": "2025-09-16T03:38:45Z",
     "completed_at": "2025-09-16T03:39:50Z",
@@ -247,6 +247,12 @@
       "state": "SPAWN_INTEGRATION_AGENT_PHASE",
       "time": "2025-09-16T03:38:45Z",
       "purpose": "Execute Phase 2 integration - merge Wave 1 and Wave 2 integrations"
+    },
+    {
+      "agent": "code-reviewer",
+      "state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+      "time": "2025-09-16T13:00:00Z",
+      "purpose": "Create fix plan for build syntax error in pkg/certs/chain_validator_test.go"
     }
   ],
   "notes": "CRITICAL: E2.2.2-A is based on E2.2.1 (cli-commands), NOT on wave1-integration! This is an intra-wave dependency. The line-counter.sh tool doesn't support this pattern and will incorrectly measure against wave1-integration. Always verify the base_branch in orchestrator-state.json and measure manually if needed. E2.2.1 (cli-commands) was intentionally a prototype with TODOs and placeholders. E2.2.2-A and E2.2.2-B will implement ALL production features needed for real-world usage.",
@@ -540,5 +546,15 @@
       "BUILD-FAILURE-ANALYSIS-SUMMARY.md",
       "CODE-REVIEWER-FIX-PLANNING-BRIEF.md"
     ]
+  },
+  "fix_plan": {
+    "created_at": "2025-09-16T13:00:07Z",
+    "location": "efforts/phase2/wave2/fix-plans/FIX-PLAN-certs-syntax.md",
+    "summary_location": "efforts/phase2/wave2/fix-plans/FIX-PLAN-SUMMARY.yaml",
+    "issue": "syntax_error",
+    "file": "pkg/certs/chain_validator_test.go",
+    "line": 173,
+    "severity": "BLOCKING",
+    "estimated_fix_time": "10m"
   }
 }
