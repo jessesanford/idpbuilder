@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
-  "previous_state": "CREATE_INTEGRATION_TESTING",
+  "current_state": "WAITING_FOR_PROJECT_FIX_PLANS",
+  "previous_state": "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
   "current_phase": 2,
   "current_wave": 2,
-  "transition_time": "2025-09-16T17:57:29Z",
-  "transition_reason": "Project validation found issues that should be fixed before creating integration-testing branch. Transitioning to fix planning state to address: syntax error in chain_validator_test.go:173 and feature flags in pkg/certs.",
+  "transition_time": "2025-09-16T18:10:16Z",
+  "transition_reason": "R324/R322 compliance: Spawned Code Reviewer to create fix plans for project issues. Now waiting for plan completion.",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -361,6 +361,18 @@
       "fix_plan": "INTEGRATION_FIX_PLAN_20250916-134248.md",
       "status": "COMPLETED",
       "completion_time": "2025-09-16T13:54:07Z"
+    },
+    {
+      "type": "code-reviewer",
+      "task": "project_fix_plan_creation",
+      "state": "CREATE_PROJECT_FIX_PLAN",
+      "timestamp": "2025-09-16T18:09:00Z",
+      "working_directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
+      "purpose": "Create fix plans for syntax error and feature flag issues from project validation",
+      "status": "COMPLETED",
+      "output": "PROJECT-FIX-PLAN.md",
+      "bugs_to_fix": 2,
+      "completion_time": "2025-09-16T18:10:00Z"
     }
   ],
   "notes": "CRITICAL: E2.2.2-A is based on E2.2.1 (cli-commands), NOT on wave1-integration! This is an intra-wave dependency. The line-counter.sh tool doesn't support this pattern and will incorrectly measure against wave1-integration. Always verify the base_branch in orchestrator-state.json and measure manually if needed. E2.2.1 (cli-commands) was intentionally a prototype with TODOs and placeholders. E2.2.2-A and E2.2.2-B will implement ALL production features needed for real-world usage.",
@@ -922,6 +934,9 @@
         "impact": "Not production ready"
       }
     ],
-    "fix_location": "project-integration branch before creating integration-testing"
+    "fix_location": "project-integration branch before creating integration-testing",
+    "fix_plan_created": true,
+    "fix_plan_location": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace/PROJECT-FIX-PLAN.md",
+    "fix_plan_created_at": "2025-09-16T18:10:00Z"
   }
 }
