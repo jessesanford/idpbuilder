@@ -1,0 +1,33 @@
+# Orchestrator TODOs - SPAWN_SW_ENGINEER_PROJECT_FIXES
+State: SPAWN_SW_ENGINEER_PROJECT_FIXES
+Timestamp: 2025-09-16T22:06:00Z
+Previous State: WAITING_FOR_PROJECT_FIX_PLANS
+
+Tasks Completed:
+- ✅ Read state-specific rules for WAITING_FOR_PROJECT_FIX_PLANS
+- ✅ Reviewed PROJECT-FIX-PLAN-COMPREHENSIVE.md created by Code Reviewer
+- ✅ Reviewed FIX-PLAN-SUMMARY.yaml for bug details
+- ✅ Updated state to SPAWN_SW_ENGINEER_PROJECT_FIXES per R324
+
+Tasks Pending:
+- Spawn 5 SW Engineers IN PARALLEL for project bug fixes (R151 critical!)
+- Monitor fix implementation progress
+- Transition to MONITORING_PROJECT_FIXES
+
+Fix Plan Summary:
+- 5 bugs identified (3 critical, 2 medium)
+- All fixes target source branches per R321
+- All fixes can be executed in parallel
+- Engineers needed: 5
+- Estimated time: 90 minutes parallel execution
+
+Critical Fixes:
+1. Missing Manifest type import (pkg/registry)
+2. Missing EnableImageBuilderFlag constant (pkg/build)
+3. Unused import in cmd_test
+
+Medium Fixes:
+4. Test file syntax error (pkg/certs)
+5. Feature flags removal (pkg/certs)
+
+Next Action: Spawn SW Engineers in parallel using single message with multiple Task tools (R151)
