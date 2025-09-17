@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
-  "previous_state": "MONITOR_IMPLEMENTATION",
+  "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
   "current_phase": 1,
   "current_wave": 3,
-  "transition_time": "2025-09-17T03:43:21Z",
-  "transition_reason": "Phase 1 Wave 3 upstream-fixes implementation complete (842 lines) - ready for code review",
+  "transition_time": "2025-09-17T03:54:51Z",
+  "transition_reason": "Size violation detected (865 lines > 800 limit) - need split plan for upstream-fixes",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -266,7 +266,43 @@
       "location": "efforts/phase2/wave2/image-operations"
     }
   ],
-  "efforts_in_progress": [],
+  "efforts_in_progress": [
+    {
+      "name": "upstream-fixes",
+      "phase": 1,
+      "wave": 3,
+      "status": "review_complete",
+      "review_status": "NEEDS_SPLIT",
+      "implementation_status": "COMPLETE",
+      "effort_path": "efforts/phase1/wave3/upstream-fixes",
+      "branch": "idpbuilder-oci-build-push/phase1/wave3/upstream-fixes",
+      "review_report": "efforts/phase1/wave3/upstream-fixes/CODE-REVIEW-REPORT-20250917-035106.md",
+      "line_count_tracking": {
+        "initial_count": 865,
+        "current_count": 865,
+        "last_measured": "2025-09-17T03:54:32Z",
+        "measured_by": "code-reviewer",
+        "measurement_command": "./tools/line-counter.sh phase1/wave3/upstream-fixes",
+        "auto_detected_base": "origin/idpbuilder-oci-build-push/phase1/wave2-integration",
+        "implementation_only": true,
+        "within_limit": false,
+        "requires_split": true,
+        "split_plan_path": null,
+        "measurement_history": [
+          {
+            "timestamp": "2025-09-17T03:54:32Z",
+            "count": 865,
+            "measured_by": "code-reviewer",
+            "reason": "initial review",
+            "command": "./tools/line-counter.sh phase1/wave3/upstream-fixes",
+            "auto_detected_base": "origin/idpbuilder-oci-build-push/phase1/wave2-integration",
+            "excludes": "tests/demos/docs per R007",
+            "within_limit": false
+          }
+        ]
+      }
+    }
+  ],
   "split_tracking": {
     "phase2_wave1_gitea_client": {
       "original_effort": "gitea-client",
