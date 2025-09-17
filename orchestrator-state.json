@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
-  "previous_state": "INTEGRATION",
+  "current_state": "SETUP_INTEGRATION_INFRASTRUCTURE",
+  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-17T00:51:10Z",
-  "transition_reason": "Infrastructure exists for Phase 1 Wave 2, need merge plan from Code Reviewer",
+  "transition_time": "2025-09-17T00:58:09Z",
+  "transition_reason": "R327: Must recreate Phase 1 Wave 2 integration - existing one is stale (created Sep 14, Bug 4 fixed Sep 16)",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -509,12 +509,14 @@
   "integration_infrastructure": {
     "type": "wave",
     "phase": 1,
-    "wave": 1,
-    "branch": "idpbuilder-oci-build-push/phase1/wave1/integration",
+    "wave": 2,
+    "branch": "idpbuilder-oci-build-push/phase1/wave2-integration",
     "base_branch": "main",
-    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace/repo",
+    "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/integration-workspace/repo",
     "status": "infrastructure_ready",
-    "created_at": "2025-09-16T18:57:17Z"
+    "created_at": "2025-09-17T01:00:52Z",
+    "includes_bug_fixes": true,
+    "r327_compliant": true
   },
   "state_transition_reason": "Integration infrastructure exists, ready to spawn Code Reviewer for merge plan",
   "phase_integration_context": {
