@@ -1,10 +1,10 @@
 {
-  "current_state": "WAITING_FOR_MERGE_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+  "current_state": "SPAWN_INTEGRATION_AGENT",
+  "previous_state": "WAITING_FOR_MERGE_PLAN",
   "current_phase": 1,
   "current_wave": 3,
-  "transition_time": "2025-09-17T12:36:59Z",
-  "transition_reason": "No Wave 3 infrastructure exists, need to create integration infrastructure",
+  "transition_time": "2025-09-17T12:42:14Z",
+  "transition_reason": "Wave 3 merge plan ready for execution",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -1427,5 +1427,10 @@
     "decision": "Spawn single SW Engineer for upstream-fixes",
     "analyzed_at": "2025-09-17T02:54:00Z",
     "skipped_state": true
+  },
+  "wave3_integration": {
+    "merge_plan": "efforts/phase1/wave3/integration-workspace/repo/WAVE-MERGE-PLAN.md",
+    "merge_plan_created": "2025-09-17T12:42:14Z",
+    "plan_validation": "PASSED"
   }
 }

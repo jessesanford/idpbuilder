@@ -1,0 +1,23 @@
+## Orchestrator TODO State - SPAWN_INTEGRATION_AGENT
+## Saved: 2025-09-17 12:42:30 UTC
+
+### Completed Tasks:
+- [x] Acknowledge WAITING_FOR_MERGE_PLAN state rules per R290
+- [x] Check if Phase 1 Wave 3 integration infrastructure exists
+- [x] Check if Code Reviewer was spawned for merge plan creation
+- [x] Monitor for WAVE-MERGE-PLAN.md creation in integration workspace
+- [x] Validate merge plan contents when found
+- [x] Execute R322 checkpoint protocol before state transition
+- [x] Save TODOs and update state file per R287/R324
+
+### Next State Tasks (SPAWN_INTEGRATION_AGENT):
+- [ ] Spawn Integration Agent to execute Wave 3 merge
+- [ ] Monitor integration progress
+- [ ] Verify integration success
+- [ ] Transition to next appropriate state
+
+### Context:
+- Phase 1 Wave 3 merge plan ready
+- Single effort: upstream-fixes (865 lines)
+- Integration workspace: efforts/phase1/wave3/integration-workspace/repo
+- Merge plan: WAVE-MERGE-PLAN.md validated
