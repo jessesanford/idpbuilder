@@ -1,10 +1,10 @@
 {
-  "current_state": "MONITORING_INTEGRATION",
-  "previous_state": "SPAWN_INTEGRATION_AGENT",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "MONITORING_INTEGRATION",
   "current_phase": 1,
   "current_wave": 2,
-  "transition_time": "2025-09-17T01:42:00Z",
-  "transition_reason": "Integration Agent spawned successfully for Phase 1 Wave 2, transitioning to monitoring",
+  "transition_time": "2025-09-17T01:41:10Z",
+  "transition_reason": "R291 TEST GATE FAILURE: PARTIAL FAILURE - cannot proceed without passing tests (tests fail due to upstream issues in Phase 1 Wave 2 integration)",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
