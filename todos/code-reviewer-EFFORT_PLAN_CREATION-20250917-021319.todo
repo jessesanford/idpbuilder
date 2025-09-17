@@ -1,0 +1,20 @@
+# Code Reviewer TODOs - Phase 1 Wave 3 Planning Complete
+# State: EFFORT_PLAN_CREATION
+# Effort: upstream-fixes
+# Timestamp: 2025-09-17T02:13:19+00:00
+
+## Completed Tasks:
+- ✅ Acknowledged Code Reviewer role and R221/R235 rules
+- ✅ Analyzed all upstream bugs from Wave 2 integration
+- ✅ Created FIX-PLAN.md with detailed analysis
+- ✅ Created IMPLEMENTATION-SEQUENCE.md with step-by-step guide
+- ✅ Created timestamped IMPLEMENTATION-PLAN-20250917-020900.md
+- ✅ Verified size estimate (750 lines) within limit
+
+## Plan Summary:
+- Fix Bug 1: Create pkg/kind/cluster.go (350 lines)
+- Fix Bug 2: Create cmd/idpbuilder/main.go (100 lines)
+- Fix Bug 3a: Create pkg/cmd/get/secrets.go (100 lines)
+- Fix Bug 3b: Create pkg/util/git_repository.go (150 lines)
+- Fix Bug 3c: Create pkg/k8s/types.go (50 lines)
+- Total estimate: 750 lines (< 800 limit)
