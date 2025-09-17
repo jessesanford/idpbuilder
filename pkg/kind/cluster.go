@@ -434,9 +434,14 @@ func (c *Cluster) getConfig() ([]byte, error) {
 		fmt.Sscanf(port, "%d", &hostPort)
 	}
 
+	// Don't add double 'v' prefix
 	image := "kindest/node:v1.26.3"
-	if c.KubernetesVersion != "" {
-		image = fmt.Sprintf("kindest/node:v%s", c.KubernetesVersion)
+	if c.KubernetesVersion != "" && c.KubernetesVersion != "1.26.3" {
+		if !strings.HasPrefix(c.KubernetesVersion, "v") {
+			image = fmt.Sprintf("kindest/node:v%s", c.KubernetesVersion)
+		} else {
+			image = fmt.Sprintf("kindest/node:%s", c.KubernetesVersion)
+		}
 	}
 
 	// Base config
@@ -450,29 +455,35 @@ nodes:
   extraPortMappings:
   - containerPort: 443
     hostPort: %d
+    protocol: TCP
+  - containerPort: 32222
+    hostPort: 32222
     protocol: TCP`, image, hostPort)
 
-	// Add extra port mappings if specified
-	if c.ExtraPortMappings != "" {
+	// Add additional extra port mappings if specified (besides the default 32222)
+	if c.ExtraPortMappings != "" && c.ExtraPortMappings != "22:32222" {
 		// Parse extra port mappings (format: "22:32222")
 		parts := strings.Split(c.ExtraPortMappings, ":")
 		if len(parts) == 2 {
 			containerPort := parts[0]
 			hostPort := parts[1]
-			config += fmt.Sprintf(`
+			// Only add if it's not the default 32222 mapping
+			if hostPort != "32222" {
+				config += fmt.Sprintf(`
   - containerPort: %s
     hostPort: %s
     protocol: TCP`, containerPort, hostPort)
+			}
 		}
 	}
 
 	// Add registry config mounts if specified
 	if registryConfigs, ok := c.RegistryConfig.([]string); ok && len(registryConfigs) > 0 {
-		config += "\n  extraMounts:"
 		for _, configPath := range registryConfigs {
 			// Check if file exists
 			if _, err := os.Stat(configPath); err == nil {
 				config += fmt.Sprintf(`
+  extraMounts:
   - containerPath: /var/lib/kubelet/config.json
     hostPath: %s`, configPath)
 				break // Only use the first valid config
@@ -480,14 +491,15 @@ nodes:
 		}
 	}
 
-	// Add containerd config patches
+	// Add containerd config patches - use gitea.cnoe.localtest.me for registry
+	registryHost := "gitea." + host
 	config += fmt.Sprintf(`
 containerdConfigPatches:
 - |-
   [plugins."io.containerd.grpc.v1.cri".registry.mirrors."%s:%s"]
     endpoint = ["https://%s"]
   [plugins."io.containerd.grpc.v1.cri".registry.configs."%s".tls]
-    insecure_skip_verify = true`, host, port, host, host)
+    insecure_skip_verify = true`, registryHost, port, registryHost, registryHost)
 
 	return []byte(config), nil
 }

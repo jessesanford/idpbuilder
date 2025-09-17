@@ -38,16 +38,11 @@ func printPackageSecrets(ctx context.Context, w io.Writer, kubeClient client.Cli
 
 	// Handle packages based on the global packages variable
 	for _, pkg := range packages {
-		var secretName string
-		var namespace string
-
 		switch pkg {
 		case "argocd":
-			secretName = argoCDInitialAdminSecretName
-			namespace = "argocd"
 			secret := &v1.Secret{}
-			key := client.ObjectKey{Name: secretName, Namespace: namespace}
-			err := kubeClient.Get(ctx, key, secret, []client.GetOption{}...)
+			key := client.ObjectKey{Name: argoCDInitialAdminSecretName, Namespace: "argocd"}
+			err := kubeClient.Get(ctx, key, secret)
 			if err != nil {
 				continue // Skip if secret doesn't exist
 			}
@@ -69,11 +64,9 @@ func printPackageSecrets(ctx context.Context, w io.Writer, kubeClient client.Cli
 			allSecrets = append(allSecrets, secretData)
 
 		case "gitea":
-			secretName = giteaAdminSecretName
-			namespace = "gitea"
 			secret := &v1.Secret{}
-			key := client.ObjectKey{Name: secretName, Namespace: namespace}
-			err := kubeClient.Get(ctx, key, secret, []client.GetOption{}...)
+			key := client.ObjectKey{Name: giteaAdminSecretName, Namespace: "gitea"}
+			err := kubeClient.Get(ctx, key, secret)
 			if err != nil {
 				continue // Skip if secret doesn't exist
 			}
@@ -95,7 +88,7 @@ func printPackageSecrets(ctx context.Context, w io.Writer, kubeClient client.Cli
 			allSecrets = append(allSecrets, secretData)
 
 		default:
-			// Handle non-core packages - create label selector
+			// Handle non-core packages - create label selector matching the package name
 			req, err := labels.NewRequirement(v1alpha1.CLISecretLabelKey, selection.Equals, []string{pkg})
 			if err != nil {
 				continue
@@ -105,6 +98,7 @@ func printPackageSecrets(ctx context.Context, w io.Writer, kubeClient client.Cli
 			secretList := &v1.SecretList{}
 			listOpts := client.ListOptions{
 				LabelSelector: selector,
+				Namespace:     "",
 			}
 
 			err = kubeClient.List(ctx, secretList, &listOpts)
