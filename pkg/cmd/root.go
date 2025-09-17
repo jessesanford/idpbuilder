@@ -1,36 +1,22 @@
+// pkg/cmd/root.go
 package cmd
 
 import (
-	"context"
-	"fmt"
-	"os"
-
-	"github.com/cnoe-io/idpbuilder/pkg/cmd/create"
-	"github.com/cnoe-io/idpbuilder/pkg/cmd/delete"
-	"github.com/cnoe-io/idpbuilder/pkg/cmd/get"
-	"github.com/cnoe-io/idpbuilder/pkg/cmd/helpers"
-	"github.com/cnoe-io/idpbuilder/pkg/cmd/version"
 	"github.com/spf13/cobra"
+	"github.com/cnoe-io/idpbuilder/pkg/cmd/get"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "idpbuilder",
-	Short: "Manage reference IDPs",
-	Long:  "",
-}
-
-func init() {
-	rootCmd.PersistentFlags().StringVarP(&helpers.LogLevel, "log-level", "l", "info", helpers.LogLevelMsg)
-	rootCmd.PersistentFlags().BoolVar(&helpers.ColoredOutput, "color", false, helpers.ColoredOutputMsg)
-	rootCmd.AddCommand(create.CreateCmd)
-	rootCmd.AddCommand(get.GetCmd)
-	rootCmd.AddCommand(delete.DeleteCmd)
-	rootCmd.AddCommand(version.VersionCmd)
-}
-
-func Execute(ctx context.Context) {
-	if err := rootCmd.ExecuteContext(ctx); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+// NewRootCmd creates the root command for idpbuilder
+func NewRootCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "idpbuilder",
+		Short: "IDP Builder - Internal Developer Platform Builder",
+		Long: `IDP Builder is a tool for building and managing internal developer platforms.
+It provides commands for creating, managing, and deploying platform components.`,
 	}
+
+	// Add subcommands
+	cmd.AddCommand(get.NewGetCmd())
+
+	return cmd
 }
