@@ -1,10 +1,10 @@
 {
-  "current_state": "WAVE_COMPLETE",
-  "previous_state": "MONITOR_REVIEWS",
+  "current_state": "PROJECT_INTEGRATION",
+  "previous_state": "WAVE_COMPLETE",
   "current_phase": 1,
   "current_wave": 3,
-  "transition_time": "2025-09-17T06:24:57Z",
-  "transition_reason": "Phase 1 Wave 3 complete - upstream-fixes approved at 865 lines",
+  "transition_time": "2025-09-17T07:39:49Z",
+  "transition_reason": "Phase 1 Wave 3 upstream-fixes complete - re-running project integration per R327",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -844,23 +844,17 @@
     "ready_for": "PR_PLAN_CREATION"
   },
   "project_integration_context": {
-    "status": "PENDING",
-    "phase1_integration": "idpbuilder-oci-build-push/phase1/integration",
-    "phase2_integration": "idpbuilder-oci-build-push/phase2-integration-20250916-033720",
-    "base_branch": "main",
-    "target_branch": "idpbuilder-oci-build-push/project-integration-20250916-152718",
-    "purpose": "Merge all phase integrations to verify complete project works together",
-    "merge_order": [
-      "Phase 1 integration first (foundation)",
-      "Phase 2 integration second (features)"
+    "reason": "Re-integration after upstream-fixes",
+    "previous_issues": [
+      "pkg/build compilation",
+      "pkg/registry compilation",
+      "pkg/certs setup"
     ],
-    "validation_required": [
-      "All efforts merge cleanly",
-      "No conflicts between phases",
-      "Complete codebase builds",
-      "All tests pass",
-      "Final artifact builds successfully"
-    ]
+    "new_branches_to_include": [
+      "origin/idpbuilder-oci-build-push/phase1/wave3/upstream-fixes"
+    ],
+    "mandatory_per_R327": true,
+    "old_integration_to_delete": "idpbuilder-oci-build-push/project-integration-20250916-152718"
   },
   "project_integration_infrastructure": {
     "branch": "idpbuilder-oci-build-push/project-integration-20250916-152718",
