@@ -1,10 +1,10 @@
 {
-  "current_state": "ERROR_RECOVERY",
-  "previous_state": "MONITORING_INTEGRATION",
+  "current_state": "SETUP_EFFORT_INFRASTRUCTURE",
+  "previous_state": "SPAWN_ENGINEERS_FOR_FIXES",
   "current_phase": 1,
-  "current_wave": 2,
-  "transition_time": "2025-09-17T01:41:10Z",
-  "transition_reason": "R291 TEST GATE FAILURE: PARTIAL FAILURE - cannot proceed without passing tests (tests fail due to upstream issues in Phase 1 Wave 2 integration)",
+  "current_wave": 3,
+  "transition_time": "2025-09-17T02:14:24Z",
+  "transition_reason": "Need to properly setup Phase 1 Wave 3 effort infrastructure before spawning agents",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -1284,5 +1284,17 @@
     "workspace": "efforts/phase1/wave2/integration-workspace/repo",
     "merge_plan": "PHASE1-WAVE2-MERGE-PLAN.md",
     "integration_agent_spawned": true
+  },
+  "phase1_wave3": {
+    "status": "CREATED",
+    "effort": "upstream-fixes",
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave2-integration",
+    "purpose": "Fix upstream test failures to satisfy R291 gates",
+    "infrastructure_complete": true,
+    "branch_pushed": true,
+    "effort_path": "efforts/phase1/wave3/upstream-fixes",
+    "remote_branch": "origin/idpbuilder-oci-build-push/phase1/wave3/upstream-fixes",
+    "fix_plan_created": true,
+    "ready_for_implementation": true
   }
 }
