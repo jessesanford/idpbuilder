@@ -1,0 +1,14 @@
+/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace/bin/controller-gen rbac:roleName=manager-role crd webhook paths="./api/..." output:crd:artifacts:config=pkg/controllers/resources
+/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./api/..."
+go fmt ./...
+go vet ./...
+# github.com/cnoe-io/idpbuilder/pkg/registry
+# [github.com/cnoe-io/idpbuilder/pkg/registry]
+vet: pkg/registry/mocks_test.go:184:45: undefined: Manifest
+# github.com/cnoe-io/idpbuilder/pkg/build
+# [github.com/cnoe-io/idpbuilder/pkg/build]
+vet: pkg/build/image_builder_test.go:28:14: undefined: EnableImageBuilderFlag
+# github.com/cnoe-io/idpbuilder/pkg/cmd_test_test
+# [github.com/cnoe-io/idpbuilder/pkg/cmd_test_test]
+vet: pkg/cmd_test/build_test.go:6:2: "github.com/cnoe-io/idpbuilder/pkg/cmd" imported and not used
+make: *** [Makefile:36: vet] Error 1

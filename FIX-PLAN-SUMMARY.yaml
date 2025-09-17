@@ -1,0 +1,125 @@
+fix_plan_summary:
+  timestamp: "2025-09-16T22:10:00Z"
+  created_by: "code-reviewer"
+  state: "CREATE_PROJECT_FIX_PLAN"
+  r321_compliant: true
+
+  bugs_analyzed: 5
+  priority_distribution:
+    critical: 3  # Build blockers
+    medium: 2    # Production readiness issues
+
+  parallelizable: true
+  engineers_needed: 5  # Can use fewer if sequential
+
+  fix_assignments:
+    - engineer: 1
+      priority: "CRITICAL"
+      bug: "Missing Manifest type import in registry mocks"
+      package: "pkg/registry"
+      effort: "builder"
+      branch: "idpbuilder-oci-build-push/phase2/wave1/image-builder"
+      file: "pkg/registry/mocks_test.go"
+      estimated_time: "20 minutes"
+      fix_type: "add_import"
+
+    - engineer: 2
+      priority: "CRITICAL"
+      bug: "Missing EnableImageBuilderFlag constant"
+      package: "pkg/build"
+      effort: "image-builder"
+      branch: "idpbuilder-oci-build-push/phase2/wave1/image-builder"
+      file: "pkg/build/image_builder_test.go"
+      estimated_time: "15 minutes"
+      fix_type: "add_constant"
+
+    - engineer: 3
+      priority: "CRITICAL"
+      bug: "Unused import in cmd_test"
+      package: "pkg/cmd_test"
+      effort: "needs_identification"
+      branch: "needs_identification"
+      file: "pkg/cmd_test/build_test.go"
+      estimated_time: "10 minutes"
+      fix_type: "remove_import"
+
+    - engineer: 4
+      priority: "MEDIUM"
+      bug: "Extra closing brace in chain_validator_test"
+      package: "pkg/certs"
+      effort: "cert-validation-split-003"
+      branch: "idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003"
+      file: "pkg/certs/chain_validator_test.go"
+      line: 173
+      estimated_time: "15 minutes"
+      fix_type: "syntax_fix"
+
+    - engineer: 5
+      priority: "MEDIUM"
+      bug: "Feature flags present in production code"
+      package: "pkg/certs"
+      effort: "kind-cert-extraction"
+      branch: "idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction"
+      files:
+        - "pkg/certs/helpers.go"
+        - "pkg/certs/extractor.go"
+      estimated_time: "30 minutes"
+      fix_type: "remove_feature_flags"
+
+  integration_sequence:
+    - step: 1
+      action: "Fix all source branches"
+      parallel: true
+
+    - step: 2
+      action: "Re-run Phase 1 Wave 1 Integration"
+      reason: "kind-cert-extraction fix"
+
+    - step: 3
+      action: "Re-run Phase 1 Wave 2 Integration"
+      reason: "cert-validation-split-003 fix"
+
+    - step: 4
+      action: "Re-run Phase 1 Integration"
+      reason: "Combine both Phase 1 waves"
+
+    - step: 5
+      action: "Re-run Phase 2 Wave 1 Integration"
+      reason: "image-builder and builder fixes"
+
+    - step: 6
+      action: "Re-run Phase 2 Integration"
+      reason: "Combine all Phase 2 waves"
+
+    - step: 7
+      action: "Re-run Project Integration"
+      reason: "Final merge of all phases"
+
+  success_criteria:
+    - "make build succeeds"
+    - "make test passes"
+    - "make vet clean"
+    - "make fmt shows no changes"
+    - "All demos run successfully"
+
+  timeline:
+    parallel_execution: "90 minutes"
+    sequential_execution: "3 hours"
+    integration_reruns: "3-4 hours"
+    total_time_estimate: "5 hours with parallel execution"
+
+  risk_level: "LOW"
+  risk_mitigation:
+    - "All fixes are compilation/import issues"
+    - "Changes isolated to specific files"
+    - "No architectural changes needed"
+    - "Tests available for verification"
+
+  plan_location: "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace/PROJECT-FIX-PLAN-COMPREHENSIVE.md"
+  previous_plan: "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace/PROJECT-FIX-PLAN.md"
+
+  notes:
+    - "All fixes MUST be applied to source branches per R321"
+    - "Integration branches are READ-ONLY"
+    - "Previous plan fixes (bugs 4-5) are incorporated"
+    - "Engineer 3's branch needs identification from effort ownership"
