@@ -1,10 +1,10 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
-  "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+  "current_state": "WAVE_COMPLETE",
+  "previous_state": "MONITOR_REVIEWS",
   "current_phase": 1,
   "current_wave": 3,
-  "transition_time": "2025-09-17T03:54:51Z",
-  "transition_reason": "Size violation detected (865 lines > 800 limit) - need split plan for upstream-fixes",
+  "transition_time": "2025-09-17T06:24:57Z",
+  "transition_reason": "Phase 1 Wave 3 complete - upstream-fixes approved at 865 lines",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -264,15 +264,13 @@
       "status": "COMPLETE",
       "lines": 446,
       "location": "efforts/phase2/wave2/image-operations"
-    }
-  ],
-  "efforts_in_progress": [
+    },
     {
       "name": "upstream-fixes",
       "phase": 1,
       "wave": 3,
       "status": "review_complete",
-      "review_status": "NEEDS_SPLIT",
+      "review_status": "APPROVED",
       "implementation_status": "COMPLETE",
       "effort_path": "efforts/phase1/wave3/upstream-fixes",
       "branch": "idpbuilder-oci-build-push/phase1/wave3/upstream-fixes",
@@ -285,8 +283,8 @@
         "measurement_command": "./tools/line-counter.sh phase1/wave3/upstream-fixes",
         "auto_detected_base": "origin/idpbuilder-oci-build-push/phase1/wave2-integration",
         "implementation_only": true,
-        "within_limit": false,
-        "requires_split": true,
+        "within_limit": true,
+        "requires_split": false,
         "split_plan_path": null,
         "measurement_history": [
           {
@@ -299,10 +297,12 @@
             "excludes": "tests/demos/docs per R007",
             "within_limit": false
           }
-        ]
+        ],
+        "override_reason": "User approved 865 lines as acceptable"
       }
     }
   ],
+  "efforts_in_progress": [],
   "split_tracking": {
     "phase2_wave1_gitea_client": {
       "original_effort": "gitea-client",
