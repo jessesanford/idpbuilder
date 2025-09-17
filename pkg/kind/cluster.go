@@ -10,6 +10,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
+	"github.com/go-logr/logr"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 )
@@ -25,9 +28,16 @@ type IProvider interface {
 
 // Cluster represents a KIND cluster
 type Cluster struct {
-	Name     string
-	Provider IProvider
-	Config   *ClusterConfig
+	Name               string
+	Provider           IProvider
+	Config             *ClusterConfig
+	KubernetesVersion  string
+	ConfigDir          string
+	KubeConfigPath     string
+	ExtraPortMappings  string
+	RegistryConfig     interface{}
+	BuildCustomization v1alpha1.BuildCustomizationSpec
+	Logger             logr.Logger
 }
 
 // ClusterConfig holds configuration for KIND cluster
@@ -48,7 +58,7 @@ func DefaultClusterConfig() *ClusterConfig {
 }
 
 // NewCluster creates a new KIND cluster instance
-func NewCluster(name string) (*Cluster, error) {
+func NewCluster(name string, kubernetesVersion string, configDir string, kubeConfigPath string, extraPortMappings string, registryConfig interface{}, customization v1alpha1.BuildCustomizationSpec, logger logr.Logger) (*Cluster, error) {
 	if name == "" {
 		return nil, fmt.Errorf("cluster name cannot be empty")
 	}
@@ -59,15 +69,32 @@ func NewCluster(name string) (*Cluster, error) {
 	}
 
 	config := DefaultClusterConfig()
+	if kubernetesVersion != "" {
+		config.Image = fmt.Sprintf("kindest/node:v%s", kubernetesVersion)
+	}
+	if configDir != "" {
+		config.ConfigPath = configDir
+	}
+	if kubeConfigPath != "" {
+		config.KubeConfig = kubeConfigPath
+	}
+
 	provider := &defaultProvider{
 		name:   name,
 		config: config,
 	}
 
 	return &Cluster{
-		Name:     name,
-		Provider: provider,
-		Config:   config,
+		Name:               name,
+		Provider:           provider,
+		Config:             config,
+		KubernetesVersion:  kubernetesVersion,
+		ConfigDir:          configDir,
+		KubeConfigPath:     kubeConfigPath,
+		ExtraPortMappings:  extraPortMappings,
+		RegistryConfig:     registryConfig,
+		BuildCustomization: customization,
+		Logger:             logger,
 	}, nil
 }
 
@@ -388,4 +415,32 @@ func (c *Cluster) Status(ctx context.Context) (string, error) {
 	}
 
 	return "ready", nil
+}
+
+// getConfig returns the KIND cluster configuration as YAML bytes
+func (c *Cluster) getConfig() ([]byte, error) {
+	// This is a basic KIND cluster configuration
+	// The actual implementation would depend on the specific requirements
+	config := fmt.Sprintf(`kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  image: "kindest/node:v1.26.3"
+  labels:
+    ingress-ready: "true"
+  extraPortMappings:
+  - containerPort: 443
+    hostPort: 8443
+    protocol: TCP
+  - containerPort: 32222
+    hostPort: 32222
+    protocol: TCP
+containerdConfigPatches:
+- |-
+  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."gitea.cnoe.localtest.me:8443"]
+    endpoint = ["https://gitea.cnoe.localtest.me"]
+  [plugins."io.containerd.grpc.v1.cri".registry.configs."gitea.cnoe.localtest.me".tls]
+    insecure_skip_verify = true`)
+
+	return []byte(config), nil
 }
