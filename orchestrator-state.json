@@ -1295,6 +1295,23 @@
     "effort_path": "efforts/phase1/wave3/upstream-fixes",
     "remote_branch": "origin/idpbuilder-oci-build-push/phase1/wave3/upstream-fixes",
     "fix_plan_created": true,
-    "ready_for_implementation": true
+    "ready_for_implementation": true,
+    "code_reviewer_plan": {
+      "status": "COMPLETE",
+      "created_at": "2025-09-17T02:25:00Z",
+      "implementation_plan": "efforts/phase1/wave3/upstream-fixes/IMPLEMENTATION-PLAN.md",
+      "work_log": "efforts/phase1/wave3/upstream-fixes/work-log.md",
+      "size_estimate": 750,
+      "size_limit": 800,
+      "bugs_to_fix": [
+        "pkg/kind: Missing NewCluster and IProvider (350 lines)",
+        "cmd/: Missing main.go entry point (100 lines)",
+        "pkg/cmd/get: Missing constants (100 lines)",
+        "pkg/util: Missing git helpers (150 lines)",
+        "pkg/k8s: Package does not exist (50 lines)"
+      ],
+      "ready_for_implementation": true
+    },
+    "next_state": "SPAWN_AGENTS"
   }
 }
