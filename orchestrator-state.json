@@ -309,6 +309,19 @@
         ],
         "override_reason": "User approved 865 lines as acceptable"
       }
+    },
+    {
+      "phase": 1,
+      "wave": 3,
+      "effort_id": "E1.3.1",
+      "effort_name": "upstream-fixes",
+      "effort_type": "upstream-test-fixes",
+      "description": "Fix pre-existing test failures in upstream idpbuilder",
+      "status": "completed",
+      "lines_of_code": 600,
+      "workspace": "efforts/phase1/wave3/upstream-fixes",
+      "integration_status": "integrated",
+      "completion_time": "2025-09-17T03:53:00Z"
     }
   ],
   "efforts_in_progress": [],
@@ -1429,9 +1442,16 @@
     "skipped_state": true
   },
   "wave3_integration": {
-    "merge_plan": "efforts/phase1/wave3/integration-workspace/repo/WAVE-MERGE-PLAN.md",
-    "merge_plan_created": "2025-09-17T12:42:14Z",
-    "plan_validation": "PASSED"
+    "status": "completed",
+    "workspace": "efforts/phase1/wave3/integration-workspace",
+    "branch": "idpbuilder-oci-build-push/phase1/wave3-integration",
+    "efforts_integrated": [
+      "upstream-fixes"
+    ],
+    "integration_time": "2025-09-17T12:53:00Z",
+    "build_status": "SUCCESS",
+    "test_status": "PASS",
+    "artifact": "idpbuilder-oci-new"
   },
   "phase1_wave3_integration": {
     "status": "COMPLETE",

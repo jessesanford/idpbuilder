@@ -281,6 +281,23 @@ func TestTLSConnection(t *testing.T) {
 }
 ```
 
+### Wave 3: Upstream Test Fixes (Day 5.5) 🔧 ADDED
+**Goal**: Fix pre-existing test failures in upstream idpbuilder codebase
+
+#### Effort 1.3.1: Upstream Test Fixes
+**Size**: ~600 lines
+**Owner**: SW Engineer 1
+**Status**: ✅ COMPLETED
+
+This wave was added during implementation to address pre-existing test failures in the upstream idpbuilder codebase that were blocking R291 gates. The fixes included:
+
+1. **Missing pkg/kind Components**: Created NewCluster and IProvider interfaces
+2. **Missing Entry Point**: Created cmd/main.go
+3. **Test Failures**: Fixed test failures in pkg/cmd/get, pkg/util, and pkg/controllers
+4. **Build Validation**: Ensured all tests pass with `go test ./...`
+
+**Integration Status**: Successfully integrated into phase1/wave3/integration-workspace
+
 ## Phase 2: Dockerfile Build & Push Implementation (Days 6-10)
 
 ### Wave 1: Dockerfile Parser & Executor (Days 6-7)
