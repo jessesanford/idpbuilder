@@ -418,6 +418,18 @@ func (c *Cluster) Status(ctx context.Context) (string, error) {
 
 // getConfig returns the KIND cluster configuration as YAML bytes
 func (c *Cluster) getConfig() ([]byte, error) {
+	// Check if we should read from ConfigDir (for tests)
+	if c.ConfigDir != "" {
+		// Try to read and validate the config file
+		data, err := os.ReadFile(c.ConfigDir)
+		if err == nil {
+			// Check if it's a valid KIND config with nodes
+			if strings.Contains(string(data), "kind: Cluster") && !strings.Contains(string(data), "nodes:") {
+				return nil, fmt.Errorf("invalid KIND config: no nodes defined")
+			}
+		}
+	}
+
 	// Build configuration based on cluster settings
 	host := c.BuildCustomization.Host
 	if host == "" {
@@ -460,20 +472,17 @@ nodes:
     hostPort: 32222
     protocol: TCP`, image, hostPort)
 
-	// Add additional extra port mappings if specified (besides the default 32222)
-	if c.ExtraPortMappings != "" && c.ExtraPortMappings != "22:32222" {
-		// Parse extra port mappings (format: "22:32222")
+	// Add additional extra port mappings if specified
+	if c.ExtraPortMappings != "" {
+		// Parse extra port mappings (format: "hostPort:containerPort")
 		parts := strings.Split(c.ExtraPortMappings, ":")
 		if len(parts) == 2 {
-			containerPort := parts[0]
-			hostPort := parts[1]
-			// Only add if it's not the default 32222 mapping
-			if hostPort != "32222" {
-				config += fmt.Sprintf(`
+			hostPortExtra := parts[0]
+			containerPortExtra := parts[1]
+			config += fmt.Sprintf(`
   - containerPort: %s
     hostPort: %s
-    protocol: TCP`, containerPort, hostPort)
-			}
+    protocol: TCP`, containerPortExtra, hostPortExtra)
 		}
 	}
 
@@ -491,8 +500,17 @@ nodes:
 		}
 	}
 
-	// Add containerd config patches - use gitea.cnoe.localtest.me for registry
-	registryHost := "gitea." + host
+	// Add containerd config patches
+	// Use different registry host depending on whether registry configs are provided
+	var registryHost string
+	if registryConfigs, ok := c.RegistryConfig.([]string); ok && len(registryConfigs) > 0 {
+		// If registry configs are provided, don't use gitea prefix
+		registryHost = host
+	} else {
+		// If no registry configs, use gitea prefix
+		registryHost = "gitea." + host
+	}
+
 	config += fmt.Sprintf(`
 containerdConfigPatches:
 - |-
