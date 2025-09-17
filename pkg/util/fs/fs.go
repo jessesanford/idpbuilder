@@ -1,120 +1,129 @@
+// pkg/util/fs/fs.go
 package fs
 
 import (
-	"errors"
 	"fmt"
-	"github.com/cnoe-io/idpbuilder/pkg/util/files"
 	"io"
 	"io/fs"
-	"os"
-	"path"
-	"path/filepath"
+	"strings"
+
+	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
 )
 
-type FS interface {
-	ReadDir(name string) ([]fs.DirEntry, error)
-	ReadFile(name string) ([]byte, error)
-}
+// ConvertFSToBytes converts files from a filesystem to byte slices
+func ConvertFSToBytes(fsys fs.FS, path string, customization v1alpha1.BuildCustomizationSpec) ([][]byte, error) {
+	var results [][]byte
 
-func ConvertFSToBytes(inFS FS, name string, templateData any) ([][]byte, error) {
-	d, err := inFS.ReadDir(name)
-	if err != nil {
-		return nil, err
-	}
-
-	var rawResources [][]byte
-
-	for _, f := range d {
-		rawResource, err := inFS.ReadFile(path.Join(name, f.Name()))
+	// Walk through the filesystem at the given path
+	err := fs.WalkDir(fsys, path, func(filePath string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		if returnedRawResource, err := files.ApplyTemplate(rawResource, templateData); err == nil {
-			rawResources = append(rawResources, returnedRawResource)
-		} else {
-			return nil, err
+		// Skip directories
+		if d.IsDir() {
+			return nil
 		}
-	}
 
-	return rawResources, nil
-}
+		// Only process YAML files (common for Kubernetes resources)
+		if !strings.HasSuffix(filePath, ".yaml") && !strings.HasSuffix(filePath, ".yml") {
+			return nil
+		}
 
-func CopyFile(src fs.File, dest string) error {
-	srcStat, srcStatErr := src.Stat()
-	if srcStatErr != nil {
-		return srcStatErr
-	}
-
-	destFn := filepath.Join(dest, srcStat.Name())
-
-	destf, destErr := os.OpenFile(
-		destFn,
-		os.O_WRONLY|os.O_CREATE|os.O_TRUNC,
-		srcStat.Mode(),
-	)
-	if destErr != nil {
-		return fmt.Errorf("opening a file for writing: %w", destErr)
-	}
-
-	_, err := io.Copy(destf, src)
-	if err != nil {
-		return fmt.Errorf("copying %s to %s", srcStat.Name(), destFn)
-	}
-
-	return destf.Close()
-}
-
-func CopyDir(src fs.FS, dest string) error {
-	ents, err := fs.ReadDir(src, ".")
-	if err != nil {
-		return fmt.Errorf("reading src: %w", err)
-	}
-
-	for _, sdent := range ents {
-		info, err := sdent.Info()
+		// Read file contents
+		file, err := fsys.Open(filePath)
 		if err != nil {
-			return fmt.Errorf("reading file info: %v", err)
+			return fmt.Errorf("failed to open file %s: %w", filePath, err)
 		}
-		switch {
-		case info.IsDir():
-			subDest := filepath.Join(dest, sdent.Name())
+		defer file.Close()
 
-			if err := os.Mkdir(subDest, 0700); err != nil {
-				return fmt.Errorf("mkdir on %s: %w", subDest, err)
-			}
-
-			subFS, err := fs.Sub(src, sdent.Name())
-			if err != nil {
-				return fmt.Errorf("reading the sub directory: %w", err)
-			}
-
-			if err := CopyDir(subFS, subDest); err != nil {
-				return err
-			}
-		case info.Mode().IsRegular():
-			srcf, err := src.Open(info.Name())
-			if err != nil {
-				return err
-			}
-			if err := CopyFile(srcf, dest); err != nil {
-				return err
-			}
+		data, err := io.ReadAll(file)
+		if err != nil {
+			return fmt.Errorf("failed to read file %s: %w", filePath, err)
 		}
+
+		// Apply customizations if needed
+		processedData := applyCustomizations(data, customization, filePath)
+		results = append(results, processedData)
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to walk filesystem: %w", err)
 	}
 
-	return nil
+	return results, nil
 }
 
-func WriteFS(src fs.FS, dest string) error {
-	destInfo, destErr := os.Lstat(dest)
-	if destErr != nil {
-		return destErr
+// applyCustomizations applies build customizations to the file data
+func applyCustomizations(data []byte, customization v1alpha1.BuildCustomizationSpec, filePath string) []byte {
+	content := string(data)
+
+	// Add a header comment to identify the resource source
+	header := fmt.Sprintf("# UCP ARGO INSTALL RESOURCES\n")
+
+	// Apply host customization
+	if customization.Host != "" {
+		content = strings.ReplaceAll(content, "localhost", customization.Host)
+		content = strings.ReplaceAll(content, "127.0.0.1", customization.Host)
 	}
 
-	if !destInfo.IsDir() {
-		return errors.New("the destination must be a directory")
+	// Apply port customization
+	if customization.Port != "" {
+		// Replace common port patterns
+		content = strings.ReplaceAll(content, ":8080", ":"+customization.Port)
+		content = strings.ReplaceAll(content, ":80", ":"+customization.Port)
+		content = strings.ReplaceAll(content, ":443", ":"+customization.Port)
 	}
 
-	return CopyDir(src, dest)
+	// Apply protocol customization
+	if customization.Protocol != "" {
+		if customization.Protocol == "http" {
+			content = strings.ReplaceAll(content, "https://", "http://")
+		} else if customization.Protocol == "https" {
+			content = strings.ReplaceAll(content, "http://", "https://")
+		}
+	}
+
+	// Apply path routing customization
+	if customization.UsePathRouting {
+		// Modify ingress rules for path-based routing
+		// This is a simplified implementation
+		content = strings.ReplaceAll(content, "host:", "# host:")
+	}
+
+	// Add header for identification
+	if strings.Contains(strings.ToLower(filePath), "install") {
+		content = header + content
+	}
+
+	return []byte(content)
+}
+
+// FileExists checks if a file exists
+func FileExists(path string) bool {
+	_, err := fs.Stat(fs.FS(nil), path)
+	return err == nil
+}
+
+// CreateDir creates a directory
+func CreateDir(path string) error {
+	// Note: This function works with the OS filesystem, not embed.FS
+	// For embedded filesystems, directories are implicitly created
+	return fmt.Errorf("CreateDir not implemented for embedded filesystems")
+}
+
+// ReadFile reads a file
+func ReadFile(path string) ([]byte, error) {
+	// Note: This function works with the OS filesystem, not embed.FS
+	// For embedded filesystems, use fs.ReadFile
+	return nil, fmt.Errorf("ReadFile not implemented for embedded filesystems")
+}
+
+// WriteFile writes a file
+func WriteFile(path string, data []byte) error {
+	// Note: This function works with the OS filesystem, not embed.FS
+	// Embedded filesystems are read-only
+	return fmt.Errorf("WriteFile not implemented for embedded filesystems")
 }

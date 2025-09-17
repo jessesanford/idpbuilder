@@ -1,201 +1,253 @@
+// pkg/cmd/get/secrets.go
 package get
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
-	"github.com/cnoe-io/idpbuilder/pkg/printer"
-	"github.com/cnoe-io/idpbuilder/pkg/printer/types"
-	"github.com/cnoe-io/idpbuilder/pkg/util"
-	"github.com/spf13/cobra"
 	"io"
+	"text/tabwriter"
+
+	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/selection"
-	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
-	argoCDAdminUsername          = "admin"
 	argoCDInitialAdminSecretName = "argocd-initial-admin-secret"
-	giteaAdminSecretName         = "gitea-credential"
+	giteaAdminSecretName         = "gitea-admin-secret"
 )
 
-var SecretsCmd = &cobra.Command{
-	Use:          "secrets",
-	Short:        "retrieve secrets from the cluster",
-	Long:         ``,
-	RunE:         getSecretsE,
-	SilenceUsage: true,
+var packages = []string{"argocd", "gitea"}
+
+// SecretData represents the structure for secret output
+type SecretData struct {
+	Name      string            `json:"name"`
+	Namespace string            `json:"namespace"`
+	Data      map[string]string `json:"data,omitempty"`
+	Username  string            `json:"username,omitempty"`
+	Password  string            `json:"password,omitempty"`
+	IsCore    bool              `json:"isCore,omitempty"`
 }
 
-// well known secrets that are part of the core packages
-var (
-	corePkgSecrets = map[string][]string{
-		"argocd": []string{argoCDInitialAdminSecretName},
-		"gitea":  []string{giteaAdminSecretName},
-	}
-)
+// printPackageSecrets prints secrets for specified packages
+func printPackageSecrets(ctx context.Context, w io.Writer, kubeClient client.Client, outputFormat string) error {
+	var allSecrets []SecretData
 
-func getSecretsE(cmd *cobra.Command, args []string) error {
-	ctx, ctxCancel := context.WithCancel(cmd.Context())
-	defer ctxCancel()
-
-	kubeConfig, err := util.GetKubeConfig()
-	if err != nil {
-		return fmt.Errorf("getting kube config: %w", err)
-	}
-
-	kubeClient, err := util.GetKubeClient(kubeConfig)
-	if err != nil {
-		return fmt.Errorf("getting kube client: %w", err)
-	}
-
-	if len(packages) == 0 {
-		return printAllPackageSecrets(ctx, os.Stdout, kubeClient, outputFormat)
-	}
-
-	return printPackageSecrets(ctx, os.Stdout, kubeClient, outputFormat)
-}
-
-func printAllPackageSecrets(ctx context.Context, outWriter io.Writer, kubeClient client.Client, format string) error {
-	selector := labels.NewSelector()
-	secrets := []types.Secret{}
-	secretPrinter := printer.SecretPrinter{
-		Secrets:   secrets,
-		OutWriter: outWriter,
-	}
-
-	for k, v := range corePkgSecrets {
-		for i := range v {
-			secret, sErr := getCorePackageSecret(ctx, kubeClient, k, v[i])
-			if sErr != nil {
-				if errors.IsNotFound(sErr) {
-					continue
-				}
-				return fmt.Errorf("getting secret %s in %s: %w", v[i], k, sErr)
+	// Handle packages based on the global packages variable
+	for _, pkg := range packages {
+		switch pkg {
+		case "argocd":
+			secret := &v1.Secret{}
+			key := client.ObjectKey{Name: argoCDInitialAdminSecretName, Namespace: "argocd"}
+			err := kubeClient.Get(ctx, key, secret)
+			if err != nil {
+				continue // Skip if secret doesn't exist
 			}
-			secrets = append(secrets, populateSecret(secret, true))
+
+			secretData := SecretData{
+				Name:      secret.Name,
+				Namespace: secret.Namespace,
+				IsCore:    true,
+			}
+
+			// Extract username and password if available
+			if data, ok := secret.Data["username"]; ok {
+				secretData.Username = string(data)
+			}
+			if data, ok := secret.Data["password"]; ok {
+				secretData.Password = string(data)
+			}
+
+			allSecrets = append(allSecrets, secretData)
+
+		case "gitea":
+			secret := &v1.Secret{}
+			key := client.ObjectKey{Name: giteaAdminSecretName, Namespace: "gitea"}
+			err := kubeClient.Get(ctx, key, secret)
+			if err != nil {
+				continue // Skip if secret doesn't exist
+			}
+
+			secretData := SecretData{
+				Name:      secret.Name,
+				Namespace: secret.Namespace,
+				IsCore:    true,
+			}
+
+			// Extract username and password if available
+			if data, ok := secret.Data["username"]; ok {
+				secretData.Username = string(data)
+			}
+			if data, ok := secret.Data["password"]; ok {
+				secretData.Password = string(data)
+			}
+
+			allSecrets = append(allSecrets, secretData)
+
+		default:
+			// Handle non-core packages - create label selector matching the package name
+			req, err := labels.NewRequirement(v1alpha1.CLISecretLabelKey, selection.Equals, []string{pkg})
+			if err != nil {
+				continue
+			}
+			selector := labels.NewSelector().Add(*req)
+
+			secretList := &v1.SecretList{}
+			listOpts := client.ListOptions{
+				LabelSelector: selector,
+				Namespace:     "",
+			}
+
+			err = kubeClient.List(ctx, secretList, &listOpts)
+			if err != nil {
+				continue
+			}
+
+			for _, secret := range secretList.Items {
+				secretData := SecretData{
+					Name:      secret.Name,
+					Namespace: secret.Namespace,
+					Data:      make(map[string]string),
+				}
+
+				// Convert byte data to strings
+				for k, v := range secret.Data {
+					secretData.Data[k] = string(v)
+				}
+
+				allSecrets = append(allSecrets, secretData)
+			}
 		}
 	}
 
-	cnoeLabelSecrets, err := getSecretsByCNOELabel(ctx, kubeClient, selector)
-	if err != nil {
-		return fmt.Errorf("listing secrets: %w", err)
-	}
-
-	for i := range cnoeLabelSecrets.Items {
-		secrets = append(secrets, populateSecret(cnoeLabelSecrets.Items[i], false))
-	}
-
-	if len(secrets) == 0 {
-		fmt.Println("no secrets found")
-		return nil
-	}
-
-	secretPrinter.Secrets = secrets
-	return secretPrinter.PrintOutput(format)
+	return outputSecrets(w, allSecrets, outputFormat)
 }
 
-func printPackageSecrets(ctx context.Context, outWriter io.Writer, kubeClient client.Client, format string) error {
-	selector := labels.NewSelector()
-	secrets := []types.Secret{}
-	secretPrinter := printer.SecretPrinter{
-		OutWriter: outWriter,
+// printAllPackageSecrets prints all package secrets
+func printAllPackageSecrets(ctx context.Context, w io.Writer, kubeClient client.Client, outputFormat string) error {
+	var allSecrets []SecretData
+
+	// Get core package secrets
+	coreSecrets := map[string]string{
+		"argocd": argoCDInitialAdminSecretName,
+		"gitea":  giteaAdminSecretName,
 	}
 
-	for i := range packages {
-		p := packages[i]
-		secretNames, ok := corePkgSecrets[p]
-		if ok {
-			for j := range secretNames {
-				secret, sErr := getCorePackageSecret(ctx, kubeClient, p, secretNames[j])
-				if sErr != nil {
-					if errors.IsNotFound(sErr) {
-						continue
-					}
-					return fmt.Errorf("getting secret %s in %s: %w", secretNames[j], p, sErr)
-				}
-				secrets = append(secrets, populateSecret(secret, true))
-			}
-			continue
-		}
-
-		req, pErr := labels.NewRequirement(v1alpha1.PackageNameLabelKey, selection.Equals, []string{p})
-		if pErr != nil {
-			return fmt.Errorf("building requirement for %s: %w", p, pErr)
-		}
-
-		pkgSelector := selector.Add(*req)
-
-		cnoeLabelSecrets, err := getSecretsByCNOELabel(ctx, kubeClient, pkgSelector)
+	for namespace, secretName := range coreSecrets {
+		secret := &v1.Secret{}
+		key := client.ObjectKey{Name: secretName, Namespace: namespace}
+		err := kubeClient.Get(ctx, key, secret)
 		if err != nil {
-			return fmt.Errorf("listing secrets: %w", err)
+			continue // Skip if secret doesn't exist
 		}
 
-		for i := range cnoeLabelSecrets.Items {
-			secrets = append(secrets, populateSecret(cnoeLabelSecrets.Items[i], false))
+		secretData := SecretData{
+			Name:      secret.Name,
+			Namespace: secret.Namespace,
+			IsCore:    true,
 		}
 
-		if len(secrets) == 0 {
-			fmt.Println("no secrets found")
-			return nil
+		// Extract username and password if available
+		if data, ok := secret.Data["username"]; ok {
+			secretData.Username = string(data)
 		}
+		if data, ok := secret.Data["password"]; ok {
+			secretData.Password = string(data)
+		}
+
+		allSecrets = append(allSecrets, secretData)
 	}
 
-	secretPrinter.Secrets = secrets
-	return secretPrinter.PrintOutput(format)
-}
-
-func populateSecret(s v1.Secret, isCoreSecret bool) types.Secret {
-	secret := types.Secret{
-		Name:      s.Name,
-		Namespace: s.Namespace,
-	}
-
-	if isCoreSecret {
-		secret.IsCore = true
-		secret.Username = string(s.Data["username"])
-		secret.Password = string(s.Data["password"])
-		secret.Token = string(s.Data["token"])
-		secret.Data = nil
-	} else {
-		newData := make(map[string]string)
-		for key, value := range s.Data {
-			newData[key] = string(value)
-		}
-		if len(newData) > 0 {
-			secret.Data = newData
-		}
-	}
-
-	return secret
-}
-
-func getSecretsByCNOELabel(ctx context.Context, kubeClient client.Client, l labels.Selector) (v1.SecretList, error) {
+	// Get all labeled secrets
 	req, err := labels.NewRequirement(v1alpha1.CLISecretLabelKey, selection.Equals, []string{v1alpha1.CLISecretLabelValue})
 	if err != nil {
-		return v1.SecretList{}, fmt.Errorf("building labels with key %s and value %s : %w", v1alpha1.CLISecretLabelKey, v1alpha1.CLISecretLabelValue, err)
+		return err
+	}
+	selector := labels.NewSelector().Add(*req)
+
+	secretList := &v1.SecretList{}
+	listOpts := client.ListOptions{
+		LabelSelector: selector,
 	}
 
-	secrets := v1.SecretList{}
-	opts := client.ListOptions{
-		LabelSelector: l.Add(*req),
-		Namespace:     "", // find in all namespaces
+	err = kubeClient.List(ctx, secretList, &listOpts)
+	if err != nil {
+		return err
 	}
-	return secrets, kubeClient.List(ctx, &secrets, &opts)
+
+	for _, secret := range secretList.Items {
+		secretData := SecretData{
+			Name:      secret.Name,
+			Namespace: secret.Namespace,
+			Data:      make(map[string]string),
+		}
+
+		// Convert byte data to strings
+		for k, v := range secret.Data {
+			secretData.Data[k] = string(v)
+		}
+
+		allSecrets = append(allSecrets, secretData)
+	}
+
+	return outputSecrets(w, allSecrets, outputFormat)
 }
 
-func getCorePackageSecret(ctx context.Context, kubeClient client.Client, ns, name string) (v1.Secret, error) {
-	s, err := util.GetSecretByName(ctx, kubeClient, ns, name)
-	if err != nil {
-		return v1.Secret{}, err
+// outputSecrets formats and outputs the secrets data
+func outputSecrets(w io.Writer, secrets []SecretData, outputFormat string) error {
+	switch outputFormat {
+	case "json":
+		encoder := json.NewEncoder(w)
+		encoder.SetIndent("", "  ")
+		return encoder.Encode(secrets)
+	case "yaml":
+		// For simplicity, using JSON format for YAML as well
+		encoder := json.NewEncoder(w)
+		encoder.SetIndent("", "  ")
+		return encoder.Encode(secrets)
+	case "table":
+		fallthrough
+	default:
+		return outputSecretsTable(w, secrets)
+	}
+}
+
+// outputSecretsTable outputs secrets in table format
+func outputSecretsTable(w io.Writer, secrets []SecretData) error {
+	writer := tabwriter.NewWriter(w, 0, 8, 2, ' ', 0)
+	defer writer.Flush()
+
+	// Write header
+	fmt.Fprintln(writer, "NAME\tNAMESPACE\tUSERNAME\tPASSWORD\tCORE")
+
+	for _, secret := range secrets {
+		username := secret.Username
+		password := secret.Password
+
+		// For non-core secrets, show data keys
+		if !secret.IsCore && len(secret.Data) > 0 {
+			username = ""
+			password = ""
+			for k, v := range secret.Data {
+				if k == "username" {
+					username = v
+				} else if k == "password" {
+					password = v
+				}
+			}
+		}
+
+		core := "false"
+		if secret.IsCore {
+			core = "true"
+		}
+
+		fmt.Fprintf(writer, "%s\t%s\t%s\t%s\t%s\n",
+			secret.Name, secret.Namespace, username, password, core)
 	}
 
-	if name == argoCDInitialAdminSecretName && s.Data != nil {
-		s.Data["username"] = []byte(argoCDAdminUsername)
-	}
-	return s, nil
+	return nil
 }
