@@ -1,0 +1,38 @@
+# github.com/cnoe-io/idpbuilder/pkg/controllers/localbuild
+pkg/controllers/localbuild/argo_test.go:11:2: no required module provides package github.com/cnoe-io/idpbuilder/pkg/k8s; to add it:
+	go get github.com/cnoe-io/idpbuilder/pkg/k8s
+FAIL	github.com/cnoe-io/idpbuilder/pkg/controllers/localbuild [setup failed]
+?   	github.com/cnoe-io/idpbuilder/pkg	[no test files]
+# github.com/cnoe-io/idpbuilder/pkg/cmd/get [github.com/cnoe-io/idpbuilder/pkg/cmd/get.test]
+pkg/cmd/get/secrets_test.go:56:12: undefined: argoCDInitialAdminSecretName
+pkg/cmd/get/secrets_test.go:57:12: undefined: giteaAdminSecretName
+pkg/cmd/get/secrets_test.go:64:12: undefined: argoCDInitialAdminSecretName
+pkg/cmd/get/secrets_test.go:65:12: undefined: giteaAdminSecretName
+pkg/cmd/get/secrets_test.go:72:12: undefined: argoCDInitialAdminSecretName
+pkg/cmd/get/secrets_test.go:80:3: undefined: packages
+pkg/cmd/get/secrets_test.go:94:10: undefined: printPackageSecrets
+pkg/cmd/get/secrets_test.go:110:12: undefined: argoCDInitialAdminSecretName
+pkg/cmd/get/secrets_test.go:111:12: undefined: giteaAdminSecretName
+pkg/cmd/get/secrets_test.go:131:10: undefined: printAllPackageSecrets
+pkg/cmd/get/secrets_test.go:131:10: too many errors
+# github.com/cnoe-io/idpbuilder/pkg/kind [github.com/cnoe-io/idpbuilder/pkg/kind.test]
+pkg/kind/cluster_test.go:92:19: undefined: NewCluster
+pkg/kind/cluster_test.go:107:18: undefined: NewCluster
+pkg/kind/cluster_test.go:190:11: undefined: NewCluster
+pkg/kind/cluster_test.go:210:2: undefined: IProvider
+# github.com/cnoe-io/idpbuilder/pkg/util [github.com/cnoe-io/idpbuilder/pkg/util.test]
+pkg/util/git_repository_test.go:28:15: undefined: CloneRemoteRepoToDir
+pkg/util/git_repository_test.go:44:14: undefined: CloneRemoteRepoToDir
+pkg/util/git_repository_test.go:63:17: undefined: CloneRemoteRepoToMemory
+pkg/util/git_repository_test.go:66:8: undefined: CopyTreeToTree
+pkg/util/git_repository_test.go:79:17: undefined: ReadWorktreeFile
+pkg/util/git_repository_test.go:82:17: undefined: ReadWorktreeFile
+pkg/util/git_repository_test.go:106:16: undefined: GetWorktreeYamlFiles
+pkg/util/git_repository_test.go:114:15: undefined: GetWorktreeYamlFiles
+ok  	github.com/cnoe-io/idpbuilder/pkg/certs	14.374s
+FAIL	github.com/cnoe-io/idpbuilder/pkg/cmd/get [build failed]
+FAIL	github.com/cnoe-io/idpbuilder/pkg/kind [build failed]
+ok  	github.com/cnoe-io/idpbuilder/pkg/oci	0.005s
+?   	github.com/cnoe-io/idpbuilder/pkg/testutil	[no test files]
+FAIL	github.com/cnoe-io/idpbuilder/pkg/util [build failed]
+FAIL
