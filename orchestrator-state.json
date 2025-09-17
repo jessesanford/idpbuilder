@@ -1313,5 +1313,23 @@
       "ready_for_implementation": true
     },
     "next_state": "SPAWN_AGENTS"
-  }
+  },
+  "phase_1_wave_3_infrastructure": [
+    {
+      "setup_complete": true,
+      "setup_timestamp": "2025-09-17T02:45:00Z",
+      "efforts": {
+        "upstream-fixes": {
+          "status": "infrastructure_ready",
+          "directory": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave3/upstream-fixes",
+          "branch": "idpbuilder-oci-build-push/phase1/wave3/upstream-fixes",
+          "base_branch": "phase1-wave2-integration",
+          "git_config_locked": true,
+          "R312_compliant": true,
+          "R308_compliant": true,
+          "has_implementation_plan": true
+        }
+      }
+    }
+  ]
 }
