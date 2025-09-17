@@ -12,7 +12,6 @@ import (
 
 	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
 	"github.com/go-logr/logr"
-	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/clientcmd/api"
 )
@@ -419,28 +418,76 @@ func (c *Cluster) Status(ctx context.Context) (string, error) {
 
 // getConfig returns the KIND cluster configuration as YAML bytes
 func (c *Cluster) getConfig() ([]byte, error) {
-	// This is a basic KIND cluster configuration
-	// The actual implementation would depend on the specific requirements
+	// Build configuration based on cluster settings
+	host := c.BuildCustomization.Host
+	if host == "" {
+		host = "cnoe.localtest.me"
+	}
+
+	port := c.BuildCustomization.Port
+	if port == "" {
+		port = "8443"
+	}
+
+	hostPort := 8443
+	if port != "" {
+		fmt.Sscanf(port, "%d", &hostPort)
+	}
+
+	image := "kindest/node:v1.26.3"
+	if c.KubernetesVersion != "" {
+		image = fmt.Sprintf("kindest/node:v%s", c.KubernetesVersion)
+	}
+
+	// Base config
 	config := fmt.Sprintf(`kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
 - role: control-plane
-  image: "kindest/node:v1.26.3"
+  image: "%s"
   labels:
     ingress-ready: "true"
   extraPortMappings:
   - containerPort: 443
-    hostPort: 8443
-    protocol: TCP
-  - containerPort: 32222
-    hostPort: 32222
-    protocol: TCP
+    hostPort: %d
+    protocol: TCP`, image, hostPort)
+
+	// Add extra port mappings if specified
+	if c.ExtraPortMappings != "" {
+		// Parse extra port mappings (format: "22:32222")
+		parts := strings.Split(c.ExtraPortMappings, ":")
+		if len(parts) == 2 {
+			containerPort := parts[0]
+			hostPort := parts[1]
+			config += fmt.Sprintf(`
+  - containerPort: %s
+    hostPort: %s
+    protocol: TCP`, containerPort, hostPort)
+		}
+	}
+
+	// Add registry config mounts if specified
+	if registryConfigs, ok := c.RegistryConfig.([]string); ok && len(registryConfigs) > 0 {
+		config += "\n  extraMounts:"
+		for _, configPath := range registryConfigs {
+			// Check if file exists
+			if _, err := os.Stat(configPath); err == nil {
+				config += fmt.Sprintf(`
+  - containerPath: /var/lib/kubelet/config.json
+    hostPath: %s`, configPath)
+				break // Only use the first valid config
+			}
+		}
+	}
+
+	// Add containerd config patches
+	config += fmt.Sprintf(`
 containerdConfigPatches:
 - |-
-  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."gitea.cnoe.localtest.me:8443"]
-    endpoint = ["https://gitea.cnoe.localtest.me"]
-  [plugins."io.containerd.grpc.v1.cri".registry.configs."gitea.cnoe.localtest.me".tls]
-    insecure_skip_verify = true`)
+  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."%s:%s"]
+    endpoint = ["https://%s"]
+  [plugins."io.containerd.grpc.v1.cri".registry.configs."%s".tls]
+    insecure_skip_verify = true`, host, port, host, host)
 
 	return []byte(config), nil
 }

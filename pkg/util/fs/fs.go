@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"path/filepath"
 	"strings"
 
 	"github.com/cnoe-io/idpbuilder/api/v1alpha1"

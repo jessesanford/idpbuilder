@@ -36,7 +36,7 @@ type SecretData struct {
 func printPackageSecrets(ctx context.Context, w io.Writer, kubeClient client.Client, outputFormat string) error {
 	var allSecrets []SecretData
 
-	// Handle core packages first
+	// Handle packages based on the global packages variable
 	for _, pkg := range packages {
 		var secretName string
 		var namespace string
@@ -45,73 +45,87 @@ func printPackageSecrets(ctx context.Context, w io.Writer, kubeClient client.Cli
 		case "argocd":
 			secretName = argoCDInitialAdminSecretName
 			namespace = "argocd"
-		case "gitea":
-			secretName = giteaAdminSecretName
-			namespace = "gitea"
-		default:
-			continue
-		}
+			secret := &v1.Secret{}
+			key := client.ObjectKey{Name: secretName, Namespace: namespace}
+			err := kubeClient.Get(ctx, key, secret, []client.GetOption{}...)
+			if err != nil {
+				continue // Skip if secret doesn't exist
+			}
 
-		secret := &v1.Secret{}
-		key := client.ObjectKey{Name: secretName, Namespace: namespace}
-		err := kubeClient.Get(ctx, key, secret)
-		if err != nil {
-			continue // Skip if secret doesn't exist
-		}
-
-		secretData := SecretData{
-			Name:      secret.Name,
-			Namespace: secret.Namespace,
-			IsCore:    true,
-		}
-
-		// Extract username and password if available
-		if data, ok := secret.Data["username"]; ok {
-			secretData.Username = string(data)
-		}
-		if data, ok := secret.Data["password"]; ok {
-			secretData.Password = string(data)
-		}
-
-		allSecrets = append(allSecrets, secretData)
-	}
-
-	// Handle non-core packages
-	for _, pkg := range packages {
-		if pkg == "argocd" || pkg == "gitea" {
-			continue // Skip core packages
-		}
-
-		// Create label selector for the package
-		req, err := labels.NewRequirement(v1alpha1.CLISecretLabelKey, selection.Equals, []string{pkg})
-		if err != nil {
-			continue
-		}
-		selector := labels.NewSelector().Add(*req)
-
-		secretList := &v1.SecretList{}
-		listOpts := client.ListOptions{
-			LabelSelector: selector,
-		}
-
-		err = kubeClient.List(ctx, secretList, &listOpts)
-		if err != nil {
-			continue
-		}
-
-		for _, secret := range secretList.Items {
 			secretData := SecretData{
 				Name:      secret.Name,
 				Namespace: secret.Namespace,
-				Data:      make(map[string]string),
+				IsCore:    true,
 			}
 
-			// Convert byte data to strings
-			for k, v := range secret.Data {
-				secretData.Data[k] = string(v)
+			// Extract username and password if available
+			if data, ok := secret.Data["username"]; ok {
+				secretData.Username = string(data)
+			}
+			if data, ok := secret.Data["password"]; ok {
+				secretData.Password = string(data)
 			}
 
 			allSecrets = append(allSecrets, secretData)
+
+		case "gitea":
+			secretName = giteaAdminSecretName
+			namespace = "gitea"
+			secret := &v1.Secret{}
+			key := client.ObjectKey{Name: secretName, Namespace: namespace}
+			err := kubeClient.Get(ctx, key, secret, []client.GetOption{}...)
+			if err != nil {
+				continue // Skip if secret doesn't exist
+			}
+
+			secretData := SecretData{
+				Name:      secret.Name,
+				Namespace: secret.Namespace,
+				IsCore:    true,
+			}
+
+			// Extract username and password if available
+			if data, ok := secret.Data["username"]; ok {
+				secretData.Username = string(data)
+			}
+			if data, ok := secret.Data["password"]; ok {
+				secretData.Password = string(data)
+			}
+
+			allSecrets = append(allSecrets, secretData)
+
+		default:
+			// Handle non-core packages - create label selector
+			req, err := labels.NewRequirement(v1alpha1.CLISecretLabelKey, selection.Equals, []string{pkg})
+			if err != nil {
+				continue
+			}
+			selector := labels.NewSelector().Add(*req)
+
+			secretList := &v1.SecretList{}
+			listOpts := client.ListOptions{
+				LabelSelector: selector,
+			}
+
+			err = kubeClient.List(ctx, secretList, &listOpts)
+			if err != nil {
+				continue
+			}
+
+			for _, secret := range secretList.Items {
+				secretData := SecretData{
+					Name:      secret.Name,
+					Namespace: secret.Namespace,
+					Data:      make(map[string]string),
+				}
+
+				// Convert byte data to strings
+				for k, v := range secret.Data {
+					secretData.Data[k] = string(v)
+				}
+
+				allSecrets = append(allSecrets, secretData)
+			}
 		}
 	}
 
