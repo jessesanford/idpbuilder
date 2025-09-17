@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"net/http"
 	"os"
 	"strings"
 
@@ -21,6 +22,11 @@ type TemplateConfig struct {
 	KubernetesVersion string
 	ExtraPortsMapping []PortMapping
 	RegistryConfig    string
+}
+
+// HttpClient interface for HTTP operations
+type HttpClient interface {
+	Get(url string) (*http.Response, error)
 }
 
 //go:embed resources/* testdata/custom-kind.yaml.tmpl

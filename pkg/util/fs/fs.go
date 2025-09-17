@@ -5,10 +5,51 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
 )
+
+// WriteFS writes all files from a filesystem to a destination directory
+func WriteFS(fsys fs.FS, destDir string) error {
+	return fs.WalkDir(fsys, ".", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		destPath := filepath.Join(destDir, path)
+
+		if d.IsDir() {
+			// Create directory
+			return os.MkdirAll(destPath, 0755)
+		}
+
+		// Create parent directories if they don't exist
+		if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
+			return err
+		}
+
+		// Open source file
+		srcFile, err := fsys.Open(path)
+		if err != nil {
+			return err
+		}
+		defer srcFile.Close()
+
+		// Create destination file
+		destFile, err := os.Create(destPath)
+		if err != nil {
+			return err
+		}
+		defer destFile.Close()
+
+		// Copy content
+		_, err = io.Copy(destFile, srcFile)
+		return err
+	})
+}
 
 // ConvertFSToBytes converts files from a filesystem to byte slices
 func ConvertFSToBytes(fsys fs.FS, path string, customization v1alpha1.BuildCustomizationSpec) ([][]byte, error) {

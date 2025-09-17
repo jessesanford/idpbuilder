@@ -5,8 +5,11 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"strings"
 	"sync"
 	"time"
+
+	"github.com/cnoe-io/idpbuilder/pkg/oci"
 )
 
 type MockRegistry struct {
@@ -27,6 +30,34 @@ type MockImage struct {
 	Digest string
 	Size   int64
 	Data   []byte
+}
+
+// Layer represents a layer in a manifest for testing
+type Layer struct {
+	Digest string
+	Size   int64
+	Data   io.Reader
+}
+
+// Manifest represents a test manifest structure
+type Manifest struct {
+	SchemaVersion int
+	MediaType     string
+	Config        Layer
+	Layers        []Layer
+}
+
+// ParseImageRef parses an image reference into repository and tag
+func ParseImageRef(imageRef string) (repository, tag string, err error) {
+	// Handle image references in the format "repository:tag" or just "repository"
+	parts := strings.Split(imageRef, ":")
+	if len(parts) == 1 {
+		return parts[0], "latest", nil
+	} else if len(parts) == 2 {
+		return parts[0], parts[1], nil
+	} else {
+		return "", "", fmt.Errorf("invalid image reference format: %s", imageRef)
+	}
 }
 
 func NewMockRegistry() *MockRegistry {

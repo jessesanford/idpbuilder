@@ -66,7 +66,7 @@ func FirstRemoteURL(repo *git.Repository) (string, error) {
 }
 
 // returns all files with yaml or yml suffix from a worktree
-func GetWorktreeYamlFiles(parent string, wt billy.Filesystem, recurse bool) ([]string, error) {
+func GetWorktreeYamlFilesRepo(parent string, wt billy.Filesystem, recurse bool) ([]string, error) {
 	if strings.HasSuffix(parent, "/") {
 		parent = strings.TrimSuffix(parent, "/")
 	}
@@ -92,7 +92,7 @@ func GetWorktreeYamlFiles(parent string, wt billy.Filesystem, recurse bool) ([]s
 	return paths, nil
 }
 
-func ReadWorktreeFile(wt billy.Filesystem, path string) ([]byte, error) {
+func ReadWorktreeFileRepo(wt billy.Filesystem, path string) ([]byte, error) {
 	f, fErr := wt.Open(path)
 	if fErr != nil {
 		return nil, fmt.Errorf("opening %s", path)
@@ -108,7 +108,7 @@ func ReadWorktreeFile(wt billy.Filesystem, path string) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func CloneRemoteRepoToMemory(ctx context.Context, remote v1alpha1.RemoteRepositorySpec, depth int, insecureSkipTLS bool) (billy.Filesystem, *git.Repository, error) {
+func CloneRemoteRepoToMemoryRepo(ctx context.Context, remote v1alpha1.RemoteRepositorySpec, depth int, insecureSkipTLS bool) (billy.Filesystem, *git.Repository, error) {
 	cloneOptions := &git.CloneOptions{
 		URL:               remote.Url,
 		Depth:             depth,
@@ -138,7 +138,7 @@ func CloneRemoteRepoToMemory(ctx context.Context, remote v1alpha1.RemoteReposito
 	return wt, cloned, nil
 }
 
-func CloneRemoteRepoToDir(ctx context.Context, remote v1alpha1.RemoteRepositorySpec, depth int, insecureSkipTLS bool, dir, fallbackUrl string) (billy.Filesystem, *git.Repository, error) {
+func CloneRemoteRepoToDirRepo(ctx context.Context, remote v1alpha1.RemoteRepositorySpec, depth int, insecureSkipTLS bool, dir, fallbackUrl string) (billy.Filesystem, *git.Repository, error) {
 	repo, err := git.PlainOpen(dir)
 	if err != nil {
 		if errors.Is(err, git.ErrRepositoryNotExists) {
@@ -183,7 +183,7 @@ func CloneRemoteRepoToDir(ctx context.Context, remote v1alpha1.RemoteRepositoryS
 	return wt.Filesystem, repo, nil
 }
 
-func CopyTreeToTree(srcWT, dstWT billy.Filesystem, srcPath, dstPath string) error {
+func CopyTreeToTreeRepo(srcWT, dstWT billy.Filesystem, srcPath, dstPath string) error {
 	files, err := srcWT.ReadDir(srcPath)
 	if err != nil {
 		return err

@@ -2,6 +2,7 @@ package k8s
 
 import (
 	"embed"
+	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
 	"github.com/cnoe-io/idpbuilder/pkg/util/files"
 	"github.com/cnoe-io/idpbuilder/pkg/util/fs"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -10,7 +11,7 @@ import (
 )
 
 func BuildCustomizedManifests(filePath, fsPath string, resourceFS embed.FS, scheme *runtime.Scheme, templateData any) ([][]byte, error) {
-	rawResources, err := fs.ConvertFSToBytes(resourceFS, fsPath, templateData)
+	rawResources, err := fs.ConvertFSToBytes(resourceFS, fsPath, templateData.(v1alpha1.BuildCustomizationSpec))
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +29,7 @@ func BuildCustomizedManifests(filePath, fsPath string, resourceFS embed.FS, sche
 }
 
 func BuildCustomizedObjects(filePath, fsPath string, resourceFS embed.FS, scheme *runtime.Scheme, templateData any) ([]client.Object, error) {
-	rawResources, err := fs.ConvertFSToBytes(resourceFS, fsPath, templateData)
+	rawResources, err := fs.ConvertFSToBytes(resourceFS, fsPath, templateData.(v1alpha1.BuildCustomizationSpec))
 	if err != nil {
 		return nil, err
 	}
