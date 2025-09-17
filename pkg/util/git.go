@@ -234,4 +234,3 @@ func walkFilesystem(fs billy.Filesystem, startPath string, recursive bool, fn fu
 
 	return nil
 }
-

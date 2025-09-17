@@ -2,8 +2,8 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/get"
+	"github.com/spf13/cobra"
 )
 
 // NewRootCmd creates the root command for idpbuilder
