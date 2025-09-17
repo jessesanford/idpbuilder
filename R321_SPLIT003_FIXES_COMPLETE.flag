@@ -1,8 +1,0 @@
-R321 backport fixes completed for cert-validation-split-003 at Fri Sep 12 08:52:42 PM UTC 2025
-Branch: idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003
-Commit: dcfb1e7 fix(R321): resolve test setup issues in cert-validation-split-003
-✅ Fixed compilation issues:
-  - Docker API ContainerListOptions import
-  - Unused imports removed
-  - Format string issues resolved
-  - Missing testdata files created
