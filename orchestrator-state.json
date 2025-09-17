@@ -1,10 +1,10 @@
 {
-  "current_state": "PROJECT_INTEGRATION",
-  "previous_state": "WAVE_COMPLETE",
+  "current_state": "INTEGRATION",
+  "previous_state": "PROJECT_INTEGRATION",
   "current_phase": 1,
   "current_wave": 3,
-  "transition_time": "2025-09-17T07:39:49Z",
-  "transition_reason": "Phase 1 Wave 3 upstream-fixes complete - re-running project integration per R327",
+  "transition_time": "2025-09-17T07:41:58Z",
+  "transition_reason": "Must integrate Phase 1 Wave 3 before Phase/Project integration",
   "CRITICAL_PROJECT_INTEGRATION_LOCATION": {
     "STOP_READ_THIS_FIRST": "DO NOT CREATE ANY NEW WORKSPACES OR WORKTREES",
     "ABSOLUTE_WORKSPACE_PATH": "/home/vscode/workspaces/idpbuilder-oci-build-push/efforts/project/project-integration-workspace",
@@ -159,11 +159,20 @@
   },
   "integration_context": {
     "type": "wave",
-    "phase": 2,
-    "wave": 2,
-    "focus": "Phase 2 Wave 2 integration",
-    "status": "DEFERRED",
-    "note": "Integration deferred until E2.2.2 production-implementation is complete"
+    "phase": 1,
+    "wave": 3,
+    "focus": "Phase 1 Wave 3 integration",
+    "status": "READY",
+    "note": "Single effort (upstream-fixes) ready for integration",
+    "base_branch": "idpbuilder-oci-build-push/phase1/wave2-integration",
+    "efforts_to_integrate": [
+      "upstream-fixes"
+    ],
+    "cascade_plan": [
+      "1. Phase 1 Wave 3 Integration",
+      "2. Phase 1 Integration (re-run)",
+      "3. Project Integration (re-run)"
+    ]
   },
   "phase2_wave1_integration": {
     "status": "INTEGRATION_COMPLETE",
