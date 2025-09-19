@@ -30,9 +30,6 @@ func parseCertificate(pemData []byte) (*x509.Certificate, error) {
 	return cert, nil
 }
 
-<<<<<<< HEAD
-// Feature flag function removed - features are now always enabled in production
-=======
 // isFeatureEnabled checks if a feature flag is enabled
 func isFeatureEnabled(flag string) bool {
 	// Check environment variable
@@ -42,7 +39,6 @@ func isFeatureEnabled(flag string) bool {
 	// Parse boolean value
 	return value == "true" || value == "1" || value == "enabled"
 }
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001
 
 // isKindFeatureEnabled checks if a Kind-specific feature flag is enabled
 func isKindFeatureEnabled(flag string) bool {
