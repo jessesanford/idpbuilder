@@ -1,0 +1,508 @@
+# Fallback Strategies Implementation Plan
+
+## 🚨 CRITICAL EFFORT METADATA (FROM WAVE PLAN)
+**Effort**: E1.2.2: Fallback Strategies
+**Branch**: `idpbuilder-oci-build-push/phase1/wave2/fallback-strategies`
+**Can Parallelize**: Yes (with cert-validation)
+**Parallel With**: E1.2.1 (cert-validation)
+**Size Estimate**: 400 lines
+**Dependencies**: Wave 1 complete (kind-cert-extraction, registry-types/auth/helpers/tests)
+
+## Overview
+- **Effort**: Certificate validation fallback mechanisms and recovery strategies
+- **Phase**: 1, Wave: 2
+- **Estimated Size**: 400 lines (well within 800-line limit)
+- **Implementation Time**: 4-6 hours
+- **Split Required**: NO - Single effort implementation
+
+## Mission Statement
+Implement robust fallback strategies for certificate validation failures, providing clear diagnostics, actionable recommendations, and secure bypass mechanisms with proper security logging and user warnings.
+
+## Dependencies
+
+### Wave 1 Dependencies (MUST be integrated first)
+1. **kind-cert-extraction** (E1.1.1)
+   - Provides: Certificate extraction interfaces and storage
+   - Import: `github.com/cnoe-io/idpbuilder/pkg/certs`
+
+2. **registry-types** (E1.1.2A)
+   - Provides: Core registry type definitions
+   - Import: `github.com/cnoe-io/idpbuilder/pkg/registry`
+
+3. **registry-auth** (E1.1.2B)
+   - Provides: Authentication and transport configuration
+   - Import: `github.com/cnoe-io/idpbuilder/pkg/registry/auth`
+
+4. **registry-helpers** (E1.1.2C)
+   - Provides: Helper functions and utilities
+   - Import: `github.com/cnoe-io/idpbuilder/pkg/registry/helpers`
+
+### Parallel Effort Dependency (Optional coordination)
+- **cert-validation** (E1.2.1) - Can coordinate on error types but not blocking
+
+## File Structure
+
+```
+efforts/phase1/wave2/fallback-strategies/
+├── pkg/
+│   └── certs/
+│       ├── fallback/
+│       │   ├── fallback.go           # Core fallback handler (120 lines)
+│       │   ├── recommendations.go    # Issue-specific recommendations (100 lines)
+│       │   ├── security_log.go       # Security decision logging (80 lines)
+│       │   ├── insecure.go          # Insecure mode handling (100 lines)
+│       │   ├── fallback_test.go     # Unit tests (excluded from count)
+│       │   ├── recommendations_test.go # Unit tests (excluded from count)
+│       │   ├── security_log_test.go # Unit tests (excluded from count)
+│       │   └── insecure_test.go     # Unit tests (excluded from count)
+│       └── types.go                  # Shared types if needed (0 lines - use Wave 1)
+├── go.mod
+├── go.sum
+└── IMPLEMENTATION-PLAN.md
+```
+
+## Implementation Steps
+
+### Step 1: Set Up Repository Structure (30 min)
+```bash
+# Create clean workspace
+cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave2/fallback-strategies
+rm -rf pkg  # Remove incorrect content
+mkdir -p pkg/certs/fallback
+
+# Initialize as separate module initially (will integrate later)
+go mod init github.com/cnoe-io/idpbuilder/fallback-strategies
+go get github.com/cnoe-io/idpbuilder@wave1-integration  # Get Wave 1 dependencies
+```
+
+### Step 2: Implement Core Fallback Handler (120 lines)
+**File**: `pkg/certs/fallback/fallback.go`
+
+```go
+package fallback
+
+import (
+    "context"
+    "fmt"
+    "github.com/cnoe-io/idpbuilder/pkg/certs"
+    "github.com/cnoe-io/idpbuilder/pkg/registry"
+)
+
+// FallbackType categorizes the type of fallback being applied
+type FallbackType string
+
+const (
+    FallbackTypeInsecure    FallbackType = "insecure"
+    FallbackTypeRetry       FallbackType = "retry"
+    FallbackTypeAlternateCA FallbackType = "alternate_ca"
+    FallbackTypeUserPrompt  FallbackType = "user_prompt"
+)
+
+// SecurityLevel indicates the security impact of a fallback
+type SecurityLevel string
+
+const (
+    SecurityLevelCritical SecurityLevel = "critical"
+    SecurityLevelHigh     SecurityLevel = "high"
+    SecurityLevelMedium   SecurityLevel = "medium"
+    SecurityLevelLow      SecurityLevel = "low"
+)
+
+// FallbackStrategy defines a recovery strategy for certificate errors
+type FallbackStrategy struct {
+    Type            FallbackType
+    RequiresFlag    bool
+    SecurityImpact  SecurityLevel
+    Recommendations []string
+    WarningMessage  string
+}
+
+// FallbackHandler interface for handling certificate errors
+type FallbackHandler interface {
+    HandleCertError(err error) (*FallbackStrategy, error)
+    ApplyInsecureMode(config *registry.BuildConfig) error
+    LogSecurityDecision(decision string, reason string)
+    GetRecommendations(err error) []string
+    RequiresUserConfirmation() bool
+}
+
+// Handler implements FallbackHandler
+type Handler struct {
+    logger        SecurityLogger
+    insecureMode  bool
+    autoRecover   bool
+    strictMode    bool
+}
+
+// NewHandler creates a new fallback handler
+func NewHandler(opts ...Option) *Handler {
+    h := &Handler{
+        logger:       NewSecurityLogger(),
+        insecureMode: false,
+        autoRecover:  true,
+        strictMode:   false,
+    }
+
+    for _, opt := range opts {
+        opt(h)
+    }
+
+    return h
+}
+
+// HandleCertError analyzes the error and returns appropriate strategy
+func (h *Handler) HandleCertError(err error) (*FallbackStrategy, error) {
+    // Categorize the error
+    category := categorizeCertError(err)
+
+    switch category {
+    case ErrCategoryExpired:
+        return h.handleExpiredCert(err)
+    case ErrCategorySelfSigned:
+        return h.handleSelfSignedCert(err)
+    case ErrCategoryHostnameMismatch:
+        return h.handleHostnameMismatch(err)
+    case ErrCategoryChainIncomplete:
+        return h.handleIncompleteChain(err)
+    default:
+        return h.handleUnknownError(err)
+    }
+}
+
+// Additional implementation details...
+```
+
+### Step 3: Implement Recommendations Engine (100 lines)
+**File**: `pkg/certs/fallback/recommendations.go`
+
+```go
+package fallback
+
+import (
+    "fmt"
+    "strings"
+)
+
+// ErrorCategory categorizes certificate errors
+type ErrorCategory string
+
+const (
+    ErrCategoryExpired          ErrorCategory = "expired"
+    ErrCategorySelfSigned       ErrorCategory = "self_signed"
+    ErrCategoryHostnameMismatch ErrorCategory = "hostname_mismatch"
+    ErrCategoryChainIncomplete  ErrorCategory = "chain_incomplete"
+    ErrCategoryUnknown          ErrorCategory = "unknown"
+)
+
+// RecommendationEngine generates actionable recommendations
+type RecommendationEngine struct {
+    verbose bool
+}
+
+// NewRecommendationEngine creates a new recommendation engine
+func NewRecommendationEngine(verbose bool) *RecommendationEngine {
+    return &RecommendationEngine{verbose: verbose}
+}
+
+// GetRecommendations returns recommendations for the given error
+func (r *RecommendationEngine) GetRecommendations(err error, category ErrorCategory) []string {
+    var recommendations []string
+
+    switch category {
+    case ErrCategoryExpired:
+        recommendations = r.getExpiredCertRecommendations()
+    case ErrCategorySelfSigned:
+        recommendations = r.getSelfSignedRecommendations()
+    case ErrCategoryHostnameMismatch:
+        recommendations = r.getHostnameMismatchRecommendations()
+    case ErrCategoryChainIncomplete:
+        recommendations = r.getIncompleteChainRecommendations()
+    default:
+        recommendations = r.getGenericRecommendations()
+    }
+
+    if r.verbose {
+        recommendations = append(recommendations, r.getVerboseDetails(err)...)
+    }
+
+    return recommendations
+}
+
+// Category-specific recommendation generators
+func (r *RecommendationEngine) getExpiredCertRecommendations() []string {
+    return []string{
+        "Certificate has expired. Contact your administrator to renew it.",
+        "As a temporary workaround, you can use --insecure flag (NOT recommended for production)",
+        "To update the certificate: kubectl exec -it <gitea-pod> -- /bin/sh -c 'cd /data/gitea && ./generate-cert.sh'",
+    }
+}
+
+// Additional recommendation methods...
+```
+
+### Step 4: Implement Security Logger (80 lines)
+**File**: `pkg/certs/fallback/security_log.go`
+
+```go
+package fallback
+
+import (
+    "fmt"
+    "log/slog"
+    "os"
+    "time"
+)
+
+// SecurityLogger logs security-relevant decisions
+type SecurityLogger interface {
+    LogDecision(decision string, reason string, impact SecurityLevel)
+    LogBypass(certError error, method string)
+    GetAuditTrail() []SecurityEvent
+}
+
+// SecurityEvent represents a security-relevant event
+type SecurityEvent struct {
+    Timestamp time.Time
+    Decision  string
+    Reason    string
+    Impact    SecurityLevel
+    User      string
+    Method    string
+}
+
+// Logger implements SecurityLogger
+type Logger struct {
+    events []SecurityEvent
+    output *slog.Logger
+    file   *os.File
+}
+
+// NewSecurityLogger creates a new security logger
+func NewSecurityLogger() *Logger {
+    logFile, _ := os.OpenFile("/tmp/idpbuilder-security.log",
+        os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
+
+    return &Logger{
+        events: make([]SecurityEvent, 0),
+        output: slog.New(slog.NewTextHandler(logFile, nil)),
+        file:   logFile,
+    }
+}
+
+// LogDecision logs a security decision
+func (l *Logger) LogDecision(decision string, reason string, impact SecurityLevel) {
+    event := SecurityEvent{
+        Timestamp: time.Now(),
+        Decision:  decision,
+        Reason:    reason,
+        Impact:    impact,
+        User:      os.Getenv("USER"),
+    }
+
+    l.events = append(l.events, event)
+
+    l.output.Warn("SECURITY DECISION",
+        "decision", decision,
+        "reason", reason,
+        "impact", impact,
+        "user", event.User,
+    )
+}
+
+// Additional logging methods...
+```
+
+### Step 5: Implement Insecure Mode Handler (100 lines)
+**File**: `pkg/certs/fallback/insecure.go`
+
+```go
+package fallback
+
+import (
+    "crypto/tls"
+    "fmt"
+    "github.com/cnoe-io/idpbuilder/pkg/registry"
+    "net/http"
+)
+
+// InsecureConfig handles --insecure flag operations
+type InsecureConfig struct {
+    Enabled         bool
+    RequireConfirm  bool
+    LogAllRequests  bool
+    WarningShown    bool
+}
+
+// InsecureModeHandler manages insecure mode operations
+type InsecureModeHandler struct {
+    config *InsecureConfig
+    logger SecurityLogger
+}
+
+// NewInsecureModeHandler creates a new insecure mode handler
+func NewInsecureModeHandler(logger SecurityLogger) *InsecureModeHandler {
+    return &InsecureModeHandler{
+        config: &InsecureConfig{
+            Enabled:        false,
+            RequireConfirm: true,
+            LogAllRequests: true,
+            WarningShown:   false,
+        },
+        logger: logger,
+    }
+}
+
+// Enable enables insecure mode with appropriate warnings
+func (h *InsecureModeHandler) Enable(force bool) error {
+    if !force && h.config.RequireConfirm {
+        if !h.promptUserConfirmation() {
+            return fmt.Errorf("insecure mode cancelled by user")
+        }
+    }
+
+    h.showSecurityWarning()
+    h.config.Enabled = true
+    h.logger.LogDecision("INSECURE_MODE_ENABLED",
+        "User enabled insecure mode",
+        SecurityLevelCritical)
+
+    return nil
+}
+
+// ApplyToTransport applies insecure settings to HTTP transport
+func (h *InsecureModeHandler) ApplyToTransport(transport *http.Transport) error {
+    if !h.config.Enabled {
+        return fmt.Errorf("insecure mode not enabled")
+    }
+
+    transport.TLSClientConfig = &tls.Config{
+        InsecureSkipVerify: true,
+    }
+
+    h.logger.LogDecision("TLS_VERIFICATION_DISABLED",
+        "Applied insecure TLS config to transport",
+        SecurityLevelCritical)
+
+    return nil
+}
+
+// showSecurityWarning displays security warning to user
+func (h *InsecureModeHandler) showSecurityWarning() {
+    if h.config.WarningShown {
+        return
+    }
+
+    fmt.Println("⚠️  WARNING: INSECURE MODE ENABLED ⚠️")
+    fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    fmt.Println("• TLS certificate verification is DISABLED")
+    fmt.Println("• Your connection is vulnerable to MITM attacks")
+    fmt.Println("• This mode should NEVER be used in production")
+    fmt.Println("• All operations are being logged for audit")
+    fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+    h.config.WarningShown = true
+}
+
+// Additional insecure mode methods...
+```
+
+## Size Management
+- **Estimated Lines**: 400 (120 + 100 + 80 + 100)
+- **Measurement Tool**: ${PROJECT_ROOT}/tools/line-counter.sh
+- **Check Frequency**: After each file completion
+- **Split Threshold**: 700 lines (warning), 800 lines (stop)
+- **Current Assessment**: NO SPLIT NEEDED (400 < 800)
+
+## Test Requirements
+- **Unit Tests**: 85% coverage minimum
+- **Integration Tests**: Test with actual certificate errors
+- **E2E Tests**: Test fallback flows with Kind cluster
+- **Security Tests**: Verify all bypasses are logged
+
+### Test Scenarios
+1. **Expired Certificate**: Verify recommendations and fallback
+2. **Self-Signed Certificate**: Test insecure mode activation
+3. **Hostname Mismatch**: Validate error categorization
+4. **Chain Incomplete**: Test chain completion suggestions
+5. **Security Logging**: Verify all decisions are logged
+6. **User Confirmation**: Test interactive prompts
+7. **Flag Behavior**: Test --insecure flag handling
+
+## Pattern Compliance
+- **Error Handling**: Comprehensive error categorization
+- **Security**: All bypasses logged with audit trail
+- **User Experience**: Clear warnings and recommendations
+- **Testability**: Interfaces for easy mocking
+- **Documentation**: Clear comments on security implications
+
+## Key Interfaces (Compatible with Wave 1)
+
+```go
+// From Wave 1 (we import and use these)
+type KindCertExtractor interface {
+    ExtractGiteaCert(ctx context.Context) (*x509.Certificate, error)
+}
+
+type CertificateStorage interface {
+    Store(name string, cert *x509.Certificate) error
+    Load(name string) (*x509.Certificate, error)
+}
+
+// Our new interfaces for Wave 2
+type FallbackHandler interface {
+    HandleCertError(err error) (*FallbackStrategy, error)
+    ApplyInsecureMode(config *registry.BuildConfig) error
+    LogSecurityDecision(decision string, reason string)
+    GetRecommendations(err error) []string
+    RequiresUserConfirmation() bool
+}
+
+type SecurityLogger interface {
+    LogDecision(decision string, reason string, impact SecurityLevel)
+    LogBypass(certError error, method string)
+    GetAuditTrail() []SecurityEvent
+}
+```
+
+## Integration Points
+
+### With cert-validation (E1.2.1)
+- Share error categorization types if both efforts define them
+- Fallback handler can use validator's diagnostic output
+- Coordinate on error message formats
+
+### With Wave 1 efforts
+- Import certificate storage from kind-cert-extraction
+- Use registry types from registry-types effort
+- Apply transport config using registry-auth interfaces
+
+## Success Criteria
+- [ ] All 4 core files implemented (400 lines total)
+- [ ] Unit test coverage ≥ 85%
+- [ ] Security decisions logged with full audit trail
+- [ ] --insecure flag works with clear warnings
+- [ ] Actionable recommendations for each error type
+- [ ] No silent failures or security bypasses
+- [ ] Integration with Wave 1 components verified
+- [ ] Code review passed on first submission
+
+## Risk Assessment
+- **Size Risk**: LOW - 400 lines is 50% of limit
+- **Dependency Risk**: MEDIUM - Requires Wave 1 integration
+- **Security Risk**: HIGH - Must ensure proper logging
+- **Integration Risk**: LOW - Clear interfaces with Wave 1
+
+## Timeline
+1. **Hour 1**: Repository setup and structure
+2. **Hour 2**: Core fallback handler implementation
+3. **Hour 3**: Recommendations engine
+4. **Hour 4**: Security logger
+5. **Hour 5**: Insecure mode handler
+6. **Hour 6**: Unit tests and integration
+
+## Notes
+- This effort focuses ONLY on fallback strategies, not certificate validation
+- All security bypasses MUST be logged for audit compliance
+- The --insecure flag requires explicit user acknowledgment
+- Recommendations should be actionable, not generic
+- This is Wave 2, so it depends on Wave 1 being integrated first

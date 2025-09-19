@@ -1,0 +1,60 @@
+# Fallback Strategies Planning Summary
+
+**Code Reviewer Agent**: Completed planning at 2025-09-19 14:43:36
+**Effort**: E1.2.2 - Fallback Strategies
+**Phase**: 1, Wave: 2
+
+## Planning Decision: NO SPLIT REQUIRED ✅
+
+### Size Analysis
+- **Total Estimated Size**: 400 lines
+- **800-Line Limit**: Well within compliance (50% of limit)
+- **Split Decision**: Single effort implementation
+
+### Component Breakdown
+| Component | Lines | Purpose |
+|-----------|-------|---------|
+| fallback.go | 120 | Core fallback handler and strategy implementation |
+| recommendations.go | 100 | Error categorization and recommendation engine |
+| security_log.go | 80 | Security decision audit logging |
+| insecure.go | 100 | --insecure flag handling and warnings |
+| **TOTAL** | **400** | **Complete fallback implementation** |
+
+### Key Findings
+1. **Wrong Content Found**: The existing directory contained a full idpbuilder copy instead of fallback-specific code
+2. **Wrong Branch**: Directory was on 'main' branch instead of effort-specific branch
+3. **Incorrect Split Plan**: Found a CLI commands split plan instead of fallback strategies
+
+### Implementation Plan Created
+- **File**: IMPLEMENTATION-PLAN.md
+- **Created**: 2025-09-19 14:43:36
+- **Size**: 16,067 bytes
+- **Status**: Ready for SW Engineer implementation
+
+### Dependencies Identified
+**Wave 1 Dependencies (Must be integrated first):**
+1. kind-cert-extraction (E1.1.1) - Certificate extraction interfaces
+2. registry-types (E1.1.2A) - Core type definitions
+3. registry-auth (E1.1.2B) - Authentication interfaces
+4. registry-helpers (E1.1.2C) - Helper utilities
+
+**Parallel Coordination (Optional):**
+- cert-validation (E1.2.1) - Can share error categorization
+
+### Next Steps for SW Engineer
+1. Clean up existing wrong content in directory
+2. Check out correct branch: `idpbuilder-oci-build-push/phase1/wave2/fallback-strategies`
+3. Implement the 4 core files per the plan
+4. Ensure each file stays within its line budget
+5. Write comprehensive unit tests (not counted in line limit)
+6. Integrate with Wave 1 components
+
+### Success Criteria
+- Implementation fits in 400 lines (no splitting needed)
+- All security decisions are logged
+- --insecure flag has clear warnings
+- Actionable recommendations for each error type
+- 85% test coverage minimum
+
+## Conclusion
+The fallback-strategies effort is well-scoped at 400 lines and does not require splitting. The implementation plan provides clear guidance for a single SW Engineer to implement the complete functionality in one effort.

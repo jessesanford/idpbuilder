@@ -1,0 +1,32 @@
+# Code Reviewer TODOs - State: SPLIT_PLANNING
+# Effort: fallback-strategies
+# Timestamp: 2025-01-19T15:03:00
+# All tasks COMPLETED
+
+## Completed Tasks:
+1. ✅ Analyze current situation - implementation not found in repository
+2. ✅ Create split plan for expected 1,699-line implementation  
+3. ✅ Design split into 3 sub-efforts (fallback-core, fallback-recommendations, fallback-security)
+4. ✅ Create SPLIT-PLAN.md with detailed boundaries
+5. ✅ Create individual SPLIT-PLAN-XXX.md files for each split
+6. ✅ Set up split directories for implementation
+7. ✅ Create split inventory document
+8. ✅ Create orchestrator decision report
+
+## Split Plan Summary:
+- E1.2.2A: fallback-core (650 lines) - FIRST
+- E1.2.2B: fallback-recommendations (550 lines) - PARALLEL after A
+- E1.2.2C: fallback-security (499 lines) - PARALLEL after A
+
+## Files Created:
+- SPLIT-PLAN-20250119-145800.md
+- SPLIT-PLAN-E1.2.2A-20250119-145800.md  
+- SPLIT-PLAN-E1.2.2B-20250119-145801.md
+- SPLIT-PLAN-E1.2.2C-20250119-145802.md
+- SPLIT-INVENTORY-20250119-150100.md
+- CODE-REVIEW-SPLIT-DECISION-20250119-150200.md
+
+## Directories Created:
+- /efforts/phase1/wave2/fallback-core/
+- /efforts/phase1/wave2/fallback-recommendations/
+- /efforts/phase1/wave2/fallback-security/
