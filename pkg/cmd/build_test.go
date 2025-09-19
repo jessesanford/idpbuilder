@@ -138,10 +138,10 @@ func TestParsePlatform(t *testing.T) {
 			expectErr: true,
 		},
 		{
-			name:      "multiple slashes",
-			platform:  "linux//amd64",
-			expectErr: false, // Current implementation treats empty parts as valid
-			expectedOS: "linux",
+			name:         "multiple slashes",
+			platform:     "linux//amd64",
+			expectErr:    false, // Current implementation treats empty parts as valid
+			expectedOS:   "linux",
 			expectedArch: "amd64",
 		},
 	}

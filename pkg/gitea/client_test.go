@@ -24,7 +24,7 @@ func TestNewClient(t *testing.T) {
 	assert.Equal(t, registryURL, client.config.URL)
 	// With new credential management, defaults are empty when no credentials configured
 	assert.Equal(t, "", client.config.Username) // From getRegistryUsername()
-	assert.Equal(t, "", client.config.Token) // From getRegistryPassword()
+	assert.Equal(t, "", client.config.Token)    // From getRegistryPassword()
 	assert.False(t, client.config.Insecure)
 }
 

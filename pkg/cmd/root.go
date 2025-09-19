@@ -23,13 +23,13 @@ Gitea registry with automatic certificate handling, as well as manage reference 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&helpers.LogLevel, "log-level", "l", "info", helpers.LogLevelMsg)
 	rootCmd.PersistentFlags().BoolVar(&helpers.ColoredOutput, "color", false, helpers.ColoredOutputMsg)
-	
+
 	// Existing commands for IDP management
 	rootCmd.AddCommand(create.CreateCmd)
 	rootCmd.AddCommand(get.GetCmd)
 	rootCmd.AddCommand(delete.DeleteCmd)
 	rootCmd.AddCommand(version.VersionCmd)
-	
+
 	// New OCI image commands
 	rootCmd.AddCommand(BuildCmd)
 	rootCmd.AddCommand(PushCmd)

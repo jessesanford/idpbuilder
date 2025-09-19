@@ -72,7 +72,7 @@ func runPush(cmd *cobra.Command, args []string) error {
 		helpers.PrintColoredOutput("Configuring certificates for secure connection...\n")
 		certManager := certs.NewTrustStore()
 		// Note: Certificate extraction/configuration is handled internally by registry
-		
+
 		client, err = gitea.NewClient(pushRegistry, certManager)
 	}
 

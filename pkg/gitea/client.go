@@ -25,14 +25,14 @@ func init() {
 
 // PushProgress represents progress information during image push operations.
 type PushProgress struct {
-	CurrentLayer    int                `json:"currentLayer"`
-	TotalLayers     int                `json:"totalLayers"`
-	Percentage      int                `json:"percentage"`
-	UploadedBytes   int64              `json:"uploadedBytes"`
-	TotalBytes      int64              `json:"totalBytes"`
-	ElapsedTime     time.Duration      `json:"elapsedTime"`
-	Completed       bool               `json:"completed"`
-	LayerProgresses []LayerProgress    `json:"layerProgresses"`
+	CurrentLayer    int             `json:"currentLayer"`
+	TotalLayers     int             `json:"totalLayers"`
+	Percentage      int             `json:"percentage"`
+	UploadedBytes   int64           `json:"uploadedBytes"`
+	TotalBytes      int64           `json:"totalBytes"`
+	ElapsedTime     time.Duration   `json:"elapsedTime"`
+	Completed       bool            `json:"completed"`
+	LayerProgresses []LayerProgress `json:"layerProgresses"`
 }
 
 // NewClient creates a new Gitea client with certificate manager integration.

@@ -13,7 +13,14 @@ import (
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
 )
 
+const (
+	// EnableImageBuilderFlag is the environment variable to enable the image builder feature
+	EnableImageBuilderFlag = "ENABLE_IMAGE_BUILDER"
+)
+
 var (
+	// ErrFeatureDisabled is returned when the image builder feature is disabled
+	ErrFeatureDisabled = fmt.Errorf("image builder feature is disabled")
 )
 
 // NewBuilder creates a new OCI image builder with the specified storage directory
@@ -35,6 +42,10 @@ func NewBuilder(storageDir string) (*Builder, error) {
 
 // BuildImage builds an OCI image from a directory context
 func (b *Builder) BuildImage(ctx context.Context, opts BuildOptions) (*BuildResult, error) {
+	// Check if feature is enabled
+	if os.Getenv(EnableImageBuilderFlag) != "true" {
+		return nil, ErrFeatureDisabled
+	}
 
 	// Validate options
 	if opts.ContextPath == "" {
