@@ -69,6 +69,7 @@ func TestCopyTreeToTree(t *testing.T) {
 }
 
 func testCopiedFiles(t *testing.T, src, dst billy.Filesystem, srcStartPath, dstStartPath string) {
+	// Use shared testutil function with local ReadWorktreeFile implementation
 	files, err := src.ReadDir(srcStartPath)
 	assert.Nil(t, err)
 
