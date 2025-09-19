@@ -1,1488 +1,761 @@
-# Wave 1: Certificate Management Core - Implementation Plan
+# Credential Management Implementation Plan
 
-## 📌 Wave Overview
+## Effort ID: E2.2.2-A
 
-**Phase**: 1 - Certificate Infrastructure  
-**Wave**: 1 - Certificate Management Core  
-**Total Efforts**: 2  
-**Total Estimated Lines**: 1,100  
-**Parallelization**: YES - Both efforts can be implemented in parallel  
-**Created**: 2025-09-06  
-**Code Reviewer**: code-reviewer  
+## Overview
+- **Effort**: Implement real credential management for Gitea registry authentication
+- **Phase**: 2, Wave: 2
+- **Estimated Size**: 450-500 lines (excluding tests)
+- **Implementation Time**: 4-6 hours
+- **Dependencies**: E2.2.1 cli-commands (complete)
 
-## 🎯 Wave Mission
+## Scope
+Replace placeholder authentication with a comprehensive credential management system supporting:
+1. CLI flags for username and token (--username, --token)
+2. Environment variable credential loading (fallback)
+3. Configuration file parsing (fallback)
+4. System keyring integration for secure storage (fallback)
+5. Proper credential retrieval functions
+6. Removal of all credential-related TODOs
 
-Establish the foundational certificate extraction and trust management infrastructure, enabling secure communication with Gitea's self-signed certificate registry through go-containerregistry. This wave focuses on the core mechanics of certificate retrieval from Kind clusters and integration with the container registry client library.
+## File Structure
 
-## 🔄 Atomic PR Requirements (R220 Compliance)
+### New Files to Create
+1. **pkg/gitea/credentials.go** (150 lines)
+   - Core credential management logic
+   - Credential provider interface
+   - Credential resolution chain
 
-### Wave-Level Atomic Design
-```yaml
-wave_implementation_atomic_design:
-  parallel_pr_efforts:
-    - effort_1_1_1: "Kind Certificate Extraction - can merge anytime"
-    - effort_1_1_2: "Registry TLS Trust Integration - can merge anytime"
-  sequential_pr_efforts: []  # No sequential dependencies
-  feature_flags:
-    wave_flag: "CERT_INFRASTRUCTURE_ENABLED"
-    effort_flags:
-      - "KIND_CERT_EXTRACTION_ENABLED"
-      - "REGISTRY_TLS_TRUST_ENABLED"
-  stub_plan:
-    - stub: "MockCertExtractor"
-      replaced_by: "E1.1.1"
-      used_by: ["E1.1.2 tests"]
-    - stub: "MockTrustManager"
-      replaced_by: "E1.1.2"
-      used_by: ["Phase 2 efforts"]
-  merge_strategy:
-    order_independent: true
-    conflict_resolution: "Rebase on main"
-  test_independence:
-    each_pr_isolated: true
-    flag_permutations: ["all off", "extraction only", "trust only", "all on"]
-```
+2. **pkg/gitea/config.go** (70 lines)
+   - Configuration file parsing
+   - Config structure definitions
+   - Config validation
 
-## 📦 Effort 1.1.1: Kind Certificate Extraction
+3. **pkg/gitea/keyring.go** (80 lines)
+   - System keyring integration
+   - Secure credential storage/retrieval
+   - Fallback handling
 
-### Metadata
-**Branch**: `phase1/wave1/kind-cert-extraction`  
-**Can Parallelize**: Yes  
-**Parallel With**: [E1.1.2]  
-**Size Estimate**: 500 lines  
-**Dependencies**: None  
-**Feature Flag**: `KIND_CERT_EXTRACTION_ENABLED`  
+4. **pkg/gitea/credentials_test.go** (100 lines)
+   - Unit tests for credential providers
+   - Mock implementations
+   - Test coverage for all scenarios
 
-### Technical Requirements
+5. **pkg/gitea/config_test.go** (50 lines)
+   - Config parsing tests
+   - Validation tests
+   - Error handling tests
 
-#### Core Functionality
-1. **Cluster Detection**: Verify Kind cluster existence and accessibility
-2. **Pod Location**: Find Gitea pod in the Kind cluster
-3. **Certificate Extraction**: Copy certificate from pod filesystem
-4. **Local Storage**: Save certificate to well-known location
-5. **Error Handling**: Graceful degradation when cluster unavailable
+6. **pkg/gitea/keyring_test.go** (50 lines)
+   - Keyring integration tests
+   - Mock keyring provider
+   - Fallback scenario tests
 
-### Detailed File Structure
+### Files to Modify
+1. **pkg/gitea/client.go** (~60 line changes)
+   - Update getRegistryUsername() function
+   - Update getRegistryPassword() function
+   - Remove TODO comments at lines 30, 145, 151
+   - Add credential manager initialization
+   - Add methods to set CLI-provided credentials
 
-#### `pkg/certs/extractor.go` (150 lines)
+2. **pkg/gitea/client_test.go** (~50 line changes)
+   - Update tests to use real credential system
+   - Add environment variable tests
+   - Remove hardcoded credential expectations
+
+3. **pkg/cmd/push.go** (~30 line changes)
+   - Add --username and --token flags
+   - Pass CLI credentials to client
+   - Update help text and examples
+
+4. **pkg/cmd/build.go** (~30 line changes)
+   - Add --username and --token flags for registry operations
+   - Pass CLI credentials to builder
+   - Update help text
+
+## Implementation Steps
+
+### Step 1: Create Credential Provider Interface (credentials.go)
 ```go
-package certs
+// Create pkg/gitea/credentials.go with:
+
+package gitea
 
 import (
-    "context"
-    "crypto/x509"
     "fmt"
     "os"
     "path/filepath"
 )
 
-// KindCertExtractor handles certificate extraction from Kind clusters
-type KindCertExtractor struct {
-    client     KindClient
-    storage    CertificateStorage
-    validator  CertValidator
-    config     ExtractorConfig
+// CredentialProvider defines interface for credential sources
+type CredentialProvider interface {
+    GetUsername() (string, error)
+    GetPassword() (string, error)
+    IsAvailable() bool
+    Priority() int
 }
 
-// ExtractorConfig holds configuration for the extractor
-type ExtractorConfig struct {
-    ClusterName     string
-    Namespace       string
-    PodLabelSelector string
-    CertPath        string // Path inside the pod
-    Timeout         time.Duration
-    RetryAttempts   int
+// CredentialManager manages multiple credential providers
+type CredentialManager struct {
+    providers []CredentialProvider
+    cliUsername string
+    cliPassword string
 }
 
-// NewKindCertExtractor creates a new certificate extractor
-func NewKindCertExtractor(config ExtractorConfig) (*KindCertExtractor, error) {
-    // Initialize kubectl client
-    // Validate configuration
-    // Setup storage directory
-    // Return configured extractor
-}
-
-// ExtractGiteaCert extracts the Gitea certificate from Kind cluster
-func (e *KindCertExtractor) ExtractGiteaCert(ctx context.Context) (*x509.Certificate, error) {
-    // 1. Check feature flag
-    if !isFeatureEnabled("KIND_CERT_EXTRACTION_ENABLED") {
-        return nil, ErrFeatureDisabled
-    }
-    
-    // 2. Get cluster information
-    clusterName, err := e.getClusterName()
-    if err != nil {
-        return nil, fmt.Errorf("failed to get cluster name: %w", err)
-    }
-    
-    // 3. Find Gitea pod
-    podName, err := e.findGiteaPod(ctx, clusterName)
-    if err != nil {
-        return nil, fmt.Errorf("failed to find Gitea pod: %w", err)
-    }
-    
-    // 4. Extract certificate data
-    certData, err := e.client.CopyFromPod(ctx, podName, e.config.CertPath)
-    if err != nil {
-        return nil, fmt.Errorf("failed to copy certificate: %w", err)
-    }
-    
-    // 5. Parse certificate
-    cert, err := parseCertificate(certData)
-    if err != nil {
-        return nil, fmt.Errorf("failed to parse certificate: %w", err)
-    }
-    
-    // 6. Validate certificate
-    if err := e.validator.ValidateCertificate(cert); err != nil {
-        return nil, fmt.Errorf("certificate validation failed: %w", err)
-    }
-    
-    // 7. Store locally
-    if err := e.storage.Store("gitea", cert); err != nil {
-        return nil, fmt.Errorf("failed to store certificate: %w", err)
-    }
-    
-    return cert, nil
-}
-
-// GetClusterName returns the current Kind cluster name
-func (e *KindCertExtractor) GetClusterName() (string, error) {
-    if e.config.ClusterName != "" {
-        return e.config.ClusterName, nil
-    }
-    return e.client.GetCurrentCluster()
-}
-
-// ValidateCertificate performs basic certificate validation
-func (e *KindCertExtractor) ValidateCertificate(cert *x509.Certificate) error {
-    // Check certificate is not nil
-    // Check certificate is not expired
-    // Check certificate has proper key usage
-    // Return validation result
-}
-
-// StoreCertificate saves the certificate to local storage
-func (e *KindCertExtractor) StoreCertificate(cert *x509.Certificate, path string) error {
-    return e.storage.StoreAt(cert, path)
-}
-```
-
-#### `pkg/certs/kind_client.go` (120 lines)
-```go
-package certs
-
-import (
-    "bytes"
-    "context"
-    "fmt"
-    "os/exec"
-    "strings"
-)
-
-// KindClient interface for interacting with Kind clusters
-type KindClient interface {
-    GetCurrentCluster() (string, error)
-    ListClusters() ([]string, error)
-    GetPods(ctx context.Context, namespace, labelSelector string) ([]string, error)
-    CopyFromPod(ctx context.Context, podName, path string) ([]byte, error)
-    ExecInPod(ctx context.Context, podName string, command []string) (string, error)
-}
-
-// KubectlKindClient implements KindClient using kubectl
-type KubectlKindClient struct {
-    kubectlPath string
-    kubeconfig  string
-}
-
-// NewKubectlKindClient creates a new kubectl-based Kind client
-func NewKubectlKindClient() (*KubectlKindClient, error) {
-    // Find kubectl binary
-    // Verify kubectl is available
-    // Setup kubeconfig path
-    // Return configured client
-}
-
-// GetCurrentCluster returns the current Kind cluster name
-func (c *KubectlKindClient) GetCurrentCluster() (string, error) {
-    cmd := exec.Command("kind", "get", "clusters")
-    output, err := cmd.Output()
-    if err != nil {
-        return "", fmt.Errorf("failed to list Kind clusters: %w", err)
-    }
-    
-    clusters := strings.Split(strings.TrimSpace(string(output)), "\n")
-    if len(clusters) == 0 {
-        return "", ErrNoKindCluster
-    }
-    
-    // Return first cluster (or use context to determine active)
-    return clusters[0], nil
-}
-
-// ListClusters returns all available Kind clusters
-func (c *KubectlKindClient) ListClusters() ([]string, error) {
-    cmd := exec.Command("kind", "get", "clusters")
-    output, err := cmd.Output()
-    if err != nil {
-        return nil, fmt.Errorf("failed to list clusters: %w", err)
-    }
-    
-    return strings.Split(strings.TrimSpace(string(output)), "\n"), nil
-}
-
-// GetPods returns pods matching the label selector
-func (c *KubectlKindClient) GetPods(ctx context.Context, namespace, labelSelector string) ([]string, error) {
-    args := []string{"get", "pods", "-n", namespace}
-    if labelSelector != "" {
-        args = append(args, "-l", labelSelector)
-    }
-    args = append(args, "-o", "jsonpath={.items[*].metadata.name}")
-    
-    cmd := exec.CommandContext(ctx, c.kubectlPath, args...)
-    output, err := cmd.Output()
-    if err != nil {
-        return nil, fmt.Errorf("failed to get pods: %w", err)
-    }
-    
-    pods := strings.Fields(string(output))
-    return pods, nil
-}
-
-// CopyFromPod copies a file from a pod
-func (c *KubectlKindClient) CopyFromPod(ctx context.Context, podName, path string) ([]byte, error) {
-    // Use kubectl cp to extract file
-    cmd := exec.CommandContext(ctx, c.kubectlPath, "cp", 
-        fmt.Sprintf("%s:%s", podName, path), "-")
-    
-    var stdout, stderr bytes.Buffer
-    cmd.Stdout = &stdout
-    cmd.Stderr = &stderr
-    
-    if err := cmd.Run(); err != nil {
-        return nil, fmt.Errorf("kubectl cp failed: %w, stderr: %s", err, stderr.String())
-    }
-    
-    return stdout.Bytes(), nil
-}
-
-// ExecInPod executes a command in a pod
-func (c *KubectlKindClient) ExecInPod(ctx context.Context, podName string, command []string) (string, error) {
-    args := append([]string{"exec", podName, "--"}, command...)
-    cmd := exec.CommandContext(ctx, c.kubectlPath, args...)
-    
-    output, err := cmd.Output()
-    if err != nil {
-        return "", fmt.Errorf("exec in pod failed: %w", err)
-    }
-    
-    return string(output), nil
-}
-```
-
-#### `pkg/certs/storage.go` (100 lines)
-```go
-package certs
-
-import (
-    "crypto/x509"
-    "encoding/pem"
-    "fmt"
-    "io/ioutil"
-    "os"
-    "path/filepath"
-)
-
-// CertificateStorage interface for certificate persistence
-type CertificateStorage interface {
-    Store(name string, cert *x509.Certificate) error
-    StoreAt(cert *x509.Certificate, path string) error
-    Load(name string) (*x509.Certificate, error)
-    Exists(name string) bool
-    Remove(name string) error
-    ListCertificates() ([]string, error)
-}
-
-// LocalCertStorage implements file-based certificate storage
-type LocalCertStorage struct {
-    baseDir string
-}
-
-// NewLocalCertStorage creates a new local certificate storage
-func NewLocalCertStorage(baseDir string) (*LocalCertStorage, error) {
-    // Expand home directory if needed
-    expandedDir := expandHomeDir(baseDir)
-    
-    // Create directory if it doesn't exist
-    if err := os.MkdirAll(expandedDir, 0700); err != nil {
-        return nil, fmt.Errorf("failed to create cert directory: %w", err)
-    }
-    
-    return &LocalCertStorage{baseDir: expandedDir}, nil
-}
-
-// Store saves a certificate with the given name
-func (s *LocalCertStorage) Store(name string, cert *x509.Certificate) error {
-    path := filepath.Join(s.baseDir, fmt.Sprintf("%s.pem", name))
-    return s.StoreAt(cert, path)
-}
-
-// StoreAt saves a certificate at a specific path
-func (s *LocalCertStorage) StoreAt(cert *x509.Certificate, path string) error {
-    // Encode certificate to PEM
-    pemBlock := &pem.Block{
-        Type:  "CERTIFICATE",
-        Bytes: cert.Raw,
-    }
-    
-    pemData := pem.EncodeToMemory(pemBlock)
-    if pemData == nil {
-        return fmt.Errorf("failed to encode certificate")
-    }
-    
-    // Write to file with secure permissions
-    if err := ioutil.WriteFile(path, pemData, 0600); err != nil {
-        return fmt.Errorf("failed to write certificate: %w", err)
-    }
-    
-    return nil
-}
-
-// Load retrieves a certificate by name
-func (s *LocalCertStorage) Load(name string) (*x509.Certificate, error) {
-    path := filepath.Join(s.baseDir, fmt.Sprintf("%s.pem", name))
-    
-    // Read certificate file
-    pemData, err := ioutil.ReadFile(path)
-    if err != nil {
-        if os.IsNotExist(err) {
-            return nil, ErrCertNotFound
-        }
-        return nil, fmt.Errorf("failed to read certificate: %w", err)
-    }
-    
-    // Parse PEM block
-    block, _ := pem.Decode(pemData)
-    if block == nil {
-        return nil, fmt.Errorf("failed to decode PEM block")
-    }
-    
-    // Parse certificate
-    cert, err := x509.ParseCertificate(block.Bytes)
-    if err != nil {
-        return nil, fmt.Errorf("failed to parse certificate: %w", err)
-    }
-    
-    return cert, nil
-}
-
-// Exists checks if a certificate exists
-func (s *LocalCertStorage) Exists(name string) bool {
-    path := filepath.Join(s.baseDir, fmt.Sprintf("%s.pem", name))
-    _, err := os.Stat(path)
-    return err == nil
-}
-
-// Remove deletes a certificate
-func (s *LocalCertStorage) Remove(name string) error {
-    path := filepath.Join(s.baseDir, fmt.Sprintf("%s.pem", name))
-    return os.Remove(path)
-}
-
-// ListCertificates returns all stored certificate names
-func (s *LocalCertStorage) ListCertificates() ([]string, error) {
-    // Read directory
-    // Filter .pem files
-    // Return names without extension
-}
-
-// expandHomeDir expands ~ to user home directory
-func expandHomeDir(path string) string {
-    if strings.HasPrefix(path, "~/") {
-        home, _ := os.UserHomeDir()
-        return filepath.Join(home, path[2:])
-    }
-    return path
-}
-```
-
-#### `pkg/certs/errors.go` (50 lines)
-```go
-package certs
-
-import "errors"
-
-// Certificate operation errors
-var (
-    // Extraction errors
-    ErrNoKindCluster = errors.New("no Kind cluster found")
-    ErrGiteaPodNotFound = errors.New("Gitea pod not found in cluster")
-    ErrCertNotInPod = errors.New("certificate not found in pod")
-    ErrInvalidCertData = errors.New("invalid certificate data")
-    
-    // Storage errors
-    ErrCertNotFound = errors.New("certificate not found in storage")
-    ErrStoragePermission = errors.New("insufficient permissions for certificate storage")
-    ErrStorageFull = errors.New("certificate storage is full")
-    
-    // Validation errors
-    ErrCertExpired = errors.New("certificate has expired")
-    ErrCertNotYetValid = errors.New("certificate is not yet valid")
-    ErrCertInvalidKeyUsage = errors.New("certificate has invalid key usage")
-    ErrCertSelfSigned = errors.New("certificate is self-signed")
-    
-    // Feature flag errors
-    ErrFeatureDisabled = errors.New("certificate extraction feature is disabled")
-)
-
-// CertError wraps certificate errors with context
-type CertError struct {
-    Op      string // Operation that failed
-    Kind    string // Kind of error
-    Err     error  // Underlying error
-    Context map[string]string // Additional context
-}
-
-// Error implements the error interface
-func (e *CertError) Error() string {
-    if e.Context != nil && len(e.Context) > 0 {
-        return fmt.Sprintf("%s: %s: %v (context: %v)", e.Op, e.Kind, e.Err, e.Context)
-    }
-    return fmt.Sprintf("%s: %s: %v", e.Op, e.Kind, e.Err)
-}
-
-// Unwrap returns the underlying error
-func (e *CertError) Unwrap() error {
-    return e.Err
-}
-
-// NewCertError creates a new certificate error
-func NewCertError(op, kind string, err error) *CertError {
-    return &CertError{
-        Op:   op,
-        Kind: kind,
-        Err:  err,
-    }
-}
-```
-
-#### `pkg/certs/helpers.go` (80 lines)
-```go
-package certs
-
-import (
-    "crypto/x509"
-    "encoding/pem"
-    "fmt"
-    "os"
-    "time"
-)
-
-// parseCertificate parses certificate from PEM data
-func parseCertificate(pemData []byte) (*x509.Certificate, error) {
-    block, _ := pem.Decode(pemData)
-    if block == nil {
-        return nil, fmt.Errorf("failed to parse PEM block")
-    }
-    
-    if block.Type != "CERTIFICATE" {
-        return nil, fmt.Errorf("PEM block is not a certificate: %s", block.Type)
-    }
-    
-    cert, err := x509.ParseCertificate(block.Bytes)
-    if err != nil {
-        return nil, fmt.Errorf("failed to parse certificate: %w", err)
-    }
-    
-    return cert, nil
-}
-
-// isFeatureEnabled checks if a feature flag is enabled
-func isFeatureEnabled(flag string) bool {
-    // Check environment variable
-    envVar := fmt.Sprintf("IDPBUILDER_%s", flag)
-    value := os.Getenv(envVar)
-    
-    // Parse boolean value
-    return value == "true" || value == "1" || value == "enabled"
-}
-
-// findGiteaPod locates the Gitea pod in the cluster
-func (e *KindCertExtractor) findGiteaPod(ctx context.Context, clusterName string) (string, error) {
-    // Default namespace and labels for Gitea
-    namespace := "gitea"
-    labelSelector := "app=gitea"
-    
-    // Override from config if provided
-    if e.config.Namespace != "" {
-        namespace = e.config.Namespace
-    }
-    if e.config.PodLabelSelector != "" {
-        labelSelector = e.config.PodLabelSelector
-    }
-    
-    // Get pods matching selector
-    pods, err := e.client.GetPods(ctx, namespace, labelSelector)
-    if err != nil {
-        return "", fmt.Errorf("failed to get pods: %w", err)
-    }
-    
-    if len(pods) == 0 {
-        return "", ErrGiteaPodNotFound
-    }
-    
-    // Return first matching pod
-    return pods[0], nil
-}
-
-// getClusterName retrieves the cluster name with fallback
-func (e *KindCertExtractor) getClusterName() (string, error) {
-    // Try configured name first
-    if e.config.ClusterName != "" {
-        return e.config.ClusterName, nil
-    }
-    
-    // Fall back to current cluster
-    return e.client.GetCurrentCluster()
-}
-
-// validateCertificateExpiry checks if certificate is valid time-wise
-func validateCertificateExpiry(cert *x509.Certificate) error {
-    now := time.Now()
-    
-    if now.Before(cert.NotBefore) {
-        return ErrCertNotYetValid
-    }
-    
-    if now.After(cert.NotAfter) {
-        return ErrCertExpired
-    }
-    
-    return nil
-}
-```
-
-### Test Requirements for E1.1.1
-
-#### `pkg/certs/extractor_test.go` (150 lines)
-- Test successful certificate extraction from Kind cluster
-- Test handling of missing Kind cluster
-- Test handling of missing Gitea pod
-- Test certificate parsing errors
-- Test storage permission errors
-- Test feature flag disabled scenario
-- Test timeout and retry logic
-- Mock kubectl commands for unit testing
-
-#### `pkg/certs/kind_client_test.go` (100 lines)
-- Test cluster detection with multiple clusters
-- Test pod listing with various selectors
-- Test file copy from pod
-- Test command execution in pod
-- Test error handling for kubectl failures
-- Mock exec.Command for testing
-
-#### `pkg/certs/storage_test.go` (80 lines)
-- Test certificate storage and retrieval
-- Test handling of non-existent certificates
-- Test permission errors (using temp directories)
-- Test certificate listing
-- Test certificate removal
-- Test home directory expansion
-
-## 📦 Effort 1.1.2: Registry TLS Trust Integration
-
-### Metadata
-**Branch**: `phase1/wave1/registry-tls-trust`  
-**Can Parallelize**: Yes  
-**Parallel With**: [E1.1.1]  
-**Size Estimate**: 600 lines  
-**Dependencies**: None (can use mock certificates for testing)  
-**Feature Flag**: `REGISTRY_TLS_TRUST_ENABLED`  
-
-### Technical Requirements
-
-#### Core Functionality
-1. **CA Pool Management**: Load custom CAs into x509.CertPool
-2. **Transport Configuration**: Configure go-containerregistry with custom TLS
-3. **Certificate Rotation**: Support runtime certificate updates
-4. **Insecure Mode**: Provide explicit --insecure flag override
-5. **Error Reporting**: Clear messages for TLS configuration issues
-
-### Detailed File Structure
-
-#### `pkg/certs/trust.go` (180 lines)
-```go
-package certs
-
-import (
-    "crypto/tls"
-    "crypto/x509"
-    "fmt"
-    "sync"
-    "github.com/google/go-containerregistry/pkg/v1/remote"
-)
-
-// TrustStoreManager manages trusted certificates for registries
-type TrustStoreManager struct {
-    mu              sync.RWMutex
-    trustedCerts    map[string][]*x509.Certificate
-    insecureRegistries map[string]bool
-    systemPool      *x509.CertPool
-    storage         CertificateStorage
-}
-
-// NewTrustStoreManager creates a new trust store manager
-func NewTrustStoreManager(storage CertificateStorage) (*TrustStoreManager, error) {
-    // Load system certificate pool
-    systemPool, err := x509.SystemCertPool()
-    if err != nil {
-        // Fall back to empty pool if system pool unavailable
-        systemPool = x509.NewCertPool()
-    }
-    
-    return &TrustStoreManager{
-        trustedCerts:       make(map[string][]*x509.Certificate),
-        insecureRegistries: make(map[string]bool),
-        systemPool:        systemPool,
-        storage:           storage,
-    }, nil
-}
-
-// AddCertificate adds a trusted certificate for a registry
-func (m *TrustStoreManager) AddCertificate(registry string, cert *x509.Certificate) error {
-    // Check feature flag
-    if !isFeatureEnabled("REGISTRY_TLS_TRUST_ENABLED") {
-        return ErrFeatureDisabled
-    }
-    
-    m.mu.Lock()
-    defer m.mu.Unlock()
-    
-    // Validate certificate
-    if err := validateCertificateExpiry(cert); err != nil {
-        return fmt.Errorf("certificate validation failed: %w", err)
-    }
-    
-    // Add to trusted certs
-    if m.trustedCerts[registry] == nil {
-        m.trustedCerts[registry] = make([]*x509.Certificate, 0)
-    }
-    m.trustedCerts[registry] = append(m.trustedCerts[registry], cert)
-    
-    // Persist to storage
-    storageKey := fmt.Sprintf("registry_%s", sanitizeRegistryName(registry))
-    if err := m.storage.Store(storageKey, cert); err != nil {
-        return fmt.Errorf("failed to persist certificate: %w", err)
-    }
-    
-    return nil
-}
-
-// RemoveCertificate removes a trusted certificate for a registry
-func (m *TrustStoreManager) RemoveCertificate(registry string) error {
-    m.mu.Lock()
-    defer m.mu.Unlock()
-    
-    delete(m.trustedCerts, registry)
-    
-    // Remove from storage
-    storageKey := fmt.Sprintf("registry_%s", sanitizeRegistryName(registry))
-    return m.storage.Remove(storageKey)
-}
-
-// SetInsecureRegistry marks a registry as insecure (skip TLS verification)
-func (m *TrustStoreManager) SetInsecureRegistry(registry string, insecure bool) error {
-    m.mu.Lock()
-    defer m.mu.Unlock()
-    
-    if insecure {
-        // Log security decision
-        logSecurityDecision("INSECURE_REGISTRY", registry, "User explicitly set --insecure flag")
-        m.insecureRegistries[registry] = true
-    } else {
-        delete(m.insecureRegistries, registry)
-    }
-    
-    return nil
-}
-
-// GetTrustedCerts returns all trusted certificates for a registry
-func (m *TrustStoreManager) GetTrustedCerts(registry string) ([]*x509.Certificate, error) {
-    m.mu.RLock()
-    defer m.mu.RUnlock()
-    
-    certs := m.trustedCerts[registry]
-    if certs == nil {
-        // Try to load from storage
-        storageKey := fmt.Sprintf("registry_%s", sanitizeRegistryName(registry))
-        if cert, err := m.storage.Load(storageKey); err == nil {
-            certs = []*x509.Certificate{cert}
-            // Cache for future use
-            m.trustedCerts[registry] = certs
-        }
-    }
-    
-    return certs, nil
-}
-
-// GetTransportOptions returns go-containerregistry options for a registry
-func (m *TrustStoreManager) GetTransportOptions(registry string) ([]remote.Option, error) {
-    // Check if registry is marked as insecure
-    if m.isInsecure(registry) {
-        transport := &http.Transport{
-            TLSClientConfig: &tls.Config{
-                InsecureSkipVerify: true,
-            },
-        }
-        return []remote.Option{remote.WithTransport(transport)}, nil
-    }
-    
-    // Build custom CA pool
-    pool := x509.NewCertPool()
-    
-    // Add system certificates
-    pool.AppendCertsFromPEM(m.systemPool.Subjects())
-    
-    // Add custom certificates for this registry
-    certs, err := m.GetTrustedCerts(registry)
-    if err != nil {
-        return nil, fmt.Errorf("failed to get trusted certs: %w", err)
-    }
-    
-    for _, cert := range certs {
-        pool.AddCert(cert)
-    }
-    
-    // Create transport with custom CA pool
-    transport := &http.Transport{
-        TLSClientConfig: &tls.Config{
-            RootCAs: pool,
+// NewCredentialManager creates a credential manager with default providers
+func NewCredentialManager() *CredentialManager {
+    return &CredentialManager{
+        providers: []CredentialProvider{
+            NewCLICredentialProvider(),
+            NewEnvCredentialProvider(),
+            NewConfigFileProvider(),
+            NewKeyringProvider(),
         },
     }
-    
-    return []remote.Option{remote.WithTransport(transport)}, nil
 }
 
-// ReloadCertificates reloads certificates from storage
-func (m *TrustStoreManager) ReloadCertificates() error {
-    m.mu.Lock()
-    defer m.mu.Unlock()
-    
-    // Clear current cache
-    m.trustedCerts = make(map[string][]*x509.Certificate)
-    
-    // Reload from storage
-    certNames, err := m.storage.ListCertificates()
-    if err != nil {
-        return fmt.Errorf("failed to list certificates: %w", err)
+// SetCLICredentials sets credentials provided via CLI flags
+func (cm *CredentialManager) SetCLICredentials(username, password string) {
+    if cliProvider, ok := cm.providers[0].(*CLICredentialProvider); ok {
+        cliProvider.SetCredentials(username, password)
     }
-    
-    for _, name := range certNames {
-        if strings.HasPrefix(name, "registry_") {
-            cert, err := m.storage.Load(name)
+}
+
+// GetCredentials retrieves credentials from the first available provider
+func (cm *CredentialManager) GetCredentials() (username, password string, err error) {
+    for _, provider := range cm.providers {
+        if provider.IsAvailable() {
+            username, err = provider.GetUsername()
             if err != nil {
-                // Log but continue
-                fmt.Printf("Warning: failed to load certificate %s: %v\n", name, err)
                 continue
             }
-            
-            // Extract registry name
-            registry := strings.TrimPrefix(name, "registry_")
-            if m.trustedCerts[registry] == nil {
-                m.trustedCerts[registry] = make([]*x509.Certificate, 0)
+            password, err = provider.GetPassword()
+            if err != nil {
+                continue
             }
-            m.trustedCerts[registry] = append(m.trustedCerts[registry], cert)
+            return username, password, nil
         }
     }
-    
-    return nil
+    return "", "", fmt.Errorf("no credentials available from any provider")
 }
 
-// isInsecure checks if a registry is marked as insecure
-func (m *TrustStoreManager) isInsecure(registry string) bool {
-    m.mu.RLock()
-    defer m.mu.RUnlock()
-    return m.insecureRegistries[registry]
+// EnvCredentialProvider reads from environment variables
+type EnvCredentialProvider struct{}
+
+func NewEnvCredentialProvider() *EnvCredentialProvider {
+    return &EnvCredentialProvider{}
+}
+
+func (e *EnvCredentialProvider) GetUsername() (string, error) {
+    username := os.Getenv("GITEA_USERNAME")
+    if username == "" {
+        return "", fmt.Errorf("GITEA_USERNAME not set")
+    }
+    return username, nil
+}
+
+func (e *EnvCredentialProvider) GetPassword() (string, error) {
+    password := os.Getenv("GITEA_PASSWORD")
+    if password == "" {
+        return "", fmt.Errorf("GITEA_PASSWORD not set")
+    }
+    return password, nil
+}
+
+func (e *EnvCredentialProvider) IsAvailable() bool {
+    return os.Getenv("GITEA_USERNAME") != "" && os.Getenv("GITEA_PASSWORD") != ""
+}
+
+func (e *EnvCredentialProvider) Priority() int {
+    return 2 // Second priority after CLI
+}
+
+// CLICredentialProvider holds credentials from command-line flags
+type CLICredentialProvider struct {
+    username string
+    password string
+}
+
+func NewCLICredentialProvider() *CLICredentialProvider {
+    return &CLICredentialProvider{}
+}
+
+func (c *CLICredentialProvider) SetCredentials(username, password string) {
+    c.username = username
+    c.password = password
+}
+
+func (c *CLICredentialProvider) GetUsername() (string, error) {
+    if c.username == "" {
+        return "", fmt.Errorf("no CLI username provided")
+    }
+    return c.username, nil
+}
+
+func (c *CLICredentialProvider) GetPassword() (string, error) {
+    if c.password == "" {
+        return "", fmt.Errorf("no CLI password/token provided")
+    }
+    return c.password, nil
+}
+
+func (c *CLICredentialProvider) IsAvailable() bool {
+    return c.username != "" && c.password != ""
+}
+
+func (c *CLICredentialProvider) Priority() int {
+    return 1 // Highest priority
 }
 ```
 
-#### `pkg/certs/transport.go` (150 lines)
+### Step 2: Create Configuration File Support (config.go)
 ```go
-package certs
+// Create pkg/gitea/config.go with:
+
+package gitea
 
 import (
-    "crypto/tls"
-    "crypto/x509"
+    "encoding/json"
     "fmt"
-    "net/http"
-    "time"
-)
-
-// TransportConfigurer configures HTTP transports with custom TLS
-type TransportConfigurer interface {
-    ConfigureTransport(baseTransport http.RoundTripper, tlsConfig *tls.Config) http.RoundTripper
-    GetTLSConfig(registry string) (*tls.Config, error)
-    SetInsecureSkipVerify(skip bool)
-}
-
-// DefaultTransportConfigurer implements TransportConfigurer
-type DefaultTransportConfigurer struct {
-    trustManager *TrustStoreManager
-    insecure     bool
-    timeout      time.Duration
-}
-
-// NewDefaultTransportConfigurer creates a new transport configurer
-func NewDefaultTransportConfigurer(trustManager *TrustStoreManager) *DefaultTransportConfigurer {
-    return &DefaultTransportConfigurer{
-        trustManager: trustManager,
-        timeout:      30 * time.Second,
-    }
-}
-
-// ConfigureTransport wraps a base transport with custom TLS configuration
-func (c *DefaultTransportConfigurer) ConfigureTransport(baseTransport http.RoundTripper, tlsConfig *tls.Config) http.RoundTripper {
-    if baseTransport == nil {
-        baseTransport = http.DefaultTransport
-    }
-    
-    // Type assert to get underlying transport
-    if transport, ok := baseTransport.(*http.Transport); ok {
-        // Clone to avoid modifying shared transport
-        cloned := transport.Clone()
-        cloned.TLSClientConfig = tlsConfig
-        
-        // Set reasonable timeouts
-        cloned.TLSHandshakeTimeout = 10 * time.Second
-        cloned.ResponseHeaderTimeout = c.timeout
-        
-        return cloned
-    }
-    
-    // If not http.Transport, wrap with custom round tripper
-    return &tlsRoundTripper{
-        base:      baseTransport,
-        tlsConfig: tlsConfig,
-    }
-}
-
-// GetTLSConfig builds a TLS configuration for a registry
-func (c *DefaultTransportConfigurer) GetTLSConfig(registry string) (*tls.Config, error) {
-    // Check for insecure mode
-    if c.insecure || c.trustManager.isInsecure(registry) {
-        logSecurityDecision("TLS_SKIP_VERIFY", registry, "Insecure mode enabled")
-        return &tls.Config{
-            InsecureSkipVerify: true,
-        }, nil
-    }
-    
-    // Build CA pool
-    pool, err := c.buildCAPool(registry)
-    if err != nil {
-        return nil, fmt.Errorf("failed to build CA pool: %w", err)
-    }
-    
-    config := &tls.Config{
-        RootCAs:            pool,
-        MinVersion:         tls.VersionTLS12,
-        PreferServerCipherSuites: true,
-    }
-    
-    // Add SNI if registry looks like a hostname
-    if !strings.Contains(registry, ":") {
-        config.ServerName = registry
-    } else {
-        // Extract hostname from registry:port
-        host, _, err := net.SplitHostPort(registry)
-        if err == nil {
-            config.ServerName = host
-        }
-    }
-    
-    return config, nil
-}
-
-// SetInsecureSkipVerify sets global insecure mode
-func (c *DefaultTransportConfigurer) SetInsecureSkipVerify(skip bool) {
-    c.insecure = skip
-    if skip {
-        logSecurityDecision("GLOBAL_INSECURE", "all", "Global insecure mode enabled")
-    }
-}
-
-// buildCAPool creates a certificate pool for a registry
-func (c *DefaultTransportConfigurer) buildCAPool(registry string) (*x509.CertPool, error) {
-    // Start with system pool
-    pool, err := x509.SystemCertPool()
-    if err != nil {
-        // Fall back to empty pool
-        pool = x509.NewCertPool()
-    }
-    
-    // Add custom certificates
-    certs, err := c.trustManager.GetTrustedCerts(registry)
-    if err != nil {
-        return nil, err
-    }
-    
-    for _, cert := range certs {
-        pool.AddCert(cert)
-    }
-    
-    return pool, nil
-}
-
-// tlsRoundTripper wraps a RoundTripper with TLS configuration
-type tlsRoundTripper struct {
-    base      http.RoundTripper
-    tlsConfig *tls.Config
-}
-
-// RoundTrip implements http.RoundTripper
-func (t *tlsRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-    // Only modify HTTPS requests
-    if req.URL.Scheme != "https" {
-        return t.base.RoundTrip(req)
-    }
-    
-    // Clone request to avoid modifying original
-    reqClone := req.Clone(req.Context())
-    
-    // Apply TLS config through context or transport modification
-    // This is a simplified version - actual implementation would
-    // need to handle transport configuration properly
-    
-    return t.base.RoundTrip(reqClone)
-}
-```
-
-#### `pkg/certs/pool.go` (120 lines)
-```go
-package certs
-
-import (
-    "crypto/x509"
-    "encoding/pem"
-    "fmt"
-    "io/ioutil"
+    "os"
     "path/filepath"
-    "sync"
 )
 
-// CertPoolManager manages certificate pools with caching
-type CertPoolManager struct {
-    mu       sync.RWMutex
-    pools    map[string]*x509.CertPool
-    storage  CertificateStorage
+// Config represents the configuration file structure
+type Config struct {
+    Registries map[string]RegistryCredentials `json:"registries"`
 }
 
-// NewCertPoolManager creates a new certificate pool manager
-func NewCertPoolManager(storage CertificateStorage) *CertPoolManager {
-    return &CertPoolManager{
-        pools:   make(map[string]*x509.CertPool),
-        storage: storage,
+// RegistryCredentials holds credentials for a specific registry
+type RegistryCredentials struct {
+    Username string `json:"username"`
+    Password string `json:"password"`
+    URL      string `json:"url"`
+}
+
+// ConfigFileProvider reads from ~/.idpbuilder/config
+type ConfigFileProvider struct {
+    configPath string
+    config     *Config
+}
+
+func NewConfigFileProvider() *ConfigFileProvider {
+    homeDir, _ := os.UserHomeDir()
+    configPath := filepath.Join(homeDir, ".idpbuilder", "config")
+    return &ConfigFileProvider{
+        configPath: configPath,
     }
 }
 
-// GetPool returns a certificate pool for a registry
-func (m *CertPoolManager) GetPool(registry string) (*x509.CertPool, error) {
-    m.mu.RLock()
-    pool, exists := m.pools[registry]
-    m.mu.RUnlock()
-    
-    if exists {
-        return pool, nil
+func (c *ConfigFileProvider) loadConfig() error {
+    if c.config != nil {
+        return nil
     }
-    
-    // Build new pool
-    pool, err := m.buildPool(registry)
-    if err != nil {
-        return nil, err
-    }
-    
-    // Cache for future use
-    m.mu.Lock()
-    m.pools[registry] = pool
-    m.mu.Unlock()
-    
-    return pool, nil
-}
 
-// buildPool creates a new certificate pool for a registry
-func (m *CertPoolManager) buildPool(registry string) (*x509.CertPool, error) {
-    // Start with system pool
-    pool, err := x509.SystemCertPool()
-    if err != nil {
-        pool = x509.NewCertPool()
-    }
-    
-    // Load registry-specific certificates
-    certKey := fmt.Sprintf("registry_%s", sanitizeRegistryName(registry))
-    if cert, err := m.storage.Load(certKey); err == nil {
-        pool.AddCert(cert)
-    }
-    
-    // Load any additional CA certificates
-    caDir := filepath.Join(getConfigDir(), "ca-certificates")
-    if certs, err := loadCertificatesFromDir(caDir); err == nil {
-        for _, cert := range certs {
-            pool.AddCert(cert)
-        }
-    }
-    
-    return pool, nil
-}
-
-// AddCertificateToPool adds a certificate to a registry's pool
-func (m *CertPoolManager) AddCertificateToPool(registry string, cert *x509.Certificate) error {
-    pool, err := m.GetPool(registry)
+    data, err := os.ReadFile(c.configPath)
     if err != nil {
         return err
     }
-    
-    pool.AddCert(cert)
-    
-    // Invalidate cache to force rebuild
-    m.mu.Lock()
-    delete(m.pools, registry)
-    m.mu.Unlock()
-    
+
+    var config Config
+    if err := json.Unmarshal(data, &config); err != nil {
+        return err
+    }
+
+    c.config = &config
     return nil
 }
 
-// loadCertificatesFromDir loads all certificates from a directory
-func loadCertificatesFromDir(dir string) ([]*x509.Certificate, error) {
-    files, err := ioutil.ReadDir(dir)
-    if err != nil {
-        return nil, err
+func (c *ConfigFileProvider) GetUsername() (string, error) {
+    if err := c.loadConfig(); err != nil {
+        return "", err
     }
-    
-    var certs []*x509.Certificate
-    for _, file := range files {
-        if filepath.Ext(file.Name()) != ".pem" {
-            continue
-        }
-        
-        path := filepath.Join(dir, file.Name())
-        pemData, err := ioutil.ReadFile(path)
-        if err != nil {
-            continue // Skip files we can't read
-        }
-        
-        // Parse all certificates in the file
-        for len(pemData) > 0 {
-            var block *pem.Block
-            block, pemData = pem.Decode(pemData)
-            if block == nil {
-                break
-            }
-            
-            if block.Type != "CERTIFICATE" {
-                continue
-            }
-            
-            cert, err := x509.ParseCertificate(block.Bytes)
-            if err != nil {
-                continue
-            }
-            
-            certs = append(certs, cert)
+
+    // Look for gitea registry config
+    for name, creds := range c.config.Registries {
+        if name == "gitea" || name == "default" {
+            return creds.Username, nil
         }
     }
-    
-    return certs, nil
+
+    return "", fmt.Errorf("no gitea credentials in config")
 }
 
-// ClearCache clears all cached certificate pools
-func (m *CertPoolManager) ClearCache() {
-    m.mu.Lock()
-    defer m.mu.Unlock()
-    m.pools = make(map[string]*x509.CertPool)
+func (c *ConfigFileProvider) GetPassword() (string, error) {
+    if err := c.loadConfig(); err != nil {
+        return "", err
+    }
+
+    for name, creds := range c.config.Registries {
+        if name == "gitea" || name == "default" {
+            return creds.Password, nil
+        }
+    }
+
+    return "", fmt.Errorf("no gitea credentials in config")
+}
+
+func (c *ConfigFileProvider) IsAvailable() bool {
+    if _, err := os.Stat(c.configPath); err != nil {
+        return false
+    }
+    return true
+}
+
+func (c *ConfigFileProvider) Priority() int {
+    return 3 // Third priority
 }
 ```
 
-#### `pkg/certs/config.go` (80 lines)
+### Step 3: Create Keyring Integration (keyring.go)
 ```go
-package certs
+// Create pkg/gitea/keyring.go with:
 
-import (
-    "os"
-    "path/filepath"
-    "time"
-)
-
-// TLSConfig holds TLS configuration for registry connections
-type TLSConfig struct {
-    // Registry-specific settings
-    Registry           string
-    InsecureSkipVerify bool
-    CAFile             string
-    CertFile           string
-    KeyFile            string
-    
-    // Global settings
-    MinVersion         uint16
-    PreferServerCiphers bool
-    SessionCache       bool
-    
-    // Timeouts
-    HandshakeTimeout   time.Duration
-    
-    // Certificate validation
-    ValidateHostname   bool
-    AllowExpiredCerts  bool
-}
-
-// DefaultTLSConfig returns a secure default TLS configuration
-func DefaultTLSConfig() *TLSConfig {
-    return &TLSConfig{
-        MinVersion:          tls.VersionTLS12,
-        PreferServerCiphers: true,
-        SessionCache:        true,
-        HandshakeTimeout:    10 * time.Second,
-        ValidateHostname:    true,
-        AllowExpiredCerts:   false,
-    }
-}
-
-// LoadFromEnv loads TLS configuration from environment variables
-func (c *TLSConfig) LoadFromEnv() {
-    // Check for insecure mode
-    if os.Getenv("IDPBUILDER_TLS_INSECURE") == "true" {
-        c.InsecureSkipVerify = true
-    }
-    
-    // Load CA file path
-    if caFile := os.Getenv("IDPBUILDER_CA_FILE"); caFile != "" {
-        c.CAFile = caFile
-    }
-    
-    // Load client certificate paths
-    if certFile := os.Getenv("IDPBUILDER_CERT_FILE"); certFile != "" {
-        c.CertFile = certFile
-    }
-    if keyFile := os.Getenv("IDPBUILDER_KEY_FILE"); keyFile != "" {
-        c.KeyFile = keyFile
-    }
-}
-
-// getConfigDir returns the configuration directory path
-func getConfigDir() string {
-    // Check environment variable first
-    if dir := os.Getenv("IDPBUILDER_CONFIG_DIR"); dir != "" {
-        return dir
-    }
-    
-    // Default to ~/.idpbuilder
-    home, err := os.UserHomeDir()
-    if err != nil {
-        return ".idpbuilder"
-    }
-    
-    return filepath.Join(home, ".idpbuilder")
-}
-
-// sanitizeRegistryName converts registry URL to safe filename
-func sanitizeRegistryName(registry string) string {
-    // Replace problematic characters
-    safe := strings.ReplaceAll(registry, ":", "_")
-    safe = strings.ReplaceAll(safe, "/", "_")
-    safe = strings.ReplaceAll(safe, ".", "_")
-    return safe
-}
-```
-
-#### `pkg/certs/logging.go` (70 lines)
-```go
-package certs
+package gitea
 
 import (
     "fmt"
-    "log"
-    "os"
-    "time"
+    "github.com/zalando/go-keyring"
 )
 
-// SecurityLogger logs security-relevant decisions
-type SecurityLogger struct {
-    logger *log.Logger
-    file   *os.File
+const (
+    keyringService = "idpbuilder"
+    keyringUser    = "gitea"
+)
+
+// KeyringProvider provides credentials from system keyring
+type KeyringProvider struct {
+    service string
+    user    string
 }
 
-var securityLogger *SecurityLogger
+func NewKeyringProvider() *KeyringProvider {
+    return &KeyringProvider{
+        service: keyringService,
+        user:    keyringUser,
+    }
+}
 
-// InitSecurityLogger initializes the security logger
-func InitSecurityLogger() error {
-    logPath := filepath.Join(getConfigDir(), "security.log")
-    
-    file, err := os.OpenFile(logPath, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+func (k *KeyringProvider) GetUsername() (string, error) {
+    username, err := keyring.Get(k.service, k.user+"_username")
     if err != nil {
-        return fmt.Errorf("failed to open security log: %w", err)
+        return "", fmt.Errorf("failed to get username from keyring: %w", err)
     }
-    
-    securityLogger = &SecurityLogger{
-        logger: log.New(file, "[SECURITY] ", log.LstdFlags|log.LUTC),
-        file:   file,
+    return username, nil
+}
+
+func (k *KeyringProvider) GetPassword() (string, error) {
+    password, err := keyring.Get(k.service, k.user+"_password")
+    if err != nil {
+        return "", fmt.Errorf("failed to get password from keyring: %w", err)
     }
-    
+    return password, nil
+}
+
+func (k *KeyringProvider) IsAvailable() bool {
+    // Check if keyring is accessible
+    _, err := keyring.Get(k.service, k.user+"_username")
+    return err == nil || err == keyring.ErrNotFound
+}
+
+func (k *KeyringProvider) Priority() int {
+    return 4 // Lowest priority
+}
+
+// SetCredentials stores credentials in the keyring
+func (k *KeyringProvider) SetCredentials(username, password string) error {
+    if err := keyring.Set(k.service, k.user+"_username", username); err != nil {
+        return fmt.Errorf("failed to store username: %w", err)
+    }
+    if err := keyring.Set(k.service, k.user+"_password", password); err != nil {
+        return fmt.Errorf("failed to store password: %w", err)
+    }
     return nil
 }
 
-// logSecurityDecision logs a security-relevant decision
-func logSecurityDecision(decision, target, reason string) {
-    if securityLogger == nil {
-        // Fall back to stderr if logger not initialized
-        fmt.Fprintf(os.Stderr, "[SECURITY] %s: %s - %s (reason: %s)\n",
-            time.Now().UTC().Format(time.RFC3339),
-            decision, target, reason)
-        return
-    }
-    
-    securityLogger.logger.Printf("%s: %s - %s", decision, target, reason)
-}
-
-// CloseSecurityLogger closes the security log file
-func CloseSecurityLogger() {
-    if securityLogger != nil && securityLogger.file != nil {
-        securityLogger.file.Close()
-    }
-}
-
-// SecurityAuditEntry represents a security audit log entry
-type SecurityAuditEntry struct {
-    Timestamp   time.Time
-    Decision    string
-    Target      string
-    Reason      string
-    User        string
-    Success     bool
-}
-
-// LogAuditEntry logs a structured audit entry
-func LogAuditEntry(entry SecurityAuditEntry) {
-    if entry.Timestamp.IsZero() {
-        entry.Timestamp = time.Now().UTC()
-    }
-    
-    if entry.User == "" {
-        entry.User = os.Getenv("USER")
-    }
-    
-    msg := fmt.Sprintf("AUDIT: user=%s decision=%s target=%s success=%v reason=%s",
-        entry.User, entry.Decision, entry.Target, entry.Success, entry.Reason)
-    
-    logSecurityDecision("AUDIT", entry.Target, msg)
+// DeleteCredentials removes credentials from the keyring
+func (k *KeyringProvider) DeleteCredentials() error {
+    keyring.Delete(k.service, k.user+"_username")
+    keyring.Delete(k.service, k.user+"_password")
+    return nil
 }
 ```
 
-### Test Requirements for E1.1.2
+### Step 4: Update push.go and build.go for CLI flags
 
-#### `pkg/certs/trust_test.go` (150 lines)
-- Test adding/removing certificates for registries
-- Test insecure registry configuration
-- Test certificate reloading
-- Test transport options generation
-- Test concurrent access safety
-- Test feature flag disabled scenario
+#### Update pkg/cmd/push.go:
+```go
+// Add to var declarations:
+var (
+    pushUsername string
+    pushToken    string
+    // ... existing vars
+)
 
-#### `pkg/certs/transport_test.go` (120 lines)
-- Test TLS configuration building
-- Test insecure mode behavior
-- Test custom CA pool inclusion
-- Test hostname verification
-- Test transport wrapping
-- Mock HTTP transports for testing
+// Update init function:
+func init() {
+    PushCmd.Flags().BoolVar(&pushInsecure, "insecure", false, "Skip certificate verification (not recommended)")
+    PushCmd.Flags().StringVar(&pushRegistry, "registry", getDefaultRegistry(), "Target registry")
+    PushCmd.Flags().StringVar(&pushUsername, "username", "", "Registry username")
+    PushCmd.Flags().StringVar(&pushToken, "token", "", "Registry token/password")
+}
 
-#### `pkg/certs/pool_test.go` (80 lines)
-- Test certificate pool creation
-- Test pool caching behavior
-- Test loading certificates from directory
-- Test system pool fallback
-- Test certificate addition to pools
+// Update runPush function to pass credentials:
+func runPush(cmd *cobra.Command, args []string) error {
+    // ... existing code ...
 
-## 🔄 Integration Points
+    // After creating client, set CLI credentials if provided
+    if pushUsername != "" && pushToken != "" {
+        client.SetCredentials(pushUsername, pushToken)
+    }
 
-### Between E1.1.1 and E1.1.2
-While these efforts can be implemented in parallel, they share some common types:
-- Both use `CertificateStorage` interface
-- Both reference certificate validation functions
-- Both check feature flags
-
-### Integration Strategy
-1. **Mock Interfaces**: E1.1.2 can use mock `CertificateStorage` for testing
-2. **Shared Types**: Define interfaces in a common `types.go` file
-3. **Feature Flags**: Both efforts check their respective flags independently
-4. **Storage Path**: Agree on `~/.idpbuilder/certs/` as standard location
-
-## 📊 Size Tracking
-
-### Measurement Command
-```bash
-# From project root, use the line counter tool
-PROJECT_ROOT=$(pwd)
-while [ "$PROJECT_ROOT" != "/" ]; do 
-    [ -f "$PROJECT_ROOT/orchestrator-state.yaml" ] && break
-    PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
-done
-
-# For each effort branch
-cd efforts/phase1/wave1/kind-cert-extraction
-$PROJECT_ROOT/tools/line-counter.sh
-
-cd efforts/phase1/wave1/registry-tls-trust  
-$PROJECT_ROOT/tools/line-counter.sh
+    // ... rest of function
+}
 ```
 
-### Size Targets
-- **E1.1.1**: 500 lines (excluding tests)
-- **E1.1.2**: 600 lines (excluding tests)
-- **Warning Threshold**: 700 lines
-- **Hard Limit**: 800 lines
+#### Update pkg/cmd/build.go:
+```go
+// Add similar flags for build command if it needs registry access
+var (
+    buildUsername string
+    buildToken    string
+    // ... existing vars
+)
 
-## 🧪 Testing Strategy
-
-### Unit Test Coverage Requirements
-- Minimum: 80% coverage
-- Target: 90% coverage
-- Must test all error paths
-- Must test concurrent access where applicable
-
-### Integration Test Requirements
-- Test with real Kind cluster (CI environment)
-- Test with mock registry server
-- Test certificate rotation scenarios
-- Test fallback mechanisms
-
-### Test Execution
-```bash
-# Unit tests
-go test ./pkg/certs/... -cover
-
-# Integration tests (requires Kind cluster)
-go test ./tests/integration/certs/... -tags=integration
-
-# Coverage report
-go test ./pkg/certs/... -coverprofile=coverage.out
-go tool cover -html=coverage.out
+func init() {
+    // ... existing flags ...
+    BuildCmd.Flags().StringVar(&buildUsername, "username", "", "Registry username for base image pulls")
+    BuildCmd.Flags().StringVar(&buildToken, "token", "", "Registry token/password for base image pulls")
+}
 ```
 
-## 🚀 Deployment Considerations
+### Step 5: Update client.go
+```go
+// Modify pkg/gitea/client.go:
 
-### Environment Variables
-```bash
-# Feature flags
-export IDPBUILDER_CERT_INFRASTRUCTURE_ENABLED=true
-export IDPBUILDER_KIND_CERT_EXTRACTION_ENABLED=true
-export IDPBUILDER_REGISTRY_TLS_TRUST_ENABLED=true
+// Add at package level:
+var credentialManager *CredentialManager
 
-# Configuration
-export IDPBUILDER_CONFIG_DIR=~/.idpbuilder
-export IDPBUILDER_TLS_INSECURE=false  # Only set true for testing
+func init() {
+    credentialManager = NewCredentialManager()
+}
 
-# Certificate paths (optional)
-export IDPBUILDER_CA_FILE=/path/to/ca.pem
-export IDPBUILDER_CERT_FILE=/path/to/cert.pem
-export IDPBUILDER_KEY_FILE=/path/to/key.pem
+// SetCredentials sets credentials from CLI flags
+func (c *Client) SetCredentials(username, password string) {
+    credentialManager.SetCLICredentials(username, password)
+}
+
+// Update getRegistryUsername function (line ~144):
+func getRegistryUsername() string {
+    username, password, err := credentialManager.GetCredentials()
+    if err != nil {
+        // Log warning and return empty string for backward compatibility
+        // In production, this should probably return an error
+        return ""
+    }
+    return username
+}
+
+// Update getRegistryPassword function (line ~150):
+func getRegistryPassword() string {
+    username, password, err := credentialManager.GetCredentials()
+    if err != nil {
+        // Log warning and return empty string for backward compatibility
+        // In production, this should probably return an error
+        return ""
+    }
+    return password
+}
+
+// Remove TODO comments at lines 30, 145, 151
 ```
 
-### File System Layout
+### Step 6: Create Test Files
+
+#### credentials_test.go
+```go
+package gitea
+
+import (
+    "os"
+    "testing"
+    "github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/require"
+)
+
+func TestEnvCredentialProvider(t *testing.T) {
+    // Save and restore environment
+    oldUsername := os.Getenv("GITEA_USERNAME")
+    oldPassword := os.Getenv("GITEA_PASSWORD")
+    defer func() {
+        os.Setenv("GITEA_USERNAME", oldUsername)
+        os.Setenv("GITEA_PASSWORD", oldPassword)
+    }()
+
+    // Test with environment variables set
+    os.Setenv("GITEA_USERNAME", "testuser")
+    os.Setenv("GITEA_PASSWORD", "testpass")
+
+    provider := NewEnvCredentialProvider()
+    assert.True(t, provider.IsAvailable())
+
+    username, err := provider.GetUsername()
+    require.NoError(t, err)
+    assert.Equal(t, "testuser", username)
+
+    password, err := provider.GetPassword()
+    require.NoError(t, err)
+    assert.Equal(t, "testpass", password)
+
+    // Test with environment variables not set
+    os.Unsetenv("GITEA_USERNAME")
+    os.Unsetenv("GITEA_PASSWORD")
+
+    assert.False(t, provider.IsAvailable())
+}
+
+func TestCredentialManager(t *testing.T) {
+    // Test with mock providers
+    manager := NewCredentialManager()
+
+    // Set environment variables for testing
+    os.Setenv("GITEA_USERNAME", "envuser")
+    os.Setenv("GITEA_PASSWORD", "envpass")
+    defer func() {
+        os.Unsetenv("GITEA_USERNAME")
+        os.Unsetenv("GITEA_PASSWORD")
+    }()
+
+    username, password, err := manager.GetCredentials()
+    require.NoError(t, err)
+    assert.Equal(t, "envuser", username)
+    assert.Equal(t, "envpass", password)
+}
 ```
-~/.idpbuilder/
-├── certs/
-│   ├── gitea.pem                    # Extracted Gitea certificate
-│   ├── registry_gitea_10_0_0_1.pem  # Registry-specific cert
-│   └── ca-certificates/              # Additional CA certs
-│       └── custom-ca.pem
-├── security.log                     # Security audit log
-└── config.yaml                      # Future: configuration file
+
+#### config_test.go
+```go
+package gitea
+
+import (
+    "encoding/json"
+    "os"
+    "path/filepath"
+    "testing"
+    "github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/require"
+)
+
+func TestConfigFileProvider(t *testing.T) {
+    // Create temporary config file
+    tmpDir := t.TempDir()
+    configPath := filepath.Join(tmpDir, ".idpbuilder", "config")
+    os.MkdirAll(filepath.Dir(configPath), 0755)
+
+    config := Config{
+        Registries: map[string]RegistryCredentials{
+            "gitea": {
+                Username: "configuser",
+                Password: "configpass",
+                URL:      "https://gitea.example.com",
+            },
+        },
+    }
+
+    data, err := json.Marshal(config)
+    require.NoError(t, err)
+
+    err = os.WriteFile(configPath, data, 0600)
+    require.NoError(t, err)
+
+    // Test provider
+    provider := &ConfigFileProvider{
+        configPath: configPath,
+    }
+
+    assert.True(t, provider.IsAvailable())
+
+    username, err := provider.GetUsername()
+    require.NoError(t, err)
+    assert.Equal(t, "configuser", username)
+
+    password, err := provider.GetPassword()
+    require.NoError(t, err)
+    assert.Equal(t, "configpass", password)
+}
 ```
 
-## 📝 Implementation Guidelines for SW Engineers
+#### keyring_test.go
+```go
+package gitea
 
-### Development Order
-1. **Start with interfaces and types** - Define contracts first
-2. **Implement storage layer** - Foundation for both efforts
-3. **Build extraction (E1.1.1)** or trust management (E1.1.2)
-4. **Add error handling and logging**
-5. **Write comprehensive tests**
-6. **Document public APIs**
+import (
+    "testing"
+    "github.com/stretchr/testify/assert"
+)
 
-### Code Quality Requirements
-- **NO TODO COMMENTS** - All code must be complete
-- **NO STUB IMPLEMENTATIONS** - No "not implemented" errors
-- **PROPER ERROR HANDLING** - Wrap errors with context
-- **CLEAR LOGGING** - Especially for security decisions
-- **CONCURRENT SAFETY** - Use mutexes where needed
+// MockKeyringProvider for testing
+type MockKeyringProvider struct {
+    username string
+    password string
+    available bool
+}
 
-### Pull Request Checklist
-- [ ] All tests passing with >80% coverage
-- [ ] No linting errors
-- [ ] Feature flags properly checked
-- [ ] Security logging implemented
-- [ ] Public APIs documented
-- [ ] Line count under 800 (use line-counter.sh)
-- [ ] Can merge independently to main
+func (m *MockKeyringProvider) GetUsername() (string, error) {
+    if m.username == "" {
+        return "", fmt.Errorf("no username in keyring")
+    }
+    return m.username, nil
+}
 
-## 🔒 Security Considerations
+func (m *MockKeyringProvider) GetPassword() (string, error) {
+    if m.password == "" {
+        return "", fmt.Errorf("no password in keyring")
+    }
+    return m.password, nil
+}
 
-### Critical Security Rules
-1. **NEVER silently bypass certificate validation**
-2. **ALWAYS require explicit --insecure flag**
-3. **LOG all security-relevant decisions**
-4. **PROTECT certificate files with 0600 permissions**
-5. **VALIDATE certificate chains properly**
+func (m *MockKeyringProvider) IsAvailable() bool {
+    return m.available
+}
 
-### Security Audit Points
-- Certificate extraction must verify pod identity
-- Trust configuration must not leak credentials
-- Insecure mode must show clear warnings
-- All bypasses must be logged with reason
+func (m *MockKeyringProvider) Priority() int {
+    return 3
+}
 
-## 🎬 Demo Requirements (R330)
+func TestMockKeyringProvider(t *testing.T) {
+    provider := &MockKeyringProvider{
+        username:  "keyringuser",
+        password:  "keyringpass",
+        available: true,
+    }
 
-### Demo Objectives
-1. Demonstrate image push operations with progress tracking
-2. Showcase repository listing with pagination
-3. Illustrate retry logic with exponential backoff
-4. Display repository deletion capabilities
-5. Prove integration with Split-001 authentication
+    assert.True(t, provider.IsAvailable())
 
-### Demo Deliverables
-- **demo-features.sh** (executable) - Main demo script with 4 scenarios
-- **DEMO.md** (documentation) - Complete operation guide
-- **test-data/** (sample files) - Test images and configurations
+    username, err := provider.GetUsername()
+    assert.NoError(t, err)
+    assert.Equal(t, "keyringuser", username)
 
-### Demo Scenarios Summary
-1. **Push with Progress** - Multi-layer image upload with tracking
-2. **List Repositories** - Paginated repository discovery
-3. **Retry Logic** - Network resilience demonstration
-4. **Delete Repo** - Repository cleanup operations
+    password, err := provider.GetPassword()
+    assert.NoError(t, err)
+    assert.Equal(t, "keyringpass", password)
+}
+```
 
-## 📚 References
+### Step 7: Update client_test.go
+Update the existing tests to work with the new credential system:
+- Remove hardcoded "admin"/"password" expectations
+- Add tests for environment variable integration
+- Add tests for missing credentials scenarios
+- Update TestClientWithEnvironmentVariables to actually test env vars
 
-### External Dependencies
-- [go-containerregistry](https://github.com/google/go-containerregistry) v0.19.0
-- [Kind](https://kind.sigs.k8s.io/) (latest stable)
-- Standard library: crypto/x509, crypto/tls
+## Dependencies
 
-### Related Documentation
-- Phase 1 Architecture Plan: `phase-plans/PHASE-1-PLAN.md`
-- Certificate Handling Guide: (to be created)
-- Security Best Practices: (to be created)
-- Demo Retrofit Plan: `DEMO-RETROFIT-PLAN.md`
-- Split-001 Integration: `../gitea-client-split-001/DEMO-RETROFIT-PLAN.md`
+### External Libraries
+Add to go.mod:
+```
+github.com/zalando/go-keyring v0.2.3
+```
 
----
+### Import Updates
+Update imports in client.go to include the credential manager initialization.
 
-**Wave Plan Version**: 1.0  
-**Created**: 2025-09-06  
-**Code Reviewer**: code-reviewer  
-**Status**: Ready for Implementation
+## Size Management
+- **Estimated Lines**: 490-540 (excluding tests)
+- **Breakdown**:
+  - credentials.go: 180 lines (added CLI provider)
+  - config.go: 70 lines
+  - keyring.go: 80 lines
+  - client.go updates: 60 lines
+  - push.go updates: 30 lines
+  - build.go updates: 30 lines
+  - Test files: 250 lines (not counted toward limit)
+- **Measurement Tool**: ${PROJECT_ROOT}/tools/line-counter.sh
+- **Check Frequency**: After each file completion
+- **Split Threshold**: N/A (well under 800 line limit)
 
-**Remember**: 
-- Both efforts can work in PARALLEL
-- Each PR must be INDEPENDENTLY mergeable
-- NO stub implementations allowed
-- Use line-counter.sh for ALL size measurements
-- Feature flags enable gradual rollout
+## Test Requirements
+- **Unit Tests**: 90% coverage
+- **Integration Tests**: Test all three credential providers
+- **E2E Tests**: Test with actual environment variables
+- **Test Files**:
+  - credentials_test.go
+  - config_test.go
+  - keyring_test.go
+  - Updated client_test.go
+
+## Integration Points
+
+### 1. CLI Flags (Highest Priority)
+- --username - Registry username
+- --token - Registry password/token
+- Available on both push and build commands
+- Override all other credential sources
+
+### 2. Client Initialization
+- NewClient() and NewInsecureClient() automatically use credential manager
+- SetCredentials() method to set CLI-provided credentials
+- Backward compatible - returns empty strings if no credentials found
+
+### 3. Environment Variables (Second Priority)
+- GITEA_USERNAME - Gitea registry username
+- GITEA_PASSWORD - Gitea registry password
+- Used when no CLI flags provided
+
+### 4. Configuration File (Third Priority)
+- Location: ~/.idpbuilder/config
+- JSON format with registry credentials
+- Used when no CLI flags or env vars
+
+### 5. System Keyring (Fourth Priority)
+- Service: "idpbuilder"
+- Account: "gitea"
+- Most secure but lowest priority
+
+## Success Criteria
+- ✅ All credential-related TODOs removed from client.go
+- ✅ Environment variables properly read when set
+- ✅ Config file parsed when present
+- ✅ Keyring integration functional (with graceful fallback)
+- ✅ All tests passing with >90% coverage
+- ✅ No hardcoded credentials remaining
+- ✅ Backward compatible with existing code
+
+## Security Considerations
+1. **Credential Storage**: Never log passwords in plaintext
+2. **File Permissions**: Config file should be 0600 (user read/write only)
+3. **Error Messages**: Don't expose credential values in errors
+4. **Keyring Access**: Handle keyring unavailability gracefully
+
+## Error Handling Strategy
+1. **Cascade Through Providers**: Try each provider in order
+2. **Graceful Degradation**: Return empty strings if no credentials found
+3. **Logging**: Log warnings when credentials unavailable (not errors)
+4. **Testing**: Ensure all error paths are tested
+
+## Migration Path
+1. **Phase 1**: Implement credential providers
+2. **Phase 2**: Update client.go to use providers
+3. **Phase 3**: Update tests
+4. **Phase 4**: Documentation update (if needed)
+5. **Phase 5**: Remove all TODOs
+
+## Validation Checklist
+- [ ] All TODOs removed from client.go
+- [ ] Environment variables working
+- [ ] Config file parsing working
+- [ ] Keyring integration working
+- [ ] All tests passing
+- [ ] Size under 500 lines
+- [ ] No security vulnerabilities
+- [ ] Backward compatible
+
+## Notes for Implementation
+1. Start with the credential provider interface to establish the contract
+2. Implement each provider independently for easy testing
+3. Use dependency injection for testability
+4. Keep the credential manager singleton for simplicity
+5. Ensure thread-safety if concurrent access is expected
+6. Consider adding credential caching to avoid repeated lookups
+7. Add appropriate logging for debugging credential issues

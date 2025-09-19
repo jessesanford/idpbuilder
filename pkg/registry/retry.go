@@ -41,3 +41,50 @@ func retryWithExponentialBackoff(operation func() error, operationName, target s
 	return fmt.Errorf("failed %s for %s after %d attempts: %v",
 		operationName, target, maxRetries, lastErr)
 }
+<<<<<<< HEAD
+=======
+
+func NewWithRetry(registry Registry, policy *RetryPolicy) *WithRetry {
+	if policy == nil {
+		policy = DefaultRetryPolicy()
+	}
+	return &WithRetry{registry, policy}
+}
+
+func (r *WithRetry) Push(ctx context.Context, image string, content io.Reader) error {
+	return RetryWithPolicy(ctx, r.policy, func() error { return r.registry.Push(ctx, image, content) })
+}
+
+func (r *WithRetry) List(ctx context.Context) ([]string, error) {
+	var result []string
+	err := RetryWithPolicy(ctx, r.policy, func() error { 
+		var e error
+		result, e = r.registry.List(ctx)
+		return e
+	})
+	return result, err
+}
+
+func (r *WithRetry) Exists(ctx context.Context, repository string) (bool, error) {
+	var result bool
+	err := RetryWithPolicy(ctx, r.policy, func() error { 
+		var e error
+		result, e = r.registry.Exists(ctx, repository)
+		return e
+	})
+	return result, err
+}
+
+func (r *WithRetry) Delete(ctx context.Context, repository string) error {
+	return RetryWithPolicy(ctx, r.policy, func() error { return r.registry.Delete(ctx, repository) })
+}
+
+func (r *WithRetry) Close() error { return r.registry.Close() }
+// retryWithExponentialBackoff is a wrapper for backward compatibility
+// This function is used by split-001 code
+func retryWithExponentialBackoff(operation func() error, operationName string, details string) error {
+	ctx := context.Background()
+	policy := DefaultRetryPolicy()
+	return RetryWithPolicy(ctx, policy, operation)
+}
+>>>>>>> origin/idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118

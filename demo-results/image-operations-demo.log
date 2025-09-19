@@ -1,0 +1,19 @@
+🎬 Demo: Phase 2 Wave 1 Integration Features
+Timestamp: 2025-09-16 01:02:00
+================================
+
+Image Builder Commands:
+  build-image      Build OCI image from directory
+  generate-certs   Generate TLS certificates
+  push-with-tls    Push with TLS verification
+  status           Show feature status
+
+Options:
+  --context PATH        Build context directory
+  --tag NAME            Image name and tag
+  --storage PATH        Storage directory
+  --registry URL        Registry URL
+  --cert-path PATH      Certificate path
+  --namespace NAME      Kubernetes namespace
+  --secret-name NAME    Secret name
+  --output PATH         Output directory
