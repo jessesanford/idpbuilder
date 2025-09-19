@@ -1,499 +1,761 @@
-# Registry Authentication Implementation Plan
+# Credential Management Implementation Plan
 
-## 📌 Effort Overview
+## Effort ID: E2.2.2-A
 
-**Effort ID**: E1.1.2B
-**Effort Name**: registry-auth
-**Phase**: 1, Wave: 1
-**Branch**: `idpbuilder-oci-build-push/phase1/wave1/registry-auth`
-**Base Branch**: `idpbuilder-oci-build-push/phase1/wave1/registry-types`
-**Estimated Lines**: 350
-**Can Parallelize**: No (depends on registry-types)
-**Parallel With**: None
-**Dependencies**: [registry-types (E1.1.2A)]
-**Created**: 2025-09-18
+## Overview
+- **Effort**: Implement real credential management for Gitea registry authentication
+- **Phase**: 2, Wave: 2
+- **Estimated Size**: 450-500 lines (excluding tests)
+- **Implementation Time**: 4-6 hours
+- **Dependencies**: E2.2.1 cli-commands (complete)
 
-## 🎯 Mission
+## Scope
+Replace placeholder authentication with a comprehensive credential management system supporting:
+1. CLI flags for username and token (--username, --token)
+2. Environment variable credential loading (fallback)
+3. Configuration file parsing (fallback)
+4. System keyring integration for secure storage (fallback)
+5. Proper credential retrieval functions
+6. Removal of all credential-related TODOs
 
-Implement authentication handlers and middleware for OCI registry operations. This effort provides the authentication layer that sits between the registry types and actual registry operations, handling credential management, token negotiation, and authentication flow.
+## File Structure
 
-## 📦 Scope and Boundaries
+### New Files to Create
+1. **pkg/gitea/credentials.go** (150 lines)
+   - Core credential management logic
+   - Credential provider interface
+   - Credential resolution chain
 
-### What This Effort Includes
-- Authentication handler implementations
-- Token management and refresh logic
-- Credential validation
-- Authentication middleware for registry operations
-- Basic auth and token auth implementations
+2. **pkg/gitea/config.go** (70 lines)
+   - Configuration file parsing
+   - Config structure definitions
+   - Config validation
 
-### What This Effort Excludes
-- Core registry types (in registry-types)
-- Helper utilities and convenience functions (in registry-helpers)
-- Test implementations (in registry-tests)
-- Actual registry client operations
+3. **pkg/gitea/keyring.go** (80 lines)
+   - System keyring integration
+   - Secure credential storage/retrieval
+   - Fallback handling
 
-## 📁 File Structure
+4. **pkg/gitea/credentials_test.go** (100 lines)
+   - Unit tests for credential providers
+   - Mock implementations
+   - Test coverage for all scenarios
 
-```
-pkg/
-└── registry/
-    └── auth/
-        ├── authenticator.go      (~80 lines) - Core authenticator interface and factory
-        ├── basic.go              (~60 lines) - Basic auth implementation
-        ├── token.go              (~90 lines) - Token auth implementation
-        ├── middleware.go         (~70 lines) - Auth middleware for HTTP clients
-        └── manager.go            (~50 lines) - Auth manager for credential lifecycle
-```
+5. **pkg/gitea/config_test.go** (50 lines)
+   - Config parsing tests
+   - Validation tests
+   - Error handling tests
 
-## 🔧 Implementation Details
+6. **pkg/gitea/keyring_test.go** (50 lines)
+   - Keyring integration tests
+   - Mock keyring provider
+   - Fallback scenario tests
 
-### 1. Core Authenticator Interface (`pkg/registry/auth/authenticator.go`)
+### Files to Modify
+1. **pkg/gitea/client.go** (~60 line changes)
+   - Update getRegistryUsername() function
+   - Update getRegistryPassword() function
+   - Remove TODO comments at lines 30, 145, 151
+   - Add credential manager initialization
+   - Add methods to set CLI-provided credentials
 
+2. **pkg/gitea/client_test.go** (~50 line changes)
+   - Update tests to use real credential system
+   - Add environment variable tests
+   - Remove hardcoded credential expectations
+
+3. **pkg/cmd/push.go** (~30 line changes)
+   - Add --username and --token flags
+   - Pass CLI credentials to client
+   - Update help text and examples
+
+4. **pkg/cmd/build.go** (~30 line changes)
+   - Add --username and --token flags for registry operations
+   - Pass CLI credentials to builder
+   - Update help text
+
+## Implementation Steps
+
+### Step 1: Create Credential Provider Interface (credentials.go)
 ```go
-package auth
+// Create pkg/gitea/credentials.go with:
+
+package gitea
 
 import (
-    "context"
-    "net/http"
-    "github.com/cnoe-io/idpbuilder/pkg/registry/types"
+    "fmt"
+    "os"
+    "path/filepath"
 )
 
-// Authenticator defines the interface for registry authentication
-type Authenticator interface {
-    // Authenticate adds authentication to the request
-    Authenticate(ctx context.Context, req *http.Request) error
-
-    // Refresh refreshes authentication credentials if needed
-    Refresh(ctx context.Context) error
-
-    // IsValid checks if current auth is still valid
-    IsValid() bool
+// CredentialProvider defines interface for credential sources
+type CredentialProvider interface {
+    GetUsername() (string, error)
+    GetPassword() (string, error)
+    IsAvailable() bool
+    Priority() int
 }
 
-// NewAuthenticator creates an authenticator based on config
-func NewAuthenticator(config *types.AuthConfig) (Authenticator, error) {
-    switch config.AuthType {
-    case types.AuthTypeBasic:
-        return NewBasicAuthenticator(config)
-    case types.AuthTypeToken:
-        return NewTokenAuthenticator(config)
-    case types.AuthTypeNone:
-        return NewNoOpAuthenticator(), nil
-    default:
-        return nil, fmt.Errorf("unsupported auth type: %s", config.AuthType)
+// CredentialManager manages multiple credential providers
+type CredentialManager struct {
+    providers []CredentialProvider
+    cliUsername string
+    cliPassword string
+}
+
+// NewCredentialManager creates a credential manager with default providers
+func NewCredentialManager() *CredentialManager {
+    return &CredentialManager{
+        providers: []CredentialProvider{
+            NewCLICredentialProvider(),
+            NewEnvCredentialProvider(),
+            NewConfigFileProvider(),
+            NewKeyringProvider(),
+        },
     }
 }
 
-// NoOpAuthenticator for registries without auth
-type NoOpAuthenticator struct{}
-
-func NewNoOpAuthenticator() *NoOpAuthenticator {
-    return &NoOpAuthenticator{}
+// SetCLICredentials sets credentials provided via CLI flags
+func (cm *CredentialManager) SetCLICredentials(username, password string) {
+    if cliProvider, ok := cm.providers[0].(*CLICredentialProvider); ok {
+        cliProvider.SetCredentials(username, password)
+    }
 }
 
-func (n *NoOpAuthenticator) Authenticate(ctx context.Context, req *http.Request) error {
-    return nil
+// GetCredentials retrieves credentials from the first available provider
+func (cm *CredentialManager) GetCredentials() (username, password string, err error) {
+    for _, provider := range cm.providers {
+        if provider.IsAvailable() {
+            username, err = provider.GetUsername()
+            if err != nil {
+                continue
+            }
+            password, err = provider.GetPassword()
+            if err != nil {
+                continue
+            }
+            return username, password, nil
+        }
+    }
+    return "", "", fmt.Errorf("no credentials available from any provider")
 }
 
-func (n *NoOpAuthenticator) Refresh(ctx context.Context) error {
-    return nil
+// EnvCredentialProvider reads from environment variables
+type EnvCredentialProvider struct{}
+
+func NewEnvCredentialProvider() *EnvCredentialProvider {
+    return &EnvCredentialProvider{}
 }
 
-func (n *NoOpAuthenticator) IsValid() bool {
-    return true
+func (e *EnvCredentialProvider) GetUsername() (string, error) {
+    username := os.Getenv("GITEA_USERNAME")
+    if username == "" {
+        return "", fmt.Errorf("GITEA_USERNAME not set")
+    }
+    return username, nil
 }
-```
 
-### 2. Basic Authentication (`pkg/registry/auth/basic.go`)
+func (e *EnvCredentialProvider) GetPassword() (string, error) {
+    password := os.Getenv("GITEA_PASSWORD")
+    if password == "" {
+        return "", fmt.Errorf("GITEA_PASSWORD not set")
+    }
+    return password, nil
+}
 
-```go
-package auth
+func (e *EnvCredentialProvider) IsAvailable() bool {
+    return os.Getenv("GITEA_USERNAME") != "" && os.Getenv("GITEA_PASSWORD") != ""
+}
 
-import (
-    "context"
-    "encoding/base64"
-    "fmt"
-    "net/http"
-    "github.com/cnoe-io/idpbuilder/pkg/registry/types"
-)
+func (e *EnvCredentialProvider) Priority() int {
+    return 2 // Second priority after CLI
+}
 
-// BasicAuthenticator implements basic authentication
-type BasicAuthenticator struct {
+// CLICredentialProvider holds credentials from command-line flags
+type CLICredentialProvider struct {
     username string
     password string
-    encoded  string
 }
 
-// NewBasicAuthenticator creates a new basic authenticator
-func NewBasicAuthenticator(config *types.AuthConfig) (*BasicAuthenticator, error) {
-    if config.Username == "" || config.Password == "" {
-        return nil, fmt.Errorf("username and password required for basic auth")
+func NewCLICredentialProvider() *CLICredentialProvider {
+    return &CLICredentialProvider{}
+}
+
+func (c *CLICredentialProvider) SetCredentials(username, password string) {
+    c.username = username
+    c.password = password
+}
+
+func (c *CLICredentialProvider) GetUsername() (string, error) {
+    if c.username == "" {
+        return "", fmt.Errorf("no CLI username provided")
     }
+    return c.username, nil
+}
 
-    auth := &BasicAuthenticator{
-        username: config.Username,
-        password: config.Password,
+func (c *CLICredentialProvider) GetPassword() (string, error) {
+    if c.password == "" {
+        return "", fmt.Errorf("no CLI password/token provided")
     }
-    auth.encoded = base64.StdEncoding.EncodeToString(
-        []byte(fmt.Sprintf("%s:%s", config.Username, config.Password)),
-    )
-
-    return auth, nil
+    return c.password, nil
 }
 
-func (b *BasicAuthenticator) Authenticate(ctx context.Context, req *http.Request) error {
-    req.Header.Set("Authorization", "Basic "+b.encoded)
-    return nil
+func (c *CLICredentialProvider) IsAvailable() bool {
+    return c.username != "" && c.password != ""
 }
 
-func (b *BasicAuthenticator) Refresh(ctx context.Context) error {
-    // Basic auth doesn't need refresh
-    return nil
-}
-
-func (b *BasicAuthenticator) IsValid() bool {
-    return b.encoded != ""
+func (c *CLICredentialProvider) Priority() int {
+    return 1 // Highest priority
 }
 ```
 
-### 3. Token Authentication (`pkg/registry/auth/token.go`)
-
+### Step 2: Create Configuration File Support (config.go)
 ```go
-package auth
+// Create pkg/gitea/config.go with:
+
+package gitea
 
 import (
-    "context"
+    "encoding/json"
     "fmt"
-    "net/http"
-    "sync"
-    "time"
-    "github.com/cnoe-io/idpbuilder/pkg/registry/types"
+    "os"
+    "path/filepath"
 )
 
-// TokenAuthenticator implements bearer token authentication
-type TokenAuthenticator struct {
-    mu          sync.RWMutex
-    token       string
-    expiresAt   time.Time
-    authConfig  *types.AuthConfig
-    tokenClient TokenClient
+// Config represents the configuration file structure
+type Config struct {
+    Registries map[string]RegistryCredentials `json:"registries"`
 }
 
-// TokenClient interface for token operations
-type TokenClient interface {
-    RequestToken(ctx context.Context, config *types.AuthConfig) (*types.TokenResponse, error)
+// RegistryCredentials holds credentials for a specific registry
+type RegistryCredentials struct {
+    Username string `json:"username"`
+    Password string `json:"password"`
+    URL      string `json:"url"`
 }
 
-// NewTokenAuthenticator creates a new token authenticator
-func NewTokenAuthenticator(config *types.AuthConfig, client TokenClient) (*TokenAuthenticator, error) {
-    if config.Token == "" && client == nil {
-        return nil, fmt.Errorf("token or token client required")
-    }
-
-    auth := &TokenAuthenticator{
-        authConfig:  config,
-        tokenClient: client,
-    }
-
-    if config.Token != "" {
-        auth.token = config.Token
-        // Set a default expiry if token is provided directly
-        auth.expiresAt = time.Now().Add(1 * time.Hour)
-    }
-
-    return auth, nil
+// ConfigFileProvider reads from ~/.idpbuilder/config
+type ConfigFileProvider struct {
+    configPath string
+    config     *Config
 }
 
-func (t *TokenAuthenticator) Authenticate(ctx context.Context, req *http.Request) error {
-    t.mu.RLock()
-    token := t.token
-    t.mu.RUnlock()
-
-    if token == "" {
-        if err := t.Refresh(ctx); err != nil {
-            return fmt.Errorf("failed to obtain token: %w", err)
-        }
-        t.mu.RLock()
-        token = t.token
-        t.mu.RUnlock()
+func NewConfigFileProvider() *ConfigFileProvider {
+    homeDir, _ := os.UserHomeDir()
+    configPath := filepath.Join(homeDir, ".idpbuilder", "config")
+    return &ConfigFileProvider{
+        configPath: configPath,
     }
-
-    req.Header.Set("Authorization", "Bearer "+token)
-    return nil
 }
 
-func (t *TokenAuthenticator) Refresh(ctx context.Context) error {
-    if t.tokenClient == nil {
-        return fmt.Errorf("no token client configured for refresh")
+func (c *ConfigFileProvider) loadConfig() error {
+    if c.config != nil {
+        return nil
     }
 
-    resp, err := t.tokenClient.RequestToken(ctx, t.authConfig)
+    data, err := os.ReadFile(c.configPath)
     if err != nil {
-        return fmt.Errorf("token request failed: %w", err)
+        return err
     }
 
-    t.mu.Lock()
-    t.token = resp.Token
-    if resp.ExpiresIn > 0 {
-        t.expiresAt = time.Now().Add(time.Duration(resp.ExpiresIn) * time.Second)
-    } else {
-        t.expiresAt = time.Now().Add(1 * time.Hour)
+    var config Config
+    if err := json.Unmarshal(data, &config); err != nil {
+        return err
     }
-    t.mu.Unlock()
 
+    c.config = &config
     return nil
 }
 
-func (t *TokenAuthenticator) IsValid() bool {
-    t.mu.RLock()
-    defer t.mu.RUnlock()
+func (c *ConfigFileProvider) GetUsername() (string, error) {
+    if err := c.loadConfig(); err != nil {
+        return "", err
+    }
 
-    if t.token == "" {
+    // Look for gitea registry config
+    for name, creds := range c.config.Registries {
+        if name == "gitea" || name == "default" {
+            return creds.Username, nil
+        }
+    }
+
+    return "", fmt.Errorf("no gitea credentials in config")
+}
+
+func (c *ConfigFileProvider) GetPassword() (string, error) {
+    if err := c.loadConfig(); err != nil {
+        return "", err
+    }
+
+    for name, creds := range c.config.Registries {
+        if name == "gitea" || name == "default" {
+            return creds.Password, nil
+        }
+    }
+
+    return "", fmt.Errorf("no gitea credentials in config")
+}
+
+func (c *ConfigFileProvider) IsAvailable() bool {
+    if _, err := os.Stat(c.configPath); err != nil {
         return false
     }
+    return true
+}
 
-    // Check if token is expired with 30-second buffer
-    return time.Now().Add(30 * time.Second).Before(t.expiresAt)
+func (c *ConfigFileProvider) Priority() int {
+    return 3 // Third priority
 }
 ```
 
-### 4. Authentication Middleware (`pkg/registry/auth/middleware.go`)
-
+### Step 3: Create Keyring Integration (keyring.go)
 ```go
-package auth
+// Create pkg/gitea/keyring.go with:
+
+package gitea
 
 import (
-    "context"
-    "net/http"
-    "github.com/cnoe-io/idpbuilder/pkg/registry/types"
-)
-
-// Transport wraps an http.RoundTripper with authentication
-type Transport struct {
-    Base          http.RoundTripper
-    Authenticator Authenticator
-}
-
-// NewTransport creates a new authenticated transport
-func NewTransport(base http.RoundTripper, auth Authenticator) *Transport {
-    if base == nil {
-        base = http.DefaultTransport
-    }
-
-    return &Transport{
-        Base:          base,
-        Authenticator: auth,
-    }
-}
-
-// RoundTrip implements http.RoundTripper
-func (t *Transport) RoundTrip(req *http.Request) (*http.Response, error) {
-    // Clone the request to avoid modifying the original
-    clonedReq := req.Clone(req.Context())
-
-    // Apply authentication
-    if t.Authenticator != nil {
-        // Check if auth needs refresh
-        if !t.Authenticator.IsValid() {
-            if err := t.Authenticator.Refresh(req.Context()); err != nil {
-                return nil, fmt.Errorf("auth refresh failed: %w", err)
-            }
-        }
-
-        if err := t.Authenticator.Authenticate(req.Context(), clonedReq); err != nil {
-            return nil, fmt.Errorf("authentication failed: %w", err)
-        }
-    }
-
-    // Execute the request
-    resp, err := t.Base.RoundTrip(clonedReq)
-    if err != nil {
-        return nil, err
-    }
-
-    // Handle 401 Unauthorized by refreshing auth and retrying once
-    if resp.StatusCode == http.StatusUnauthorized && t.Authenticator != nil {
-        resp.Body.Close()
-
-        if err := t.Authenticator.Refresh(req.Context()); err != nil {
-            return nil, fmt.Errorf("auth refresh after 401 failed: %w", err)
-        }
-
-        // Retry with refreshed auth
-        retryReq := req.Clone(req.Context())
-        if err := t.Authenticator.Authenticate(req.Context(), retryReq); err != nil {
-            return nil, fmt.Errorf("re-authentication failed: %w", err)
-        }
-
-        return t.Base.RoundTrip(retryReq)
-    }
-
-    return resp, nil
-}
-```
-
-### 5. Auth Manager (`pkg/registry/auth/manager.go`)
-
-```go
-package auth
-
-import (
-    "context"
     "fmt"
-    "sync"
-    "github.com/cnoe-io/idpbuilder/pkg/registry/types"
+    "github.com/zalando/go-keyring"
 )
 
-// Manager manages authentication for multiple registries
-type Manager struct {
-    mu      sync.RWMutex
-    auths   map[string]Authenticator
-    store   types.CredentialStore
+const (
+    keyringService = "idpbuilder"
+    keyringUser    = "gitea"
+)
+
+// KeyringProvider provides credentials from system keyring
+type KeyringProvider struct {
+    service string
+    user    string
 }
 
-// NewManager creates a new auth manager
-func NewManager(store types.CredentialStore) *Manager {
-    return &Manager{
-        auths: make(map[string]Authenticator),
-        store: store,
+func NewKeyringProvider() *KeyringProvider {
+    return &KeyringProvider{
+        service: keyringService,
+        user:    keyringUser,
     }
 }
 
-// GetAuthenticator gets or creates an authenticator for a registry
-func (m *Manager) GetAuthenticator(ctx context.Context, registry string) (Authenticator, error) {
-    m.mu.RLock()
-    auth, exists := m.auths[registry]
-    m.mu.RUnlock()
-
-    if exists && auth.IsValid() {
-        return auth, nil
-    }
-
-    // Load credentials from store
-    creds, err := m.store.GetCredentials(registry)
+func (k *KeyringProvider) GetUsername() (string, error) {
+    username, err := keyring.Get(k.service, k.user+"_username")
     if err != nil {
-        return nil, fmt.Errorf("failed to get credentials: %w", err)
+        return "", fmt.Errorf("failed to get username from keyring: %w", err)
     }
-
-    // Create new authenticator
-    auth, err = NewAuthenticator(creds)
-    if err != nil {
-        return nil, fmt.Errorf("failed to create authenticator: %w", err)
-    }
-
-    // Cache the authenticator
-    m.mu.Lock()
-    m.auths[registry] = auth
-    m.mu.Unlock()
-
-    return auth, nil
+    return username, nil
 }
 
-// Clear removes cached authenticator for a registry
-func (m *Manager) Clear(registry string) {
-    m.mu.Lock()
-    delete(m.auths, registry)
-    m.mu.Unlock()
+func (k *KeyringProvider) GetPassword() (string, error) {
+    password, err := keyring.Get(k.service, k.user+"_password")
+    if err != nil {
+        return "", fmt.Errorf("failed to get password from keyring: %w", err)
+    }
+    return password, nil
+}
+
+func (k *KeyringProvider) IsAvailable() bool {
+    // Check if keyring is accessible
+    _, err := keyring.Get(k.service, k.user+"_username")
+    return err == nil || err == keyring.ErrNotFound
+}
+
+func (k *KeyringProvider) Priority() int {
+    return 4 // Lowest priority
+}
+
+// SetCredentials stores credentials in the keyring
+func (k *KeyringProvider) SetCredentials(username, password string) error {
+    if err := keyring.Set(k.service, k.user+"_username", username); err != nil {
+        return fmt.Errorf("failed to store username: %w", err)
+    }
+    if err := keyring.Set(k.service, k.user+"_password", password); err != nil {
+        return fmt.Errorf("failed to store password: %w", err)
+    }
+    return nil
+}
+
+// DeleteCredentials removes credentials from the keyring
+func (k *KeyringProvider) DeleteCredentials() error {
+    keyring.Delete(k.service, k.user+"_username")
+    keyring.Delete(k.service, k.user+"_password")
+    return nil
 }
 ```
 
-## 📊 Size Estimation Breakdown
+### Step 4: Update push.go and build.go for CLI flags
 
-| File | Estimated Lines | Purpose |
-|------|-----------------|---------|
-| authenticator.go | 80 | Core interface and factory |
-| basic.go | 60 | Basic auth implementation |
-| token.go | 90 | Token auth with refresh |
-| middleware.go | 70 | HTTP transport wrapper |
-| manager.go | 50 | Multi-registry auth management |
-| **TOTAL** | **350** | Within limit |
+#### Update pkg/cmd/push.go:
+```go
+// Add to var declarations:
+var (
+    pushUsername string
+    pushToken    string
+    // ... existing vars
+)
 
-## 🔗 Dependencies and Integration
+// Update init function:
+func init() {
+    PushCmd.Flags().BoolVar(&pushInsecure, "insecure", false, "Skip certificate verification (not recommended)")
+    PushCmd.Flags().StringVar(&pushRegistry, "registry", getDefaultRegistry(), "Target registry")
+    PushCmd.Flags().StringVar(&pushUsername, "username", "", "Registry username")
+    PushCmd.Flags().StringVar(&pushToken, "token", "", "Registry token/password")
+}
 
-### Internal Dependencies
-- `github.com/cnoe-io/idpbuilder/pkg/registry/types` - From registry-types effort (E1.1.2A)
-  - Uses: `AuthConfig`, `AuthType`, `TokenResponse`, `CredentialStore`
+// Update runPush function to pass credentials:
+func runPush(cmd *cobra.Command, args []string) error {
+    // ... existing code ...
 
-### External Dependencies
-- Standard library only (`net/http`, `context`, `sync`, `time`, `encoding/base64`)
+    // After creating client, set CLI credentials if provided
+    if pushUsername != "" && pushToken != "" {
+        client.SetCredentials(pushUsername, pushToken)
+    }
 
-### Integration Points
-1. **Registry Types**: Import and use types from registry-types package
-2. **Registry Client**: Will be used by registry client (future effort) via middleware
-3. **Registry Helpers**: Helpers will use these authenticators for operations
+    // ... rest of function
+}
+```
 
-## ⚡ Implementation Strategy
+#### Update pkg/cmd/build.go:
+```go
+// Add similar flags for build command if it needs registry access
+var (
+    buildUsername string
+    buildToken    string
+    // ... existing vars
+)
 
-### Phase 1: Core Structure (50 lines)
-1. Create package structure
-2. Define Authenticator interface
-3. Implement NoOpAuthenticator
+func init() {
+    // ... existing flags ...
+    BuildCmd.Flags().StringVar(&buildUsername, "username", "", "Registry username for base image pulls")
+    BuildCmd.Flags().StringVar(&buildToken, "token", "", "Registry token/password for base image pulls")
+}
+```
 
-### Phase 2: Basic Auth (60 lines)
-1. Implement BasicAuthenticator
-2. Add header generation
-3. Test with mock requests
+### Step 5: Update client.go
+```go
+// Modify pkg/gitea/client.go:
 
-### Phase 3: Token Auth (90 lines)
-1. Define TokenClient interface
-2. Implement TokenAuthenticator
-3. Add refresh logic with expiry
+// Add at package level:
+var credentialManager *CredentialManager
 
-### Phase 4: Middleware (70 lines)
-1. Create Transport wrapper
-2. Add authentication injection
-3. Implement 401 retry logic
+func init() {
+    credentialManager = NewCredentialManager()
+}
 
-### Phase 5: Manager (50 lines)
-1. Implement auth caching
-2. Add credential store integration
-3. Handle multi-registry scenarios
+// SetCredentials sets credentials from CLI flags
+func (c *Client) SetCredentials(username, password string) {
+    credentialManager.SetCLICredentials(username, password)
+}
 
-### Phase 6: Integration (30 lines)
-1. Wire components together
-2. Add error handling
-3. Final testing and validation
+// Update getRegistryUsername function (line ~144):
+func getRegistryUsername() string {
+    username, password, err := credentialManager.GetCredentials()
+    if err != nil {
+        // Log warning and return empty string for backward compatibility
+        // In production, this should probably return an error
+        return ""
+    }
+    return username
+}
 
-## 🧪 Testing Strategy
+// Update getRegistryPassword function (line ~150):
+func getRegistryPassword() string {
+    username, password, err := credentialManager.GetCredentials()
+    if err != nil {
+        // Log warning and return empty string for backward compatibility
+        // In production, this should probably return an error
+        return ""
+    }
+    return password
+}
 
-Testing will be handled in the separate registry-tests effort (E1.1.2D), but key test scenarios include:
+// Remove TODO comments at lines 30, 145, 151
+```
 
-1. **Unit Tests**:
-   - Each authenticator type
-   - Token refresh logic
-   - Middleware behavior
-   - Manager caching
+### Step 6: Create Test Files
 
-2. **Integration Tests**:
-   - Full auth flow with mock registry
-   - Credential store integration
-   - Multi-registry scenarios
+#### credentials_test.go
+```go
+package gitea
 
-## ✅ Success Criteria
+import (
+    "os"
+    "testing"
+    "github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/require"
+)
 
-1. **Functional Requirements**:
-   - ✅ Basic authentication works
-   - ✅ Token authentication with refresh
-   - ✅ Middleware properly injects auth
-   - ✅ Manager handles multiple registries
+func TestEnvCredentialProvider(t *testing.T) {
+    // Save and restore environment
+    oldUsername := os.Getenv("GITEA_USERNAME")
+    oldPassword := os.Getenv("GITEA_PASSWORD")
+    defer func() {
+        os.Setenv("GITEA_USERNAME", oldUsername)
+        os.Setenv("GITEA_PASSWORD", oldPassword)
+    }()
 
-2. **Non-Functional Requirements**:
-   - ✅ Thread-safe operations
-   - ✅ Proper error handling
-   - ✅ Clean separation from other efforts
-   - ✅ Under 350 lines limit
+    // Test with environment variables set
+    os.Setenv("GITEA_USERNAME", "testuser")
+    os.Setenv("GITEA_PASSWORD", "testpass")
 
-## 🚀 Next Steps
+    provider := NewEnvCredentialProvider()
+    assert.True(t, provider.IsAvailable())
 
-After this effort is complete:
-1. **registry-helpers (E1.1.2C)** will build convenience functions using these authenticators
-2. **registry-tests (E1.1.2D)** will provide comprehensive test coverage
-3. Future efforts will use this auth layer for actual registry operations
+    username, err := provider.GetUsername()
+    require.NoError(t, err)
+    assert.Equal(t, "testuser", username)
 
-## 📝 Notes
+    password, err := provider.GetPassword()
+    require.NoError(t, err)
+    assert.Equal(t, "testpass", password)
 
-- This effort focuses ONLY on authentication logic
-- No actual registry operations are implemented here
-- Clean interfaces allow for easy extension (OAuth2, etc.)
-- Thread safety is critical for concurrent operations
-- Error messages should be clear and actionable
+    // Test with environment variables not set
+    os.Unsetenv("GITEA_USERNAME")
+    os.Unsetenv("GITEA_PASSWORD")
+
+    assert.False(t, provider.IsAvailable())
+}
+
+func TestCredentialManager(t *testing.T) {
+    // Test with mock providers
+    manager := NewCredentialManager()
+
+    // Set environment variables for testing
+    os.Setenv("GITEA_USERNAME", "envuser")
+    os.Setenv("GITEA_PASSWORD", "envpass")
+    defer func() {
+        os.Unsetenv("GITEA_USERNAME")
+        os.Unsetenv("GITEA_PASSWORD")
+    }()
+
+    username, password, err := manager.GetCredentials()
+    require.NoError(t, err)
+    assert.Equal(t, "envuser", username)
+    assert.Equal(t, "envpass", password)
+}
+```
+
+#### config_test.go
+```go
+package gitea
+
+import (
+    "encoding/json"
+    "os"
+    "path/filepath"
+    "testing"
+    "github.com/stretchr/testify/assert"
+    "github.com/stretchr/testify/require"
+)
+
+func TestConfigFileProvider(t *testing.T) {
+    // Create temporary config file
+    tmpDir := t.TempDir()
+    configPath := filepath.Join(tmpDir, ".idpbuilder", "config")
+    os.MkdirAll(filepath.Dir(configPath), 0755)
+
+    config := Config{
+        Registries: map[string]RegistryCredentials{
+            "gitea": {
+                Username: "configuser",
+                Password: "configpass",
+                URL:      "https://gitea.example.com",
+            },
+        },
+    }
+
+    data, err := json.Marshal(config)
+    require.NoError(t, err)
+
+    err = os.WriteFile(configPath, data, 0600)
+    require.NoError(t, err)
+
+    // Test provider
+    provider := &ConfigFileProvider{
+        configPath: configPath,
+    }
+
+    assert.True(t, provider.IsAvailable())
+
+    username, err := provider.GetUsername()
+    require.NoError(t, err)
+    assert.Equal(t, "configuser", username)
+
+    password, err := provider.GetPassword()
+    require.NoError(t, err)
+    assert.Equal(t, "configpass", password)
+}
+```
+
+#### keyring_test.go
+```go
+package gitea
+
+import (
+    "testing"
+    "github.com/stretchr/testify/assert"
+)
+
+// MockKeyringProvider for testing
+type MockKeyringProvider struct {
+    username string
+    password string
+    available bool
+}
+
+func (m *MockKeyringProvider) GetUsername() (string, error) {
+    if m.username == "" {
+        return "", fmt.Errorf("no username in keyring")
+    }
+    return m.username, nil
+}
+
+func (m *MockKeyringProvider) GetPassword() (string, error) {
+    if m.password == "" {
+        return "", fmt.Errorf("no password in keyring")
+    }
+    return m.password, nil
+}
+
+func (m *MockKeyringProvider) IsAvailable() bool {
+    return m.available
+}
+
+func (m *MockKeyringProvider) Priority() int {
+    return 3
+}
+
+func TestMockKeyringProvider(t *testing.T) {
+    provider := &MockKeyringProvider{
+        username:  "keyringuser",
+        password:  "keyringpass",
+        available: true,
+    }
+
+    assert.True(t, provider.IsAvailable())
+
+    username, err := provider.GetUsername()
+    assert.NoError(t, err)
+    assert.Equal(t, "keyringuser", username)
+
+    password, err := provider.GetPassword()
+    assert.NoError(t, err)
+    assert.Equal(t, "keyringpass", password)
+}
+```
+
+### Step 7: Update client_test.go
+Update the existing tests to work with the new credential system:
+- Remove hardcoded "admin"/"password" expectations
+- Add tests for environment variable integration
+- Add tests for missing credentials scenarios
+- Update TestClientWithEnvironmentVariables to actually test env vars
+
+## Dependencies
+
+### External Libraries
+Add to go.mod:
+```
+github.com/zalando/go-keyring v0.2.3
+```
+
+### Import Updates
+Update imports in client.go to include the credential manager initialization.
+
+## Size Management
+- **Estimated Lines**: 490-540 (excluding tests)
+- **Breakdown**:
+  - credentials.go: 180 lines (added CLI provider)
+  - config.go: 70 lines
+  - keyring.go: 80 lines
+  - client.go updates: 60 lines
+  - push.go updates: 30 lines
+  - build.go updates: 30 lines
+  - Test files: 250 lines (not counted toward limit)
+- **Measurement Tool**: ${PROJECT_ROOT}/tools/line-counter.sh
+- **Check Frequency**: After each file completion
+- **Split Threshold**: N/A (well under 800 line limit)
+
+## Test Requirements
+- **Unit Tests**: 90% coverage
+- **Integration Tests**: Test all three credential providers
+- **E2E Tests**: Test with actual environment variables
+- **Test Files**:
+  - credentials_test.go
+  - config_test.go
+  - keyring_test.go
+  - Updated client_test.go
+
+## Integration Points
+
+### 1. CLI Flags (Highest Priority)
+- --username - Registry username
+- --token - Registry password/token
+- Available on both push and build commands
+- Override all other credential sources
+
+### 2. Client Initialization
+- NewClient() and NewInsecureClient() automatically use credential manager
+- SetCredentials() method to set CLI-provided credentials
+- Backward compatible - returns empty strings if no credentials found
+
+### 3. Environment Variables (Second Priority)
+- GITEA_USERNAME - Gitea registry username
+- GITEA_PASSWORD - Gitea registry password
+- Used when no CLI flags provided
+
+### 4. Configuration File (Third Priority)
+- Location: ~/.idpbuilder/config
+- JSON format with registry credentials
+- Used when no CLI flags or env vars
+
+### 5. System Keyring (Fourth Priority)
+- Service: "idpbuilder"
+- Account: "gitea"
+- Most secure but lowest priority
+
+## Success Criteria
+- ✅ All credential-related TODOs removed from client.go
+- ✅ Environment variables properly read when set
+- ✅ Config file parsed when present
+- ✅ Keyring integration functional (with graceful fallback)
+- ✅ All tests passing with >90% coverage
+- ✅ No hardcoded credentials remaining
+- ✅ Backward compatible with existing code
+
+## Security Considerations
+1. **Credential Storage**: Never log passwords in plaintext
+2. **File Permissions**: Config file should be 0600 (user read/write only)
+3. **Error Messages**: Don't expose credential values in errors
+4. **Keyring Access**: Handle keyring unavailability gracefully
+
+## Error Handling Strategy
+1. **Cascade Through Providers**: Try each provider in order
+2. **Graceful Degradation**: Return empty strings if no credentials found
+3. **Logging**: Log warnings when credentials unavailable (not errors)
+4. **Testing**: Ensure all error paths are tested
+
+## Migration Path
+1. **Phase 1**: Implement credential providers
+2. **Phase 2**: Update client.go to use providers
+3. **Phase 3**: Update tests
+4. **Phase 4**: Documentation update (if needed)
+5. **Phase 5**: Remove all TODOs
+
+## Validation Checklist
+- [ ] All TODOs removed from client.go
+- [ ] Environment variables working
+- [ ] Config file parsing working
+- [ ] Keyring integration working
+- [ ] All tests passing
+- [ ] Size under 500 lines
+- [ ] No security vulnerabilities
+- [ ] Backward compatible
+
+## Notes for Implementation
+1. Start with the credential provider interface to establish the contract
+2. Implement each provider independently for easy testing
+3. Use dependency injection for testability
+4. Keep the credential manager singleton for simplicity
+5. Ensure thread-safety if concurrent access is expected
+6. Consider adding credential caching to avoid repeated lookups
+7. Add appropriate logging for debugging credential issues
