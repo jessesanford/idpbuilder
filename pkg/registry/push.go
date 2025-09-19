@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
-	"github.com/google/go-containerregistry/pkg/name"
 )
 
 // PushProgress tracks the progress of a push operation
@@ -81,7 +81,9 @@ func NewImagePusher(registry *GiteaRegistry, config *PushConfig) *ImagePusher {
 func (p *ImagePusher) updateProgress(update func(*PushProgress)) {
 	update(p.progress)
 	p.progress.Duration = time.Since(p.progress.StartTime)
-	if p.config.ProgressCallback != nil { p.config.ProgressCallback(p.progress) }
+	if p.config.ProgressCallback != nil {
+		p.config.ProgressCallback(p.progress)
+	}
 }
 
 // initiateBlobUpload starts a blob upload session
@@ -186,8 +188,12 @@ func (p *ImagePusher) pushLayer(ctx context.Context, repository string, layer La
 			uploaded += int64(n)
 			p.updateProgress(func(prog *PushProgress) { prog.BytesCurrent += int64(n); prog.Status = "uploading" })
 		}
-		if err == io.EOF { break }
-		if err != nil { return err }
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return err
+		}
 	}
 
 	// Finalize upload
@@ -256,15 +262,26 @@ func (p *ImagePusher) pushManifest(ctx context.Context, repository, tag string, 
 
 // PushImage pushes a complete image (config + layers + manifest) to the registry
 func (p *ImagePusher) PushImage(ctx context.Context, repository, tag string, manifest *Manifest) error {
-	p.updateProgress(func(prog *PushProgress) { prog.Repository = repository; prog.Tag = tag; prog.LayersTotal = len(manifest.Layers) + 1; prog.Status = "starting" })
+	p.updateProgress(func(prog *PushProgress) {
+		prog.Repository = repository
+		prog.Tag = tag
+		prog.LayersTotal = len(manifest.Layers) + 1
+		prog.Status = "starting"
+	})
 
-	if err := p.pushLayer(ctx, repository, manifest.Config); err != nil { return err }
-
-	for _, layer := range manifest.Layers {
-		if err := p.pushLayer(ctx, repository, layer); err != nil { return err }
+	if err := p.pushLayer(ctx, repository, manifest.Config); err != nil {
+		return err
 	}
 
-	if err := p.pushManifest(ctx, repository, tag, manifest); err != nil { return err }
+	for _, layer := range manifest.Layers {
+		if err := p.pushLayer(ctx, repository, layer); err != nil {
+			return err
+		}
+	}
+
+	if err := p.pushManifest(ctx, repository, tag, manifest); err != nil {
+		return err
+	}
 
 	p.updateProgress(func(prog *PushProgress) { prog.Status = "complete" })
 	return nil
@@ -415,8 +432,8 @@ func (r *GiteaRegistry) handlePushError(err error, reference string) error {
 
 // pushProgressTracker implements progress reporting for push operations
 type pushProgressTracker struct {
-	reference    string
-	totalBytes   int64
+	reference     string
+	totalBytes    int64
 	uploadedBytes int64
 }
 

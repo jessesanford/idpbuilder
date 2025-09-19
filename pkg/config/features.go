@@ -25,7 +25,7 @@ func getBoolEnv(key string, defaultValue bool) bool {
 	if value == "" {
 		return defaultValue
 	}
-	
+
 	// Handle common boolean representations
 	value = strings.ToLower(strings.TrimSpace(value))
 	switch value {

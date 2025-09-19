@@ -6,10 +6,10 @@ import (
 
 func TestParseManifest(t *testing.T) {
 	tests := []struct {
-		name        string
-		data        string
-		wantType    string
-		wantError   bool
+		name          string
+		data          string
+		wantType      string
+		wantError     bool
 		errorContains string
 	}{
 		{
@@ -145,9 +145,9 @@ func TestParseManifest(t *testing.T) {
 
 func TestValidateManifest(t *testing.T) {
 	tests := []struct {
-		name        string
-		manifest    *Manifest
-		wantError   bool
+		name          string
+		manifest      *Manifest
+		wantError     bool
 		errorContains string
 	}{
 		{
@@ -208,7 +208,7 @@ func TestValidateManifest(t *testing.T) {
 			manifest: &Manifest{
 				SchemaVersion: SchemaVersion,
 				MediaType:     MediaTypeManifest,
-				Config: Descriptor{
+				Config:        Descriptor{
 					// Missing required fields
 				},
 			},

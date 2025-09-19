@@ -7,8 +7,6 @@ import (
 	"time"
 )
 
-<<<<<<< HEAD
-=======
 // ValidationMode defines the validation strictness level
 type ValidationMode int
 
@@ -36,7 +34,6 @@ func (vm ValidationMode) String() string {
 		return fmt.Sprintf("Unknown(%d)", int(vm))
 	}
 }
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/image-builder
 
 // ChainValidationOptions defines options for certificate chain validation
 type ChainValidationOptions struct {

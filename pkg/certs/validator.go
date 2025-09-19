@@ -1,31 +1,36 @@
 package certs
 
-import "fmt"
-
-// ValidationMode defines the validation strictness level
-type ValidationMode int
-
-const (
-	// StrictMode performs full certificate validation including chain verification
-	StrictMode ValidationMode = iota
-
-	// LenientMode performs basic certificate validation with relaxed chain requirements
-	LenientMode
-
-	// InsecureMode performs minimal validation (for development/testing only)
-	InsecureMode
+import (
+	"crypto/x509"
+	"errors"
 )
 
-// String returns the string representation of ValidationMode
-func (vm ValidationMode) String() string {
-	switch vm {
-	case StrictMode:
-		return "Strict"
-	case LenientMode:
-		return "Lenient"
-	case InsecureMode:
-		return "Insecure"
-	default:
-		return fmt.Sprintf("Unknown(%d)", int(vm))
+// Validator interface defines methods for certificate validation
+type Validator interface {
+	Validate(cert *x509.Certificate) error
+	ValidateChain(certs []*x509.Certificate) error
+}
+
+// BasicValidator provides basic certificate validation
+type BasicValidator struct{}
+
+// Validate implements basic certificate validation
+func (v *BasicValidator) Validate(cert *x509.Certificate) error {
+	if cert == nil {
+		return errors.New("certificate is nil")
 	}
+	return nil
+}
+
+// ValidateChain implements basic chain validation
+func (v *BasicValidator) ValidateChain(certs []*x509.Certificate) error {
+	if len(certs) == 0 {
+		return errors.New("certificate chain is empty")
+	}
+	for _, cert := range certs {
+		if err := v.Validate(cert); err != nil {
+			return err
+		}
+	}
+	return nil
 }

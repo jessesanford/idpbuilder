@@ -142,30 +142,11 @@ func TestChainValidator_ValidationModes(t *testing.T) {
 func TestChainValidator_DefaultOptions(t *testing.T) {
 	trustStore := NewMockTrustStore()
 	validator := NewChainValidator(trustStore, StrictMode)
-<<<<<<< HEAD
-	
-=======
 
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/image-builder
 	// Test default max chain length for different modes
 	strictValidator := NewChainValidator(trustStore, StrictMode)
 	lenientValidator := NewChainValidator(trustStore, LenientMode)
 	insecureValidator := NewChainValidator(trustStore, InsecureMode)
-<<<<<<< HEAD
-	
-	if strictValidator.getMaxChainLengthForMode() != 4 {
-		t.Errorf("Expected strict mode max chain length 4, got %d", strictValidator.getMaxChainLengthForMode())
-	}
-	
-	if lenientValidator.getMaxChainLengthForMode() != 6 {
-		t.Errorf("Expected lenient mode max chain length 6, got %d", lenientValidator.getMaxChainLengthForMode())
-	}
-	
-	if insecureValidator.getMaxChainLengthForMode() != 10 {
-		t.Errorf("Expected insecure mode max chain length 10, got %d", insecureValidator.getMaxChainLengthForMode())
-	}
-	
-=======
 
 	if strictValidator.getMaxChainLengthForMode() != 4 {
 		t.Errorf("Expected strict mode max chain length 4, got %d", strictValidator.getMaxChainLengthForMode())
@@ -179,22 +160,13 @@ func TestChainValidator_DefaultOptions(t *testing.T) {
 		t.Errorf("Expected insecure mode max chain length 10, got %d", insecureValidator.getMaxChainLengthForMode())
 	}
 
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/image-builder
 	// Test default options
 	options := validator.getDefaultOptions()
 	if options == nil {
 		t.Fatal("getDefaultOptions returned nil")
 	}
-<<<<<<< HEAD
-	
-	if options.MaxChainLength != 4 {
-		t.Errorf("Expected default max chain length 4, got %d", options.MaxChainLength)
-	}
-}
-=======
 
 	if options.MaxChainLength != 4 {
 		t.Errorf("Expected default max chain length 4, got %d", options.MaxChainLength)
 	}
 }
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/image-builder

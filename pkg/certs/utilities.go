@@ -126,7 +126,6 @@ func (c *TransportConfigurer) buildTLSConfig(registry string) (*tls.Config, erro
 	}, nil
 }
 
-
 // LoadConfigFromEnv loads configuration from environment
 func (c *TLSConfig) LoadConfigFromEnv() {
 	if os.Getenv("IDPBUILDER_TLS_INSECURE") == "true" {

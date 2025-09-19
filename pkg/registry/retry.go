@@ -9,8 +9,8 @@ import (
 // retryWithExponentialBackoff executes the given operation with exponential backoff retry logic
 func retryWithExponentialBackoff(operation func() error, operationName, target string) error {
 	const (
-		maxRetries   = 3
-		initialDelay = time.Second
+		maxRetries    = 3
+		initialDelay  = time.Second
 		backoffFactor = 2.0
 	)
 

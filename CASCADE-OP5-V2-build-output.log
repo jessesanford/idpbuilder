@@ -1,0 +1,64 @@
+/home/vscode/workspaces/this-is-not-the-target-repo-this-is-for-orchestrator-planning-only/efforts/phase2/wave1/integration-workspace/bin/controller-gen rbac:roleName=manager-role crd webhook paths="./api/..." output:crd:artifacts:config=pkg/controllers/resources
+/home/vscode/workspaces/this-is-not-the-target-repo-this-is-for-orchestrator-planning-only/efforts/phase2/wave1/integration-workspace/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./api/..."
+go fmt ./...
+pkg/doc.go
+pkg/build/image_builder.go
+pkg/certs/chain_validator.go:10:1: expected declaration, found '<<'
+pkg/certs/chain_validator.go:39:1: expected declaration, found '>>'
+pkg/certs/chain_validator_test.go:145:1: expected statement, found '<<'
+pkg/certs/chain_validator_test.go:168:1: expected statement, found '=='
+pkg/certs/chain_validator_test.go:182:1: expected statement, found '>>'
+pkg/certs/chain_validator_test.go:188:1: expected statement, found '<<'
+pkg/certs/chain_validator_test.go:194:1: expected declaration, found '=='
+pkg/certs/constants.go
+pkg/certs/constants_test.go
+pkg/certs/errors.go:26:1: expected 'IDENT', found '<<'
+pkg/certs/errors.go:27:1: expected 'IDENT', found '=='
+pkg/certs/errors.go:31:1: expected declaration, found '>>'
+pkg/certs/test_helpers.go
+pkg/certs/types.go
+pkg/certs/types_test.go
+pkg/certs/utilities.go
+pkg/certs/validator.go
+pkg/config/features.go
+pkg/oci/constants.go
+pkg/oci/manifest.go
+pkg/oci/manifest_test.go
+pkg/oci/types.go
+pkg/oci/types_test.go
+pkg/registry/auth.go
+pkg/registry/auth_test.go
+pkg/registry/gitea.go
+pkg/registry/gitea_test.go
+pkg/registry/interface.go
+pkg/registry/list.go
+pkg/registry/mocks_test.go
+pkg/registry/push.go
+pkg/registry/remote_options.go
+pkg/registry/retry.go
+pkg/registry/auth/authenticator.go
+pkg/registry/auth/authenticator_test.go
+pkg/registry/auth/basic.go
+pkg/registry/auth/basic_test.go
+pkg/registry/auth/manager.go
+pkg/registry/auth/manager_test.go
+pkg/registry/auth/middleware.go
+pkg/registry/auth/middleware_test.go
+pkg/registry/auth/token.go
+pkg/registry/auth/token_test.go
+pkg/registry/helpers/client.go
+pkg/registry/helpers/client_test.go
+pkg/registry/helpers/image.go
+pkg/registry/helpers/image_test.go
+pkg/registry/helpers/retry.go
+pkg/registry/helpers/retry_test.go
+pkg/registry/helpers/url.go
+pkg/registry/helpers/url_test.go
+pkg/registry/types/credentials.go
+pkg/registry/types/errors.go
+pkg/registry/types/errors_test.go
+pkg/registry/types/options.go
+pkg/registry/types/registry.go
+pkg/testutil/helpers.go
+exit status 2
+make: *** [Makefile:32: fmt] Error 1

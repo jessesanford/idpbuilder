@@ -158,12 +158,12 @@ func TestErrorConstructors(t *testing.T) {
 
 func TestErrorConstants(t *testing.T) {
 	expectedCodes := map[string]string{
-		"UNAUTHORIZED":           ErrCodeUnauthorized,
-		"FORBIDDEN":              ErrCodeForbidden,
-		"NOT_FOUND":              ErrCodeNotFound,
-		"TIMEOUT":                ErrCodeTimeout,
-		"CONNECTION_FAILED":      ErrCodeConnectionFailed,
-		"INVALID_CONFIG":         ErrCodeInvalidConfig,
+		"UNAUTHORIZED":            ErrCodeUnauthorized,
+		"FORBIDDEN":               ErrCodeForbidden,
+		"NOT_FOUND":               ErrCodeNotFound,
+		"TIMEOUT":                 ErrCodeTimeout,
+		"CONNECTION_FAILED":       ErrCodeConnectionFailed,
+		"INVALID_CONFIG":          ErrCodeInvalidConfig,
 		"TLS_VERIFICATION_FAILED": ErrCodeTLSVerification,
 	}
 

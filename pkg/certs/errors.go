@@ -23,12 +23,9 @@ var (
 	ErrCertNotYetValid     = errors.New("certificate is not yet valid")
 	ErrCertInvalidKeyUsage = errors.New("certificate has invalid key usage")
 	ErrCertSelfSigned      = errors.New("certificate is self-signed")
-<<<<<<< HEAD
-=======
 
 	// Feature flag errors
 	ErrFeatureDisabled = errors.New("certificate extraction feature is disabled")
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave1/image-builder
 )
 
 // CertError wraps certificate errors with context

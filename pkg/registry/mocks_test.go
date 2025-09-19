@@ -59,51 +59,63 @@ func (m *MockRegistry) GetCallCount(operation string) int {
 func (m *MockRegistry) checkError(operation string) error {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
-	
+
 	m.callCounts[operation]++
-	
+
 	if delay, exists := m.delays[operation]; exists {
 		time.Sleep(delay)
 	}
-	
+
 	if err, exists := m.errors[operation]; exists {
 		return err
 	}
-	
+
 	return nil
 }
 
 func (m *MockRegistry) Push(ctx context.Context, image string, content io.Reader) error {
-	if err := m.checkError("Push"); err != nil { return err }
-	
+	if err := m.checkError("Push"); err != nil {
+		return err
+	}
+
 	repository, tag, err := ParseImageRef(image)
-	if err != nil { return err }
-	
+	if err != nil {
+		return err
+	}
+
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if _, exists := m.repositories[repository]; !exists {
 		m.repositories[repository] = &MockRepository{Name: repository, Images: make(map[string]*MockImage)}
 	}
-	
+
 	data, err := io.ReadAll(content)
-	if err != nil { return err }
-	
+	if err != nil {
+		return err
+	}
+
 	m.repositories[repository].Images[tag] = &MockImage{Tag: tag, Digest: calculateDigest(data), Size: int64(len(data)), Data: data}
 	return nil
 }
 
 func (m *MockRegistry) List(ctx context.Context) ([]string, error) {
-	if err := m.checkError("List"); err != nil { return nil, err }
+	if err := m.checkError("List"); err != nil {
+		return nil, err
+	}
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	repositories := make([]string, 0, len(m.repositories))
-	for name := range m.repositories { repositories = append(repositories, name) }
+	for name := range m.repositories {
+		repositories = append(repositories, name)
+	}
 	return repositories, nil
 }
 
 func (m *MockRegistry) Exists(ctx context.Context, repository string) (bool, error) {
-	if err := m.checkError("Exists"); err != nil { return false, err }
+	if err := m.checkError("Exists"); err != nil {
+		return false, err
+	}
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	_, exists := m.repositories[repository]
@@ -111,10 +123,14 @@ func (m *MockRegistry) Exists(ctx context.Context, repository string) (bool, err
 }
 
 func (m *MockRegistry) Delete(ctx context.Context, repository string) error {
-	if err := m.checkError("Delete"); err != nil { return err }
+	if err := m.checkError("Delete"); err != nil {
+		return err
+	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if _, exists := m.repositories[repository]; !exists { return fmt.Errorf("repository %s not found", repository) }
+	if _, exists := m.repositories[repository]; !exists {
+		return fmt.Errorf("repository %s not found", repository)
+	}
 	delete(m.repositories, repository)
 	return nil
 }
@@ -134,11 +150,11 @@ func (m *MockRegistry) AddRepository(name string) *MockRepository {
 func (m *MockRegistry) AddImage(repository, tag string, size int64) *MockImage {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	
+
 	if _, exists := m.repositories[repository]; !exists {
 		m.repositories[repository] = &MockRepository{Name: repository, Images: make(map[string]*MockImage)}
 	}
-	
+
 	data := bytes.Repeat([]byte("mock"), int(size/4)+1)[:size]
 	image := &MockImage{Tag: tag, Digest: calculateDigest(data), Size: size, Data: data}
 	m.repositories[repository].Images[tag] = image
@@ -170,6 +186,6 @@ func (th *TestHelper) CreateTestManifest() *Manifest {
 		SchemaVersion: 2,
 		MediaType:     "application/vnd.docker.distribution.manifest.v2+json",
 		Config:        Layer{Digest: "sha256:cfg", Size: 1024, Data: bytes.NewReader([]byte("config"))},
-		Layers: []Layer{{Digest: "sha256:layer1", Size: 2048, Data: bytes.NewReader([]byte("layer1"))}},
+		Layers:        []Layer{{Digest: "sha256:layer1", Size: 2048, Data: bytes.NewReader([]byte("layer1"))}},
 	}
 }
