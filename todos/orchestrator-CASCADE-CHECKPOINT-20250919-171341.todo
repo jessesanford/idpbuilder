@@ -1,0 +1,27 @@
+[
+  {
+    "content": "CASCADE Op #1: P1W2 Rebase",
+    "status": "completed",
+    "activeForm": "Rebased P1W2 efforts onto P1W1 integration"
+  },
+  {
+    "content": "CASCADE Op #2: P1W2 Integration",
+    "status": "completed",
+    "activeForm": "Integrated cert-validation + 3 fallback splits"
+  },
+  {
+    "content": "CASCADE Op #3: Create Phase 1 Integration",
+    "status": "pending",
+    "activeForm": "Merge P1W1 + P1W2 integrations"
+  },
+  {
+    "content": "CASCADE Op #4: Rebase P2W1 Efforts",
+    "status": "pending",
+    "activeForm": "Rebase gitea-client splits and image-builder"
+  },
+  {
+    "content": "CASCADE Op #5-9: Complete remaining integrations",
+    "status": "pending",
+    "activeForm": "P2W1, P2W2, Phase2, and Project integrations"
+  }
+]
