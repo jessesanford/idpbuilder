@@ -1,10 +1,7 @@
 package registry
 
 import (
-<<<<<<< HEAD
 	"bytes"
-=======
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118
 	"context"
 	"crypto/sha256"
 	"encoding/json"
@@ -468,8 +465,4 @@ func (r *GiteaRegistry) logProgress(reference string, update v1.Update) {
 	} else {
 		log.Printf("Push progress for %s: %d bytes completed", reference, update.Complete)
 	}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118

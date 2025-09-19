@@ -2,7 +2,6 @@ package build
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -15,8 +14,6 @@ import (
 )
 
 var (
-	// ErrFeatureDisabled is returned when the image builder feature is disabled
-	ErrFeatureDisabled = errors.New("image builder feature is disabled")
 )
 
 // NewBuilder creates a new OCI image builder with the specified storage directory
@@ -38,10 +35,6 @@ func NewBuilder(storageDir string) (*Builder, error) {
 
 // BuildImage builds an OCI image from a directory context
 func (b *Builder) BuildImage(ctx context.Context, opts BuildOptions) (*BuildResult, error) {
-	// Check if the image builder feature is enabled
-	if !IsImageBuilderEnabled() {
-		return nil, ErrFeatureDisabled
-	}
 
 	// Validate options
 	if opts.ContextPath == "" {

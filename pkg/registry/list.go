@@ -306,8 +306,4 @@ func (r *GiteaRegistry) retryRepositoryOperation(operation func() ([]string, err
 	}
 
 	return result, nil
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/idpbuilder-oci-build-push/phase2/wave2/integration-20250916-002118
