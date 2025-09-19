@@ -1,338 +1,451 @@
-# Phase 1 Wave 1 Integration Merge Plan
+# Wave 2 Rebase Plan - Image Builder Branch
 
-## Metadata
-- **Created By**: Code Reviewer Agent (WAVE_MERGE_PLANNING state)
-- **Creation Time**: 2025-09-18T22:50:00Z
-- **Phase**: 1
-- **Wave**: 1
-- **Integration Branch**: `idpbuilder-oci-build-push/phase1-wave1-integration`
-- **Base Branch**: `main`
-- **Total Efforts**: 5
+## Critical Context (Phase 2 Wave 1 Rebase)
+- **Source Branch**: `idpbuilder-oci-build-push/phase2/wave1/image-builder`
+- **Target Base**: `origin/idpbuilder-oci-build-push/phase1/integration` (commit: 2c39501)
+- **Purpose**: Update image-builder to latest Phase 1 integration foundation
+- **Date**: 2025-09-14
 
-## Critical Requirements (R269, R270 Compliance)
-✅ Using ONLY original effort branches as sources
-✅ No integration branches used as merge sources
-✅ Dependency-aware merge ordering
-✅ Conflict resolution strategies documented
-✅ This is a PLAN ONLY - no actual merges executed
+## Rebase Purpose
+This rebase updates the image-builder branch from an old phase1/integration commit to the latest complete Phase 1 integration. The latest base includes:
+- All Wave 1 work (kind-cert-extraction, registry-tls-trust, registry-auth-types)
+- All Wave 2 work (cert-validation, fallback-strategies)
+- Complete Phase 1 foundation for Phase 2 efforts
 
-## Efforts to Integrate
-
-| Order | Effort ID | Effort Name | Branch | Lines | Dependencies | Status |
-|-------|-----------|-------------|--------|-------|--------------|--------|
-| 1 | E1.1.1 | kind-cert-extraction | `idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction` | 450 | None | COMPLETE |
-| 2 | E1.1.2A | registry-types | `idpbuilder-oci-build-push/phase1/wave1/registry-types` | 205 | E1.1.1 | COMPLETE |
-| 3 | E1.1.2B | registry-auth | `idpbuilder-oci-build-push/phase1/wave1/registry-auth` | 363 | E1.1.2A | COMPLETE |
-| 4 | E1.1.2C | registry-helpers | `idpbuilder-oci-build-push/phase1/wave1/registry-helpers` | 684 | E1.1.2B | COMPLETE |
-| 5 | E1.1.2D | registry-tests | `idpbuilder-oci-build-push/efforts/phase1/wave1/registry-tests` | 115 | E1.1.2C | COMPLETE (test-only) |
-
-**Total Implementation Lines**: 1,702 (excluding test-only effort per R007)
-**Total Including Tests**: 1,817
-
-## Merge Order Analysis
-
-### Dependency Chain
-```
-main
-  └─> E1.1.1 (kind-cert-extraction) - Foundational, no dependencies
-      └─> E1.1.2A (registry-types) - Core types, depends on E1.1.1
-          └─> E1.1.2B (registry-auth) - Auth logic, depends on E1.1.2A
-              └─> E1.1.2C (registry-helpers) - Utilities, depends on E1.1.2B
-                  └─> E1.1.2D (registry-tests) - Tests, depends on E1.1.2C
-```
-
-### Rationale for Order
-1. **kind-cert-extraction** must merge first as it's the foundational effort with no dependencies
-2. **registry-types** depends on kind-cert-extraction and provides core types for subsequent efforts
-3. **registry-auth** builds on registry-types, implementing authentication logic
-4. **registry-helpers** extends registry-auth with utility functions
-5. **registry-tests** is test-only code that validates all previous implementations
-
-## Pre-Merge Verification Steps
-
-### Step 0: Environment Setup
+## Phase 2 Wave 1 Context
+The image-builder effort is part of Phase 2 Wave 1 and should be based on the complete Phase 1 work.
 ```bash
-# Ensure clean integration workspace
-cd /home/vscode/workspaces/this-is-not-the-target-repo-this-is-for-orchestrator-planning-only/efforts/phase1/wave1/integration-workspace/repo
-git status
-# Should show: On branch idpbuilder-oci-build-push/phase1-wave1-integration
+# Navigate to integration workspace
+cd /home/vscode/workspaces/idpbuilder-oci-build-push/efforts/phase1/wave1/integration-workspace
 
-# Fetch all remotes to ensure we have latest
+<<<<<<< HEAD
+# Verify clean state
+git status --short
+
+# Ensure on integration branch
+git checkout idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401
+
+# Fetch all remotes to ensure latest
 git fetch --all
-
-# Verify integration branch is at main
-git diff origin/main --stat
-# Should show: no differences (clean slate)
 ```
 
-### Step 1: Verify All Effort Branches
+### Merge Commands (Execute in Order)
+
+#### 1. Merge kind-cert-extraction
 ```bash
-# For each effort, verify it exists and is complete
-for effort_dir in kind-cert-extraction registry-types registry-auth registry-helpers registry-tests; do
-    echo "Checking $effort_dir..."
-    if [ -d "../../$effort_dir/.git" ]; then
-        cd "../../$effort_dir"
-        git log --oneline -1
-        cd -
-    fi
-done
-```
+# Add remote for effort (if not exists)
+git remote add kind-cert-extraction ../kind-cert-extraction || true
 
-## Detailed Merge Instructions
-
-### Merge 1: kind-cert-extraction
-```bash
-# Navigate to integration directory
-cd /home/vscode/workspaces/this-is-not-the-target-repo-this-is-for-orchestrator-planning-only/efforts/phase1/wave1/integration-workspace/repo
-
-# Add effort repository as remote if not exists
-git remote add kind-cert-extraction ../../kind-cert-extraction 2>/dev/null || true
-
-# Fetch the effort branch
+# Fetch the effort
 git fetch kind-cert-extraction
 
-# Merge with descriptive message
+# Merge the effort branch
 git merge kind-cert-extraction/idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction \
-    --no-ff \
-    -m "feat(integration): merge E1.1.1 kind-cert-extraction into phase1-wave1
+  --no-ff \
+  -m "merge: integrate E1.1.1-kind-cert-extraction (650 lines) into Wave 1 integration"
 
-Integrates foundational Kind certificate extraction functionality
-- Adds certificate extraction from Kind clusters
-- Implements secure storage mechanisms
-- Provides base infrastructure for registry auth
-- Implementation: 450 lines"
-
-# Verify merge success
-git log --oneline -1
-git diff --stat HEAD~1
+# If conflicts, resolve and continue
+# Expected: No conflicts (first merge)
 ```
 
-### Merge 2: registry-types
+#### 2. Merge registry-tls-trust
 ```bash
-# Add effort repository as remote if not exists
-git remote add registry-types ../../registry-types 2>/dev/null || true
+# Add remote for effort
+git remote add registry-tls-trust ../registry-tls-trust || true
 
-# Fetch the effort branch
-git fetch registry-types
+# Fetch the effort
+git fetch registry-tls-trust
 
-# Merge with descriptive message
-git merge registry-types/idpbuilder-oci-build-push/phase1/wave1/registry-types \
-    --no-ff \
-    -m "feat(integration): merge E1.1.2A registry-types into phase1-wave1
+# Merge the effort branch
+git merge registry-tls-trust/idpbuilder-oci-build-push/phase1/wave1/registry-tls-trust \
+  --no-ff \
+  -m "merge: integrate E1.1.2-registry-tls-trust (700 lines) into Wave 1 integration"
 
-Integrates core registry type definitions
-- Defines registry configuration structures
-- Implements type validation
-- Provides interfaces for auth components
-- Implementation: 205 lines
-- Dependencies: E1.1.1 (kind-cert-extraction)"
-
-# Verify merge success
-git log --oneline -1
-git diff --stat HEAD~1
+# If conflicts in pkg/testutil:
+# git add pkg/testutil/
+# git commit --no-edit
 ```
 
-### Merge 3: registry-auth
+#### 3. Merge registry-auth-types-split-001
 ```bash
-# Add effort repository as remote if not exists
-git remote add registry-auth ../../registry-auth 2>/dev/null || true
+# Add remote for split
+git remote add registry-auth-types-split-001 ../registry-auth-types-split-001 || true
 
-# Fetch the effort branch
-git fetch registry-auth
+# Fetch the split
+git fetch registry-auth-types-split-001
 
-# Merge with descriptive message
-git merge registry-auth/idpbuilder-oci-build-push/phase1/wave1/registry-auth \
-    --no-ff \
-    -m "feat(integration): merge E1.1.2B registry-auth into phase1-wave1
+# Merge the split branch
+git merge registry-auth-types-split-001/idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-001 \
+  --no-ff \
+  -m "merge: integrate E1.1.3-registry-auth-types-split-001 (types/constants) into Wave 1 integration"
 
-Integrates registry authentication logic
-- Implements authentication handlers
-- Adds credential management
-- Provides auth middleware
-- Implementation: 363 lines
-- Dependencies: E1.1.2A (registry-types)"
-
-# Verify merge success
-git log --oneline -1
-git diff --stat HEAD~1
+# Expected: Clean merge (new pkg/oci directory)
 ```
 
-### Merge 4: registry-helpers
+#### 4. Merge registry-auth-types-split-002
 ```bash
-# Add effort repository as remote if not exists
-git remote add registry-helpers ../../registry-helpers 2>/dev/null || true
+# Add remote for split
+git remote add registry-auth-types-split-002 ../registry-auth-types-split-002 || true
 
-# Fetch the effort branch
-git fetch registry-helpers
+# Fetch the split
+git fetch registry-auth-types-split-002
 
-# Merge with descriptive message
-git merge registry-helpers/idpbuilder-oci-build-push/phase1/wave1/registry-helpers \
-    --no-ff \
-    -m "feat(integration): merge E1.1.2C registry-helpers into phase1-wave1
+# Merge the split branch
+git merge registry-auth-types-split-002/idpbuilder-oci-build-push/phase1/wave1/registry-auth-types-split-002 \
+  --no-ff \
+  -m "merge: integrate E1.1.3-registry-auth-types-split-002 (implementation) into Wave 1 integration"
 
-Integrates registry helper utilities
-- Adds utility functions for registry operations
-- Implements convenience wrappers
-- Provides shared helper methods
-- Implementation: 684 lines
-- Dependencies: E1.1.2B (registry-auth)"
-
-# Verify merge success
-git log --oneline -1
-git diff --stat HEAD~1
+# Expected: Clean merge (extends pkg/oci)
 ```
 
-### Merge 5: registry-tests
+#### 5. Merge cert-validation-split-001
 ```bash
-# Add effort repository as remote if not exists
-git remote add registry-tests ../../registry-tests 2>/dev/null || true
+# Add remote for split
+git remote add cert-validation-split-001 ../../wave2/cert-validation-split-001 || true
 
-# Fetch the effort branch
-git fetch registry-tests
+# Fetch the split
+git fetch cert-validation-split-001
 
-# Note: Branch name might be slightly different based on git output
-# Use the correct branch name: idpbuilder-oci-build-push/efforts/phase1/wave1/registry-tests
-git merge registry-tests/idpbuilder-oci-build-push/efforts/phase1/wave1/registry-tests \
-    --no-ff \
-    -m "feat(integration): merge E1.1.2D registry-tests into phase1-wave1
+# Merge the split branch
+git merge cert-validation-split-001/idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-001 \
+  --no-ff \
+  -m "merge: integrate E1.2.1-cert-validation-split-001 (validation foundations) into Wave 1 integration"
 
-Integrates comprehensive test suite
-- Adds unit tests for all registry components
-- Includes integration test scenarios
-- Provides test utilities and mocks
-- Test code: 115 lines (not counted toward implementation limit per R007)
-- Dependencies: E1.1.2C (registry-helpers)
-- Test coverage: 91.0% overall"
-
-# Verify merge success
-git log --oneline -1
-git diff --stat HEAD~1
+# If conflicts in pkg/certs:
+# Review both versions, likely additive
+# git add pkg/certs/
+# git commit --no-edit
 ```
 
-## Expected Conflicts
-
-Based on the dependency chain and incremental development approach, minimal conflicts are expected:
-
-### Potential Conflict Areas
-1. **go.mod/go.sum**: Each effort may have added dependencies
-   - **Resolution**: Accept all additions (merge both sides)
-
-2. **Import paths**: If efforts reference each other
-   - **Resolution**: Ensure all imports use correct package paths
-
-3. **Test files**: Overlapping test utilities
-   - **Resolution**: Keep all tests, rename if necessary
-
-### Conflict Resolution Strategy
+#### 6. Merge cert-validation-split-002
 ```bash
-# If conflicts occur during any merge:
-# 1. Review conflicts
-git status
-git diff --name-only --diff-filter=U
+# Add remote for split
+git remote add cert-validation-split-002 ../../wave2/cert-validation-split-002 || true
 
-# 2. For go.mod/go.sum conflicts:
-git checkout --theirs go.mod go.sum
+# Fetch the split
+git fetch cert-validation-split-002
+
+# Merge the split branch
+git merge cert-validation-split-002/idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-002 \
+  --no-ff \
+  -m "merge: integrate E1.2.1-cert-validation-split-002 (validation implementation) into Wave 1 integration"
+
+# Expected: Clean merge or minor conflicts in pkg/certs
+```
+
+#### 7. Merge cert-validation-split-003
+```bash
+# Add remote for split
+git remote add cert-validation-split-003 ../../wave2/cert-validation-split-003 || true
+
+# Fetch the split
+git fetch cert-validation-split-003
+
+# Merge the split branch
+git merge cert-validation-split-003/idpbuilder-oci-build-push/phase1/wave2/cert-validation-split-003 \
+  --no-ff \
+  -m "merge: integrate E1.2.1-cert-validation-split-003 (validation completion) into Wave 1 integration"
+
+# Expected: Clean merge
+```
+
+#### 8. Merge fallback-strategies
+```bash
+# Add remote for effort
+git remote add fallback-strategies ../../wave2/fallback-strategies || true
+
+# Fetch the effort
+git fetch fallback-strategies
+
+# Merge the effort branch
+git merge fallback-strategies/idpbuilder-oci-build-push/phase1/wave2/fallback-strategies \
+  --no-ff \
+  -m "merge: integrate E1.2.2-fallback-strategies (560 lines) into Wave 1 integration"
+
+# Expected: Clean merge (uses previous functionality)
+```
+
+### Post-Merge Validation
+```bash
+# After all merges, validate the integration
 go mod tidy
-
-# 3. For source conflicts:
-# Open conflicted files and merge manually
-# Ensure all functionality from both sides is preserved
-
-# 4. Complete the merge
-git add .
-git commit --no-edit
-
-# 5. Verify build still works
 go build ./...
 go test ./...
+
+# Verify all efforts integrated
+git log --oneline --graph -20
+
+# Check final size
+find pkg -name "*.go" | xargs wc -l | tail -1
 ```
 
-## Post-Merge Validation
+## Conflict Resolution Strategies
 
-### After All Merges Complete
+### General Resolution Approach
+1. **Additive Changes**: Accept both sides when adding new files/functions
+2. **Import Conflicts**: Merge all imports, remove duplicates
+3. **Test Utilities**: Keep all test helpers from different efforts
+4. **go.mod Conflicts**: Accept all dependency additions, run `go mod tidy`
+
+### Specific File Resolution
+
+#### pkg/testutil/* conflicts:
+```go
+// Accept all test utility additions
+// These are helper functions that shouldn't conflict functionally
+```
+
+#### pkg/certs/* conflicts:
+```go
+// registry-tls-trust adds: trust.go, utilities.go
+// cert-validation adds: validation_errors.go, storage.go, extractor.go
+// These should be additive - accept all
+```
+
+#### go.mod conflicts:
 ```bash
-# 1. Verify all efforts are integrated
-git log --oneline --graph -10
-
-# 2. Check total line count
-PROJECT_ROOT="/home/vscode/workspaces/this-is-not-the-target-repo-this-is-for-orchestrator-planning-only"
-$PROJECT_ROOT/tools/line-counter.sh
-
-# 3. Run build verification
-go build ./...
-
-# 4. Run test suite
-go test ./... -v
-
-# 5. Verify no files were lost
-git diff origin/main --name-status
-
-# 6. Create integration marker
-git commit --allow-empty -m "marker: phase1-wave1 integration complete
-
-All 5 efforts successfully integrated:
-- E1.1.1: kind-cert-extraction (450 lines)
-- E1.1.2A: registry-types (205 lines)
-- E1.1.2B: registry-auth (363 lines)
-- E1.1.2C: registry-helpers (684 lines)
-- E1.1.2D: registry-tests (115 lines, test-only)
-
-Total implementation: 1,702 lines
-Test coverage: 91.0%"
+# Accept all require statements
+# Then run:
+go mod tidy
 ```
 
-## Integration Success Criteria
+## Validation Checklist
 
-✅ **All merges complete without unresolved conflicts**
-✅ **Build succeeds**: `go build ./...` passes
-✅ **Tests pass**: `go test ./...` shows all green
-✅ **Line count verified**: Total ~1,702 implementation lines
-✅ **No functionality lost**: All features from efforts present
-✅ **Clean history**: Merge commits clearly document each integration
+After each merge:
+- [ ] No uncommitted changes (`git status`)
+- [ ] Build succeeds (`go build ./...`)
+- [ ] Tests pass (`go test ./...`)
+- [ ] No duplicate declarations
+- [ ] Dependencies resolved (`go mod tidy`)
 
-## Rollback Plan
-
-If integration fails at any point:
-
-```bash
-# Reset to last known good state
-git reset --hard HEAD
-
-# Or completely restart from main
-git reset --hard origin/main
-
-# Clean any artifacts
-git clean -fd
-
-# Retry merge sequence from failed point
-```
+After all merges:
+- [ ] All 8 efforts integrated
+- [ ] Total size within expectations (~4,000 lines)
+- [ ] Integration tests pass
+- [ ] No missing functionality
+- [ ] Clean commit history
 
 ## Notes for Integration Agent
 
-1. **Execute merges in exact order specified** - Dependencies are critical
-2. **Use provided commit messages** - They document the integration history
-3. **Stop immediately if merge fails** - Do not attempt to continue
-4. **Run validation after each merge** - Ensure incremental success
-5. **Document any deviations** - If branches don't exist as expected
+1. **DO NOT** merge the parent 'registry-auth-types' branch - only splits
+2. **DO NOT** merge the parent 'cert-validation' branch - only splits
+3. **ALWAYS** use `--no-ff` to preserve merge history
+4. **RESOLVE** conflicts conservatively - when in doubt, accept both
+5. **TEST** after each merge to catch issues early
+6. **DOCUMENT** any unexpected conflicts in the integration report
 
-## Alternative Approach (if effort repos not accessible)
+## Expected Final State
 
-If the separate effort repositories cannot be accessed as remotes, the Integration Agent should:
-
-1. Clone each effort repository separately
-2. Create patches from each:
-   ```bash
-   cd /path/to/effort
-   git format-patch origin/main..HEAD --stdout > effort.patch
-   ```
-3. Apply patches in order to integration branch:
-   ```bash
-   git am < effort.patch
-   ```
+After successful integration:
+- Branch: `idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401`
+- Contains: All Wave 1 and Wave 2 efforts (8 total branches merged)
+- Size: Approximately 4,000 lines of new code
+- Status: Ready for architect review and main branch merge
 
 ---
 
-**Plan Status**: COMPLETE
-**Ready for**: Integration Agent execution
-**Created**: 2025-09-18T22:50:00Z
-**Review Required**: No (plan only, no code changes)
+**Created**: 2025-09-12 03:30:00 UTC
+**Created By**: Code Reviewer Agent (WAVE_MERGE_PLANNING state)
+**Integration Target**: idpbuilder-oci-build-push/phase1/wave1/integration-20250912-032401
+=======
+# Verify we're on the integration branch
+git branch --show-current
+# Expected: idpbuilder-oci-build-push/phase1/wave1/integration
+
+# Ensure clean working directory
+git status
+# Expected: nothing to commit, working tree clean
+
+# Fetch latest changes
+git fetch origin
+```
+
+### Step 2: Add Effort Remotes (if not already added)
+```bash
+# Add remotes for the effort branches
+git remote add kind-cert ../kind-cert-extraction || true
+git remote add registry-tls ../registry-tls-trust || true
+
+# Fetch from the effort remotes
+git fetch kind-cert
+git fetch registry-tls
+```
+
+### Step 3: Merge E1.1.1 - Kind Certificate Extraction
+```bash
+# Merge E1.1.1 into integration
+git merge origin/phase1/wave1/effort-kind-cert-extraction --no-ff \
+  -m "feat: integrate E1.1.1 - Kind Certificate Extraction
+
+- Adds certificate extraction from Kind clusters
+- Implements KindCertValidator interface
+- Provides kubectl-based client for pod access
+- Feature flag: KIND_CERT_EXTRACTION_ENABLED"
+
+# Verify no conflicts
+if [ $? -ne 0 ]; then
+    echo "❌ Merge conflict detected - manual resolution required"
+    exit 1
+fi
+
+# Quick build test
+go build ./... || echo "⚠️ Build issue detected - review required"
+```
+
+### Step 4: Validate E1.1.1 Integration
+```bash
+# Run tests for E1.1.1 functionality
+go test ./pkg/certs/... -v
+
+# Verify renamed functions are present
+grep -r "KindCertValidator" pkg/
+grep -r "isKindFeatureEnabled" pkg/
+
+# Check for any remaining duplicates
+grep -r "^type CertValidator interface" pkg/ | wc -l
+# Expected: 1 (only KindCertValidator should exist at this point)
+```
+
+### Step 5: Merge E1.1.2 - Registry TLS Trust Integration
+```bash
+# Merge E1.1.2 into integration
+git merge origin/phase1/wave1/effort-registry-tls-trust --no-ff \
+  -m "feat: integrate E1.1.2 - Registry TLS Trust Integration
+
+- Adds TLS trust store management for registries
+- Implements RegistryCertValidator interface  
+- Provides go-containerregistry transport configuration
+- Feature flag: REGISTRY_TLS_TRUST_ENABLED"
+
+# Verify no conflicts
+if [ $? -ne 0 ]; then
+    echo "❌ Merge conflict detected - manual resolution required"
+    exit 1
+fi
+```
+
+### Step 6: Final Integration Validation
+```bash
+# Full build test
+echo "🔨 Running full build..."
+go build ./...
+
+# Run all tests
+echo "🧪 Running all tests..."
+go test ./... -v
+
+# Verify both renamed interfaces exist
+echo "✅ Verifying interface naming..."
+grep -r "KindCertValidator" pkg/ | head -2
+grep -r "RegistryCertValidator" pkg/ | head -2
+
+# Verify both renamed functions exist
+echo "✅ Verifying function naming..."
+grep -r "isKindFeatureEnabled" pkg/ | head -2
+grep -r "isRegistryFeatureEnabled" pkg/ | head -2
+
+# Check for any duplicate declarations
+echo "🔍 Checking for duplicates..."
+DUPLICATES=$(grep -r "^type CertValidator interface\|^func isFeatureEnabled" pkg/ | wc -l)
+if [ $DUPLICATES -gt 0 ]; then
+    echo "❌ Found duplicate declarations!"
+    grep -r "^type CertValidator interface\|^func isFeatureEnabled" pkg/
+    exit 1
+else
+    echo "✅ No duplicate declarations found"
+fi
+
+# Final line count
+echo "📏 Total integration size:"
+git diff --stat origin/main
+```
+
+### Step 7: Push Integration Branch
+```bash
+# Commit any integration-specific files if needed
+git add -A
+git commit -m "chore: wave 1 integration complete" || true
+
+# Push the integration branch
+git push origin idpbuilder-oci-build-push/phase1/wave1/integration
+```
+
+## ✅ Success Criteria
+
+The integration is successful when:
+1. ✅ Both effort branches merged without conflicts
+2. ✅ No duplicate type/function declarations
+3. ✅ All tests pass
+4. ✅ Build succeeds without errors
+5. ✅ Both feature flags can be toggled independently
+6. ✅ Integration branch pushed to remote
+
+## ⚠️ Rollback Plan
+
+If integration fails:
+```bash
+# Reset to pre-merge state
+git reset --hard origin/idpbuilder-oci-build-push/phase1/wave1/integration
+
+# Investigate specific failure
+# - Check for missed duplicate declarations
+# - Review test failures
+# - Examine build errors
+
+# Report issues back to orchestrator for ERROR_RECOVERY
+```
+
+## 📊 Expected Outcomes
+
+### File Structure After Integration
+```
+pkg/certs/
+├── extractor.go         # E1.1.1 - KindCertValidator
+├── extractor_test.go    # E1.1.1 tests
+├── helpers.go           # E1.1.1 - isKindFeatureEnabled
+├── helpers_test.go      # E1.1.1 tests
+├── kubectl_client.go    # E1.1.1
+├── storage.go           # E1.1.1
+├── trust.go            # E1.1.2 - isRegistryFeatureEnabled
+├── utilities.go        # E1.1.2 - RegistryCertValidator
+├── transport.go        # E1.1.2
+└── transport_test.go   # E1.1.2 tests
+```
+
+### Interface Summary
+- `KindCertValidator` - Interface for Kind certificate validation (E1.1.1)
+- `RegistryCertValidator` - Interface for registry certificate validation (E1.1.2)
+- No generic `CertValidator` interface should exist
+
+### Function Summary
+- `isKindFeatureEnabled()` - Check Kind feature flag (E1.1.1)
+- `isRegistryFeatureEnabled()` - Check registry feature flag (E1.1.2)
+- No generic `isFeatureEnabled()` function should exist
+
+## 🔍 Integration Verification Checklist
+
+- [ ] Integration workspace is clean
+- [ ] Both effort branches fetched
+- [ ] E1.1.1 merged successfully
+- [ ] E1.1.1 tests pass
+- [ ] E1.1.2 merged successfully
+- [ ] E1.1.2 tests pass
+- [ ] No duplicate declarations
+- [ ] Full build succeeds
+- [ ] All tests pass
+- [ ] Integration branch pushed
+
+## 📝 Notes for Integration Agent
+
+1. **Execute steps sequentially** - Do not parallelize merge operations
+2. **Stop on first failure** - Do not continue if any step fails
+3. **Document any issues** - Create ERROR-REPORT.md if problems occur
+4. **Verify each step** - Run validation commands after each merge
+5. **Use --no-ff** - Preserve merge commit history for tracking
+
+---
+
+**Plan Status**: READY FOR EXECUTION  
+**Created By**: Code Reviewer Agent  
+**For Execution By**: Integration Agent  
+>>>>>>> dccee8f (docs: add integration plan and work log)
