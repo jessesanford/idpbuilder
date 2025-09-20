@@ -9,6 +9,7 @@ import (
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/delete"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/get"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/helpers"
+	"github.com/cnoe-io/idpbuilder/pkg/cmd/push"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/version"
 	"github.com/spf13/cobra"
 )
@@ -32,7 +33,7 @@ func init() {
 
 	// New OCI image commands
 	rootCmd.AddCommand(BuildCmd)
-	rootCmd.AddCommand(PushCmd)
+	rootCmd.AddCommand(push.PushCmd)
 }
 
 func Execute(ctx context.Context) {
