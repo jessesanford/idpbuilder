@@ -1,6 +1,0 @@
-Completed at: 2025-09-14 20:14:52 UTC
-Effort: cli-commands (Phase 2, Wave 2)
-Branch: idpbuilder-oci-build-push/phase2/wave2/cli-commands
-Fix applied: Updated build.NewBuilder() API call for Wave 1 compatibility
-Commit: d40f88d fix(build): update NewBuilder API call for Wave 1 compatibility
-Status: FIXES COMPLETE
