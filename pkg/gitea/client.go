@@ -11,6 +11,45 @@ import (
 	"github.com/cnoe-io/idpbuilder/pkg/registry"
 )
 
+// registryAdapter adapts *registry.GiteaClient to implement registry.Registry interface
+type registryAdapter struct {
+	client *registry.GiteaClient
+}
+
+// Push implements the Registry interface
+func (r *registryAdapter) Push(ctx context.Context, image string, content io.Reader) error {
+	// For now, return not implemented since the GiteaClient uses v1.Image
+	return fmt.Errorf("Push with io.Reader not implemented - use direct GiteaClient methods")
+}
+
+// List implements the Registry interface
+func (r *registryAdapter) List(ctx context.Context) ([]string, error) {
+	return r.client.Catalog(ctx)
+}
+
+// Exists implements the Registry interface
+func (r *registryAdapter) Exists(ctx context.Context, repository string) (bool, error) {
+	_, err := r.client.Tags(ctx, repository)
+	if err != nil {
+		if strings.Contains(strings.ToLower(err.Error()), "not found") ||
+			strings.Contains(strings.ToLower(err.Error()), "404") {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+// Delete implements the Registry interface
+func (r *registryAdapter) Delete(ctx context.Context, repository string) error {
+	return fmt.Errorf("delete operation not implemented")
+}
+
+// Close implements the Registry interface
+func (r *registryAdapter) Close() error {
+	return r.client.Close()
+}
+
 // Client wraps the registry.Registry to provide the gitea-specific interface
 // expected by the CLI commands.
 type Client struct {
@@ -36,16 +75,17 @@ func NewClient(registryURL string, certManager *certs.DefaultTrustStore) (*Clien
 		Insecure: false,
 	}
 
-	// Create remote options with default values
-	opts := registry.DefaultRemoteOptions()
-
-	reg, err := registry.NewGiteaRegistry(&config, opts)
+	// Create the Gitea client using the proper constructor
+	giteaClient, err := registry.NewGiteaClient(registryURL, getRegistryUsername(), getRegistryPassword(), certManager)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create gitea registry: %w", err)
 	}
 
+	// Create adapter to implement Registry interface
+	adapter := &registryAdapter{client: giteaClient}
+
 	return &Client{
-		registry: reg,
+		registry: adapter,
 		config:   config,
 	}, nil
 }
@@ -59,18 +99,18 @@ func NewInsecureClient(registryURL string) (*Client, error) {
 		Insecure: true,
 	}
 
-	// Create remote options with insecure settings
-	opts := registry.DefaultRemoteOptions()
-	opts.Insecure = true
-	opts.SkipTLSVerify = true
-
-	reg, err := registry.NewGiteaRegistry(&config, opts)
+	// Create the Gitea client with insecure mode
+	giteaClient, err := registry.NewGiteaClient(registryURL, getRegistryUsername(), getRegistryPassword(), nil,
+		registry.WithInsecure(true))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create insecure gitea registry: %w", err)
 	}
 
+	// Create adapter to implement Registry interface
+	adapter := &registryAdapter{client: giteaClient}
+
 	return &Client{
-		registry: reg,
+		registry: adapter,
 		config:   config,
 	}, nil
 }

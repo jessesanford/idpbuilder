@@ -323,11 +323,46 @@ func (c *GiteaClient) Tags(ctx context.Context, repository string) ([]string, er
 	return tags, nil
 }
 
+// Delete removes a repository from the Gitea registry
+func (c *GiteaClient) Delete(ctx context.Context, repository string) error {
+	c.mu.Lock()
+	c.lastUsed = time.Now()
+	c.mu.Unlock()
+
+	// For now, return not implemented - this would require Gitea API integration
+	return fmt.Errorf("delete operation not implemented for Gitea registry")
+}
+
+// List returns a list of repositories in the Gitea registry (alias for Catalog)
+func (c *GiteaClient) List(ctx context.Context) ([]string, error) {
+	return c.Catalog(ctx)
+}
+
+// Exists checks if a repository exists in the Gitea registry
+func (c *GiteaClient) Exists(ctx context.Context, repository string) (bool, error) {
+	c.mu.Lock()
+	c.lastUsed = time.Now()
+	c.mu.Unlock()
+
+	// Try to get tags for the repository - if it exists, we should get tags or at least no "not found" error
+	_, err := c.Tags(ctx, repository)
+	if err != nil {
+		// Check if it's a "not found" error
+		if strings.Contains(strings.ToLower(err.Error()), "not found") ||
+			strings.Contains(strings.ToLower(err.Error()), "404") {
+			return false, nil
+		}
+		// Other errors are actual errors
+		return false, err
+	}
+	return true, nil
+}
+
 // Close cleans up resources used by the client
 func (c *GiteaClient) Close() error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	
+
 	// Currently no resources to clean up explicitly
 	// In future implementations, this might close connection pools
 	return nil
