@@ -10,10 +10,18 @@ import (
 	"time"
 )
 
+// SecurityLoggerInterface defines methods for logging security events
+type SecurityLoggerInterface interface {
+	LogCertificateFailure(registry string, err error)
+	LogFallbackAttempt(registry string, strategy FallbackStrategy, success bool, reason string)
+	LogFallbackSuccess(registry string, strategy FallbackStrategy, risk SecurityRiskLevel)
+	LogSecurityDecision(decision, target, reason string)
+}
+
 // FallbackHandler manages certificate validation fallback strategies
 type FallbackHandler struct {
 	recommendations *RecommendationEngine
-	securityLogger  *SecurityLogger
+	securityLogger  SecurityLoggerInterface
 	insecureManager *InsecureManager
 	config          *FallbackConfig
 }
