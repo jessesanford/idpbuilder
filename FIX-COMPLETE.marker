@@ -1,6 +1,0 @@
-Completed at: 2025-09-19 22:29:06 UTC
-Fix Applied: FIX-TEST-005 (R321 backport)
-File Modified: pkg/build/image_builder_test.go
-Change: Line 39 - assert.Equal -> assert.ErrorIs
-Tests: All passing (12 tests in pkg/build)
-Status: R321 BACKPORT COMPLETE
