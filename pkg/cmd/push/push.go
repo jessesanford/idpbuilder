@@ -24,7 +24,7 @@ Automatically handles certificate trust configuration for secure connections.`,
 	Example: `  idpbuilder push myapp:v1
   idpbuilder push --insecure myapp:latest
   idpbuilder push --registry https://gitea.example.com myapp:v2
-  idpbuilder push --username myuser --password mypass myapp:latest`,
+  idpbuilder push --username myuser --token mytoken myapp:latest`,
 	Args: cobra.ExactArgs(1),
 	RunE: runPush,
 }
@@ -33,7 +33,7 @@ func init() {
 	PushCmd.Flags().Bool("insecure", false, "Skip TLS certificate verification")
 	PushCmd.Flags().String("registry", "", "Registry URL (default: auto-detect)")
 	PushCmd.Flags().String("username", "", "Registry username (default: gitea_admin)")
-	PushCmd.Flags().String("password", "", "Registry password")
+	PushCmd.Flags().String("token", "", "Registry token/password")
 	PushCmd.Flags().Int("retry", 3, "Number of retry attempts")
 }
 
@@ -42,7 +42,7 @@ func runPush(cmd *cobra.Command, args []string) error {
 	insecure, _ := cmd.Flags().GetBool("insecure")
 	registryURL, _ := cmd.Flags().GetString("registry")
 	username, _ := cmd.Flags().GetString("username")
-	password, _ := cmd.Flags().GetString("password")
+	token, _ := cmd.Flags().GetString("token")
 	retryCount, _ := cmd.Flags().GetInt("retry")
 
 	// Don't add :latest tag if this is a tarball path
@@ -62,12 +62,16 @@ func runPush(cmd *cobra.Command, args []string) error {
 		username = "gitea_admin"
 	}
 
-	// Get password from environment if not provided
-	if password == "" {
-		if envPassword := os.Getenv("GITEA_PASSWORD"); envPassword != "" {
-			password = envPassword
-		} else if envPassword := os.Getenv("IDPBUILDER_REGISTRY_PASSWORD"); envPassword != "" {
-			password = envPassword
+	// Get token from environment if not provided
+	if token == "" {
+		if envToken := os.Getenv("GITEA_PASSWORD"); envToken != "" {
+			token = envToken
+		} else if envToken := os.Getenv("IDPBUILDER_REGISTRY_PASSWORD"); envToken != "" {
+			token = envToken
+		} else if envToken := os.Getenv("GITEA_TOKEN"); envToken != "" {
+			token = envToken
+		} else if envToken := os.Getenv("IDPBUILDER_REGISTRY_TOKEN"); envToken != "" {
+			token = envToken
 		}
 	}
 
@@ -113,7 +117,7 @@ func runPush(cmd *cobra.Command, args []string) error {
 	}
 
 	// Create registry client
-	client, err := registry.NewGiteaClient(registryURL, username, password, trustStore, clientOpts...)
+	client, err := registry.NewGiteaClient(registryURL, username, token, trustStore, clientOpts...)
 	if err != nil {
 		return fmt.Errorf("failed to create registry client: %w", err)
 	}
