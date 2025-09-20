@@ -15,24 +15,31 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "idpbuilder",
-	Short: "IDP Builder OCI image management and reference IDP operations",
-	Long: `IDP Builder provides tools to build and push OCI images to the embedded 
-Gitea registry with automatic certificate handling, as well as manage reference IDPs.`,
+	Short: "Manage reference IDPs",
+	Long:  "",
 }
 
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&helpers.LogLevel, "log-level", "l", "info", helpers.LogLevelMsg)
 	rootCmd.PersistentFlags().BoolVar(&helpers.ColoredOutput, "color", false, helpers.ColoredOutputMsg)
-	
-	// Existing commands for IDP management
 	rootCmd.AddCommand(create.CreateCmd)
 	rootCmd.AddCommand(get.GetCmd)
 	rootCmd.AddCommand(delete.DeleteCmd)
 	rootCmd.AddCommand(version.VersionCmd)
-	
-	// New OCI image commands
-	rootCmd.AddCommand(BuildCmd)
-	rootCmd.AddCommand(PushCmd)
+
+	// Add OCI commands - can be controlled by build tags or env vars
+	if isOCIEnabled() {
+		rootCmd.AddCommand(BuildCmd)
+		rootCmd.AddCommand(PushCmd)
+	}
+}
+
+// isOCIEnabled checks if OCI features should be enabled
+// This can be controlled by environment variable or build tags
+func isOCIEnabled() bool {
+	// Always enable for now, can add env var check later
+	// e.g., return os.Getenv("IDPBUILDER_ENABLE_OCI") == "true"
+	return true
 }
 
 func Execute(ctx context.Context) {
