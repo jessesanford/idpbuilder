@@ -144,5 +144,7 @@ require (
 
 // Replace directives for local packages to enable independent builds (R307 compliance)
 replace github.com/cnoe-io/idpbuilder/api => ./api
+
 replace github.com/cnoe-io/idpbuilder/globals => ./globals
+
 replace github.com/cnoe-io/idpbuilder/pkg => ./pkg
