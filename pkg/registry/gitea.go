@@ -108,6 +108,13 @@ func (g *GiteaRegistry) List(ctx context.Context) ([]string, error) {
 	return []string{}, nil // Catalog parsing would be implemented here
 }
 
+// UpdateCredentials updates the auth manager with new credentials
+func (g *GiteaRegistry) UpdateCredentials(username, password string) {
+	if g.authMgr != nil {
+		g.authMgr = NewAuthManager(username, password)
+	}
+}
+
 // Exists checks if a repository exists in the registry
 func (g *GiteaRegistry) Exists(ctx context.Context, repository string) (bool, error) {
 	if repository == "" {

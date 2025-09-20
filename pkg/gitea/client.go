@@ -199,4 +199,10 @@ func (c *Client) SetCredentials(username, password string) {
 	// Update the config with new credentials
 	c.config.Username = username
 	c.config.Token = password
+
+	// CRITICAL FIX: Update the registry's auth manager with new credentials
+	// The registry was created with empty credentials, so we need to update it
+	if giteaReg, ok := c.registry.(*registry.GiteaRegistry); ok {
+		giteaReg.UpdateCredentials(username, password)
+	}
 }
