@@ -7,12 +7,12 @@ import (
 
 // ClientOptions contains basic configuration for the Gitea client
 type ClientOptions struct {
-	BaseURL    string
-	Username   string
-	Password   string
-	Insecure   bool
-	Timeout    time.Duration
-	UserAgent  string
+	BaseURL   string
+	Username  string
+	Password  string
+	Insecure  bool
+	Timeout   time.Duration
+	UserAgent string
 }
 
 // NewDefaultOptions returns default client options for Gitea

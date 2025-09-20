@@ -8,17 +8,17 @@ import (
 	"strings"
 	"time"
 
-	"github.com/spf13/cobra"
-	"github.com/google/go-containerregistry/pkg/v1/tarball"
-	"github.com/cnoe-io/idpbuilder/pkg/registry"
 	"github.com/cnoe-io/idpbuilder/pkg/certs"
+	"github.com/cnoe-io/idpbuilder/pkg/registry"
+	"github.com/google/go-containerregistry/pkg/v1/tarball"
+	"github.com/spf13/cobra"
 )
 
 // PushCmd is the push command
 var PushCmd = &cobra.Command{
 	Use:   "push IMAGE[:TAG]",
 	Short: "Push image to Gitea registry",
-	Long:  `Push a container image to the builtin Gitea registry with certificate support.
+	Long: `Push a container image to the builtin Gitea registry with certificate support.
 Automatically handles certificate trust configuration for secure connections.`,
 	Example: `  idpbuilder push myapp:v1
   idpbuilder push --insecure myapp:latest
@@ -108,27 +108,27 @@ func runPush(cmd *cobra.Command, args []string) error {
 
 	// Push the image
 	fmt.Println("Loading image from tarball...")
-	
+
 	// For CLI usage, we expect the image to be provided as a tarball path
 	// This follows the pattern: idpbuilder build --output image.tar && idpbuilder push image.tar
 	tarballPath := image
 	if !strings.Contains(tarballPath, ".tar") {
 		return fmt.Errorf("image must be provided as a tarball path (*.tar). Use 'idpbuilder build --output %s.tar' first", image)
 	}
-	
+
 	// Load the OCI image from the tarball
 	img, err := tarball.ImageFromPath(tarballPath, nil)
 	if err != nil {
 		return fmt.Errorf("failed to load image from tarball: %w", err)
 	}
-	
+
 	// Parse registry URL to get host
 	registryHost := strings.TrimPrefix(registryURL, "https://")
 	registryHost = strings.TrimPrefix(registryHost, "http://")
-	
+
 	// Construct the full image reference for pushing
 	imageRef := fmt.Sprintf("%s/%s/hello-world:v1", registryHost, strings.ToLower(username))
-	
+
 	fmt.Printf("Pushing to %s...\n", imageRef)
 
 	// Prepare push options
@@ -143,7 +143,7 @@ func runPush(cmd *cobra.Command, args []string) error {
 	if err := client.Push(context.Background(), img, imageRef, pushOpts); err != nil {
 		return fmt.Errorf("push failed: %w", err)
 	}
-	
+
 	fmt.Printf("Successfully pushed %s to %s\n", tarballPath, imageRef)
 	return nil
 }
@@ -154,4 +154,3 @@ func extractGiteaCertificate() (*x509.Certificate, error) {
 	// For now, return an error to use insecure mode
 	return nil, fmt.Errorf("certificate extraction not yet implemented")
 }
-
