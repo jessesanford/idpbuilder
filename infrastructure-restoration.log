@@ -1,0 +1,11 @@
+From https://github.com/jessesanford/idpbuilder
+ * branch            idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002 -> FETCH_HEAD
+Updating 254c71c..7577b8a
+Fast-forward
+ FIX-004-COMPLETE.marker      | 14 ++++++++++++++
+ pkg/certs/chain_validator.go | 27 ---------------------------
+ pkg/certs/validator.go       | 31 +++++++++++++++++++++++++++++++
+ 3 files changed, 45 insertions(+), 27 deletions(-)
+ create mode 100644 FIX-004-COMPLETE.marker
+ create mode 100644 pkg/certs/validator.go
+[0;32m  ✅ Successfully updated to latest[0m
