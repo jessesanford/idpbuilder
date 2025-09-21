@@ -7,12 +7,12 @@ import (
 	"time"
 )
 
-// CertErrorType represents different types of certificate errors
-type CertErrorType int
+// RecommendationErrorType represents different types of certificate errors for recommendations
+type RecommendationErrorType int
 
 const (
 	// CertExpired indicates the certificate has expired
-	CertExpired CertErrorType = iota
+	CertExpired RecommendationErrorType = iota
 	// CertNotYetValid indicates the certificate is not yet valid
 	CertNotYetValid
 	// CertHostnameMismatch indicates hostname doesn't match certificate
@@ -29,8 +29,8 @@ const (
 	CertUnknownError
 )
 
-// String returns the string representation of CertErrorType
-func (c CertErrorType) String() string {
+// String returns the string representation of RecommendationErrorType
+func (c RecommendationErrorType) String() string {
 	switch c {
 	case CertExpired:
 		return "EXPIRED"
@@ -51,10 +51,10 @@ func (c CertErrorType) String() string {
 	}
 }
 
-// ErrorDetails contains specific information about a certificate error
-type ErrorDetails struct {
+// RecommendationErrorDetails contains specific information about a certificate error for recommendations
+type RecommendationErrorDetails struct {
 	// ErrorType categorizes the type of certificate error
-	ErrorType CertErrorType `json:"error_type"`
+	ErrorType RecommendationErrorType `json:"error_type"`
 	// ErrorMessage contains the raw error message
 	ErrorMessage string `json:"error_message"`
 	// Registry identifies the OCI registry where the error occurred
@@ -126,13 +126,13 @@ type RecommendationAction struct {
 // RecommendationEngine provides user-friendly recommendations for certificate errors
 type RecommendationEngine interface {
 	// GetRecommendations returns recommendations for a certificate error
-	GetRecommendations(details ErrorDetails) ([]Recommendation, error)
+	GetRecommendations(details RecommendationErrorDetails) ([]Recommendation, error)
 	// GetQuickFix returns a quick fix command for simple errors
-	GetQuickFix(details ErrorDetails) (string, error)
+	GetQuickFix(details RecommendationErrorDetails) (string, error)
 	// GetDiagnosticInfo returns diagnostic information for troubleshooting
 	GetDiagnosticInfo(registry string) (string, error)
 	// GetSecurityAssessment evaluates the security risk of ignoring an error
-	GetSecurityAssessment(details ErrorDetails) (SecurityAssessment, error)
+	GetSecurityAssessment(details RecommendationErrorDetails) (SecurityAssessment, error)
 }
 
 // SecurityAssessment evaluates the security risk of ignoring a certificate error
@@ -292,7 +292,7 @@ func (d *DefaultRecommendationEngine) initializeRegistryConfigs() {
 }
 
 // GetRecommendations returns recommendations for a certificate error
-func (d *DefaultRecommendationEngine) GetRecommendations(details ErrorDetails) ([]Recommendation, error) {
+func (d *DefaultRecommendationEngine) GetRecommendations(details RecommendationErrorDetails) ([]Recommendation, error) {
 	var recommendations []Recommendation
 
 	switch details.ErrorType {
@@ -318,7 +318,7 @@ func (d *DefaultRecommendationEngine) GetRecommendations(details ErrorDetails) (
 }
 
 // getExpiredCertRecommendations provides recommendations for expired certificates
-func (d *DefaultRecommendationEngine) getExpiredCertRecommendations(details ErrorDetails) []Recommendation {
+func (d *DefaultRecommendationEngine) getExpiredCertRecommendations(details RecommendationErrorDetails) []Recommendation {
 	recommendations := []Recommendation{
 		{
 			Title:           "Contact Registry Administrator",
@@ -384,7 +384,7 @@ func (d *DefaultRecommendationEngine) getExpiredCertRecommendations(details Erro
 }
 
 // getNotYetValidRecommendations provides recommendations for not-yet-valid certificates
-func (d *DefaultRecommendationEngine) getNotYetValidRecommendations(details ErrorDetails) []Recommendation {
+func (d *DefaultRecommendationEngine) getNotYetValidRecommendations(details RecommendationErrorDetails) []Recommendation {
 	return []Recommendation{
 		{
 			Title:           "Check System Time",
@@ -410,7 +410,7 @@ func (d *DefaultRecommendationEngine) getNotYetValidRecommendations(details Erro
 }
 
 // getHostnameMismatchRecommendations provides recommendations for hostname mismatches
-func (d *DefaultRecommendationEngine) getHostnameMismatchRecommendations(details ErrorDetails) []Recommendation {
+func (d *DefaultRecommendationEngine) getHostnameMismatchRecommendations(details RecommendationErrorDetails) []Recommendation {
 	return []Recommendation{
 		{
 			Title:           "Verify Registry URL",
@@ -451,7 +451,7 @@ func (d *DefaultRecommendationEngine) getHostnameMismatchRecommendations(details
 }
 
 // getUntrustedRootRecommendations provides recommendations for untrusted root certificates
-func (d *DefaultRecommendationEngine) getUntrustedRootRecommendations(details ErrorDetails) []Recommendation {
+func (d *DefaultRecommendationEngine) getUntrustedRootRecommendations(details RecommendationErrorDetails) []Recommendation {
 	return []Recommendation{
 		{
 			Title:           "Install Missing CA Certificate",
@@ -481,7 +481,7 @@ func (d *DefaultRecommendationEngine) getUntrustedRootRecommendations(details Er
 }
 
 // getSelfSignedRecommendations provides recommendations for self-signed certificates
-func (d *DefaultRecommendationEngine) getSelfSignedRecommendations(details ErrorDetails) []Recommendation {
+func (d *DefaultRecommendationEngine) getSelfSignedRecommendations(details RecommendationErrorDetails) []Recommendation {
 	return []Recommendation{
 		{
 			Title:           "Add Certificate Exception",
@@ -507,7 +507,7 @@ func (d *DefaultRecommendationEngine) getSelfSignedRecommendations(details Error
 }
 
 // getRevokedCertRecommendations provides recommendations for revoked certificates
-func (d *DefaultRecommendationEngine) getRevokedCertRecommendations(details ErrorDetails) []Recommendation {
+func (d *DefaultRecommendationEngine) getRevokedCertRecommendations(details RecommendationErrorDetails) []Recommendation {
 	return []Recommendation{
 		{
 			Title:           "Certificate Revocation Issue",
@@ -528,7 +528,7 @@ func (d *DefaultRecommendationEngine) getRevokedCertRecommendations(details Erro
 }
 
 // getInvalidSignatureRecommendations provides recommendations for invalid signatures
-func (d *DefaultRecommendationEngine) getInvalidSignatureRecommendations(details ErrorDetails) []Recommendation {
+func (d *DefaultRecommendationEngine) getInvalidSignatureRecommendations(details RecommendationErrorDetails) []Recommendation {
 	return []Recommendation{
 		{
 			Title:           "Certificate Integrity Issue",
@@ -549,7 +549,7 @@ func (d *DefaultRecommendationEngine) getInvalidSignatureRecommendations(details
 }
 
 // getGenericRecommendations provides fallback recommendations for unknown errors
-func (d *DefaultRecommendationEngine) getGenericRecommendations(details ErrorDetails) []Recommendation {
+func (d *DefaultRecommendationEngine) getGenericRecommendations(details RecommendationErrorDetails) []Recommendation {
 	return []Recommendation{
 		{
 			Title:           "General Certificate Troubleshooting",
@@ -575,7 +575,7 @@ func (d *DefaultRecommendationEngine) getGenericRecommendations(details ErrorDet
 }
 
 // GetQuickFix returns a quick fix command for simple errors
-func (d *DefaultRecommendationEngine) GetQuickFix(details ErrorDetails) (string, error) {
+func (d *DefaultRecommendationEngine) GetQuickFix(details RecommendationErrorDetails) (string, error) {
 	switch details.ErrorType {
 	case CertExpired, CertNotYetValid:
 		return "sudo ntpdate -s time.nist.gov", nil
@@ -621,7 +621,7 @@ func (d *DefaultRecommendationEngine) GetDiagnosticInfo(registry string) (string
 }
 
 // GetSecurityAssessment evaluates the security risk of ignoring an error
-func (d *DefaultRecommendationEngine) GetSecurityAssessment(details ErrorDetails) (SecurityAssessment, error) {
+func (d *DefaultRecommendationEngine) GetSecurityAssessment(details RecommendationErrorDetails) (SecurityAssessment, error) {
 	assessment := SecurityAssessment{
 		Compliance: []string{"SOX", "PCI-DSS", "HIPAA", "SOC2"},
 	}
