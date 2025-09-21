@@ -1,4 +1,4 @@
-valkey-cluster:
+redis-cluster:
   enabled: false
 postgresql:
   enabled: false
@@ -27,21 +27,10 @@ gitea:
     server:
       DOMAIN: '{{- if .UsePathRouting -}} {{ .Host }} {{- else -}} gitea.{{- .Host }} {{- end }}'
       ROOT_URL: '{{- if .UsePathRouting }} {{- .Protocol }}://{{ .Host }}:{{ .Port }}/gitea {{- else }} {{- .Protocol }}://gitea.{{ .Host }}:{{ .Port }} {{- end }}'
-      SSH_PORT: 32222
-      SSH_LISTEN_PORT: 2222
-    webhook:
-      ALLOWED_HOST_LIST: private
-      SKIP_TLS_VERIFY: true
 
 service:
-  http:
-    type: NodePort
-    port: 3000
-    nodePort: 32223
-    externalTrafficPolicy: Local
   ssh:
     type: NodePort
-    port: 32222
     nodePort: 32222
     externalTrafficPolicy: Local
 
@@ -51,5 +40,7 @@ ingress:
 
 image:
   pullPolicy: "IfNotPresent"
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1.22.0"
   # Adds -rootless suffix to image name
   rootless: true
