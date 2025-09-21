@@ -80,7 +80,7 @@ type FallbackStrategy struct {
 	Mode FallbackMode
 	
 	// Rules contains specific rules for different error types
-	Rules map[CertErrorType]FallbackAction
+	Rules map[DetectorErrorType]FallbackAction
 	
 	// Hostnames contains hostname-specific overrides
 	Hostnames map[string]FallbackAction
@@ -151,7 +151,7 @@ func (m FallbackMode) String() string {
 // FallbackHandler interface defines methods for handling certificate errors
 type FallbackHandler interface {
 	// HandleError processes a certificate error and returns a decision
-	HandleError(ctx context.Context, errorDetails *ErrorDetails) (*FallbackDecision, error)
+	HandleError(ctx context.Context, errorDetails *DetectorErrorDetails) (*FallbackDecision, error)
 	
 	// GetStrategy returns the current fallback strategy
 	GetStrategy() *FallbackStrategy
@@ -172,27 +172,27 @@ type FallbackHandler interface {
 	CreateTLSConfig(decision *FallbackDecision) (*tls.Config, error)
 	
 	// LogSecurityDecision logs a security decision (implementation in Split 002)
-	LogSecurityDecision(decision *FallbackDecision, errorDetails *ErrorDetails)
+	LogSecurityDecision(decision *FallbackDecision, errorDetails *DetectorErrorDetails)
 }
 
 // UserPrompter interface defines methods for prompting users for decisions
 type UserPrompter interface {
 	// PromptForDecision asks the user to make a decision about a certificate error
-	PromptForDecision(ctx context.Context, errorDetails *ErrorDetails) (FallbackAction, error)
+	PromptForDecision(ctx context.Context, errorDetails *DetectorErrorDetails) (FallbackAction, error)
 	
 	// PromptForTrust asks the user whether to trust a certificate permanently
 	PromptForTrust(ctx context.Context, cert *x509.Certificate) (bool, error)
 }
 
-// SecurityLogger interface defines methods for logging security-related events
+// HandlerSecurityLogger interface defines methods for logging security-related events
 // Implementation will be provided in Split 002
-type SecurityLogger interface {
+type HandlerSecurityLogger interface {
 	// LogCertificateError logs a certificate error
-	LogCertificateError(errorDetails *ErrorDetails)
-	
+	LogCertificateError(errorDetails *DetectorErrorDetails)
+
 	// LogFallbackDecision logs a fallback decision
-	LogFallbackDecision(decision *FallbackDecision, errorDetails *ErrorDetails)
-	
+	LogFallbackDecision(decision *FallbackDecision, errorDetails *DetectorErrorDetails)
+
 	// LogSecurityRisk logs a security risk assessment
 	LogSecurityRisk(level int, reason string, context map[string]interface{})
 }

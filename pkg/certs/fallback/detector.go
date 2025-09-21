@@ -10,12 +10,12 @@ import (
 	"time"
 )
 
-// CertErrorType represents different types of certificate errors
-type CertErrorType int
+// DetectorErrorType represents different types of certificate errors
+type DetectorErrorType int
 
 const (
 	// ErrorTypeUnknown represents an unclassified error
-	ErrorTypeUnknown CertErrorType = iota
+	ErrorTypeUnknown DetectorErrorType = iota
 	
 	// ErrorTypeExpired indicates the certificate has expired
 	ErrorTypeExpired
@@ -46,7 +46,7 @@ const (
 )
 
 // String returns a human-readable representation of the error type
-func (e CertErrorType) String() string {
+func (e DetectorErrorType) String() string {
 	switch e {
 	case ErrorTypeExpired:
 		return "expired"
@@ -71,10 +71,10 @@ func (e CertErrorType) String() string {
 	}
 }
 
-// ErrorDetails contains detailed information about a certificate error
-type ErrorDetails struct {
+// DetectorErrorDetails contains detailed information about a certificate error
+type DetectorErrorDetails struct {
 	// Type is the classified error type
-	Type CertErrorType
+	Type DetectorErrorType
 	
 	// OriginalError is the underlying error that occurred
 	OriginalError error
@@ -104,13 +104,13 @@ type ErrorDetails struct {
 // CertErrorDetector interface defines methods for detecting and classifying certificate errors
 type CertErrorDetector interface {
 	// DetectError analyzes a TLS error and returns detailed error information
-	DetectError(err error, hostname string) (*ErrorDetails, error)
-	
+	DetectError(err error, hostname string) (*DetectorErrorDetails, error)
+
 	// ClassifyError determines the type of certificate error
-	ClassifyError(err error) CertErrorType
-	
+	ClassifyError(err error) DetectorErrorType
+
 	// ValidateChain performs validation on a certificate chain
-	ValidateChain(chain []*x509.Certificate, hostname string) *ErrorDetails
+	ValidateChain(chain []*x509.Certificate, hostname string) *DetectorErrorDetails
 	
 	// IsTrustedCA checks if the certificate authority is trusted
 	IsTrustedCA(cert *x509.Certificate) bool
@@ -119,7 +119,7 @@ type CertErrorDetector interface {
 	ExtractCertFromError(err error) (*x509.Certificate, []*x509.Certificate)
 	
 	// IsRecoverable determines if an error is potentially recoverable
-	IsRecoverable(errorType CertErrorType) bool
+	IsRecoverable(errorType DetectorErrorType) bool
 }
 
 // DefaultCertErrorDetector implements the CertErrorDetector interface
@@ -153,7 +153,7 @@ func NewDefaultCertErrorDetector() *DefaultCertErrorDetector {
 }
 
 // DetectError analyzes a TLS error and returns detailed error information
-func (d *DefaultCertErrorDetector) DetectError(err error, hostname string) (*ErrorDetails, error) {
+func (d *DefaultCertErrorDetector) DetectError(err error, hostname string) (*DetectorErrorDetails, error) {
 	if err == nil {
 		return nil, fmt.Errorf("no error to analyze")
 	}
@@ -161,7 +161,7 @@ func (d *DefaultCertErrorDetector) DetectError(err error, hostname string) (*Err
 	errorType := d.ClassifyError(err)
 	cert, chain := d.ExtractCertFromError(err)
 	
-	details := &ErrorDetails{
+	details := &DetectorErrorDetails{
 		Type:          errorType,
 		OriginalError: err,
 		Certificate:   cert,
@@ -178,7 +178,7 @@ func (d *DefaultCertErrorDetector) DetectError(err error, hostname string) (*Err
 }
 
 // ClassifyError determines the type of certificate error
-func (d *DefaultCertErrorDetector) ClassifyError(err error) CertErrorType {
+func (d *DefaultCertErrorDetector) ClassifyError(err error) DetectorErrorType {
 	if err == nil {
 		return ErrorTypeUnknown
 	}
@@ -240,9 +240,9 @@ func (d *DefaultCertErrorDetector) ClassifyError(err error) CertErrorType {
 }
 
 // ValidateChain performs validation on a certificate chain
-func (d *DefaultCertErrorDetector) ValidateChain(chain []*x509.Certificate, hostname string) *ErrorDetails {
+func (d *DefaultCertErrorDetector) ValidateChain(chain []*x509.Certificate, hostname string) *DetectorErrorDetails {
 	if len(chain) == 0 {
-		return &ErrorDetails{
+		return &DetectorErrorDetails{
 			Type:             ErrorTypeBadCertificate,
 			Hostname:         hostname,
 			Timestamp:        time.Now(),
@@ -257,7 +257,7 @@ func (d *DefaultCertErrorDetector) ValidateChain(chain []*x509.Certificate, host
 	
 	// Check expiration with time skew tolerance
 	if leafCert.NotAfter.Add(d.timeSkewTolerance).Before(now) {
-		return &ErrorDetails{
+		return &DetectorErrorDetails{
 			Type:             ErrorTypeExpired,
 			Certificate:      leafCert,
 			Chain:            chain,
@@ -271,7 +271,7 @@ func (d *DefaultCertErrorDetector) ValidateChain(chain []*x509.Certificate, host
 	
 	// Check if certificate is not yet valid
 	if leafCert.NotBefore.Add(-d.timeSkewTolerance).After(now) {
-		return &ErrorDetails{
+		return &DetectorErrorDetails{
 			Type:             ErrorTypeNotYetValid,
 			Certificate:      leafCert,
 			Chain:            chain,
@@ -286,7 +286,7 @@ func (d *DefaultCertErrorDetector) ValidateChain(chain []*x509.Certificate, host
 	// Check hostname verification
 	if hostname != "" {
 		if err := leafCert.VerifyHostname(hostname); err != nil {
-			return &ErrorDetails{
+			return &DetectorErrorDetails{
 				Type:             ErrorTypeHostnameMismatch,
 				OriginalError:    err,
 				Certificate:      leafCert,
@@ -303,7 +303,7 @@ func (d *DefaultCertErrorDetector) ValidateChain(chain []*x509.Certificate, host
 	// Check if certificate is self-signed
 	if leafCert.Subject.String() == leafCert.Issuer.String() {
 		isRecoverable := d.allowSelfSigned
-		return &ErrorDetails{
+		return &DetectorErrorDetails{
 			Type:             ErrorTypeSelfSigned,
 			Certificate:      leafCert,
 			Chain:            chain,
@@ -373,7 +373,7 @@ func (d *DefaultCertErrorDetector) ExtractCertFromError(err error) (*x509.Certif
 }
 
 // IsRecoverable determines if an error is potentially recoverable
-func (d *DefaultCertErrorDetector) IsRecoverable(errorType CertErrorType) bool {
+func (d *DefaultCertErrorDetector) IsRecoverable(errorType DetectorErrorType) bool {
 	switch errorType {
 	case ErrorTypeHostnameMismatch:
 		return true // Can bypass hostname verification
@@ -399,7 +399,7 @@ func (d *DefaultCertErrorDetector) IsRecoverable(errorType CertErrorType) bool {
 }
 
 // populateErrorDetails fills in the message and suggested actions for an error
-func (d *DefaultCertErrorDetector) populateErrorDetails(details *ErrorDetails) {
+func (d *DefaultCertErrorDetector) populateErrorDetails(details *DetectorErrorDetails) {
 	if details == nil {
 		return
 	}

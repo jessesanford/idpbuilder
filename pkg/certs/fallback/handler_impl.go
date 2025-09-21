@@ -19,7 +19,7 @@ type DefaultFallbackHandler struct {
 	strategy *FallbackStrategy
 	
 	// logger is the security logger interface (implementation in Split 002)
-	logger SecurityLogger
+	logger HandlerSecurityLogger
 	
 	// prompter is the user prompter interface
 	prompter UserPrompter
@@ -38,7 +38,7 @@ type DefaultFallbackHandler struct {
 }
 
 // NewDefaultFallbackHandler creates a new DefaultFallbackHandler with secure defaults
-func NewDefaultFallbackHandler(detector CertErrorDetector, logger SecurityLogger, prompter UserPrompter) *DefaultFallbackHandler {
+func NewDefaultFallbackHandler(detector CertErrorDetector, logger HandlerSecurityLogger, prompter UserPrompter) *DefaultFallbackHandler {
 	return &DefaultFallbackHandler{
 		detector:       detector,
 		logger:         logger,
@@ -54,7 +54,7 @@ func NewDefaultFallbackHandler(detector CertErrorDetector, logger SecurityLogger
 func NewSecureStrategy() *FallbackStrategy {
 	return &FallbackStrategy{
 		Mode:              ModeSecure,
-		Rules:             map[CertErrorType]FallbackAction{
+		Rules:             map[DetectorErrorType]FallbackAction{
 			ErrorTypeExpired:          ActionDeny,
 			ErrorTypeNotYetValid:      ActionDeny,
 			ErrorTypeHostnameMismatch: ActionDeny,
@@ -81,7 +81,7 @@ func NewSecureStrategy() *FallbackStrategy {
 func NewDevelopmentStrategy() *FallbackStrategy {
 	return &FallbackStrategy{
 		Mode:              ModeDevelopment,
-		Rules:             map[CertErrorType]FallbackAction{
+		Rules:             map[DetectorErrorType]FallbackAction{
 			ErrorTypeExpired:          ActionLog,
 			ErrorTypeNotYetValid:      ActionLog,
 			ErrorTypeHostnameMismatch: ActionLog,
@@ -108,7 +108,7 @@ func NewDevelopmentStrategy() *FallbackStrategy {
 func NewInteractiveStrategy() *FallbackStrategy {
 	return &FallbackStrategy{
 		Mode:              ModeInteractive,
-		Rules:             map[CertErrorType]FallbackAction{
+		Rules:             map[DetectorErrorType]FallbackAction{
 			ErrorTypeExpired:          ActionPrompt,
 			ErrorTypeNotYetValid:      ActionPrompt,
 			ErrorTypeHostnameMismatch: ActionPrompt,
@@ -132,7 +132,7 @@ func NewInteractiveStrategy() *FallbackStrategy {
 }
 
 // HandleError processes a certificate error and returns a fallback decision
-func (h *DefaultFallbackHandler) HandleError(ctx context.Context, errorDetails *ErrorDetails) (*FallbackDecision, error) {
+func (h *DefaultFallbackHandler) HandleError(ctx context.Context, errorDetails *DetectorErrorDetails) (*FallbackDecision, error) {
 	if errorDetails == nil {
 		return nil, fmt.Errorf("error details cannot be nil")
 	}
@@ -309,7 +309,7 @@ func (h *DefaultFallbackHandler) CreateTLSConfig(decision *FallbackDecision) (*t
 }
 
 // LogSecurityDecision logs a security decision (stub - full implementation in Split 002)
-func (h *DefaultFallbackHandler) LogSecurityDecision(decision *FallbackDecision, errorDetails *ErrorDetails) {
+func (h *DefaultFallbackHandler) LogSecurityDecision(decision *FallbackDecision, errorDetails *DetectorErrorDetails) {
 	if h.logger != nil {
 		h.logger.LogFallbackDecision(decision, errorDetails)
 	}
@@ -324,14 +324,14 @@ func (h *DefaultFallbackHandler) SetUserPrompter(prompter UserPrompter) {
 }
 
 // SetSecurityLogger sets the security logger interface
-func (h *DefaultFallbackHandler) SetSecurityLogger(logger SecurityLogger) {
+func (h *DefaultFallbackHandler) SetSecurityLogger(logger HandlerSecurityLogger) {
 	h.mutex.Lock()
 	h.logger = logger
 	h.mutex.Unlock()
 }
 
 // determineAction determines the appropriate action based on the error details and strategy
-func (h *DefaultFallbackHandler) determineAction(errorDetails *ErrorDetails) FallbackAction {
+func (h *DefaultFallbackHandler) determineAction(errorDetails *DetectorErrorDetails) FallbackAction {
 	// Check hostname-specific rules first
 	if action, exists := h.strategy.Hostnames[errorDetails.Hostname]; exists {
 		return action
@@ -366,7 +366,7 @@ func (h *DefaultFallbackHandler) determineAction(errorDetails *ErrorDetails) Fal
 }
 
 // createDecision creates a FallbackDecision based on the action and error details
-func (h *DefaultFallbackHandler) createDecision(action FallbackAction, errorDetails *ErrorDetails) *FallbackDecision {
+func (h *DefaultFallbackHandler) createDecision(action FallbackAction, errorDetails *DetectorErrorDetails) *FallbackDecision {
 	decision := &FallbackDecision{
 		Action:       action,
 		Reason:       fmt.Sprintf("Certificate error %s for host %s", errorDetails.Type.String(), errorDetails.Hostname),
@@ -384,7 +384,7 @@ func (h *DefaultFallbackHandler) createDecision(action FallbackAction, errorDeta
 }
 
 // createDecisionKey creates a unique key for caching decisions
-func (h *DefaultFallbackHandler) createDecisionKey(errorDetails *ErrorDetails) string {
+func (h *DefaultFallbackHandler) createDecisionKey(errorDetails *DetectorErrorDetails) string {
 	return fmt.Sprintf("%s:%s:%s", errorDetails.Hostname, errorDetails.Type.String(), errorDetails.Message)
 }
 
@@ -401,13 +401,13 @@ func (h *DefaultFallbackHandler) rememberDecision(key string, decision *Fallback
 
 
 // assessSecurityRisk evaluates the security risk level for a given action and error
-func (h *DefaultFallbackHandler) assessSecurityRisk(action FallbackAction, errorDetails *ErrorDetails) int {
+func (h *DefaultFallbackHandler) assessSecurityRisk(action FallbackAction, errorDetails *DetectorErrorDetails) int {
 	if action == ActionDeny {
 		return 0 // No risk if we deny
 	}
 	
-	// Base risk by error type  
-	risk := map[CertErrorType]int{
+	// Base risk by error type
+	risk := map[DetectorErrorType]int{
 		ErrorTypeRevoked: 10, ErrorTypeBadCertificate: 9, ErrorTypeUntrustedCA: 8,
 		ErrorTypeSelfSigned: 7, ErrorTypeHostnameMismatch: 6, ErrorTypeChainIncomplete: 5,
 		ErrorTypeExpired: 4, ErrorTypeNotYetValid: 3, ErrorTypeKeyUsage: 2,
