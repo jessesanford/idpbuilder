@@ -1,9 +1,9 @@
-# SPLIT-PLAN-001: Core Detection and Handling
+# SPLIT-PLAN-002: Support Systems and Complete Testing
 
-## Split 001 of 2: Certificate Error Detection and Core Handler
+## Split 002 of 2: Logging, Recommendations, and Full Test Coverage
 **Planner**: Code Reviewer $$
 **Parent Effort**: fallback-strategies
-**Created**: 2025-08-31 20:38:00
+**Created**: 2025-08-31 20:38:30
 
 <!-- ⚠️ ORCHESTRATOR METADATA PLACEHOLDER - DO NOT REMOVE ⚠️ -->
 <!-- The orchestrator will add infrastructure metadata below: -->
@@ -12,155 +12,190 @@
 <!-- END PLACEHOLDER -->
 
 ## Boundaries (⚠️⚠️⚠️ CRITICAL: All splits MUST reference SAME effort!)
-- **Previous Split**: None (first split of THIS effort)
-  - Path: N/A (this is Split 001)
-  - Branch: N/A
-- **This Split**: Split 001 of phase1/wave2/fallback-strategies
+- **Previous Split**: Split 001 of phase1/wave2/fallback-strategies
   - Path: efforts/phase1/wave2/fallback-strategies/split-001/
   - Branch: idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies-split-001
-- **Next Split**: Split 002 of phase1/wave2/fallback-strategies
+  - Summary: Implemented core detection and handler interfaces
+- **This Split**: Split 002 of phase1/wave2/fallback-strategies
   - Path: efforts/phase1/wave2/fallback-strategies/split-002/
   - Branch: idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies-split-002
-- **File Boundaries**:
-  - This Split Start: New implementation (no previous lines)
-  - This Split End: Complete detector.go and handler.go with basic tests
-  - Next Split Start: logger.go (new file)
+- **Next Split**: None (final split of phase1/wave2/fallback-strategies)
+  - Path: N/A
+  - Branch: N/A
 
-## Files in This Split (EXCLUSIVE - no overlap with other splits)
+⚠️ NEVER reference splits from different efforts!
+✅ RIGHT: "Previous Split: Split 001 of phase1/wave2/fallback-strategies"
+❌ WRONG: "Previous Split: Split 001 (certificate-validation-pipeline)"
+
+## Files in This Split (EXCLUSIVE - no overlap except test completion)
 | File | Lines | Purpose |
 |------|-------|---------|
-| pkg/certs/fallback/detector.go | 298 | Certificate error detection and classification |
-| pkg/certs/fallback/handler.go | 220 | Main fallback handler implementation |
-| pkg/certs/fallback/detector_test.go | ~200 | Basic unit tests for detector (partial) |
-| **Total Estimated** | ~718 | Well under 800 limit |
+| pkg/certs/fallback/logger.go | 232 | Security decision logging implementation |
+| pkg/certs/fallback/recommendations.go | 344 | User-friendly recommendation generation |
+| pkg/certs/fallback/handler_test.go | 395 | Complete handler test suite |
+| pkg/certs/fallback/detector_test.go | +285 | Complete detector tests (adds to Split 001's basic tests) |
+| **Total Estimated** | ~756 | Under 800 limit |
 
 ## Functionality
-This split implements the core certificate error detection and handling infrastructure:
+This split completes the fallback strategies implementation with support systems:
 
-1. **Error Detection** (detector.go):
-   - CertErrorType enumeration
-   - CertErrorDetector interface
-   - Error classification logic
-   - Certificate chain validation
-   - Error detail extraction
+1. **Security Logging** (logger.go):
+   - SecurityLogEntry structure
+   - Structured audit logging
+   - Security severity levels
+   - Persistent log management
+   - Compliance-ready audit trails
 
-2. **Fallback Handler** (handler.go):
-   - FallbackHandler interface
-   - FallbackStrategy structure
-   - Action determination logic
-   - Basic insecure mode configuration
-   - Interface for security logging (implementation in Split 002)
+2. **Recommendation Engine** (recommendations.go):
+   - User-friendly error messages
+   - Actionable remediation steps
+   - Registry-specific recommendations
+   - Certificate diagnostic helpers
+   - Command suggestions for fixes
 
-3. **Basic Testing** (detector_test.go - partial):
-   - Unit tests for error type detection
-   - Tests for error classification
-   - Basic validation tests
+3. **Complete Test Coverage**:
+   - Full handler test suite (handler_test.go)
+   - Complete detector tests (detector_test.go - remaining tests)
+   - Integration test scenarios
+   - Edge case coverage
+   - Error simulation tests
 
 ## Dependencies
-- **External Dependencies**:
-  - crypto/tls
-  - crypto/x509
-  - Standard Go libraries
-
-- **From Previous Efforts**:
-  - E1.1.1 (kind-certificate-extraction): Import certificate extraction interfaces
-  - E1.1.2 (registry-tls-trust-integration): Import TrustStoreManager interface
-
-- **Creates for Next Split**:
+- **From Split 001** (MUST be completed first):
   - CertErrorDetector interface
   - FallbackHandler interface
-  - Core types and constants
+  - CertErrorType enumeration
+  - ErrorDetails structure
+  - FallbackStrategy structure
+
+- **External Dependencies**:
+  - encoding/json (for structured logging)
+  - Standard testing libraries
+  - Test fixture certificates
+
+- **Provides to Phase 2**:
+  - Complete fallback strategy system
+  - Production-ready error handling
+  - Audit-compliant logging
 
 ## Implementation Instructions
 
-### Step 1: Create Split Infrastructure
+### Step 1: Verify Split 001 Completion
 ```bash
-# Create split directory structure
-mkdir -p efforts/phase1/wave2/fallback-strategies/split-001/pkg/certs/fallback
+# Ensure Split 001 is merged
+git checkout idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies
+git pull
 
-# Create split branch
-git checkout -b idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies-split-001
+# Create split-002 branch
+git checkout -b idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies-split-002
+
+# Create split directory
+mkdir -p efforts/phase1/wave2/fallback-strategies/split-002/pkg/certs/fallback
 ```
 
-### Step 2: Implement Core Detection (detector.go)
-1. Copy detector.go from main implementation
-2. Ensure all imports are satisfied
-3. Verify compilation with `go build`
-4. File should include:
-   - CertErrorType constants
-   - ErrorDetails structure
-   - CertErrorDetector interface and implementation
-   - Error classification methods
+### Step 2: Import Split 001 Interfaces
+```go
+// Ensure you can import from Split 001
+import (
+    "your-module/pkg/certs/fallback" // From Split 001
+)
+```
 
-### Step 3: Implement Fallback Handler (handler.go)
-1. Copy handler.go from main implementation
-2. Ensure interfaces are complete
-3. File should include:
-   - FallbackHandler interface
-   - FallbackStrategy structure
-   - FallbackAction enumeration
-   - Core handler implementation
-   - NOTE: LogSecurityDecision will call stub (actual logger in Split 002)
+### Step 3: Implement Security Logger (logger.go)
+1. Copy logger.go from main implementation
+2. Implement full logging functionality:
+   - Structured log entries
+   - JSON formatting
+   - File persistence
+   - Rotation policies
+   - Security audit compliance
 
-### Step 4: Create Basic Tests (detector_test.go - partial)
-1. Implement essential unit tests only (~200 lines)
-2. Focus on:
-   - Error type detection tests
-   - Classification accuracy tests
-   - Edge case handling
-3. Leave comprehensive testing for Split 002
+### Step 4: Implement Recommendations (recommendations.go)
+1. Copy recommendations.go from main implementation
+2. Include:
+   - Error-to-recommendation mapping
+   - Registry-specific suggestions
+   - Command generation for fixes
+   - Diagnostic information formatting
 
-### Step 5: Validate Split
+### Step 5: Complete Test Coverage
+1. **handler_test.go** (395 lines):
+   - Full handler functionality tests
+   - Insecure mode tests
+   - Strategy selection tests
+   - Integration scenarios
+
+2. **detector_test.go** (add ~285 lines):
+   - Complete the basic tests from Split 001
+   - Add comprehensive error scenarios
+   - Test all error types
+   - Edge cases and malformed certificates
+
+### Step 6: Validate Split
 ```bash
-# Measure size with line counter
+# Measure size
 $PROJECT_ROOT/tools/line-counter.sh
 
 # Verify under 800 lines
-# Run tests
-go test ./pkg/certs/fallback/...
+# Run all tests
+go test -v ./pkg/certs/fallback/...
 
-# Ensure compilation
-go build ./...
+# Check coverage
+go test -cover ./pkg/certs/fallback/...
+
+# Ensure >80% coverage
 ```
 
 ## Split Branch Strategy
-- Branch: `idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies-split-001`
-- Base: `main`
+- Branch: `idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies-split-002`
+- Base: `idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies` (after Split 001 merged)
 - Must merge to: `idpbuidler-oci-go-cr/phase1/wave2/fallback-strategies` after review
-- Sequential dependency: Split 002 depends on this split
+- Final merge: Both splits combine to complete the effort
 
 ## Quality Requirements
 - [ ] Size measured and confirmed <800 lines
-- [ ] All interfaces properly defined
-- [ ] Basic tests passing
+- [ ] All tests passing (including Split 001 tests)
+- [ ] Test coverage >80% for complete package
 - [ ] No compilation errors
-- [ ] Comments and documentation included
-- [ ] No hardcoded values
-- [ ] Thread-safe implementations
+- [ ] Security logging validated
+- [ ] Recommendations are actionable
+- [ ] No sensitive data in logs
 
 ## Testing Requirements
-- [ ] Error detection tests pass
-- [ ] Handler interface tests pass
-- [ ] No nil pointer exceptions
-- [ ] Proper error handling
-- [ ] At least 60% code coverage for this split
+- [ ] All unit tests pass
+- [ ] Integration tests pass
+- [ ] Coverage >80% overall
+- [ ] No race conditions
+- [ ] Logger handles concurrent writes
+- [ ] Recommendations are accurate
+- [ ] Error scenarios fully covered
 
-## Known Limitations
-This split provides core functionality but:
-- Logging implementation is stubbed (completed in Split 002)
-- Recommendation generation not included (Split 002)
-- Full test coverage deferred to Split 002
-- Integration tests in Split 002
+## Integration Checklist
+- [ ] Split 001 interfaces imported correctly
+- [ ] No duplicate code from Split 001
+- [ ] Combined splits equal original implementation
+- [ ] All original functionality preserved
+- [ ] Tests cover both splits' code
+- [ ] Documentation complete
 
-## Integration Notes
-- This split MUST be completed and merged before Split 002
-- Split 002 will import these interfaces
-- No breaking changes allowed after merge
-- Maintain backward compatibility
+## Final Validation
+After this split is complete:
+1. Both splits should merge cleanly
+2. Combined size should match original (1136 lines)
+3. All tests should pass
+4. Coverage should exceed 80%
+5. Ready for Phase 2 integration
+
+## Notes
+- This is the FINAL split for fallback-strategies effort
+- Completes all functionality from original implementation
+- Must maintain compatibility with Split 001
+- No breaking changes to interfaces
+- Security logging is critical - ensure compliance
 
 ---
 
-**Status**: Ready for Implementation
-**Dependencies Verified**: Yes
-**Size Validated**: ~718 lines (under limit)
-**Next Step**: Implement Split 001, then proceed to Split 002
+**Status**: Ready for Implementation (after Split 001)
+**Dependencies**: Split 001 MUST be completed first
+**Size Validated**: ~756 lines (under limit)
+**Next Step**: Complete implementation, then merge both splits
