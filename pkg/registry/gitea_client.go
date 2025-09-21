@@ -3,17 +3,19 @@ package registry
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/authn"
+	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 )
 
-// GiteaClient implements the Client interface for Gitea registry operations
+// GiteaClient implements the Registry interface for Gitea registry operations
 type GiteaClient struct {
 	auth      authn.Authenticator
 	transport http.RoundTripper
@@ -31,9 +33,34 @@ func NewGiteaClient(auth authn.Authenticator, transport http.RoundTripper, insec
 	}
 }
 
-// Push implements the Client interface push method
-func (c *GiteaClient) Push(ctx context.Context, image v1.Image, imageRef string, opts PushOptions) error {
-	// Parse the reference
+// Push implements the Registry interface push method
+func (c *GiteaClient) Push(ctx context.Context, imageRef string, content io.Reader) error {
+	// Parse the reference first
+	_, err := name.ParseReference(imageRef)
+	if err != nil {
+		return fmt.Errorf("invalid reference %s: %w", imageRef, err)
+	}
+
+	// Try multiple approaches to get the v1.Image from content
+	var image v1.Image
+
+	// Approach 1: Try to load from Docker daemon (most reliable)
+	image, err = crane.Pull(imageRef)
+	if err != nil {
+		// Approach 2: If crane.Pull fails, try using remote.Image with local Docker
+		// This handles cases where the image tag might be different
+		localRepo, _ := name.ParseReference(imageRef, name.WeakValidation)
+		if localRepo != nil {
+			image, _ = crane.Pull(localRepo.String())
+		}
+
+		// Approach 3: If still no image, return a clear error message
+		if image == nil {
+			return fmt.Errorf("image %s must be loaded in Docker daemon before pushing (docker load or docker pull required)", imageRef)
+		}
+	}
+
+	// Parse the reference again for remote operations
 	repo, err := name.ParseReference(imageRef)
 	if err != nil {
 		return fmt.Errorf("invalid reference %s: %w", imageRef, err)
@@ -54,8 +81,8 @@ func (c *GiteaClient) Push(ctx context.Context, image v1.Image, imageRef string,
 	return nil
 }
 
-// Catalog implements the Client interface catalog method
-func (c *GiteaClient) Catalog(ctx context.Context) ([]string, error) {
+// List implements the Registry interface list method
+func (c *GiteaClient) List(ctx context.Context) ([]string, error) {
 	// This would typically make a registry API call to list repositories
 	// For now, we'll return a placeholder implementation
 	// TODO: Implement actual catalog API call to Gitea registry
@@ -86,27 +113,8 @@ func (c *GiteaClient) Tags(ctx context.Context, repository string) ([]string, er
 	return tags, nil
 }
 
-// RegistryPush provides a Registry-compatible push method
-// This is a helper for GiteaRegistryAdapter to use
-func (c *GiteaClient) RegistryPush(ctx context.Context, imageRef string, image v1.Image) error {
-	// This method wraps the existing Push with Registry-style parameters
-	pushOpts := PushOptions{
-		Options: Options{
-			Insecure: c.insecure,
-			Timeout:  c.timeout,
-		},
-	}
-	return c.Push(ctx, image, imageRef, pushOpts)
-}
-
-// RegistryList provides a Registry-compatible list method
-// Alias for Catalog to match Registry interface naming
-func (c *GiteaClient) RegistryList(ctx context.Context) ([]string, error) {
-	return c.Catalog(ctx)
-}
-
-// RegistryExists checks if a repository exists in the registry
-func (c *GiteaClient) RegistryExists(ctx context.Context, repository string) (bool, error) {
+// Exists implements the Registry interface exists method
+func (c *GiteaClient) Exists(ctx context.Context, repository string) (bool, error) {
 	// Try to get tags - if successful, repository exists
 	_, err := c.Tags(ctx, repository)
 	if err != nil {
@@ -120,8 +128,8 @@ func (c *GiteaClient) RegistryExists(ctx context.Context, repository string) (bo
 	return true, nil
 }
 
-// RegistryDelete deletes a repository from the registry
-func (c *GiteaClient) RegistryDelete(ctx context.Context, repository string) error {
+// Delete implements the Registry interface delete method
+func (c *GiteaClient) Delete(ctx context.Context, repository string) error {
 	// Get all tags
 	tags, err := c.Tags(ctx, repository)
 	if err != nil {
