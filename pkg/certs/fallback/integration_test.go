@@ -21,7 +21,7 @@ func TestLoggerRecommendationIntegration(t *testing.T) {
 			"environment": "production",
 		}
 
-		errorTypes := []CertErrorType{
+		errorTypes := []RecommendationErrorType{
 			CertExpired, CertNotYetValid, CertHostnameMismatch,
 			CertUntrustedRoot, CertSelfSigned, CertRevoked,
 			CertInvalidSignature, CertUnknownError,
@@ -60,7 +60,7 @@ func TestLoggerRecommendationIntegration(t *testing.T) {
 
 	t.Run("Security level consistency", func(t *testing.T) {
 		testCases := []struct {
-			errorType     CertErrorType
+			errorType     RecommendationErrorType
 			expectedLevel SecurityLevel
 		}{
 			{CertRevoked, CriticalLevel},
@@ -150,7 +150,7 @@ func TestEndToEndScenarios(t *testing.T) {
 	t.Run("Multiple error handling", func(t *testing.T) {
 		scenarios := []struct {
 			host      string
-			errorType CertErrorType
+			errorType RecommendationErrorType
 		}{
 			{"self-signed.local", CertSelfSigned},
 			{"hostname-mismatch.com", CertHostnameMismatch},
@@ -209,7 +209,7 @@ func TestPerformanceIntegration(t *testing.T) {
 		const iterations = 1000
 
 		for i := 0; i < iterations; i++ {
-			errorType := CertErrorType((i % 8) + 1) // Cycle through error types
+			errorType := RecommendationErrorType((i % 8) + 1) // Cycle through error types
 			rec := engine.GetRecommendation(errorType, context)
 			if rec == nil {
 				t.Fatal("Should always get a recommendation")

@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-// TestCertErrorType tests the CertErrorType enum
-func TestCertErrorType(t *testing.T) {
+// TestRecommendationErrorType tests the RecommendationErrorType enum
+func TestRecommendationErrorType(t *testing.T) {
 	tests := []struct {
 		name     string
-		errType  CertErrorType
+		errType  RecommendationErrorType
 		expected string
 	}{
 		{"Expired certificate", CertExpired, "expired"},
@@ -28,15 +28,15 @@ func TestCertErrorType(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.errType.String(); got != tt.expected {
-				t.Errorf("CertErrorType.String() = %v, want %v", got, tt.expected)
+				t.Errorf("RecommendationErrorType.String() = %v, want %v", got, tt.expected)
 			}
 		})
 	}
 }
 
-// TestCertErrorType_AllTypes ensures all error types are covered
-func TestCertErrorType_AllTypes(t *testing.T) {
-	allTypes := []CertErrorType{
+// TestRecommendationErrorType_AllTypes ensures all error types are covered
+func TestRecommendationErrorType_AllTypes(t *testing.T) {
+	allTypes := []RecommendationErrorType{
 		CertExpired,
 		CertNotYetValid,
 		CertHostnameMismatch,
@@ -49,7 +49,7 @@ func TestCertErrorType_AllTypes(t *testing.T) {
 
 	for _, errType := range allTypes {
 		if errType.String() == "" {
-			t.Errorf("CertErrorType %v should have non-empty string representation", errType)
+			t.Errorf("RecommendationErrorType %v should have non-empty string representation", errType)
 		}
 	}
 }
@@ -303,7 +303,7 @@ func TestDefaultRecommendationEngine(t *testing.T) {
 	})
 
 	t.Run("Risk level assignment", func(t *testing.T) {
-		riskLevels := map[CertErrorType]string{
+		riskLevels := map[RecommendationErrorType]string{
 			CertExpired:          "high",
 			CertNotYetValid:      "medium",
 			CertHostnameMismatch: "medium",
@@ -324,7 +324,7 @@ func TestDefaultRecommendationEngine(t *testing.T) {
 	})
 
 	t.Run("Action list generation", func(t *testing.T) {
-		allErrorTypes := []CertErrorType{
+		allErrorTypes := []RecommendationErrorType{
 			CertExpired, CertNotYetValid, CertHostnameMismatch,
 			CertUntrustedRoot, CertSelfSigned, CertRevoked,
 			CertInvalidSignature, CertUnknownError,
@@ -374,7 +374,7 @@ func TestRecommendationEngineEdgeCases(t *testing.T) {
 	})
 
 	t.Run("Invalid error type", func(t *testing.T) {
-		invalidErrorType := CertErrorType(999)
+		invalidErrorType := RecommendationErrorType(999)
 		rec := engine.GetRecommendation(invalidErrorType, map[string]interface{}{})
 		
 		// Should default to unknown error handling
@@ -440,7 +440,7 @@ func BenchmarkRecommendationEngine(b *testing.B) {
 
 	b.Run("GetRecommendation", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			errorType := CertErrorType(i%8 + 1) // Cycle through error types
+			errorType := RecommendationErrorType(i%8 + 1) // Cycle through error types
 			_ = engine.GetRecommendation(errorType, context)
 		}
 	})
