@@ -31,8 +31,8 @@ func (v ValidationMode) String() string {
 	}
 }
 
-// CertificateValidator defines the interface for certificate validation operations
-type CertificateValidator interface {
+// X509CertificateValidator defines the interface for X509 certificate validation operations
+type X509CertificateValidator interface {
 	// ValidateChain validates a complete certificate chain from leaf to root
 	ValidateChain(certs []*x509.Certificate) error
 	
@@ -62,16 +62,16 @@ type TrustStoreProvider interface {
 	IsRootTrusted(cert *x509.Certificate) bool
 }
 
-// DefaultCertificateValidator implements the CertificateValidator interface
+// DefaultCertificateValidator implements the X509CertificateValidator interface
 type DefaultCertificateValidator struct {
 	mode             ValidationMode
 	trustStore       TrustStoreProvider
-	lastValidation   *ValidationResult
+	lastValidation   *X509ValidationResult
 	diagnostics      *CertDiagnostics
 }
 
-// ValidationResult holds the results of a validation operation
-type ValidationResult struct {
+// X509ValidationResult holds the results of a validation operation
+type X509ValidationResult struct {
 	IsValid      bool
 	Errors       []error
 	Warnings     []string
@@ -116,7 +116,7 @@ func (v *DefaultCertificateValidator) ValidateChain(certs []*x509.Certificate) e
 	}
 
 	// Store validation result
-	v.lastValidation = &ValidationResult{
+	v.lastValidation = &X509ValidationResult{
 		IsValid:     len(validationErrors) == 0,
 		Errors:      validationErrors,
 		ValidatedAt: time.Now(),
