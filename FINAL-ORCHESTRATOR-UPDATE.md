@@ -2,7 +2,7 @@
 
 ## Summary
 
-This update provides the comprehensive and accurate orchestrator-state.json file with all 17 individual effort branches that are ready for merging to main.
+This update provides the comprehensive and accurate orchestrator-state.json file with all 16 individual effort branches that are ready for merging to main.
 
 ## Key Changes Made
 
@@ -12,7 +12,7 @@ This update provides the comprehensive and accurate orchestrator-state.json file
 - **Branch**: `orchestrator-state-update`
 
 ### 2. Complete Branch Documentation
-**All 17 individual effort branches documented:**
+**All 16 individual effort branches documented:**
 
 **Phase 1 Wave 1 (5 branches):**
 1. `idpbuilder-oci-build-push/phase1/wave1/registry-types`
@@ -22,27 +22,26 @@ This update provides the comprehensive and accurate orchestrator-state.json file
 5. `idpbuilder-oci-build-push/phase1/wave1/registry-tests`
 
 **Phase 1 Wave 2 (5 branches):**
-6. `idpbuilder-oci-build-push/phase1/wave2/fallback-strategies-split-001`
-7. `idpbuilder-oci-build-push/phase1/wave2/fallback-strategies-split-002a`
-8. `idpbuilder-oci-build-push/phase1/wave2/fallback-strategies-split-002` ⚠️ **Corrected naming**
-9. `idpbuilder-oci-build-push/phase1/wave2/fallback-strategies-split-002b`
-10. `idpbuilder-oci-build-push/phase1/wave2/fallback-strategies-split-002c`
+6. `idpbuilder-oci-build-push/phase1/wave2/cert-validation`
+7. `idpbuilder-oci-build-push/phase1/wave2/fallback-core`
+8. `idpbuilder-oci-build-push/phase1/wave2/fallback-strategies`
+9. `idpbuilder-oci-build-push/phase1/wave2/fallback-security`
+10. `idpbuilder-oci-build-push/phase1/wave2/fallback-recommendations`
 
 **Phase 2 Wave 1 (3 branches):**
 11. `idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001-fix-cascade-v3` ⚠️ **Includes gitea fixes**
 12. `idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002`
 13. `idpbuilder-oci-build-push/phase2/wave1/image-builder`
 
-**Phase 2 Wave 2 (4 branches):**
+**Phase 2 Wave 2 (3 branches):**
 14. `idpbuilder-oci-build-push/phase2/wave2/cli-commands`
 15. `idpbuilder-oci-build-push/phase2/wave2/credential-management`
 16. `idpbuilder-oci-build-push/phase2/wave2/image-operations`
-17. `idpbuilder-oci-build-push/phase2/wave2/commands`
 
 ### 3. Critical Corrections Made
 
 **Branch Naming Corrections:**
-- **Branch 8**: Corrected to `fallback-strategies-split-002` (NOT `002-fix-cascade-v3`)
+- **Phase 1 Wave 2**: Corrected from incorrect `fallback-strategies-split-*` to proper `fallback-strategies`, `fallback-core`, `cert-validation`, `fallback-security`, `fallback-recommendations`
 - **Branch 11**: Documented as `gitea-client-split-001-fix-cascade-v3` (includes gitea fixes)
 
 **Key Clarifications:**
@@ -66,7 +65,7 @@ Build Status: ALL branches build successfully
 
 **IMPORTANT: Use Individual Branches, NOT Integration Branches**
 - ❌ Do NOT use integration branches
-- ✅ Use the 17 individual effort branches listed above
+- ✅ Use the 16 individual effort branches listed above
 - ✅ Can be merged in any order (all dependency conflicts resolved)
 - ✅ Each branch is independently ready for merge
 
@@ -83,13 +82,13 @@ Build Status: ALL branches build successfully
 The orchestrator-state.json contains:
 - **Project metadata**: Name, phases, waves, status
 - **Detailed phase/wave breakdown**: All efforts organized by phase and wave
-- **Individual effort branches section**: Clear list of 17 branches for merging
+- **Individual effort branches section**: Clear list of 16 branches for merging
 - **Dependency status**: Version compatibility information
 - **Special notes**: Branch corrections and important merge guidance
 - **Merge readiness confirmation**: All branches ready for individual merge
 
 ### Validation Performed
-- ✅ All 17 branches documented correctly
+- ✅ All 16 branches documented correctly
 - ✅ Branch naming corrections applied
 - ✅ Dependency versions documented
 - ✅ Build status confirmed for all branches
@@ -113,7 +112,7 @@ The orchestrator-state.json contains:
 ## Next Steps
 
 1. **Review** the orchestrator-state.json file in the `orchestrator-state-update` branch
-2. **Use** the 17 individual effort branches for merging (not integration branches)
+2. **Use** the 16 individual effort branches for merging (not integration branches)
 3. **Merge** branches individually to main in any order
 4. **Verify** each merge builds successfully before proceeding to next
 
@@ -131,4 +130,4 @@ For questions about the orchestrator state or branch information:
 
 ---
 
-**⚠️ IMPORTANT REMINDER**: Use the 17 individual effort branches, NOT integration branches, for final merging to main.
+**⚠️ IMPORTANT REMINDER**: Use the 16 individual effort branches, NOT integration branches, for final merging to main.
