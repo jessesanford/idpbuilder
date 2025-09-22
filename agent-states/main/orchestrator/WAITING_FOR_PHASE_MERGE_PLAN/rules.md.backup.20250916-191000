@@ -1,0 +1,337 @@
+# WAITING_FOR_PHASE_MERGE_PLAN State Rules
+
+## State Purpose
+Actively monitor Code Reviewer creating phase merge plan for integrating all wave branches into the phase integration branch. Read merge plan location from orchestrator-state.json per R340. This is critical for phase-level integration.
+
+## Critical Rules
+
+### 🛑🛑🛑 RULE R322: MANDATORY CHECKPOINT BEFORE SPAWN_INTEGRATION_AGENT_PHASE (SUPREME LAW) 🛑🛑🛑
+
+**THIS IS A CRITICAL R322 CHECKPOINT STATE!**
+
+When transitioning from WAITING_FOR_PHASE_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PHASE:
+- **MUST STOP** to allow user review of PHASE-MERGE-PLAN.md
+- **MUST UPDATE** state file to SPAWN_INTEGRATION_AGENT_PHASE before stopping
+- **MUST DISPLAY** checkpoint message with plan location
+- **MUST EXIT** cleanly to preserve context
+- **VIOLATION = -100% IMMEDIATE FAILURE**
+
+See: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
+
+### 🔴🔴🔴 RULE R233: IMMEDIATE ACTION REQUIRED (SUPREME LAW)
+- **NO PASSIVE WAITING** - Must actively check for completion
+- **IMMEDIATE ACTION** - Start checking within first response
+- **CONTINUOUS MONITORING** - Check every 30-60 seconds
+- **States are VERBS** - "WAITING" means "ACTIVELY CHECKING"
+
+### 🔴🔴🔴 RULE R285: MANDATORY PHASE INTEGRATION (SUPREME LAW)
+- Phase integration MUST happen before phase assessment
+- All waves MUST be integrated into phase branch
+- Integration MUST follow sequential wave order
+- Failed integration triggers IMMEDIATE_BACKPORT per R321
+
+### 🚨🚨🚨 RULE R290: STATE RULE VERIFICATION (BLOCKING)
+- **MUST** verify this rules file exists and is loaded
+- **MUST** acknowledge all rules before proceeding
+- **MUST** validate state transitions against state machine
+
+### 🚨🚨🚨 RULE R232: MONITOR STATE REQUIREMENTS (BLOCKING)
+- **MUST** check TodoWrite for pending items BEFORE transition
+- **MUST** process ALL pending items immediately
+- **NO** "I will..." statements - only "I am..." with action
+- **VIOLATION = AUTOMATIC FAILURE**
+
+### 🚨🚨🚨 RULE R340: PLANNING FILE METADATA TRACKING (BLOCKING)
+- **MUST** read merge plan location from orchestrator-state.json
+- **NEVER** search directories for planning files
+- **ALWAYS** use planning_files.merge_plans.phase section
+- **VIOLATION = -20% for each untracked file**
+
+### ⚠️⚠️⚠️ RULE R269: PHASE MERGE PLAN REQUIREMENTS (WARNING)
+- Plan MUST be created as PHASE-MERGE-PLAN.md
+- Plan MUST list all wave branches in sequential order
+- Plan MUST specify integration strategy
+- Plan MUST identify cross-wave dependencies
+
+### ⚠️⚠️⚠️ RULE R287: TODO PERSISTENCE (WARNING)
+- **MUST** save TODOs every 10 messages or 15 minutes
+- **MUST** save before state transition
+- **MUST** commit and push TODO state
+
+## Required Actions
+
+1. **Initial Check (IMMEDIATE)**
+   ```bash
+   # Verify Code Reviewer was spawned
+   grep "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN" orchestrator-state.json
+   grep "spawned_agents" orchestrator-state.json | tail -5
+   
+   # Check phase integration directory exists
+   ls -la phase-*-integration/
+   
+   # Verify all waves completed
+   grep "waves_completed" orchestrator-state.json
+   ```
+
+2. **Active Monitoring Loop (R340 Compliant)**
+   ```bash
+   # Per R340: Read merge plan location from state file
+   PHASE=$(jq -r '.current_phase' orchestrator-state.json)
+   PHASE_ID="phase${PHASE}"
+   
+   # Monitor for plan creation in state file
+   while true; do
+     # R340: Check if phase merge plan is tracked in state
+     MERGE_PLAN_PATH=$(jq -r ".planning_files.merge_plans.phase[\"${PHASE_ID}\"].file_path // null" orchestrator-state.json)
+     
+     if [ "$MERGE_PLAN_PATH" != "null" ] && [ -n "$MERGE_PLAN_PATH" ]; then
+       # Plan is tracked in state - verify it exists
+       if [ -f "$MERGE_PLAN_PATH" ]; then
+         echo "✓ Phase merge plan detected at $(date)"
+         echo "📍 Location (from state): $MERGE_PLAN_PATH"
+         break
+       else
+         echo "❌ CRITICAL: Plan tracked but file missing: $MERGE_PLAN_PATH"
+         # Transition to ERROR_RECOVERY
+         break
+       fi
+     fi
+     
+     # Also check if Code Reviewer reported completion
+     REVIEWER_STATE=$(jq -r '.spawned_agents[] | select(.name == "code-reviewer") | .state // "UNKNOWN"' orchestrator-state.json)
+     
+     if [ "$REVIEWER_STATE" = "COMPLETED" ]; then
+       # Reviewer claims completion but no plan in state
+       echo "⚠️ Code Reviewer completed but no plan tracked in state!"
+       echo "Waiting for plan metadata update..."
+     elif [ "$REVIEWER_STATE" = "BLOCKED" ] || [ "$REVIEWER_STATE" = "ERROR" ]; then
+       echo "✗ Code Reviewer blocked/error - need intervention"
+       # Transition to ERROR_RECOVERY
+       break
+     fi
+     
+     echo "Waiting for phase merge plan to be tracked in state (R340)... checking again in 30s"
+     sleep 30
+   done
+   ```
+
+3. **Validate Phase Merge Plan (R340 Compliant)**
+   ```bash
+   # R340: Use the tracked plan path from state
+   PHASE=$(jq -r '.current_phase' orchestrator-state.json)
+   PHASE_ID="phase${PHASE}"
+   
+   # Get plan path from state (R340 requirement)
+   PLAN_FILE=$(jq -r ".planning_files.merge_plans.phase[\"${PHASE_ID}\"].file_path" orchestrator-state.json)
+   
+   if [ "$PLAN_FILE" = "null" ] || [ -z "$PLAN_FILE" ]; then
+     echo "❌ R340 VIOLATION: No phase merge plan tracked in state!"
+     exit 340
+   fi
+   
+   if [ ! -f "$PLAN_FILE" ]; then
+     echo "❌ Plan tracked but file missing: $PLAN_FILE"
+     exit 1
+   fi
+   
+   echo "Validating phase merge plan: $PLAN_FILE"
+   
+   # Check required sections
+   grep -q "## Wave Merge Order" "$PLAN_FILE" || echo "✗ Missing wave order"
+   grep -q "## Integration Strategy" "$PLAN_FILE" || echo "✗ Missing strategy"
+   grep -q "## Wave Branches" "$PLAN_FILE" || echo "✗ Missing wave list"
+   grep -q "## Dependencies" "$PLAN_FILE" || echo "✗ Missing dependencies"
+   grep -q "## Conflict Analysis" "$PLAN_FILE" || echo "✗ Missing conflict analysis"
+     
+     # Verify all waves included
+     WAVE_COUNT=$(grep -c "wave-.*-integration" "$PLAN_FILE")
+     EXPECTED_WAVES=$(grep "total_waves:" orchestrator-state.json | awk '{print $2}')
+     
+     if [ "$WAVE_COUNT" -ne "$EXPECTED_WAVES" ]; then
+       echo "✗ Plan missing waves: found $WAVE_COUNT, expected $EXPECTED_WAVES"
+     else
+       echo "✓ All $WAVE_COUNT waves included in plan"
+     fi
+     
+     # Verify sequential order (R285)
+     grep "wave-" "$PLAN_FILE" | grep -n "integration" | while read line; do
+       echo "  $line"
+     done
+   fi
+   ```
+
+4. **Check Wave Readiness**
+   ```bash
+   # Verify all wave branches exist and are pushed
+   for WAVE_DIR in wave-*-integration/; do
+     if [ -d "$WAVE_DIR" ]; then
+       cd "$WAVE_DIR"
+       BRANCH=$(git branch --show-current)
+       echo "Wave branch: $BRANCH"
+       
+       # Check remote exists
+       if git ls-remote origin "$BRANCH" > /dev/null 2>&1; then
+         echo "  ✓ Remote branch exists"
+       else
+         echo "  ✗ Remote branch missing!"
+       fi
+       
+       # Check for integration report
+       if [ -f WAVE-INTEGRATION-REPORT.md ]; then
+         echo "  ✓ Wave integration complete"
+       else
+         echo "  ⚠ No integration report"
+       fi
+       cd ..
+     fi
+   done
+   ```
+
+5. **Check for Timeout**
+   ```bash
+   # Get spawn timestamp
+   SPAWN_TIME=$(grep "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN" orchestrator-state.json -A 10 | \
+                grep "timestamp" | tail -1 | cut -d'"' -f2)
+   
+   # Calculate elapsed time
+   CURRENT=$(date +%s)
+   SPAWN_EPOCH=$(date -d "$SPAWN_TIME" +%s)
+   ELAPSED=$((CURRENT - SPAWN_EPOCH))
+   
+   # Timeout after 30 minutes
+   if [ $ELAPSED -gt 1800 ]; then
+     echo "✗ Timeout: Phase merge planning took > 30 minutes"
+     # Transition to ERROR_RECOVERY
+   fi
+   ```
+
+6. **Update State When Complete (R340 Compliant)**
+   ```yaml
+   current_state: WAITING_FOR_PHASE_MERGE_PLAN
+   phase_integration:
+     merge_plan: (read from planning_files.merge_plans.phase)
+     merge_plan_created: YYYY-MM-DD HH:MM:SS
+     wave_count: X
+     plan_validated: true
+     ready_for_integration: true
+   # R340: Planning file location already tracked in:
+   planning_files:
+     merge_plans:
+       phase:
+         phaseX:
+           file_path: /absolute/path/to/PHASE-MERGE-PLAN.md
+           created_by: code-reviewer
+           created_at: timestamp
+   ```
+
+## Transition Rules
+
+### Valid Next States
+- **SPAWN_INTEGRATION_AGENT_PHASE** - Plan created and validated
+- **ERROR_RECOVERY** - Timeout or Code Reviewer blocked
+
+### Invalid Transitions
+- ❌ Direct to MONITORING_PHASE_INTEGRATION (must spawn first)
+- ❌ Back to PHASE_INTEGRATION (already in that flow)
+- ❌ Skipping to phase assessment (integration required first)
+
+## Common Violations to Avoid
+
+1. **Passive waiting** - Violates R233, must actively check
+2. **Not validating wave count** - Plan missing waves
+3. **Ignoring sequential order** - Waves out of order (R285)
+4. **Missing dependency check** - Cross-wave conflicts
+5. **Not checking remote branches** - Integration will fail
+
+## Phase vs Wave Merge Plans
+
+Key differences:
+- **Scope**: Phase plans merge waves, wave plans merge efforts
+- **Complexity**: Phase has cross-wave dependencies
+- **Scale**: Phase typically 3-5 waves vs 5-10 efforts
+- **Risk**: Phase failures affect entire project phase
+
+## Monitoring Pattern
+
+```bash
+# CORRECT (R340 compliant): Check state file for tracked plan
+echo "Starting phase merge plan monitoring at $(date)"
+PHASE=$(jq -r '.current_phase' orchestrator-state.json)
+PHASE_ID="phase${PHASE}"
+CHECKS=0
+MAX_CHECKS=60  # 30 minutes
+
+while [ $CHECKS -lt $MAX_CHECKS ]; do
+  CHECKS=$((CHECKS + 1))
+  echo "Check #$CHECKS at $(date)"
+  
+  # R340: Check if plan is tracked in state
+  PLAN_PATH=$(jq -r ".planning_files.merge_plans.phase[\"${PHASE_ID}\"].file_path" orchestrator-state.json)
+  
+  if [ "$PLAN_PATH" != "null" ] && [ -f "$PLAN_PATH" ]; then
+    echo "✓ Plan tracked and exists: $PLAN_PATH"
+    # Validate immediately
+    grep -c "wave-" "$PLAN_PATH"
+    break
+  fi
+  
+  # Check Code Reviewer state
+  REVIEWER_STATE=$(jq -r '.spawned_agents[] | select(.name == "code-reviewer") | .state' orchestrator-state.json)
+  echo "Code Reviewer state: $REVIEWER_STATE"
+  
+  sleep 30
+done
+
+if [ $CHECKS -eq $MAX_CHECKS ]; then
+  echo "✗ Timeout reached"
+fi
+
+# WRONG (R340 violation): Searching directories
+echo "Looking for plan..."
+if [ -f phase-*/PHASE-MERGE-PLAN.md ]; then  # ❌ R340 VIOLATION!
+  echo "Found plan"
+fi
+```
+
+## Verification Commands
+
+```bash
+# Verify state entry
+echo "===================="
+echo "WAITING_FOR_PHASE_MERGE_PLAN"
+echo "Entered at: $(date)"
+echo "===================="
+
+# Check context
+PHASE=$(jq -r '.current_phase' orchestrator-state.json)
+echo "Current phase: $PHASE"
+echo "Waves completed: $(jq -r '.waves_completed | length' orchestrator-state.json)"
+
+# R340 compliant monitoring
+PHASE_ID="phase${PHASE}"
+timeout 1800 bash -c 'while true; do
+  PLAN_PATH=$(jq -r ".planning_files.merge_plans.phase[\"'"$PHASE_ID"'\"].file_path" orchestrator-state.json)
+  if [ "$PLAN_PATH" != "null" ] && [ -f "$PLAN_PATH" ]; then
+    echo "Plan tracked: $PLAN_PATH"
+    break
+  fi
+  echo "Checking... $(date +%H:%M:%S)"
+  sleep 30
+done && echo "✓ Plan created"' || echo "✗ Timeout"
+
+# Final validation
+if [ -f phase-*/PHASE-MERGE-PLAN.md ]; then
+  echo "Plan size: $(wc -l phase-*/PHASE-MERGE-PLAN.md)"
+  echo "Waves in plan: $(grep -c "wave-" phase-*/PHASE-MERGE-PLAN.md)"
+fi
+```
+
+## References
+- R232: rule-library/R232-monitor-state-requirements.md
+- R233: rule-library/R233-all-states-immediate-action.md
+- R269: rule-library/R269-merge-plan-requirements.md
+- R285: rule-library/R285-mandatory-phase-integration.md
+- R287: rule-library/R287-todo-persistence-comprehensive.md
+- R290: rule-library/R290-state-rule-verification.md
+- R322: rule-library/R322-mandatory-stop-before-transition.md
+- R340: rule-library/R340-planning-file-metadata-tracking.md

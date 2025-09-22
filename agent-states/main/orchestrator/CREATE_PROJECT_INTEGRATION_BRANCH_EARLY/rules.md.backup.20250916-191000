@@ -1,0 +1,106 @@
+# ORCHESTRATOR STATE: CREATE_PROJECT_INTEGRATION_BRANCH_EARLY
+
+## Overview
+This state creates the project-integration branch immediately after test planning, storing tests in their permanent location per R342.
+
+## Entry Criteria
+- Transitioned from WAITING_FOR_PROJECT_TEST_PLAN
+- PROJECT-TEST-PLAN.md exists
+- Project tests have been created
+
+## State Responsibilities
+
+### 1. Create Project Integration Workspace
+```bash
+# R104: Proper workspace isolation
+PROJECT_INT_DIR="/efforts/project/integration-workspace"
+mkdir -p "$PROJECT_INT_DIR"
+cd "$PROJECT_INT_DIR"
+echo "📁 Created project integration workspace"
+```
+
+### 2. Clone Target Repository
+```bash
+# Get target repository from config
+TARGET_REPO=$(yq '.target_repository' "$CLAUDE_PROJECT_DIR/orchestrator-state.json")
+if [ -z "$TARGET_REPO" ]; then
+    echo "❌ No target repository configured!"
+    exit 1
+fi
+
+git clone "$TARGET_REPO" target-repo
+cd target-repo
+echo "✅ Cloned target repository"
+```
+
+### 3. Create Project Integration Branch
+```bash
+# Create branch from main
+git checkout -b project-integration
+echo "🌿 Created project-integration branch"
+```
+
+### 4. Store Project Tests (R342 Core Requirement)
+```bash
+# Copy tests to integration branch
+mkdir -p tests/project
+if [ -d "$CLAUDE_PROJECT_DIR/project-tests" ]; then
+    cp -r "$CLAUDE_PROJECT_DIR/project-tests/"* tests/project/
+    echo "📋 Copied project tests to branch"
+fi
+
+# Copy test plan and harness
+cp "$CLAUDE_PROJECT_DIR/PROJECT-TEST-PLAN.md" .
+cp "$CLAUDE_PROJECT_DIR/PROJECT-TEST-HARNESS.sh" tests/project/ 2>/dev/null || true
+
+# Verify tests exist
+ls -la tests/project/
+```
+
+### 5. Commit and Push Tests
+```bash
+# Add and commit tests
+git add tests/ PROJECT-TEST-PLAN.md
+git commit -m "test: add project-level tests (R341 TDD, R342 early branch)"
+git push -u origin project-integration
+
+echo "✅ R342 COMPLIANT: Tests stored in project-integration branch"
+```
+
+### 6. Update State File with Branch Info
+```bash
+# Track integration branch creation
+yq -i '.project_integration.branch = "project-integration"' orchestrator-state.json
+yq -i '.project_integration.created_at = "'$(date -Iseconds)'"' orchestrator-state.json
+yq -i '.project_integration.has_tests = true' orchestrator-state.json
+yq -i '.project_integration.workspace = "'$PROJECT_INT_DIR'"' orchestrator-state.json
+```
+
+### 7. Transition Back to INIT for Phase 1
+```bash
+update_state "INIT"
+echo "📍 Ready to begin Phase 1 with project tests in place"
+save_todos "Created project integration branch with tests"
+git add orchestrator-state.json todos/
+git commit -m "state: created project-integration branch per R342"
+git push
+```
+
+## Exit Criteria
+- project-integration branch created
+- Tests committed to branch
+- Branch pushed to remote
+- State transitions to INIT for Phase 1 start
+
+## Success Metrics
+- ✅ Integration branch exists
+- ✅ Tests stored in tests/project/
+- ✅ Branch pushed to remote
+- ✅ R342 compliance achieved
+- ✅ Ready for Phase 1
+
+## Related Rules
+- R342: Early integration branch creation (SUPREME LAW)
+- R341: TDD - tests before implementation
+- R104: Target repository isolation
+- R308: Incremental branching strategy

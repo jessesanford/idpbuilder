@@ -1,0 +1,477 @@
+# Orchestrator - SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE State Rules
+
+## 🛑🛑🛑 R322 MANDATORY STOP BEFORE STATE TRANSITIONS 🛑🛑🛑
+
+**SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
+
+### YOU MUST STOP AFTER:
+1. ✅ Completing all TODOs for this state
+2. ✅ Updating orchestrator-state.json with new state
+3. ✅ Committing and pushing the state file  
+4. ✅ Providing work summary
+
+### YOU MUST NOT:
+- ❌ Continue to the next state automatically
+- ❌ Start work for the new state
+- ❌ Spawn agents for the new state
+- ❌ Assume permission to continue
+
+### STOP PROTOCOL:
+```markdown
+## 🛑 STATE TRANSITION CHECKPOINT: CURRENT_STATE → NEXT_STATE
+
+### ✅ Current State Work Completed:
+- [List completed work]
+
+### 📊 Current Status:
+- Current State: CURRENT_STATE
+- Next State: NEXT_STATE
+- TODOs Completed: X/Y
+- State Files: Updated and committed ✅
+
+### ⏸️ STOPPED - Awaiting User Continuation
+Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
+```
+
+**STOP MEANS STOP - Exit and wait for /continue-orchestrating**
+
+---
+
+## 🔴🔴🔴 CRITICAL: PROJECT INTEGRATION BASE BRANCH DETERMINATION (R308) 🔴🔴🔴
+
+**VIOLATION = -100% AUTOMATIC FAILURE**
+
+### PROJECT INTEGRATION MUST FOLLOW R308 INCREMENTAL STRATEGY:
+
+**Project Integration branches are created from the LAST PHASE integration:**
+- Project Integration: from phase{LAST}-integration (where LAST is the final phase)
+- NEVER from main
+- NEVER from any wave integration
+- ALWAYS from the most recent phase integration
+
+### 🔴 CRITICAL R308 ENFORCEMENT FOR PROJECT INTEGRATION:
+```bash
+# Example: Project Integration (after completing 3 phases)
+# WRONG - AUTOMATIC FAILURE:
+BASE_BRANCH="main"  # ❌ NEVER for project integration!
+BASE_BRANCH="phase3-wave4-integration"  # ❌ WRONG! Not from wave!
+BASE_BRANCH="phase1-integration"  # ❌ WRONG! Must use LAST phase!
+
+# CORRECT:
+BASE_BRANCH="phase3-integration"  # ✅ From last phase integration!
+```
+
+### PROJECT INTEGRATION BASE DETERMINATION LOGIC:
+```bash
+determine_project_integration_base() {
+    # Get total number of phases
+    local TOTAL_PHASES=$(jq -r '.total_phases' orchestrator-state.json)
+    
+    echo "🔴 R308: Project integration base determination"
+    echo "📊 Project has $TOTAL_PHASES total phases"
+    
+    # Project integration uses last phase integration
+    BASE_BRANCH="phase${TOTAL_PHASES}-integration"
+    
+    echo "✅ R308 VALIDATED: Project integration will use: $BASE_BRANCH"
+    echo "   (Integration branch from the final phase)"
+    
+    # Verify the base branch exists
+    if ! git rev-parse --verify "$BASE_BRANCH" >/dev/null 2>&1; then
+        echo "❌ R308 FATAL: Required base branch not found: $BASE_BRANCH"
+        echo "   Project integration cannot proceed without all phase integrations!"
+        exit 1
+    fi
+    
+    # Verify all phases are actually integrated
+    for ((i=1; i<=TOTAL_PHASES; i++)); do
+        PHASE_INTEGRATED=$(jq -r ".phase${i}.integrated" orchestrator-state.json)
+        if [ "$PHASE_INTEGRATED" != "true" ]; then
+            echo "❌ Phase $i not integrated! Cannot proceed with project integration"
+            exit 1
+        fi
+    done
+    
+    echo "$BASE_BRANCH"
+}
+```
+
+**Acknowledge: "I understand PROJECT integration branches MUST use the last phase integration per R308"**
+
+## 🔴🔴🔴 STOP! STATE RULE READING IS ABSOLUTELY FIRST! 🔴🔴🔴
+
+**YOU HAVE ENTERED SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
+
+## 🔴🔴🔴 R290 VERIFICATION REQUIREMENT 🔴🔴🔴
+
+**R290 ENFORCEMENT: CREATE VERIFICATION MARKER AFTER READING**
+
+After reading and acknowledging all state rules, you MUST create a verification marker:
+
+```bash
+# MANDATORY: Create verification marker after reading rules
+touch .state_rules_read_orchestrator_SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE
+echo "$(date +%s) - Rules read and acknowledged for SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE" > .state_rules_read_orchestrator_SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE
+```
+
+**FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**
+
+The system will check for this marker. No marker = Immediate failure.
+
+### ❌ DO NOT DO ANY SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE WORK UNTIL RULES ARE READ:
+- ❌ Start creating project integration workspace
+- ❌ Start creating project integration branch
+- ❌ Start determining base branch
+- ❌ Start pushing to remote
+- ❌ Update state files
+- ❌ Continue to next state
+
+### ✅ YOU MUST IMMEDIATELY:
+
+## 🔴🔴🔴 MANDATORY STATE RULE READING AND ACKNOWLEDGMENT 🔴🔴🔴
+
+### READ ALL RULES IN THIS FILE COMPLETELY
+
+You are now in the **SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE** state. You MUST:
+
+1. **READ** every single rule in this file from top to bottom
+2. **UNDERSTAND** the requirements and restrictions
+3. **ACKNOWLEDGE** in a structured format (see below)
+4. **CREATE** the R290 verification marker
+5. **THEN AND ONLY THEN** proceed with state work
+
+### MANDATORY ACKNOWLEDGMENT FORMAT:
+```markdown
+## 📋 STATE RULES ACKNOWLEDGED: SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE
+
+I have read and understood all rules for the SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE state:
+
+### Critical Rules Acknowledged:
+✅ R322: Mandatory stop before state transitions - ACKNOWLEDGED
+✅ R308: Project integration uses last phase integration as base - ACKNOWLEDGED  
+✅ R290: Must create verification marker - ACKNOWLEDGED
+✅ Project integration infrastructure creation requirements - ACKNOWLEDGED
+✅ Worktree and branch isolation requirements - ACKNOWLEDGED
+
+### Key Requirements I Will Follow:
+1. Create project integration infrastructure with correct R308 base
+2. Use phase{LAST}-integration as base branch
+3. Create isolated full clone working copy for project integration
+4. Verify ALL phases are integrated before proceeding
+5. Update orchestrator-state.json with infrastructure details
+6. Stop after completing state work
+
+### Prohibitions I Will Respect:
+- Will NOT continue to next state automatically
+- Will NOT use wrong base branch (main or any wave)
+- Will NOT skip phase validation
+- Will NOT skip R308 validation
+- Will NOT proceed without verification marker
+```
+
+---
+
+## 📋 PRIMARY STATE RESPONSIBILITIES
+
+This state is responsible for creating the infrastructure needed for PROJECT integration:
+
+### 1. PROJECT INTEGRATION INFRASTRUCTURE CREATION
+- Create isolated full clone working copy for project integration work
+- Create project integration branch with R308-compliant base
+- Set up clean workspace for Integration Agent
+- This is the FINAL integration of the entire project
+
+### 2. R308 COMPLIANCE FOR PROJECT INTEGRATION
+- Determine the total number of phases
+- Use phase{LAST}-integration as base
+- NEVER use main or any wave integration as base
+- Validate ALL phases are integrated before proceeding
+
+### 3. STATE TRACKING
+- Update orchestrator-state.json with project_integration_infrastructure
+- Record branch name, working copy path, base branch
+- Mark infrastructure as ready for Integration Agent
+- This represents the final integration state
+
+## 🔴🔴🔴 PROJECT INTEGRATION SPECIFIC RULES 🔴🔴🔴
+
+### PROJECT INTEGRATION BRANCH NAMING:
+- Pattern: `project-integration`
+- This is a singleton branch name (only one project integration)
+
+### PROJECT INTEGRATION WORKING COPY:
+- Pattern: `project/integration/`
+- This is the final integration working copy
+
+### BASE BRANCH DETERMINATION:
+```bash
+# For Project integration:
+# Base = phase{LAST}-integration
+
+# Examples:
+Project with 3 phases → base: phase3-integration
+Project with 5 phases → base: phase5-integration
+Project with 2 phases → base: phase2-integration
+```
+
+### PROJECT COMPLETION VALIDATION:
+```bash
+# ALL phases must be integrated
+# ALL waves within each phase must be integrated
+# ALL efforts within each wave must be completed
+```
+
+## 📝 PROJECT INTEGRATION INFRASTRUCTURE WORKFLOW
+
+### Step 1: Validate Project Completion
+```bash
+# Check all phases are integrated
+TOTAL_PHASES=$(jq -r '.total_phases' orchestrator-state.json)
+
+echo "🔍 Validating project completion..."
+echo "📊 Total phases: $TOTAL_PHASES"
+
+for ((i=1; i<=TOTAL_PHASES; i++)); do
+    PHASE_INTEGRATED=$(jq -r ".phase${i}.integrated" orchestrator-state.json)
+    if [ "$PHASE_INTEGRATED" != "true" ]; then
+        echo "❌ Phase $i not integrated! Cannot proceed with project integration"
+        exit 1
+    fi
+    echo "✅ Phase $i: Integrated"
+done
+
+echo "✅ All phases integrated - ready for project integration"
+```
+
+### Step 2: Determine R308 Base Branch
+```bash
+# Get last phase integration branch
+TOTAL_PHASES=$(jq -r '.total_phases' orchestrator-state.json)
+BASE_BRANCH="phase${TOTAL_PHASES}-integration"
+
+echo "🔴 R308 ENFORCEMENT: Project integration"
+echo "   Base: $BASE_BRANCH (last phase integration)"
+
+# Verify base exists
+if ! git rev-parse --verify "$BASE_BRANCH" >/dev/null 2>&1; then
+    echo "❌ R308 FATAL: Base branch $BASE_BRANCH not found!"
+    echo "   Cannot create project integration without final phase integration"
+    exit 1
+fi
+```
+
+### Step 3: Create Project Integration Infrastructure
+```bash
+# Create working copy and branch
+INTEGRATION_BRANCH="project-integration"
+INTEGRATION_DIR="$CLAUDE_PROJECT_DIR/project/integration"
+
+# Clean up if exists
+if [ -d "$INTEGRATION_DIR" ]; then
+    rm -rf "$INTEGRATION_DIR"
+fi
+
+if git rev-parse --verify "$INTEGRATION_BRANCH" >/dev/null 2>&1; then
+    git branch -D "$INTEGRATION_BRANCH"
+fi
+
+# Check if integration branch already exists (R342 early creation)
+# R342: Branch may already exist with tests
+if git ls-remote --heads origin "$INTEGRATION_BRANCH" | grep -q "$INTEGRATION_BRANCH"; then
+    echo "✅ R342: Project integration branch already exists (created early with tests)"
+    git fetch origin "$INTEGRATION_BRANCH"
+    mkdir -p "$(dirname "$INTEGRATION_DIR")"
+    git clone "$TARGET_REPO" "$INTEGRATION_DIR"
+    cd "$INTEGRATION_DIR"
+    git checkout "$INTEGRATION_BRANCH"
+    
+    # Verify tests exist
+    cd "$INTEGRATION_DIR"
+    if [ -d "tests/project" ]; then
+        echo "✅ Project tests already present (R341/R342 compliant)"
+    fi
+    cd -
+else
+    echo "Creating new project integration branch"
+    mkdir -p "$(dirname "$INTEGRATION_DIR")"
+    git clone "$TARGET_REPO" "$INTEGRATION_DIR"
+    cd "$INTEGRATION_DIR"
+    git checkout -b "$INTEGRATION_BRANCH" "$BASE_BRANCH"
+fi
+
+echo "✅ Project integration infrastructure ready:"
+echo "   - Branch: $INTEGRATION_BRANCH"
+echo "   - Base: $BASE_BRANCH (R308 compliant)"
+echo "   - Worktree: $WORKTREE_PATH"
+```
+
+### Step 4: Update State File
+```bash
+# Record infrastructure in orchestrator-state.json
+jq --arg branch "$INTEGRATION_BRANCH" \
+   --arg working_copy "$INTEGRATION_DIR" \
+   --arg base "$BASE_BRANCH" \
+   --argjson phases "$TOTAL_PHASES" \
+   '.project_integration_infrastructure = {
+      "branch": $branch,
+      "working_copy": $working_copy,
+      "base_branch": $base,
+      "type": "project",
+      "total_phases": $phases,
+      "created_at": now | todate,
+      "ready": true
+   }' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+```
+
+### Step 5: Push Infrastructure
+```bash
+# Push the integration branch to remote
+cd "$WORKTREE_PATH"
+git push -u origin "$INTEGRATION_BRANCH"
+cd -
+
+echo "✅ Project integration branch pushed to remote"
+```
+
+## 🚨 COMMON PROJECT INTEGRATION VIOLATIONS
+
+### ❌ WRONG BASE BRANCH:
+```bash
+# Project Integration
+BASE_BRANCH="main"  # ❌ NEVER!
+BASE_BRANCH="phase1-integration"  # ❌ Must use LAST phase!
+BASE_BRANCH="phase3-wave4-integration"  # ❌ Never from wave!
+
+# CORRECT (for 3-phase project):
+BASE_BRANCH="phase3-integration"  # ✅ Last phase integration
+```
+
+### ❌ INCOMPLETE PHASE VALIDATION:
+```bash
+# Creating project integration without checking all phases
+# ❌ WRONG - May have unintegrated phases!
+```
+
+### ❌ PREMATURE PROJECT INTEGRATION:
+```bash
+# Attempting project integration before all phases complete
+# ❌ WRONG - All phases must be integrated first!
+```
+
+## 📊 SUCCESS CRITERIA
+
+### Infrastructure Created Successfully When:
+- ✅ ALL phases are validated as integrated
+- ✅ R308 base branch correctly determined (last phase)
+- ✅ Worktree created with correct naming
+- ✅ Branch created from correct base
+- ✅ Branch pushed to remote
+- ✅ orchestrator-state.json updated with infrastructure
+- ✅ Git operations successful
+
+### Ready for Integration Agent When:
+- ✅ project_integration_infrastructure.ready = true
+- ✅ Worktree exists and is clean
+- ✅ Branch exists on remote
+- ✅ No uncommitted changes
+- ✅ All prerequisites validated
+
+## 🛑 STATE TRANSITION REQUIREMENTS
+
+### Before Transitioning to SPAWN_INTEGRATION_AGENT_PROJECT:
+1. ✅ Project integration infrastructure created
+2. ✅ All phases validated as integrated
+3. ✅ R308 compliance verified
+4. ✅ State file updated and committed
+5. ✅ Provide completion summary
+6. ✅ STOP and wait for user continuation
+
+### Transition Checklist:
+```bash
+echo "✅ Project integration infrastructure ready:"
+echo "   - Branch: $INTEGRATION_BRANCH"
+echo "   - Base: $BASE_BRANCH (R308 compliant)"
+echo "   - Worktree: $WORKTREE_PATH"
+echo "   - Type: Project (FINAL)"
+echo "   - Phases integrated: $TOTAL_PHASES"
+echo ""
+echo "🛑 STOPPING - Ready to spawn Integration Agent for FINAL integration"
+echo "   Use /continue-orchestrating to proceed"
+```
+
+## ⚠️ ERROR HANDLING
+
+### If Any Phase Not Integrated:
+```bash
+for ((i=1; i<=TOTAL_PHASES; i++)); do
+    if [ "$(jq -r ".phase${i}.integrated" orchestrator-state.json)" != "true" ]; then
+        echo "❌ FATAL: Phase $i not integrated!"
+        echo "   Project integration requires ALL phases"
+        echo "   Complete phase $i integration first"
+        exit 1
+    fi
+done
+```
+
+### If Base Branch Not Found:
+```bash
+if ! git rev-parse --verify "$BASE_BRANCH" >/dev/null 2>&1; then
+    echo "❌ FATAL: Base branch $BASE_BRANCH does not exist!"
+    echo "   Cannot create project integration without phase $TOTAL_PHASES integration"
+    echo "   Ensure all phases have been properly integrated"
+    exit 1
+fi
+```
+
+### If Previous Project Integration Exists:
+```bash
+# Clean up any previous attempts
+if [ -d "$INTEGRATION_DIR" ]; then
+    echo "⚠️ Removing existing project integration working copy..."
+    rm -rf "$INTEGRATION_DIR"
+fi
+
+if git rev-parse --verify "$INTEGRATION_BRANCH" >/dev/null 2>&1; then
+    echo "⚠️ Removing existing project integration branch..."
+    git branch -D "$INTEGRATION_BRANCH"
+    git push origin --delete "$INTEGRATION_BRANCH" 2>/dev/null || true
+fi
+```
+
+## 📋 PROJECT INTEGRATION SIGNIFICANCE
+
+### This is the FINAL Integration:
+- 🎯 Represents the complete, integrated project
+- 🎯 All features from all phases combined
+- 🎯 Ready for final testing and deployment
+- 🎯 The culmination of all development work
+
+### Project Integration Is Special Because:
+1. It's the ONLY integration that represents the full project
+2. It's created ONCE after all phases complete
+3. It's the branch that becomes the final deliverable
+4. It contains ALL features from ALL phases and waves
+
+## 📋 FINAL CHECKLIST
+
+Before marking this state complete:
+
+- [ ] R290 verification marker created
+- [ ] ALL phases validated as integrated
+- [ ] R308 base branch correctly determined (last phase)
+- [ ] Project integration working copy created
+- [ ] Project integration branch created from correct base
+- [ ] Branch pushed to remote
+- [ ] orchestrator-state.json updated with infrastructure
+- [ ] State file committed and pushed
+- [ ] Ready to spawn Integration Agent for final integration
+- [ ] STOPPED and waiting for user continuation
+
+---
+
+**REMEMBER**: 
+- Project integration MUST use last phase integration (R308)
+- NEVER use main or any wave as base
+- This is the FINAL integration of the entire project
+- STOP after completing state work (R322)
+- Create verification marker (R290)

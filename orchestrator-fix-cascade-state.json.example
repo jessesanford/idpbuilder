@@ -1,0 +1,298 @@
+{
+  "_comment": "Example fix-cascade sub-state machine state file per R375/R380",
+  "sub_state_type": "FIX_CASCADE",
+  "fix_identifier": "gitea-api-auth-fix",
+  "fix_type": "HOTFIX",
+  "current_state": "FIX_CASCADE_BACKPORT_IN_PROGRESS",
+  "previous_state": "FIX_CASCADE_BACKPORT_START",
+  "created_at": "2025-01-21T10:00:00Z",
+  "last_updated": "2025-01-21T10:30:00Z",
+  "status": "IN_PROGRESS",
+
+  "_r380_registry": "Fix Registry - ALL fixes tracked with unique IDs",
+  "fix_registry": {
+    "FIX-001": {
+      "discovered_at": "2025-01-21T10:00:00Z",
+      "discovered_during": "initial_analysis",
+      "branch": "main",
+      "issue": "Authentication bypass in Gitea API integration",
+      "status": "validated",
+      "attempts": 1,
+      "max_attempts": 3,
+      "resolution": "Applied security patch to auth handler",
+      "pr_number": 567,
+      "commit_hash": "abc123def456"
+    },
+    "FIX-002": {
+      "discovered_at": "2025-01-21T10:20:00Z",
+      "discovered_during": "integration",
+      "branch": "release-2.0",
+      "issue": "Type conflict in API response handler",
+      "status": "in_progress",
+      "attempts": 1,
+      "max_attempts": 3,
+      "resolution": null,
+      "pr_number": null,
+      "commit_hash": null
+    }
+  },
+
+  "_r380_convergence": "Convergence metrics for finite execution guarantee",
+  "convergence_metrics": {
+    "fixes_pending": 1,
+    "fixes_completed": 1,
+    "fixes_failed": 0,
+    "fixes_skipped": 0,
+    "progress_rate": 0.50,
+    "cycle_count": 2,
+    "max_cycles": 20,
+    "last_progress_cycle": 2,
+    "stalled_cycles": 0,
+    "started_at": "2025-01-21T10:00:00Z",
+    "total_timeout_hours": 10,
+    "escalation_triggered": false,
+    "escalation_reason": null
+  },
+
+  "_r380_checkpoints": "Git checkpoints for recovery",
+  "checkpoints": {
+    "before_FIX_001": "def456ghi789",
+    "after_FIX_001": "abc123def456",
+    "validation_FIX_001": "passed",
+    "before_FIX_002": "xyz789abc123",
+    "after_FIX_002": null,
+    "validation_FIX_002": "pending"
+  },
+
+  "_r380_discovery": "Progressive discovery tracking",
+  "discovery_tracking": {
+    "discovery_points": [
+      {
+        "timestamp": "2025-01-21T10:00:00Z",
+        "state": "FIX_CASCADE_ANALYSIS",
+        "fixes_found": 1,
+        "fix_ids": ["FIX-001"]
+      },
+      {
+        "timestamp": "2025-01-21T10:20:00Z",
+        "state": "FIX_CASCADE_VALIDATION",
+        "fixes_found": 1,
+        "fix_ids": ["FIX-002"]
+      }
+    ],
+    "total_fixes_discovered": 2,
+    "discovery_enabled": true,
+    "last_discovery_check": "2025-01-21T10:28:00Z"
+  },
+
+  "parent_state_machine": {
+    "_comment": "Reference to parent state machine that spawned this sub-state",
+    "state_file": "orchestrator-state.json",
+    "return_state": "MONITORING",
+    "parent_was_in_state": "ERROR_RECOVERY",
+    "nested_level": 1
+  },
+
+  "fix_details": {
+    "source_branch": "main",
+    "source_commit": "abc123def456",
+    "target_branches": ["release-2.0", "release-1.9", "release-1.8"],
+    "fix_description": "Critical authentication bypass in Gitea API integration",
+    "jira_ticket": "SF-1234",
+    "severity": "CRITICAL"
+  },
+
+  "cascade_plan": {
+    "strategy": "BACKPORT_THEN_VALIDATE",
+    "planned_operations": [
+      {
+        "type": "BACKPORT",
+        "target": "release-2.0",
+        "order": 1
+      },
+      {
+        "type": "BACKPORT",
+        "target": "release-1.9",
+        "order": 2
+      },
+      {
+        "type": "BACKPORT",
+        "target": "release-1.8",
+        "order": 3
+      },
+      {
+        "type": "COMPREHENSIVE_VALIDATION",
+        "targets": "all",
+        "order": 4
+      }
+    ]
+  },
+
+  "backports": {
+    "release-2.0": {
+      "status": "COMPLETED",
+      "branch": "fix/SF-1234-gitea-auth-release-2.0",
+      "pr_number": 567,
+      "started_at": "2025-01-21T10:05:00Z",
+      "completed_at": "2025-01-21T10:20:00Z",
+      "validation": "PASSED",
+      "quality_gate_1": "PASSED",
+      "review_comments": [],
+      "conflicts_encountered": false
+    },
+    "release-1.9": {
+      "status": "IN_PROGRESS",
+      "branch": "fix/SF-1234-gitea-auth-release-1.9",
+      "pr_number": null,
+      "started_at": "2025-01-21T10:25:00Z",
+      "completed_at": null,
+      "validation": "PENDING",
+      "quality_gate_1": "PENDING",
+      "review_comments": [],
+      "conflicts_encountered": false
+    },
+    "release-1.8": {
+      "status": "PENDING",
+      "branch": null,
+      "pr_number": null,
+      "started_at": null,
+      "completed_at": null,
+      "validation": "PENDING",
+      "quality_gate_1": "PENDING",
+      "review_comments": [],
+      "conflicts_encountered": null
+    }
+  },
+
+  "forward_ports": {},
+
+  "quality_gates": {
+    "_comment": "R376 mandatory quality gates",
+    "gate_1_backport": {
+      "release-2.0": {
+        "status": "PASSED",
+        "reviewed_by": "code-reviewer",
+        "review_timestamp": "2025-01-21T10:18:00Z"
+      },
+      "release-1.9": {
+        "status": "PENDING",
+        "reviewed_by": null,
+        "review_timestamp": null
+      },
+      "release-1.8": {
+        "status": "PENDING",
+        "reviewed_by": null,
+        "review_timestamp": null
+      }
+    },
+    "gate_2_forward_port": {},
+    "gate_3_conflict_resolution": {},
+    "gate_4_comprehensive": {
+      "status": "PENDING",
+      "checklist": {
+        "all_branches_build": false,
+        "all_tests_pass": false,
+        "fix_resolves_issue": false,
+        "no_regressions": false,
+        "code_quality_maintained": false
+      }
+    },
+    "current_gate": "gate_1_backport",
+    "gates_passed": 0,
+    "gates_total": 2
+  },
+
+  "validation_results": {
+    "build_status": {
+      "main": "PASSED",
+      "release-2.0": "PASSED",
+      "release-1.9": "RUNNING",
+      "release-1.8": "PENDING"
+    },
+    "test_status": {
+      "main": "PASSED",
+      "release-2.0": "PASSED",
+      "release-1.9": "PENDING",
+      "release-1.8": "PENDING"
+    },
+    "functional_validation": {
+      "fix_verified": true,
+      "regression_check": "PASSED",
+      "performance_impact": "NONE"
+    }
+  },
+
+  "conflicts_resolution": {
+    "total_conflicts": 0,
+    "resolved_conflicts": 0,
+    "conflict_details": []
+  },
+
+  "errors_encountered": [],
+
+  "_r380_recovery": "Recovery information for interruption handling",
+  "recovery_info": {
+    "last_checkpoint": "after_FIX_001",
+    "last_successful_fix": "FIX-001",
+    "recovery_attempted": false,
+    "recovery_timestamp": null,
+    "recovery_from_state": null
+  },
+
+  "recovery_actions": [],
+
+  "agent_deployments": [
+    {
+      "agent_type": "sw-engineer",
+      "purpose": "Apply backport to release-2.0",
+      "spawned_at": "2025-01-21T10:05:00Z",
+      "completed_at": "2025-01-21T10:15:00Z",
+      "status": "COMPLETED"
+    },
+    {
+      "agent_type": "code-reviewer",
+      "purpose": "Review backport to release-2.0 (R376 Gate 1)",
+      "spawned_at": "2025-01-21T10:16:00Z",
+      "completed_at": "2025-01-21T10:19:00Z",
+      "status": "COMPLETED"
+    },
+    {
+      "agent_type": "sw-engineer",
+      "purpose": "Apply backport to release-1.9",
+      "spawned_at": "2025-01-21T10:25:00Z",
+      "completed_at": null,
+      "status": "IN_PROGRESS"
+    }
+  ],
+
+  "cascade_progress": {
+    "total_operations": 4,
+    "completed_operations": 1,
+    "current_operation_index": 2,
+    "current_operation_type": "BACKPORT",
+    "current_operation_target": "release-1.9",
+    "percent_complete": 25,
+    "estimated_completion": "2025-01-21T11:00:00Z"
+  },
+
+  "notes": [
+    "Hotfix for critical security vulnerability",
+    "Must be backported to all supported releases",
+    "Customer reported issue in production"
+  ],
+
+  "completion_criteria": {
+    "all_backports_complete": false,
+    "all_forward_ports_complete": true,
+    "all_quality_gates_passed": false,
+    "comprehensive_validation_passed": false,
+    "ready_for_archival": false
+  },
+
+  "timestamps": {
+    "created_at": "2025-01-21T10:00:00Z",
+    "last_updated": "2025-01-21T10:30:00Z",
+    "last_checkpoint": "2025-01-21T10:28:00Z",
+    "estimated_completion": "2025-01-21T11:00:00Z"
+  }
+}

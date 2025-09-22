@@ -1,0 +1,802 @@
+# SW Engineer - FIX_ISSUES State Grading
+
+## Critical Performance Metrics
+
+┌─────────────────────────────────────────────────────────────────┐
+│ PRIMARY METRIC: Issue Resolution Effectiveness                 │
+├─────────────────────────────────────────────────────────────────┤
+│ Measurement: Percentage of issues successfully resolved        │
+│ Target: 90%+ of issues resolved per session                   │
+│ Grade: Based on resolution success rate                       │
+│ Weight: 40% of overall fix issues grade                       │
+│ Consequence: Low resolution rate = failed debugging           │
+└─────────────────────────────────────────────────────────────────┘
+
+## Grading Rubric
+
+| Metric | Excellent | Good | Acceptable | FAIL |
+|--------|-----------|------|------------|------|
+| Resolution Rate | 95%+ resolved | 85-95% resolved | 75-85% resolved | <75% resolved |
+| Fix Quality | No regressions | Minor issues | Some regressions | Major regressions |
+| Time Efficiency | <2 hours/issue | 2-4 hours/issue | 4-6 hours/issue | >6 hours/issue |
+| Root Cause Analysis | Comprehensive | Good | Basic | Insufficient |
+| Testing Coverage | 100% verified | 90% verified | 80% verified | <80% verified |
+| Size Impact | Positive impact | Neutral | Slight negative | Major negative |
+
+## Real-Time Scoring
+
+```python
+class FixIssuesGrader:
+    def __init__(self):
+        self.fix_sessions = []
+        self.resolution_history = []
+        
+    def grade_fix_issues_session(self, session_data):
+        """Grade an issue fixing work session"""
+        
+        # Issue resolution effectiveness (primary metric)
+        resolution_grade = self.calculate_resolution_effectiveness_grade(session_data)
+        
+        # Fix quality and regression assessment
+        quality_grade = self.calculate_fix_quality_grade(session_data)
+        
+        # Time efficiency in resolving issues
+        efficiency_grade = self.calculate_fix_efficiency_grade(session_data)
+        
+        # Root cause analysis quality
+        analysis_grade = self.calculate_root_cause_analysis_grade(session_data)
+        
+        # Testing and verification completeness
+        verification_grade = self.calculate_verification_grade(session_data)
+        
+        # Impact on overall codebase health
+        impact_grade = self.calculate_fix_impact_grade(session_data)
+        
+        overall = self.calculate_overall_fix_issues_grade(
+            resolution_grade, quality_grade, efficiency_grade,
+            analysis_grade, verification_grade, impact_grade
+        )
+        
+        return {
+            'resolution_effectiveness': resolution_grade,
+            'fix_quality': quality_grade,
+            'fix_efficiency': efficiency_grade,
+            'root_cause_analysis': analysis_grade,
+            'verification': verification_grade,
+            'fix_impact': impact_grade,
+            'overall': overall,
+            'timestamp': datetime.now().isoformat()
+        }
+    
+    def calculate_resolution_effectiveness_grade(self, session):
+        """Calculate issue resolution effectiveness grade"""
+        
+        issues_identified = session.get('issues_identified', [])
+        issues_attempted = session.get('issues_attempted', [])
+        issues_resolved = session.get('issues_resolved', [])
+        issues_failed = session.get('issues_failed', [])
+        
+        total_issues = len(issues_identified)
+        attempted_issues = len(issues_attempted)
+        resolved_issues = len(issues_resolved)
+        
+        if total_issues == 0:
+            return {
+                'resolution_rate': 100,  # No issues is perfect
+                'attempt_rate': 100,
+                'success_rate': 100,
+                'grade': 'EXCELLENT',
+                'score': 100
+            }
+        
+        # Calculate rates
+        attempt_rate = (attempted_issues / total_issues) * 100
+        resolution_rate = (resolved_issues / total_issues) * 100
+        success_rate = (resolved_issues / attempted_issues * 100) if attempted_issues > 0 else 0
+        
+        # Base scoring on resolution rate
+        if resolution_rate >= 95:
+            base_score = 100
+            grade = 'EXCELLENT'
+        elif resolution_rate >= 85:
+            base_score = 85 + (resolution_rate - 85)  # 85-100 range
+            grade = 'GOOD'
+        elif resolution_rate >= 75:
+            base_score = 70 + (resolution_rate - 75)  # 70-85 range
+            grade = 'ACCEPTABLE'
+        else:
+            base_score = max(0, resolution_rate * 0.9)  # 0-70 range
+            grade = 'FAIL'
+        
+        # Adjust for attempt rate - penalize not attempting
+        if attempt_rate < 90:
+            attempt_penalty = (90 - attempt_rate) * 0.5
+            base_score -= attempt_penalty
+        
+        # Bonus for high success rate on attempted issues
+        if success_rate >= 95 and attempted_issues > 0:
+            base_score += 5
+        
+        final_score = max(0, min(100, base_score))
+        
+        return {
+            'total_issues': total_issues,
+            'attempted_issues': attempted_issues,
+            'resolved_issues': resolved_issues,
+            'failed_issues': len(issues_failed),
+            'attempt_rate': attempt_rate,
+            'resolution_rate': resolution_rate,
+            'success_rate': success_rate,
+            'grade': grade,
+            'score': final_score
+        }
+    
+    def calculate_fix_quality_grade(self, session):
+        """Calculate quality of fixes implemented"""
+        
+        fixes_applied = session.get('fixes_applied', [])
+        regression_tests_run = session.get('regression_tests_run', 0)
+        regressions_introduced = session.get('regressions_introduced', [])
+        side_effects_detected = session.get('side_effects_detected', [])
+        
+        if not fixes_applied:
+            return {
+                'fix_quality_score': 100,  # No fixes = no quality issues
+                'regression_rate': 0,
+                'grade': 'EXCELLENT',
+                'score': 100
+            }
+        
+        total_fixes = len(fixes_applied)
+        regression_count = len(regressions_introduced)
+        side_effect_count = len(side_effects_detected)
+        
+        # Base quality score
+        quality_score = 100
+        
+        # Penalize regressions heavily
+        regression_penalty = regression_count * 20  # 20 points per regression
+        quality_score -= regression_penalty
+        
+        # Penalize side effects
+        side_effect_penalty = side_effect_count * 10  # 10 points per side effect
+        quality_score -= side_effect_penalty
+        
+        # Bonus for comprehensive regression testing
+        if regression_tests_run >= total_fixes * 2:  # At least 2 tests per fix
+            quality_score += 5
+        
+        # Assess individual fix quality
+        high_quality_fixes = sum(1 for fix in fixes_applied if fix.get('quality_rating', 3) >= 4)
+        if total_fixes > 0:
+            quality_ratio = high_quality_fixes / total_fixes
+            if quality_ratio >= 0.8:
+                quality_score += 5
+            elif quality_ratio < 0.5:
+                quality_score -= 10
+        
+        final_score = max(0, min(100, quality_score))
+        regression_rate = (regression_count / total_fixes * 100) if total_fixes > 0 else 0
+        
+        if final_score >= 95 and regression_count == 0:
+            grade = 'EXCELLENT'
+        elif final_score >= 85 and regression_count <= 1:
+            grade = 'GOOD'
+        elif final_score >= 70 and regression_count <= 2:
+            grade = 'ACCEPTABLE'
+        else:
+            grade = 'FAIL'
+        
+        return {
+            'total_fixes': total_fixes,
+            'regressions_introduced': regression_count,
+            'side_effects_detected': side_effect_count,
+            'regression_tests_run': regression_tests_run,
+            'fix_quality_score': quality_score,
+            'regression_rate': regression_rate,
+            'grade': grade,
+            'score': final_score
+        }
+    
+    def calculate_fix_efficiency_grade(self, session):
+        """Calculate efficiency of issue resolution process"""
+        
+        duration_hours = session.get('duration_hours', 1)
+        issues_resolved = len(session.get('issues_resolved', []))
+        
+        # Calculate time per issue
+        time_per_issue = duration_hours / issues_resolved if issues_resolved > 0 else duration_hours
+        
+        # Grade based on time efficiency
+        if time_per_issue <= 1.0:  # Very fast resolution
+            efficiency_score = 100
+            grade = 'EXCELLENT'
+        elif time_per_issue <= 2.0:  # Good efficiency
+            efficiency_score = 85 + (2.0 - time_per_issue) * 15  # 85-100 range
+            grade = 'GOOD'
+        elif time_per_issue <= 4.0:  # Acceptable efficiency
+            efficiency_score = 70 + (4.0 - time_per_issue) * 7.5  # 70-85 range
+            grade = 'ACCEPTABLE'
+        else:  # Poor efficiency
+            efficiency_score = max(0, 70 - (time_per_issue - 4.0) * 10)
+            grade = 'FAIL'
+        
+        # Adjust based on issue complexity
+        avg_complexity = self.calculate_average_issue_complexity(session.get('issues_resolved', []))
+        complexity_multiplier = {
+            'simple': 0.8,    # Simple issues should be faster
+            'medium': 1.0,    # Normal expectation
+            'complex': 1.3,   # Complex issues get more time
+            'critical': 1.5   # Critical issues get most time
+        }.get(avg_complexity, 1.0)
+        
+        adjusted_score = min(100, efficiency_score * complexity_multiplier)
+        
+        # Factor in debugging approach quality
+        debugging_approach = session.get('debugging_approach_rating', 3)  # 1-5 scale
+        if debugging_approach >= 4:
+            adjusted_score += 5
+        elif debugging_approach <= 2:
+            adjusted_score -= 10
+        
+        final_score = max(0, min(100, adjusted_score))
+        
+        return {
+            'duration_hours': duration_hours,
+            'issues_resolved': issues_resolved,
+            'time_per_issue_hours': time_per_issue,
+            'avg_complexity': avg_complexity,
+            'debugging_approach_rating': debugging_approach,
+            'efficiency_score': efficiency_score,
+            'adjusted_score': adjusted_score,
+            'grade': grade,
+            'score': final_score
+        }
+    
+    def calculate_root_cause_analysis_grade(self, session):
+        """Calculate quality of root cause analysis performed"""
+        
+        issues_analyzed = session.get('issues_with_root_cause_analysis', [])
+        total_issues = len(session.get('issues_resolved', [])) + len(session.get('issues_failed', []))
+        
+        if total_issues == 0:
+            return {
+                'analysis_coverage': 100,
+                'analysis_quality': 100,
+                'grade': 'EXCELLENT',
+                'score': 100
+            }
+        
+        analysis_coverage = (len(issues_analyzed) / total_issues) * 100
+        
+        # Assess quality of analysis for each issue
+        analysis_quality_scores = []
+        for analysis in issues_analyzed:
+            quality = self.assess_root_cause_analysis_quality(analysis)
+            analysis_quality_scores.append(quality)
+        
+        avg_analysis_quality = sum(analysis_quality_scores) / len(analysis_quality_scores) if analysis_quality_scores else 0
+        
+        # Weighted score
+        coverage_weight = 0.4
+        quality_weight = 0.6
+        
+        weighted_score = (analysis_coverage * coverage_weight) + (avg_analysis_quality * quality_weight)
+        
+        if weighted_score >= 90:
+            grade = 'EXCELLENT'
+        elif weighted_score >= 80:
+            grade = 'GOOD'
+        elif weighted_score >= 65:
+            grade = 'ACCEPTABLE'
+        else:
+            grade = 'FAIL'
+        
+        return {
+            'total_issues': total_issues,
+            'issues_analyzed': len(issues_analyzed),
+            'analysis_coverage': analysis_coverage,
+            'avg_analysis_quality': avg_analysis_quality,
+            'weighted_score': weighted_score,
+            'grade': grade,
+            'score': weighted_score
+        }
+    
+    def calculate_verification_grade(self, session):
+        """Calculate completeness and quality of fix verification"""
+        
+        fixes_applied = session.get('fixes_applied', [])
+        fixes_tested = session.get('fixes_tested', [])
+        test_results = session.get('verification_test_results', {})
+        
+        if not fixes_applied:
+            return {
+                'verification_coverage': 100,
+                'test_success_rate': 100,
+                'grade': 'EXCELLENT',
+                'score': 100
+            }
+        
+        # Verification coverage
+        verification_coverage = (len(fixes_tested) / len(fixes_applied)) * 100
+        
+        # Test success rate
+        tests_passed = test_results.get('passed', 0)
+        tests_total = test_results.get('total', 0)
+        test_success_rate = (tests_passed / tests_total * 100) if tests_total > 0 else 100
+        
+        # Regression testing coverage
+        regression_tests_run = session.get('regression_tests_run', 0)
+        expected_regression_tests = len(fixes_applied) * 2  # At least 2 per fix
+        regression_coverage = min(100, (regression_tests_run / expected_regression_tests) * 100)
+        
+        # Weighted score
+        verification_score = (
+            verification_coverage * 0.4 +
+            test_success_rate * 0.4 +
+            regression_coverage * 0.2
+        )
+        
+        if verification_score >= 95:
+            grade = 'EXCELLENT'
+        elif verification_score >= 85:
+            grade = 'GOOD'
+        elif verification_score >= 70:
+            grade = 'ACCEPTABLE'
+        else:
+            grade = 'FAIL'
+        
+        return {
+            'fixes_applied': len(fixes_applied),
+            'fixes_tested': len(fixes_tested),
+            'verification_coverage': verification_coverage,
+            'test_success_rate': test_success_rate,
+            'regression_tests_run': regression_tests_run,
+            'regression_coverage': regression_coverage,
+            'verification_score': verification_score,
+            'grade': grade,
+            'score': verification_score
+        }
+    
+    def calculate_fix_impact_grade(self, session):
+        """Calculate overall impact of fixes on codebase health"""
+        
+        size_impact = session.get('size_impact', {})
+        performance_impact = session.get('performance_impact', {})
+        maintainability_impact = session.get('maintainability_impact', {})
+        technical_debt_impact = session.get('technical_debt_impact', {})
+        
+        impact_score = 100
+        
+        # Size impact assessment
+        size_change = size_impact.get('lines_changed', 0)
+        if size_change < 0:  # Size reduction is good
+            impact_score += min(10, abs(size_change) * 0.1)
+        elif size_change > 50:  # Significant size increase is concerning
+            impact_score -= min(15, (size_change - 50) * 0.2)
+        
+        # Performance impact
+        perf_improvement = performance_impact.get('improvement_percentage', 0)
+        perf_regression = performance_impact.get('regression_percentage', 0)
+        
+        impact_score += min(15, perf_improvement * 0.5)  # Bonus for improvements
+        impact_score -= min(25, perf_regression * 1.0)   # Penalty for regressions
+        
+        # Maintainability impact
+        maintainability_score = maintainability_impact.get('score_change', 0)
+        impact_score += min(10, maintainability_score * 2)
+        
+        # Technical debt impact
+        debt_reduction = technical_debt_impact.get('debt_reduced', 0)
+        debt_increase = technical_debt_impact.get('debt_increased', 0)
+        
+        impact_score += min(10, debt_reduction * 2)
+        impact_score -= min(20, debt_increase * 3)
+        
+        final_score = max(0, min(100, impact_score))
+        
+        if final_score >= 95:
+            grade = 'EXCELLENT'
+        elif final_score >= 85:
+            grade = 'GOOD'
+        elif final_score >= 70:
+            grade = 'ACCEPTABLE'
+        else:
+            grade = 'FAIL'
+        
+        return {
+            'size_impact': size_impact,
+            'performance_impact': performance_impact,
+            'maintainability_impact': maintainability_impact,
+            'technical_debt_impact': technical_debt_impact,
+            'impact_score': impact_score,
+            'grade': grade,
+            'score': final_score
+        }
+    
+    def calculate_overall_fix_issues_grade(self, resolution, quality, efficiency, analysis, verification, impact):
+        """Calculate weighted overall fix issues grade"""
+        
+        # Weighted scoring:
+        # Resolution Effectiveness: 40% (primary goal)
+        # Fix Quality: 25% (critical for stability)
+        # Verification: 15% (important for confidence)
+        # Root Cause Analysis: 10% (important for learning)
+        # Fix Impact: 7% (long-term health)
+        # Efficiency: 3% (nice to have)
+        
+        weighted_score = (
+            resolution['score'] * 0.40 +
+            quality['score'] * 0.25 +
+            verification['score'] * 0.15 +
+            analysis['score'] * 0.10 +
+            impact['score'] * 0.07 +
+            efficiency['score'] * 0.03
+        )
+        
+        # Critical failure conditions
+        critical_failures = []
+        if quality['score'] < 50:
+            critical_failures.append('Fix quality unacceptable - major regressions')
+        if resolution['score'] < 40:
+            critical_failures.append('Issue resolution effectiveness too low')
+        if verification['score'] < 50:
+            critical_failures.append('Insufficient verification of fixes')
+        
+        # Determine final grade
+        if critical_failures:
+            overall_grade = 'FAIL'
+        elif weighted_score >= 90:
+            overall_grade = 'EXCELLENT'
+        elif weighted_score >= 80:
+            overall_grade = 'GOOD'
+        elif weighted_score >= 70:
+            overall_grade = 'PASS'
+        else:
+            overall_grade = 'FAIL'
+        
+        return {
+            'weighted_score': weighted_score,
+            'grade': overall_grade,
+            'critical_failures': critical_failures,
+            'has_critical_failures': len(critical_failures) > 0
+        }
+    
+    def assess_root_cause_analysis_quality(self, analysis):
+        """Assess quality of individual root cause analysis (0-100)"""
+        
+        quality_score = 0
+        
+        # Check for problem identification (25 points)
+        if analysis.get('problem_clearly_described'):
+            quality_score += 25
+        elif analysis.get('problem_mentioned'):
+            quality_score += 15
+        
+        # Check for investigation depth (25 points)
+        investigation_depth = analysis.get('investigation_depth', 'shallow')
+        if investigation_depth == 'comprehensive':
+            quality_score += 25
+        elif investigation_depth == 'thorough':
+            quality_score += 20
+        elif investigation_depth == 'adequate':
+            quality_score += 15
+        elif investigation_depth == 'basic':
+            quality_score += 10
+        
+        # Check for cause identification (25 points)
+        if analysis.get('root_cause_identified'):
+            quality_score += 25
+        elif analysis.get('probable_cause_identified'):
+            quality_score += 15
+        elif analysis.get('contributing_factors_identified'):
+            quality_score += 10
+        
+        # Check for prevention strategy (15 points)
+        if analysis.get('prevention_strategy_defined'):
+            quality_score += 15
+        elif analysis.get('prevention_suggestions_made'):
+            quality_score += 10
+        
+        # Check for documentation quality (10 points)
+        doc_quality = analysis.get('documentation_quality', 'poor')
+        if doc_quality == 'excellent':
+            quality_score += 10
+        elif doc_quality == 'good':
+            quality_score += 8
+        elif doc_quality == 'adequate':
+            quality_score += 5
+        
+        return min(100, quality_score)
+    
+    def calculate_average_issue_complexity(self, resolved_issues):
+        """Calculate average complexity of resolved issues"""
+        
+        if not resolved_issues:
+            return 'medium'
+        
+        complexity_values = {
+            'simple': 1,
+            'medium': 2,
+            'complex': 3,
+            'critical': 4
+        }
+        
+        complexities = [issue.get('complexity', 'medium') for issue in resolved_issues]
+        avg_value = sum(complexity_values.get(c, 2) for c in complexities) / len(complexities)
+        
+        if avg_value <= 1.5:
+            return 'simple'
+        elif avg_value <= 2.5:
+            return 'medium'
+        elif avg_value <= 3.5:
+            return 'complex'
+        else:
+            return 'critical'
+```
+
+## Issue Resolution Tracking
+
+```python
+class IssueResolutionTracker:
+    def __init__(self):
+        self.resolution_history = []
+        
+    def track_issue_resolution_session(self, session_data):
+        """Track a complete issue resolution session"""
+        
+        session_metrics = {
+            'session_id': f"fix_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+            'timestamp': datetime.now().isoformat(),
+            'duration_hours': session_data.get('duration_hours', 0),
+            
+            # Issue counts
+            'total_issues': len(session_data.get('issues_identified', [])),
+            'issues_resolved': len(session_data.get('issues_resolved', [])),
+            'issues_failed': len(session_data.get('issues_failed', [])),
+            'regressions_introduced': len(session_data.get('regressions_introduced', [])),
+            
+            # Quality metrics
+            'root_cause_analyses': len(session_data.get('issues_with_root_cause_analysis', [])),
+            'fixes_tested': len(session_data.get('fixes_tested', [])),
+            'regression_tests_run': session_data.get('regression_tests_run', 0),
+            
+            # Impact metrics
+            'size_impact_lines': session_data.get('size_impact', {}).get('lines_changed', 0),
+            'performance_improvement': session_data.get('performance_impact', {}).get('improvement_percentage', 0),
+            'technical_debt_reduced': session_data.get('technical_debt_impact', {}).get('debt_reduced', 0)
+        }
+        
+        # Calculate derived metrics
+        session_metrics['resolution_rate'] = (
+            session_metrics['issues_resolved'] / session_metrics['total_issues'] * 100
+            if session_metrics['total_issues'] > 0 else 100
+        )
+        
+        session_metrics['time_per_issue'] = (
+            session_metrics['duration_hours'] / max(1, session_metrics['issues_resolved'])
+        )
+        
+        session_metrics['quality_score'] = self.calculate_session_quality_score(session_metrics)
+        
+        self.resolution_history.append(session_metrics)
+        return session_metrics
+    
+    def calculate_session_quality_score(self, metrics):
+        """Calculate overall quality score for the session"""
+        
+        quality_score = 100
+        
+        # Penalize for regressions
+        if metrics['regressions_introduced'] > 0:
+            quality_score -= metrics['regressions_introduced'] * 15
+        
+        # Bonus for thorough testing
+        if metrics['fixes_tested'] == metrics['issues_resolved'] and metrics['issues_resolved'] > 0:
+            quality_score += 10
+        
+        # Bonus for root cause analysis
+        rca_coverage = (
+            metrics['root_cause_analyses'] / max(1, metrics['total_issues']) * 100
+        )
+        if rca_coverage >= 80:
+            quality_score += 10
+        elif rca_coverage >= 60:
+            quality_score += 5
+        
+        # Adjust for efficiency
+        if metrics['time_per_issue'] <= 1.0:
+            quality_score += 5
+        elif metrics['time_per_issue'] > 4.0:
+            quality_score -= 10
+        
+        return max(0, min(100, quality_score))
+    
+    def analyze_resolution_trends(self, lookback_sessions=5):
+        """Analyze issue resolution trends"""
+        
+        if len(self.resolution_history) < 2:
+            return {'trend': 'INSUFFICIENT_DATA', 'sessions_analyzed': len(self.resolution_history)}
+        
+        recent_sessions = self.resolution_history[-lookback_sessions:]
+        
+        # Calculate trend metrics
+        resolution_rates = [s['resolution_rate'] for s in recent_sessions]
+        quality_scores = [s['quality_score'] for s in recent_sessions]
+        time_per_issue = [s['time_per_issue'] for s in recent_sessions]
+        
+        avg_resolution_rate = sum(resolution_rates) / len(resolution_rates)
+        avg_quality_score = sum(quality_scores) / len(quality_scores)
+        avg_time_per_issue = sum(time_per_issue) / len(time_per_issue)
+        
+        # Determine trend direction
+        resolution_trend = self.calculate_trend_direction(resolution_rates)
+        quality_trend = self.calculate_trend_direction(quality_scores)
+        
+        # Overall assessment
+        if avg_resolution_rate >= 90 and avg_quality_score >= 85:
+            overall_trend = 'EXCELLENT'
+        elif avg_resolution_rate >= 80 and avg_quality_score >= 75:
+            overall_trend = 'GOOD'
+        elif avg_resolution_rate >= 70:
+            overall_trend = 'ACCEPTABLE'
+        else:
+            overall_trend = 'POOR'
+        
+        return {
+            'overall_trend': overall_trend,
+            'avg_resolution_rate': avg_resolution_rate,
+            'avg_quality_score': avg_quality_score,
+            'avg_time_per_issue': avg_time_per_issue,
+            'resolution_trend': resolution_trend,
+            'quality_trend': quality_trend,
+            'sessions_analyzed': len(recent_sessions)
+        }
+    
+    def calculate_trend_direction(self, values):
+        """Calculate trend direction from a series of values"""
+        
+        if len(values) < 3:
+            return 'STABLE'
+        
+        # Simple slope calculation
+        x_values = list(range(len(values)))
+        n = len(values)
+        
+        x_mean = sum(x_values) / n
+        y_mean = sum(values) / n
+        
+        numerator = sum((x_values[i] - x_mean) * (values[i] - y_mean) for i in range(n))
+        denominator = sum((x_values[i] - x_mean) ** 2 for i in range(n))
+        
+        if denominator == 0:
+            return 'STABLE'
+        
+        slope = numerator / denominator
+        
+        if slope > 2:
+            return 'IMPROVING'
+        elif slope < -2:
+            return 'DECLINING'
+        else:
+            return 'STABLE'
+```
+
+## Performance Dashboard
+
+```python
+def generate_fix_issues_dashboard(session_data):
+    """Generate real-time fix issues performance dashboard"""
+    
+    grader = FixIssuesGrader()
+    tracker = IssueResolutionTracker()
+    
+    # Grade current session
+    current_grade = grader.grade_fix_issues_session(session_data)
+    
+    # Get resolution trends
+    resolution_trends = tracker.analyze_resolution_trends()
+    
+    dashboard = {
+        'current_session': current_grade,
+        'resolution_trends': resolution_trends,
+        'fix_health': assess_fix_issues_health(current_grade, session_data),
+        'recommendations': generate_fix_recommendations(current_grade, resolution_trends)
+    }
+    
+    print("📊 FIX ISSUES PERFORMANCE DASHBOARD")
+    print(f"Overall Grade: {current_grade['overall']['grade']} ({current_grade['overall']['weighted_score']:.1f}/100)")
+    
+    resolution = current_grade['resolution_effectiveness']
+    print(f"Resolution Rate: {resolution['resolution_rate']:.1f}% ({resolution['resolved_issues']}/{resolution['total_issues']} issues)")
+    
+    quality = current_grade['fix_quality']
+    print(f"Fix Quality: {quality['grade']} ({quality['score']}/100)")
+    print(f"Regressions: {quality['regressions_introduced']} introduced")
+    
+    efficiency = current_grade['fix_efficiency']
+    print(f"Time Efficiency: {efficiency['time_per_issue_hours']:.1f} hours/issue")
+    
+    verification = current_grade['verification']
+    print(f"Verification: {verification['verification_coverage']:.1f}% coverage")
+    
+    if current_grade['overall']['critical_failures']:
+        print("❌ CRITICAL ISSUES:")
+        for failure in current_grade['overall']['critical_failures']:
+            print(f"  - {failure}")
+    
+    if resolution_trends['overall_trend'] == 'POOR':
+        print("⚠️ TREND CONCERN: Issue resolution performance declining")
+    
+    return dashboard
+
+def assess_fix_issues_health(current_grade, session_data):
+    """Assess overall fix issues process health"""
+    
+    health_indicators = {
+        'resolution_effectiveness': current_grade['resolution_effectiveness']['score'] >= 75,
+        'fix_quality': current_grade['fix_quality']['score'] >= 70,
+        'no_critical_regressions': current_grade['fix_quality']['regressions_introduced'] == 0,
+        'adequate_verification': current_grade['verification']['score'] >= 70
+    }
+    
+    if current_grade['overall']['has_critical_failures']:
+        status = 'CRITICAL'
+    elif all(health_indicators.values()):
+        status = 'HEALTHY'
+    elif sum(health_indicators.values()) >= 3:
+        status = 'GOOD'
+    else:
+        status = 'NEEDS_IMPROVEMENT'
+    
+    return {
+        'status': status,
+        'indicators': health_indicators
+    }
+```
+
+## Warning Triggers
+
+┌─────────────────────────────────────────────────────────────────┐
+│ FIX ISSUES WARNINGS                                             │
+├─────────────────────────────────────────────────────────────────┤
+│ Resolution Rate <75%:                                           │
+│ ⚠️ WARNING: Low issue resolution effectiveness                 │
+│ ⚠️ May indicate insufficient debugging skills                  │
+│                                                                 │
+│ Regressions Introduced:                                         │
+│ 🚨 CRITICAL: Fix quality compromised                          │
+│ 🚨 Comprehensive testing and rollback plan needed             │
+│                                                                 │
+│ >4 hours per issue:                                            │
+│ ⚠️⚠️ WARNING: Very slow issue resolution                      │
+│ ⚠️⚠️ Review debugging approach and tools                      │
+│                                                                 │
+│ Insufficient Verification <70%:                                │
+│ ⚠️ WARNING: Fixes not properly verified                       │
+│ ⚠️ Risk of undetected issues remaining                        │
+└─────────────────────────────────────────────────────────────────┘
+
+## Performance State Tracking
+
+```yaml
+# Update orchestrator-state.yaml
+grading:
+  SW_ENGINEER:
+    FIX_ISSUES:
+      latest:
+        timestamp: "2025-08-23T18:30:15Z"
+        resolution_rate: 92.3
+        regressions_introduced: 0
+        avg_time_per_issue: 1.8
+        overall: "EXCELLENT"
+        
+      cumulative:
+        fix_sessions_completed: 4
+        total_issues_resolved: 23
+        avg_resolution_rate: 88.5
+        excellent: 2
+        good: 1
+        acceptable: 1
+        fail: 0
+```

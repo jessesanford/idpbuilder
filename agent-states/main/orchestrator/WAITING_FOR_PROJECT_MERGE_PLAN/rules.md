@@ -1,0 +1,287 @@
+# Orchestrator - WAITING_FOR_PROJECT_MERGE_PLAN State Rules
+
+
+## 🔴🔴🔴 MANDATORY STATE RULE READING AND ACKNOWLEDGMENT 🔴🔴🔴
+
+### ⚠️⚠️⚠️ YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. **I AM WATCHING YOUR TOOL CALLS FOR READ OPERATIONS** *YOU WILL FAIL* IF YOU DO NOT MAKE A READ FILE CALL FOR EACH RULE FILE IN PRIMARY DIRECTIVES!!! ⚠️⚠️⚠️
+
+**AFTER READING, YOU MUST ACKNOWLEDGE ALL THE STATE RULES AND STATE THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION.**
+
+## 📋 PRIMARY DIRECTIVES FOR WAITING_FOR_PROJECT_MERGE_PLAN STATE
+
+### Core Mandatory Rules (ALL orchestrator states must have these):
+
+1. **🚨🚨🚨 R006** - ORCHESTRATOR NEVER WRITES CODE OR PERFORMS FILE OPERATIONS (BLOCKING)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md`
+   - Criticality: BLOCKING - Automatic termination, 0% grade
+   - Summary: NEVER write, copy, move, or manipulate ANY code files - delegate ALL to agents
+
+2. **🔴🔴🔴 R287** - TODO PERSISTENCE COMPREHENSIVE (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R287-todo-persistence-comprehensive.md`
+   - Criticality: SUPREME - -20% to -100% penalty for violations
+   - Summary: MUST save TODOs within 30s after write, every 10 messages, before transitions
+
+3. **🔴🔴🔴 R288** - STATE FILE UPDATE REQUIREMENTS (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-requirements.md`
+   - Criticality: SUPREME - State updates required for all transitions
+   - Summary: MUST update orchestrator-state.json before EVERY state transition
+
+4. **🔴🔴🔴 R322 Part A** - Mandatory Stop After Spawn States
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R322 Part A-mandatory-stop-after-spawn.md`
+   - Criticality: SUPREME LAW - Must stop after spawning
+   - Summary: ALL spawn states require STOP after spawning agents
+
+### State-Specific Rules:
+
+5. **🔴🔴🔴 R233** - Immediate Action On State Entry
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R233-immediate-action-on-state-entry.md`
+   - Criticality: SUPREME LAW - Must act immediately on entering state
+   - Summary: WAITING states require active monitoring, not passive waiting
+
+## State Purpose
+Actively monitor Code Reviewer creating project merge plan for final integration. Read merge plan location from orchestrator-state.json per R340. Never search directories - always use state file as single source of truth.
+
+## 🛑🛑🛑 R322 MANDATORY CHECKPOINT BEFORE SPAWN_INTEGRATION_AGENT_PROJECT 🛑🛑🛑
+
+**THIS IS A CRITICAL R322 CHECKPOINT STATE!**
+
+### SUPREME LAW - PROJECT MERGE PLAN REQUIRES USER REVIEW
+
+When transitioning from WAITING_FOR_PROJECT_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PROJECT:
+- **MUST STOP** to allow user review of PROJECT-MERGE-PLAN.md
+- **MUST UPDATE** state file to SPAWN_INTEGRATION_AGENT_PROJECT before stopping
+- **MUST DISPLAY** checkpoint message listing ALL phases to be merged
+- **MUST EXIT** cleanly to preserve context
+- **VIOLATION = -100% IMMEDIATE FAILURE**
+
+### CHECKPOINT PROTOCOL:
+```markdown
+## 🛑 R322 PROJECT INTEGRATION CHECKPOINT
+
+### ✅ Project Merge Plan Created:
+- Location: project-integration/PROJECT-MERGE-PLAN.md
+- Phases to merge: [List all phase branches]
+- Integration strategy: [Sequential/Parallel]
+
+### 📊 Ready for Final Integration:
+- Current State: WAITING_FOR_PROJECT_MERGE_PLAN ✅
+- Next State: SPAWN_INTEGRATION_AGENT_PROJECT (pending approval)
+
+### ⚠️ CRITICAL REVIEW REQUIRED
+This is the FINAL integration merging ALL phases!
+Please review the plan carefully before execution.
+
+### ⏸️ STOPPED FOR USER REVIEW
+To proceed after review: /continue-orchestrating
+```
+
+**STOP MEANS STOP - NO automatic continuation!**
+
+See: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
+
+---
+
+## State Context
+
+**Purpose:**
+Monitor Code Reviewer creating the project-level merge plan that will integrate all phase branches.
+
+## Critical Rules
+
+### 🔴🔴🔴 RULE R233: IMMEDIATE ACTION REQUIRED (SUPREME LAW)
+- **NO PASSIVE WAITING** - Must actively check for completion
+- **IMMEDIATE ACTION** - Start checking within first response
+- **CONTINUOUS MONITORING** - Check every 30-60 seconds
+- **States are VERBS** - "WAITING" means "ACTIVELY CHECKING"
+
+### 🚨🚨🚨 RULE R340: PLANNING FILE METADATA TRACKING (BLOCKING)
+- **MUST** read merge plan location from orchestrator-state.json
+- **NEVER** search directories for planning files
+- **ALWAYS** use planning_files.merge_plans.project section
+- **VIOLATION = -20% for each untracked file**
+
+### 🚨🚨🚨 RULE R290: STATE RULE VERIFICATION (BLOCKING)
+- **MUST** verify this rules file exists and is loaded
+- **MUST** acknowledge all rules before proceeding
+- **MUST** validate state transitions against state machine
+
+### 🚨🚨🚨 RULE R232: MONITOR STATE REQUIREMENTS (BLOCKING)
+- **MUST** check TodoWrite for pending items BEFORE transition
+- **MUST** process ALL pending items immediately
+- **NO** "I will..." statements - only "I am..." with action
+- **VIOLATION = AUTOMATIC FAILURE**
+
+### ⚠️⚠️⚠️ RULE R270: PROJECT MERGE PLAN REQUIREMENTS (WARNING)
+- Plan MUST be created as PROJECT-MERGE-PLAN.md
+- Plan MUST list all phase branches in sequential order
+- Plan MUST specify final integration strategy
+- Plan MUST identify cross-phase dependencies
+
+### ⚠️⚠️⚠️ RULE R287: TODO PERSISTENCE (WARNING)
+- **MUST** save TODOs every 10 messages or 15 minutes
+- **MUST** save before state transition
+- **MUST** commit and push TODO state
+
+## Primary Actions
+
+1. **Check for Merge Plan (R340 Compliant)**:
+   ```bash
+   # Per R340: Read merge plan location from state file
+   PROJECT_ID="project"
+   
+   # R340: Check if project merge plan is tracked in state
+   MERGE_PLAN_PATH=$(jq -r ".planning_files.merge_plans.project[\"${PROJECT_ID}\"].file_path // null" orchestrator-state.json)
+   
+   if [ "$MERGE_PLAN_PATH" != "null" ] && [ -n "$MERGE_PLAN_PATH" ]; then
+     if [ -f "$MERGE_PLAN_PATH" ]; then
+       echo "✓ Project merge plan tracked and found: $MERGE_PLAN_PATH"
+     else
+       echo "❌ CRITICAL: Plan tracked but file missing: $MERGE_PLAN_PATH"
+     fi
+   else
+     echo "Waiting for project merge plan to be tracked in state (R340)..."
+   fi
+   ```
+
+2. **Validate Plan Completeness (R340 Compliant)**:
+   ```bash
+   # R340: Use the tracked plan path from state
+   PROJECT_ID="project"
+   PLAN_FILE=$(jq -r ".planning_files.merge_plans.project[\"${PROJECT_ID}\"].file_path" orchestrator-state.json)
+   
+   if [ "$PLAN_FILE" = "null" ] || [ -z "$PLAN_FILE" ]; then
+     echo "❌ R340 VIOLATION: No project merge plan tracked in state!"
+     exit 340
+   fi
+   
+   if [ ! -f "$PLAN_FILE" ]; then
+     echo "❌ Plan tracked but file missing: $PLAN_FILE"
+     exit 1
+   fi
+   
+   # Verify plan includes all phases in correct order (R270)
+   echo "Validating project merge plan: $PLAN_FILE"
+   grep -q "## Phase Merge Order" "$PLAN_FILE" || echo "✗ Missing phase order"
+   grep -q "## Integration Strategy" "$PLAN_FILE" || echo "✗ Missing strategy"
+   grep -q "## Phase Branches" "$PLAN_FILE" || echo "✗ Missing phase list"
+   grep -q "## Dependencies" "$PLAN_FILE" || echo "✗ Missing dependencies"
+   ```
+
+3. **Update State when plan is ready**:
+   ```yaml
+   # R340: Planning file location already tracked in:
+   planning_files:
+     merge_plans:
+       project:
+         project:
+           file_path: /absolute/path/to/PROJECT-MERGE-PLAN.md
+           created_by: code-reviewer
+           created_at: timestamp
+   ```
+
+## Active Monitoring Loop (R340 Compliant)
+
+```bash
+# Per R340: Read merge plan location from state file
+PROJECT_ID="project"
+
+# Monitor for plan creation in state file
+while true; do
+  # R340: Check if project merge plan is tracked in state
+  MERGE_PLAN_PATH=$(jq -r ".planning_files.merge_plans.project[\"${PROJECT_ID}\"].file_path // null" orchestrator-state.json)
+  
+  if [ "$MERGE_PLAN_PATH" != "null" ] && [ -n "$MERGE_PLAN_PATH" ]; then
+    # Plan is tracked in state - verify it exists
+    if [ -f "$MERGE_PLAN_PATH" ]; then
+      echo "✓ Project merge plan detected at $(date)"
+      echo "📍 Location (from state): $MERGE_PLAN_PATH"
+      break
+    else
+      echo "❌ CRITICAL: Plan tracked but file missing: $MERGE_PLAN_PATH"
+      # Transition to ERROR_RECOVERY
+      break
+    fi
+  fi
+  
+  # Also check if Code Reviewer reported completion
+  REVIEWER_STATE=$(jq -r '.spawned_agents[] | select(.name == "code-reviewer") | .state // "UNKNOWN"' orchestrator-state.json)
+  
+  if [ "$REVIEWER_STATE" = "COMPLETED" ]; then
+    # Reviewer claims completion but no plan in state
+    echo "⚠️ Code Reviewer completed but no plan tracked in state!"
+    echo "Waiting for plan metadata update..."
+  elif [ "$REVIEWER_STATE" = "BLOCKED" ] || [ "$REVIEWER_STATE" = "ERROR" ]; then
+    echo "✗ Code Reviewer blocked/error - need intervention"
+    # Transition to ERROR_RECOVERY
+    break
+  fi
+  
+  echo "Waiting for project merge plan to be tracked in state (R340)... checking again in 30s"
+  sleep 30
+done
+```
+
+## Monitoring Pattern
+
+```bash
+# CORRECT (R340 compliant): Check state file for tracked plan
+echo "Starting project merge plan monitoring at $(date)"
+PROJECT_ID="project"
+CHECKS=0
+MAX_CHECKS=60  # 30 minutes
+
+while [ $CHECKS -lt $MAX_CHECKS ]; do
+  CHECKS=$((CHECKS + 1))
+  echo "Check #$CHECKS at $(date)"
+  
+  # R340: Check if plan is tracked in state
+  PLAN_PATH=$(jq -r ".planning_files.merge_plans.project[\"${PROJECT_ID}\"].file_path" orchestrator-state.json)
+  
+  if [ "$PLAN_PATH" != "null" ] && [ -f "$PLAN_PATH" ]; then
+    echo "✓ Plan tracked and exists: $PLAN_PATH"
+    # Validate immediately
+    grep -c "phase-" "$PLAN_PATH"
+    break
+  fi
+  
+  # Check Code Reviewer state
+  REVIEWER_STATE=$(jq -r '.spawned_agents[] | select(.name == "code-reviewer") | .state' orchestrator-state.json)
+  echo "Code Reviewer state: $REVIEWER_STATE"
+  
+  sleep 30
+done
+
+if [ $CHECKS -eq $MAX_CHECKS ]; then
+  echo "✗ Timeout reached"
+fi
+
+# WRONG (R340 violation): Searching directories
+echo "Looking for plan..."
+if [ -f project-*/PROJECT-MERGE-PLAN.md ]; then  # ❌ R340 VIOLATION!
+  echo "Found plan"
+fi
+```
+
+## Valid State Transitions
+
+- **SUCCESS** → SPAWN_INTEGRATION_AGENT_PROJECT (plan ready)
+- **TIMEOUT** → ERROR_RECOVERY (plan not created)
+- **FAILURE** → ERROR_RECOVERY (invalid plan)
+
+## Common Violations to Avoid
+
+1. **Passive waiting** - Violates R233, must actively check
+2. **Searching directories** - Violates R340, must read from state
+3. **Not validating phase count** - Plan missing phases
+4. **Ignoring sequential order** - Phases out of order (R270)
+5. **Missing dependency check** - Cross-phase conflicts
+6. **Not checking remote branches** - Integration will fail
+
+## References
+- R232: rule-library/R232-monitor-state-requirements.md
+- R233: rule-library/R233-all-states-immediate-action.md
+- R270: rule-library/R270-project-merge-plan-requirements.md
+- R287: rule-library/R287-todo-persistence-comprehensive.md
+- R290: rule-library/R290-state-rule-verification.md
+- R322: rule-library/R322-mandatory-stop-before-transition.md
+- R340: rule-library/R340-planning-file-metadata-tracking.md

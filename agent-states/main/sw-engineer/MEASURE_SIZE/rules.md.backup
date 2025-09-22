@@ -1,0 +1,768 @@
+# SW Engineer - MEASURE_SIZE State Rules
+
+## State Context
+You have reached a size checkpoint or warning threshold and need to measure exact size compliance and plan next steps.
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R107.0.0 - MEASURE_SIZE Rules                             │
+│ Source: rule-library/RULE-REGISTRY.md#R107                     │
+├─────────────────────────────────────────────────────────────────┤
+│ SIZE MEASUREMENT PROTOCOL:                                     │
+│ 1. Use ONLY tmc-pr-line-counter.sh for measurements           │
+│ 2. Generate detailed breakdown analysis                       │
+│ 3. Determine exact compliance status                          │
+│ 4. Calculate remaining capacity or overflow                   │
+│ 5. Make transition decision based on measurement              │
+│ 6. Document findings and recommendations                      │
+└─────────────────────────────────────────────────────────────────┘
+
+## Mandatory Size Measurement
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R007.0.0 - Size Limit Enforcement                        │
+│ Source: rule-library/RULE-REGISTRY.md#R007                     │
+├─────────────────────────────────────────────────────────────────┤
+│ MEASUREMENT REQUIREMENTS:                                      │
+│                                                                 │
+│ ⚠️ CRITICAL: Use ONLY tmc-pr-line-counter.sh                 │
+│ ⚠️ NEVER count lines manually or with other tools            │
+│ ⚠️ Exclude generated code automatically                      │
+│                                                                 │
+│ REQUIRED MEASUREMENTS:                                         │
+│ 1. Total effort size (primary metric)                        │
+│ 2. Size breakdown by package/directory                       │
+│ 3. Growth trend analysis                                      │
+│ 4. Remaining capacity calculation                             │
+│                                                                 │
+│ DECISION MATRIX:                                              │
+│ - ≤700 lines: CONTINUE implementation                        │
+│ - 701-750 lines: OPTIMIZE or prepare for completion          │
+│ - 751-800 lines: COMPLETE immediately or split               │
+│ - >800 lines: MANDATORY split required                       │
+└─────────────────────────────────────────────────────────────────┘
+
+```bash
+#!/bin/bash
+# Comprehensive size measurement script
+
+BRANCH=$(git branch --show-current)
+WORKING_DIR=$(pwd)
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+
+echo "🔍 COMPREHENSIVE SIZE MEASUREMENT - $TIMESTAMP"
+echo "Branch: $BRANCH"
+echo "Working Directory: $WORKING_DIR"
+echo ""
+
+# Primary measurement using mandatory tool
+echo "📏 PRIMARY SIZE MEASUREMENT"
+SIZE_RESULT=$(/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c "$BRANCH")
+TOTAL_LINES=$(echo "$SIZE_RESULT" | tail -1 | awk '{print $1}')
+
+echo "Tool: /workspaces/kcp-shared-tools/tmc-pr-line-counter.sh"
+echo "Command: tmc-pr-line-counter.sh -c $BRANCH"
+echo "Result: $SIZE_RESULT"
+echo ""
+
+# Detailed breakdown measurement
+echo "📊 DETAILED SIZE BREAKDOWN"
+DETAILED_RESULT=$(/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c "$BRANCH" -d)
+echo "$DETAILED_RESULT"
+echo ""
+
+# Calculate compliance metrics
+echo "⚖️ COMPLIANCE ANALYSIS"
+LIMIT=800
+UTILIZATION=$(echo "scale=2; ($TOTAL_LINES * 100) / $LIMIT" | bc)
+REMAINING=$(echo "$LIMIT - $TOTAL_LINES" | bc)
+
+echo "Total Lines: $TOTAL_LINES"
+echo "Limit: $LIMIT"
+echo "Utilization: ${UTILIZATION}%"
+echo "Remaining Capacity: $REMAINING lines"
+echo ""
+
+# Determine status
+if [ "$TOTAL_LINES" -gt 800 ]; then
+    STATUS="VIOLATION"
+    SEVERITY="CRITICAL"
+    echo "🚨 STATUS: SIZE LIMIT VIOLATION"
+    echo "🚨 SEVERITY: CRITICAL - Immediate split required"
+elif [ "$TOTAL_LINES" -gt 750 ]; then
+    STATUS="DANGER"
+    SEVERITY="HIGH"
+    echo "⚠️ STATUS: DANGER ZONE"
+    echo "⚠️ SEVERITY: HIGH - Complete immediately or split"
+elif [ "$TOTAL_LINES" -gt 700 ]; then
+    STATUS="WARNING"
+    SEVERITY="MEDIUM"
+    echo "⚠️ STATUS: WARNING"
+    echo "⚠️ SEVERITY: MEDIUM - Optimize and plan completion"
+else
+    STATUS="COMPLIANT"
+    SEVERITY="LOW"
+    echo "✅ STATUS: COMPLIANT"
+    echo "✅ SEVERITY: LOW - Safe to continue"
+fi
+echo ""
+
+# Log measurement to work log
+echo "- [$TIMESTAMP] Size measurement: $TOTAL_LINES/$LIMIT lines (${UTILIZATION}%) - $STATUS" >> work-log.md
+
+# Return appropriate exit code for decision making
+case $STATUS in
+    "VIOLATION") exit 3;;
+    "DANGER") exit 2;;
+    "WARNING") exit 1;;
+    "COMPLIANT") exit 0;;
+esac
+```
+
+## Size Analysis and Breakdown
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R152.0.0 - Implementation Speed                           │
+│ Source: rule-library/RULE-REGISTRY.md#R152                     │
+├─────────────────────────────────────────────────────────────────┤
+│ SIZE TREND ANALYSIS REQUIREMENTS:                             │
+│                                                                 │
+│ GROWTH TREND ANALYSIS:                                         │
+│ 1. Analyze historical size measurements                       │
+│ 2. Calculate growth rate per hour/session                     │
+│ 3. Project completion size based on remaining work            │
+│ 4. Identify rapid growth periods and causes                   │
+│                                                                 │
+│ BREAKDOWN ANALYSIS:                                            │
+│ 1. Size contribution by package/directory                     │
+│ 2. Implementation vs test code ratios                         │
+│ 3. Identify largest contributors to size                      │
+│ 4. Find optimization opportunities                            │
+└─────────────────────────────────────────────────────────────────┘
+
+```python
+def analyze_size_breakdown(branch, working_dir):
+    """Perform comprehensive size breakdown analysis"""
+    
+    print("📊 COMPREHENSIVE SIZE ANALYSIS")
+    
+    # Get detailed breakdown from tmc-pr-line-counter.sh
+    detailed_result = subprocess.run([
+        '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+        '-c', branch, '-d'
+    ], capture_output=True, text=True)
+    
+    if detailed_result.returncode != 0:
+        print("❌ Error getting detailed breakdown")
+        return None
+    
+    # Parse breakdown output
+    breakdown_lines = detailed_result.stdout.strip().split('\n')
+    breakdown_data = parse_size_breakdown(breakdown_lines)
+    
+    analysis = {
+        'total_lines': breakdown_data['total'],
+        'breakdown_by_directory': breakdown_data['directories'],
+        'breakdown_by_file_type': breakdown_data['file_types'],
+        'largest_contributors': breakdown_data['largest_files'],
+        'optimization_opportunities': identify_optimization_opportunities(breakdown_data),
+        'test_to_implementation_ratio': calculate_test_ratio(breakdown_data)
+    }
+    
+    print(f"Total Lines: {analysis['total_lines']}")
+    print("\n📁 SIZE BY DIRECTORY:")
+    for dir_info in analysis['breakdown_by_directory']:
+        print(f"  {dir_info['path']}: {dir_info['lines']} lines ({dir_info['percentage']:.1f}%)")
+    
+    print("\n📄 SIZE BY FILE TYPE:")  
+    for type_info in analysis['breakdown_by_file_type']:
+        print(f"  {type_info['type']}: {type_info['lines']} lines ({type_info['percentage']:.1f}%)")
+    
+    print("\n🔍 LARGEST CONTRIBUTORS:")
+    for file_info in analysis['largest_contributors'][:5]:
+        print(f"  {file_info['path']}: {file_info['lines']} lines")
+    
+    if analysis['optimization_opportunities']:
+        print("\n💡 OPTIMIZATION OPPORTUNITIES:")
+        for opportunity in analysis['optimization_opportunities']:
+            print(f"  - {opportunity['description']} (potential savings: {opportunity['estimated_savings']} lines)")
+    
+    print(f"\n🧪 TEST RATIO: {analysis['test_to_implementation_ratio']:.1f}% test coverage by lines")
+    
+    return analysis
+
+def parse_size_breakdown(breakdown_lines):
+    """Parse tmc-pr-line-counter.sh detailed output"""
+    
+    breakdown_data = {
+        'total': 0,
+        'directories': [],
+        'file_types': {},
+        'largest_files': []
+    }
+    
+    current_section = None
+    
+    for line in breakdown_lines:
+        line = line.strip()
+        
+        if not line or line.startswith('#'):
+            continue
+            
+        # Extract total from summary line
+        if 'total lines' in line.lower():
+            parts = line.split()
+            breakdown_data['total'] = int(parts[0])
+            continue
+        
+        # Parse directory breakdown
+        if line.startswith('/') or line.startswith('./'):
+            parts = line.split()
+            if len(parts) >= 2:
+                path = parts[0]
+                lines = int(parts[1])
+                percentage = (lines / breakdown_data['total']) * 100 if breakdown_data['total'] > 0 else 0
+                
+                breakdown_data['directories'].append({
+                    'path': path,
+                    'lines': lines,
+                    'percentage': percentage
+                })
+                
+                # Track by file type
+                file_extension = get_file_extension(path)
+                if file_extension:
+                    if file_extension not in breakdown_data['file_types']:
+                        breakdown_data['file_types'][file_extension] = {'lines': 0, 'count': 0}
+                    breakdown_data['file_types'][file_extension]['lines'] += lines
+                    breakdown_data['file_types'][file_extension]['count'] += 1
+                
+                # Track largest files
+                breakdown_data['largest_files'].append({
+                    'path': path,
+                    'lines': lines
+                })
+    
+    # Sort largest files
+    breakdown_data['largest_files'].sort(key=lambda x: x['lines'], reverse=True)
+    
+    # Convert file_types dict to list with percentages
+    total_lines = breakdown_data['total']
+    file_type_list = []
+    for ext, data in breakdown_data['file_types'].items():
+        file_type_list.append({
+            'type': ext,
+            'lines': data['lines'],
+            'count': data['count'],
+            'percentage': (data['lines'] / total_lines) * 100 if total_lines > 0 else 0
+        })
+    
+    breakdown_data['file_types'] = sorted(file_type_list, key=lambda x: x['lines'], reverse=True)
+    
+    return breakdown_data
+
+def identify_optimization_opportunities(breakdown_data):
+    """Identify potential code optimization opportunities"""
+    
+    opportunities = []
+    
+    # Look for very large files (potential for splitting)
+    large_files = [f for f in breakdown_data['largest_files'] if f['lines'] > 200]
+    if large_files:
+        opportunities.append({
+            'type': 'LARGE_FILES',
+            'description': f'{len(large_files)} files >200 lines could be refactored',
+            'estimated_savings': sum(max(0, f['lines'] - 150) for f in large_files[:3]),  # Conservative estimate
+            'files': [f['path'] for f in large_files[:3]]
+        })
+    
+    # Look for duplicate patterns (heuristic based on file names)
+    file_groups = group_similar_files(breakdown_data['largest_files'])
+    for group_name, files in file_groups.items():
+        if len(files) > 2:
+            avg_size = sum(f['lines'] for f in files) / len(files)
+            if avg_size > 100:  # Only consider substantial files
+                opportunities.append({
+                    'type': 'SIMILAR_FILES',
+                    'description': f'{len(files)} similar {group_name} files could share common code',
+                    'estimated_savings': int(avg_size * 0.3 * len(files)),  # 30% savings estimate
+                    'files': [f['path'] for f in files]
+                })
+    
+    # Check test-to-implementation ratio
+    test_lines = sum(f['lines'] for f in breakdown_data['largest_files'] if '_test.go' in f['path'])
+    impl_lines = sum(f['lines'] for f in breakdown_data['largest_files'] if '_test.go' not in f['path'])
+    
+    if test_lines > impl_lines * 1.5:  # More than 150% test coverage by lines
+        opportunities.append({
+            'type': 'TEST_OPTIMIZATION',
+            'description': 'Test code is very verbose - consider more concise testing',
+            'estimated_savings': int(test_lines * 0.2),  # 20% test reduction
+            'files': [f['path'] for f in breakdown_data['largest_files'] if '_test.go' in f['path']][:3]
+        })
+    
+    return opportunities
+
+def group_similar_files(files):
+    """Group files by similar naming patterns"""
+    
+    groups = {}
+    
+    for file_info in files:
+        path = file_info['path']
+        filename = path.split('/')[-1]
+        
+        # Group by common prefixes/suffixes
+        if '_controller.go' in filename:
+            group_key = 'controllers'
+        elif '_types.go' in filename:
+            group_key = 'types'
+        elif '_test.go' in filename:
+            group_key = 'tests'
+        elif 'webhook' in filename:
+            group_key = 'webhooks'
+        else:
+            group_key = 'other'
+        
+        if group_key not in groups:
+            groups[group_key] = []
+        groups[group_key].append(file_info)
+    
+    return groups
+
+def calculate_test_ratio(breakdown_data):
+    """Calculate test-to-implementation code ratio"""
+    
+    test_lines = sum(
+        f['lines'] for f in breakdown_data['largest_files'] 
+        if '_test.go' in f['path'] or '/test' in f['path']
+    )
+    
+    impl_lines = sum(
+        f['lines'] for f in breakdown_data['largest_files']
+        if '_test.go' not in f['path'] and '/test' not in f['path']
+    )
+    
+    if impl_lines == 0:
+        return 0
+    
+    return (test_lines / impl_lines) * 100
+```
+
+## Growth Trend Analysis
+
+```python
+def analyze_size_growth_trend(effort_dir):
+    """Analyze size growth trend from historical measurements"""
+    
+    print("📈 SIZE GROWTH TREND ANALYSIS")
+    
+    # Load historical size measurements from work log and checkpoints
+    measurements = load_historical_size_measurements(effort_dir)
+    
+    if len(measurements) < 2:
+        print("⚠️ Insufficient historical data for trend analysis")
+        return {
+            'trend': 'INSUFFICIENT_DATA',
+            'measurements_available': len(measurements)
+        }
+    
+    # Calculate growth rates
+    growth_analysis = {
+        'measurements_count': len(measurements),
+        'timespan_hours': calculate_timespan_hours(measurements),
+        'total_growth_lines': measurements[-1]['lines'] - measurements[0]['lines'],
+        'average_growth_rate': 0,
+        'recent_growth_rate': 0,
+        'growth_trend': 'STABLE',
+        'projected_completion_size': 0
+    }
+    
+    # Calculate average growth rate
+    if growth_analysis['timespan_hours'] > 0:
+        growth_analysis['average_growth_rate'] = growth_analysis['total_growth_lines'] / growth_analysis['timespan_hours']
+    
+    # Calculate recent growth rate (last 3 measurements)
+    if len(measurements) >= 3:
+        recent_measurements = measurements[-3:]
+        recent_timespan = calculate_timespan_hours(recent_measurements)
+        recent_growth = recent_measurements[-1]['lines'] - recent_measurements[0]['lines']
+        
+        if recent_timespan > 0:
+            growth_analysis['recent_growth_rate'] = recent_growth / recent_timespan
+    
+    # Determine trend direction
+    if growth_analysis['recent_growth_rate'] > growth_analysis['average_growth_rate'] * 1.2:
+        growth_analysis['growth_trend'] = 'ACCELERATING'
+    elif growth_analysis['recent_growth_rate'] < growth_analysis['average_growth_rate'] * 0.8:
+        growth_analysis['growth_trend'] = 'DECELERATING'
+    else:
+        growth_analysis['growth_trend'] = 'STABLE'
+    
+    # Project completion size based on plan progress
+    completion_percentage = get_implementation_plan_completion(effort_dir)
+    if completion_percentage > 0 and completion_percentage < 100:
+        remaining_percentage = 100 - completion_percentage
+        projected_additional_growth = (remaining_percentage / 100) * growth_analysis['recent_growth_rate'] * 4  # Estimate 4 more hours
+        growth_analysis['projected_completion_size'] = measurements[-1]['lines'] + projected_additional_growth
+    
+    # Display analysis
+    print(f"Measurements analyzed: {growth_analysis['measurements_count']} over {growth_analysis['timespan_hours']:.1f} hours")
+    print(f"Total growth: {growth_analysis['total_growth_lines']} lines")
+    print(f"Average growth rate: {growth_analysis['average_growth_rate']:.1f} lines/hour")
+    print(f"Recent growth rate: {growth_analysis['recent_growth_rate']:.1f} lines/hour")
+    print(f"Growth trend: {growth_analysis['growth_trend']}")
+    
+    if growth_analysis['projected_completion_size'] > 0:
+        print(f"Projected completion size: {growth_analysis['projected_completion_size']:.0f} lines")
+        
+        if growth_analysis['projected_completion_size'] > 800:
+            print("🚨 WARNING: Projected to exceed size limit!")
+        elif growth_analysis['projected_completion_size'] > 750:
+            print("⚠️ CAUTION: Projected size in danger zone")
+    
+    return growth_analysis
+
+def load_historical_size_measurements(effort_dir):
+    """Load historical size measurements from various sources"""
+    
+    measurements = []
+    
+    # Try to load from work log
+    work_log_path = os.path.join(effort_dir, 'work-log.md')
+    if os.path.exists(work_log_path):
+        measurements.extend(extract_measurements_from_work_log(work_log_path))
+    
+    # Try to load from checkpoint files
+    checkpoint_pattern = f"/workspaces/software-factory-2.0-template/checkpoints/*/sw-engineer-implementation-*"
+    checkpoint_files = glob.glob(checkpoint_pattern)
+    
+    for checkpoint_file in checkpoint_files:
+        if effort_dir.split('/')[-1] in checkpoint_file:  # Match effort ID
+            measurements.extend(extract_measurements_from_checkpoint(checkpoint_file))
+    
+    # Sort by timestamp
+    measurements.sort(key=lambda x: x['timestamp'])
+    
+    return measurements
+
+def extract_measurements_from_work_log(work_log_path):
+    """Extract size measurements from work log entries"""
+    
+    measurements = []
+    
+    try:
+        with open(work_log_path, 'r') as f:
+            content = f.read()
+        
+        # Look for size measurement patterns
+        import re
+        
+        # Pattern: "Size check: 542 lines" or "542/800 lines"
+        patterns = [
+            r'\[([^\]]+)\].*?[Ss]ize.*?(\d+).*?lines',
+            r'\[([^\]]+)\].*?(\d+)/800.*?lines',
+            r'- \[([^\]]+)\].*?(\d+).*?lines'
+        ]
+        
+        for pattern in patterns:
+            matches = re.findall(pattern, content)
+            for match in matches:
+                try:
+                    timestamp_str = match[0]
+                    lines = int(match[1])
+                    
+                    # Parse timestamp
+                    timestamp = parse_work_log_timestamp(timestamp_str)
+                    if timestamp:
+                        measurements.append({
+                            'timestamp': timestamp,
+                            'lines': lines,
+                            'source': 'work_log'
+                        })
+                except (ValueError, IndexError):
+                    continue
+    
+    except Exception:
+        pass  # Silently handle file reading errors
+    
+    return measurements
+```
+
+## Decision Making Framework
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R020.0.0 - State Transitions                              │
+│ Source: rule-library/RULE-REGISTRY.md#R020                     │
+├─────────────────────────────────────────────────────────────────┤
+│ SIZE-BASED DECISION MATRIX:                                    │
+│                                                                 │
+│ >800 LINES (VIOLATION):                                        │
+│ → SPLIT_WORK (mandatory)                                       │
+│ → Document violation and split strategy                       │
+│                                                                 │
+│ 751-800 LINES (DANGER):                                        │
+│ → Evaluate completion feasibility                             │
+│ → IMPLEMENTATION if <10% work remaining                       │
+│ → SPLIT_WORK if >10% work remaining                           │
+│                                                                 │
+│ 701-750 LINES (WARNING):                                       │
+│ → Optimize current code if opportunities exist               │
+│ → IMPLEMENTATION with careful monitoring                      │
+│ → Consider completion strategy                                │
+│                                                                 │
+│ ≤700 LINES (COMPLIANT):                                        │
+│ → IMPLEMENTATION (safe to continue)                           │
+│ → Continue normal development pace                            │
+└─────────────────────────────────────────────────────────────────┘
+
+```python
+def make_size_based_transition_decision(measurement_data, analysis_data):
+    """Make state transition decision based on size measurements"""
+    
+    current_lines = measurement_data['total_lines']
+    limit = 800
+    
+    decision = {
+        'current_lines': current_lines,
+        'limit': limit,
+        'utilization_percentage': (current_lines / limit) * 100,
+        'next_state': None,
+        'reasoning': [],
+        'urgency': 'NORMAL',
+        'immediate_actions': []
+    }
+    
+    # Critical size violation
+    if current_lines > limit:
+        decision['next_state'] = 'SPLIT_WORK'
+        decision['urgency'] = 'CRITICAL'
+        decision['reasoning'].append(f'Size violation: {current_lines} > {limit} lines')
+        decision['immediate_actions'].extend([
+            'Document current implementation status',
+            'Create split strategy immediately',
+            'Notify orchestrator of mandatory split'
+        ])
+        
+        return decision
+    
+    # Danger zone - detailed analysis required
+    if current_lines > 750:
+        decision['urgency'] = 'HIGH'
+        
+        # Check implementation plan completion
+        completion_percentage = analysis_data.get('implementation_completion', 0)
+        projected_final_size = analysis_data.get('projected_completion_size', current_lines)
+        
+        if completion_percentage >= 90:
+            # Very close to completion - may be able to finish
+            decision['next_state'] = 'IMPLEMENTATION'
+            decision['reasoning'].append('Implementation >90% complete, finishing within limit likely')
+            decision['immediate_actions'].extend([
+                'Focus on completion only - no new features',
+                'Optimize existing code if possible',
+                'Monitor size every 50 lines'
+            ])
+        elif projected_final_size <= limit:
+            # Projection shows we can finish within limit
+            decision['next_state'] = 'IMPLEMENTATION'
+            decision['reasoning'].append(f'Projected final size {projected_final_size:.0f} within limit')
+            decision['immediate_actions'].extend([
+                'Strict size monitoring required',
+                'Focus on essential implementation only',
+                'Prepare split plan as contingency'
+            ])
+        else:
+            # Projection shows we'll exceed limit
+            decision['next_state'] = 'SPLIT_WORK'
+            decision['reasoning'].append(f'Projected final size {projected_final_size:.0f} exceeds limit')
+            decision['immediate_actions'].extend([
+                'Stop implementation immediately',
+                'Analyze split opportunities',
+                'Create split plan'
+            ])
+        
+        return decision
+    
+    # Warning zone - optimization and careful monitoring
+    if current_lines > 700:
+        decision['urgency'] = 'MEDIUM'
+        decision['next_state'] = 'IMPLEMENTATION'
+        
+        optimization_opportunities = analysis_data.get('optimization_opportunities', [])
+        if optimization_opportunities:
+            decision['reasoning'].append('Code optimization opportunities identified')
+            decision['immediate_actions'].extend([
+                'Review optimization opportunities',
+                'Refactor large functions if beneficial',
+                'Continue implementation with size monitoring'
+            ])
+        else:
+            decision['reasoning'].append('No obvious optimization opportunities')
+            decision['immediate_actions'].extend([
+                'Continue implementation carefully',
+                'Monitor size every 100 lines',
+                'Plan completion strategy'
+            ])
+        
+        return decision
+    
+    # Compliant - safe to continue
+    decision['next_state'] = 'IMPLEMENTATION'
+    decision['reasoning'].append(f'Size compliant: {current_lines}/{limit} lines ({decision["utilization_percentage"]:.1f}%)')
+    decision['immediate_actions'].extend([
+        'Continue normal implementation',
+        'Maintain regular size monitoring',
+        'Continue following implementation plan'
+    ])
+    
+    return decision
+
+def generate_size_measurement_report(measurement_data, analysis_data, decision_data):
+    """Generate comprehensive size measurement report"""
+    
+    report = {
+        'measurement_timestamp': datetime.now().isoformat(),
+        'measurement_summary': {
+            'total_lines': measurement_data['total_lines'],
+            'size_limit': 800,
+            'utilization_percentage': (measurement_data['total_lines'] / 800) * 100,
+            'compliance_status': 'COMPLIANT' if measurement_data['total_lines'] <= 800 else 'VIOLATION'
+        },
+        'size_breakdown': analysis_data.get('breakdown_by_directory', []),
+        'growth_analysis': analysis_data.get('growth_trend', {}),
+        'optimization_opportunities': analysis_data.get('optimization_opportunities', []),
+        'decision': decision_data,
+        'recommendations': generate_size_recommendations(measurement_data, analysis_data, decision_data)
+    }
+    
+    print("📋 SIZE MEASUREMENT REPORT")
+    print(f"Measurement Time: {report['measurement_timestamp']}")
+    print(f"Total Lines: {report['measurement_summary']['total_lines']}/800 ({report['measurement_summary']['utilization_percentage']:.1f}%)")
+    print(f"Status: {report['measurement_summary']['compliance_status']}")
+    print(f"Next State: {report['decision']['next_state']}")
+    print(f"Urgency: {report['decision']['urgency']}")
+    
+    print("\nDecision Reasoning:")
+    for reason in report['decision']['reasoning']:
+        print(f"  - {reason}")
+    
+    print("\nImmediate Actions:")
+    for action in report['decision']['immediate_actions']:
+        print(f"  • {action}")
+    
+    if report['optimization_opportunities']:
+        print("\nOptimization Opportunities:")
+        for opp in report['optimization_opportunities']:
+            print(f"  - {opp['description']} (est. {opp['estimated_savings']} lines)")
+    
+    return report
+
+def generate_size_recommendations(measurement_data, analysis_data, decision_data):
+    """Generate actionable recommendations based on size analysis"""
+    
+    recommendations = []
+    
+    current_lines = measurement_data['total_lines']
+    
+    # Size-specific recommendations
+    if current_lines > 800:
+        recommendations.extend([
+            'IMMEDIATE: Stop all implementation work',
+            'CRITICAL: Create effort split plan within 1 hour',
+            'MANDATORY: Document current implementation state',
+            'REQUIRED: Notify orchestrator of size violation'
+        ])
+    elif current_lines > 750:
+        recommendations.extend([
+            'URGENT: Focus only on essential completion tasks',
+            'HIGH: Monitor size every 50 lines of changes',
+            'IMPORTANT: Optimize code where possible',
+            'CONTINGENCY: Prepare split plan as backup'
+        ])
+    elif current_lines > 700:
+        recommendations.extend([
+            'MONITOR: Check size every 100 lines',
+            'OPTIMIZE: Review refactoring opportunities',
+            'PLAN: Develop completion strategy',
+            'TRACK: Monitor growth rate trends'
+        ])
+    else:
+        recommendations.extend([
+            'CONTINUE: Normal implementation pace acceptable',
+            'MAINTAIN: Regular size monitoring schedule',
+            'FOLLOW: Implementation plan as designed'
+        ])
+    
+    # Growth trend recommendations
+    growth_trend = analysis_data.get('growth_trend', {})
+    if growth_trend.get('growth_trend') == 'ACCELERATING':
+        recommendations.append('CAUTION: Growth rate increasing - monitor closely')
+    elif growth_trend.get('projected_completion_size', 0) > 800:
+        recommendations.append('WARNING: Projected to exceed limit - consider scope reduction')
+    
+    # Optimization recommendations
+    optimization_opportunities = analysis_data.get('optimization_opportunities', [])
+    for opp in optimization_opportunities[:2]:  # Top 2 opportunities
+        recommendations.append(f"OPTIMIZE: {opp['description']}")
+    
+    return recommendations
+```
+
+## State Transitions
+
+From MEASURE_SIZE state:
+- **SIZE_COMPLIANT** → IMPLEMENTATION (Continue development safely)
+- **SIZE_WARNING** → IMPLEMENTATION (Continue with enhanced monitoring)
+- **SIZE_DANGER** → IMPLEMENTATION or SPLIT_WORK (Based on completion analysis)
+- **SIZE_VIOLATION** → SPLIT_WORK (Mandatory split required)
+- **OPTIMIZATION_IDENTIFIED** → FIX_ISSUES (Refactor before continuing)
+
+## Size Measurement Validation
+
+```python
+def validate_size_measurement_accuracy():
+    """Validate that size measurements are accurate and consistent"""
+    
+    print("✅ VALIDATING SIZE MEASUREMENT ACCURACY")
+    
+    # Run measurement multiple times to check consistency
+    measurements = []
+    branch = subprocess.check_output(['git', 'branch', '--show-current']).decode().strip()
+    
+    for i in range(3):
+        result = subprocess.run([
+            '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+            '-c', branch
+        ], capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            lines = int(result.stdout.strip().split()[-1])
+            measurements.append(lines)
+        else:
+            print(f"❌ Measurement {i+1} failed: {result.stderr}")
+    
+    if len(measurements) < 2:
+        return {'valid': False, 'error': 'Insufficient successful measurements'}
+    
+    # Check consistency
+    max_measurement = max(measurements)
+    min_measurement = min(measurements)
+    variance = max_measurement - min_measurement
+    
+    if variance > 5:  # Allow small variance for race conditions
+        return {
+            'valid': False,
+            'error': f'Inconsistent measurements: {measurements}',
+            'variance': variance
+        }
+    
+    avg_measurement = sum(measurements) / len(measurements)
+    
+    return {
+        'valid': True,
+        'measurements': measurements,
+        'average': avg_measurement,
+        'variance': variance,
+        'final_measurement': int(avg_measurement)
+    }
+```

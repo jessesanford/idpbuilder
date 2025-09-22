@@ -1,0 +1,456 @@
+# Orchestrator - ANALYZE_IMPLEMENTATION_PARALLELIZATION State Rules
+
+## 🔴🔴🔴 STOP! STATE RULE READING IS ABSOLUTELY FIRST! 🔴🔴🔴
+
+**YOU HAVE ENTERED ANALYZE_IMPLEMENTATION_PARALLELIZATION STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
+
+### ❌ DO NOT DO ANY ANALYZE_IMPLEMENTATION_PARALLELIZATION WORK UNTIL RULES ARE READ:
+- ❌ Start analyze implementation dependencies
+- ❌ Start determine SWE parallelization
+- ❌ Start plan agent allocation
+- ❌ Update state files
+- ❌ Continue to next state
+- ❌ Think about what to do in this state
+
+### ✅ YOU MUST IMMEDIATELY:
+1. **READ** every rule file listed in PRIMARY DIRECTIVES below
+2. **ACKNOWLEDGE** each rule individually with number and description
+3. **ONLY THEN** proceed with ANALYZE_IMPLEMENTATION_PARALLELIZATION work
+
+### 🚨 FAILURE TO READ STATE RULES FIRST = IMMEDIATE EXIT 🚨
+**If you do ANY ANALYZE_IMPLEMENTATION_PARALLELIZATION work before reading and acknowledging rules:**
+- **STOP ALL WORK IMMEDIATELY**
+- **EXIT WITH FAILURE STATUS**
+- **YOU HAVE VIOLATED STATE COMPLIANCE**
+
+**THE SYSTEM IS MONITORING YOUR READ TOOL CALLS!**
+
+## ⚠️⚠️⚠️ MANDATORY RULE READING AND ACKNOWLEDGMENT ⚠️⚠️⚠️
+
+**YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. YOUR READ TOOL CALLS ARE BEING MONITORED.**
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+1. Fake acknowledgment without reading
+2. Bulk acknowledgment
+3. Reading from memory
+
+### ✅ CORRECT PATTERN:
+1. READ each rule file
+2. Acknowledge individually with rule number and description
+
+## 📋 PRIMARY DIRECTIVES FOR ANALYZE_IMPLEMENTATION_PARALLELIZATION
+
+### 🚨🚨🚨 R213 - Wave and Effort Metadata Injection
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R213-wave-and-effort-metadata-protocol.md`
+**Criticality**: BLOCKING - Must inject metadata before spawning SW Engineers
+**Summary**: Inject metadata into IMPLEMENTATION-PLAN.md before spawn
+
+### 🚨🚨🚨 R219 - Code Reviewer Dependency-Aware Planning
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R219-code-reviewer-dependency-aware-planning.md`
+**Criticality**: BLOCKING - Must analyze effort dependencies
+**Summary**: Analyze dependencies for parallelization decisions
+
+### ⚠️⚠️⚠️ R151 - Parallel Agent Spawning Timing
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R151-parallel-agent-spawning-timing.md`
+**Criticality**: CRITICAL - <5s delta required
+**Summary**: All parallel agents must acknowledge within 5 seconds
+
+### 🔴🔴🔴 R234 - Mandatory State Traversal (SUPREME LAW)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal-supreme-law.md`
+**Criticality**: SUPREME LAW - Violation = -100% automatic failure
+**Summary**: Must traverse all states in sequence, no skipping allowed
+
+## 🚨 ANALYZE_IMPLEMENTATION_PARALLELIZATION IS A VERB - START ANALYZING IMPLEMENTATION PARALLELIZATION IMMEDIATELY! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING ANALYZE_IMPLEMENTATION_PARALLELIZATION
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Check agent availability in orchestrator-state.yaml NOW
+2. Parse effort implementation plans for dependencies immediately
+3. Check TodoWrite for pending items and process them
+4. Create implementation spawn sequence without delay
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in ANALYZE_IMPLEMENTATION_PARALLELIZATION" [stops]
+- ❌ "Successfully entered ANALYZE_IMPLEMENTATION_PARALLELIZATION state" [waits]
+- ❌ "Ready to start analyzing implementation parallelization" [pauses]
+- ❌ "I'm in ANALYZE_IMPLEMENTATION_PARALLELIZATION state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering ANALYZE_IMPLEMENTATION_PARALLELIZATION, Check agent availability in orchestrator-state.yaml NOW..."
+- ✅ "START ANALYZING IMPLEMENTATION PARALLELIZATION, parse effort implementation plans for dependencies immediately..."
+- ✅ "ANALYZE_IMPLEMENTATION_PARALLELIZATION: Create implementation spawn sequence without delay..."
+
+## State Context
+You MUST analyze the individual effort implementation plans to determine parallelization strategy BEFORE spawning any SW Engineers for implementation. This is a MANDATORY GATE after Code Reviewers create effort plans.
+
+## 🔴🔴🔴 ABSOLUTE REQUIREMENT 🔴🔴🔴
+
+**THIS STATE IS A MANDATORY STOP!**
+- You CANNOT proceed to SPAWN_AGENTS without completing this analysis
+- You MUST read EACH effort's IMPLEMENTATION-PLAN.md
+- You MUST create a SW Engineer parallelization plan
+- You MUST acknowledge your parallelization decision BEFORE any spawning
+
+---
+### 🚨🚨🚨 RULE R219 - Mandatory Implementation Parallelization Analysis
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R219-code-reviewer-dependency-aware-planning.md`
+
+### ⚠️⚠️⚠️ RULE R151 - Parallel Spawn Timing Requirements
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R151-parallel-agent-spawning-timing.md`
+
+**ANALYSIS REQUIREMENTS:**
+1. **USE THE READ TOOL** to read EACH effort's IMPLEMENTATION-PLAN.md
+2. **EXTRACT** parallelization metadata from each plan
+3. **VERIFY** consistency with wave plan metadata
+4. **CREATE** SW Engineer spawn groups
+5. **SAVE** the plan to orchestrator-state.yaml
+6. **ACKNOWLEDGE** the decision with explicit output
+---
+
+## Mandatory Analysis Protocol
+
+```bash
+# STEP 0: INJECT EFFORT METADATA (R213 - BLOCKING)
+echo "═══════════════════════════════════════════════════════════════"
+echo "🔧 R213: MANDATORY - Injecting Effort Metadata BEFORE Analysis"
+echo "═══════════════════════════════════════════════════════════════"
+# For each effort, inject metadata into IMPLEMENTATION-PLAN.md
+# This MUST happen BEFORE spawning SW Engineers!
+inject_effort_metadata "$PHASE" "$WAVE" "$EFFORT_NAME" "$EFFORT_NUM" "$WORKING_DIR" "$BRANCH"
+
+# STEP 1: READ All Effort Implementation Plans
+echo "═══════════════════════════════════════════════════════════════"
+echo "🔴🔴🔴 ANALYZE_IMPLEMENTATION_PARALLELIZATION STATE 🔴🔴🔴"
+echo "═══════════════════════════════════════════════════════════════"
+echo ""
+echo "📖 R219: MANDATORY - Reading ALL Effort Implementation Plans"
+
+# For each effort directory
+for effort in efforts/phase${PHASE}/wave${WAVE}/*/; do
+    EFFORT_NAME=$(basename "$effort")
+    IMPL_PLAN="${effort}IMPLEMENTATION-PLAN.md"
+    
+    echo ""
+    echo "🚨 USING READ TOOL on effort plan:"
+    echo "   $IMPL_PLAN"
+    # READ: $IMPL_PLAN
+    
+    # Extract parallelization context from each plan
+    echo "🔍 Extracting parallelization metadata for $EFFORT_NAME..."
+done
+
+# STEP 2: Verify Consistency with Wave Plan
+echo ""
+echo "🔍 Verifying parallelization consistency..."
+echo "   Comparing effort plans with original wave plan metadata"
+
+# STEP 3: Create SW Engineer Spawn Groups
+cat > /tmp/sw_engineer_parallelization.yaml << EOF
+sw_engineer_parallelization_plan:
+  wave: ${WAVE}
+  phase: ${PHASE}
+  analysis_timestamp: "$(date -Iseconds)"
+  
+  blocking_implementations:
+    # Implementations that MUST run sequentially
+    - effort_id: "E3.1.1"
+      name: "sync-engine-foundation"
+      implementation_plan: "efforts/phase3/wave1/sync-engine-foundation/IMPLEMENTATION-PLAN.md"
+      can_parallelize: false
+      reason: "Core foundation - blocks all others"
+      dependencies: []
+      
+  parallel_groups:
+    # Groups that can run in parallel AFTER blocking implementations
+    group_1:
+      can_start_after: ["E3.1.1"]
+      efforts:
+        - effort_id: "E3.1.2"
+          name: "webhook-framework"
+          implementation_plan: "efforts/phase3/wave1/webhook-framework/IMPLEMENTATION-PLAN.md"
+        - effort_id: "E3.1.3"
+          name: "controller-setup"
+          implementation_plan: "efforts/phase3/wave1/controller-setup/IMPLEMENTATION-PLAN.md"
+        - effort_id: "E3.1.4"
+          name: "validation-engine"
+          implementation_plan: "efforts/phase3/wave1/validation-engine/IMPLEMENTATION-PLAN.md"
+        - effort_id: "E3.1.5"
+          name: "status-management"
+          implementation_plan: "efforts/phase3/wave1/status-management/IMPLEMENTATION-PLAN.md"
+          
+  spawn_sequence:
+    - step: 1
+      action: "spawn_sequential"
+      agent_type: "sw-engineer"
+      efforts: ["E3.1.1"]
+      wait_for_completion: true
+      expected_duration: "2-3 hours"
+    - step: 2
+      action: "spawn_parallel"
+      agent_type: "sw-engineer"
+      efforts: ["E3.1.2", "E3.1.3", "E3.1.4", "E3.1.5"]
+      r151_requirement: "All in ONE message with <5s delta"
+      expected_duration: "3-4 hours"
+EOF
+
+# STEP 4: Update orchestrator-state.yaml
+echo ""
+echo "💾 Saving SW Engineer parallelization plan to orchestrator-state.yaml..."
+```
+
+## Mandatory Acknowledgment Output
+
+**YOU MUST OUTPUT ALL OF THE FOLLOWING BEFORE PROCEEDING:**
+
+```
+═══════════════════════════════════════════════════════════════
+📋 IMPLEMENTATION PARALLELIZATION ANALYSIS COMPLETE
+═══════════════════════════════════════════════════════════════
+
+✅ I have READ ALL effort implementation plans:
+   - efforts/phase3/wave1/sync-engine-foundation/IMPLEMENTATION-PLAN.md
+   - efforts/phase3/wave1/webhook-framework/IMPLEMENTATION-PLAN.md
+   - efforts/phase3/wave1/controller-setup/IMPLEMENTATION-PLAN.md
+   - efforts/phase3/wave1/validation-engine/IMPLEMENTATION-PLAN.md
+   - efforts/phase3/wave1/status-management/IMPLEMENTATION-PLAN.md
+
+📊 SW ENGINEER SPAWN DECISION:
+   
+   BLOCKING IMPLEMENTATIONS (must complete first):
+   - E3.1.1: sync-engine-foundation (foundation layer)
+   
+   PARALLEL IMPLEMENTATIONS (can spawn together after blocking):
+   - E3.1.2: webhook-framework
+   - E3.1.3: controller-setup
+   - E3.1.4: validation-engine
+   - E3.1.5: status-management
+   
+🚨 SPAWN STRATEGY COMMITMENT:
+   Step 1: Spawn SW Engineer for E3.1.1 ALONE and WAIT
+   Step 2: Spawn SW Engineers for E3.1.2-E3.1.5 TOGETHER (R151)
+   
+✅ Consistency verified with wave plan parallelization
+✅ This strategy is SAVED in orchestrator-state.yaml
+✅ I WILL follow this strategy in SPAWN_AGENTS state
+═══════════════════════════════════════════════════════════════
+```
+
+## Post-State Actions
+
+After completing implementation parallelization analysis:
+1. Save implementation strategy to orchestrator-state.yaml
+2. Display state machine visualization (R230)
+3. Transition to SPAWN_AGENTS
+4. Re-acknowledge critical rules (R217)
+5. Use the saved strategy to spawn SW Engineers correctly
+
+## Validation Checks Before State Transition
+
+```bash
+validate_implementation_parallelization() {
+    echo "🔍 Validating implementation parallelization analysis..."
+    
+    # CHECK 1: Were all implementation plans read?
+    EFFORT_COUNT=$(ls efforts/phase${PHASE}/wave${WAVE}/*/IMPLEMENTATION-PLAN.md 2>/dev/null | wc -l)
+    echo "Found $EFFORT_COUNT effort implementation plans"
+    
+    if [ $EFFORT_COUNT -eq 0 ]; then
+        echo "❌ FATAL: No implementation plans found!"
+        echo "Code Reviewers must create plans first!"
+        exit 1
+    fi
+    
+    # CHECK 2: Is SW Engineer parallelization plan saved?
+    if ! grep -q "sw_engineer_parallelization_plan" orchestrator-state.yaml; then
+        echo "❌ FATAL: No SW Engineer parallelization plan in orchestrator-state.yaml!"
+        echo "Cannot proceed to SPAWN_AGENTS!"
+        exit 1
+    fi
+    
+    # CHECK 3: Verify consistency with Code Reviewer parallelization
+    CR_BLOCKING=$(yq '.code_reviewer_parallelization_plan.blocking_efforts | length' orchestrator-state.yaml)
+    SW_BLOCKING=$(yq '.sw_engineer_parallelization_plan.blocking_implementations | length' orchestrator-state.yaml)
+    
+    if [ "$CR_BLOCKING" != "$SW_BLOCKING" ]; then
+        echo "⚠️ WARNING: Mismatch between Code Reviewer and SW Engineer blocking counts"
+        echo "   Code Reviewer blocking: $CR_BLOCKING"
+        echo "   SW Engineer blocking: $SW_BLOCKING"
+    fi
+    
+    # CHECK 4: Verify spawn sequence exists
+    SEQUENCE_COUNT=$(yq '.sw_engineer_parallelization_plan.spawn_sequence | length' orchestrator-state.yaml)
+    echo "✅ SW Engineer spawn sequence has $SEQUENCE_COUNT steps"
+    
+    echo ""
+    echo "✅ Implementation parallelization analysis is COMPLETE"
+    echo "✅ Ready to transition to SPAWN_AGENTS"
+}
+```
+
+## Consistency Verification Protocol
+
+```bash
+verify_parallelization_consistency() {
+    echo "🔍 Verifying parallelization consistency across plans..."
+    
+    # Compare wave plan metadata with effort plans
+    for effort in efforts/phase${PHASE}/wave${WAVE}/*/; do
+        EFFORT_NAME=$(basename "$effort")
+        IMPL_PLAN="${effort}IMPLEMENTATION-PLAN.md"
+        
+        # Check if effort plan preserves parallelization metadata
+        if grep -q "Can Parallelize:" "$IMPL_PLAN"; then
+            echo "✅ $EFFORT_NAME preserves parallelization metadata"
+        else
+            echo "⚠️ WARNING: $EFFORT_NAME missing parallelization metadata"
+        fi
+    done
+    
+    echo ""
+    echo "✅ Consistency verification complete"
+}
+```
+
+## State Transition Requirements
+
+**BEFORE transitioning to SPAWN_AGENTS:**
+
+1. ✅ ALL effort IMPLEMENTATION-PLAN.md files have been READ
+2. ✅ Parallelization metadata extracted from each plan
+3. ✅ Consistency verified with wave plan
+4. ✅ SW Engineer parallelization plan saved to orchestrator-state.yaml
+5. ✅ Acknowledgment output has been displayed
+6. ✅ Validation checks have passed
+
+**AFTER completing this state:**
+```yaml
+orchestrator_state:
+  current_state: "SPAWN_AGENTS"
+  previous_state: "ANALYZE_IMPLEMENTATION_PARALLELIZATION"
+  transition_time: "{ISO-8601}"
+  transition_reason: "SW Engineer parallelization analysis complete"
+  
+  sw_engineer_parallelization_plan:
+    wave: 1
+    phase: 3
+    blocking_implementations: [...]
+    parallel_groups: [...]
+    spawn_sequence: [...]
+```
+
+## Critical Failure Conditions
+
+**THE FOLLOWING WILL CAUSE IMMEDIATE STATE FAILURE:**
+
+1. ❌ Not reading ANY implementation plans
+2. ❌ Skipping this state and going directly to SPAWN_AGENTS
+3. ❌ Not saving SW Engineer parallelization plan
+4. ❌ Inconsistent parallelization with wave plan
+5. ❌ Spawning all SW Engineers together when some are blocking
+
+## Integration with Directory Protocol (R208)
+
+```bash
+prepare_spawn_with_directories() {
+    echo "🗂️ R208: Preparing directory verification for spawn..."
+    
+    # For each effort in spawn sequence
+    for effort in $EFFORTS; do
+        EFFORT_DIR="efforts/phase${PHASE}/wave${WAVE}/${effort}"
+        
+        echo "   $effort will spawn in: $EFFORT_DIR"
+        echo "   Branch: $(cd $EFFORT_DIR && git branch --show-current)"
+        echo "   Implementation plan: $EFFORT_DIR/IMPLEMENTATION-PLAN.md"
+    done
+    
+    echo "✅ All directories verified and ready for spawn"
+}
+```
+
+## Example: Correct Execution
+
+```bash
+# 1. Enter state
+echo "Transitioning to ANALYZE_IMPLEMENTATION_PARALLELIZATION"
+
+# 2. Read ALL implementation plans
+for plan in efforts/phase3/wave1/*/IMPLEMENTATION-PLAN.md; do
+    READ: $plan
+done
+
+# 3. Analyze parallelization
+echo "Analysis complete:"
+echo "  1 blocking implementation (E3.1.1)"
+echo "  4 parallel implementations (E3.1.2-E3.1.5)"
+
+# 4. Verify consistency
+verify_parallelization_consistency
+
+# 5. Save to orchestrator-state.yaml
+yq eval '.sw_engineer_parallelization_plan = ...' orchestrator-state.yaml
+
+# 6. Acknowledge decision
+echo "✅ SW ENGINEER SPAWN STRATEGY COMMITTED"
+
+# 7. Validate and transition
+validate_implementation_parallelization
+echo "Transitioning to SPAWN_AGENTS"
+```
+
+## Integration with Other Rules
+
+- **R151**: Parallel spawn timing requirements
+- **R208**: Directory protocol for each spawn
+- **R219**: Dependency-aware planning
+- **R197**: One agent per effort requirement
+- **R252**: Mandatory state file updates
+- **R253**: Mandatory commit and push
+
+## Grading Impact
+
+**This state affects orchestrator grading:**
+- Skipping this state: **-100%** (R234 SUPREME LAW VIOLATION)
+- Not reading implementation plans: **-30%** (Analysis failure)
+- Wrong parallelization groups: **-25%** (Strategy error)
+- Inconsistent with wave plan: **-20%** (Coordination failure)
+- No acknowledgment: **-15%** (Protocol violation)
+- Forgetting TODO saves: **-15%** per violation (R187-R188)
+
+### R187-R189 CHECKPOINT
+```bash
+# After analysis complete
+echo "💾 R187: Saving TODOs after implementation analysis..."
+save_todos "ANALYZE_IMPLEMENTATION_PARALLELIZATION complete"
+
+# R189: Commit within 60 seconds
+cd $CLAUDE_PROJECT_DIR
+git add todos/*.todo orchestrator-state.yaml
+git commit -m "todo: implementation parallelization analyzed"
+git push
+
+# Ready for SPAWN_AGENTS
+echo "✅ Analysis complete - ready to spawn SW Engineers!"
+```
+
+## Summary
+
+This state is a **MANDATORY GATE** that:
+1. **ANALYZES** all effort implementation plans
+2. **VERIFIES** consistency with wave parallelization
+3. **CREATES** SW Engineer spawn strategy
+4. **PREVENTS** parallelization violations
+5. **ENSURES** R151 compliance before spawning
+6. **ENFORCES** R234 mandatory state sequence (see rule library)
+7. **REQUIRES** TODO persistence per R187-R189 (see rule library)
+
+**THIS STATE CANNOT BE SKIPPED! R234 VIOLATION = -100% FAILURE!**
+
+### Additional Rules Referenced:
+- **R187**: `$CLAUDE_PROJECT_DIR/rule-library/R187-mandatory-todo-save-triggers.md`
+- **R188**: `$CLAUDE_PROJECT_DIR/rule-library/R188-todo-save-frequency-requirements.md`
+- **R189**: `$CLAUDE_PROJECT_DIR/rule-library/R189-todo-file-commit-protocol.md`
+- **R252**: `$CLAUDE_PROJECT_DIR/rule-library/R252-mandatory-state-file-updates.md`
+- **R253**: `$CLAUDE_PROJECT_DIR/rule-library/R253-mandatory-state-file-commit-push.md`
+- **R208**: `$CLAUDE_PROJECT_DIR/rule-library/R208-orchestrator-spawn-cd-protocol.md`
+- **R197**: `$CLAUDE_PROJECT_DIR/rule-library/R197-one-agent-per-effort.md`

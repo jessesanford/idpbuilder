@@ -1,0 +1,390 @@
+# Orchestrator - ERROR_RECOVERY State Rules
+
+## State Context
+You are recovering from critical errors that have blocked normal operation flow.
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R019.0.0 - Error Recovery                                 │
+│ Source: rule-library/RULE-REGISTRY.md#R019                     │
+├─────────────────────────────────────────────────────────────────┤
+│ RECOVERY PROTOCOL:                                             │
+│ 1. Immediate error assessment and classification               │
+│ 2. Stop all ongoing operations                                │
+│ 3. Preserve state for forensic analysis                       │
+│ 4. Determine recovery strategy                                 │
+│ 5. Execute recovery with validation checkpoints               │
+│ 6. Resume normal operations only when verified safe           │
+└─────────────────────────────────────────────────────────────────┘
+
+## Error Classification
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R156.0.0 - Error Recovery Time                            │
+│ Source: rule-library/RULE-REGISTRY.md#R156                     │
+├─────────────────────────────────────────────────────────────────┤
+│ ERROR SEVERITY LEVELS:                                         │
+│                                                                 │
+│ CRITICAL: System-breaking, halt all operations                │
+│ - Size limit violations                                       │
+│ - Test suite complete failure                                 │
+│ - Build system breakdown                                      │
+│ Target Recovery: <30 minutes                                  │
+│                                                                 │
+│ HIGH: Wave-blocking, affects multiple efforts                 │
+│ - Integration conflicts                                       │
+│ - Architecture violations                                     │
+│ - Agent communication failures                                │
+│ Target Recovery: <60 minutes                                  │
+│                                                                 │
+│ MEDIUM: Effort-blocking, single effort affected              │
+│ - Code review failures                                        │
+│ - Performance regressions                                     │
+│ - Dependency issues                                           │
+│ Target Recovery: <2 hours                                     │
+│                                                                 │
+│ LOW: Non-blocking, cosmetic or minor issues                   │
+│ - Documentation gaps                                          │
+│ - Style violations                                            │
+│ - Non-critical warnings                                       │
+│ Target Recovery: <4 hours                                     │
+└─────────────────────────────────────────────────────────────────┘
+
+## Recovery Decision Matrix
+
+```python
+def classify_error_and_strategy(error_data):
+    """Classify error and determine recovery strategy"""
+    
+    error_type = error_data['type']
+    severity = error_data['severity']
+    affected_scope = error_data['scope']
+    
+    strategies = {
+        'SIZE_LIMIT_VIOLATION': {
+            'severity': 'CRITICAL',
+            'strategy': 'IMMEDIATE_SPLIT',
+            'actions': [
+                'Stop all implementation work',
+                'Spawn Code Reviewer for split analysis',
+                'Create split plan',
+                'Execute split with size validation'
+            ],
+            'target_time': '30min'
+        },
+        
+        'INTEGRATION_FAILURE': {
+            'severity': 'HIGH',
+            'strategy': 'CONFLICT_RESOLUTION',
+            'actions': [
+                'Analyze merge conflicts',
+                'Spawn specialized agents for resolution',
+                'Create temporary resolution branch',
+                'Validate resolution before integration'
+            ],
+            'target_time': '60min'
+        },
+        
+        'TEST_SUITE_FAILURE': {
+            'severity': 'CRITICAL',
+            'strategy': 'IMMEDIATE_FIX',
+            'actions': [
+                'Isolate failing tests',
+                'Determine root cause',
+                'Spawn SW Engineer for urgent fix',
+                'Validate fix before resuming'
+            ],
+            'target_time': '30min'
+        },
+        
+        'ARCHITECTURE_VIOLATION': {
+            'severity': 'HIGH',
+            'strategy': 'ARCHITECT_CONSULTATION',
+            'actions': [
+                'Document violation details',
+                'Spawn Architect for guidance',
+                'Create remediation plan',
+                'Execute with continuous validation'
+            ],
+            'target_time': '60min'
+        },
+        
+        'AGENT_COMMUNICATION_FAILURE': {
+            'severity': 'HIGH',
+            'strategy': 'AGENT_RESTART',
+            'actions': [
+                'Identify failed agent',
+                'Save agent state',
+                'Restart with full context',
+                'Resume from last checkpoint'
+            ],
+            'target_time': '45min'
+        }
+    }
+    
+    return strategies.get(error_type, {
+        'severity': 'UNKNOWN',
+        'strategy': 'MANUAL_ANALYSIS',
+        'actions': ['Escalate to human oversight'],
+        'target_time': '120min'
+    })
+```
+
+## Recovery Execution Protocol
+
+```yaml
+# Error recovery state tracking
+error_recovery_state:
+  error_id: "ERR-2025-08-23-001"
+  detected_at: "2025-08-23T16:15:30Z"
+  classification:
+    type: "SIZE_LIMIT_VIOLATION"
+    severity: "CRITICAL"
+    affected_efforts: ["effort2-controller"]
+    affected_wave: 2
+    affected_phase: 1
+    
+  recovery_strategy:
+    name: "IMMEDIATE_SPLIT"
+    target_completion: "2025-08-23T16:45:30Z"  # 30min target
+    
+  recovery_steps:
+    - step: 1
+      action: "STOP_ALL_WORK"
+      status: "COMPLETED"
+      completed_at: "2025-08-23T16:16:00Z"
+      
+    - step: 2
+      action: "SPAWN_CODE_REVIEWER_ANALYSIS"
+      status: "IN_PROGRESS"
+      started_at: "2025-08-23T16:16:30Z"
+      assigned_to: "@agent-code-reviewer"
+      
+    - step: 3
+      action: "CREATE_SPLIT_PLAN"
+      status: "PENDING"
+      depends_on: "step_2"
+      
+    - step: 4
+      action: "EXECUTE_SPLIT"
+      status: "PENDING"
+      depends_on: "step_3"
+      
+    - step: 5
+      action: "VALIDATE_RECOVERY"
+      status: "PENDING"
+      depends_on: "step_4"
+```
+
+## Critical Recovery Actions
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R010.0.0 - Wrong Location Handling                        │
+│ Source: rule-library/RULE-REGISTRY.md#R010                     │
+├─────────────────────────────────────────────────────────────────┤
+│ LOCATION/BRANCH ERRORS:                                       │
+│ 1. NEVER attempt to cd or git checkout to "fix"               │
+│ 2. STOP immediately when wrong location detected              │
+│ 3. Preserve current state completely                          │
+│ 4. Create error report with current vs expected               │
+│ 5. Wait for orchestrator manual correction                    │
+│ 6. Verify correct location before resuming                    │
+└─────────────────────────────────────────────────────────────────┘
+
+### Immediate Stop Protocol
+
+```bash
+#!/bin/bash
+# Emergency stop script
+
+echo "🚨 EMERGENCY STOP TRIGGERED"
+echo "Timestamp: $(date)"
+echo "Current Directory: $(pwd)"
+echo "Current Branch: $(git branch --show-current)"
+echo "Git Status:"
+git status --porcelain
+
+# Save current state
+STATE_FILE="/tmp/emergency-state-$(date +%s).yaml"
+cat > "$STATE_FILE" << EOF
+emergency_stop:
+  timestamp: "$(date -u +%Y-%m-%dT%H:%M:%S)Z"
+  working_directory: "$(pwd)"
+  git_branch: "$(git branch --show-current)"
+  git_status: |
+$(git status --porcelain | sed 's/^/    /')
+  error_context: "${ERROR_CONTEXT:-Unknown}"
+  recovery_needed: true
+EOF
+
+echo "State saved to: $STATE_FILE"
+echo "🛑 ALL OPERATIONS HALTED"
+exit 1
+```
+
+## Recovery Validation Checkpoints
+
+```python
+def validate_recovery_step(step_data):
+    """Validate each recovery step before proceeding"""
+    
+    validations = {
+        'STOP_ALL_WORK': validate_all_agents_stopped,
+        'SPAWN_CODE_REVIEWER_ANALYSIS': validate_reviewer_spawned,
+        'CREATE_SPLIT_PLAN': validate_split_plan_created,
+        'EXECUTE_SPLIT': validate_split_executed,
+        'VALIDATE_RECOVERY': validate_full_recovery
+    }
+    
+    step_action = step_data['action']
+    validator = validations.get(step_action)
+    
+    if not validator:
+        return {'valid': False, 'error': f'No validator for {step_action}'}
+    
+    try:
+        result = validator(step_data)
+        if result['valid']:
+            step_data['validation'] = {
+                'validated_at': datetime.now().isoformat(),
+                'validator': validator.__name__,
+                'result': 'PASS'
+            }
+        return result
+    except Exception as e:
+        return {
+            'valid': False,
+            'error': f'Validation failed: {str(e)}',
+            'exception': type(e).__name__
+        }
+
+def validate_full_recovery():
+    """Final validation before resuming normal operations"""
+    
+    checks = {
+        'size_compliance': check_all_efforts_under_limit(),
+        'test_status': verify_all_tests_passing(),
+        'integration_status': verify_integration_clean(),
+        'agent_health': verify_all_agents_responsive(),
+        'branch_status': verify_correct_branches()
+    }
+    
+    all_pass = all(check['status'] == 'PASS' for check in checks.values())
+    
+    if all_pass:
+        return {
+            'recovery_complete': True,
+            'safe_to_resume': True,
+            'checks': checks
+        }
+    else:
+        failed_checks = [name for name, check in checks.items() 
+                        if check['status'] != 'PASS']
+        return {
+            'recovery_complete': False,
+            'safe_to_resume': False,
+            'failed_checks': failed_checks,
+            'action': 'EXTEND_RECOVERY'
+        }
+```
+
+## State Preservation During Recovery
+
+```yaml
+# Preserve original state for rollback if needed
+original_state_backup:
+  preserved_at: "2025-08-23T16:15:30Z"
+  orchestrator_state: |
+    # Full copy of orchestrator-state.yaml at error time
+  working_directories:
+    - path: "/workspaces/efforts/phase1/wave2/effort2-controller"
+      branch: "phase1/wave2/effort2-controller"
+      uncommitted_changes: |
+        # Git diff output
+  agent_states:
+    - agent: "sw-engineer"
+      last_checkpoint: "checkpoint-123.yaml"
+      current_task: "implementing controller logic"
+```
+
+## Recovery Time Tracking
+
+```python
+class ErrorRecoveryTracker:
+    def __init__(self, error_id):
+        self.error_id = error_id
+        self.start_time = datetime.now()
+        self.target_time = None
+        self.steps_completed = []
+        
+    def set_target_time(self, minutes):
+        """Set target recovery time in minutes"""
+        self.target_time = self.start_time + timedelta(minutes=minutes)
+        
+    def complete_step(self, step_name):
+        """Mark step as completed"""
+        completion_time = datetime.now()
+        self.steps_completed.append({
+            'step': step_name,
+            'completed_at': completion_time,
+            'elapsed': (completion_time - self.start_time).total_seconds()
+        })
+        
+        # Check if we're on track
+        if self.target_time and completion_time > self.target_time:
+            print(f"⚠️ Recovery exceeding target time")
+            print(f"Target: {self.target_time}")
+            print(f"Current: {completion_time}")
+            return False
+        return True
+        
+    def calculate_grade(self):
+        """Calculate recovery performance grade"""
+        if not self.target_time:
+            return {'grade': 'UNKNOWN', 'reason': 'No target set'}
+            
+        total_time = (datetime.now() - self.start_time)
+        target_duration = self.target_time - self.start_time
+        
+        ratio = total_time / target_duration
+        
+        if ratio <= 0.5:
+            return {'grade': 'EXCELLENT', 'ratio': ratio}
+        elif ratio <= 0.8:
+            return {'grade': 'GOOD', 'ratio': ratio}
+        elif ratio <= 1.0:
+            return {'grade': 'PASS', 'ratio': ratio}
+        else:
+            return {'grade': 'FAIL', 'ratio': ratio}
+```
+
+## State Transitions
+
+From ERROR_RECOVERY state:
+- **RECOVERY_COMPLETE** → Original state (WAVE_START, IMPLEMENTATION, etc.)
+- **RECOVERY_FAILED** → SPAWN_AGENTS (Human oversight)
+- **CRITICAL_UNRESOLVED** → HALT (Full stop, manual intervention)
+- **PARTIAL_RECOVERY** → Continue recovery with extended timeline
+
+## Prevention Integration
+
+After successful recovery, update prevention measures:
+
+```yaml
+# Add to orchestrator-state.yaml
+error_prevention:
+  learned_patterns:
+    - error_type: "SIZE_LIMIT_VIOLATION"
+      prevention: "More frequent size checks every 100 lines"
+      implemented: true
+      
+  monitoring_enhancements:
+    - trigger: "Lines > 600"
+      action: "WARNING_NOTIFICATION"
+    - trigger: "Lines > 750"
+      action: "MANDATORY_SIZE_CHECK"
+      
+  process_improvements:
+    - area: "Integration"
+      improvement: "Pre-merge size validation"
+      priority: "HIGH"
+```

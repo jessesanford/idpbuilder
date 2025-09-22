@@ -1,0 +1,5 @@
+
+# R237 State rule verification markers (temporary)
+.state_rules_read_*
+efforts/
+.state_rules_*

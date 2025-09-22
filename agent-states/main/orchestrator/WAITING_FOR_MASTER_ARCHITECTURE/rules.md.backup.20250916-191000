@@ -1,0 +1,60 @@
+# ORCHESTRATOR STATE: WAITING_FOR_MASTER_ARCHITECTURE
+
+## Overview
+This state waits for the Architect to complete the master architecture document that defines the entire project structure.
+
+## Entry Criteria
+- Transitioned from SPAWN_ARCHITECT_MASTER_PLANNING
+- Architect agent was spawned for master planning
+
+## State Responsibilities
+
+### 1. Check for Architecture Completion
+```bash
+# Look for completed master architecture
+if [ -f "PROJECT-ARCHITECTURE.md" ] || [ -f "MASTER-ARCHITECTURE.md" ]; then
+    echo "✅ Master architecture completed"
+    READY=true
+else
+    echo "⏳ Waiting for master architecture..."
+    READY=false
+fi
+```
+
+### 2. Verify Architecture Quality
+If architecture exists:
+- Check it defines all phases
+- Check it includes success criteria
+- Check it has clear boundaries
+- Store location per R340
+
+### 3. Update Planning File Tracking (R340)
+```bash
+# Record architecture location
+yq -i '.planning_files.master_architecture = "PROJECT-ARCHITECTURE.md"' orchestrator-state.json
+yq -i '.planning_files.master_architecture_author = "architect"' orchestrator-state.json
+yq -i '.planning_files.master_architecture_timestamp = "'$(date -Iseconds)'"' orchestrator-state.json
+```
+
+### 4. Transition to Test Planning
+```bash
+if [ "$READY" = true ]; then
+    update_state "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING"
+    echo "🧪 Moving to project test planning (R341 TDD)"
+fi
+```
+
+## Exit Criteria
+- Master architecture document exists
+- Document location tracked per R340
+- State transitions to SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING
+
+## Success Metrics
+- ✅ Architecture defines all phases
+- ✅ R340 metadata tracking complete
+- ✅ Transition follows R341 TDD flow
+
+## Related Rules
+- R340: Planning file metadata tracking
+- R341: TDD requirement (tests before implementation)
+- R342: Early branch creation (tests need homes)

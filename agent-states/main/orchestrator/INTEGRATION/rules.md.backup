@@ -1,0 +1,164 @@
+# Orchestrator - INTEGRATION State Rules
+
+## State Context
+You are integrating completed wave efforts into a cohesive branch and preparing for phase transitions.
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R034.0.0 - Integration Requirements                       │
+│ Source: rule-library/RULE-REGISTRY.md#R034                     │
+├─────────────────────────────────────────────────────────────────┤
+│ INTEGRATION PROTOCOL:                                          │
+│ 1. All wave efforts must be complete and reviewed             │
+│ 2. Create wave integration branch                             │
+│ 3. Merge all efforts with conflict resolution                 │
+│ 4. Run full test suite on integration                         │
+│ 5. Validate size limits remain enforced                       │
+│ 6. Create phase integration branch when wave complete         │
+└─────────────────────────────────────────────────────────────────┘
+
+## Branch Creation Strategy
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R014.0.0 - Branch Naming Convention                       │
+│ Source: rule-library/RULE-REGISTRY.md#R014                     │
+├─────────────────────────────────────────────────────────────────┤
+│ INTEGRATION BRANCH NAMES:                                      │
+│                                                                 │
+│ Wave Integration:                                              │
+│ phase{X}/wave{Y}-integration                                   │
+│                                                                 │
+│ Phase Integration:                                             │
+│ phase{X}-integration                                           │
+│                                                                 │
+│ Final Integration:                                             │
+│ main-integration-{timestamp}                                   │
+└─────────────────────────────────────────────────────────────────┘
+
+## Integration Steps
+
+```bash
+# 1. Create integration branch
+git checkout -b phase{X}/wave{Y}-integration
+
+# 2. Merge all effort branches
+for effort in effort1-{name} effort2-{name} effort3-{name}; do
+    echo "Merging $effort..."
+    git merge phase{X}/wave{Y}/$effort --no-ff -m "integrate: $effort"
+    
+    # Handle conflicts if any
+    if [ $? -ne 0 ]; then
+        echo "⚠️ Conflict detected in $effort"
+        # Resolution required before continuing
+    fi
+done
+
+# 3. Validate integration
+/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh -c phase{X}/wave{Y}-integration
+make test
+make build
+
+# 4. Push integration branch
+git push -u origin phase{X}/wave{Y}-integration
+```
+
+## Conflict Resolution
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R157.0.0 - Integration Success Rate                       │
+│ Source: rule-library/RULE-REGISTRY.md#R157                     │
+├─────────────────────────────────────────────────────────────────┤
+│ CONFLICT HANDLING:                                             │
+│ 1. Pause integration on ANY conflict                          │
+│ 2. Spawn Code Reviewer for conflict analysis                  │
+│ 3. Spawn SW Engineer for resolution if needed                 │
+│ 4. Re-validate all tests after resolution                     │
+│ 5. Record conflict details in integration log                 │
+│                                                                 │
+│ SUCCESS METRIC: >95% clean merges required                    │
+└─────────────────────────────────────────────────────────────────┘
+
+## Integration Validation
+
+```yaml
+# Update orchestrator-state.yaml
+integration_records:
+  phase{X}_wave{Y}:
+    started_at: "2025-08-23T15:00:00Z"
+    efforts_included:
+      - "effort1-api-types"
+      - "effort2-controller"
+      - "effort3-webhooks"
+    conflicts_detected: 0
+    resolution_time: "0s"
+    test_results:
+      unit_tests: "PASS"
+      integration_tests: "PASS"
+      build: "PASS"
+    final_size_check: "742 lines"
+    completed_at: "2025-08-23T15:05:22Z"
+    grade: "PASS"
+```
+
+## Phase Transition Protocol
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R020.0.0 - State Transitions                              │
+│ Source: rule-library/RULE-REGISTRY.md#R020                     │
+├─────────────────────────────────────────────────────────────────┤
+│ PHASE COMPLETION:                                              │
+│ 1. All waves integrated successfully                           │
+│ 2. Phase integration branch created                            │
+│ 3. Architect phase review requested                            │
+│ 4. All tests passing at phase level                           │
+│ 5. Documentation updated                                       │
+│ 6. Performance metrics within targets                          │
+└─────────────────────────────────────────────────────────────────┘
+
+## Size Validation During Integration
+
+```python
+def validate_integration_size(branch_name):
+    """Validate size limits maintained during integration"""
+    
+    result = subprocess.run([
+        '/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh',
+        '-c', branch_name
+    ], capture_output=True, text=True)
+    
+    total_lines = int(result.stdout.split()[-1])
+    
+    # Integration should not exceed sum of constituent efforts
+    # with reasonable overhead for integration code
+    max_allowed = calculate_effort_sum() * 1.05  # 5% overhead
+    
+    if total_lines > max_allowed:
+        return {
+            'valid': False,
+            'total_lines': total_lines,
+            'max_allowed': max_allowed,
+            'action': 'SPLIT_INTEGRATION'
+        }
+    
+    return {
+        'valid': True,
+        'total_lines': total_lines,
+        'grade': 'PASS'
+    }
+```
+
+## Integration Failure Recovery
+
+If integration fails:
+1. Stop all integration work
+2. Transition to ERROR_RECOVERY state
+3. Analyze failure cause
+4. Create recovery plan
+5. Execute fixes before retrying
+
+## State Transitions
+
+From INTEGRATION state:
+- **SUCCESS** → Next wave (WAVE_START) or WAVE_REVIEW for architect
+- **CONFLICTS** → SPAWN_AGENTS (Code Reviewer for analysis)
+- **FAILURE** → ERROR_RECOVERY
+- **PHASE_COMPLETE** → WAVE_REVIEW (Architect phase assessment)

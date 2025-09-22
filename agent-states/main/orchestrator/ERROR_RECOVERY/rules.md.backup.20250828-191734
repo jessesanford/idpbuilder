@@ -1,0 +1,876 @@
+# Orchestrator - ERROR_RECOVERY State Rules
+
+## ⚠️⚠️⚠️ MANDATORY RULE READING AND ACKNOWLEDGMENT ⚠️⚠️⚠️
+
+**YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. YOUR READ TOOL CALLS ARE BEING MONITORED.**
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+1. Fake acknowledgment without reading
+2. Bulk acknowledgment
+3. Reading from memory
+
+### ✅ CORRECT PATTERN:
+1. READ each rule file
+2. Acknowledge individually with rule number and description
+
+## 📋 PRIMARY DIRECTIVES FOR ERROR_RECOVERY STATE
+
+### 🚨🚨🚨 R019 - Error Recovery Protocol
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R019-error-recovery.md`
+**Criticality**: BLOCKING - Must follow recovery protocol
+**Summary**: Systematic error assessment, preservation, and recovery
+
+### 🔴🔴🔴 R021 - Orchestrator Never Stops (SUPREME LAW #7)
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R021-orchestrator-never-stops.md`
+**Criticality**: SUPREME LAW - Violation = -100% failure
+**Summary**: Continue operations until success or explicit stop
+
+### ⚠️⚠️⚠️ R156 - Error Recovery Time Targets
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R156-error-recovery-time.md`
+**Criticality**: CRITICAL - Time targets for recovery by severity
+**Summary**: CRITICAL <30min, HIGH <60min, MEDIUM <2hrs, LOW <4hrs
+
+### ⚠️⚠️⚠️ R010 - Wrong Location Handling
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R010-wrong-location-handling.md`
+**Criticality**: CRITICAL - Never attempt to fix location errors
+**Summary**: Stop immediately, preserve state, wait for manual correction
+
+### 🚨🚨🚨 R258 - Mandatory Wave Review Report
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R258-mandatory-wave-review-report.md`
+**Criticality**: BLOCKING - Required for wave completion
+**Summary**: Must read wave review report from specified location
+
+### 🚨🚨🚨 R257 - Mandatory Phase Assessment Report
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R257-mandatory-phase-assessment-report.md`
+**Criticality**: BLOCKING - Required for phase completion
+**Summary**: Must read phase assessment report from specified location
+
+### 🚨🚨🚨 R259 - Mandatory Phase Integration After Fixes
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R259-mandatory-phase-integration-after-fixes.md`
+**Criticality**: BLOCKING - Must create integration branch after fixes
+**Summary**: Return to PHASE_INTEGRATION after phase assessment fixes
+
+## 🚨 ERROR_RECOVERY IS A VERB - START ERROR RECOVERY IMMEDIATELY! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING ERROR_RECOVERY
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Diagnose the error from state file NOW
+2. Create recovery plan immediately
+3. Check TodoWrite for pending items and process them
+4. Begin executing recovery steps
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in ERROR_RECOVERY" [stops]
+- ❌ "Successfully entered ERROR_RECOVERY state" [waits]
+- ❌ "Ready to start error recovery" [pauses]
+- ❌ "I'm in ERROR_RECOVERY state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering ERROR_RECOVERY, Diagnose the error from state file NOW..."
+- ✅ "START ERROR RECOVERY, create recovery plan immediately..."
+- ✅ "ERROR_RECOVERY: Begin executing recovery steps..."
+
+## State Context
+You are recovering from critical errors that have blocked normal operation flow.
+
+---
+### 🚨🚨🚨 RULE R019 - Error Recovery Protocol
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R019-error-recovery.md`
+---
+
+### 🔴🔴🔴 RULE R021 - Orchestrator Never Stops (SUPREME LAW)
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R021-orchestrator-never-stops.md`
+**CRITICAL FOR ERROR_RECOVERY**: Never stop recovering until resolved or explicit stop
+---
+
+## Error Classification
+
+### ⚠️⚠️⚠️ RULE R156 - Error Recovery Time Targets
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R156-error-recovery-time.md`
+---
+
+## Recovery Decision Matrix
+
+```python
+def classify_error_and_strategy(error_data):
+    """Classify error and determine recovery strategy"""
+    
+    error_type = error_data['type']
+    severity = error_data['severity']
+    affected_scope = error_data['scope']
+    
+    strategies = {
+        'SIZE_LIMIT_VIOLATION': {
+            'severity': 'CRITICAL',
+            'strategy': 'IMMEDIATE_SPLIT',
+            'actions': [
+                'Stop all implementation work',
+                'Spawn Code Reviewer for split analysis',
+                'Create split plan',
+                'Execute split with size validation'
+            ],
+            'target_time': '30min'
+        },
+        
+        'WAVE_REVIEW_CHANGES_REQUIRED': {
+            'severity': 'HIGH',
+            'strategy': 'ARCHITECT_DIRECTED_FIXES',
+            'actions': [
+                'Read wave review report per R258',
+                'Extract Issues Identified section',
+                'Parse Required Fixes from report',
+                'Map each fix to appropriate agent type',
+                'Spawn agents for each required fix',
+                'Track completion against report requirements',
+                'Return to INTEGRATION for re-review'
+            ],
+            'target_time': '120min',
+            'report_location': 'wave-reviews/phase{N}/wave{W}/PHASE-{N}-WAVE-{W}-REVIEW-REPORT.md'
+        },
+        
+        'PHASE_ASSESSMENT_NEEDS_WORK': {
+            'severity': 'CRITICAL',
+            'strategy': 'PHASE_LEVEL_REMEDIATION',
+            'actions': [
+                'Read phase assessment report per R257',
+                'Extract all Issues Identified',
+                'Parse Required Fixes section',
+                'Create comprehensive fix plan',
+                'Spawn multiple agents if needed',
+                'Coordinate cross-wave fixes',
+                'Track against assessment criteria',
+                'Return to PHASE_INTEGRATION for integration branch creation (R259)'
+            ],
+            'target_time': '240min',
+            'report_location': 'phase-assessments/phase{N}/PHASE-{N}-ASSESSMENT-REPORT.md'
+        },
+        
+        'INTEGRATION_FAILURE': {
+            'severity': 'HIGH',
+            'strategy': 'CONFLICT_RESOLUTION',
+            'actions': [
+                'Analyze merge conflicts',
+                'Spawn specialized agents for resolution',
+                'Create temporary resolution branch',
+                'Validate resolution before integration'
+            ],
+            'target_time': '60min'
+        },
+        
+        'TEST_SUITE_FAILURE': {
+            'severity': 'CRITICAL',
+            'strategy': 'IMMEDIATE_FIX',
+            'actions': [
+                'Isolate failing tests',
+                'Determine root cause',
+                'Spawn SW Engineer for urgent fix',
+                'Validate fix before resuming'
+            ],
+            'target_time': '30min'
+        },
+        
+        'ARCHITECTURE_VIOLATION': {
+            'severity': 'HIGH',
+            'strategy': 'ARCHITECT_CONSULTATION',
+            'actions': [
+                'Document violation details',
+                'Spawn Architect for guidance',
+                'Create remediation plan',
+                'Execute with continuous validation'
+            ],
+            'target_time': '60min'
+        },
+        
+        'AGENT_COMMUNICATION_FAILURE': {
+            'severity': 'HIGH',
+            'strategy': 'AGENT_RESTART',
+            'actions': [
+                'Identify failed agent',
+                'Save agent state',
+                'Restart with full context',
+                'Resume from last checkpoint'
+            ],
+            'target_time': '45min'
+        }
+    }
+    
+    return strategies.get(error_type, {
+        'severity': 'UNKNOWN',
+        'strategy': 'MANUAL_ANALYSIS',
+        'actions': ['Escalate to human oversight'],
+        'target_time': '120min'
+    })
+```
+
+## Report Reading Functions for Architect Feedback
+
+```bash
+# Function to read wave review issues (R258 compliance)
+read_wave_review_issues() {
+    local PHASE=$1
+    local WAVE=$2
+    local REPORT="wave-reviews/phase${PHASE}/wave${WAVE}/PHASE-${PHASE}-WAVE-${WAVE}-REVIEW-REPORT.md"
+    
+    if [ ! -f "$REPORT" ]; then
+        echo "❌ CRITICAL: Wave review report not found!"
+        echo "❌ Cannot process CHANGES_REQUIRED without report (R258 violation)"
+        exit 1
+    fi
+    
+    echo "📋 Reading architect's required fixes from wave review..."
+    echo "📄 Report location: $REPORT"
+    echo ""
+    
+    # Extract decision
+    echo "🔍 Decision from report:"
+    grep "^\*\*DECISION\*\*:" "$REPORT"
+    echo ""
+    
+    # Extract Issues Identified section
+    echo "🔍 Issues Identified:"
+    sed -n '/## Issues Identified/,/## Required Actions/p' "$REPORT" | grep -v "^##"
+    echo ""
+    
+    # Extract Required Fixes/Actions
+    echo "🔍 Required Actions:"
+    sed -n '/## Required Actions/,/## Recommendations/p' "$REPORT" | grep -v "^##"
+}
+
+# Function to read phase assessment issues (R257 compliance)
+read_phase_assessment_issues() {
+    local PHASE=$1
+    local REPORT="phase-assessments/phase${PHASE}/PHASE-${PHASE}-ASSESSMENT-REPORT.md"
+    
+    if [ ! -f "$REPORT" ]; then
+        echo "❌ CRITICAL: Phase assessment report not found!"
+        echo "❌ Cannot process NEEDS_WORK without report (R257 violation)"
+        exit 1
+    fi
+    
+    echo "📋 Reading architect's required fixes from phase assessment..."
+    echo "📄 Report location: $REPORT"
+    echo ""
+    
+    # Extract decision
+    echo "🔍 Decision from report:"
+    grep "^\*\*DECISION\*\*:" "$REPORT"
+    echo ""
+    
+    # Extract overall score
+    echo "🔍 Overall Score:"
+    grep "^\*\*TOTAL SCORE\*\*" "$REPORT"
+    echo ""
+    
+    # Extract Issues Identified section
+    echo "🔍 Issues Identified:"
+    sed -n '/## Issues Identified/,/## Required Fixes/p' "$REPORT" | grep -v "^##"
+    echo ""
+    
+    # Extract Required Fixes
+    echo "🔍 Required Fixes (Priority 1 - Must Fix):"
+    sed -n '/### Priority 1/,/### Priority 2/p' "$REPORT" | grep "^- \["
+    echo ""
+    
+    echo "🔍 Required Fixes (Priority 2 - Should Fix):"
+    sed -n '/### Priority 2/,/## Recommendations/p' "$REPORT" | grep "^- \["
+}
+
+# Function to parse and assign fixes to agents
+parse_and_assign_fixes() {
+    local REPORT_TYPE=$1  # WAVE or PHASE
+    local REPORT_FILE=$2
+    
+    echo "📊 Parsing fixes and assigning to agents..."
+    
+    # Extract critical issues that need sw-engineer
+    local CODE_FIXES=$(grep -A2 "\*\*\[CRITICAL\]\*\*\|Assigned To: sw-engineer" "$REPORT_FILE" | grep "Required Fix:" | cut -d: -f2-)
+    
+    # Extract review issues that need code-reviewer
+    local REVIEW_FIXES=$(grep -A2 "Assigned To: code-reviewer" "$REPORT_FILE" | grep "Required Fix:" | cut -d: -f2-)
+    
+    # Extract architecture issues that need architect consultation
+    local ARCH_FIXES=$(grep -A2 "Assigned To: architect" "$REPORT_FILE" | grep "Required Fix:" | cut -d: -f2-)
+    
+    # Create fix assignment plan
+    cat > /tmp/fix-assignments.yaml << EOF
+fix_assignments:
+  report_type: "$REPORT_TYPE"
+  report_file: "$REPORT_FILE"
+  assignments:
+    sw_engineer:
+$(echo "$CODE_FIXES" | sed 's/^/      - /')
+    code_reviewer:
+$(echo "$REVIEW_FIXES" | sed 's/^/      - /')
+    architect:
+$(echo "$ARCH_FIXES" | sed 's/^/      - /')
+EOF
+    
+    echo "✅ Fix assignments created: /tmp/fix-assignments.yaml"
+}
+```
+
+## Recovery Execution Protocol
+
+```yaml
+# Example 1: Wave Review Changes Required (R258)
+error_recovery_state:
+  error_id: "ERR-WAVE-REVIEW-2025-08-27-001"
+  detected_at: "2025-08-27T16:15:30Z"
+  classification:
+    type: "WAVE_REVIEW_CHANGES_REQUIRED"
+    severity: "HIGH"
+    source_report: "wave-reviews/phase3/wave2/PHASE-3-WAVE-2-REVIEW-REPORT.md"
+    architect_decision: "CHANGES_REQUIRED"
+    issues_count: 3
+    
+  recovery_strategy:
+    name: "ARCHITECT_DIRECTED_FIXES"
+    target_completion: "2025-08-27T18:15:30Z"  # 120min target
+    
+  architect_requirements:
+    - issue_1: 
+        description: "API inconsistency in effort2"
+        assigned_to: "sw-engineer"
+        status: "IN_PROGRESS"
+    - issue_2: 
+        description: "Missing integration tests"
+        assigned_to: "sw-engineer"
+        status: "PENDING"
+    - issue_3: 
+        description: "Size violation in effort3"
+        assigned_to: "code-reviewer"
+        status: "PENDING"
+        
+  recovery_steps:
+    - step: 1
+      action: "READ_WAVE_REVIEW_REPORT"
+      status: "COMPLETED"
+      completed_at: "2025-08-27T16:16:00Z"
+      
+    - step: 2
+      action: "PARSE_REQUIRED_FIXES"
+      status: "COMPLETED"
+      completed_at: "2025-08-27T16:17:00Z"
+      
+    - step: 3
+      action: "SPAWN_SW_ENGINEER_FOR_API_FIX"
+      status: "IN_PROGRESS"
+      started_at: "2025-08-27T16:18:00Z"
+      
+    - step: 4
+      action: "SPAWN_CODE_REVIEWER_FOR_SIZE_FIX"
+      status: "PENDING"
+      depends_on: "step_3"
+      
+    - step: 5
+      action: "VALIDATE_ALL_FIXES_COMPLETE"
+      status: "PENDING"
+      depends_on: "all_fixes"
+      
+    - step: 6
+      action: "RETURN_TO_INTEGRATION"
+      status: "PENDING"
+      depends_on: "step_5"
+
+# Example 2: Phase Assessment Needs Work (R257)
+error_recovery_state:
+  error_id: "ERR-PHASE-ASSESS-2025-08-27-002"
+  detected_at: "2025-08-27T14:30:00Z"
+  classification:
+    type: "PHASE_ASSESSMENT_NEEDS_WORK"
+    severity: "CRITICAL"
+    source_report: "phase-assessments/phase2/PHASE-2-ASSESSMENT-REPORT.md"
+    architect_decision: "NEEDS_WORK"
+    score: 68  # Below passing threshold
+    
+  recovery_strategy:
+    name: "PHASE_LEVEL_REMEDIATION"
+    target_completion: "2025-08-27T18:30:00Z"  # 240min target
+    
+  assessment_requirements:
+    priority_1_must_fix:
+      - "KCP multi-tenancy patterns missing in wave 2"
+      - "API backwards compatibility broken in wave 3"
+      - "Integration tests coverage below 60%"
+    priority_2_should_fix:
+      - "Documentation incomplete for new APIs"
+      - "Performance degradation in controller reconciliation"
+      
+  recovery_steps:
+    - step: 1
+      action: "READ_PHASE_ASSESSMENT_REPORT"
+      status: "COMPLETED"
+      completed_at: "2025-08-27T14:31:00Z"
+      
+    - step: 2
+      action: "CREATE_COMPREHENSIVE_FIX_PLAN"
+      status: "COMPLETED"
+      completed_at: "2025-08-27T14:35:00Z"
+      
+    - step: 3
+      action: "SPAWN_SW_ENGINEER_MULTI_TENANCY_FIX"
+      status: "IN_PROGRESS"
+      target_wave: 2
+      
+    - step: 4
+      action: "SPAWN_SW_ENGINEER_API_COMPATIBILITY"
+      status: "PENDING"
+      target_wave: 3
+      
+    - step: 5
+      action: "SPAWN_CODE_REVIEWER_TEST_COVERAGE"
+      status: "PENDING"
+      target_waves: [1, 2, 3]
+      
+    - step: 6
+      action: "VALIDATE_ALL_PRIORITY_1_FIXED"
+      status: "PENDING"
+      depends_on: ["step_3", "step_4", "step_5"]
+      
+    - step: 7
+      action: "RETURN_TO_PHASE_INTEGRATION"
+      status: "PENDING"
+      depends_on: "step_6"
+      note: "Per R259 - Must create phase integration branch before reassessment"
+
+# Example 3: Standard Size Violation
+error_recovery_state:
+  error_id: "ERR-SIZE-2025-08-27-003"
+  detected_at: "2025-08-27T12:00:00Z"
+  classification:
+    type: "SIZE_LIMIT_VIOLATION"
+    severity: "CRITICAL"
+    affected_efforts: ["effort2-controller"]
+    measured_size: 1250
+    limit: 800
+    
+  recovery_strategy:
+    name: "IMMEDIATE_SPLIT"
+    target_completion: "2025-08-27T12:30:00Z"  # 30min target
+    
+  recovery_steps:
+    - step: 1
+      action: "STOP_ALL_WORK"
+      status: "COMPLETED"
+      
+    - step: 2
+      action: "SPAWN_CODE_REVIEWER_SPLIT_ANALYSIS"
+      status: "IN_PROGRESS"
+      
+    - step: 3
+      action: "CREATE_SPLIT_PLAN"
+      status: "PENDING"
+      
+    - step: 4
+      action: "EXECUTE_SPLITS_SEQUENTIALLY"
+      status: "PENDING"
+      
+    - step: 5
+      action: "VALIDATE_ALL_SPLITS_UNDER_800"
+      status: "PENDING"
+```
+
+## Critical Recovery Actions
+
+### ⚠️⚠️⚠️ RULE R010 - Wrong Location Handling
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R010-wrong-location-handling.md`
+---
+
+### Immediate Stop Protocol
+
+```bash
+#!/bin/bash
+# Emergency stop script
+
+echo "🚨 EMERGENCY STOP TRIGGERED"
+echo "Timestamp: $(date)"
+echo "Current Directory: $(pwd)"
+echo "Current Branch: $(git branch --show-current)"
+echo "Git Status:"
+git status --porcelain
+
+# Save current state
+STATE_FILE="/tmp/emergency-state-$(date +%s).yaml"
+cat > "$STATE_FILE" << EOF
+emergency_stop:
+  timestamp: "$(date -u +%Y-%m-%dT%H:%M:%S)Z"
+  working_directory: "$(pwd)"
+  git_branch: "$(git branch --show-current)"
+  git_status: |
+$(git status --porcelain | sed 's/^/    /')
+  error_context: "${ERROR_CONTEXT:-Unknown}"
+  recovery_needed: true
+EOF
+
+echo "State saved to: $STATE_FILE"
+echo "🛑 ALL OPERATIONS HALTED"
+exit 1
+```
+
+## Recovery Validation Checkpoints
+
+```python
+def validate_recovery_step(step_data):
+    """Validate each recovery step before proceeding"""
+    
+    validations = {
+        'STOP_ALL_WORK': validate_all_agents_stopped,
+        'SPAWN_CODE_REVIEWER_ANALYSIS': validate_reviewer_spawned,
+        'CREATE_SPLIT_PLAN': validate_split_plan_created,
+        'EXECUTE_SPLIT': validate_split_executed,
+        'VALIDATE_RECOVERY': validate_full_recovery
+    }
+    
+    step_action = step_data['action']
+    validator = validations.get(step_action)
+    
+    if not validator:
+        return {'valid': False, 'error': f'No validator for {step_action}'}
+    
+    try:
+        result = validator(step_data)
+        if result['valid']:
+            step_data['validation'] = {
+                'validated_at': datetime.now().isoformat(),
+                'validator': validator.__name__,
+                'result': 'PASS'
+            }
+        return result
+    except Exception as e:
+        return {
+            'valid': False,
+            'error': f'Validation failed: {str(e)}',
+            'exception': type(e).__name__
+        }
+
+def validate_full_recovery():
+    """Final validation before resuming normal operations"""
+    
+    checks = {
+        'size_compliance': check_all_efforts_under_limit(),
+        'test_status': verify_all_tests_passing(),
+        'integration_status': verify_integration_clean(),
+        'agent_health': verify_all_agents_responsive(),
+        'branch_status': verify_correct_branches()
+    }
+    
+    all_pass = all(check['status'] == 'PASS' for check in checks.values())
+    
+    if all_pass:
+        return {
+            'recovery_complete': True,
+            'safe_to_resume': True,
+            'checks': checks
+        }
+    else:
+        failed_checks = [name for name, check in checks.items() 
+                        if check['status'] != 'PASS']
+        return {
+            'recovery_complete': False,
+            'safe_to_resume': False,
+            'failed_checks': failed_checks,
+            'action': 'EXTEND_RECOVERY'
+        }
+
+def validate_wave_review_fixes():
+    """Validate all wave review issues from R258 report are addressed"""
+    
+    # Read original wave review report
+    phase = yq('.current_phase', 'orchestrator-state.yaml')
+    wave = yq('.current_wave', 'orchestrator-state.yaml')
+    report_file = f"wave-reviews/phase{phase}/wave{wave}/PHASE-{phase}-WAVE-{wave}-REVIEW-REPORT.md"
+    
+    if not os.path.exists(report_file):
+        return {'valid': False, 'error': 'Original report not found'}
+    
+    # Extract all required fixes from Issues Identified section
+    with open(report_file) as f:
+        content = f.read()
+    
+    # Parse critical and high priority issues
+    critical_issues = re.findall(r'\*\*\[CRITICAL\]\*\*: (.+)', content)
+    high_issues = re.findall(r'\*\*\[HIGH\]\*\*: (.+)', content)
+    
+    # Check each issue has been addressed
+    validation_results = []
+    for issue in critical_issues:
+        # Check if fix branch exists or commit references the issue
+        fix_evidence = check_fix_evidence(issue, 'CRITICAL')
+        validation_results.append({
+            'issue': issue,
+            'severity': 'CRITICAL',
+            'fixed': fix_evidence['found'],
+            'evidence': fix_evidence['details']
+        })
+    
+    for issue in high_issues:
+        fix_evidence = check_fix_evidence(issue, 'HIGH')
+        validation_results.append({
+            'issue': issue,
+            'severity': 'HIGH',
+            'fixed': fix_evidence['found'],
+            'evidence': fix_evidence['details']
+        })
+    
+    # All critical issues must be fixed
+    critical_fixed = all(r['fixed'] for r in validation_results if r['severity'] == 'CRITICAL')
+    
+    if not critical_fixed:
+        unfixed = [r['issue'] for r in validation_results if r['severity'] == 'CRITICAL' and not r['fixed']]
+        return {
+            'valid': False,
+            'error': 'Critical issues remain unfixed',
+            'unfixed_critical': unfixed
+        }
+    
+    return {
+        'valid': True,
+        'validation_results': validation_results,
+        'ready_for_rereviw': True
+    }
+
+def validate_phase_assessment_fixes():
+    """Validate all phase assessment issues from R257 report are addressed"""
+    
+    # Read original phase assessment report
+    phase = yq('.current_phase', 'orchestrator-state.yaml')
+    report_file = f"phase-assessments/phase{phase}/PHASE-{phase}-ASSESSMENT-REPORT.md"
+    
+    if not os.path.exists(report_file):
+        return {'valid': False, 'error': 'Original assessment report not found'}
+    
+    # Extract Priority 1 (Must Fix) items
+    with open(report_file) as f:
+        content = f.read()
+    
+    # Find Priority 1 section
+    priority_1_match = re.search(r'### Priority 1.*?\n(.*?)### Priority 2', content, re.DOTALL)
+    if priority_1_match:
+        priority_1_items = re.findall(r'- \[ \] (.+)', priority_1_match.group(1))
+    else:
+        priority_1_items = []
+    
+    # Validate each Priority 1 item is fixed
+    validation_results = []
+    for item in priority_1_items:
+        fix_evidence = check_phase_fix_evidence(item, phase)
+        validation_results.append({
+            'requirement': item,
+            'priority': 1,
+            'fixed': fix_evidence['found'],
+            'evidence': fix_evidence['details']
+        })
+    
+    # All Priority 1 items must be fixed
+    all_p1_fixed = all(r['fixed'] for r in validation_results if r['priority'] == 1)
+    
+    if not all_p1_fixed:
+        unfixed = [r['requirement'] for r in validation_results if r['priority'] == 1 and not r['fixed']]
+        return {
+            'valid': False,
+            'error': 'Priority 1 requirements remain unfixed',
+            'unfixed_requirements': unfixed
+        }
+    
+    return {
+        'valid': True,
+        'validation_results': validation_results,
+        'ready_for_reassessment': True
+    }
+```
+
+## State Preservation During Recovery
+
+```yaml
+# Preserve original state for rollback if needed
+original_state_backup:
+  preserved_at: "2025-08-23T16:15:30Z"
+  orchestrator_state: |
+    # Full copy of orchestrator-state.yaml at error time
+  working_directories:
+    - path: "/workspaces/efforts/phase1/wave2/effort2-controller"
+      branch: "phase1/wave2/effort2-controller"
+      uncommitted_changes: |
+        # Git diff output
+  agent_states:
+    - agent: "sw-engineer"
+      last_checkpoint: "checkpoint-123.yaml"
+      current_task: "implementing controller logic"
+```
+
+## Recovery Time Tracking
+
+```python
+class ErrorRecoveryTracker:
+    def __init__(self, error_id):
+        self.error_id = error_id
+        self.start_time = datetime.now()
+        self.target_time = None
+        self.steps_completed = []
+        
+    def set_target_time(self, minutes):
+        """Set target recovery time in minutes"""
+        self.target_time = self.start_time + timedelta(minutes=minutes)
+        
+    def complete_step(self, step_name):
+        """Mark step as completed"""
+        completion_time = datetime.now()
+        self.steps_completed.append({
+            'step': step_name,
+            'completed_at': completion_time,
+            'elapsed': (completion_time - self.start_time).total_seconds()
+        })
+        
+        # Check if we're on track
+        if self.target_time and completion_time > self.target_time:
+            print(f"⚠️ Recovery exceeding target time")
+            print(f"Target: {self.target_time}")
+            print(f"Current: {completion_time}")
+            return False
+        return True
+        
+    def calculate_grade(self):
+        """Calculate recovery performance grade"""
+        if not self.target_time:
+            return {'grade': 'UNKNOWN', 'reason': 'No target set'}
+            
+        total_time = (datetime.now() - self.start_time)
+        target_duration = self.target_time - self.start_time
+        
+        ratio = total_time / target_duration
+        
+        if ratio <= 0.5:
+            return {'grade': 'EXCELLENT', 'ratio': ratio}
+        elif ratio <= 0.8:
+            return {'grade': 'GOOD', 'ratio': ratio}
+        elif ratio <= 1.0:
+            return {'grade': 'PASS', 'ratio': ratio}
+        else:
+            return {'grade': 'FAIL', 'ratio': ratio}
+```
+
+## State Transitions
+
+From ERROR_RECOVERY state:
+
+### For Standard Errors:
+- **RECOVERY_COMPLETE** → Original state (WAVE_START, IMPLEMENTATION, etc.)
+- **RECOVERY_FAILED** → SPAWN_AGENTS (Human oversight)
+- **CRITICAL_UNRESOLVED** → HALT (Full stop, manual intervention)
+- **PARTIAL_RECOVERY** → Continue recovery with extended timeline
+
+### For Wave Review Errors (R258):
+- **WAVE_FIXES_COMPLETE** → INTEGRATION → WAVE_REVIEW (re-review by architect)
+- **WAVE_FIXES_FAILED** → ERROR_RECOVERY (stay in recovery, escalate)
+
+### For Phase Assessment Errors (R257 + R259):
+- **PHASE_FIXES_COMPLETE** → PHASE_INTEGRATION (create integration branch per R259)
+- **PHASE_FIXES_FAILED** → ERROR_RECOVERY (stay in recovery, escalate)
+
+### State Context Clarification:
+ERROR_RECOVERY handles both:
+1. **Code-level errors**: Size violations, test failures, integration conflicts
+2. **Architect feedback**: CHANGES_REQUIRED from wave reviews, NEEDS_WORK from phase assessments
+
+The key difference is that architect feedback errors MUST:
+- Read the actual report file (not just verbal feedback)
+- Parse the documented issues from specific sections
+- Track fixes against the report's requirements
+- Return to the appropriate review state for re-evaluation
+
+## Prevention Integration
+
+After successful recovery, update prevention measures:
+
+```yaml
+# Add to orchestrator-state.yaml
+error_prevention:
+  learned_patterns:
+    - error_type: "SIZE_LIMIT_VIOLATION"
+      prevention: "More frequent size checks every 100 lines"
+      implemented: true
+      
+  monitoring_enhancements:
+    - trigger: "Lines > 600"
+      action: "WARNING_NOTIFICATION"
+    - trigger: "Lines > 750"
+      action: "MANDATORY_SIZE_CHECK"
+      
+  process_improvements:
+    - area: "Integration"
+      improvement: "Pre-merge size validation"
+      priority: "HIGH"
+
+## 📋 Quick Reference: Handling Architect Review Feedback
+
+### When Architect Returns CHANGES_REQUIRED (Wave Review)
+
+```bash
+# IMMEDIATE ACTIONS:
+1. echo "🔍 Architect returned CHANGES_REQUIRED - reading wave review report..."
+2. read_wave_review_issues $CURRENT_PHASE $CURRENT_WAVE
+3. parse_and_assign_fixes "WAVE" "$REPORT_FILE"
+4. Spawn appropriate agents based on assignments
+5. Track each fix to completion
+6. Return to INTEGRATION for re-review
+
+# DO NOT:
+- Try to fix issues yourself (orchestrator never codes)
+- Proceed without reading the actual report file
+- Skip any issues marked as CRITICAL or HIGH
+```
+
+### When Architect Returns NEEDS_WORK (Phase Assessment)
+
+```bash
+# IMMEDIATE ACTIONS:
+1. echo "🔍 Architect returned NEEDS_WORK - reading phase assessment report..."
+2. read_phase_assessment_issues $CURRENT_PHASE
+3. Create comprehensive fix plan covering all waves
+4. Spawn multiple agents if fixes span multiple waves
+5. Ensure all Priority 1 items are addressed
+6. Return to PHASE_INTEGRATION for integration branch creation (R259)
+7. Then transition to SPAWN_ARCHITECT_PHASE_ASSESSMENT for reassessment
+
+# DO NOT:
+- Ignore Priority 2 items (should still track them)
+- Proceed to next phase without reassessment
+- Fix only part of the identified issues
+```
+
+### Critical Rules for Architect Feedback Recovery
+
+### 🚨🚨🚨 RULE R258 - Wave Review Report Requirements
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R258-mandatory-wave-review-report.md`
+
+### 🚨🚨🚨 RULE R257 - Phase Assessment Report Requirements  
+**SEE**: `$CLAUDE_PROJECT_DIR/rule-library/R257-mandatory-phase-assessment-report.md`
+
+### Recovery Verification Checklist
+
+Before exiting ERROR_RECOVERY for architect feedback issues:
+- [ ] Original report file was read and parsed
+- [ ] All CRITICAL issues have been addressed
+- [ ] All HIGH priority issues have been addressed
+- [ ] Fix evidence exists (commits, branches, tests)
+- [ ] State file updated with recovery details
+- [ ] Ready to return to appropriate review state
+
+### Common Mistakes to Avoid
+
+1. **Processing verbal feedback instead of reading reports**
+   - ❌ WRONG: "Architect said to fix API issues"
+   - ✅ RIGHT: Read report, extract specific issues from "Issues Identified" section
+
+2. **Not mapping fixes to appropriate agents**
+   - ❌ WRONG: Try to handle all fixes with one agent
+   - ✅ RIGHT: Parse "Assigned To:" fields, spawn correct agent type
+
+3. **Exiting recovery before validation**
+   - ❌ WRONG: Assume fixes are complete
+   - ✅ RIGHT: Run validate_wave_review_fixes() or validate_phase_assessment_fixes()
+
+4. **Wrong state transition after fixes**
+   - ❌ WRONG: Go to WAVE_START after wave fixes
+   - ✅ RIGHT: Return to INTEGRATION → WAVE_REVIEW for re-review

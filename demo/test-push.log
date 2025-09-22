@@ -1,0 +1,26 @@
+[K⠋ Pushing hello-world-v1.tar (0s)[K⠙ Configuring certificate trust (0s)[K⠹ Loading image from tarball (0s)[K⠸ Pushing to registry (0s)[K✓ Pushing to registry (took 947ms)
+Error: push failed: push operation failed: GET https://auth.docker.io/token?scope=repository%3Alibrary%2Fhello-world-v1.tar%3Apush%2Cpull&service=registry.docker.io: unexpected status code 401 Unauthorized: {"details":"incorrect username or password"}
+
+Usage:
+  idpbuilder push IMAGE[:TAG] [flags]
+
+Examples:
+  idpbuilder push myapp:v1
+  idpbuilder push --insecure myapp:latest
+  idpbuilder push --registry https://gitea.example.com myapp:v2
+  idpbuilder push --username myuser --password mypass myapp:latest
+
+Flags:
+  -h, --help              help for push
+      --insecure          Skip TLS certificate verification
+      --password string   Registry password
+      --registry string   Registry URL (default: auto-detect)
+      --retry int         Number of retry attempts (default 3)
+      --username string   Registry username (default: gitea_admin)
+
+Global Flags:
+      --color              Enable colored log messages.
+  -l, --log-level string   Set the log verbosity. Supported values are: debug, info, warn, and error. (default "info")
+
+push failed: push operation failed: GET https://auth.docker.io/token?scope=repository%3Alibrary%2Fhello-world-v1.tar%3Apush%2Cpull&service=registry.docker.io: unexpected status code 401 Unauthorized: {"details":"incorrect username or password"}
+

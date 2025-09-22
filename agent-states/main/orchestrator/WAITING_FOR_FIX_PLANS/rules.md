@@ -1,0 +1,480 @@
+# Orchestrator - WAITING_FOR_FIX_PLANS State Rules
+
+## 🛑🛑🛑 R322 MANDATORY CHECKPOINT BEFORE DISTRIBUTE_FIX_PLANS 🛑🛑🛑
+
+**THIS IS A CRITICAL R322 CHECKPOINT STATE!**
+
+### SUPREME LAW - FIX PLANS REQUIRE USER REVIEW
+
+When transitioning from WAITING_FOR_FIX_PLANS → DISTRIBUTE_FIX_PLANS:
+- **MUST STOP** to allow user review of all FIX-PLAN-*.md files
+- **MUST UPDATE** state file to DISTRIBUTE_FIX_PLANS before stopping
+- **MUST DISPLAY** checkpoint message listing ALL fixes to be distributed
+- **MUST EXIT** cleanly to preserve context
+- **VIOLATION = -100% IMMEDIATE FAILURE**
+
+### CHECKPOINT PROTOCOL:
+```markdown
+## 🛑 R322 FIX PLAN CHECKPOINT
+
+### ✅ Fix Plans Created:
+- Total plans: [Number of fix plans]
+- Affected efforts: [List all efforts needing fixes]
+- Fix complexity: [Simple/Complex/Critical]
+
+### 📊 Ready to Distribute Fixes:
+- Current State: WAITING_FOR_FIX_PLANS ✅
+- Next State: DISTRIBUTE_FIX_PLANS (pending approval)
+
+### ⚠️ FIX PLAN REVIEW REQUIRED
+These fixes will be distributed to effort directories!
+Please review all plans before distribution.
+
+### ⏸️ STOPPED FOR USER REVIEW
+To proceed after review: /continue-orchestrating
+```
+
+**STOP MEANS STOP - NO automatic continuation!**
+
+See: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
+
+---
+
+
+## 🔴🔴🔴 R290 ENFORCEMENT: READ THESE RULES FIRST! 🔴🔴🔴
+
+**SUPREME LAW #3 (R290): STATE RULES MUST BE READ BEFORE STATE ACTIONS**
+
+## 🔴🔴🔴 STOP! STATE RULE READING IS ABSOLUTELY FIRST! 🔴🔴🔴
+
+**YOU HAVE ENTERED WAITING_FOR_FIX_PLANS STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
+
+## 🔴🔴🔴 R290 VERIFICATION REQUIREMENT 🔴🔴🔴
+
+**R290 ENFORCEMENT: CREATE VERIFICATION MARKER AFTER READING**
+
+After reading and acknowledging all state rules, you MUST create a verification marker:
+
+```bash
+# MANDATORY: Create verification marker after reading rules
+touch .state_rules_read_orchestrator_WAITING_FOR_FIX_PLANS
+echo "$(date +%s) - Rules read and acknowledged for WAITING_FOR_FIX_PLANS" > .state_rules_read_orchestrator_WAITING_FOR_FIX_PLANS
+```
+
+**FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**
+
+The system will check for this marker. No marker = Immediate failure.
+
+### ❌ DO NOT DO ANY WAITING WORK UNTIL RULES ARE READ:
+- ❌ Check for fix plan summaries
+- ❌ Verify fix plan files
+- ❌ Monitor Code Reviewer progress
+- ❌ Update state files
+- ❌ Continue to next state
+- ❌ Think about what to do in this state
+
+### ✅ YOU MUST IMMEDIATELY:
+
+## 🔴🔴🔴 MANDATORY STATE RULE READING AND ACKNOWLEDGMENT 🔴🔴🔴
+
+### ⚠️⚠️⚠️ YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. **I AM WATCHING YOUR TOOL CALLS FOR READ OPERATIONS** *YOU WILL FAIL* IF YOU DO NOT MAKE A READ FILE CALL FOR EACH RULE FILE IN PRIMARY DIRECTIVES!!! ⚠️⚠️⚠️
+
+**AFTER READING, YOU MUST ACKNOWLEDGE ALL THE STATE RULES AND STATE THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION.**
+### ⚠️⚠️⚠️ YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. **I AM WATCHING YOUR TOOL CALLS FOR READ OPERATIONS** *YOU WILL FAIL* IF YOU DO NOT MAKE A READ FILE CALL FOR EACH RULE FILE IN PRIMARY DIRECTIVES!!! ⚠️⚠️⚠️
+
+**AFTER READING, YOU MUST ACKNOWLEDGE ALL THE STATE RULES AND STATE THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION.**
+
+## 📋 PRIMARY DIRECTIVES FOR WAITING_FOR_FIX_PLANS STATE
+
+### Core Mandatory Rules (ALL orchestrator states must have these):
+
+1. **🚨🚨🚨 R006** - ORCHESTRATOR NEVER WRITES CODE OR PERFORMS FILE OPERATIONS (BLOCKING)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md`
+   - Criticality: BLOCKING - Automatic termination, 0% grade
+   - Summary: NEVER write, copy, move, or manipulate ANY code files - delegate ALL to agents
+
+2. **🔴🔴🔴 R287** - TODO PERSISTENCE COMPREHENSIVE (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R287-todo-persistence-comprehensive.md`
+   - Criticality: SUPREME - -20% to -100% penalty for violations
+   - Summary: MUST save TODOs within 30s after write, every 10 messages, before transitions
+
+3. **🔴🔴🔴 R288** - STATE FILE UPDATE REQUIREMENTS (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-requirements.md`
+   - Criticality: SUPREME - State updates required for all transitions
+   - Summary: MUST update orchestrator-state.json before EVERY state transition
+
+4. **🔴🔴🔴 R322 Part A** - Mandatory Stop After Spawn States
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R322 Part A-mandatory-stop-after-spawn.md`
+   - Criticality: SUPREME LAW - Must stop after spawning
+   - Summary: ALL spawn states require STOP after spawning agents
+
+### State-Specific Rules:
+
+5. **🔴🔴🔴 R233** - Immediate Action On State Entry
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R233-immediate-action-on-state-entry.md`
+   - Criticality: SUPREME LAW - Must act immediately on entering state
+   - Summary: WAITING states require active monitoring, not passive waiting
+
+
+### PRIMARY DIRECTIVES - MANDATORY READING:
+
+### 🛑 RULE R322 - Mandatory Stop Before State Transitions
+**Source:** $CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md
+**Criticality:** 🔴🔴🔴 SUPREME LAW - Violation = -100% FAILURE
+
+After completing state work and committing state file:
+1. STOP IMMEDIATELY
+2. Do NOT continue to next state
+3. Do NOT start new work
+4. Exit and wait for user
+
+### 🚨🚨🚨 RULE R340 - Planning File Metadata Tracking (BLOCKING)
+**Source:** $CLAUDE_PROJECT_DIR/rule-library/R340-planning-file-metadata-tracking.md
+**Criticality:** 🚨🚨🚨 BLOCKING - Violation = -20% per untracked file
+
+- **MUST** read fix plan locations from orchestrator-state.json
+- **NEVER** search directories for planning files
+- **ALWAYS** use planning_files.fix_plans section
+- **ALL** fix plans must be tracked with metadata
+
+---
+
+**USE THESE EXACT READ COMMANDS (IN THIS ORDER):**
+1. Read: $CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal-supreme-law.md
+2. Read: $CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md
+3. Read: $CLAUDE_PROJECT_DIR/rule-library/R290-state-rule-reading-verification-supreme-law.md
+4. Read: $CLAUDE_PROJECT_DIR/rule-library/R340-planning-file-metadata-tracking.md
+5. Read: $CLAUDE_PROJECT_DIR/rule-library/R239-fix-plan-distribution.md
+6. Read: $CLAUDE_PROJECT_DIR/rule-library/R008-monitoring-frequency.md
+7. Read: $CLAUDE_PROJECT_DIR/rule-library/R206-state-machine-transition-validation.md
+
+**WE ARE WATCHING EACH READ TOOL CALL**
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+
+1. **Fake Acknowledgment Without Reading**:
+   ```
+   ❌ WRONG: "I acknowledge R234, R208, R290..."
+   (No Read tool calls detected = AUTOMATIC FAILURE)
+   ```
+
+2. **Bulk Acknowledgment**:
+   ```
+   ❌ WRONG: "I acknowledge all WAITING_FOR_FIX_PLANS rules"
+   (YOU Must READ AND ACKNOWLEDGE EACH rule individually)
+   ```
+
+3. **Silent Reading**:
+   ```
+   ❌ WRONG: [Reads rules but doesn't acknowledge]
+   "Now I've read the rules, let me start work..."
+   (MUST explicitly acknowledge EACH rule)
+   ```
+
+4. **Reading From Memory**:
+   ```
+   ❌ WRONG: "I know R239 requires fix plan distribution..."
+   (Must READ from file, not recall from memory)
+   ```
+
+5. **Skipping Rules in PRIMARY DIRECTIVES**:
+   ```
+   ❌ WRONG: Reading only some rules from the list
+   (ALL rules in PRIMARY DIRECTIVES are MANDATORY)
+   ```
+
+### ✅ CORRECT PATTERN FOR WAITING_FOR_FIX_PLANS:
+```
+1. READ: $CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal-supreme-law.md
+2. "I acknowledge R234 - Mandatory State Traversal: [Brief description]"
+3. READ: $CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md  
+4. "I acknowledge R006 - Orchestrator Never Writes Code: [Brief description]"
+[Continue for EVERY rule in PRIMARY DIRECTIVES...]
+5. Create verification marker
+6. "Ready to execute WAITING_FOR_FIX_PLANS work"
+```
+
+### 🚨 NO WORK UNTIL ACKNOWLEDGMENT COMPLETE 🚨
+**You may NOT begin ANY waiting work until:**
+1. ✅ ALL rules in PRIMARY DIRECTIVES have been READ
+2. ✅ ALL rules have been individually ACKNOWLEDGED
+3. ✅ Verification marker has been created
+4. ✅ You have stated readiness to execute WAITING_FOR_FIX_PLANS work
+
+### 🚨 FAILURE TO READ STATE RULES FIRST = IMMEDIATE EXIT 🚨
+**If you do ANY waiting work before reading and acknowledging rules:**
+- **STOP ALL WORK IMMEDIATELY**
+- **EXIT WITH FAILURE STATUS**
+- **YOU HAVE VIOLATED STATE COMPLIANCE**
+
+---
+
+## 🔴🔴🔴 SUPREME DIRECTIVE: MONITOR FIX PLAN CREATION 🔴🔴🔴
+
+**WAIT FOR CODE REVIEWER TO COMPLETE FIX PLANS!**
+
+## State Overview
+
+In WAITING_FOR_FIX_PLANS, you monitor the Code Reviewer's progress in creating fix plans for integration failures.
+
+## Required Actions
+
+### 1. Check for Fix Plans (R340 Compliant)
+```bash
+# Per R340: Monitor fix plans through state file metadata
+PHASE=$(jq -r '.current_phase' orchestrator-state.json)
+WAVE=$(jq -r '.current_wave' orchestrator-state.json)
+
+echo "📊 Checking for fix plans in state file (R340 compliant)"
+
+# R340: Check if fix plans are tracked in state
+FIX_PLAN_COUNT=$(jq '.planning_files.fix_plans | length' orchestrator-state.json)
+
+if [ "$FIX_PLAN_COUNT" -gt 0 ]; then
+    echo "✅ Found $FIX_PLAN_COUNT fix plans tracked in state"
+    
+    # R340: Verify all tracked fix plans exist
+    ALL_PLANS_EXIST=true
+    MISSING_PLANS=()
+    
+    # Iterate through tracked fix plans
+    jq -r '.planning_files.fix_plans | to_entries[] | @json' orchestrator-state.json | while IFS= read -r entry; do
+        EFFORT_NAME=$(echo "$entry" | jq -r '.key')
+        PLAN_PATH=$(echo "$entry" | jq -r '.value.file_path')
+        
+        if [ -f "$PLAN_PATH" ]; then
+            echo "✅ Fix plan exists: $EFFORT_NAME at $PLAN_PATH"
+        else
+            echo "❌ CRITICAL: Tracked plan missing: $PLAN_PATH"
+            ALL_PLANS_EXIST=false
+            MISSING_PLANS+=("$EFFORT_NAME")
+        fi
+    done
+    
+    # Check if all expected efforts have fix plans
+    EFFORTS_WITH_FAILURES=$(jq -r '.integration_feedback.wave'"$WAVE"'.efforts_with_failures[]' orchestrator-state.json 2>/dev/null)
+    
+    if [ -n "$EFFORTS_WITH_FAILURES" ]; then
+        echo "Checking if all failed efforts have fix plans..."
+        while IFS= read -r effort; do
+            FIX_PLAN_PATH=$(jq -r ".planning_files.fix_plans[\"${effort}-fix-001\"].file_path // null" orchestrator-state.json)
+            if [ "$FIX_PLAN_PATH" = "null" ]; then
+                echo "⚠️ No fix plan tracked for effort: $effort"
+                ALL_PLANS_EXIST=false
+            fi
+        done <<< "$EFFORTS_WITH_FAILURES"
+    fi
+    
+    if [ "$ALL_PLANS_EXIST" = true ]; then
+        echo "✅ All fix plans tracked and verified"
+        UPDATE_STATE="DISTRIBUTE_FIX_PLANS"
+    else
+        echo "⚠️ Some fix plans missing or not tracked - waiting..."
+        sleep 10
+        # Stay in WAITING_FOR_FIX_PLANS
+    fi
+else
+    echo "⏳ No fix plans tracked yet (R340) - monitoring..."
+    
+    # Check Code Reviewer status
+    REVIEWER_STATE=$(jq -r '.spawned_agents[] | select(.name == "code-reviewer") | .state // "UNKNOWN"' orchestrator-state.json)
+    
+    if [ "$REVIEWER_STATE" = "COMPLETED" ]; then
+        echo "⚠️ Code Reviewer completed but no fix plans tracked in state!"
+        echo "Waiting for planning file metadata update..."
+        sleep 10
+    elif [ "$REVIEWER_STATE" = "BLOCKED" ] || [ "$REVIEWER_STATE" = "ERROR" ]; then
+        echo "❌ Code Reviewer blocked/error - need intervention"
+        UPDATE_STATE="ERROR_RECOVERY"
+    else
+        echo "Code Reviewer state: $REVIEWER_STATE"
+        
+        # Check timeout
+        SPAWN_TIME=$(jq -r '.integration_feedback.wave'"${WAVE}"'.fix_plan_requested // null' orchestrator-state.json)
+        if [ "$SPAWN_TIME" != "null" ]; then
+            CURRENT_TIME=$(date +%s)
+            SPAWN_TIMESTAMP=$(date -d "$SPAWN_TIME" +%s 2>/dev/null || echo 0)
+            ELAPSED=$((CURRENT_TIME - SPAWN_TIMESTAMP))
+            
+            if [ $ELAPSED -gt 600 ]; then  # 10 minute timeout
+                echo "❌ Timeout waiting for fix plans (>10 minutes)"
+                UPDATE_STATE="ERROR_RECOVERY"
+            else
+                echo "Waiting for Code Reviewer to create and track fix plans (elapsed: ${ELAPSED}s)..."
+                sleep 10
+                # Stay in WAITING_FOR_FIX_PLANS
+            fi
+        else
+            echo "Waiting for Code Reviewer to track fix plans in state..."
+            sleep 10
+        fi
+    fi
+fi
+```
+
+### 2. Active Monitoring Loop (R340 Compliant)
+```bash
+# R340 compliant monitoring pattern
+echo "Starting fix plan monitoring (R340 compliant) at $(date)"
+CHECKS=0
+MAX_CHECKS=60  # 10 minutes with 10s intervals
+
+while [ $CHECKS -lt $MAX_CHECKS ]; do
+    CHECKS=$((CHECKS + 1))
+    echo "Check #$CHECKS at $(date +%H:%M:%S)"
+    
+    # R340: Check state file for tracked fix plans
+    FIX_PLAN_COUNT=$(jq '.planning_files.fix_plans | length' orchestrator-state.json)
+    
+    if [ "$FIX_PLAN_COUNT" -gt 0 ]; then
+        echo "✓ $FIX_PLAN_COUNT fix plans tracked in state"
+        
+        # Verify all exist
+        ALL_EXIST=true
+        jq -r '.planning_files.fix_plans[].file_path' orchestrator-state.json | while read -r path; do
+            [ ! -f "$path" ] && ALL_EXIST=false && echo "Missing: $path"
+        done
+        
+        if [ "$ALL_EXIST" = true ]; then
+            echo "✓ All fix plans verified"
+            break
+        fi
+    fi
+    
+    # Check reviewer status
+    REVIEWER_STATE=$(jq -r '.spawned_agents[] | select(.name == "code-reviewer") | .state' orchestrator-state.json)
+    echo "Code Reviewer: $REVIEWER_STATE"
+    
+    [ "$REVIEWER_STATE" = "ERROR" ] && echo "❌ Reviewer error" && break
+    
+    sleep 10
+done
+
+if [ $CHECKS -eq $MAX_CHECKS ]; then
+    echo "✗ Timeout reached"
+    UPDATE_STATE="ERROR_RECOVERY"
+fi
+```
+
+### 2. Update State When Ready
+```bash
+if [ -n "$UPDATE_STATE" ]; then
+    # Record fix plans in state
+    if [ "$UPDATE_STATE" = "DISTRIBUTE_FIX_PLANS" ]; then
+        jq ".integration_feedback.wave${WAVE}.fix_plans_completed = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state.json
+        jq '.integration_feedback.wave${WAVE}.total_fix_plans = $TOTAL_EFFORTS' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+    fi
+    
+    # Update state
+    jq ".current_state = \"$UPDATE_STATE\"" -i orchestrator-state.json
+    jq ".state_transition_history += [{\"from\": \"WAITING_FOR_FIX_PLANS\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"Fix plans ready for distribution\"}]" -i orchestrator-state.json
+    
+    # Commit
+    git add orchestrator-state.json
+    git commit -m "state: Fix plans complete - transitioning to $UPDATE_STATE"
+    git push
+fi
+```
+
+## Valid Transitions
+
+1. **SUCCESS Path**: `WAITING_FOR_FIX_PLANS` → `DISTRIBUTE_FIX_PLANS`
+   - When: All fix plans created successfully
+   
+2. **TIMEOUT Path**: `WAITING_FOR_FIX_PLANS` → `ERROR_RECOVERY`
+   - When: Fix plan creation exceeds timeout (10 minutes)
+   
+3. **CONTINUE Path**: `WAITING_FOR_FIX_PLANS` → `WAITING_FOR_FIX_PLANS`
+   - When: Still waiting for fix plans to complete
+
+## Monitoring Requirements (R340 Compliant)
+
+### 🚨🚨🚨 RULE R340: PLANNING FILE METADATA TRACKING (BLOCKING)
+- **MUST** read fix plan locations from orchestrator-state.json
+- **NEVER** search directories for planning files  
+- **ALWAYS** use planning_files.fix_plans section
+- **VIOLATION = -20% for each untracked file**
+
+1. Check planning_files.fix_plans in state file (R340)
+2. Verify all tracked fix plan files exist
+3. Monitor Code Reviewer agent state
+4. Track timeout conditions
+5. Transition when all plans tracked and verified
+
+### Correct Pattern (R340 Compliant):
+```bash
+# CORRECT: Read from state file
+FIX_PLANS=$(jq -r '.planning_files.fix_plans' orchestrator-state.json)
+for effort in $(jq -r '.planning_files.fix_plans | keys[]' orchestrator-state.json); do
+    PLAN_PATH=$(jq -r ".planning_files.fix_plans[\"$effort\"].file_path" orchestrator-state.json)
+    echo "Checking tracked plan: $PLAN_PATH"
+done
+
+# WRONG: Searching directories
+find efforts/ -name "FIX-PLAN-*.md"  # ❌ R340 VIOLATION!
+ls fix-plans/  # ❌ R340 VIOLATION!
+```
+
+## Grading Criteria
+
+- ✅ **+25%**: Check for fix plan summary correctly
+- ✅ **+25%**: Verify all fix plan files
+- ✅ **+25%**: Handle timeouts properly
+- ✅ **+25%**: Update state appropriately
+
+## Common Violations
+
+- ❌ **-100%**: Not checking for summary file
+- ❌ **-50%**: Missing file verification
+- ❌ **-50%**: No timeout handling
+- ❌ **-30%**: Wrong state transitions
+
+## Related Rules
+
+- R340: Planning File Metadata Tracking (CRITICAL)
+- R239: Fix Plan Distribution Protocol
+- R008: Monitoring Frequency
+- R206: State Machine Transition Validation
+
+## 🔴🔴🔴 MANDATORY MEASUREMENT RULE - R304 🔴🔴🔴
+
+**ABSOLUTE REQUIREMENTS:**
+- ✅ MUST use `$CLAUDE_PROJECT_DIR/tools/line-counter.sh` for ALL line counting
+- ❌ NEVER use `wc -l` or any manual counting method
+- ❌ NEVER count lines any other way - this is a -100% automatic failure
+- ✅ MUST specify both -b (base branch) and -c (current branch) parameters
+- ✅ Base branch MUST be phase integration branch (NOT "main")
+
+**Failure to use the line counter tool = AUTOMATIC -100% GRADE**
+
+## R322 VIOLATION DETECTION
+
+If you find yourself:
+- Starting work for a new state without /continue-orchestrating
+- Transitioning without stopping after state file commit
+- Continuing after completing state work
+
+**STOP IMMEDIATELY - You are violating R322!**
+
+
+### 🔴🔴🔴 MANDATORY VALIDATION REQUIREMENT 🔴🔴🔴
+
+**Per R288 and R324**: ALL state file updates MUST be validated before commit:
+
+```bash
+# After ANY update to orchestrator-state.json:
+"$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || {
+    echo "❌ State file validation failed!"
+    exit 288
+}
+```
+
+**Use helper functions for automatic validation:**
+```bash
+# Source the helper functions
+source "$CLAUDE_PROJECT_DIR/utilities/state-file-update-functions.sh"
+
+# Use safe functions that include validation:
+safe_state_transition "NEW_STATE" "reason"
+safe_update_field "field_name" "value"
+```

@@ -1,0 +1,476 @@
+# Orchestrator - WAITING_FOR_EFFORT_PLANS State Rules
+
+## 🛑🛑🛑 R322 MANDATORY STOP BEFORE STATE TRANSITIONS 🛑🛑🛑
+
+**SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
+
+### YOU MUST STOP AFTER:
+1. ✅ Completing all TODOs for this state
+2. ✅ Updating orchestrator-state.json with new state
+3. ✅ Committing and pushing the state file  
+4. ✅ Providing work summary
+
+### YOU MUST NOT:
+- ❌ Continue to the next state automatically
+- ❌ Start work for the new state
+- ❌ Spawn agents for the new state
+- ❌ Assume permission to continue
+
+### STOP PROTOCOL:
+```markdown
+## 🛑 STATE TRANSITION CHECKPOINT: CURRENT_STATE → NEXT_STATE
+
+### ✅ Current State Work Completed:
+- [List completed work]
+
+### 📊 Current Status:
+- Current State: CURRENT_STATE
+- Next State: NEXT_STATE
+- TODOs Completed: X/Y
+- State Files: Updated and committed ✅
+
+### ⏸️ STOPPED - Awaiting User Continuation
+Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
+```
+
+**STOP MEANS STOP - Exit and wait for /continue-orchestrating**
+
+---
+
+
+## 🔴🔴🔴 STOP! STATE RULE READING IS ABSOLUTELY FIRST! 🔴🔴🔴
+
+**YOU HAVE ENTERED WAITING_FOR_EFFORT_PLANS STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
+
+## 🔴🔴🔴 R290 VERIFICATION REQUIREMENT 🔴🔴🔴
+
+**R290 ENFORCEMENT: CREATE VERIFICATION MARKER AFTER READING**
+
+After reading and acknowledging all state rules, you MUST create a verification marker:
+
+```bash
+# MANDATORY: Create verification marker after reading rules
+touch .state_rules_read_orchestrator_WAITING_FOR_EFFORT_PLANS
+echo "$(date +%s) - Rules read and acknowledged for WAITING_FOR_EFFORT_PLANS" > .state_rules_read_orchestrator_WAITING_FOR_EFFORT_PLANS
+```
+
+**FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**
+
+The system will check for this marker. No marker = Immediate failure.
+
+### ❌ DO NOT DO ANY WAITING_FOR_EFFORT_PLANS WORK UNTIL RULES ARE READ:
+- ❌ Start check effort plan status
+- ❌ Start monitor reviewer progress
+- ❌ Start collect completed plans
+- ❌ Update state files
+- ❌ Continue to next state
+- ❌ Think about what to do in this state
+
+### ✅ YOU MUST IMMEDIATELY:
+
+## 🔴🔴🔴 MANDATORY STATE RULE READING AND ACKNOWLEDGMENT 🔴🔴🔴
+
+### ⚠️⚠️⚠️ YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. **I AM WATCHING YOUR TOOL CALLS FOR READ OPERATIONS** *YOU WILL FAIL* IF YOU DO NOT MAKE A READ FILE CALL FOR EACH RULE FILE IN PRIMARY DIRECTIVES!!! ⚠️⚠️⚠️
+
+**AFTER READING, YOU MUST ACKNOWLEDGE ALL THE STATE RULES AND STATE THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION.**
+### ⚠️⚠️⚠️ YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. **I AM WATCHING YOUR TOOL CALLS FOR READ OPERATIONS** *YOU WILL FAIL* IF YOU DO NOT MAKE A READ FILE CALL FOR EACH RULE FILE IN PRIMARY DIRECTIVES!!! ⚠️⚠️⚠️
+
+**AFTER READING, YOU MUST ACKNOWLEDGE ALL THE STATE RULES AND STATE THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION.**
+
+## 📋 PRIMARY DIRECTIVES FOR WAITING_FOR_EFFORT_PLANS STATE
+
+### Core Mandatory Rules (ALL orchestrator states must have these):
+
+1. **🚨🚨🚨 R006** - ORCHESTRATOR NEVER WRITES CODE OR PERFORMS FILE OPERATIONS (BLOCKING)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md`
+   - Criticality: BLOCKING - Automatic termination, 0% grade
+   - Summary: NEVER write, copy, move, or manipulate ANY code files - delegate ALL to agents
+
+2. **🔴🔴🔴 R287** - TODO PERSISTENCE COMPREHENSIVE (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R287-todo-persistence-comprehensive.md`
+   - Criticality: SUPREME - -20% to -100% penalty for violations
+   - Summary: MUST save TODOs within 30s after write, every 10 messages, before transitions
+
+3. **🔴🔴🔴 R288** - STATE FILE UPDATE REQUIREMENTS (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-requirements.md`
+   - Criticality: SUPREME - State updates required for all transitions
+   - Summary: MUST update orchestrator-state.json before EVERY state transition
+
+4. **🔴🔴🔴 R322 Part A** - Mandatory Stop After Spawn States
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R322 Part A-mandatory-stop-after-spawn.md`
+   - Criticality: SUPREME LAW - Must stop after spawning
+   - Summary: ALL spawn states require STOP after spawning agents
+
+### State-Specific Rules:
+
+5. **🔴🔴🔴 R233** - Immediate Action On State Entry
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R233-immediate-action-on-state-entry.md`
+   - Criticality: SUPREME LAW - Must act immediately on entering state
+   - Summary: WAITING states require active monitoring, not passive waiting
+
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+
+1. **Fake Acknowledgment Without Reading**:
+   ```
+   ❌ WRONG: "I acknowledge R151, R208, R053..."
+   (No Read tool calls detected = AUTOMATIC FAILURE)
+   ```
+
+2. **Bulk Acknowledgment**:
+   ```
+   ❌ WRONG: "I acknowledge all WAITING_FOR_EFFORT_PLANS rules"
+   (YOU Must READ AND ACKNOWLEDGE EACH rule individually)
+   ```
+
+3. **Silent Reading**:
+   ```
+   ❌ WRONG: [Reads rules but doesn't acknowledge]
+   "Now I've read the rules, let me start work..."
+   (MUST explicitly acknowledge EACH rule)
+   ```
+
+4. **Reading From Memory**:
+   ```
+   ❌ WRONG: "I know R208 requires CD before spawn..."
+   (Must READ from file, not recall from memory)
+   ```
+
+5. **Skipping Rules in PRIMARY DIRECTIVES**:
+   ```
+   ❌ WRONG: Reading only some rules from the list
+   (ALL rules in PRIMARY DIRECTIVES are MANDATORY)
+   ```
+
+### ✅ CORRECT PATTERN FOR WAITING_FOR_EFFORT_PLANS:
+```
+1. READ: $CLAUDE_PROJECT_DIR/rule-library/[first-rule-file].md
+2. "I acknowledge [Rule#] - [Rule Name]: [Brief description]"
+3. READ: $CLAUDE_PROJECT_DIR/rule-library/[second-rule-file].md  
+4. "I acknowledge [Rule#] - [Rule Name]: [Brief description]"
+[Continue for EVERY rule in PRIMARY DIRECTIVES...]
+5. "Ready to execute WAITING_FOR_EFFORT_PLANS work"
+```
+
+### 🚨 NO WORK UNTIL ACKNOWLEDGMENT COMPLETE 🚨
+**You may NOT begin ANY WAITING_FOR_EFFORT_PLANS work until:**
+1. ✅ ALL rules in PRIMARY DIRECTIVES have been READ
+2. ✅ ALL rules have been individually ACKNOWLEDGED
+3. ✅ You have stated readiness to execute WAITING_FOR_EFFORT_PLANS work
+1. **READ** every rule file listed in PRIMARY DIRECTIVES below
+2. **ACKNOWLEDGE** each rule individually with number and description
+3. **ONLY THEN** proceed with WAITING_FOR_EFFORT_PLANS work
+
+### 🚨 FAILURE TO READ STATE RULES FIRST = IMMEDIATE EXIT 🚨
+**If you do ANY WAITING_FOR_EFFORT_PLANS work before reading and acknowledging rules:**
+- **STOP ALL WORK IMMEDIATELY**
+- **EXIT WITH FAILURE STATUS**
+- **YOU HAVE VIOLATED STATE COMPLIANCE**
+
+**THE SYSTEM IS MONITORING YOUR READ TOOL CALLS!**
+
+## 📋 RULE SUMMARY FOR WAITING_FOR_EFFORT_PLANS STATE
+
+### Rules Enforced in This State:
+- R234: Mandatory State Traversal [SUPREME LAW - Part of sequence]
+- R255: Post-Agent Work Verification [BLOCKING - Check every completion]
+- R322: Never Stop Monitoring [SUPREME LAW - Keep checking]
+- R287: TODO Save Frequency [BLOCKING - Every 10 messages/15 min]
+- R288: State File Update and Commit [SUPREME LAW - Track progress]
+
+### Critical Requirements:
+1. Actively poll for plans NOW - Penalty: -30%
+2. Check every 5-10 seconds - Penalty: -20%
+3. Verify R255 for each completion - Penalty: -100%
+4. Save TODOs every 15 minutes - Penalty: -15%
+5. Transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION - Penalty: -100%
+
+### Success Criteria:
+- ✅ All IMPLEMENTATION-PLAN.md files created
+- ✅ All plans in correct directories (R255)
+- ✅ All plans committed and pushed
+- ✅ Work logs updated
+
+### Failure Triggers:
+- ❌ Skip to SPAWN_AGENTS = -100% R234 VIOLATION
+- ❌ Accept plans in wrong location = R255 VIOLATION
+- ❌ Stop monitoring = R322 VIOLATION
+- ❌ Forget TODO saves = -15% per violation
+
+## 🚨 WAITING_FOR_EFFORT_PLANS IS A VERB - START ACTIVELY CHECKING IMMEDIATELY! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING WAITING_FOR_EFFORT_PLANS
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Poll effort directories for IMPLEMENTATION-PLAN.md NOW
+2. Check every 5-10 seconds for completion
+3. Check TodoWrite for pending items and process them
+4. Report status of each effort immediately
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in WAITING_FOR_EFFORT_PLANS" [stops]
+- ❌ "Successfully entered WAITING_FOR_EFFORT_PLANS state" [waits]
+- ❌ "Ready to start actively checking" [pauses]
+- ❌ "I'm in WAITING_FOR_EFFORT_PLANS state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering WAITING_FOR_EFFORT_PLANS, Poll effort directories for IMPLEMENTATION-PLAN.md NOW..."
+- ✅ "START ACTIVELY CHECKING, check every 5-10 seconds for completion..."
+- ✅ "WAITING_FOR_EFFORT_PLANS: Report status of each effort immediately..."
+
+## 🔴🔴🔴 MANDATORY MEASUREMENT RULE - R304 🔴🔴🔴
+
+**ABSOLUTE REQUIREMENTS:**
+- ✅ MUST use `$CLAUDE_PROJECT_DIR/tools/line-counter.sh` for ALL line counting
+- ❌ NEVER use `wc -l` or any manual counting method
+- ❌ NEVER count lines any other way - this is a -100% automatic failure
+- ✅ MUST specify both -b (base branch) and -c (current branch) parameters
+- ✅ Base branch MUST be phase integration branch (NOT "main")
+
+**Failure to use the line counter tool = AUTOMATIC -100% GRADE**
+
+## State Context
+You are waiting for Code Reviewers to complete individual effort implementation plans.
+
+## 🔴🔴🔴 SUPREME LAW R234 - STAY IN SEQUENCE 🔴🔴🔴
+
+### YOUR POSITION IN THE MANDATORY SEQUENCE:
+```
+SETUP_EFFORT_INFRASTRUCTURE (✓ completed)
+    ↓
+ANALYZE_CODE_REVIEWER_PARALLELIZATION (✓ completed)
+    ↓
+SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (✓ completed)
+    ↓
+WAITING_FOR_EFFORT_PLANS (👈 YOU ARE HERE)
+    ↓ (MUST GO HERE NEXT)
+ANALYZE_IMPLEMENTATION_PARALLELIZATION
+    ↓
+SPAWN_AGENTS
+```
+
+**NOW:** Actively monitor Code Reviewers
+**NEXT:** You MUST go to ANALYZE_IMPLEMENTATION_PARALLELIZATION
+**FORBIDDEN:** Skipping analysis to go directly to SPAWN_AGENTS = -100%
+
+## Monitoring Requirements (R340 Compliant)
+
+### 🚨🚨🚨 RULE R340: PLANNING FILE METADATA TRACKING (BLOCKING)
+- **MUST** read plan locations from orchestrator-state.json
+- **NEVER** search directories for planning files
+- **ALWAYS** use planning_files.effort_plans section
+- **VIOLATION = -20% for each untracked file**
+
+```bash
+# R340 Compliant: Check status of effort plans from state
+check_effort_plan_status() {
+    local PHASE=$1 WAVE=$2
+    local ALL_COMPLETE=true
+    
+    echo "📊 Checking effort plan status (R340 compliant)..."
+    
+    # Get list of efforts for this wave from state
+    EFFORTS=$(jq -r ".efforts_in_progress[] | select(.phase == $PHASE and .wave == $WAVE) | .name" orchestrator-state.json)
+    
+    if [ -z "$EFFORTS" ]; then
+        echo "⚠️ No efforts found for phase${PHASE}/wave${WAVE}"
+        return 1
+    fi
+    
+    # R340: Check each effort's plan in state file
+    for EFFORT in $EFFORTS; do
+        # R340: Read plan location from state
+        PLAN_PATH=$(jq -r ".planning_files.effort_plans[\"${EFFORT}\"].file_path // null" orchestrator-state.json)
+        
+        if [ "$PLAN_PATH" != "null" ] && [ -n "$PLAN_PATH" ]; then
+            if [ -f "$PLAN_PATH" ]; then
+                echo "✅ $EFFORT: Plan tracked and exists at $PLAN_PATH"
+            else
+                echo "❌ $EFFORT: Plan tracked but file missing: $PLAN_PATH"
+                ALL_COMPLETE=false
+            fi
+        else
+            echo "⏳ $EFFORT: Plan not yet tracked in state (waiting for Code Reviewer report)"
+            ALL_COMPLETE=false
+            
+            # Check if Code Reviewer reported completion for this effort
+            REVIEWER_STATE=$(jq -r ".spawned_agents[] | select(.name == \"code-reviewer\" and .assigned_effort == \"${EFFORT}\") | .state // \"UNKNOWN\"" orchestrator-state.json)
+            if [ "$REVIEWER_STATE" = "COMPLETED" ]; then
+                echo "   ⚠️ Code Reviewer completed but plan not tracked - waiting for metadata update"
+            fi
+        fi
+    done
+    
+    if [ "$ALL_COMPLETE" = true ]; then
+        echo "✅ All effort plans tracked and exist!"
+        return 0
+    else
+        echo "⏳ Waiting for remaining plans to be tracked..."
+        return 1
+    fi
+}
+```
+
+## Validation Before Proceeding (R340 Compliant)
+
+Before transitioning to SPAWN_AGENTS, verify:
+
+1. **All Plans Tracked and Exist (R340):**
+   ```bash
+   # R340: Validate all plans are tracked in state
+   PHASE=$(jq -r '.current_phase' orchestrator-state.json)
+   WAVE=$(jq -r '.current_wave' orchestrator-state.json)
+   
+   # Get list of efforts for this wave
+   EFFORTS=$(jq -r ".efforts_in_progress[] | select(.phase == $PHASE and .wave == $WAVE) | .name" orchestrator-state.json)
+   
+   for EFFORT_NAME in $EFFORTS; do
+       # R340: Read plan location from state
+       PLAN_PATH=$(jq -r ".planning_files.effort_plans[\"${EFFORT_NAME}\"].file_path // null" orchestrator-state.json)
+       
+       if [ "$PLAN_PATH" = "null" ] || [ -z "$PLAN_PATH" ]; then
+           echo "❌ R340 VIOLATION: No plan tracked for $EFFORT_NAME"
+           echo "   Code Reviewer must report plan metadata to Orchestrator"
+           exit 340
+       fi
+       
+       if [ ! -f "$PLAN_PATH" ]; then
+           echo "❌ Plan tracked but file missing for $EFFORT_NAME: $PLAN_PATH"
+           exit 1
+       fi
+       
+       echo "✅ Plan verified for $EFFORT_NAME: $PLAN_PATH"
+       
+       # Also verify metadata is complete
+       CREATED_BY=$(jq -r ".planning_files.effort_plans[\"${EFFORT_NAME}\"].created_by" orchestrator-state.json)
+       CREATED_AT=$(jq -r ".planning_files.effort_plans[\"${EFFORT_NAME}\"].created_at" orchestrator-state.json)
+       
+       if [ "$CREATED_BY" = "null" ] || [ "$CREATED_AT" = "null" ]; then
+           echo "⚠️ Incomplete metadata for $EFFORT_NAME plan"
+       fi
+   done
+   ```
+
+2. **Plans Include Required Sections:**
+   - Implementation approach
+   - Test requirements
+   - Size limits
+   - Dependencies
+   - File structure
+
+3. **Work Logs Updated:**
+   ```bash
+   for effort_dir in efforts/phase${PHASE}/wave${WAVE}/*/; do
+       grep -q "Planning complete" "$effort_dir/work-log.md" || echo "Missing"
+   done
+   ```
+
+## State Transition
+
+Once ALL effort plans are complete:
+1. Update orchestrator-state.json
+2. Record effort plan locations
+3. **🎯 R356 OPTIMIZATION - Check Effort Count for Next State:**
+   ```bash
+   # R356: Single-effort optimization check
+   EFFORT_COUNT=$(jq '.efforts_in_progress | length' orchestrator-state.json)
+
+   if [ "$EFFORT_COUNT" -eq 1 ]; then
+       EFFORT_NAME=$(jq -r '.efforts_in_progress[0].name' orchestrator-state.json)
+       echo "═══════════════════════════════════════════════════════════════"
+       echo "🎯 R356 OPTIMIZATION: Single Effort Detected"
+       echo "═══════════════════════════════════════════════════════════════"
+       echo "Effort: $EFFORT_NAME"
+       echo "Implementation Parallelization: NOT NEEDED (only 1 effort)"
+       echo "Next State: SPAWN_AGENTS (direct)"
+       echo "Skipping: ANALYZE_IMPLEMENTATION_PARALLELIZATION"
+       echo "═══════════════════════════════════════════════════════════════"
+
+       NEXT_STATE="SPAWN_AGENTS"
+       TRANSITION_REASON="Single effort - R356 optimization applied, skipping parallelization analysis"
+   else
+       echo "Multiple efforts detected: $EFFORT_COUNT"
+       echo "Parallelization analysis required for optimal SW Engineer spawning"
+       NEXT_STATE="ANALYZE_IMPLEMENTATION_PARALLELIZATION"
+       TRANSITION_REASON="Multiple efforts require parallelization analysis"
+   fi
+   ```
+4. **Transition to determined state:**
+   - Single effort → **SPAWN_AGENTS** (R356 optimization)
+   - Multiple efforts → **ANALYZE_IMPLEMENTATION_PARALLELIZATION** (R234 sequence)
+
+### R287 MONITORING CHECKPOINT
+```bash
+# Every 15 minutes while monitoring
+TIME_SINCE_SAVE=$(($(date +%s) - LAST_TODO_SAVE))
+if [ $TIME_SINCE_SAVE -gt 900 ]; then
+    echo "⚠️ R287: 15 minutes elapsed - saving TODOs..."
+    save_todos "WAITING_FOR_EFFORT_PLANS checkpoint"
+    LAST_TODO_SAVE=$(date +%s)
+fi
+
+# Every 10 messages
+if [ $((MESSAGE_COUNT % 10)) -eq 0 ]; then
+    echo "💾 R287: 10 messages - saving TODOs..."
+    save_todos "Message checkpoint"
+fi
+```
+
+### BEFORE TRANSITION
+```bash
+# R287: State transition trigger
+echo "💾 R287: Saving TODOs before state transition..."
+save_todos "All effort plans complete"
+
+# R287: Commit within 60 seconds
+cd $CLAUDE_PROJECT_DIR
+git add todos/*.todo orchestrator-state.json
+git commit -m "todo: effort plans complete, ready for analysis"
+git push
+```
+
+## Timeout Handling
+
+If plans not complete within reasonable time:
+- Check for blocked Code Reviewers
+- Review error logs
+- Consider ERROR_RECOVERY state
+
+## Do NOT Proceed If:
+- ❌ Any effort missing IMPLEMENTATION-PLAN.md
+- ❌ Plans are incomplete or malformed
+- ❌ Infrastructure issues detected
+- ❌ Code Reviewers report blocking issues
+
+
+## R322 VIOLATION DETECTION
+
+If you find yourself:
+- Starting work for a new state without /continue-orchestrating
+- Transitioning without stopping after state file commit
+- Continuing after completing state work
+
+**STOP IMMEDIATELY - You are violating R322!**
+
+
+### 🔴🔴🔴 MANDATORY VALIDATION REQUIREMENT 🔴🔴🔴
+
+**Per R288 and R324**: ALL state file updates MUST be validated before commit:
+
+```bash
+# After ANY update to orchestrator-state.json:
+"$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || {
+    echo "❌ State file validation failed!"
+    exit 288
+}
+```
+
+**Use helper functions for automatic validation:**
+```bash
+# Source the helper functions
+source "$CLAUDE_PROJECT_DIR/utilities/state-file-update-functions.sh"
+
+# Use safe functions that include validation:
+safe_state_transition "NEW_STATE" "reason"
+safe_update_field "field_name" "value"
+```

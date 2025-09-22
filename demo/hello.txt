@@ -1,0 +1,4 @@
+Hello World from idpbuilder!
+
+This is a test file to demonstrate the OCI build capability.
+The build command will package this entire directory into a container image.

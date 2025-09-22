@@ -1,0 +1,209 @@
+# Orchestrator - SPAWN_AGENTS State Grading
+
+## Critical Performance Metrics
+
+---
+### ℹ️ RULE  - 
+**Source:** 
+**Criticality:** INFO - Best practice
+
+PRIMARY METRIC: Parallel Spawn Efficiency
+Measurement: Average time delta between parallel spawns
+Target: < 5 seconds
+Grade: PASS/FAIL (binary)
+Weight: 50% of overall orchestrator grade
+Consequence: FAIL = Employment warning
+---
+
+## Grading Rubric
+
+| Metric | Excellent | Good | Acceptable | FAIL |
+|--------|-----------|------|------------|------|
+| Parallel Spawn Delta | <2s | 2-3s | 3-5s | >5s |
+| Context Completeness | 100% | 95% | 90% | <90% |
+| Startup Requirements | All included | 1 missing | 2 missing | >2 missing |
+| Timestamp Recording | All recorded | 95% recorded | 90% recorded | <90% |
+
+## Real-Time Scoring
+
+```python
+class SpawnAgentsGrader:
+    def __init__(self):
+        self.spawn_times = []
+        self.context_scores = []
+        self.startup_compliance = []
+        
+    def grade_spawn_batch(self, batch_data):
+        """Grade a batch of parallel spawns"""
+        
+        # Critical metric: Spawn timing
+        timing_grade = self.calculate_timing_grade(batch_data['timestamps'])
+        
+        # Context completeness
+        context_grade = self.check_context_completeness(batch_data['messages'])
+        
+        # Startup requirements
+        startup_grade = self.check_startup_requirements(batch_data['messages'])
+        
+        # Calculate overall
+        overall = self.calculate_overall(timing_grade, context_grade, startup_grade)
+        
+        return {
+            'timing': timing_grade,
+            'context': context_grade,
+            'startup': startup_grade,
+            'overall': overall,
+            'timestamp': datetime.now().isoformat()
+        }
+    
+    def calculate_timing_grade(self, timestamps):
+        """Calculate spawn timing grade"""
+        if len(timestamps) < 2:
+            return {'delta': 0, 'grade': 'PASS', 'score': 100}
+            
+        deltas = []
+        for i in range(1, len(timestamps)):
+            delta = (timestamps[i] - timestamps[i-1]).total_seconds()
+            deltas.append(delta)
+        
+        avg_delta = sum(deltas) / len(deltas)
+        
+        if avg_delta < 2:
+            score = 100
+            grade = 'EXCELLENT'
+        elif avg_delta < 3:
+            score = 90
+            grade = 'GOOD'
+        elif avg_delta < 5:
+            score = 75
+            grade = 'PASS'
+        else:
+            score = 0
+            grade = 'FAIL'
+        
+        return {
+            'avg_delta': avg_delta,
+            'grade': grade,
+            'score': score
+        }
+    
+    def check_context_completeness(self, messages):
+        """Check if all required context provided"""
+        required = [
+            'PURPOSE', 'WORKING_DIR', 'BRANCH',
+            'REQUIREMENTS', 'STARTUP', 'DELIVERABLES'
+        ]
+        
+        scores = []
+        for msg in messages:
+            present = sum(1 for r in required if r in msg)
+            scores.append(present / len(required) * 100)
+        
+        avg_score = sum(scores) / len(scores)
+        return {
+            'score': avg_score,
+            'grade': 'PASS' if avg_score >= 90 else 'FAIL'
+        }
+    
+    def check_startup_requirements(self, messages):
+        """Check startup requirements included"""
+        required = [
+            'AGENT STARTUP',
+            'pwd',
+            'git branch',
+            'acknowledge'
+        ]
+        
+        scores = []
+        for msg in messages:
+            present = sum(1 for r in required if r.lower() in msg.lower())
+            scores.append(present / len(required) * 100)
+        
+        avg_score = sum(scores) / len(scores)
+        return {
+            'score': avg_score,
+            'grade': 'PASS' if avg_score >= 90 else 'FAIL'
+        }
+    
+    def calculate_overall(self, timing, context, startup):
+        """Calculate overall grade with weights"""
+        # Timing is 50% of grade (critical)
+        # Context is 30%
+        # Startup is 20%
+        
+        weighted_score = (
+            timing['score'] * 0.5 +
+            context['score'] * 0.3 +
+            startup['score'] * 0.2
+        )
+        
+        # Binary pass/fail on timing overrides
+        if timing['grade'] == 'FAIL':
+            overall_grade = 'FAIL'
+        elif weighted_score >= 90:
+            overall_grade = 'EXCELLENT'
+        elif weighted_score >= 80:
+            overall_grade = 'GOOD'
+        elif weighted_score >= 70:
+            overall_grade = 'PASS'
+        else:
+            overall_grade = 'FAIL'
+        
+        return {
+            'weighted_score': weighted_score,
+            'grade': overall_grade
+        }
+```
+
+## Grade Reporting
+
+Update orchestrator-state.json:
+```yaml
+grading:
+  SPAWN_AGENTS:
+    latest:
+      timestamp: "2025-08-23T14:30:45Z"
+      timing_grade: "PASS"
+      avg_delta: 3.2
+      context_score: 95
+      startup_score: 100
+      overall: "PASS"
+    history:
+      - {timestamp: "...", grade: "PASS", delta: 2.8}
+      - {timestamp: "...", grade: "PASS", delta: 3.2}
+    cumulative:
+      attempts: 42
+      passes: 41
+      fails: 1
+      pass_rate: 97.6
+```
+
+## Warning Triggers
+
+---
+### ℹ️ RULE  - 
+**Source:** 
+**Criticality:** INFO - Best practice
+
+AUTOMATIC WARNINGS
+First FAIL:
+⚠️ WARNING: Spawn efficiency below target
+⚠️ Average delta: Xs (target: <5s)
+⚠️ Improvement required immediately
+
+Second FAIL:
+⚠️⚠️ FINAL WARNING: Consistent performance issues
+⚠️⚠️ Next failure triggers termination review
+
+Third FAIL:
+❌ TERMINATION: Repeated spawn efficiency failures
+❌ Orchestrator replacement initiated
+---
+
+## Performance Tips
+
+To achieve EXCELLENT grade:
+1. Prepare all spawn messages before sending
+2. Use single message with multiple tool calls
+3. Don't wait between spawns
+4. Include all context upfront

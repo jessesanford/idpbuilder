@@ -1,0 +1,61 @@
+# ORCHESTRATOR STATE: SPAWN_ARCHITECT_MASTER_PLANNING
+
+## Overview
+This state spawns the Architect to create the master architecture that defines the entire project structure.
+
+## Entry Criteria
+- No existing PROJECT-ARCHITECTURE.md or MASTER-ARCHITECTURE.md
+- Starting a brand new project
+- Transitioned from INIT state
+
+## State Responsibilities
+
+### 1. Verify No Existing Master Plan
+```bash
+# Check for existing architecture
+if [ -f "PROJECT-ARCHITECTURE.md" ] || [ -f "MASTER-ARCHITECTURE.md" ]; then
+    echo "⚠️ Master architecture already exists"
+    transition_to "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING"
+else
+    echo "✅ No master architecture found, proceeding with spawn"
+fi
+```
+
+### 2. Spawn Architect Agent
+```bash
+/spawn-agent architect \
+    --state MASTER_PLANNING \
+    --task "Create master architecture for entire project"
+```
+
+### 3. Record Spawn in State File
+- Update orchestrator-state.json with spawned agent
+- Track timestamp per R151
+- Record spawn ID
+
+### 4. Transition to Waiting State
+```bash
+update_state "WAITING_FOR_MASTER_ARCHITECTURE"
+save_todos "Spawned architect for master planning"
+git add orchestrator-state.json todos/
+git commit -m "state: spawned architect for master planning"
+git push
+```
+
+## Exit Criteria
+- Architect spawned successfully
+- State file updated to WAITING_FOR_MASTER_ARCHITECTURE
+- R313: MUST stop after spawning
+
+## Success Metrics
+- ✅ Architect spawned within 5s (R151)
+- ✅ State file updated before stop (R324)
+- ✅ TODOs saved (R287)
+
+## Related Rules
+- R151: Parallel agent timing
+- R287: TODO persistence
+- R313: Mandatory stop after spawn
+- R324: State update before stop
+- R341: TDD requirement
+- R342: Early branch creation

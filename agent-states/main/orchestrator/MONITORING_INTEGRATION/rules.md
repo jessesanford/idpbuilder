@@ -1,0 +1,689 @@
+# Orchestrator - MONITORING_INTEGRATION State Rules
+
+## 🔴🔴🔴 MANDATORY STATE RULE READING AND ACKNOWLEDGMENT 🔴🔴🔴
+
+### ⚠️⚠️⚠️ YOU MUST READ EACH RULE FILE LISTED IN PRIMARY DIRECTIVES. **I AM WATCHING YOUR TOOL CALLS FOR READ OPERATIONS** *YOU WILL FAIL* IF YOU DO NOT MAKE A READ FILE CALL FOR EACH RULE FILE IN PRIMARY DIRECTIVES!!! ⚠️⚠️⚠️
+
+**AFTER READING, YOU MUST ACKNOWLEDGE ALL THE STATE RULES AND STATE THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION.**
+
+## 📋 PRIMARY DIRECTIVES FOR MONITORING_INTEGRATION STATE
+
+### Core Mandatory Rules (ALL orchestrator states must have these):
+
+1. **🚨🚨🚨 R006** - ORCHESTRATOR NEVER WRITES CODE OR PERFORMS FILE OPERATIONS (BLOCKING)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md`
+   - Criticality: BLOCKING - Automatic termination, 0% grade
+   - Summary: NEVER write, copy, move, or manipulate ANY code files - delegate ALL to agents
+
+2. **🔴🔴🔴 R287** - TODO PERSISTENCE COMPREHENSIVE (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R287-todo-persistence-comprehensive.md`
+   - Criticality: SUPREME - -20% to -100% penalty for violations
+   - Summary: MUST save TODOs within 30s after write, every 10 messages, before transitions
+
+3. **🔴🔴🔴 R288** - STATE FILE UPDATE REQUIREMENTS (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-requirements.md`
+   - Criticality: SUPREME - State updates required for all transitions
+   - Summary: MUST update orchestrator-state.json before EVERY state transition
+
+4. **🔴🔴🔴 R322 Part A** - Mandatory Stop After Spawn States
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R322 Part A-mandatory-stop-after-spawn.md`
+   - Criticality: SUPREME LAW - Must stop after spawning
+   - Summary: ALL spawn states require STOP after spawning agents
+
+### State-Specific Rules:
+
+5. **🔴🔴🔴 R233** - Immediate Action On State Entry
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R233-immediate-action-on-state-entry.md`
+   - Criticality: SUPREME LAW - Must act immediately on entering state
+   - Summary: Monitoring states require active checking, not passive waiting
+
+6. **🔴🔴🔴 R358** - Integration Completion Detection and Automatic Transition
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R358-integration-completion-detection.md`
+   - Criticality: SUPREME LAW - Must detect completion and transition within 30 seconds
+   - Summary: CANNOT remain in MONITORING_INTEGRATION after integration completes
+
+## 🔴🔴🔴 R358 INTEGRATION COMPLETION MONITORING STARTUP 🔴🔴🔴
+
+**MANDATORY**: When entering MONITORING_INTEGRATION state:
+
+```bash
+# START THE R358 MONITORING LOOP IMMEDIATELY
+echo "📊 Entering MONITORING_INTEGRATION state - starting R358 monitoring loop"
+
+# Start the completion detection function
+monitor_integration_completion &
+MONITOR_PID=$!
+
+echo "✅ R358 monitoring loop started (PID: $MONITOR_PID)"
+echo "Will check for completion every 30 seconds and transition immediately when detected"
+```
+
+**NEVER** just wait passively - the monitoring must be ACTIVE and CONTINUOUS!
+
+## 🛑🛑🛑 R322 MANDATORY STOP BEFORE STATE TRANSITIONS 🛑🛑🛑
+
+**SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
+
+### YOU MUST STOP AFTER:
+1. ✅ Completing all TODOs for this state
+2. ✅ Updating orchestrator-state.json with new state
+3. ✅ Committing and pushing the state file  
+4. ✅ Providing work summary
+
+### YOU MUST NOT:
+- ❌ Continue to the next state automatically
+- ❌ Start work for the new state
+- ❌ Spawn agents for the new state
+- ❌ Assume permission to continue
+
+### STOP PROTOCOL:
+```markdown
+## 🛑 STATE TRANSITION CHECKPOINT: CURRENT_STATE → NEXT_STATE
+
+### ✅ Current State Work Completed:
+- [List completed work]
+
+### 📊 Current Status:
+- Current State: CURRENT_STATE
+- Next State: NEXT_STATE
+- TODOs Completed: X/Y
+- State Files: Updated and committed ✅
+
+### ⏸️ STOPPED - Awaiting User Continuation
+Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
+```
+
+**STOP MEANS STOP - Exit and wait for /continue-orchestrating**
+
+---
+
+# ORCHESTRATOR STATE: MONITORING_INTEGRATION
+
+## 🔴🔴🔴 SUPREME DIRECTIVE: INTEGRATION FEEDBACK ENFORCEMENT 🔴🔴🔴
+
+**YOU MUST CHECK FOR INTEGRATION REPORTS AND ACT ON FAILURES!**
+
+## State Overview
+
+In MONITORING_INTEGRATION, you are monitoring the Integration Agent's progress and MUST check for integration reports to determine next state.
+
+## Required Actions
+
+### 1. Monitor Integration Agent Progress with R358 Enforcement
+
+#### 🔴🔴🔴 R358: CONTINUOUS COMPLETION DETECTION REQUIRED 🔴🔴🔴
+
+**MUST check for integration completion every 30 seconds and transition IMMEDIATELY!**
+
+```bash
+# R358 ENFORCEMENT: Continuous completion detection loop
+monitor_integration_completion() {
+    while true; do
+        # Check every 30 seconds per R358
+        sleep 30
+
+        # Method 1: Check integration_status in state file
+        INTEGRATION_STATUS=$(jq -r '.integration_status.status // "unknown"' orchestrator-state.json)
+        COMPLETED_AT=$(jq -r '.integration_status.completed_at // ""' orchestrator-state.json)
+        BUILD_STATUS=$(jq -r '.integration_status.build_status // "unknown"' orchestrator-state.json)
+
+        # Method 2: Check for integration report
+        PHASE=$(jq '.current_phase' orchestrator-state.json)
+        WAVE=$(jq '.current_wave' orchestrator-state.json)
+        REPORT_FILE=$(jq -r ".metadata_locations.integration_reports.\"phase${PHASE}_wave${WAVE}\".file_path // \"\"" orchestrator-state.json)
+
+        # Method 3: Check integration agent process
+        INTEGRATION_PID=$(pgrep -f "integration-agent" || echo "")
+
+        # DETERMINE IF INTEGRATION IS COMPLETE
+        INTEGRATION_COMPLETE=false
+
+        if [[ "$INTEGRATION_STATUS" == "completed" ]] || [[ -n "$COMPLETED_AT" ]]; then
+            echo "🔴 R358: Integration marked as completed in state file!"
+            INTEGRATION_COMPLETE=true
+        elif [[ -f "$REPORT_FILE" ]]; then
+            echo "🔴 R358: Integration report exists - integration complete!"
+            INTEGRATION_COMPLETE=true
+        elif [[ -z "$INTEGRATION_PID" ]]; then
+            echo "🔴 R358: Integration agent not running - checking if complete..."
+            # If no process and we have a report or completion status, it's done
+            if [[ -f "$REPORT_FILE" ]] || [[ -n "$COMPLETED_AT" ]]; then
+                INTEGRATION_COMPLETE=true
+            fi
+        fi
+
+        # TRANSITION IMMEDIATELY IF COMPLETE
+        if [[ "$INTEGRATION_COMPLETE" == "true" ]]; then
+            echo "🔴🔴🔴 R358: INTEGRATION COMPLETE - TRANSITIONING NOW 🔴🔴🔴"
+            return 0  # Exit loop to proceed with transition
+        fi
+
+        # Still running - continue monitoring
+        echo "📊 Integration still in progress (PID: $INTEGRATION_PID)..."
+
+        # Monitor for split ordering violations while running
+    WORK_LOG="efforts/phase${PHASE}/wave${WAVE}/integration-workspace/work-log.md"
+    if [ -f "$WORK_LOG" ]; then
+        # Check for out-of-order split merges
+        check_split_merge_order() {
+            local log_file="$1"
+            
+            # Extract merged branches in order
+            MERGED_BRANCHES=$(grep "MERGED:" "$log_file" | awk '{print $2}')
+            
+            for branch in $MERGED_BRANCHES; do
+                # If this is a dependent effort, check its dependencies
+                EFFORT=$(echo "$branch" | sed 's/-split-[0-9]*//')
+                DEPENDENCIES=$(jq '.efforts.\"$EFFORT\".dependencies[]' orchestrator-state.json 2>/dev/null)
+                
+                for dep in $DEPENDENCIES; do
+                    # Check if dependency has splits
+                    SPLIT_COUNT=$(jq '.split_tracking.\"$dep\".split_count // 0' orchestrator-state.json)
+                    if [ "$SPLIT_COUNT" -gt 0 ]; then
+                        # Verify ALL splits of dependency are merged
+                        for i in $(seq 1 $SPLIT_COUNT); do
+                            SPLIT_PATTERN="${dep}-split-$(printf "%03d" $i)"
+                            if ! grep -q "MERGED:.*$SPLIT_PATTERN" "$log_file"; then
+                                echo "🔴 CRITICAL: Merge order violation detected!"
+                                echo "   $branch merged but dependency $SPLIT_PATTERN not merged!"
+                                echo "   This violates R302 split tracking protocol!"
+                                
+                                # Signal Integration Agent to STOP
+                                echo "STOP: MERGE_ORDER_VIOLATION" > efforts/phase${PHASE}/wave${WAVE}/integration-workspace/STOP_SIGNAL
+                                return 1
+                            fi
+                        done
+                    fi
+                done
+            done
+            
+            echo "✅ Merge order correct so far"
+        }
+        
+        check_split_merge_order "$WORK_LOG"
+    fi
+    
+    # Stay in MONITORING_INTEGRATION
+    sleep 5
+    continue
+fi
+```
+
+### 2. 🔴🔴🔴 R354 ENFORCEMENT: CHECK FOR PENDING POST-REBASE REVIEWS 🔴🔴🔴
+
+**SUPREME LAW: Cannot proceed if post-rebase reviews are pending!**
+
+```bash
+# R354 Compliance Check: Post-rebase reviews
+check_r354_compliance() {
+    echo "🔍 R354 Compliance Check: Post-rebase reviews"
+
+    # Check for pending post-rebase reviews in cascade coordination
+    PENDING_REBASE_REVIEWS=$(jq -r '
+        .cascade_coordination.pending_reviews[]? |
+        select(.review_type == "post_rebase" and .review_status == "pending") |
+        .effort' orchestrator-state.json)
+
+    if [[ -n "$PENDING_REBASE_REVIEWS" ]]; then
+        echo "🔴🔴🔴 R354 VIOLATION: Post-rebase reviews pending! 🔴🔴🔴"
+        echo "Cannot proceed with integration monitoring until reviews complete:"
+        echo "$PENDING_REBASE_REVIEWS" | while read effort; do
+            echo "  ❌ $effort - awaiting post-rebase review"
+        done
+
+        # Add R354 violation to state
+        jq --arg efforts "$PENDING_REBASE_REVIEWS" '
+            .r354_violations += [{
+                "state": "MONITORING_INTEGRATION",
+                "violation": "pending_post_rebase_reviews",
+                "efforts": ($efforts | split("\n")),
+                "detected_at": now | todate,
+                "blocking": true
+            }]' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+
+        echo "🚨 MANDATORY ACTION: Transition to SPAWN_CODE_REVIEWERS_FOR_REVIEW"
+        UPDATE_STATE="SPAWN_CODE_REVIEWERS_FOR_REVIEW"
+        UPDATE_REASON="R354 enforcement - post-rebase reviews required"
+
+        # Set context for reviewers
+        jq '.cascade_coordination.reviewer_context = {
+            "cascade_mode": true,
+            "review_type": "post_rebase",
+            "r354_enforcement": true,
+            "from_state": "MONITORING_INTEGRATION"
+        }' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+
+        return 354
+    fi
+
+    # Also check for recent rebases without reviews
+    for effort_dir in /efforts/*/*/effort-*; do
+        if [[ -d "$effort_dir" ]]; then
+            cd "$effort_dir"
+            EFFORT_NAME=$(basename "$effort_dir")
+
+            # Check git reflog for recent rebases (last 2 hours)
+            RECENT_REBASE=$(git reflog --since="2 hours ago" | grep -c "rebase:" || true)
+
+            if [[ "$RECENT_REBASE" -gt 0 ]]; then
+                # Check if review exists for this rebase
+                REVIEW_EXISTS=$(jq --arg e "$EFFORT_NAME" '
+                    .cascade_coordination.completed_reviews[]? |
+                    select(.effort == $e and .type == "post_rebase" and
+                           (.reviewed_at | fromdateiso8601) > (now - 7200)) |
+                    .effort' orchestrator-state.json)
+
+                if [[ -z "$REVIEW_EXISTS" ]]; then
+                    echo "❌ R354 VIOLATION: $EFFORT_NAME was rebased but not reviewed!"
+
+                    # Add to pending reviews
+                    jq --arg e "$EFFORT_NAME" '
+                        .cascade_coordination.pending_reviews += [{
+                            "effort": $e,
+                            "review_type": "post_rebase",
+                            "r354_detected": true,
+                            "detected_in": "MONITORING_INTEGRATION",
+                            "timestamp": now | todate,
+                            "review_status": "pending"
+                        }]' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+
+                    UPDATE_STATE="SPAWN_CODE_REVIEWERS_FOR_REVIEW"
+                    UPDATE_REASON="R354 violation - unreviewed rebase detected"
+                    return 354
+                fi
+            fi
+        fi
+    done
+
+    echo "✅ R354 Compliance: All rebases have been reviewed"
+    return 0
+}
+
+# Run R354 compliance check FIRST
+if ! check_r354_compliance; then
+    echo "🛑 R354 BLOCKING: Must complete post-rebase reviews before continuing!"
+    # Will transition to SPAWN_CODE_REVIEWERS_FOR_REVIEW
+fi
+```
+
+### 3. 🔴🔴🔴 CHECK FOR INTEGRATION REPORT AND ENFORCE BUILD/TEST GATES 🔴🔴🔴
+
+**Per R291 SUPREME GATE: Build/Test/Demo MUST ALL PASS or transition to ERROR_RECOVERY!**
+
+```bash
+# MANDATORY: Check for integration report AND enforce gates
+PHASE=$(jq '.current_phase' orchestrator-state.json)
+WAVE=$(jq '.current_wave' orchestrator-state.json)
+
+# R344: Read report location from state file - NO FILESYSTEM SEARCHING!
+REPORT_FILE=$(jq -r ".metadata_locations.integration_reports.\"phase${PHASE}_wave${WAVE}\".file_path" orchestrator-state.json)
+DEMO_RESULTS=$(jq -r ".metadata_locations.demo_results.\"phase${PHASE}_wave${WAVE}\".file_path" orchestrator-state.json)
+
+if [ "$REPORT_FILE" = "null" ] || [ -z "$REPORT_FILE" ]; then
+    echo "🔴 R344 VIOLATION: Integration report location not in state file"
+    echo "Integration Agent must report metadata location per R344"
+    UPDATE_STATE="ERROR_RECOVERY"
+    UPDATE_REASON="R344 violation - integration report location not tracked in state"
+elif [ ! -f "$REPORT_FILE" ]; then
+    echo "🔴 CRITICAL: Integration report missing at tracked location: $REPORT_FILE"
+    # NO REPORT = IMMEDIATE ERROR_RECOVERY
+    UPDATE_STATE="ERROR_RECOVERY"
+    UPDATE_REASON="No integration report at tracked location - R291 gate cannot be verified"
+else
+    echo "✅ Found integration report, enforcing R291 gates..."
+    
+    # Extract status from report
+    INTEGRATION_STATUS=$(grep "^Integration Status:" "$REPORT_FILE" | cut -d: -f2 | tr -d ' ')
+    BUILD_STATUS=$(grep "^Build Status:" "$REPORT_FILE" | cut -d: -f2 | tr -d ' ')
+    TEST_STATUS=$(grep "^Test Status:" "$REPORT_FILE" | cut -d: -f2 | tr -d ' ')
+    DEMO_STATUS=$(grep "^Demo Status:" "$REPORT_FILE" | cut -d: -f2 | tr -d ' ' || echo "NOT_RUN")
+    
+    echo "🔍 Gate Status Check:"
+    echo "  Build Status: $BUILD_STATUS"
+    echo "  Test Status: $TEST_STATUS"
+    echo "  Demo Status: $DEMO_STATUS"
+    echo "  Integration Status: $INTEGRATION_STATUS"
+    
+    # 🔴🔴🔴 R291 SUPREME GATE ENFORCEMENT 🔴🔴🔴
+    # ANY failure = MANDATORY ERROR_RECOVERY
+    
+    # BUILD GATE CHECK
+    if [[ "$BUILD_STATUS" != "PASSING" ]] && [[ "$BUILD_STATUS" != "SUCCESS" ]]; then
+        echo "🔴🔴🔴 BUILD GATE FAILED - MANDATORY ERROR_RECOVERY 🔴🔴🔴"
+        echo "R291 VIOLATION: Build did not pass ($BUILD_STATUS)"
+        UPDATE_STATE="ERROR_RECOVERY"
+        UPDATE_REASON="R291 BUILD GATE FAILURE: $BUILD_STATUS - cannot proceed without successful build"
+        
+    # TEST GATE CHECK
+    elif [[ "$TEST_STATUS" != "PASSING" ]] && [[ "$TEST_STATUS" != "SUCCESS" ]]; then
+        echo "🔴🔴🔴 TEST GATE FAILED - MANDATORY ERROR_RECOVERY 🔴🔴🔴"
+        echo "R291 VIOLATION: Tests did not pass ($TEST_STATUS)"
+        UPDATE_STATE="ERROR_RECOVERY"
+        UPDATE_REASON="R291 TEST GATE FAILURE: $TEST_STATUS - cannot proceed without passing tests"
+        
+    # DEMO GATE CHECK
+    elif [[ "$DEMO_STATUS" != "PASSING" ]] && [[ "$DEMO_STATUS" != "SUCCESS" ]]; then
+        echo "🔴🔴🔴 DEMO GATE FAILED - MANDATORY ERROR_RECOVERY 🔴🔴🔴"
+        echo "R291 VIOLATION: Demo did not pass ($DEMO_STATUS)"
+        UPDATE_STATE="ERROR_RECOVERY"
+        UPDATE_REASON="R291 DEMO GATE FAILURE: $DEMO_STATUS - cannot proceed without working demo"
+    
+    # INTEGRATION STATUS CHECK
+    elif [[ "$INTEGRATION_STATUS" != "SUCCESS" ]]; then
+        echo "🔴 Integration failed - R321 enforcement: IMMEDIATE BACKPORT REQUIRED"
+        # R321: ALL integration failures require immediate backport to source branches
+        UPDATE_STATE="IMMEDIATE_BACKPORT_REQUIRED"
+        UPDATE_REASON="R321: Integration failed - must fix in source branches immediately"
+        
+    # ALL GATES PASSED
+    else
+        echo "✅✅✅ ALL R291 GATES PASSED ✅✅✅"
+        echo "  ✅ Build: $BUILD_STATUS"
+        echo "  ✅ Tests: $TEST_STATUS"
+        echo "  ✅ Demo: $DEMO_STATUS"
+        echo "  ✅ Integration: $INTEGRATION_STATUS"
+        
+        # 🔴🔴🔴 CRITICAL CASCADE CHECK - R351 ENFORCEMENT 🔴🔴🔴
+        CASCADE_MODE=$(jq -r '.cascade_coordination.cascade_mode // false' orchestrator-state.json)
+        if [[ "$CASCADE_MODE" == "true" ]]; then
+            echo "🔴🔴🔴 CASCADE MODE ACTIVE - Skipping code review 🔴🔴🔴"
+            echo "Integration complete, returning to CASCADE_REINTEGRATION to continue cascade..."
+            UPDATE_STATE="CASCADE_REINTEGRATION"
+            UPDATE_REASON="Integration complete in cascade mode - continuing cascade operations"
+        else
+            # Normal flow - not in cascade mode
+            UPDATE_STATE="INTEGRATION_CODE_REVIEW"
+            UPDATE_REASON="All gates passed - need code review of integrated result"
+        fi
+        
+        # 🔴🔴🔴 R346: CLEAN UP STALE TRACKING ON SUCCESS 🔴🔴🔴
+        echo "📝 R346: Cleaning up stale tracking for successful integration..."
+        
+        # Get current integration ID
+        INTEGRATION_ID="phase${PHASE}-wave${WAVE}-integration"
+        
+        # Clean up stale tracking atomically
+        jq --arg id "$INTEGRATION_ID" --arg time "$(date -Iseconds)" '
+            # Mark stale integration as recreated if it exists
+            (.stale_integration_tracking.stale_integrations[]? | 
+             select(.integration_id == $id)) |= 
+             . + {
+                "recreation_completed": true, 
+                "recreation_at": $time,
+                "recreation_required": false
+             } |
+            
+            # Clear staleness from current integration
+            .current_wave_integration |= 
+            . + {
+                "is_stale": false,
+                "staleness_reason": null,
+                "stale_since": null,
+                "stale_due_to_fixes": []
+            } |
+            
+            # Update integration status
+            .integration_status["wave_" + $id] = {
+                "status": "COMPLETE",
+                "completed_at": $time,
+                "build_status": "SUCCESS",
+                "test_status": "PASSING",
+                "demo_status": "PASSED"
+            }
+        ' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+        
+        echo "✅ R346: Stale tracking cleaned and state synchronized"
+    fi
+fi
+
+echo ""
+echo "🎯 DECISION: Transitioning to $UPDATE_STATE"
+echo "📝 REASON: $UPDATE_REASON"
+```
+
+### 3. 🔴🔴🔴 CHECK FOR CASCADE REQUIREMENTS (R327 ENFORCEMENT) 🔴🔴🔴
+
+```bash
+# BEFORE updating state, check if cascades are needed
+echo "🔍 R327 CASCADE CHECK: Checking for pending cascade requirements..."
+
+# Check for any pending cascades in tracking
+PENDING_CASCADES=$(jq -r '
+    .stale_integration_tracking.staleness_cascade[]? |
+    select(.cascade_status != "completed") |
+    .cascade_sequence[] |
+    select(.recreation_status != "completed") |
+    .level + ":" + .integration
+' orchestrator-state.json | head -1)
+
+# Check for stale integrations without cascade tracking
+STALE_WITHOUT_CASCADE=$(jq -r '
+    .stale_integration_tracking.stale_integrations[]? |
+    select(.recreation_completed == false) |
+    .integration_id
+' orchestrator-state.json | head -1)
+
+if [[ -n "$PENDING_CASCADES" ]]; then
+    echo "🔴🔴🔴 CASCADE REQUIRED - R327 ENFORCEMENT 🔴🔴🔴"
+    echo "Pending cascade: $PENDING_CASCADES"
+    echo "MUST transition to CASCADE_REINTEGRATION state!"
+    UPDATE_STATE="CASCADE_REINTEGRATION"
+    UPDATE_REASON="R327 cascade enforcement - stale integrations must be recreated"
+    
+elif [[ -n "$STALE_WITHOUT_CASCADE" ]]; then
+    echo "🔴🔴🔴 STALE INTEGRATION DETECTED WITHOUT CASCADE 🔴🔴🔴"
+    echo "Stale integration: $STALE_WITHOUT_CASCADE"
+    
+    # Create cascade requirement
+    echo "Creating cascade tracking for stale integration..."
+    
+    # Determine phase and wave from integration ID
+    if [[ "$STALE_WITHOUT_CASCADE" =~ phase([0-9]+)-wave([0-9]+) ]]; then
+        PHASE="${BASH_REMATCH[1]}"
+        WAVE="${BASH_REMATCH[2]}"
+        
+        # Add cascade requirement
+        jq --arg phase "$PHASE" --arg wave "$WAVE" --arg time "$(date -Iseconds)" '
+            .stale_integration_tracking.staleness_cascade += [{
+                "trigger": {
+                    "type": "stale_integration_detected",
+                    "integration": $STALE_WITHOUT_CASCADE,
+                    "timestamp": $time
+                },
+                "cascade_sequence": [
+                    {
+                        "level": "wave",
+                        "integration": "phase" + $phase + "-wave" + $wave + "-integration",
+                        "became_stale": $time,
+                        "must_recreate": true,
+                        "recreation_status": "pending"
+                    },
+                    {
+                        "level": "phase",
+                        "integration": "phase" + $phase + "-integration",
+                        "became_stale": $time,
+                        "must_recreate": true,
+                        "recreation_status": "pending"
+                    },
+                    {
+                        "level": "project",
+                        "integration": "project-integration",
+                        "became_stale": $time,
+                        "must_recreate": true,
+                        "recreation_status": "pending"
+                    }
+                ],
+                "cascade_status": "pending",
+                "cascade_started_at": null,
+                "cascade_completed_at": null
+            }]
+        ' orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+    fi
+    
+    UPDATE_STATE="CASCADE_REINTEGRATION"
+    UPDATE_REASON="R327 cascade enforcement - detected stale integration without cascade tracking"
+fi
+
+# If UPDATE_STATE was already set (from section 2), keep it unless CASCADE is needed
+if [[ "$UPDATE_STATE" == "CASCADE_REINTEGRATION" ]]; then
+    echo "🔴 CASCADE TAKES PRIORITY - Must handle stale integrations first!"
+fi
+```
+
+### 4. Update State File with R346 Validation
+```bash
+# 🔴🔴🔴 R346: VALIDATE STATE CONSISTENCY BEFORE UPDATE 🔴🔴🔴
+echo "🔍 R346: Validating state consistency before transition..."
+
+# Function to validate state consistency
+validate_state_consistency() {
+    local issues=()
+    
+    # Check for contradictions in stale tracking
+    if jq -e '.stale_integration_tracking.stale_integrations[]? | 
+              select(.recreation_required == true and .recreation_completed == true)' \
+              orchestrator-state.json > /dev/null; then
+        issues+=("Contradiction: integration marked both required and completed")
+    fi
+    
+    # Check integration status consistency
+    if jq -e '.current_wave_integration | 
+              select(.is_stale == false and .staleness_reason != null)' \
+              orchestrator-state.json > /dev/null; then
+        issues+=("Contradiction: not stale but has staleness reason")
+    fi
+    
+    if [ ${#issues[@]} -gt 0 ]; then
+        echo "❌ R346 VIOLATION: STATE INCONSISTENCY DETECTED:"
+        printf '%s\n' "${issues[@]}"
+        return 1
+    fi
+    
+    echo "✅ R346: State consistency validated"
+    return 0
+}
+
+# Validate before committing
+validate_state_consistency || {
+    echo "❌ R346 VIOLATION: Cannot transition with inconsistent state!"
+    exit 346
+}
+
+# Update orchestrator state
+jq ".current_state = \"$UPDATE_STATE\"" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+jq ".state_transition_history += [{\"from\": \"MONITORING_INTEGRATION\", \"to\": \"$UPDATE_STATE\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\", \"reason\": \"$UPDATE_REASON\"}]" orchestrator-state.json > tmp.json && mv tmp.json orchestrator-state.json
+
+# R346: Final validation after update
+validate_state_consistency || {
+    echo "❌ R346 VIOLATION: State update created inconsistency!"
+    git checkout -- orchestrator-state.json
+    exit 346
+}
+
+# Commit state change
+git add orchestrator-state.json
+git commit -m "state: MONITORING_INTEGRATION → $UPDATE_STATE - $UPDATE_REASON (R346 validated)"
+git push
+
+# 🛑 STOP per R322 - State has been updated, now stop!
+echo "🛑 Stopping before $UPDATE_STATE state (per R322)"
+echo "State file updated to: $UPDATE_STATE"
+echo "When restarted with /continue-orchestrating, will continue from $UPDATE_STATE"
+# EXIT HERE - DO NOT CONTINUE
+```
+
+## Valid Transitions
+
+Based on integration report analysis and R358 enforcement:
+
+1. **SUCCESS Path**: `MONITORING_INTEGRATION` → `INTEGRATION_CODE_REVIEW`
+   - When: Integration, build, and tests all pass
+   - Need code review of integrated result
+
+2. **CASCADE Path**: `MONITORING_INTEGRATION` → `CASCADE_REINTEGRATION`
+   - When: Stale integrations detected (R327 enforcement)
+   - When: Pending cascades exist in tracking
+   - When: In cascade_mode and integration succeeds (R351)
+   - PRIORITY: Takes precedence over all other transitions
+
+3. **FAILURE Path**: `MONITORING_INTEGRATION` → `IMMEDIATE_BACKPORT_REQUIRED`
+   - When: Integration failed, build blocked, or tests fail
+   - R321 enforcement: ALL fixes must be in source branches
+   - NO fixes allowed directly in integration branches
+
+4. **ERROR Path**: `MONITORING_INTEGRATION` → `ERROR_RECOVERY`
+   - When: No report found or unexpected status
+   - When: Integration process crashes or errors
+
+## Grading Criteria
+
+- ✅ **+20%**: Properly check for integration completion (R358)
+- ✅ **+20%**: Correctly parse report status fields
+- ✅ **+20%**: Transition to IMMEDIATE_BACKPORT_REQUIRED on failures (R321)
+- ✅ **+20%**: Detect completion within 30 seconds (R358)
+- ✅ **+20%**: Update state file with proper reason and transition immediately
+
+## Common Violations
+
+- ❌ **-100%**: Remaining in MONITORING_INTEGRATION after completion (R358 violation)
+- ❌ **-50%**: Not checking for integration completion continuously
+- ❌ **-50%**: Transitioning to wrong state (e.g., INTEGRATION_FEEDBACK_REVIEW which doesn't exist)
+- ❌ **-30%**: Manual checking instead of automated loop
+- ❌ **-30%**: Not using all three detection methods
+
+## Related Rules
+
+- R358: Integration Completion Detection (SUPREME - must detect and transition immediately)
+- R321: Immediate Backport During Integration (for failures)
+- R291: Integration Demo Requirement (CRITICAL - demo must pass)
+- R327: Staleness Cascade Requirements
+- R351: CASCADE Mode Skip Patterns
+- R344: Metadata Location Tracking
+- R346: Integration State Tracking Validation
+- R300: Comprehensive Fix Management Protocol
+- R260: Integration Agent Core Requirements
+- R263: Integration Documentation Requirements
+- R206: State Machine Transition Validation
+
+## 🔴🔴🔴 MANDATORY MEASUREMENT RULE - R304 🔴🔴🔴
+
+**ABSOLUTE REQUIREMENTS:**
+- ✅ MUST use `$CLAUDE_PROJECT_DIR/tools/line-counter.sh` for ALL line counting
+- ❌ NEVER use `wc -l` or any manual counting method
+- ❌ NEVER count lines any other way - this is a -100% automatic failure
+- ✅ MUST specify both -b (base branch) and -c (current branch) parameters
+- ✅ Base branch MUST be phase integration branch (NOT "main")
+
+**Failure to use the line counter tool = AUTOMATIC -100% GRADE**
+
+## R322 VIOLATION DETECTION
+
+If you find yourself:
+- Starting work for a new state without /continue-orchestrating
+- Transitioning without stopping after state file commit
+- Continuing after completing state work
+
+**STOP IMMEDIATELY - You are violating R322!**
+
+
+### 🔴🔴🔴 MANDATORY VALIDATION REQUIREMENT 🔴🔴🔴
+
+**Per R288 and R324**: ALL state file updates MUST be validated before commit:
+
+```bash
+# After ANY update to orchestrator-state.json:
+"$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state.json || {
+    echo "❌ State file validation failed!"
+    exit 288
+}
+```
+
+**Use helper functions for automatic validation:**
+```bash
+# Source the helper functions
+source "$CLAUDE_PROJECT_DIR/utilities/state-file-update-functions.sh"
+
+# Use safe functions that include validation:
+safe_state_transition "NEW_STATE" "reason"
+safe_update_field "field_name" "value"
+```
