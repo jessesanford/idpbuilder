@@ -11,31 +11,31 @@ type ValidationErrorType int
 const (
 	// InvalidCertificate indicates the certificate is malformed or nil
 	InvalidCertificate ValidationErrorType = iota
-	
+
 	// Expired indicates the certificate has expired
 	Expired
-	
+
 	// NotYetValid indicates the certificate is not yet valid
 	NotYetValid
-	
+
 	// UntrustedRoot indicates the root certificate is not trusted
 	UntrustedRoot
-	
+
 	// InvalidChain indicates issues with the certificate chain structure
 	InvalidChain
-	
+
 	// InvalidSignature indicates signature verification failed
 	InvalidSignature
-	
+
 	// HostnameMismatch indicates the certificate doesn't match the hostname
 	HostnameMismatch
-	
+
 	// InvalidKeyUsage indicates invalid key usage for the certificate
 	InvalidKeyUsage
-	
+
 	// InvalidExtKeyUsage indicates invalid extended key usage
 	InvalidExtKeyUsage
-	
+
 	// InvalidInput indicates invalid input parameters
 	InvalidInput
 )
@@ -97,16 +97,16 @@ func (e *AggregatedValidationError) Error() string {
 	if len(e.Errors) == 0 {
 		return "no validation errors"
 	}
-	
+
 	if len(e.Errors) == 1 {
 		return e.Errors[0].Error()
 	}
-	
+
 	var messages []string
 	for _, err := range e.Errors {
 		messages = append(messages, err.Error())
 	}
-	
+
 	return fmt.Sprintf("multiple validation errors: %s", strings.Join(messages, "; "))
 }
 

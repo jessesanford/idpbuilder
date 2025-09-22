@@ -13,12 +13,12 @@ type RecommendationEngine struct {
 
 // KnownIssue represents a common certificate problem with solutions
 type KnownIssue struct {
-	Pattern        *regexp.Regexp
-	Category       IssueCategory
-	Severity       IssueSeverity
-	Description    string
+	Pattern         *regexp.Regexp
+	Category        IssueCategory
+	Severity        IssueSeverity
+	Description     string
 	Recommendations []string
-	LearnMoreURL   string
+	LearnMoreURL    string
 }
 
 // IssueCategory categorizes different types of certificate issues

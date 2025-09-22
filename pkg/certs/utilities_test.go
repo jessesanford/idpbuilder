@@ -7,11 +7,11 @@ import (
 func TestNewCertPoolManager(t *testing.T) {
 	trustStore := NewTrustStore()
 	poolManager := NewCertPoolManager(trustStore)
-	
+
 	if poolManager == nil {
 		t.Fatal("Pool manager should not be nil")
 	}
-	
+
 	if poolManager.pools == nil {
 		t.Error("Pools map not initialized")
 	}
@@ -20,14 +20,14 @@ func TestNewCertPoolManager(t *testing.T) {
 func TestCertPoolManager_GetPool(t *testing.T) {
 	trustStore := NewTrustStore()
 	poolManager := NewCertPoolManager(trustStore)
-	
+
 	registry := "test.registry.com"
-	
+
 	pool, err := poolManager.GetPool(registry)
 	if err != nil {
 		t.Fatalf("Failed to get pool: %v", err)
 	}
-	
+
 	if pool == nil {
 		t.Error("Pool should not be nil")
 	}
@@ -36,13 +36,13 @@ func TestCertPoolManager_GetPool(t *testing.T) {
 func TestCertPoolManager_ClearCache(t *testing.T) {
 	trustStore := NewTrustStore()
 	poolManager := NewCertPoolManager(trustStore)
-	
+
 	// Get a pool to populate cache
 	poolManager.GetPool("test.registry.com")
-	
+
 	// Clear cache
 	poolManager.ClearCache()
-	
+
 	// Verify cache is cleared (pools map is reset)
 	if len(poolManager.pools) != 0 {
 		t.Error("Cache should be cleared")
@@ -52,11 +52,11 @@ func TestCertPoolManager_ClearCache(t *testing.T) {
 func TestNewTransportConfigurer(t *testing.T) {
 	trustStore := NewTrustStore()
 	configurer := NewTransportConfigurer(trustStore)
-	
+
 	if configurer == nil {
 		t.Fatal("Configurer should not be nil")
 	}
-	
+
 	if configurer.trustManager == nil {
 		t.Error("Trust manager should be set")
 	}
@@ -65,18 +65,18 @@ func TestNewTransportConfigurer(t *testing.T) {
 func TestTransportConfigurer_ConfigureTransport(t *testing.T) {
 	trustStore := NewTrustStore()
 	configurer := NewTransportConfigurer(trustStore)
-	
+
 	registry := "test.registry.com"
-	
+
 	transport, err := configurer.ConfigureTransport(registry)
 	if err != nil {
 		t.Fatalf("Failed to configure transport: %v", err)
 	}
-	
+
 	if transport == nil {
 		t.Error("Transport should not be nil")
 	}
-	
+
 	if transport.TLSClientConfig == nil {
 		t.Error("TLS config should not be nil")
 	}
@@ -103,10 +103,10 @@ func TestInitSecurityLogger(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to initialize security logger: %v", err)
 	}
-	
+
 	// Test logging
 	LogSecurityEvent("TEST_EVENT", "test.target", "Test message")
-	
+
 	// Clean up
 	CloseSecurityLogger()
 }
@@ -142,7 +142,7 @@ func TestParseEnvBool(t *testing.T) {
 		{"", false},
 		{"invalid", false},
 	}
-	
+
 	for _, tc := range testCases {
 		result := parseEnvBool(tc.input)
 		if result != tc.expected {
@@ -153,24 +153,23 @@ func TestParseEnvBool(t *testing.T) {
 
 func TestLoadCertificatesFromDir(t *testing.T) {
 	tempDir := t.TempDir()
-	
+
 	// Test empty directory
 	certs, err := loadCertificatesFromDir(tempDir)
 	if err != nil {
 		t.Fatalf("Failed to load from empty dir: %v", err)
 	}
-	
+
 	if len(certs) != 0 {
 		t.Error("Should return empty list for empty directory")
 	}
-	
+
 	// Test non-existent directory
 	certs, err = loadCertificatesFromDir("/non/existent/path")
 	if err != nil || certs != nil {
 		t.Error("Should return nil for non-existent directory")
 	}
 }
-
 
 func TestExtractHostname(t *testing.T) {
 	testCases := []struct {
@@ -183,7 +182,7 @@ func TestExtractHostname(t *testing.T) {
 		{"https://registry.example.com:5000", "registry.example.com"},
 		{"registry.example.com/path", "registry.example.com"},
 	}
-	
+
 	for _, tc := range testCases {
 		result := extractHostname(tc.input)
 		if result != tc.expected {
@@ -199,15 +198,15 @@ func TestSanitizeUnsanitizeName(t *testing.T) {
 		"registry/namespace",
 		"complex.registry.com:5000/namespace",
 	}
-	
+
 	for _, original := range testCases {
 		sanitized := sanitizeName(original)
-		
+
 		// Test that sanitization removes problematic characters
 		if sanitized == original && (contains(original, ":") || contains(original, "/") || contains(original, ".")) {
 			t.Errorf("Sanitization didn't change input: %s", original)
 		}
-		
+
 		// Test that sanitized name doesn't contain problematic characters
 		if contains(sanitized, ":") || contains(sanitized, "/") || contains(sanitized, ".") {
 			t.Errorf("Sanitized name still contains problematic characters: %s", sanitized)

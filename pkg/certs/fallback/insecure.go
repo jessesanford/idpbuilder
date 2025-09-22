@@ -11,10 +11,10 @@ import (
 
 // InsecureManager handles insecure mode decisions and user confirmations
 type InsecureManager struct {
-	mu              sync.Mutex
-	securityLogger  *SecurityLogger
+	mu                  sync.Mutex
+	securityLogger      *SecurityLogger
 	confirmedRegistries map[string]*InsecureDecision
-	config          *InsecureConfig
+	config              *InsecureConfig
 }
 
 // InsecureConfig holds configuration for insecure mode behavior
@@ -37,20 +37,20 @@ type InsecureConfig struct {
 
 // InsecureDecision tracks a user's decision about insecure mode
 type InsecureDecision struct {
-	Registry      string
-	Confirmed     bool
-	Timestamp     time.Time
-	Reason        string
-	UserInput     string
-	SessionOnly   bool
+	Registry    string
+	Confirmed   bool
+	Timestamp   time.Time
+	Reason      string
+	UserInput   string
+	SessionOnly bool
 }
 
 // InsecureWarning represents different types of warnings for insecure mode
 type InsecureWarning struct {
-	Level    WarningLevel
-	Title    string
-	Message  string
-	Risks    []string
+	Level       WarningLevel
+	Title       string
+	Message     string
+	Risks       []string
 	Mitigations []string
 }
 
@@ -67,9 +67,9 @@ const (
 // NewInsecureManager creates a new insecure mode manager
 func NewInsecureManager(securityLogger *SecurityLogger) *InsecureManager {
 	return &InsecureManager{
-		securityLogger:     securityLogger,
+		securityLogger:      securityLogger,
 		confirmedRegistries: make(map[string]*InsecureDecision),
-		config:             DefaultInsecureConfig(),
+		config:              DefaultInsecureConfig(),
 	}
 }
 
@@ -378,11 +378,11 @@ func (m *InsecureManager) ShowInsecureStatus() {
 // DefaultInsecureConfig returns secure default configuration
 func DefaultInsecureConfig() *InsecureConfig {
 	return &InsecureConfig{
-		RequireConfirmation:  true,
-		ShowWarnings:         true,
-		RememberDecisions:    true,
-		AllowEnvOverride:     true,
-		ConfirmationTimeout:  30 * time.Second,
+		RequireConfirmation: true,
+		ShowWarnings:        true,
+		RememberDecisions:   true,
+		AllowEnvOverride:    true,
+		ConfirmationTimeout: 30 * time.Second,
 	}
 }
 

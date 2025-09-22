@@ -40,13 +40,13 @@ InvalidCertificateData
 func TestNewCertificate(t *testing.T) {
 	x509Cert := CreateTestCertificate(t)
 	pemData := createTestCertPEM(x509Cert)
-
+	
 	cert := NewCertificate(x509Cert, pemData)
-
+	
 	if cert.Certificate != x509Cert {
 		t.Error("Certificate should contain the provided x509.Certificate")
 	}
-
+	
 	if string(cert.PEMData) != string(pemData) {
 		t.Error("PEMData should match the provided PEM data")
 	}
@@ -87,12 +87,12 @@ func TestCertificateIsExpired(t *testing.T) {
 func TestCertificateWillExpireSoon(t *testing.T) {
 	validX509Cert := CreateTestCertificate(t)
 	validCert := NewCertificate(validX509Cert, createTestCertPEM(validX509Cert))
-
+	
 	// Should not expire within 1 hour
 	if validCert.WillExpireSoon(time.Hour) {
 		t.Error("Certificate should not expire within 1 hour")
 	}
-
+	
 	// Should expire within 2 years
 	if !validCert.WillExpireSoon(2 * 365 * 24 * time.Hour) {
 		t.Error("Certificate should expire within 2 years")
@@ -102,7 +102,7 @@ func TestCertificateWillExpireSoon(t *testing.T) {
 func TestCertificateGetCommonName(t *testing.T) {
 	x509Cert := CreateTestCertificate(t)
 	cert := NewCertificate(x509Cert, createTestCertPEM(x509Cert))
-
+	
 	if cert.GetCommonName() != "test.example.com" {
 		t.Errorf("Expected common name 'test.example.com', got '%s'", cert.GetCommonName())
 	}
@@ -111,7 +111,7 @@ func TestCertificateGetCommonName(t *testing.T) {
 func TestCertificateGetSANs(t *testing.T) {
 	x509Cert := CreateTestCertificate(t)
 	cert := NewCertificate(x509Cert, createTestCertPEM(x509Cert))
-
+	
 	sans := cert.GetSANs()
 	if len(sans) != 1 || sans[0] != "test.example.com" {
 		t.Errorf("Expected SANs ['test.example.com'], got %v", sans)
@@ -120,15 +120,15 @@ func TestCertificateGetSANs(t *testing.T) {
 
 func TestNewCertificateBundle(t *testing.T) {
 	bundle := NewCertificateBundle()
-
+	
 	if bundle == nil {
 		t.Fatal("NewCertificateBundle should return a non-nil bundle")
 	}
-
+	
 	if bundle.CertificateChain == nil {
 		t.Error("CertificateChain should be initialized")
 	}
-
+	
 	if len(bundle.CertificateChain) != 0 {
 		t.Error("CertificateChain should be empty initially")
 	}
@@ -136,11 +136,11 @@ func TestNewCertificateBundle(t *testing.T) {
 
 func TestCertificateBundleHasPrivateKey(t *testing.T) {
 	bundle := NewCertificateBundle()
-
+	
 	if bundle.HasPrivateKey() {
 		t.Error("Empty bundle should not have private key")
 	}
-
+	
 	bundle.ClientKey = "dummy-key"
 	if !bundle.HasPrivateKey() {
 		t.Error("Bundle with client key should have private key")
@@ -149,12 +149,12 @@ func TestCertificateBundleHasPrivateKey(t *testing.T) {
 
 func TestCertificateBundleIsValid(t *testing.T) {
 	bundle := NewCertificateBundle()
-
+	
 	// Empty bundle should be valid
 	if !bundle.IsValid() {
 		t.Error("Empty bundle should be valid")
 	}
-
+	
 	// Bundle with valid CA cert
 	validX509Cert := CreateTestCertificate(t)
 	validCert := NewCertificate(validX509Cert, createTestCertPEM(validX509Cert))
@@ -162,7 +162,7 @@ func TestCertificateBundleIsValid(t *testing.T) {
 	if !bundle.IsValid() {
 		t.Error("Bundle with valid CA cert should be valid")
 	}
-
+	
 	// Bundle with expired CA cert
 	expiredX509Cert := CreateExpiredTestCertificate(t)
 	expiredCert := NewCertificate(expiredX509Cert, createTestCertPEM(expiredX509Cert))
@@ -176,14 +176,14 @@ func TestCertificateBundleUpdateValidityPeriod(t *testing.T) {
 	bundle := NewCertificateBundle()
 	validX509Cert := CreateTestCertificate(t)
 	validCert := NewCertificate(validX509Cert, createTestCertPEM(validX509Cert))
-
+	
 	bundle.CACert = validCert
 	bundle.UpdateValidityPeriod()
-
+	
 	if bundle.ValidFrom.IsZero() {
 		t.Error("ValidFrom should be set after UpdateValidityPeriod")
 	}
-
+	
 	if bundle.ValidUntil.IsZero() {
 		t.Error("ValidUntil should be set after UpdateValidityPeriod")
 	}
@@ -191,27 +191,27 @@ func TestCertificateBundleUpdateValidityPeriod(t *testing.T) {
 
 func TestNewTLSConfig(t *testing.T) {
 	config := NewTLSConfig()
-
+	
 	if config == nil {
 		t.Fatal("NewTLSConfig should return a non-nil config")
 	}
-
+	
 	if config.MinVersion != MinTLSVersion {
 		t.Errorf("Expected MinVersion to be %d, got %d", MinTLSVersion, config.MinVersion)
 	}
-
+	
 	if config.MaxVersion != PreferredTLSVersion {
 		t.Errorf("Expected MaxVersion to be %d, got %d", PreferredTLSVersion, config.MaxVersion)
 	}
-
+	
 	if len(config.CipherSuites) != len(PreferredCipherSuites) {
 		t.Error("CipherSuites should match PreferredCipherSuites")
 	}
-
+	
 	if len(config.CurvePreferences) != len(SecureTLSCurves) {
 		t.Error("CurvePreferences should match SecureTLSCurves")
 	}
-
+	
 	if config.ClientAuth != tls.NoClientCert {
 		t.Error("Default ClientAuth should be NoClientCert")
 	}
@@ -221,17 +221,17 @@ func TestTLSConfigToTLSConfig(t *testing.T) {
 	config := NewTLSConfig()
 	config.ServerName = "test.example.com"
 	config.InsecureSkipVerify = true
-
+	
 	tlsConfig := config.ToTLSConfig()
-
+	
 	if tlsConfig.ServerName != config.ServerName {
 		t.Error("ServerName should be preserved")
 	}
-
+	
 	if tlsConfig.InsecureSkipVerify != config.InsecureSkipVerify {
 		t.Error("InsecureSkipVerify should be preserved")
 	}
-
+	
 	if tlsConfig.MinVersion != config.MinVersion {
 		t.Error("MinVersion should be preserved")
 	}
@@ -239,12 +239,12 @@ func TestTLSConfigToTLSConfig(t *testing.T) {
 
 func TestTLSConfigAddClientCertificate(t *testing.T) {
 	config := NewTLSConfig()
-
+	
 	initialCount := len(config.Certificates)
-
+	
 	cert := tls.Certificate{}
 	config.AddClientCertificate(cert)
-
+	
 	if len(config.Certificates) != initialCount+1 {
 		t.Error("Certificate should be added to Certificates slice")
 	}
@@ -254,16 +254,16 @@ func TestTLSConfigSetRootCA(t *testing.T) {
 	config := NewTLSConfig()
 	validX509Cert := CreateTestCertificate(t)
 	validCert := NewCertificate(validX509Cert, createTestCertPEM(validX509Cert))
-
+	
 	err := config.SetRootCA(validCert)
 	if err != nil {
 		t.Fatalf("SetRootCA should not return error: %v", err)
 	}
-
+	
 	if config.RootCAs == nil {
 		t.Error("RootCAs should be initialized")
 	}
-
+	
 	// Test with nil certificate
 	err = config.SetRootCA(&Certificate{})
 	if err == nil {
@@ -271,45 +271,38 @@ func TestTLSConfigSetRootCA(t *testing.T) {
 	}
 }
 
-func TestNewBasicValidator(t *testing.T) {
-	// Create a slice of x509 certificates instead of CertPool
-	var caCerts []*x509.Certificate
-	validator := NewBasicValidator(caCerts)
-
+func TestNewBasicCertificateValidator(t *testing.T) {
+	caCerts := x509.NewCertPool()
+	validator := NewBasicCertificateValidator(caCerts)
+	
 	if validator == nil {
-		t.Fatal("NewBasicValidator should return non-nil validator")
+		t.Fatal("NewBasicCertificateValidator should return non-nil validator")
 	}
-
-	// Check that we have a BasicCertificateValidator with proper setup
-	basicVal, ok := validator.(*BasicCertificateValidator)
-	if !ok {
-		t.Fatal("NewBasicValidator should return a BasicCertificateValidator")
-	}
-
-	if basicVal.TrustedCAs == nil {
+	
+	if validator.TrustedCAs != caCerts {
 		t.Error("TrustedCAs should be set to provided CA pool")
 	}
-
-	if !basicVal.CheckExpiry {
+	
+	if !validator.CheckExpiry {
 		t.Error("CheckExpiry should be enabled by default")
 	}
 }
 
-func TestBasicValidatorValidate(t *testing.T) {
-	validator := NewBasicValidator(nil)
-
+func TestBasicCertificateValidatorValidate(t *testing.T) {
+	validator := NewBasicCertificateValidator(nil)
+	
 	// Test nil certificate
 	err := validator.Validate(nil)
 	if err == nil {
 		t.Error("Validate should return error for nil certificate")
 	}
-
+	
 	// Test invalid certificate
 	err = validator.Validate(&Certificate{})
 	if err == nil {
 		t.Error("Validate should return error for invalid certificate")
 	}
-
+	
 	// Test valid certificate
 	validX509Cert := CreateTestCertificate(t)
 	validCert := NewCertificate(validX509Cert, createTestCertPEM(validX509Cert))
@@ -317,7 +310,7 @@ func TestBasicValidatorValidate(t *testing.T) {
 	if err != nil {
 		t.Errorf("Validate should not return error for valid certificate: %v", err)
 	}
-
+	
 	// Test expired certificate
 	expiredX509Cert := CreateExpiredTestCertificate(t)
 	expiredCert := NewCertificate(expiredX509Cert, createTestCertPEM(expiredX509Cert))
@@ -327,15 +320,15 @@ func TestBasicValidatorValidate(t *testing.T) {
 	}
 }
 
-func TestBasicValidatorValidateChain(t *testing.T) {
-	validator := NewBasicValidator(nil)
-
+func TestBasicCertificateValidatorValidateChain(t *testing.T) {
+	validator := NewBasicCertificateValidator(nil)
+	
 	// Test empty chain
 	err := validator.ValidateChain([]*Certificate{})
 	if err == nil {
 		t.Error("ValidateChain should return error for empty chain")
 	}
-
+	
 	// Test chain with valid certificate
 	validX509Cert := CreateTestCertificate(t)
 	validCert := NewCertificate(validX509Cert, createTestCertPEM(validX509Cert))
@@ -343,7 +336,7 @@ func TestBasicValidatorValidateChain(t *testing.T) {
 	if err != nil {
 		t.Errorf("ValidateChain should not return error for valid chain: %v", err)
 	}
-
+	
 	// Test chain with expired certificate
 	expiredX509Cert := CreateExpiredTestCertificate(t)
 	expiredCert := NewCertificate(expiredX509Cert, createTestCertPEM(expiredX509Cert))
@@ -353,21 +346,21 @@ func TestBasicValidatorValidateChain(t *testing.T) {
 	}
 }
 
-func TestBasicValidatorIsExpired(t *testing.T) {
-	validator := NewBasicValidator(nil)
-
+func TestBasicCertificateValidatorIsExpired(t *testing.T) {
+	validator := NewBasicCertificateValidator(nil)
+	
 	// Test nil certificate
 	if !validator.IsExpired(nil) {
 		t.Error("IsExpired should return true for nil certificate")
 	}
-
+	
 	// Test valid certificate
 	validX509Cert := CreateTestCertificate(t)
 	validCert := NewCertificate(validX509Cert, createTestCertPEM(validX509Cert))
 	if validator.IsExpired(validCert) {
 		t.Error("IsExpired should return false for valid certificate")
 	}
-
+	
 	// Test expired certificate
 	expiredX509Cert := CreateExpiredTestCertificate(t)
 	expiredCert := NewCertificate(expiredX509Cert, createTestCertPEM(expiredX509Cert))
@@ -376,21 +369,21 @@ func TestBasicValidatorIsExpired(t *testing.T) {
 	}
 }
 
-func TestBasicValidatorWillExpireSoon(t *testing.T) {
-	validator := NewBasicValidator(nil)
-
+func TestBasicCertificateValidatorWillExpireSoon(t *testing.T) {
+	validator := NewBasicCertificateValidator(nil)
+	
 	// Test nil certificate
 	if !validator.WillExpireSoon(nil, time.Hour) {
 		t.Error("WillExpireSoon should return true for nil certificate")
 	}
-
+	
 	// Test valid certificate
 	validX509Cert := CreateTestCertificate(t)
 	validCert := NewCertificate(validX509Cert, createTestCertPEM(validX509Cert))
 	if validator.WillExpireSoon(validCert, time.Hour) {
 		t.Error("WillExpireSoon should return false for certificate not expiring soon")
 	}
-
+	
 	if !validator.WillExpireSoon(validCert, 2*365*24*time.Hour) {
 		t.Error("WillExpireSoon should return true for certificate expiring within 2 years")
 	}
@@ -402,13 +395,13 @@ func TestParseCertificateFromPEM(t *testing.T) {
 	if err == nil {
 		t.Error("ParseCertificateFromPEM should return error for invalid PEM")
 	}
-
+	
 	// Test invalid certificate data
 	_, err = ParseCertificateFromPEM([]byte(invalidCertPEM))
 	if err == nil {
 		t.Error("ParseCertificateFromPEM should return error for invalid certificate")
 	}
-
+	
 	// Test wrong PEM block type
 	keyPEM := `-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC659HGH
@@ -425,7 +418,7 @@ func TestParseCertificatesFromPEM(t *testing.T) {
 	if err == nil {
 		t.Error("ParseCertificatesFromPEM should return error when no certificates found")
 	}
-
+	
 	// Test with multiple certificates (using same cert twice for simplicity)
 	testX509Cert := CreateTestCertificate(t)
 	testPEM := createTestCertPEM(testX509Cert)
@@ -434,7 +427,7 @@ func TestParseCertificatesFromPEM(t *testing.T) {
 	if err != nil {
 		t.Errorf("ParseCertificatesFromPEM should not return error: %v", err)
 	}
-
+	
 	if len(certs) != 2 {
 		t.Errorf("Expected 2 certificates, got %d", len(certs))
 	}
@@ -444,12 +437,12 @@ func TestLoadCertificateFromReader(t *testing.T) {
 	testX509Cert := CreateTestCertificate(t)
 	testPEM := createTestCertPEM(testX509Cert)
 	reader := strings.NewReader(string(testPEM))
-
+	
 	cert, err := LoadCertificateFromReader(reader)
 	if err != nil {
 		t.Errorf("LoadCertificateFromReader should not return error: %v", err)
 	}
-
+	
 	if cert == nil {
 		t.Error("LoadCertificateFromReader should return non-nil certificate")
 	}
@@ -461,15 +454,15 @@ func TestCertificateError(t *testing.T) {
 		Type:    "test-error",
 		Message: "test message",
 	}
-
+	
 	if err.Error() != "test message" {
 		t.Errorf("Expected 'test message', got '%s'", err.Error())
 	}
-
+	
 	if err.Unwrap() != nil {
 		t.Error("Unwrap should return nil when no cause is set")
 	}
-
+	
 	// Test error with cause
 	cause := &CertificateError{Type: "cause-error", Message: "cause message"}
 	err = &CertificateError{
@@ -477,12 +470,12 @@ func TestCertificateError(t *testing.T) {
 		Message: "wrapper message",
 		Cause:   cause,
 	}
-
+	
 	expected := "wrapper message: cause message"
 	if err.Error() != expected {
 		t.Errorf("Expected '%s', got '%s'", expected, err.Error())
 	}
-
+	
 	if err.Unwrap() != cause {
 		t.Error("Unwrap should return the cause error")
 	}
