@@ -1,0 +1,41 @@
+# Architect TODOs - Trigger: REQUIREMENTS_GATHERING_COMPLETE
+# State: REQUIREMENTS_GATHERING
+# Timestamp: 2025-09-22T21:36:00Z
+
+## Completed Tasks:
+1. ✅ Clone and analyze idpbuilder repository
+   - Analyzed existing command structure (Cobra-based)
+   - Identified get secrets command for credential retrieval
+   - Understood project structure and patterns
+
+2. ✅ Understand existing CLI structure and commands
+   - Root command with create, delete, get, version subcommands
+   - Get secrets retrieves gitea-credential with username/token
+   - Uses standard Go patterns with cobra and client-go
+
+3. ✅ Analyze go-containerregistry library requirements
+   - Researched google/go-containerregistry API
+   - Identified authentication patterns (Basic auth, keychain)
+   - Understood transport configuration for insecure mode
+   - Found examples of OCI push operations
+
+4. ✅ Create comprehensive requirements document
+   - Created REQUIREMENTS-ANALYSIS.md with full details
+   - Included architecture design with interfaces
+   - Detailed TDD test strategy
+   - Phased implementation plan (4 phases, 6 waves)
+   - Configuration templates for setup
+
+## Key Findings:
+- idpbuilder uses Cobra CLI framework
+- Existing get secrets can provide default gitea credentials
+- go-containerregistry provides clean OCI abstractions
+- TDD approach requires ~4200 LOC across 4 phases
+- Need strict RED-GREEN-REFACTOR cycles for each feature
+
+## Recommendations for Orchestrator:
+- Use the REQUIREMENTS-ANALYSIS.md to generate implementation plan
+- Enforce TDD with tests written FIRST
+- Leverage existing idpbuilder patterns
+- Focus on OCI standards compliance
+- Target 80%+ test coverage
