@@ -35,19 +35,19 @@ type FallbackConfig struct {
 
 // RegistryFallbackConfig holds registry-specific fallback settings
 type RegistryFallbackConfig struct {
-	AllowInsecure     bool
-	CustomCA          string
-	SkipVerification  bool
-	MaxRetryAttempts  int
+	AllowInsecure    bool
+	CustomCA         string
+	SkipVerification bool
+	MaxRetryAttempts int
 }
 
 // FallbackResult represents the outcome of a fallback attempt
 type FallbackResult struct {
-	Strategy       FallbackStrategy
-	Success        bool
-	Transport      http.RoundTripper
-	SecurityRisk   SecurityRiskLevel
-	Message        string
+	Strategy        FallbackStrategy
+	Success         bool
+	Transport       http.RoundTripper
+	SecurityRisk    SecurityRiskLevel
+	Message         string
 	Recommendations []string
 }
 

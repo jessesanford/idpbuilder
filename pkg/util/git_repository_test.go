@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
-	"github.com/cnoe-io/idpbuilder/pkg/testutil"
 	"github.com/go-git/go-billy/v5"
 	"github.com/go-git/go-billy/v5/memfs"
 	"github.com/go-git/go-git/v5"
@@ -70,7 +69,6 @@ func TestCopyTreeToTree(t *testing.T) {
 }
 
 func testCopiedFiles(t *testing.T, src, dst billy.Filesystem, srcStartPath, dstStartPath string) {
-	// Use shared testutil function with local ReadWorktreeFile implementation
 	files, err := src.ReadDir(srcStartPath)
 	assert.Nil(t, err)
 
@@ -101,7 +99,7 @@ func TestGetWorktreeYamlFiles(t *testing.T) {
 	wt := memfs.New()
 	_, err := git.CloneContext(context.Background(), memory.NewStorage(), wt, cloneOptions)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatalf("%v", err)
 	}
 
 	paths, err := GetWorktreeYamlFiles("./pkg", wt, true)

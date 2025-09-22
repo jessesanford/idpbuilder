@@ -13,25 +13,25 @@ import (
 
 // SecurityLogger handles audit logging for all fallback decisions
 type SecurityLogger struct {
-	mu       sync.Mutex
-	logger   *log.Logger
-	file     *os.File
-	logPath  string
-	entries  []SecurityLogEntry
+	mu      sync.Mutex
+	logger  *log.Logger
+	file    *os.File
+	logPath string
+	entries []SecurityLogEntry
 }
 
 // SecurityLogEntry represents a single security audit log entry
 type SecurityLogEntry struct {
-	Timestamp   time.Time         `json:"timestamp"`
-	EventType   SecurityEventType `json:"event_type"`
-	Registry    string            `json:"registry"`
-	Decision    string            `json:"decision"`
-	Reason      string            `json:"reason"`
-	Risk        SecurityRiskLevel `json:"risk_level"`
-	User        string            `json:"user"`
-	Success     bool              `json:"success"`
-	Details     map[string]string `json:"details,omitempty"`
-	FallbackID  string            `json:"fallback_id"`
+	Timestamp  time.Time         `json:"timestamp"`
+	EventType  SecurityEventType `json:"event_type"`
+	Registry   string            `json:"registry"`
+	Decision   string            `json:"decision"`
+	Reason     string            `json:"reason"`
+	Risk       SecurityRiskLevel `json:"risk_level"`
+	User       string            `json:"user"`
+	Success    bool              `json:"success"`
+	Details    map[string]string `json:"details,omitempty"`
+	FallbackID string            `json:"fallback_id"`
 }
 
 // SecurityEventType categorizes different types of security events
@@ -123,9 +123,9 @@ func (s *SecurityLogger) LogFallbackAttempt(registry string, strategy FallbackSt
 		Success:    success,
 		FallbackID: generateFallbackID(),
 		Details: map[string]string{
-			"strategy":    strategy.String(),
-			"risk_level":  riskLevel.String(),
-			"attempt_id":  fmt.Sprintf("%d", time.Now().Unix()),
+			"strategy":   strategy.String(),
+			"risk_level": riskLevel.String(),
+			"attempt_id": fmt.Sprintf("%d", time.Now().Unix()),
 		},
 	}
 
@@ -145,9 +145,9 @@ func (s *SecurityLogger) LogFallbackSuccess(registry string, strategy FallbackSt
 		Success:    true,
 		FallbackID: generateFallbackID(),
 		Details: map[string]string{
-			"strategy":         strategy.String(),
-			"security_impact":  describePriorityLevel(risk),
-			"connection_time":  time.Now().Format(time.RFC3339),
+			"strategy":        strategy.String(),
+			"security_impact": describePriorityLevel(risk),
+			"connection_time": time.Now().Format(time.RFC3339),
 		},
 	}
 
@@ -173,10 +173,10 @@ func (s *SecurityLogger) LogInsecureModeUsed(registry string, userConfirmed bool
 		Success:    userConfirmed,
 		FallbackID: generateFallbackID(),
 		Details: map[string]string{
-			"user_confirmed":    fmt.Sprintf("%v", userConfirmed),
-			"security_warning":  "ALL CERTIFICATE VALIDATION DISABLED",
-			"production_risk":   "CRITICAL - DO NOT USE IN PRODUCTION",
-			"mitigation":        "Use proper certificates as soon as possible",
+			"user_confirmed":   fmt.Sprintf("%v", userConfirmed),
+			"security_warning": "ALL CERTIFICATE VALIDATION DISABLED",
+			"production_risk":  "CRITICAL - DO NOT USE IN PRODUCTION",
+			"mitigation":       "Use proper certificates as soon as possible",
 		},
 	}
 
@@ -199,7 +199,7 @@ func (s *SecurityLogger) LogSecurityDecision(decision, target, reason string) {
 		Success:    true,
 		FallbackID: generateFallbackID(),
 		Details: map[string]string{
-			"decision_type": decision,
+			"decision_type":   decision,
 			"affected_target": target,
 		},
 	}
@@ -210,21 +210,21 @@ func (s *SecurityLogger) LogSecurityDecision(decision, target, reason string) {
 // LogRiskAcceptance logs when users explicitly accept security risks
 func (s *SecurityLogger) LogRiskAcceptance(registry string, risk SecurityRiskLevel, strategy string, userChoice bool) {
 	entry := SecurityLogEntry{
-		Timestamp:  time.Now().UTC(),
-		EventType:  EventRiskAccepted,
-		Registry:   registry,
-		Decision:   fmt.Sprintf("RISK_ACCEPTANCE_%s", risk.String()),
-		Reason:     fmt.Sprintf("User %s risk for strategy: %s",
+		Timestamp: time.Now().UTC(),
+		EventType: EventRiskAccepted,
+		Registry:  registry,
+		Decision:  fmt.Sprintf("RISK_ACCEPTANCE_%s", risk.String()),
+		Reason: fmt.Sprintf("User %s risk for strategy: %s",
 			map[bool]string{true: "accepted", false: "rejected"}[userChoice], strategy),
 		Risk:       risk,
 		User:       getCurrentUser(),
 		Success:    userChoice,
 		FallbackID: generateFallbackID(),
 		Details: map[string]string{
-			"risk_level":     risk.String(),
-			"strategy":       strategy,
-			"user_decision":  fmt.Sprintf("%v", userChoice),
-			"risk_summary":   describePriorityLevel(risk),
+			"risk_level":    risk.String(),
+			"strategy":      strategy,
+			"user_decision": fmt.Sprintf("%v", userChoice),
+			"risk_summary":  describePriorityLevel(risk),
 		},
 	}
 
@@ -238,10 +238,10 @@ func (s *SecurityLogger) GetSecuritySummary(since time.Duration) SecuritySummary
 
 	cutoff := time.Now().Add(-since)
 	summary := SecuritySummary{
-		Period: since,
-		Events: make(map[SecurityEventType]int),
+		Period:       since,
+		Events:       make(map[SecurityEventType]int),
 		RisksByLevel: make(map[SecurityRiskLevel]int),
-		Registries: make(map[string]int),
+		Registries:   make(map[string]int),
 	}
 
 	for _, entry := range s.entries {
@@ -264,11 +264,11 @@ func (s *SecurityLogger) GetSecuritySummary(since time.Duration) SecuritySummary
 
 // SecuritySummary provides an overview of security events
 type SecuritySummary struct {
-	Period            time.Duration
-	Events            map[SecurityEventType]int
-	RisksByLevel      map[SecurityRiskLevel]int
-	Registries        map[string]int
-	HighRiskEvents    int
+	Period             time.Duration
+	Events             map[SecurityEventType]int
+	RisksByLevel       map[SecurityRiskLevel]int
+	Registries         map[string]int
+	HighRiskEvents     int
 	InsecureModeUsages int
 }
 
