@@ -1,0 +1,15 @@
+=== ENHANCED COMPREHENSIVE BACKPORT PROCESS ===
+Starting at: 2025-09-22 05:05:35 UTC
+
+=== [1/15] Processing: idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction ===
+Already on 'idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction'
+Your branch is up to date with 'origin/idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction'.
+✅ Checkout successful
+📦 Has go.mod - checking dependencies
+✅ k8s.io already at v0.30.5
+✅ controller-runtime already at v0.18.5
+⚠️ Duplicate test functions found
+Applying test fixes...
+Testing build...
+✅ Build successful
+Committing and pushing changes...
