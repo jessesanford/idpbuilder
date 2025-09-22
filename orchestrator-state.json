@@ -2,25 +2,49 @@
   "all_effort_branches": {
     "total_count": 17,
     "last_updated": "2025-09-22",
-    "description": "Complete list of all effort branches in merge order",
+    "description": "Complete list of all effort branches in merge order with fix status",
     "branches_in_order": [
       "idpbuilder-oci-build-push/phase1/wave1/registry-types",
       "idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction",
       "idpbuilder-oci-build-push/phase1/wave1/registry-auth",
       "idpbuilder-oci-build-push/phase1/wave1/registry-helpers",
       "idpbuilder-oci-build-push/phase1/wave1/registry-tests",
-      "idpbuilder-oci-build-push/phase1/wave2/cert-validation",
-      "idpbuilder-oci-build-push/phase1/wave2/fallback-core",
-      "idpbuilder-oci-build-push/phase1/wave2/fallback-strategies",
-      "idpbuilder-oci-build-push/phase1/wave2/fallback-security",
-      "idpbuilder-oci-build-push/phase1/wave2/fallback-recommendations",
-      "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001",
+      "idpbuilder-oci-build-push/phase1/wave2/fallback-strategies-split-001",
+      "idpbuilder-oci-build-push/phase1/wave2/fallback-strategies-split-002a",
+      "idpbuilder-oci-build-push/phase1/wave2/fallback-strategies-split-002-fix-cascade-v3",
+      "idpbuilder-oci-build-push/phase1/wave2/fallback-strategies-split-002b",
+      "idpbuilder-oci-build-push/phase1/wave2/fallback-strategies-split-002c",
+      "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001-fix-cascade-v3-fixed",
       "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002",
       "idpbuilder-oci-build-push/phase2/wave1/image-builder",
       "idpbuilder-oci-build-push/phase2/wave2/cli-commands",
       "idpbuilder-oci-build-push/phase2/wave2/credential-management",
-      "idpbuilder-oci-build-push/phase2/wave2/image-operations"
-    ]
+      "idpbuilder-oci-build-push/phase2/wave2/image-operations",
+      "idpbuilder-oci-build-push/phase2/wave2/commands"
+    ],
+    "branches_with_fixes": {
+      "idpbuilder-oci-build-push/phase1-wave2-integration-20250921": {
+        "status": "fixed",
+        "fixes_applied": ["test fixes", "k8s.io v0.30.5 alignment", "go.mod update"],
+        "fixed_date": "2025-09-22"
+      },
+      "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001-fix-cascade-v3-fixed": {
+        "status": "fixed",
+        "replaces": "idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001-fix-cascade-v3",
+        "fixes_applied": ["GiteaClient interface", "type conflicts", "retryWithExponentialBackoff"],
+        "fixed_date": "2025-09-22"
+      },
+      "idpbuilder-oci-build-push/phase2-wave1-integration-20250921": {
+        "status": "fixed",
+        "fixes_applied": ["unused imports removed"],
+        "fixed_date": "2025-09-22"
+      },
+      "idpbuilder-oci-build-push/phase2-wave2-integration-20250921": {
+        "status": "fixed",
+        "fixes_applied": ["unused imports removed"],
+        "fixed_date": "2025-09-22"
+      }
+    }
   },
   "current_state": "WAVE_COMPLETE",
   "previous_state": "WAVE_COMPLETE",
