@@ -1,0 +1,191 @@
+{
+  "phase": 1,
+  "phase_name": "Foundation & Command Structure",
+  "total_estimated_lines": 800,
+  "wave_count": 2,
+  "waves": [
+    {
+      "wave": 1,
+      "name": "Command Structure & Skeleton",
+      "total_lines": 500,
+      "can_parallelize": false,
+      "theme": "Core command infrastructure setup",
+      "efforts": [
+        {
+          "id": "1.1.1",
+          "name": "command-registration",
+          "description": "Create and register push command with Cobra",
+          "branch": "idpbuilderpush/phase1/wave1/command-registration",
+          "estimated_lines": 150,
+          "can_parallelize": false,
+          "parallel_with": [],
+          "dependencies": [],
+          "files_to_create": [
+            "pkg/cmd/push/root.go"
+          ],
+          "files_to_modify": [
+            "pkg/cmd/root.go"
+          ],
+          "tests_to_pass": [
+            "TestPushCommandExists",
+            "TestPushCommandRegistered"
+          ],
+          "atomic_pr": true,
+          "feature_flag": null
+        },
+        {
+          "id": "1.1.2",
+          "name": "flag-definitions",
+          "description": "Define all CLI flags for push command",
+          "branch": "idpbuilderpush/phase1/wave1/flag-definitions",
+          "estimated_lines": 200,
+          "can_parallelize": false,
+          "parallel_with": [],
+          "dependencies": ["1.1.1"],
+          "files_to_create": [
+            "pkg/cmd/push/flags.go"
+          ],
+          "files_to_modify": [
+            "pkg/cmd/push/root.go"
+          ],
+          "tests_to_pass": [
+            "TestUsernameFlag",
+            "TestPasswordFlag",
+            "TestInsecureFlag",
+            "TestFlagShorthands",
+            "TestFlagDefaults"
+          ],
+          "atomic_pr": true,
+          "feature_flag": null
+        },
+        {
+          "id": "1.1.3",
+          "name": "help-documentation",
+          "description": "Complete help text and usage documentation",
+          "branch": "idpbuilderpush/phase1/wave1/help-documentation",
+          "estimated_lines": 150,
+          "can_parallelize": false,
+          "parallel_with": [],
+          "dependencies": ["1.1.1", "1.1.2"],
+          "files_to_create": [
+            "pkg/cmd/push/examples.go"
+          ],
+          "files_to_modify": [
+            "pkg/cmd/push/root.go"
+          ],
+          "tests_to_pass": [
+            "TestHelpTextContent",
+            "TestUsageString",
+            "TestLongDescription",
+            "TestExampleSection",
+            "TestFlagDescriptions"
+          ],
+          "atomic_pr": true,
+          "feature_flag": null
+        }
+      ]
+    },
+    {
+      "wave": 2,
+      "name": "Flag Implementation & Validation",
+      "total_lines": 300,
+      "can_parallelize": true,
+      "theme": "Input handling and validation",
+      "efforts": [
+        {
+          "id": "1.2.1",
+          "name": "argument-validation",
+          "description": "Implement argument validation logic",
+          "branch": "idpbuilderpush/phase1/wave2/argument-validation",
+          "estimated_lines": 150,
+          "can_parallelize": true,
+          "parallel_with": ["1.2.2"],
+          "dependencies": ["1.1.1", "1.1.2", "1.1.3"],
+          "files_to_create": [
+            "pkg/cmd/push/validation.go"
+          ],
+          "files_to_modify": [
+            "pkg/cmd/push/root.go"
+          ],
+          "tests_to_pass": [
+            "TestRequiresTwoArguments",
+            "TestValidatesImagePath",
+            "TestValidatesRegistryURL",
+            "TestInvalidArgumentCount"
+          ],
+          "atomic_pr": true,
+          "feature_flag": "pushCommandEnabled"
+        },
+        {
+          "id": "1.2.2",
+          "name": "error-handling",
+          "description": "Implement error handling and messages",
+          "branch": "idpbuilderpush/phase1/wave2/error-handling",
+          "estimated_lines": 150,
+          "can_parallelize": true,
+          "parallel_with": ["1.2.1"],
+          "dependencies": ["1.1.1", "1.1.2", "1.1.3"],
+          "files_to_create": [
+            "pkg/cmd/push/errors.go"
+          ],
+          "files_to_modify": [
+            "pkg/cmd/push/root.go"
+          ],
+          "tests_to_pass": [
+            "TestInvalidImagePath",
+            "TestInvalidRegistryURL",
+            "TestMissingArguments",
+            "TestErrorMessageFormat"
+          ],
+          "atomic_pr": true,
+          "feature_flag": null
+        }
+      ]
+    }
+  ],
+  "integration_requirements": {
+    "wave_1_integration": {
+      "branch": "idpbuilderpush/phase1/wave1/integration",
+      "merge_from": [
+        "idpbuilderpush/phase1/wave1/command-registration",
+        "idpbuilderpush/phase1/wave1/flag-definitions",
+        "idpbuilderpush/phase1/wave1/help-documentation"
+      ],
+      "validation": "All wave 1 tests pass"
+    },
+    "wave_2_integration": {
+      "branch": "idpbuilderpush/phase1/wave2/integration",
+      "merge_from": [
+        "idpbuilderpush/phase1/wave2/argument-validation",
+        "idpbuilderpush/phase1/wave2/error-handling"
+      ],
+      "base_branch": "idpbuilderpush/phase1/wave1/integration",
+      "validation": "All phase 1 tests pass"
+    },
+    "phase_integration": {
+      "branch": "idpbuilderpush/phase1/integration",
+      "merge_from": [
+        "idpbuilderpush/phase1/wave1/integration",
+        "idpbuilderpush/phase1/wave2/integration"
+      ],
+      "validation": "Complete phase 1 functionality verified"
+    }
+  },
+  "test_locations": {
+    "pre_written_tests": "phase-tests/phase-1/tests/phase1/",
+    "test_files": [
+      "command_test.go",
+      "flags_test.go",
+      "help_test.go",
+      "validation_test.go",
+      "integration_test.go"
+    ]
+  },
+  "tdd_compliance": {
+    "tests_pre_written": true,
+    "red_phase_complete": true,
+    "green_phase": "Implementation to pass tests",
+    "refactor_phase": "After tests pass",
+    "coverage_requirement": 80
+  }
+}
