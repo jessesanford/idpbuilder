@@ -16,7 +16,13 @@ package certs
 
 import (
 	"crypto/tls"
+	"errors"
 	"time"
+)
+
+// Common errors for certificate operations
+var (
+	ErrFeatureDisabled = errors.New("feature is disabled")
 )
 
 // Certificate type identifiers
