@@ -42,7 +42,38 @@ func TestParseCertificate(t *testing.T) {
 	}
 }
 
-// Feature flag test removed - features are now always enabled in production
+func TestIsKindFeatureEnabled(t *testing.T) {
+	tests := []struct {
+		name     string
+		envVar   string
+		value    string
+		expected bool
+	}{
+		{"enabled with true", "TEST_FEATURE", "true", true},
+		{"enabled with 1", "TEST_FEATURE", "1", true},
+		{"enabled with enabled", "TEST_FEATURE", "enabled", true},
+		{"disabled with false", "TEST_FEATURE", "false", false},
+		{"disabled with 0", "TEST_FEATURE", "0", false},
+		{"disabled with empty", "TEST_FEATURE", "", false},
+		{"disabled when not set", "NONEXISTENT_FEATURE", "", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Set environment variable
+			envVar := "IDPBUILDER_" + tt.envVar
+			if tt.value != "" {
+				os.Setenv(envVar, tt.value)
+				defer os.Unsetenv(envVar)
+			}
+
+			got := isKindFeatureEnabled(tt.envVar)
+			if got != tt.expected {
+				t.Errorf("isKindFeatureEnabled(%s) = %v, want %v", tt.envVar, got, tt.expected)
+			}
+		})
+	}
+}
 
 func TestValidateCertificateExpiry(t *testing.T) {
 	now := time.Now()
