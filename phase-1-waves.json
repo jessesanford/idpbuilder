@@ -1,191 +1,284 @@
 {
   "phase": 1,
-  "phase_name": "Foundation & Command Structure",
-  "total_estimated_lines": 800,
-  "wave_count": 2,
+  "title": "Foundation & Command Structure",
+  "description": "Phase 1 establishes the foundation for the idpbuilder push command with command registration, flag handling, input validation, and error handling patterns following strict TDD methodology.",
+  "total_size": 800,
+  "tdd_required": true,
+  "duration_days": "2-3",
   "waves": [
     {
-      "wave": 1,
-      "name": "Command Structure & Skeleton",
-      "total_lines": 500,
-      "can_parallelize": false,
-      "theme": "Core command infrastructure setup",
+      "wave_number": "1.1",
+      "title": "Command Skeleton with TDD",
+      "description": "Establish push command structure following TDD methodology",
+      "total_size": 500,
+      "parallelizable": false,
+      "integration_branch": "idpbuilderpush/phase1/wave1/integration",
       "efforts": [
         {
-          "id": "1.1.1",
-          "name": "command-registration",
-          "description": "Create and register push command with Cobra",
-          "branch": "idpbuilderpush/phase1/wave1/command-registration",
-          "estimated_lines": 150,
+          "effort_number": "1.1.1",
+          "name": "Write Command Tests",
+          "description": "Create comprehensive command tests (RED phase)",
+          "branch": "idpbuilderpush/phase1/wave1/command-tests",
+          "size": 150,
           "can_parallelize": false,
           "parallel_with": [],
           "dependencies": [],
-          "files_to_create": [
-            "pkg/cmd/push/root.go"
+          "files": [
+            "cmd/push/root_test.go"
           ],
-          "files_to_modify": [
-            "pkg/cmd/root.go"
-          ],
-          "tests_to_pass": [
-            "TestPushCommandExists",
-            "TestPushCommandRegistered"
-          ],
-          "atomic_pr": true,
-          "feature_flag": null
+          "test_first": true,
+          "scope": {
+            "implement": [
+              "TestPushCommandRegistration()",
+              "TestPushCommandFlags()",
+              "TestPushCommandArgValidation()",
+              "TestPushCommandHelp()",
+              "TestPushCommandFlagShorthands()",
+              "TestPushCommandEnvVariables()",
+              "TestPushCommandDefaults()",
+              "PushConfig struct"
+            ],
+            "do_not_implement": [
+              "Actual command implementation",
+              "Registry integration",
+              "Authentication logic",
+              "OCI operations"
+            ]
+          }
         },
         {
-          "id": "1.1.2",
-          "name": "flag-definitions",
-          "description": "Define all CLI flags for push command",
-          "branch": "idpbuilderpush/phase1/wave1/flag-definitions",
-          "estimated_lines": 200,
+          "effort_number": "1.1.2",
+          "name": "Implement Command Skeleton",
+          "description": "Minimal implementation to pass tests (GREEN phase)",
+          "branch": "idpbuilderpush/phase1/wave1/command-skeleton",
+          "size": 200,
           "can_parallelize": false,
           "parallel_with": [],
           "dependencies": ["1.1.1"],
-          "files_to_create": [
-            "pkg/cmd/push/flags.go"
+          "files": [
+            "cmd/push/root.go",
+            "cmd/push/config.go"
           ],
-          "files_to_modify": [
-            "pkg/cmd/push/root.go"
-          ],
-          "tests_to_pass": [
-            "TestUsernameFlag",
-            "TestPasswordFlag",
-            "TestInsecureFlag",
-            "TestFlagShorthands",
-            "TestFlagDefaults"
-          ],
-          "atomic_pr": true,
-          "feature_flag": null
+          "test_first": false,
+          "scope": {
+            "implement": [
+              "pushCmd variable definition",
+              "init() function",
+              "runPush() function",
+              "parseFlags() function",
+              "validateArgs() function",
+              "PushConfig struct",
+              "NewPushCommand() factory",
+              "GetCommand() getter",
+              "Error message constants"
+            ],
+            "do_not_implement": [
+              "Registry client creation",
+              "Authentication handling",
+              "OCI push operations",
+              "Complex error handling",
+              "Credential retrieval"
+            ]
+          }
         },
         {
-          "id": "1.1.3",
-          "name": "help-documentation",
-          "description": "Complete help text and usage documentation",
-          "branch": "idpbuilderpush/phase1/wave1/help-documentation",
-          "estimated_lines": 150,
+          "effort_number": "1.1.3",
+          "name": "Integration Tests",
+          "description": "Test command in full CLI context (RED-GREEN)",
+          "branch": "idpbuilderpush/phase1/wave1/integration-tests",
+          "size": 150,
           "can_parallelize": false,
           "parallel_with": [],
-          "dependencies": ["1.1.1", "1.1.2"],
-          "files_to_create": [
-            "pkg/cmd/push/examples.go"
+          "dependencies": ["1.1.2"],
+          "files": [
+            "cmd/push/integration_test.go"
           ],
-          "files_to_modify": [
-            "pkg/cmd/push/root.go"
-          ],
-          "tests_to_pass": [
-            "TestHelpTextContent",
-            "TestUsageString",
-            "TestLongDescription",
-            "TestExampleSection",
-            "TestFlagDescriptions"
-          ],
-          "atomic_pr": true,
-          "feature_flag": null
+          "test_first": true,
+          "scope": {
+            "implement": [
+              "TestPushCommandIntegration()",
+              "TestFlagPrecedence()",
+              "TestErrorPropagation()",
+              "TestHelpTextGeneration()",
+              "TestCommandDiscovery()",
+              "TestSubcommandInteraction()"
+            ],
+            "do_not_implement": [
+              "E2E tests with real registry",
+              "Performance tests",
+              "Load tests",
+              "Security tests"
+            ]
+          }
         }
       ]
     },
     {
-      "wave": 2,
-      "name": "Flag Implementation & Validation",
-      "total_lines": 300,
-      "can_parallelize": true,
-      "theme": "Input handling and validation",
+      "wave_number": "1.2",
+      "title": "Input Validation & Error Handling",
+      "description": "Implement comprehensive input validation and establish error handling patterns",
+      "total_size": 300,
+      "parallelizable": true,
+      "parallelizable_after": "wave_1.1",
+      "integration_branch": "idpbuilderpush/phase1/wave2/integration",
       "efforts": [
         {
-          "id": "1.2.1",
-          "name": "argument-validation",
-          "description": "Implement argument validation logic",
-          "branch": "idpbuilderpush/phase1/wave2/argument-validation",
-          "estimated_lines": 150,
+          "effort_number": "1.2.1",
+          "name": "Validation Tests",
+          "description": "Write validation test suite (RED phase)",
+          "branch": "idpbuilderpush/phase1/wave2/validation-tests",
+          "size": 150,
           "can_parallelize": true,
-          "parallel_with": ["1.2.2"],
-          "dependencies": ["1.1.1", "1.1.2", "1.1.3"],
-          "files_to_create": [
-            "pkg/cmd/push/validation.go"
+          "parallel_with": [],
+          "dependencies": ["wave_1.1"],
+          "files": [
+            "pkg/oci/validation_test.go"
           ],
-          "files_to_modify": [
-            "pkg/cmd/push/root.go"
-          ],
-          "tests_to_pass": [
-            "TestRequiresTwoArguments",
-            "TestValidatesImagePath",
-            "TestValidatesRegistryURL",
-            "TestInvalidArgumentCount"
-          ],
-          "atomic_pr": true,
-          "feature_flag": "pushCommandEnabled"
+          "test_first": true,
+          "scope": {
+            "implement": [
+              "TestValidateImagePath()",
+              "TestValidateRegistryURL()",
+              "TestValidateCredentials()",
+              "TestSpecialCharacterHandling()",
+              "TestPathTraversalPrevention()",
+              "TestSizeLimitChecks()",
+              "TestMalformedInputRejection()"
+            ],
+            "do_not_implement": [
+              "Actual validation implementation",
+              "Complex regex patterns",
+              "External validation services",
+              "Database validation"
+            ]
+          }
         },
         {
-          "id": "1.2.2",
-          "name": "error-handling",
-          "description": "Implement error handling and messages",
-          "branch": "idpbuilderpush/phase1/wave2/error-handling",
-          "estimated_lines": 150,
-          "can_parallelize": true,
-          "parallel_with": ["1.2.1"],
-          "dependencies": ["1.1.1", "1.1.2", "1.1.3"],
-          "files_to_create": [
-            "pkg/cmd/push/errors.go"
+          "effort_number": "1.2.2",
+          "name": "Implement Validation",
+          "description": "Validation implementation (GREEN-REFACTOR phase)",
+          "branch": "idpbuilderpush/phase1/wave2/validation-impl",
+          "size": 150,
+          "can_parallelize": false,
+          "parallel_with": [],
+          "dependencies": ["1.2.1"],
+          "files": [
+            "pkg/oci/validation.go",
+            "pkg/oci/errors.go"
           ],
-          "files_to_modify": [
-            "pkg/cmd/push/root.go"
-          ],
-          "tests_to_pass": [
-            "TestInvalidImagePath",
-            "TestInvalidRegistryURL",
-            "TestMissingArguments",
-            "TestErrorMessageFormat"
-          ],
-          "atomic_pr": true,
-          "feature_flag": null
+          "test_first": false,
+          "scope": {
+            "implement": [
+              "ValidationError struct",
+              "ValidateImagePath() function",
+              "ValidateRegistryURL() function",
+              "ValidateCredentials() function",
+              "SanitizeInput() function",
+              "Error() method",
+              "Error code constants",
+              "isValidPath() helper",
+              "isValidURL() helper"
+            ],
+            "do_not_implement": [
+              "Complex regex validation",
+              "External URL verification",
+              "File system checks",
+              "Network connectivity tests",
+              "Certificate validation"
+            ]
+          }
         }
       ]
     }
   ],
-  "integration_requirements": {
-    "wave_1_integration": {
-      "branch": "idpbuilderpush/phase1/wave1/integration",
-      "merge_from": [
-        "idpbuilderpush/phase1/wave1/command-registration",
-        "idpbuilderpush/phase1/wave1/flag-definitions",
-        "idpbuilderpush/phase1/wave1/help-documentation"
-      ],
-      "validation": "All wave 1 tests pass"
+  "integration_strategy": {
+    "wave_1.1": {
+      "steps": [
+        "Merge efforts sequentially to idpbuilderpush/phase1/wave1/integration",
+        "Run full test suite",
+        "Verify 100% test coverage",
+        "Create integration tag"
+      ]
     },
-    "wave_2_integration": {
-      "branch": "idpbuilderpush/phase1/wave2/integration",
-      "merge_from": [
-        "idpbuilderpush/phase1/wave2/argument-validation",
-        "idpbuilderpush/phase1/wave2/error-handling"
-      ],
-      "base_branch": "idpbuilderpush/phase1/wave1/integration",
-      "validation": "All phase 1 tests pass"
+    "wave_1.2": {
+      "steps": [
+        "Merge efforts to idpbuilderpush/phase1/wave2/integration",
+        "Merge Wave 1.1 integration into Wave 1.2",
+        "Run full test suite",
+        "Verify 100% test coverage"
+      ]
     },
-    "phase_integration": {
-      "branch": "idpbuilderpush/phase1/integration",
-      "merge_from": [
-        "idpbuilderpush/phase1/wave1/integration",
-        "idpbuilderpush/phase1/wave2/integration"
-      ],
-      "validation": "Complete phase 1 functionality verified"
+    "phase_1": {
+      "steps": [
+        "Merge Wave 1.2 integration to idpbuilderpush/phase1/integration",
+        "Full phase testing",
+        "Architect review",
+        "Documentation update"
+      ]
     }
   },
-  "test_locations": {
-    "pre_written_tests": "phase-tests/phase-1/tests/phase1/",
-    "test_files": [
-      "command_test.go",
-      "flags_test.go",
-      "help_test.go",
-      "validation_test.go",
-      "integration_test.go"
+  "tdd_compliance": {
+    "commit_order": [
+      "Test files only (RED phase)",
+      "Minimal implementation (GREEN phase)",
+      "Refactoring (REFACTOR phase)"
+    ],
+    "coverage_targets": {
+      "wave_1.1": 100,
+      "wave_1.2": 100,
+      "phase_1_overall": 100
+    },
+    "evidence_required": [
+      "Git log showing test-first commits",
+      "Coverage reports for each effort",
+      "Test execution logs"
     ]
   },
-  "tdd_compliance": {
-    "tests_pre_written": true,
-    "red_phase_complete": true,
-    "green_phase": "Implementation to pass tests",
-    "refactor_phase": "After tests pass",
-    "coverage_requirement": 80
+  "dependencies": {
+    "external": [
+      "github.com/spf13/cobra",
+      "github.com/stretchr/testify"
+    ],
+    "standard_library": true
+  },
+  "constraints": {
+    "line_limit_per_effort": 800,
+    "test_first_mandatory": true,
+    "coverage_target": 100,
+    "no_stubs_allowed": true,
+    "no_code_deletion": true
+  },
+  "success_metrics": {
+    "functional": [
+      "Push command appears in idpbuilder --help",
+      "All flags parse correctly",
+      "Validation rejects invalid inputs",
+      "Clear error messages displayed",
+      "Tests written before implementation"
+    ],
+    "quality": [
+      "100% test coverage achieved",
+      "All tests passing",
+      "Zero linting errors",
+      "TDD evidence in commit history",
+      "No stub implementations"
+    ]
+  },
+  "timeline": {
+    "wave_1.1": {
+      "duration": "1-2 days",
+      "sequential": true
+    },
+    "wave_1.2": {
+      "duration": "1 day",
+      "can_parallelize_after": "wave_1.1"
+    },
+    "integration": {
+      "duration": "0.5 days"
+    },
+    "buffer": {
+      "duration": "0.5 days",
+      "purpose": "review and fixes"
+    }
   }
 }
