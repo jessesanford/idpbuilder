@@ -90,7 +90,12 @@ func NewKindCertExtractor(config ExtractorConfig) (*KindCertExtractor, error) {
 
 // ExtractGiteaCert extracts the Gitea certificate from Kind cluster
 func (e *KindCertExtractor) ExtractGiteaCert(ctx context.Context) (*x509.Certificate, error) {
-	// 1. Get cluster information
+	// 1. Check feature flag
+	if !isKindFeatureEnabled("KIND_CERT_EXTRACTION_ENABLED") {
+		return nil, ErrFeatureDisabled
+	}
+
+	// 2. Get cluster information
 	clusterName, err := e.getClusterName()
 	if err != nil {
 		return nil, NewCertError("extraction", "cluster_discovery",
