@@ -1,0 +1,108 @@
+# Target Repository Configuration for idpbuilder-push Project
+# Defines repository structure and branch management
+
+repository:
+  name: "idpbuilder"
+  url: "https://github.com/jessesanford/idpbuilder.git"
+  base_branch: "main"
+  auth_method: "https"
+  clone_depth: 100
+
+local:
+  repository_path: "/home/vscode/workspaces/idpbuilder-push/efforts/idpbuilder"
+  efforts_root: "efforts"
+
+branch_naming:
+  project_prefix: "idpbuilderpush"
+  effort_format: "{prefix}/phase{phase}/wave{wave}/{effort_name}"
+  integration_format: "{prefix}/phase{phase}/wave{wave}/integration"
+  phase_integration_format: "{prefix}/phase{phase}/integration"
+  final_integration_format: "{prefix}/integration"
+
+  examples:
+    - "idpbuilderpush/phase1/wave1/command-tests"
+    - "idpbuilderpush/phase1/wave1/command-skeleton"
+    - "idpbuilderpush/phase1/wave1/integration"
+    - "idpbuilderpush/phase1/integration"
+
+workspace:
+  structure:
+    phase_dir: "phase{phase}"
+    wave_dir: "wave{wave}"
+    effort_dir: "{effort_name}"
+
+  working_copies:
+    pattern: "efforts/{phase_dir}/{wave_dir}/{effort_dir}"
+    examples:
+      - "efforts/phase1/wave1/command-tests"
+      - "efforts/phase2/wave1/auth-tests"
+
+testing:
+  commands:
+    unit_test: "go test ./pkg/cmd/push/... ./pkg/oci/..."
+    integration_test: "go test ./test/integration/..."
+    e2e_test: "go test ./test/e2e/..."
+    coverage: "go test -cover ./..."
+    coverage_report: "go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out"
+
+  tdd_enforcement:
+    test_first: true
+    commit_tests_before_code: true
+    min_coverage: 80
+    coverage_gate: true
+
+  test_locations:
+    unit: "pkg/**/*_test.go"
+    integration: "test/integration/**/*_test.go"
+    e2e: "test/e2e/**/*_test.go"
+
+development:
+  build_command: "go build ./cmd/idpbuilder"
+  lint_command: "golangci-lint run"
+  format_command: "gofmt -w ."
+  vet_command: "go vet ./..."
+
+  module_path: "github.com/cnoe-io/idpbuilder"
+
+  directories:
+    commands: "pkg/cmd/push"
+    oci_pkg: "pkg/oci"
+    tests: "test"
+    docs: "docs"
+
+ci_cd:
+  pipeline: "GitHub Actions"
+
+  checks:
+    - name: "tests"
+      command: "go test ./..."
+      required: true
+    - name: "coverage"
+      command: "go test -cover ./..."
+      required: true
+      threshold: 80
+    - name: "lint"
+      command: "golangci-lint run"
+      required: true
+    - name: "security"
+      command: "gosec ./..."
+      required: false
+
+merge_requirements:
+  all_tests_pass: true
+  coverage_threshold_met: true
+  code_review_approved: true
+  no_conflicts: true
+  ci_checks_pass: true
+
+documentation:
+  update_readme: true
+  api_docs: "godoc"
+  user_guide: "docs/push-command.md"
+  examples_dir: "examples/push/"
+
+monitoring:
+  track_coverage: true
+  track_test_count: true
+  track_tdd_compliance: true
+  report_frequency: "per_wave"

@@ -1895,6 +1895,24 @@ When in FIX_ISSUES state:
 7. If review fails → back to FIX_ISSUES
 8. Loop until all issues resolved
 
+## 🔧 PROJECT-SPECIFIC EXPERTISE: GO DEVELOPMENT
+
+### Go Language Expertise for idpbuilder-push
+- **Go Version**: 1.22+
+- **Package Structure**: Follow standard Go project layout
+- **Error Handling**: Always wrap errors with context using fmt.Errorf
+- **Testing**: Use stretchr/testify for assertions, gomock for mocking
+- **TDD Enforcement**: Tests MUST be written FIRST (RED-GREEN-REFACTOR)
+- **Libraries**:
+  - Cobra for CLI commands
+  - go-containerregistry for OCI operations
+  - logr for structured logging
+- **Conventions**:
+  - Use interfaces for testability
+  - Keep functions small and focused
+  - Handle all errors explicitly
+  - No naked returns
+
 ## 🔗 REFERENCE FILES
 
 Load these based on your current state:

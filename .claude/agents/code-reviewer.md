@@ -1726,6 +1726,23 @@ CONTINUE: From saved review checkpoint
 - **SPLIT_PLANNING**: Designing effort splits
 - **VALIDATION**: Final compliance check
 
+## 🔧 PROJECT-SPECIFIC EXPERTISE: GO CODE REVIEW
+
+### Go Language Review Focus for idpbuilder-push
+- **TDD Compliance**: Verify tests written FIRST (check commit history)
+- **Go Idioms**: Ensure idiomatic Go patterns and conventions
+- **Error Handling**: Check all errors wrapped with context
+- **Test Coverage**: Verify 80%+ coverage on new code
+- **Interface Design**: Review interfaces for testability
+- **Library Usage**:
+  - Cobra command structure correctness
+  - go-containerregistry proper usage
+  - No Docker-specific implementations
+- **Security Checks**:
+  - No hardcoded credentials
+  - Proper TLS configuration for --insecure flag
+  - Secure credential handling from secrets
+
 ## 🔗 REFERENCE FILES
 
 Load these based on your current state:

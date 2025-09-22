@@ -1,0 +1,119 @@
+# Setup Configuration for idpbuilder-push Project
+# This file defines the project structure and implementation approach
+
+project:
+  name: "idpbuilder-push"
+  prefix: "idpbuilderpush"
+  description: "TDD implementation of push command for idpbuilder to upload OCI images to Gitea registry"
+  target_dir: "/home/vscode/workspaces/idpbuilder-push"
+
+repository:
+  type: "existing"
+  url: "https://github.com/jessesanford/idpbuilder.git"
+  base_branch: "main"
+  clone_depth: 100
+  auth_method: "https"
+  local_path: "efforts/idpbuilder"
+
+technology:
+  primary_language: "Go"
+  go_version: "1.22"
+  frameworks:
+    - "Cobra CLI"
+    - "google/go-containerregistry"
+    - "Kubernetes Client-Go"
+  testing:
+    - "stretchr/testify"
+    - "gomock"
+    - "Go standard testing"
+
+libraries:
+  production:
+    - "github.com/spf13/cobra"
+    - "github.com/google/go-containerregistry"
+    - "k8s.io/client-go"
+    - "github.com/go-logr/logr"
+  testing:
+    - "github.com/stretchr/testify"
+    - "github.com/golang/mock"
+
+implementation:
+  methodology: "TEST_DRIVEN_DEVELOPMENT"
+  approach: "RED-GREEN-REFACTOR"
+  plan_type: "phased"
+  project_type: "CLI Tool Enhancement"
+  estimated_loc: 4200
+  num_phases: 4
+  num_waves: 6
+  test_coverage_target: 80
+
+phases:
+  - name: "Foundation & Command Structure"
+    waves: 2
+    estimated_loc: 800
+  - name: "Authentication & Credentials"
+    waves: 2
+    estimated_loc: 1200
+  - name: "OCI Registry Integration"
+    waves: 2
+    estimated_loc: 1500
+  - name: "Integration & Polish"
+    waves: 1
+    estimated_loc: 700
+
+agents:
+  selected:
+    - "Software Engineer"
+    - "Code Reviewer"
+    - "Architect"
+  expertise_required:
+    - "Go Development"
+    - "TDD Methodology"
+    - "OCI/Container Standards"
+    - "CLI Development"
+    - "API Design"
+    - "Testing Strategies"
+
+tdd:
+  enforce_tdd: true
+  require_tests_first: true
+  test_types:
+    - "unit"
+    - "integration"
+    - "e2e"
+  test_patterns:
+    - "RED: Write failing tests first"
+    - "GREEN: Minimal implementation to pass"
+    - "REFACTOR: Improve code quality"
+  min_coverage_before_merge: 80
+  coverage_tools:
+    - "go test -cover"
+    - "go tool cover"
+
+constraints:
+  max_lines_per_effort: 700
+  max_lines_per_pr: 800
+  max_parallel_agents: 3
+  code_review: "mandatory"
+  security_level: 2
+  require_documentation: true
+
+quality:
+  linting: "golangci-lint"
+  formatting: "gofmt"
+  security_scanning: "gosec"
+  dependency_check: "go mod verify"
+
+deployment:
+  ci_cd: "GitHub Actions"
+  test_on_push: true
+  coverage_gate: true
+  security_scan: true
+
+success_criteria:
+  - "All tests written BEFORE implementation"
+  - "80%+ test coverage achieved"
+  - "Zero regression in existing functionality"
+  - "Full OCI standards compliance"
+  - "Seamless integration with existing idpbuilder"
+  - "Clear documentation and examples"
