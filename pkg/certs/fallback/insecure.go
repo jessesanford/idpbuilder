@@ -199,9 +199,9 @@ func (m *InsecureManager) promptUserConfirmation(registry string) (bool, string,
 func (m *InsecureManager) displayInsecureWarnings(registry string) {
 	warnings := m.generateInsecureWarnings(registry)
 
-	fmt.Printf("\n" + strings.Repeat("=", 80) + "\n")
+	fmt.Print("\n" + strings.Repeat("=", 80) + "\n")
 	fmt.Printf("🚨 INSECURE MODE WARNINGS FOR: %s\n", registry)
-	fmt.Printf(strings.Repeat("=", 80) + "\n")
+	fmt.Print(strings.Repeat("=", 80) + "\n")
 
 	for i, warning := range warnings {
 		fmt.Printf("\n%d. %s [%s]\n", i+1, warning.Title, m.formatWarningLevel(warning.Level))
@@ -222,7 +222,7 @@ func (m *InsecureManager) displayInsecureWarnings(registry string) {
 		}
 	}
 
-	fmt.Printf("\n" + strings.Repeat("=", 80) + "\n")
+	fmt.Print("\n" + strings.Repeat("=", 80) + "\n")
 }
 
 // generateInsecureWarnings creates comprehensive warnings for insecure mode
