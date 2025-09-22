@@ -34,19 +34,19 @@ type Certificate struct {
 type CertificateBundle struct {
 	// CACert is the Certificate Authority certificate
 	CACert *Certificate
-	
+
 	// ClientCert is the client certificate for mutual TLS
 	ClientCert *Certificate
-	
+
 	// ClientKey is the private key for the client certificate
 	ClientKey interface{}
-	
+
 	// CertificateChain contains the full certificate chain
 	CertificateChain []*Certificate
-	
+
 	// ValidFrom indicates when the bundle becomes valid
 	ValidFrom time.Time
-	
+
 	// ValidUntil indicates when the bundle expires
 	ValidUntil time.Time
 }
@@ -55,40 +55,40 @@ type CertificateBundle struct {
 type TLSConfig struct {
 	// InsecureSkipVerify disables certificate verification (NOT recommended)
 	InsecureSkipVerify bool
-	
+
 	// ServerName for certificate verification
 	ServerName string
-	
+
 	// RootCAs defines the certificate authorities to trust
 	RootCAs *x509.CertPool
-	
+
 	// ClientCAs defines the certificate authorities for client certificates
 	ClientCAs *x509.CertPool
-	
+
 	// Certificates contains client certificates for mutual TLS
 	Certificates []tls.Certificate
-	
+
 	// MinVersion specifies the minimum TLS version
 	MinVersion uint16
-	
+
 	// MaxVersion specifies the maximum TLS version
 	MaxVersion uint16
-	
+
 	// CipherSuites specifies the preferred cipher suites
 	CipherSuites []uint16
-	
+
 	// CurvePreferences specifies the preferred elliptic curves
 	CurvePreferences []tls.CurveID
-	
+
 	// ClientAuth determines client certificate requirements
 	ClientAuth tls.ClientAuthType
-	
+
 	// Registry specifies the registry hostname
 	Registry string
-	
+
 	// ValidateHostname determines if hostname validation is enabled
 	ValidateHostname bool
-	
+
 	// Timeout specifies the connection timeout
 	Timeout time.Duration
 }
@@ -97,13 +97,13 @@ type TLSConfig struct {
 type CertificateValidator interface {
 	// Validate checks if the certificate is valid
 	Validate(cert *Certificate) error
-	
+
 	// ValidateChain checks if the certificate chain is valid
 	ValidateChain(chain []*Certificate) error
-	
+
 	// IsExpired checks if the certificate has expired
 	IsExpired(cert *Certificate) bool
-	
+
 	// WillExpireSoon checks if certificate will expire within threshold
 	WillExpireSoon(cert *Certificate, threshold time.Duration) bool
 }
@@ -112,10 +112,10 @@ type CertificateValidator interface {
 type BasicCertificateValidator struct {
 	// TrustedCAs contains trusted certificate authorities
 	TrustedCAs *x509.CertPool
-	
+
 	// AllowSelfSigned permits self-signed certificates
 	AllowSelfSigned bool
-	
+
 	// CheckExpiry enables expiration checking
 	CheckExpiry bool
 }
@@ -197,7 +197,7 @@ func (cb *CertificateBundle) HasPrivateKey() bool {
 // IsValid checks if the certificate bundle is currently valid
 func (cb *CertificateBundle) IsValid() bool {
 	now := time.Now()
-	
+
 	// Check bundle validity period
 	if !cb.ValidFrom.IsZero() && now.Before(cb.ValidFrom) {
 		return false
@@ -205,7 +205,7 @@ func (cb *CertificateBundle) IsValid() bool {
 	if !cb.ValidUntil.IsZero() && now.After(cb.ValidUntil) {
 		return false
 	}
-	
+
 	// Check individual certificates
 	if cb.CACert != nil && !cb.CACert.IsValid() {
 		return false
@@ -213,7 +213,7 @@ func (cb *CertificateBundle) IsValid() bool {
 	if cb.ClientCert != nil && !cb.ClientCert.IsValid() {
 		return false
 	}
-	
+
 	return true
 }
 
@@ -227,7 +227,7 @@ func (cb *CertificateBundle) UpdateValidityPeriod() {
 			cb.ValidUntil = cb.CACert.NotAfter
 		}
 	}
-	
+
 	if cb.ClientCert != nil {
 		if cb.ValidFrom.IsZero() || cb.ClientCert.NotBefore.After(cb.ValidFrom) {
 			cb.ValidFrom = cb.ClientCert.NotBefore
@@ -264,11 +264,11 @@ func (tc *TLSConfig) SetRootCA(caCert *Certificate) error {
 	if tc.RootCAs == nil {
 		tc.RootCAs = x509.NewCertPool()
 	}
-	
+
 	if caCert.Certificate == nil {
 		return fmt.Errorf("invalid CA certificate")
 	}
-	
+
 	tc.RootCAs.AddCert(caCert.Certificate)
 	return nil
 }
@@ -278,19 +278,19 @@ func (v *BasicCertificateValidator) Validate(cert *Certificate) error {
 	if cert == nil || cert.Certificate == nil {
 		return fmt.Errorf(ErrInvalidCertificate)
 	}
-	
+
 	// Check expiration if enabled
 	if v.CheckExpiry {
 		if cert.IsExpired() {
 			return fmt.Errorf(ErrCertificateExpired)
 		}
-		
+
 		now := time.Now()
 		if now.Before(cert.NotBefore) {
 			return fmt.Errorf(ErrCertificateNotYetValid)
 		}
 	}
-	
+
 	return nil
 }
 
@@ -299,35 +299,35 @@ func (v *BasicCertificateValidator) ValidateChain(chain []*Certificate) error {
 	if len(chain) == 0 {
 		return fmt.Errorf("empty certificate chain")
 	}
-	
+
 	// Validate each certificate in the chain
 	for i, cert := range chain {
 		if err := v.Validate(cert); err != nil {
 			return fmt.Errorf("certificate %d in chain: %w", i, err)
 		}
 	}
-	
+
 	// If we have trusted CAs, validate the chain against them
 	if v.TrustedCAs != nil && len(chain) > 0 {
 		leafCert := chain[0].Certificate
 		intermediates := x509.NewCertPool()
-		
+
 		// Add intermediate certificates to the pool
 		for i := 1; i < len(chain); i++ {
 			intermediates.AddCert(chain[i].Certificate)
 		}
-		
+
 		verifyOpts := x509.VerifyOptions{
 			Roots:         v.TrustedCAs,
 			Intermediates: intermediates,
 		}
-		
+
 		_, err := leafCert.Verify(verifyOpts)
 		if err != nil {
 			return fmt.Errorf(ErrCertificateChainInvalid+": %w", err)
 		}
 	}
-	
+
 	return nil
 }
 
@@ -353,16 +353,16 @@ func ParseCertificateFromPEM(pemData []byte) (*Certificate, error) {
 	if block == nil {
 		return nil, fmt.Errorf(ErrInvalidPEMBlock)
 	}
-	
+
 	if block.Type != PEMBlockCertificate {
 		return nil, fmt.Errorf("expected certificate PEM block, got %s", block.Type)
 	}
-	
+
 	cert, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {
 		return nil, fmt.Errorf(ErrInvalidCertificate+": %w", err)
 	}
-	
+
 	return NewCertificate(cert, pemData), nil
 }
 
@@ -370,34 +370,34 @@ func ParseCertificateFromPEM(pemData []byte) (*Certificate, error) {
 func ParseCertificatesFromPEM(pemData []byte) ([]*Certificate, error) {
 	var certificates []*Certificate
 	remaining := pemData
-	
+
 	for len(remaining) > 0 {
 		block, rest := pem.Decode(remaining)
 		if block == nil {
 			break
 		}
-		
+
 		if block.Type == PEMBlockCertificate {
 			cert, err := x509.ParseCertificate(block.Bytes)
 			if err != nil {
 				return nil, fmt.Errorf("failed to parse certificate: %w", err)
 			}
-			
+
 			// Extract the PEM block for this specific certificate
 			blockEnd := len(pemData) - len(rest)
 			blockStart := blockEnd - len(pem.EncodeToMemory(block))
 			certPEM := pemData[blockStart:blockEnd]
-			
+
 			certificates = append(certificates, NewCertificate(cert, certPEM))
 		}
-		
+
 		remaining = rest
 	}
-	
+
 	if len(certificates) == 0 {
 		return nil, fmt.Errorf("no certificates found in PEM data")
 	}
-	
+
 	return certificates, nil
 }
 
@@ -407,7 +407,7 @@ func LoadCertificateFromReader(reader io.Reader) (*Certificate, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to read certificate data: %w", err)
 	}
-	
+
 	return ParseCertificateFromPEM(pemData)
 }
 

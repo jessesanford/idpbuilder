@@ -184,13 +184,13 @@ func (r *Reference) String() string {
 		result += r.Namespace + "/"
 	}
 	result += r.Repository
-	
+
 	if r.Tag != "" {
 		result += ":" + r.Tag
 	}
 	if r.Digest != "" {
 		result += "@" + r.Digest
 	}
-	
+
 	return result
 }

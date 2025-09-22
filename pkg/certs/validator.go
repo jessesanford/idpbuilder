@@ -31,23 +31,23 @@ func (v ValidationMode) String() string {
 	}
 }
 
-// CertificateValidator defines the interface for certificate validation operations
-type CertificateValidator interface {
+// X509CertificateValidator defines the interface for X509 certificate validation operations
+type X509CertificateValidator interface {
 	// ValidateChain validates a complete certificate chain from leaf to root
 	ValidateChain(certs []*x509.Certificate) error
-	
+
 	// ValidateCertificate validates a single certificate
 	ValidateCertificate(cert *x509.Certificate) error
-	
+
 	// VerifyHostname verifies that a certificate is valid for a given hostname
 	VerifyHostname(cert *x509.Certificate, hostname string) error
-	
+
 	// GenerateDiagnostics creates diagnostic information for troubleshooting
 	GenerateDiagnostics() (*CertDiagnostics, error)
-	
+
 	// SetValidationMode changes the validation strictness
 	SetValidationMode(mode ValidationMode)
-	
+
 	// GetValidationMode returns the current validation mode
 	GetValidationMode() ValidationMode
 }
@@ -57,27 +57,27 @@ type CertificateValidator interface {
 type TrustStoreProvider interface {
 	// GetRootCAs returns the pool of trusted root CA certificates
 	GetRootCAs() (*x509.CertPool, error)
-	
+
 	// IsRootTrusted checks if a certificate is a trusted root CA
 	IsRootTrusted(cert *x509.Certificate) bool
 }
 
-// DefaultCertificateValidator implements the CertificateValidator interface
+// DefaultCertificateValidator implements the X509CertificateValidator interface
 type DefaultCertificateValidator struct {
-	mode             ValidationMode
-	trustStore       TrustStoreProvider
-	lastValidation   *ValidationResult
-	diagnostics      *CertDiagnostics
+	mode           ValidationMode
+	trustStore     TrustStoreProvider
+	lastValidation *X509ValidationResult
+	diagnostics    *CertDiagnostics
 }
 
 // ValidationResult holds the results of a validation operation
-type ValidationResult struct {
-	IsValid      bool
-	Errors       []error
-	Warnings     []string
-	ValidatedAt  time.Time
-	Certificate  *x509.Certificate
-	Chain        []*x509.Certificate
+type X509ValidationResult struct {
+	IsValid     bool
+	Errors      []error
+	Warnings    []string
+	ValidatedAt time.Time
+	Certificate *x509.Certificate
+	Chain       []*x509.Certificate
 }
 
 // NewDefaultCertificateValidator creates a new certificate validator
@@ -98,11 +98,11 @@ func (v *DefaultCertificateValidator) ValidateChain(certs []*x509.Certificate) e
 	// Reset diagnostics for new validation
 	v.diagnostics = &CertDiagnostics{
 		ValidationStarted: time.Now(),
-		ChainLength:      len(certs),
+		ChainLength:       len(certs),
 	}
 
 	var validationErrors []error
-	
+
 	// Validate leaf certificate first
 	leafCert := certs[0]
 	if err := v.ValidateCertificate(leafCert); err != nil {
@@ -116,7 +116,7 @@ func (v *DefaultCertificateValidator) ValidateChain(certs []*x509.Certificate) e
 	}
 
 	// Store validation result
-	v.lastValidation = &ValidationResult{
+	v.lastValidation = &X509ValidationResult{
 		IsValid:     len(validationErrors) == 0,
 		Errors:      validationErrors,
 		ValidatedAt: time.Now(),
@@ -149,7 +149,7 @@ func (v *DefaultCertificateValidator) ValidateCertificate(cert *x509.Certificate
 			errors = append(errors, NewValidationError(NotYetValid, "certificate not yet valid"))
 		}
 	}
-	
+
 	if now.After(cert.NotAfter) {
 		if v.mode != PermissiveMode {
 			errors = append(errors, NewValidationError(Expired, "certificate has expired"))
@@ -211,8 +211,8 @@ func (v *DefaultCertificateValidator) GetValidationMode() ValidationMode {
 func (v *DefaultCertificateValidator) validateConstraints(cert *x509.Certificate) error {
 	// Check if certificate can be used for TLS
 	if cert.KeyUsage != 0 {
-		if cert.KeyUsage&x509.KeyUsageDigitalSignature == 0 && 
-		   cert.KeyUsage&x509.KeyUsageKeyEncipherment == 0 {
+		if cert.KeyUsage&x509.KeyUsageDigitalSignature == 0 &&
+			cert.KeyUsage&x509.KeyUsageKeyEncipherment == 0 {
 			return NewValidationError(InvalidKeyUsage, "certificate lacks required key usage for TLS")
 		}
 	}
@@ -226,7 +226,7 @@ func (v *DefaultCertificateValidator) validateConstraints(cert *x509.Certificate
 				break
 			}
 		}
-		
+
 		if !hasServerAuth && v.mode == StrictMode {
 			return NewValidationError(InvalidExtKeyUsage, "certificate lacks server authentication extended key usage")
 		}
@@ -244,12 +244,12 @@ func (v *DefaultCertificateValidator) updateDiagnostics(cert *x509.Certificate, 
 	v.diagnostics.ChainLength = len(chain)
 	v.diagnostics.IsExpired = time.Now().After(cert.NotAfter)
 	v.diagnostics.IsSelfSigned = cert.Subject.String() == cert.Issuer.String()
-	
+
 	// Convert errors to string messages
 	v.diagnostics.ValidationErrors = make([]string, len(errors))
 	for i, err := range errors {
 		v.diagnostics.ValidationErrors[i] = err.Error()
 	}
-	
+
 	v.diagnostics.ValidationCompleted = time.Now()
 }

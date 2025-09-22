@@ -16,10 +16,10 @@ type ChainValidator struct {
 type ChainValidationOptions struct {
 	// AllowSelfSigned permits self-signed certificates
 	AllowSelfSigned bool
-	
+
 	// RequireLeafInChain ensures the leaf certificate is present
 	RequireLeafInChain bool
-	
+
 	// MaxChainLength limits the maximum chain depth
 	MaxChainLength int
 }
@@ -40,17 +40,17 @@ func (cv *ChainValidator) ValidateChain(certs []*x509.Certificate) error {
 
 	// Get default validation options based on mode
 	opts := cv.getValidationOptions()
-	
+
 	// Validate chain length
 	if len(certs) > opts.MaxChainLength {
-		return NewValidationError(InvalidChain, 
-			fmt.Sprintf("certificate chain too long: %d certificates (max: %d)", 
+		return NewValidationError(InvalidChain,
+			fmt.Sprintf("certificate chain too long: %d certificates (max: %d)",
 				len(certs), opts.MaxChainLength))
 	}
 
 	// Validate each certificate in the chain
 	var validationErrors []error
-	
+
 	for i, cert := range certs {
 		if err := cv.validateCertificateInChain(cert, i, len(certs)); err != nil {
 			validationErrors = append(validationErrors, err)
@@ -77,7 +77,7 @@ func (cv *ChainValidator) ValidateChain(certs []*x509.Certificate) error {
 // validateCertificateInChain validates a single certificate within the chain context
 func (cv *ChainValidator) validateCertificateInChain(cert *x509.Certificate, position int, chainLength int) error {
 	if cert == nil {
-		return NewValidationError(InvalidCertificate, 
+		return NewValidationError(InvalidCertificate,
 			fmt.Sprintf("certificate at position %d is nil", position))
 	}
 
@@ -92,7 +92,7 @@ func (cv *ChainValidator) validateCertificateInChain(cert *x509.Certificate, pos
 	} else {
 		// Intermediate/root certificates - should be CAs
 		if !cert.IsCA {
-			return NewValidationError(InvalidChain, 
+			return NewValidationError(InvalidChain,
 				fmt.Sprintf("certificate at position %d is not a CA but appears in chain", position))
 		}
 	}
@@ -102,7 +102,7 @@ func (cv *ChainValidator) validateCertificateInChain(cert *x509.Certificate, pos
 		if cert.MaxPathLen >= 0 {
 			remainingDepth := chainLength - position - 1
 			if remainingDepth > cert.MaxPathLen {
-				return NewValidationError(InvalidChain, 
+				return NewValidationError(InvalidChain,
 					fmt.Sprintf("basic constraints path length exceeded at position %d", position))
 			}
 		}
@@ -124,14 +124,14 @@ func (cv *ChainValidator) validateChainStructure(certs []*x509.Certificate, opts
 
 		// Check if issuer actually issued the certificate
 		if cert.Issuer.String() != issuer.Subject.String() {
-			return NewValidationError(InvalidChain, 
-				fmt.Sprintf("certificate at position %d issuer does not match certificate at position %d subject", 
+			return NewValidationError(InvalidChain,
+				fmt.Sprintf("certificate at position %d issuer does not match certificate at position %d subject",
 					i, i+1))
 		}
 
 		// Verify signature
 		if err := cert.CheckSignatureFrom(issuer); err != nil {
-			return NewValidationError(InvalidSignature, 
+			return NewValidationError(InvalidSignature,
 				fmt.Sprintf("signature verification failed for certificate at position %d: %v", i, err))
 		}
 	}
@@ -144,10 +144,10 @@ func (cv *ChainValidator) validateChainStructure(certs []*x509.Certificate, opts
 			if !opts.AllowSelfSigned {
 				return NewValidationError(UntrustedRoot, "self-signed certificates not allowed")
 			}
-			
+
 			// Verify self-signature
 			if err := cert.CheckSignatureFrom(cert); err != nil {
-				return NewValidationError(InvalidSignature, 
+				return NewValidationError(InvalidSignature,
 					fmt.Sprintf("self-signature verification failed: %v", err))
 			}
 		}
@@ -168,7 +168,7 @@ func (cv *ChainValidator) validateTrustPath(certs []*x509.Certificate, opts *Cha
 
 	// Check if root certificate is trusted
 	rootCert := certs[len(certs)-1]
-	
+
 	// Handle self-signed certificates
 	if len(certs) == 1 && rootCert.Subject.String() == rootCert.Issuer.String() {
 		if opts.AllowSelfSigned {
@@ -234,13 +234,13 @@ func (cv *ChainValidator) VerifyChainWithOptions(certs []*x509.Certificate, opts
 	}
 
 	if len(certs) > opts.MaxChainLength {
-		return NewValidationError(InvalidChain, 
-			fmt.Sprintf("certificate chain too long: %d certificates (max: %d)", 
+		return NewValidationError(InvalidChain,
+			fmt.Sprintf("certificate chain too long: %d certificates (max: %d)",
 				len(certs), opts.MaxChainLength))
 	}
 
 	var validationErrors []error
-	
+
 	for i, cert := range certs {
 		if err := cv.validateCertificateInChain(cert, i, len(certs)); err != nil {
 			validationErrors = append(validationErrors, err)

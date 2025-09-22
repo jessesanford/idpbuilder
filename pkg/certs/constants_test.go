@@ -210,9 +210,9 @@ func TestPreferredCipherSuites(t *testing.T) {
 	// Check that we include TLS 1.3 cipher suites
 	hasTLS13 := false
 	for _, suite := range PreferredCipherSuites {
-		if suite == tls.TLS_AES_256_GCM_SHA384 || 
-		   suite == tls.TLS_AES_128_GCM_SHA256 || 
-		   suite == tls.TLS_CHACHA20_POLY1305_SHA256 {
+		if suite == tls.TLS_AES_256_GCM_SHA384 ||
+			suite == tls.TLS_AES_128_GCM_SHA256 ||
+			suite == tls.TLS_CHACHA20_POLY1305_SHA256 {
 			hasTLS13 = true
 			break
 		}
