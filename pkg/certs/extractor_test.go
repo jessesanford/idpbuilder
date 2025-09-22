@@ -150,10 +150,6 @@ func TestKindCertExtractor_ExtractGiteaCert(t *testing.T) {
 		},
 	}
 
-	// Enable the feature flag for testing
-	os.Setenv("IDPBUILDER_KIND_CERT_EXTRACTION_ENABLED", "true")
-	defer os.Unsetenv("IDPBUILDER_KIND_CERT_EXTRACTION_ENABLED")
-
 	// Test successful extraction
 	ctx := context.Background()
 	extractedCert, err := extractor.ExtractGiteaCert(ctx)
@@ -282,9 +278,7 @@ func TestKindCertExtractor_ExtractGiteaCert_ValidationFailed(t *testing.T) {
 		},
 	}
 
-	// Enable the feature flag for testing
-	os.Setenv("IDPBUILDER_KIND_CERT_EXTRACTION_ENABLED", "true")
-	defer os.Unsetenv("IDPBUILDER_KIND_CERT_EXTRACTION_ENABLED")
+	// Feature flag removed - features are now always enabled
 
 	ctx := context.Background()
 	_, err = extractor.ExtractGiteaCert(ctx)

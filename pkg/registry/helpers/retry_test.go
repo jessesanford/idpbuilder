@@ -170,7 +170,7 @@ func TestRetryWithBackoffContextCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	fn := func(ctx context.Context) error {
-		cancel()                          // Cancel context during execution
+		cancel() // Cancel context during execution
 		time.Sleep(10 * time.Millisecond) // Small delay to ensure cancellation is processed
 		return &types.RegistryError{Code: types.ErrCodeTimeout, Message: "timeout"}
 	}

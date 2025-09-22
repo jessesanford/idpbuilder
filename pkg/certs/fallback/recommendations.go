@@ -1,440 +1,692 @@
+// Package fallback provides user-friendly certificate error recommendations
 package fallback
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
+	"time"
 )
 
-// RecommendationEngine generates actionable recommendations for certificate failures
-type RecommendationEngine struct {
-	knownIssues map[string]*KnownIssue
-}
-
-// KnownIssue represents a common certificate problem with solutions
-type KnownIssue struct {
-	Pattern         *regexp.Regexp
-	Category        IssueCategory
-	Severity        IssueSeverity
-	Description     string
-	Recommendations []string
-	LearnMoreURL    string
-}
-
-// IssueCategory categorizes different types of certificate issues
-type IssueCategory int
+// RecommendationErrorType represents different types of certificate errors for recommendations
+type RecommendationErrorType int
 
 const (
-	CategoryUnknownCA IssueCategory = iota
-	CategoryExpiredCert
-	CategoryHostnameMismatch
-	CategorySelfSigned
-	CategoryTLSVersion
-	CategoryNetworkIssue
-	CategoryConfiguration
+	// CertExpired indicates the certificate has expired
+	CertExpired RecommendationErrorType = iota
+	// CertNotYetValid indicates the certificate is not yet valid
+	CertNotYetValid
+	// CertHostnameMismatch indicates hostname doesn't match certificate
+	CertHostnameMismatch
+	// CertUntrustedRoot indicates untrusted certificate authority
+	CertUntrustedRoot
+	// CertSelfSigned indicates self-signed certificate
+	CertSelfSigned
+	// CertRevoked indicates certificate has been revoked
+	CertRevoked
+	// CertInvalidSignature indicates invalid certificate signature
+	CertInvalidSignature
+	// CertUnknownError indicates an unrecognized certificate error
+	CertUnknownError
 )
 
-// IssueSeverity indicates how critical the issue is
-type IssueSeverity int
+// String returns the string representation of RecommendationErrorType
+func (c RecommendationErrorType) String() string {
+	switch c {
+	case CertExpired:
+		return "EXPIRED"
+	case CertNotYetValid:
+		return "NOT_YET_VALID"
+	case CertHostnameMismatch:
+		return "HOSTNAME_MISMATCH"
+	case CertUntrustedRoot:
+		return "UNTRUSTED_ROOT"
+	case CertSelfSigned:
+		return "SELF_SIGNED"
+	case CertRevoked:
+		return "REVOKED"
+	case CertInvalidSignature:
+		return "INVALID_SIGNATURE"
+	default:
+		return "UNKNOWN"
+	}
+}
 
-const (
-	SeverityInfo IssueSeverity = iota
-	SeverityWarning
-	SeverityError
-	SeverityCritical
-)
+// RecommendationErrorDetails contains specific information about a certificate error for recommendations
+type RecommendationErrorDetails struct {
+	// ErrorType categorizes the type of certificate error
+	ErrorType RecommendationErrorType `json:"error_type"`
+	// ErrorMessage contains the raw error message
+	ErrorMessage string `json:"error_message"`
+	// Registry identifies the OCI registry where the error occurred
+	Registry string `json:"registry"`
+	// CertificateInfo contains parsed certificate information if available
+	CertificateInfo *CertificateInfo `json:"certificate_info,omitempty"`
+	// Timestamp when the error was detected
+	Timestamp time.Time `json:"timestamp"`
+	// Severity indicates the severity of the error (1-10, 10 being most severe)
+	Severity int `json:"severity"`
+	// Recoverable indicates whether the error can potentially be worked around
+	Recoverable bool `json:"recoverable"`
+}
 
-// Recommendation represents a single actionable recommendation
+// CertificateInfo contains parsed certificate information
+type CertificateInfo struct {
+	// Subject contains the certificate subject information
+	Subject string `json:"subject"`
+	// Issuer contains the certificate issuer information
+	Issuer string `json:"issuer"`
+	// NotBefore is when the certificate becomes valid
+	NotBefore time.Time `json:"not_before"`
+	// NotAfter is when the certificate expires
+	NotAfter time.Time `json:"not_after"`
+	// DNSNames contains subject alternative names
+	DNSNames []string `json:"dns_names,omitempty"`
+	// SerialNumber contains the certificate serial number
+	SerialNumber string `json:"serial_number,omitempty"`
+	// Fingerprint contains the certificate fingerprint
+	Fingerprint string `json:"fingerprint,omitempty"`
+}
+
+// Recommendation represents a user-friendly recommendation for handling certificate errors
 type Recommendation struct {
-	Title       string
-	Description string
-	Action      string
-	Command     string
-	RiskLevel   SecurityRiskLevel
-	Urgency     RecommendationUrgency
+	// Title provides a brief, user-friendly title for the recommendation
+	Title string `json:"title"`
+	// Description explains the recommendation in detail
+	Description string `json:"description"`
+	// Actions contains specific steps the user can take
+	Actions []RecommendationAction `json:"actions"`
+	// Priority indicates the urgency of this recommendation (1-10, 10 being most urgent)
+	Priority int `json:"priority"`
+	// Category groups similar recommendations
+	Category string `json:"category"`
+	// IsSecurityRisk indicates if ignoring this recommendation poses security risks
+	IsSecurityRisk bool `json:"is_security_risk"`
+	// EstimatedEffort indicates the expected effort to implement (LOW, MEDIUM, HIGH)
+	EstimatedEffort string `json:"estimated_effort"`
+	// References contains links or references to additional documentation
+	References []string `json:"references,omitempty"`
 }
 
-// RecommendationUrgency indicates how urgently a recommendation should be followed
-type RecommendationUrgency int
+// RecommendationAction represents a specific action a user can take
+type RecommendationAction struct {
+	// Type indicates the type of action (COMMAND, CONFIGURATION, MANUAL)
+	Type string `json:"type"`
+	// Description explains what this action does
+	Description string `json:"description"`
+	// Command contains the exact command to run (for COMMAND type actions)
+	Command string `json:"command,omitempty"`
+	// ConfigPath indicates the configuration file path (for CONFIGURATION type actions)
+	ConfigPath string `json:"config_path,omitempty"`
+	// ConfigContent contains the configuration content to add/modify
+	ConfigContent string `json:"config_content,omitempty"`
+	// Note contains additional notes or warnings for this action
+	Note string `json:"note,omitempty"`
+}
 
-const (
-	UrgencyLow RecommendationUrgency = iota
-	UrgencyMedium
-	UrgencyHigh
-	UrgencyImmediate
-)
+// RecommendationEngine provides user-friendly recommendations for certificate errors
+type RecommendationEngine interface {
+	// GetRecommendations returns recommendations for a certificate error
+	GetRecommendations(details RecommendationErrorDetails) ([]Recommendation, error)
+	// GetQuickFix returns a quick fix command for simple errors
+	GetQuickFix(details RecommendationErrorDetails) (string, error)
+	// GetDiagnosticInfo returns diagnostic information for troubleshooting
+	GetDiagnosticInfo(registry string) (string, error)
+	// GetSecurityAssessment evaluates the security risk of ignoring an error
+	GetSecurityAssessment(details RecommendationErrorDetails) (SecurityAssessment, error)
+}
 
-// NewRecommendationEngine creates a new recommendation engine with predefined issues
-func NewRecommendationEngine() *RecommendationEngine {
-	engine := &RecommendationEngine{
-		knownIssues: make(map[string]*KnownIssue),
+// SecurityAssessment evaluates the security risk of ignoring a certificate error
+type SecurityAssessment struct {
+	// RiskLevel indicates the security risk (LOW, MEDIUM, HIGH, CRITICAL)
+	RiskLevel string `json:"risk_level"`
+	// RiskScore provides a numerical risk score (0-100)
+	RiskScore int `json:"risk_score"`
+	// Impact describes the potential impact of ignoring this error
+	Impact string `json:"impact"`
+	// Mitigations suggests ways to reduce the risk if the error must be ignored
+	Mitigations []string `json:"mitigations"`
+	// Compliance indicates which compliance frameworks are affected
+	Compliance []string `json:"compliance,omitempty"`
+}
+
+// DefaultRecommendationEngine implements RecommendationEngine with comprehensive recommendations
+type DefaultRecommendationEngine struct {
+	// registryConfigs contains registry-specific configuration knowledge
+	registryConfigs map[string]RegistryConfig
+	// securityPolicies contains security policy configurations
+	securityPolicies SecurityPolicies
+}
+
+// RegistryConfig contains registry-specific configuration information
+type RegistryConfig struct {
+	// Name is the registry identifier
+	Name string
+	// DocumentationURL points to registry-specific documentation
+	DocumentationURL string
+	// SupportsCertPinning indicates if the registry supports certificate pinning
+	SupportsCertPinning bool
+	// SupportsInsecureMode indicates if insecure mode is available
+	SupportsInsecureMode bool
+	// CommonIssues lists common certificate issues for this registry
+	CommonIssues []string
+	// ConfigExamples contains configuration examples
+	ConfigExamples map[string]string
+}
+
+// SecurityPolicies contains security policy configurations
+type SecurityPolicies struct {
+	// AllowSelfSigned indicates if self-signed certificates are permitted
+	AllowSelfSigned bool
+	// AllowExpiredCerts indicates if expired certificates are permitted
+	AllowExpiredCerts bool
+	// RequireHostnameVerification indicates if hostname verification is required
+	RequireHostnameVerification bool
+	// MaxCertAge is the maximum allowed certificate age
+	MaxCertAge time.Duration
+	// TrustedCAs contains paths to trusted CA certificates
+	TrustedCAs []string
+}
+
+// NewDefaultRecommendationEngine creates a new recommendation engine with default settings
+func NewDefaultRecommendationEngine() *DefaultRecommendationEngine {
+	engine := &DefaultRecommendationEngine{
+		registryConfigs: make(map[string]RegistryConfig),
+		securityPolicies: SecurityPolicies{
+			AllowSelfSigned:             false,
+			AllowExpiredCerts:           false,
+			RequireHostnameVerification: true,
+			MaxCertAge:                  365 * 24 * time.Hour, // 1 year
+			TrustedCAs:                  []string{"/etc/ssl/certs", "/usr/local/share/ca-certificates"},
+		},
 	}
 
-	// Initialize known issues and their solutions
-	engine.initializeKnownIssues()
+	// Initialize common registry configurations
+	engine.initializeRegistryConfigs()
 
 	return engine
 }
 
-// GenerateRecommendations analyzes a certificate error and generates actionable recommendations
-func (r *RecommendationEngine) GenerateRecommendations(registry string, err error) []string {
-	var recommendations []string
-
-	// Get the error message for analysis
-	errorMsg := strings.ToLower(err.Error())
-
-	// Check for known issues
-	for _, issue := range r.knownIssues {
-		if issue.Pattern.MatchString(errorMsg) {
-			recommendations = append(recommendations, issue.Recommendations...)
-		}
+// initializeRegistryConfigs sets up configurations for common OCI registries
+func (d *DefaultRecommendationEngine) initializeRegistryConfigs() {
+	// Docker Hub configuration
+	d.registryConfigs["docker.io"] = RegistryConfig{
+		Name:                "Docker Hub",
+		DocumentationURL:    "https://docs.docker.com/docker-hub/",
+		SupportsCertPinning: false,
+		SupportsInsecureMode: true,
+		CommonIssues: []string{
+			"Rate limiting with anonymous access",
+			"Authentication token expiration",
+			"Regional certificate differences",
+		},
+		ConfigExamples: map[string]string{
+			"insecure": `"insecure-registries": ["docker.io"]`,
+			"mirror":   `"registry-mirrors": ["https://mirror.gcr.io"]`,
+		},
 	}
 
-	// Add registry-specific recommendations
-	registryRecs := r.generateRegistrySpecificRecommendations(registry, errorMsg)
-	recommendations = append(recommendations, registryRecs...)
-
-	// Add general fallback recommendations
-	generalRecs := r.generateGeneralRecommendations(errorMsg)
-	recommendations = append(recommendations, generalRecs...)
-
-	// Deduplicate and prioritize recommendations
-	return r.prioritizeRecommendations(recommendations)
-}
-
-// initializeKnownIssues sets up the database of known certificate issues
-func (r *RecommendationEngine) initializeKnownIssues() {
-	// Unknown Certificate Authority
-	r.knownIssues["unknown_authority"] = &KnownIssue{
-		Pattern:     regexp.MustCompile(`unknown authority|certificate signed by unknown authority`),
-		Category:    CategoryUnknownCA,
-		Severity:    SeverityError,
-		Description: "Certificate signed by unknown or untrusted Certificate Authority",
-		Recommendations: []string{
-			"Add the registry's CA certificate to your trust store",
-			"Extract the CA certificate from the Kind cluster if using self-signed certs",
-			"Verify the registry is using a valid certificate chain",
-			"Use --insecure flag only for testing (NOT recommended for production)",
+	// GitHub Container Registry configuration
+	d.registryConfigs["ghcr.io"] = RegistryConfig{
+		Name:                "GitHub Container Registry",
+		DocumentationURL:    "https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry",
+		SupportsCertPinning: true,
+		SupportsInsecureMode: false,
+		CommonIssues: []string{
+			"GitHub token authentication required",
+			"Package visibility permissions",
+			"Organization-level restrictions",
 		},
-		LearnMoreURL: "https://docs.docker.com/registry/insecure/",
+		ConfigExamples: map[string]string{
+			"auth": `"auths": {"ghcr.io": {"auth": "base64-encoded-token"}}`,
+		},
 	}
 
-	// Expired Certificate
-	r.knownIssues["expired_cert"] = &KnownIssue{
-		Pattern:     regexp.MustCompile(`certificate has expired|expired certificate`),
-		Category:    CategoryExpiredCert,
-		Severity:    SeverityCritical,
-		Description: "Registry certificate has expired",
-		Recommendations: []string{
-			"Contact registry administrator to renew the certificate",
-			"Check if registry has updated certificates available",
-			"Verify system clock is correct",
-			"Use --insecure flag as temporary workaround (SECURITY RISK)",
+	// Google Container Registry configuration
+	d.registryConfigs["gcr.io"] = RegistryConfig{
+		Name:                "Google Container Registry",
+		DocumentationURL:    "https://cloud.google.com/container-registry/docs",
+		SupportsCertPinning: true,
+		SupportsInsecureMode: false,
+		CommonIssues: []string{
+			"Service account authentication",
+			"IAM permissions for registry access",
+			"Regional endpoint variations",
 		},
-		LearnMoreURL: "https://letsencrypt.org/docs/certificate-renewals/",
+		ConfigExamples: map[string]string{
+			"gcp-auth": `gcloud auth configure-docker`,
+		},
 	}
 
-	// Hostname Mismatch
-	r.knownIssues["hostname_mismatch"] = &KnownIssue{
-		Pattern:     regexp.MustCompile(`hostname.*doesn't match|certificate is valid for.*but not`),
-		Category:    CategoryHostnameMismatch,
-		Severity:    SeverityError,
-		Description: "Certificate hostname doesn't match the registry URL",
-		Recommendations: []string{
-			"Verify you're using the correct registry hostname",
-			"Check if registry is accessible via Subject Alternative Names (SANs)",
-			"Update /etc/hosts if using custom hostname mapping",
-			"Configure registry with correct hostname in certificate",
+	// Amazon Elastic Container Registry configuration
+	d.registryConfigs["amazonaws.com"] = RegistryConfig{
+		Name:                "Amazon ECR",
+		DocumentationURL:    "https://docs.aws.amazon.com/ecr/",
+		SupportsCertPinning: true,
+		SupportsInsecureMode: false,
+		CommonIssues: []string{
+			"AWS credentials configuration",
+			"ECR repository policies",
+			"Cross-region access",
+			"VPC endpoint configurations",
 		},
-		LearnMoreURL: "https://tools.ietf.org/html/rfc6125",
+		ConfigExamples: map[string]string{
+			"aws-auth": `aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin`,
+		},
 	}
 
-	// Self-Signed Certificate
-	r.knownIssues["self_signed"] = &KnownIssue{
-		Pattern:     regexp.MustCompile(`self.*signed|self-signed certificate`),
-		Category:    CategorySelfSigned,
-		Severity:    SeverityWarning,
-		Description: "Registry is using self-signed certificate",
-		Recommendations: []string{
-			"Add the self-signed certificate to your trust store",
-			"Extract certificate from Kind cluster: kubectl cp <pod>:/etc/ssl/certs/ca.pem ./ca.pem",
-			"Configure registry with proper CA-signed certificate for production",
-			"Use --insecure flag for development only",
+	// Azure Container Registry configuration
+	d.registryConfigs["azurecr.io"] = RegistryConfig{
+		Name:                "Azure Container Registry",
+		DocumentationURL:    "https://docs.microsoft.com/en-us/azure/container-registry/",
+		SupportsCertPinning: true,
+		SupportsInsecureMode: false,
+		CommonIssues: []string{
+			"Azure AD authentication",
+			"Service principal configuration",
+			"Network security group rules",
 		},
-		LearnMoreURL: "https://kind.sigs.k8s.io/docs/user/private-registries/",
-	}
-
-	// TLS Version Issues
-	r.knownIssues["tls_version"] = &KnownIssue{
-		Pattern:     regexp.MustCompile(`tls.*version|protocol version|handshake failure`),
-		Category:    CategoryTLSVersion,
-		Severity:    SeverityError,
-		Description: "TLS version compatibility issue",
-		Recommendations: []string{
-			"Update registry to support TLS 1.2 or higher",
-			"Check if client TLS configuration is too restrictive",
-			"Verify cipher suite compatibility",
-			"Update container registry client libraries",
+		ConfigExamples: map[string]string{
+			"azure-auth": `az acr login --name myregistry`,
 		},
-		LearnMoreURL: "https://wiki.mozilla.org/Security/Server_Side_TLS",
-	}
-
-	// Network/Connection Issues
-	r.knownIssues["network_issue"] = &KnownIssue{
-		Pattern:     regexp.MustCompile(`connection.*refused|timeout|network.*unreachable`),
-		Category:    CategoryNetworkIssue,
-		Severity:    SeverityError,
-		Description: "Network connectivity issue to registry",
-		Recommendations: []string{
-			"Verify registry is running and accessible",
-			"Check firewall and network policies",
-			"Confirm registry port (usually 443 for HTTPS, 5000 for HTTP)",
-			"Test connectivity: curl -v https://registry-url/v2/",
-		},
-		LearnMoreURL: "https://docs.docker.com/registry/spec/api/",
 	}
 }
 
-// generateRegistrySpecificRecommendations provides recommendations based on registry type
-func (r *RecommendationEngine) generateRegistrySpecificRecommendations(registry string, errorMsg string) []string {
-	var recommendations []string
+// GetRecommendations returns recommendations for a certificate error
+func (d *DefaultRecommendationEngine) GetRecommendations(details RecommendationErrorDetails) ([]Recommendation, error) {
+	var recommendations []Recommendation
 
-	// Kind cluster registry recommendations
-	if strings.Contains(registry, "kind") || strings.Contains(registry, "localhost") {
-		recommendations = append(recommendations, []string{
-			"For Kind clusters: Extract CA certificate using: kind get kubeconfig",
-			"Verify Kind cluster is running: kind get clusters",
-			"Check Gitea pod is accessible: kubectl get pods -n gitea",
-			"Use Kind's built-in registry if available: localhost:5001",
-		}...)
+	switch details.ErrorType {
+	case CertExpired:
+		recommendations = d.getExpiredCertRecommendations(details)
+	case CertNotYetValid:
+		recommendations = d.getNotYetValidRecommendations(details)
+	case CertHostnameMismatch:
+		recommendations = d.getHostnameMismatchRecommendations(details)
+	case CertUntrustedRoot:
+		recommendations = d.getUntrustedRootRecommendations(details)
+	case CertSelfSigned:
+		recommendations = d.getSelfSignedRecommendations(details)
+	case CertRevoked:
+		recommendations = d.getRevokedCertRecommendations(details)
+	case CertInvalidSignature:
+		recommendations = d.getInvalidSignatureRecommendations(details)
+	default:
+		recommendations = d.getGenericRecommendations(details)
 	}
 
-	// Docker Hub recommendations
-	if strings.Contains(registry, "docker.io") || strings.Contains(registry, "registry-1.docker.io") {
-		recommendations = append(recommendations, []string{
-			"Docker Hub connectivity issue - check internet connection",
-			"Verify Docker Hub status: https://status.docker.com/",
-			"Try alternative Docker Hub mirrors if available",
-			"Check for rate limiting issues",
-		}...)
-	}
+	return recommendations, nil
+}
 
-	// Self-hosted registry recommendations
-	if strings.Contains(registry, "harbor") || strings.Contains(registry, "nexus") {
-		recommendations = append(recommendations, []string{
-			"Contact registry administrator for certificate issues",
-			"Check registry documentation for TLS configuration",
-			"Verify registry health endpoint is accessible",
-			"Review registry logs for additional error details",
-		}...)
+// getExpiredCertRecommendations provides recommendations for expired certificates
+func (d *DefaultRecommendationEngine) getExpiredCertRecommendations(details RecommendationErrorDetails) []Recommendation {
+	recommendations := []Recommendation{
+		{
+			Title:           "Contact Registry Administrator",
+			Description:     "The certificate for this registry has expired and needs to be renewed by the registry administrator.",
+			Priority:        9,
+			Category:        "Certificate Management",
+			IsSecurityRisk:  true,
+			EstimatedEffort: "LOW",
+			Actions: []RecommendationAction{
+				{
+					Type:        "MANUAL",
+					Description: "Contact the registry administrator to renew the expired certificate",
+					Note:        "Provide the certificate expiration date and error details",
+				},
+			},
+		},
+		{
+			Title:           "Verify System Time",
+			Description:     "Ensure your system clock is accurate, as certificate validation depends on correct time.",
+			Priority:        7,
+			Category:        "System Configuration",
+			IsSecurityRisk:  false,
+			EstimatedEffort: "LOW",
+			Actions: []RecommendationAction{
+				{
+					Type:        "COMMAND",
+					Description: "Check current system time",
+					Command:     "date",
+				},
+				{
+					Type:        "COMMAND",
+					Description: "Sync system time with NTP",
+					Command:     "sudo ntpdate -s time.nist.gov",
+					Note:        "May require NTP package installation",
+				},
+			},
+		},
+		{
+			Title:           "Temporary Insecure Access (High Risk)",
+			Description:     "As a last resort, you can temporarily bypass certificate validation, but this poses significant security risks.",
+			Priority:        3,
+			Category:        "Workaround",
+			IsSecurityRisk:  true,
+			EstimatedEffort: "LOW",
+			Actions: []RecommendationAction{
+				{
+					Type:        "CONFIGURATION",
+					Description: "Add registry to insecure registries list",
+					ConfigPath:  "/etc/docker/daemon.json",
+					ConfigContent: fmt.Sprintf(`{
+  "insecure-registries": ["%s"]
+}`, details.Registry),
+					Note: "WARNING: This disables all certificate validation for this registry",
+				},
+			},
+			References: []string{
+				"https://docs.docker.com/registry/insecure/",
+			},
+		},
 	}
 
 	return recommendations
 }
 
-// generateGeneralRecommendations provides general fallback and troubleshooting advice
-func (r *RecommendationEngine) generateGeneralRecommendations(errorMsg string) []string {
-	var recommendations []string
-
-	// Time-based recommendations
-	if strings.Contains(errorMsg, "expired") || strings.Contains(errorMsg, "not yet valid") {
-		recommendations = append(recommendations, []string{
-			"Verify system clock is correct: date",
-			"Sync system time: sudo ntpdate -s time.nist.gov",
-			"Check timezone settings",
-		}...)
-	}
-
-	// General troubleshooting
-	recommendations = append(recommendations, []string{
-		"Enable verbose logging for more details: export GODEBUG=x509verifier=1",
-		"Test with curl: curl -v https://registry-url/v2/",
-		"Check registry status and availability",
-		"Review registry documentation for TLS requirements",
-	}...)
-
-	// Security best practices
-	recommendations = append(recommendations, []string{
-		"NEVER use --insecure in production environments",
-		"Always verify certificate fingerprints when adding to trust store",
-		"Consider using a proper CA-signed certificate for the registry",
-		"Monitor certificate expiration dates",
-	}...)
-
-	return recommendations
-}
-
-// prioritizeRecommendations removes duplicates and orders recommendations by importance
-func (r *RecommendationEngine) prioritizeRecommendations(recommendations []string) []string {
-	// Remove duplicates
-	seen := make(map[string]bool)
-	var unique []string
-
-	for _, rec := range recommendations {
-		if !seen[rec] {
-			seen[rec] = true
-			unique = append(unique, rec)
-		}
-	}
-
-	// Prioritize by type (security first, then actionable steps)
-	var prioritized []string
-
-	// High priority: Security warnings
-	for _, rec := range unique {
-		if strings.Contains(strings.ToLower(rec), "never") ||
-			strings.Contains(strings.ToLower(rec), "security") ||
-			strings.Contains(strings.ToLower(rec), "production") {
-			prioritized = append(prioritized, rec)
-		}
-	}
-
-	// Medium priority: Direct actions
-	for _, rec := range unique {
-		if strings.Contains(rec, ":") || // Commands with colons
-			strings.Contains(rec, "kubectl") ||
-			strings.Contains(rec, "curl") ||
-			strings.Contains(rec, "extract") {
-			if !contains(prioritized, rec) {
-				prioritized = append(prioritized, rec)
-			}
-		}
-	}
-
-	// Low priority: General advice
-	for _, rec := range unique {
-		if !contains(prioritized, rec) {
-			prioritized = append(prioritized, rec)
-		}
-	}
-
-	return prioritized
-}
-
-// GetDetailedRecommendation returns detailed information about a specific error
-func (r *RecommendationEngine) GetDetailedRecommendation(registry string, err error) *DetailedRecommendation {
-	errorMsg := strings.ToLower(err.Error())
-
-	// Find the most relevant known issue
-	var bestMatch *KnownIssue
-	for _, issue := range r.knownIssues {
-		if issue.Pattern.MatchString(errorMsg) {
-			bestMatch = issue
-			break
-		}
-	}
-
-	if bestMatch == nil {
-		// Create generic recommendation for unknown issues
-		return &DetailedRecommendation{
-			Issue:       "Unknown certificate error",
-			Category:    CategoryConfiguration,
-			Severity:    SeverityError,
-			Description: fmt.Sprintf("Certificate validation failed: %v", err),
-			ImpactAnalysis: "Unable to establish secure connection to registry. " +
-				"This prevents pulling/pushing container images securely.",
-			Solutions:     r.GenerateRecommendations(registry, err),
-			NextSteps:     r.getNextSteps(registry, errorMsg),
-			EstimatedTime: "5-30 minutes depending on issue complexity",
-		}
-	}
-
-	return &DetailedRecommendation{
-		Issue:          bestMatch.Description,
-		Category:       bestMatch.Category,
-		Severity:       bestMatch.Severity,
-		Description:    fmt.Sprintf("%s: %v", bestMatch.Description, err),
-		ImpactAnalysis: r.getImpactAnalysis(bestMatch.Category),
-		Solutions:      bestMatch.Recommendations,
-		NextSteps:      r.getNextSteps(registry, errorMsg),
-		LearnMoreURL:   bestMatch.LearnMoreURL,
-		EstimatedTime:  r.getEstimatedTime(bestMatch.Category),
+// getNotYetValidRecommendations provides recommendations for not-yet-valid certificates
+func (d *DefaultRecommendationEngine) getNotYetValidRecommendations(details RecommendationErrorDetails) []Recommendation {
+	return []Recommendation{
+		{
+			Title:           "Check System Time",
+			Description:     "The certificate is not yet valid according to your system time. Verify your system clock is correct.",
+			Priority:        8,
+			Category:        "System Configuration",
+			IsSecurityRisk:  false,
+			EstimatedEffort: "LOW",
+			Actions: []RecommendationAction{
+				{
+					Type:        "COMMAND",
+					Description: "Check current system time and timezone",
+					Command:     "timedatectl status",
+				},
+				{
+					Type:        "COMMAND",
+					Description: "Enable NTP synchronization",
+					Command:     "sudo timedatectl set-ntp true",
+				},
+			},
+		},
 	}
 }
 
-// DetailedRecommendation provides comprehensive guidance for certificate issues
-type DetailedRecommendation struct {
-	Issue          string
-	Category       IssueCategory
-	Severity       IssueSeverity
-	Description    string
-	ImpactAnalysis string
-	Solutions      []string
-	NextSteps      []string
-	LearnMoreURL   string
-	EstimatedTime  string
+// getHostnameMismatchRecommendations provides recommendations for hostname mismatches
+func (d *DefaultRecommendationEngine) getHostnameMismatchRecommendations(details RecommendationErrorDetails) []Recommendation {
+	return []Recommendation{
+		{
+			Title:           "Verify Registry URL",
+			Description:     "Ensure you're using the correct hostname for the registry. Check for typos or incorrect subdomain.",
+			Priority:        8,
+			Category:        "Configuration",
+			IsSecurityRisk:  false,
+			EstimatedEffort: "LOW",
+			Actions: []RecommendationAction{
+				{
+					Type:        "MANUAL",
+					Description: "Double-check the registry URL for typos or incorrect subdomains",
+					Note:        "Common mistakes include www. prefixes or incorrect region specifiers",
+				},
+				{
+					Type:        "COMMAND",
+					Description: "Test DNS resolution for the registry",
+					Command:     fmt.Sprintf("nslookup %s", details.Registry),
+				},
+			},
+		},
+		{
+			Title:           "Check Certificate Subject Alternative Names",
+			Description:     "The certificate may be valid for the server but not for the specific hostname you're using.",
+			Priority:        6,
+			Category:        "Certificate Analysis",
+			IsSecurityRisk:  false,
+			EstimatedEffort: "LOW",
+			Actions: []RecommendationAction{
+				{
+					Type:        "COMMAND",
+					Description: "View certificate details including SANs",
+					Command:     fmt.Sprintf("openssl s_client -connect %s:443 -servername %s | openssl x509 -text -noout", details.Registry, details.Registry),
+				},
+			},
+		},
+	}
 }
 
-// getImpactAnalysis provides analysis of the issue's impact
-func (r *RecommendationEngine) getImpactAnalysis(category IssueCategory) string {
-	switch category {
-	case CategoryUnknownCA:
-		return "Registry connection will fail until CA certificate is trusted. All image operations blocked."
-	case CategoryExpiredCert:
-		return "Critical security issue. Connection failures until certificate is renewed."
-	case CategoryHostnameMismatch:
-		return "Certificate validation fails due to hostname mismatch. Connection blocked for security."
-	case CategorySelfSigned:
-		return "Self-signed certificates need explicit trust. Development workflows affected."
-	case CategoryTLSVersion:
-		return "TLS compatibility issue preventing secure handshake. All HTTPS operations fail."
-	case CategoryNetworkIssue:
-		return "Network connectivity problem. Registry may be unreachable or misconfigured."
+// getUntrustedRootRecommendations provides recommendations for untrusted root certificates
+func (d *DefaultRecommendationEngine) getUntrustedRootRecommendations(details RecommendationErrorDetails) []Recommendation {
+	return []Recommendation{
+		{
+			Title:           "Install Missing CA Certificate",
+			Description:     "The certificate is signed by a Certificate Authority that is not trusted by your system.",
+			Priority:        7,
+			Category:        "Certificate Management",
+			IsSecurityRisk:  false,
+			EstimatedEffort: "MEDIUM",
+			Actions: []RecommendationAction{
+				{
+					Type:        "COMMAND",
+					Description: "Download the certificate chain",
+					Command:     fmt.Sprintf("openssl s_client -connect %s:443 -showcerts", details.Registry),
+				},
+				{
+					Type:        "MANUAL",
+					Description: "Install the CA certificate to your system's trust store",
+					Note:        "Specific steps vary by operating system and distribution",
+				},
+			},
+			References: []string{
+				"https://ubuntu.com/server/docs/security-trust-store",
+				"https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/securing_networks/using-shared-system-certificates_securing-networks",
+			},
+		},
+	}
+}
+
+// getSelfSignedRecommendations provides recommendations for self-signed certificates
+func (d *DefaultRecommendationEngine) getSelfSignedRecommendations(details RecommendationErrorDetails) []Recommendation {
+	return []Recommendation{
+		{
+			Title:           "Add Certificate Exception",
+			Description:     "For internal registries with self-signed certificates, you can add a specific exception.",
+			Priority:        6,
+			Category:        "Certificate Management",
+			IsSecurityRisk:  true,
+			EstimatedEffort: "MEDIUM",
+			Actions: []RecommendationAction{
+				{
+					Type:        "COMMAND",
+					Description: "Extract the self-signed certificate",
+					Command:     fmt.Sprintf("echo | openssl s_client -connect %s:443 2>/dev/null | openssl x509 -out %s.crt", details.Registry, details.Registry),
+				},
+				{
+					Type:        "COMMAND",
+					Description: "Add certificate to system trust store",
+					Command:     fmt.Sprintf("sudo cp %s.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates", details.Registry),
+				},
+			},
+		},
+	}
+}
+
+// getRevokedCertRecommendations provides recommendations for revoked certificates
+func (d *DefaultRecommendationEngine) getRevokedCertRecommendations(details RecommendationErrorDetails) []Recommendation {
+	return []Recommendation{
+		{
+			Title:           "Certificate Revocation Issue",
+			Description:     "The certificate has been revoked and should not be trusted. Contact the registry administrator immediately.",
+			Priority:        10,
+			Category:        "Security",
+			IsSecurityRisk:  true,
+			EstimatedEffort: "HIGH",
+			Actions: []RecommendationAction{
+				{
+					Type:        "MANUAL",
+					Description: "Contact registry administrator about certificate revocation",
+					Note:        "This is a serious security issue that requires immediate attention",
+				},
+			},
+		},
+	}
+}
+
+// getInvalidSignatureRecommendations provides recommendations for invalid signatures
+func (d *DefaultRecommendationEngine) getInvalidSignatureRecommendations(details RecommendationErrorDetails) []Recommendation {
+	return []Recommendation{
+		{
+			Title:           "Certificate Integrity Issue",
+			Description:     "The certificate signature is invalid, which could indicate tampering or corruption.",
+			Priority:        9,
+			Category:        "Security",
+			IsSecurityRisk:  true,
+			EstimatedEffort: "HIGH",
+			Actions: []RecommendationAction{
+				{
+					Type:        "MANUAL",
+					Description: "Report potential certificate tampering to registry administrator",
+					Note:        "Invalid signatures can indicate man-in-the-middle attacks",
+				},
+			},
+		},
+	}
+}
+
+// getGenericRecommendations provides fallback recommendations for unknown errors
+func (d *DefaultRecommendationEngine) getGenericRecommendations(details RecommendationErrorDetails) []Recommendation {
+	return []Recommendation{
+		{
+			Title:           "General Certificate Troubleshooting",
+			Description:     "General steps to diagnose and resolve certificate issues.",
+			Priority:        5,
+			Category:        "Troubleshooting",
+			IsSecurityRisk:  false,
+			EstimatedEffort: "MEDIUM",
+			Actions: []RecommendationAction{
+				{
+					Type:        "COMMAND",
+					Description: "Test connectivity to the registry",
+					Command:     fmt.Sprintf("curl -v https://%s", details.Registry),
+				},
+				{
+					Type:        "COMMAND",
+					Description: "Check certificate details",
+					Command:     fmt.Sprintf("openssl s_client -connect %s:443 -servername %s", details.Registry, details.Registry),
+				},
+			},
+		},
+	}
+}
+
+// GetQuickFix returns a quick fix command for simple errors
+func (d *DefaultRecommendationEngine) GetQuickFix(details RecommendationErrorDetails) (string, error) {
+	switch details.ErrorType {
+	case CertExpired, CertNotYetValid:
+		return "sudo ntpdate -s time.nist.gov", nil
+	case CertHostnameMismatch:
+		return fmt.Sprintf("nslookup %s", details.Registry), nil
+	case CertSelfSigned:
+		return fmt.Sprintf("echo | openssl s_client -connect %s:443 2>/dev/null | openssl x509 -out %s.crt", details.Registry, details.Registry), nil
 	default:
-		return "Certificate validation failure affecting registry connectivity."
+		return fmt.Sprintf("curl -v https://%s", details.Registry), nil
 	}
 }
 
-// getNextSteps provides immediate next steps for the user
-func (r *RecommendationEngine) getNextSteps(registry string, errorMsg string) []string {
-	var steps []string
+// GetDiagnosticInfo returns diagnostic information for troubleshooting
+func (d *DefaultRecommendationEngine) GetDiagnosticInfo(registry string) (string, error) {
+	var diagnostics strings.Builder
 
-	// Immediate diagnostics
-	steps = append(steps, "1. Test basic connectivity: ping "+registry)
-	steps = append(steps, "2. Check registry status: curl -I https://"+registry+"/v2/")
-	steps = append(steps, "3. Examine certificate: openssl s_client -connect "+registry+":443")
+	diagnostics.WriteString(fmt.Sprintf("Diagnostic Information for %s:\n", registry))
+	diagnostics.WriteString("=====================================\n\n")
 
-	// Issue-specific steps
-	if strings.Contains(errorMsg, "unknown authority") {
-		steps = append(steps, "4. Extract and trust the CA certificate")
-		steps = append(steps, "5. Verify certificate chain is complete")
-	} else if strings.Contains(errorMsg, "expired") {
-		steps = append(steps, "4. Verify system time is correct")
-		steps = append(steps, "5. Contact registry admin for certificate renewal")
-	} else if strings.Contains(errorMsg, "hostname") {
-		steps = append(steps, "4. Verify registry hostname matches certificate")
-		steps = append(steps, "5. Check Subject Alternative Names (SANs)")
+	// Registry-specific information
+	if config, exists := d.registryConfigs[registry]; exists {
+		diagnostics.WriteString(fmt.Sprintf("Registry: %s\n", config.Name))
+		diagnostics.WriteString(fmt.Sprintf("Documentation: %s\n", config.DocumentationURL))
+		diagnostics.WriteString(fmt.Sprintf("Supports Certificate Pinning: %t\n", config.SupportsCertPinning))
+		diagnostics.WriteString(fmt.Sprintf("Supports Insecure Mode: %t\n", config.SupportsInsecureMode))
+		diagnostics.WriteString("\nCommon Issues:\n")
+		for _, issue := range config.CommonIssues {
+			diagnostics.WriteString(fmt.Sprintf("- %s\n", issue))
+		}
+		diagnostics.WriteString("\n")
 	}
 
-	return steps
+	// System information
+	diagnostics.WriteString("System Diagnostic Commands:\n")
+	diagnostics.WriteString("---------------------------\n")
+	diagnostics.WriteString(fmt.Sprintf("Test connectivity: curl -v https://%s\n", registry))
+	diagnostics.WriteString(fmt.Sprintf("Check DNS: nslookup %s\n", registry))
+	diagnostics.WriteString(fmt.Sprintf("View certificate: openssl s_client -connect %s:443 -servername %s\n", registry, registry))
+	diagnostics.WriteString("Check system time: timedatectl status\n")
+	diagnostics.WriteString("View trusted CAs: ls /etc/ssl/certs/\n\n")
+
+	return diagnostics.String(), nil
 }
 
-// getEstimatedTime provides time estimates for resolution
-func (r *RecommendationEngine) getEstimatedTime(category IssueCategory) string {
-	switch category {
-	case CategoryUnknownCA:
-		return "10-20 minutes (extract and install CA certificate)"
-	case CategoryExpiredCert:
-		return "Depends on admin response (certificate renewal required)"
-	case CategoryHostnameMismatch:
-		return "5-15 minutes (verify hostname configuration)"
-	case CategorySelfSigned:
-		return "5-10 minutes (add certificate to trust store)"
-	case CategoryTLSVersion:
-		return "15-30 minutes (update TLS configuration)"
-	case CategoryNetworkIssue:
-		return "5-60 minutes (network troubleshooting)"
+// GetSecurityAssessment evaluates the security risk of ignoring an error
+func (d *DefaultRecommendationEngine) GetSecurityAssessment(details RecommendationErrorDetails) (SecurityAssessment, error) {
+	assessment := SecurityAssessment{
+		Compliance: []string{"SOX", "PCI-DSS", "HIPAA", "SOC2"},
+	}
+
+	switch details.ErrorType {
+	case CertExpired:
+		assessment.RiskLevel = "HIGH"
+		assessment.RiskScore = 85
+		assessment.Impact = "Expired certificates can be exploited by attackers to intercept communications"
+		assessment.Mitigations = []string{
+			"Use certificate pinning if possible",
+			"Monitor certificate expiration dates",
+			"Implement automated certificate renewal",
+		}
+
+	case CertRevoked:
+		assessment.RiskLevel = "CRITICAL"
+		assessment.RiskScore = 95
+		assessment.Impact = "Revoked certificates indicate known compromise or security issues"
+		assessment.Mitigations = []string{
+			"Never ignore revoked certificates",
+			"Contact security team immediately",
+			"Implement certificate revocation checking",
+		}
+
+	case CertSelfSigned:
+		assessment.RiskLevel = "MEDIUM"
+		assessment.RiskScore = 60
+		assessment.Impact = "Self-signed certificates cannot be verified against trusted authorities"
+		assessment.Mitigations = []string{
+			"Use certificate fingerprint verification",
+			"Implement out-of-band certificate verification",
+			"Consider using private CA infrastructure",
+		}
+
+	case CertUntrustedRoot:
+		assessment.RiskLevel = "MEDIUM"
+		assessment.RiskScore = 55
+		assessment.Impact = "Unknown certificate authorities may not follow proper security practices"
+		assessment.Mitigations = []string{
+			"Research the certificate authority",
+			"Install CA certificate only if trustworthy",
+			"Consider using certificate pinning",
+		}
+
+	case CertHostnameMismatch:
+		assessment.RiskLevel = "HIGH"
+		assessment.RiskScore = 80
+		assessment.Impact = "Hostname mismatches can indicate man-in-the-middle attacks"
+		assessment.Mitigations = []string{
+			"Verify you're connecting to the correct server",
+			"Check for DNS manipulation",
+			"Use alternative verification methods",
+		}
+
 	default:
-		return "10-30 minutes (depending on issue complexity)"
-	}
-}
-
-// contains checks if a slice contains a specific string
-func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
+		assessment.RiskLevel = "MEDIUM"
+		assessment.RiskScore = 50
+		assessment.Impact = "Unknown certificate issues should be investigated thoroughly"
+		assessment.Mitigations = []string{
+			"Investigate the specific error thoroughly",
+			"Consult security team for guidance",
+			"Document the decision and rationale",
 		}
 	}
-	return false
+
+	return assessment, nil
 }

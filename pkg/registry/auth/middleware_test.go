@@ -93,12 +93,12 @@ func (m *mockAlwaysUnauthorizedRoundTripper) RoundTrip(req *http.Request) (*http
 
 // mockAuthenticator implements Authenticator for testing
 type mockAuthenticator struct {
-	authError           error
-	refreshError        error
-	isValid             bool
-	authCalls           int
-	refreshCalls        int
-	validCalls          int
+	authError   error
+	refreshError error
+	isValid     bool
+	authCalls   int
+	refreshCalls int
+	validCalls  int
 	shouldRefreshOnAuth bool
 }
 
