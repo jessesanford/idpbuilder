@@ -1,0 +1,15 @@
+idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction
+idpbuilder-oci-build-push/phase1/wave1/registry-types
+idpbuilder-oci-build-push/phase1/wave1/registry-auth
+idpbuilder-oci-build-push/phase1/wave1/registry-helpers
+idpbuilder-oci-build-push/phase1/wave1/registry-tests
+idpbuilder-oci-build-push/phase1/wave2/cert-validation
+idpbuilder-oci-build-push/phase1/wave2/fallback-core
+idpbuilder-oci-build-push/phase1/wave2/fallback-recommendations
+idpbuilder-oci-build-push/phase1/wave2/fallback-security
+idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-001
+idpbuilder-oci-build-push/phase2/wave1/gitea-client-split-002
+idpbuilder-oci-build-push/phase2/wave1/image-builder
+idpbuilder-oci-build-push/phase2/wave2/cli-commands
+idpbuilder-oci-build-push/phase2/wave2/credential-management
+idpbuilder-oci-build-push/phase2/wave2/image-operations
