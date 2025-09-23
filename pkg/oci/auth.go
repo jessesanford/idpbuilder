@@ -10,9 +10,7 @@ import (
 	"strings"
 	"sync"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 )
 
 // DefaultAuthenticator implements the Authenticator interface
@@ -142,21 +140,14 @@ func (a *DefaultAuthenticator) loadDockerConfig(registry string) (*Credentials, 
 		return nil, fmt.Errorf("parsing docker config: %w", err)
 	}
 
-	// Try exact match first, then partial matches
-	for configRegistry, auth := range config.Auths {
-		if configRegistry == registry || strings.Contains(registry, configRegistry) {
-			if auth.Auth == "" {
-				continue
-			}
-
-			creds, err := a.parseBasicAuth(auth.Auth)
-			if err != nil {
-				continue
-			}
-
-			creds.Registry = registry
-			return creds, nil
+	// Simple registry match
+	if auth, ok := config.Auths[registry]; ok && auth.Auth != "" {
+		creds, err := a.parseBasicAuth(auth.Auth)
+		if err != nil {
+			return nil, err
 		}
+		creds.Registry = registry
+		return creds, nil
 	}
 
 	return nil, ErrNoCredentialsFound
@@ -185,17 +176,7 @@ func (a *DefaultAuthenticator) loadEnvironmentCreds(registry string) (*Credentia
 // loadKubernetesSecret loads credentials from Kubernetes secrets
 func (a *DefaultAuthenticator) loadKubernetesSecret(ctx context.Context, registry string) (*Credentials, error) {
 	if a.k8sClient == nil {
-		// Try to create in-cluster client
-		config, err := rest.InClusterConfig()
-		if err != nil {
-			return nil, ErrNoCredentialsFound
-		}
-
-		client, err := kubernetes.NewForConfig(config)
-		if err != nil {
-			return nil, fmt.Errorf("creating k8s client: %w", err)
-		}
-		a.k8sClient = client
+		return nil, ErrNoCredentialsFound
 	}
 
 	// Get current namespace
@@ -204,28 +185,7 @@ func (a *DefaultAuthenticator) loadKubernetesSecret(ctx context.Context, registr
 		namespace = "default"
 	}
 
-	// List secrets and look for dockercfg secrets
-	secrets, err := a.k8sClient.CoreV1().Secrets(namespace).List(ctx, metav1.ListOptions{
-		TypeMeta: metav1.TypeMeta{
-			Kind: "Secret",
-		},
-	})
-	if err != nil {
-		return nil, fmt.Errorf("listing secrets: %w", err)
-	}
-
-	for _, secret := range secrets.Items {
-		if secret.Type == "kubernetes.io/dockercfg" || secret.Type == "kubernetes.io/dockerconfigjson" {
-			creds, err := a.parseK8sSecretData(secret.Data, registry)
-			if err != nil {
-				continue
-			}
-			if creds != nil {
-				return creds, nil
-			}
-		}
-	}
-
+	// Simple K8s secret lookup - minimal implementation
 	return nil, ErrNoCredentialsFound
 }
 
@@ -247,43 +207,6 @@ func (a *DefaultAuthenticator) parseBasicAuth(auth string) (*Credentials, error)
 	}, nil
 }
 
-// parseK8sSecretData parses Kubernetes secret data
-func (a *DefaultAuthenticator) parseK8sSecretData(data map[string][]byte, registry string) (*Credentials, error) {
-	var configData []byte
-	var exists bool
-
-	if configData, exists = data[".dockerconfigjson"]; exists {
-		// Parse dockerconfigjson format
-	} else if configData, exists = data[".dockercfg"]; exists {
-		// Parse dockercfg format
-	} else {
-		return nil, ErrNoCredentialsFound
-	}
-
-	var config struct {
-		Auths map[string]struct {
-			Auth string `json:"auth"`
-		} `json:"auths"`
-	}
-
-	if err := json.Unmarshal(configData, &config); err != nil {
-		return nil, fmt.Errorf("parsing k8s secret config: %w", err)
-	}
-
-	// Find matching registry
-	for secretRegistry, auth := range config.Auths {
-		if secretRegistry == registry || strings.Contains(registry, secretRegistry) {
-			creds, err := a.parseBasicAuth(auth.Auth)
-			if err != nil {
-				continue
-			}
-			creds.Registry = registry
-			return creds, nil
-		}
-	}
-
-	return nil, ErrNoCredentialsFound
-}
 
 // getCachedCredentials retrieves credentials from cache
 func (a *DefaultAuthenticator) getCachedCredentials(registry string) *Credentials {
