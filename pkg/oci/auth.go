@@ -33,18 +33,12 @@ type AuthConfig struct {
 func NewAuthenticator(config *AuthConfig) *DefaultAuthenticator {
 	if config == nil {
 		config = &AuthConfig{
-			Sources: []CredentialSource{
-				SourceDockerConfig,
-				SourceEnvironment,
-				SourceKubernetes,
-			},
+			Sources: []CredentialSource{SourceDockerConfig, SourceEnvironment, SourceKubernetes},
 		}
 	}
 
-	// Set default secrets path if not provided
 	if config.SecretsPath == "" {
-		homeDir, err := os.UserHomeDir()
-		if err == nil {
+		if homeDir, err := os.UserHomeDir(); err == nil {
 			config.SecretsPath = filepath.Join(homeDir, ".docker")
 		}
 	}
@@ -82,25 +76,17 @@ func (a *DefaultAuthenticator) Authenticate(ctx context.Context, registry string
 
 // RefreshToken refreshes an expired token
 func (a *DefaultAuthenticator) RefreshToken(ctx context.Context, registry string) (*Credentials, error) {
-	// Clear cache for this registry
 	a.mu.Lock()
 	delete(a.cache, registry)
 	a.mu.Unlock()
-
-	// Re-authenticate
 	return a.Authenticate(ctx, registry)
 }
 
 // ValidateCredentials checks if credentials are still valid
 func (a *DefaultAuthenticator) ValidateCredentials(ctx context.Context, creds *Credentials) (bool, error) {
-	if creds == nil {
+	if creds == nil || creds.IsExpired() {
 		return false, ErrInvalidCredentials
 	}
-
-	if creds.IsExpired() {
-		return false, ErrTokenExpired
-	}
-
 	return creds.IsValid(), nil
 }
 
