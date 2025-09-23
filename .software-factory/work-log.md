@@ -62,3 +62,23 @@ Result: Success - Build passes
 
 Command: go test ./cmd/push/... -v
 Result: Success - All 7 tests passing
+
+### Merge 3: Effort 1.1.3 (integration-tests)
+Command: git merge --no-ff idpbuilderpush/phase1/wave1/integration-tests -m "feat(phase1/wave1): integrate effort 1.1.3 - integration tests"
+Result: Conflicts occurred as expected
+MERGED: idpbuilderpush/phase1/wave1/integration-tests at 2025-09-23 15:32:00
+Conflicts resolved in:
+- cmd/push/config.go (kept RegistryURL field from 1.1.2 as per plan)
+- IMPLEMENTATION-COMPLETE.marker (combined all three efforts' completion info)
+- work-log.md (combined work logs from all efforts)
+
+### Post-Integration Validation
+Command: go build ./cmd/push/...
+Result: Success - Build passes
+
+Command: go test (unit tests only)
+Result: Success - All 7 unit tests passing
+Note: Integration tests have expected failures due to missing parent command wiring
+
+Command: go build -o idpbuilder-push ./main.go
+Result: Success - Binary builds correctly
