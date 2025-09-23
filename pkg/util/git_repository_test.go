@@ -42,6 +42,7 @@ func TestCloneRemoteRepoToDir(t *testing.T) {
 	defer os.RemoveAll(testDir2)
 
 	_, _, err = CloneRemoteRepoToDir(context.Background(), spec, 0, false, dir, "")
+	assert.Nil(t, err)
 	repo, err = git.PlainClone(testDir2, false, &git.CloneOptions{URL: dir})
 	assert.Nil(t, err)
 	ref, err = repo.Head()
