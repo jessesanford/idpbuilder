@@ -11,17 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// PushConfig represents the configuration for the push command
-type PushConfig struct {
-	RegistryURL string
-	Username    string
-	Password    string
-	Namespace   string
-	Dir         string
-	Insecure    bool
-	PlainHTTP   bool
-}
-
 // TestPushCommandRegistration verifies the push command is properly registered
 func TestPushCommandRegistration(t *testing.T) {
 	require.NotNil(t, pushCmd, "push command should be registered")

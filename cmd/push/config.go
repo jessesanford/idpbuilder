@@ -5,6 +5,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// PushConfig represents the configuration for the push command
+type PushConfig struct {
+	RegistryURL string
+	Username    string
+	Password    string
+	Namespace   string
+	Dir         string
+	Insecure    bool
+	PlainHTTP   bool
+}
+
 // NewPushConfig creates a new PushConfig with default values
 func NewPushConfig() *PushConfig {
 	return &PushConfig{
