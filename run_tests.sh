@@ -1,0 +1,43 @@
+#!/bin/bash
+# Integration Test Runner Script
+# This script demonstrates how to run the integration tests properly
+
+echo "================================================"
+echo "Integration Tests for idpbuilder push command"
+echo "================================================"
+echo ""
+echo "These integration tests are designed to run AFTER"
+echo "all Wave 1.1 efforts are integrated together."
+echo ""
+echo "Current Status:"
+echo "- Effort 1.1.1 (Write Command Tests): COMPLETED"
+echo "- Effort 1.1.2 (Implement Command Skeleton): COMPLETED"
+echo "- Effort 1.1.3 (Integration Tests): COMPLETED"
+echo ""
+echo "The tests verify:"
+echo "1. Command registration and discovery"
+echo "2. Flag precedence (CLI > ENV > defaults)"
+echo "3. Error propagation through the stack"
+echo "4. Help text generation"
+echo "5. Parent-child command relationships"
+echo ""
+echo "To run these tests properly:"
+echo ""
+echo "1. After Wave 1.1 integration:"
+echo "   cd /home/vscode/workspaces/idpbuilder-push"
+echo "   # Merge all efforts into integration branch"
+echo "   go test ./cmd/push -v"
+echo ""
+echo "2. For standalone testing (current state):"
+echo "   # The push command needs to be registered with a parent"
+echo "   # This is handled during the integration phase"
+echo ""
+echo "Note: Some tests will fail in isolation because they"
+echo "      require the full command hierarchy to be set up."
+echo ""
+
+# Try to run the tests to show current state
+echo "Current test results (in isolation):"
+echo "====================================="
+cd /home/vscode/workspaces/idpbuilder-push/efforts/phase1/wave1/effort-1.1.3-integration-tests
+go test ./cmd/push -v 2>&1 | grep -E "PASS|FAIL|Error"

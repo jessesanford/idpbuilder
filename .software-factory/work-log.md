@@ -45,3 +45,20 @@ Files added: cmd/push/root_test.go, EFFORT-PLAN.md, IMPLEMENTATION-COMPLETE.mark
 Command: go test ./cmd/push/... -v
 Result: Build failed - Expected (tests reference pushCmd which comes from effort 1.1.2)
 Note: This is expected behavior - tests written before implementation
+
+### Merge 2: Effort 1.1.2 (command-skeleton)
+Command: git merge --no-ff idpbuilderpush/phase1/wave1/command-skeleton -m "feat(phase1/wave1): integrate effort 1.1.2 - command skeleton"
+Result: Conflicts occurred as expected
+MERGED: idpbuilderpush/phase1/wave1/command-skeleton at 2025-09-23 15:29:00
+Conflicts resolved in:
+- cmd/push/root_test.go (kept all test functions, removed duplicate PushConfig struct)
+- IMPLEMENTATION-COMPLETE.marker (combined both efforts' completion info)
+- work-log.md (combined work logs from both efforts)
+- .software-factory/work-log.md (kept integration work log)
+
+### Test Run After Merge 2
+Command: go build ./cmd/push/...
+Result: Success - Build passes
+
+Command: go test ./cmd/push/... -v
+Result: Success - All 7 tests passing
