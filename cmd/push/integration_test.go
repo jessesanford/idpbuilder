@@ -82,7 +82,7 @@ func TestHelpTextGeneration(t *testing.T) {
 	rootCmd.SetOut(&output)
 
 	rootCmd.SetArgs([]string{"push", "--help"})
-	err := rootCmd.ExecuteContext(context.Background())
+	_ = rootCmd.ExecuteContext(context.Background())
 	helpText := output.String()
 	assert.Contains(t, helpText, "Usage:")
 	assert.Contains(t, helpText, "push")
