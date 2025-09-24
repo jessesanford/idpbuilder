@@ -207,3 +207,130 @@ func (a *DefaultAuthenticator) cacheCredentials(registry string, creds *Credenti
 	defer a.mu.Unlock()
 	a.cache[registry] = creds
 }
+
+// NewAuthenticatorFromFlags creates an authenticator from CLI flag values
+func NewAuthenticatorFromFlags(username, password string) (*DefaultAuthenticator, error) {
+	// Validate both parameters are non-empty
+	if username == "" {
+		return nil, fmt.Errorf("username cannot be empty")
+	}
+	if password == "" {
+		return nil, fmt.Errorf("password cannot be empty")
+	}
+
+	// Create AuthConfig with credentials - using direct credentials approach
+	// Since the existing NewAuthenticator uses sources, we'll create a minimal config
+	config := &AuthConfig{
+		Sources: []CredentialSource{SourceEnvironment}, // Use environment as the source type
+	}
+
+	// Create the authenticator
+	auth := NewAuthenticator(config)
+
+	// For flags-based auth, we'll store the credentials directly in cache
+	// This allows the credentials to be available when requested
+	creds := &Credentials{
+		Username: username,
+		Password: password,
+		Registry: "", // Will be set when specific registry is requested
+	}
+
+	// Cache the credentials for immediate use - using a default key
+	auth.mu.Lock()
+	auth.cache["flags-provided"] = creds
+	auth.mu.Unlock()
+
+	return auth, nil
+}
+
+// NewAuthenticatorFromEnv creates an authenticator from environment variables
+// Reads OCI_USERNAME and OCI_PASSWORD environment variables
+func NewAuthenticatorFromEnv() (*DefaultAuthenticator, error) {
+	// Read environment variables
+	username := os.Getenv("OCI_USERNAME")
+	password := os.Getenv("OCI_PASSWORD")
+
+	// Validate both are present and non-empty
+	if username == "" {
+		return nil, fmt.Errorf("OCI_USERNAME environment variable is not set or empty")
+	}
+	if password == "" {
+		return nil, fmt.Errorf("OCI_PASSWORD environment variable is not set or empty")
+	}
+
+	// Create AuthConfig - use environment source since that's what we're doing
+	config := &AuthConfig{
+		Sources: []CredentialSource{SourceEnvironment},
+	}
+
+	// Create the authenticator
+	auth := NewAuthenticator(config)
+
+	// Store the credentials directly in cache for immediate use
+	creds := &Credentials{
+		Username: username,
+		Password: password,
+		Registry: "", // Will be set when specific registry is requested
+	}
+
+	// Cache the credentials using an environment-specific key
+	auth.mu.Lock()
+	auth.cache["env-provided"] = creds
+	auth.mu.Unlock()
+
+	return auth, nil
+}
+
+// NewAuthenticatorFromSecrets creates an authenticator from Kubernetes secret data
+// The secretData map should contain "username" and "password" keys
+func NewAuthenticatorFromSecrets(secretData map[string][]byte) (*DefaultAuthenticator, error) {
+	// Validate secretData is not nil
+	if secretData == nil {
+		return nil, fmt.Errorf("secretData cannot be nil")
+	}
+
+	// Check for required keys and convert to strings
+	usernameBytes, hasUsername := secretData["username"]
+	passwordBytes, hasPassword := secretData["password"]
+
+	if !hasUsername {
+		return nil, fmt.Errorf("username key missing in secret data")
+	}
+	if !hasPassword {
+		return nil, fmt.Errorf("password key missing in secret data")
+	}
+
+	// Convert []byte values to strings
+	username := string(usernameBytes)
+	password := string(passwordBytes)
+
+	// Validate converted values are not empty
+	if username == "" {
+		return nil, fmt.Errorf("username cannot be empty")
+	}
+	if password == "" {
+		return nil, fmt.Errorf("password cannot be empty")
+	}
+
+	// Create AuthConfig - use Kubernetes source since that's what we're doing
+	config := &AuthConfig{
+		Sources: []CredentialSource{SourceKubernetes},
+	}
+
+	// Create the authenticator
+	auth := NewAuthenticator(config)
+
+	// Store the credentials directly in cache for immediate use
+	creds := &Credentials{
+		Username: username,
+		Password: password,
+		Registry: "", // Will be set when specific registry is requested
+	}
+
+	// Cache the credentials using a secrets-specific key
+	auth.mu.Lock()
+	auth.cache["secrets-provided"] = creds
+	auth.mu.Unlock()
+
+	return auth, nil
+}
