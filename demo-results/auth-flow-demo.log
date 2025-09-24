@@ -1,0 +1,14 @@
+=== Auth Flow Demo ===
+Demonstrating authentication flow with flag override and secret fallback
+
+Scenario 1: Flag Override Demo
+Setup: Kubernetes secret exists with credentials
+Input: Username and password via flags
+Action: Using flag credentials
+
+Using credentials from flags
+Username: flag-user
+Source: command-line flags
+✅ Verification: Flags used, not secrets
+
+=== Demo Complete ===

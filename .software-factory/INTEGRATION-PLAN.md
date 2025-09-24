@@ -1,31 +1,26 @@
 # Integration Plan
-Date: 2025-09-23 15:25:00 UTC
-Target Branch: phase1/wave1/integration
-Integration Agent: Started at 2025-09-23T15:23:23.517Z
+Date: 2025-09-24
+Target Branch: idpbuilderpush/phase2/wave2/integration
+Base Branch: idpbuilderpush/phase2/wave1/integration
 
-## Branches to Integrate (ordered by lineage)
-1. idpbuilderpush/phase1/wave1/command-tests (Effort 1.1.1 - Test foundation)
-2. idpbuilderpush/phase1/wave1/command-skeleton (Effort 1.1.2 - Core implementation)
-3. idpbuilderpush/phase1/wave1/integration-tests (Effort 1.1.3 - Integration validation)
+## Branches to Integrate
+1. phase2/wave2/flow-tests (remote branch exists)
+2. phase2/wave2/auth-flow (needs recovery from local workspace)
 
-## Merge Strategy
-- Order based on dependency relationships (tests → implementation → integration)
-- Use --no-ff to preserve merge history
-- Test after EACH merge to ensure stability
-- Document all conflict resolutions
+## Critical Issues Identified
+- R308 VIOLATION: Effort branches incorrectly based on `main` instead of previous wave
+- auth-flow branch missing from remote
+- CANNOT use cherry-pick (violates Integration Agent SUPREME LAW)
 
-## Expected Conflicts
-1. Step 1 (command-tests): No conflicts expected
-2. Step 2 (command-skeleton): Potential conflict in cmd/push/root_test.go
-3. Step 3 (integration-tests): Expected conflicts in config.go and root.go
-
-## Conflict Resolution Strategy
-- root_test.go: Keep ALL test functions from both branches
-- config.go: Keep RegistryURL field from effort 1.1.2
-- root.go: Merge all functionality from both branches
+## Alternative Merge Strategy (NO CHERRY-PICK)
+Since cherry-pick is forbidden, will use:
+1. Full merge with conflict resolution for flow-tests
+2. Manual file recovery and commit for auth-flow
+3. Preserve complete history per Integration Agent rules
 
 ## Expected Outcome
-- Fully integrated branch with all three efforts
+- Fully integrated branch with both efforts
 - All tests passing
-- Build successful
-- Complete documentation in .software-factory/
+- Complete documentation
+- NO cherry-picks used
+- Full history preserved

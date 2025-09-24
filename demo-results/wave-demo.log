@@ -1,0 +1,43 @@
+🎬 Running Phase 2 Wave 2 Wave Demo...
+=========================
+
+📦 Wave 2 Components:
+  - Auth Flow Implementation (effort 2.2.2)
+  - Flow Tests (effort 2.2.1)
+
+Note: Tests cannot compile due to interface mismatch
+      This is documented as an upstream bug
+
+Running auth-flow demo...
+=== Auth Flow Demo ===
+Demonstrating authentication flow with flag override and secret fallback
+
+Scenario 1: Flag Override Demo
+Setup: Kubernetes secret exists with credentials
+Input: Username and password via flags
+Action: Using flag credentials
+
+Using credentials from flags
+Username: flag-user
+Source: command-line flags
+✅ Verification: Flags used, not secrets
+
+=== Demo Complete ===
+
+=== Auth Flow Demo ===
+Demonstrating authentication flow with flag override and secret fallback
+
+Scenario 2: Secret Fallback Demo
+Setup: Kubernetes secret with registry credentials
+Input: No flags provided
+Action: Using secret credentials
+
+Using credentials from Kubernetes secret
+Username: secret-user
+Source: kubernetes-secret
+✅ Verification: Secret credentials used
+
+=== Demo Complete ===
+
+=========================
+✅ Wave demo completed (with noted test compilation issues)
