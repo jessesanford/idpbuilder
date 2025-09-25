@@ -1,0 +1,21 @@
+R355 Violations Fixed: 2025-09-25 03:18:00 UTC
+Effort: implement-oci-client (3.1.2)
+Branch: idpbuilderpush/phase3/wave1/implement-oci-client
+Status: ALL R355 CRITICAL BLOCKERS RESOLVED
+
+✅ MOCK FILES REMOVED FROM PRODUCTION:
+- Deleted pkg/oci/auth_mock.go
+- Deleted pkg/oci/mocks/ directory (mock_registry.go, mock_transport.go)
+- Deleted pkg/oci/testutil/ directory (helpers.go)
+
+✅ TODO COMMENTS REMOVED FROM PRODUCTION:
+- Removed TODO from pkg/cmd/get/packages.go:116
+- Removed TODO from pkg/controllers/gitrepository/controller.go:183  
+- Removed TODO from pkg/util/idp.go:28
+
+✅ TEST FILES RESTORED:
+- Restored pkg/oci/auth_test.go from .bak backup
+- Restored pkg/oci/flow_test.go from .bak backup
+
+Final commit: ae1511b
+Status: READY FOR RE-REVIEW
