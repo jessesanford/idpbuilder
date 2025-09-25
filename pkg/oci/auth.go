@@ -193,7 +193,6 @@ func (a *DefaultAuthenticator) parseBasicAuth(auth string) (*Credentials, error)
 	}, nil
 }
 
-
 // getCachedCredentials retrieves credentials from cache
 func (a *DefaultAuthenticator) getCachedCredentials(registry string) *Credentials {
 	a.mu.RLock()

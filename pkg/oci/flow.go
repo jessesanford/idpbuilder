@@ -12,9 +12,9 @@ import (
 
 // AuthFlowConfig configures the authentication flow
 type AuthFlowConfig struct {
-	Username  string                // From flags
-	Password  string                // From flags
-	K8sClient kubernetes.Interface  // Kubernetes client for secrets
+	Username  string               // From flags
+	Password  string               // From flags
+	K8sClient kubernetes.Interface // Kubernetes client for secrets
 	Logger    logr.Logger          // Logger for debug messages
 }
 

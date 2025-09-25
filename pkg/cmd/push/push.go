@@ -17,32 +17,32 @@ import (
 )
 
 const (
-	imageUsage        = "Image reference to push (e.g., localhost:5000/myimage:latest)"
-	usernameUsage     = "Registry username for authentication"
-	passwordUsage     = "Registry password for authentication"
-	insecureUsage     = "Allow connections to non-HTTPS registries"
-	authModeUsage     = "Authentication mode: flags, env, docker-config, or auto (default: auto)"
-	tagUsage          = "Additional tags to apply to the image before pushing"
-	quietUsage        = "Suppress push progress output"
-	forceUsage        = "Force push even if image already exists in registry"
+	imageUsage    = "Image reference to push (e.g., localhost:5000/myimage:latest)"
+	usernameUsage = "Registry username for authentication"
+	passwordUsage = "Registry password for authentication"
+	insecureUsage = "Allow connections to non-HTTPS registries"
+	authModeUsage = "Authentication mode: flags, env, docker-config, or auto (default: auto)"
+	tagUsage      = "Additional tags to apply to the image before pushing"
+	quietUsage    = "Suppress push progress output"
+	forceUsage    = "Force push even if image already exists in registry"
 )
 
 var (
 	// Command flags
-	imageRef   string
-	username   string
-	password   string
-	insecure   bool
-	authMode   string
-	tags       []string
-	quiet      bool
-	force      bool
+	imageRef string
+	username string
+	password string
+	insecure bool
+	authMode string
+	tags     []string
+	quiet    bool
+	force    bool
 )
 
 // PushCmd represents the push command
 var PushCmd = &cobra.Command{
-	Use:          "push IMAGE",
-	Short:        "Push a container image to an OCI registry",
+	Use:   "push IMAGE",
+	Short: "Push a container image to an OCI registry",
 	Long: `Push a container image to an OCI registry with authentication support.
 
 The push command supports multiple authentication methods:

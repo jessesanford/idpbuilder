@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-
 // TestRegistryClient_SecureConnection tests HTTPS registry connection
 // TDD GREEN phase: Implementation now exists
 func TestRegistryClient_SecureConnection(t *testing.T) {

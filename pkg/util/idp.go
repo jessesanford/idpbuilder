@@ -25,7 +25,6 @@ func GetConfig(ctx context.Context) (v1alpha1.BuildCustomizationSpec, error) {
 		return b, err
 	}
 
-	// TODO: We assume that only one LocalBuild exists !
 	return list.Items[0].Spec.BuildCustomization, nil
 }
 

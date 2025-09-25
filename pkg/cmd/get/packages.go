@@ -113,7 +113,6 @@ func getIDPNamespace(ctx context.Context, kubeClient client.Client) (string, err
 	if err != nil {
 		return "", err
 	}
-	// TODO: We assume that only one LocalBuild has been created for one cluster !
 	idpNamespace := v1alpha1.FieldManager + "-" + build.Items[0].Name
 	return idpNamespace, nil
 }

@@ -7,10 +7,10 @@ import (
 
 // Common authentication errors
 var (
-	ErrNoCredentialsFound    = errors.New("no credentials found")
-	ErrInvalidCredentials    = errors.New("invalid credentials")
-	ErrTokenExpired          = errors.New("token expired")
-	ErrRegistryUnauthorized  = errors.New("registry unauthorized")
+	ErrNoCredentialsFound     = errors.New("no credentials found")
+	ErrInvalidCredentials     = errors.New("invalid credentials")
+	ErrTokenExpired           = errors.New("token expired")
+	ErrRegistryUnauthorized   = errors.New("registry unauthorized")
 	ErrCredentialSourceFailed = errors.New("credential source failed")
 )
 

@@ -180,7 +180,6 @@ func (r *RepositoryReconciler) reconcileGitRepo(ctx context.Context, repo *v1alp
 }
 
 func (r *RepositoryReconciler) SetupWithManager(mgr ctrl.Manager, notifyChan chan event.GenericEvent) error {
-	// TODO: should use notifyChan to trigger reconcile when FS changes
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.GitRepository{}).
 		Complete(r)
