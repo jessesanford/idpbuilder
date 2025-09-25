@@ -1,10 +1,10 @@
 {
   "current_phase": 3,
   "current_wave": 1,
-  "current_state": "CREATE_NEXT_INFRASTRUCTURE",
-  "previous_state": "MONITOR_REVIEWS",
-  "transition_time": "2025-09-25T04:15:07Z",
-  "transition_reason": "Split infrastructure needed for effort 3.1.1 - 2763 lines requires 4 splits",
+  "current_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+  "previous_state": "MONITOR_FIXES",
+  "transition_time": "2025-09-25T03:23:00Z",
+  "transition_reason": "Fixes complete for effort 3.1.2 - ready for re-review",
   "phases_planned": 4,
   "waves_per_phase": [
     1
@@ -95,23 +95,22 @@
       "directory": "efforts/phase3/wave1/client-interface-tests",
       "test_infrastructure": true,
       "completed_at": "2025-09-25T02:31:14Z"
-    },
+    }
+  ],
+  "efforts_in_progress": [],
+  "efforts_pending": [
     {
       "effort": "3.1.2",
       "name": "Implement OCI Client",
       "phase": 3,
       "wave": 1,
-      "branch": "idpbuilderpush/phase3/wave1/implement-oci-client",
-      "status": "COMPLETE",
-      "size": 347,
-      "directory": "efforts/phase3/wave1/implement-oci-client",
-      "completed_at": "2025-09-25T04:09:56Z",
-      "review_passed": true,
-      "r355_compliant": true
-    }
-  ],
-  "efforts_in_progress": [],
-  "efforts_pending": [
+      "status": "pending_infrastructure",
+      "size_estimate": 400,
+      "dependencies": [
+        "3.1.1"
+      ],
+      "sequential": true
+    },
     {
       "effort": "3.1.3",
       "name": "Insecure Mode Handling",
@@ -313,11 +312,14 @@
     "effort_312": {
       "effort": "3.1.2",
       "name": "Implement OCI Client",
-      "review_result": "PASSED",
-      "re_review_completed": "2025-09-25T04:09:56Z",
-      "r355_violations_resolved": true,
-      "size": 347,
-      "ready_for_integration": true
+      "review_result": "FAILED",
+      "failure_reason": "R355 violations - mocks/TODOs in production",
+      "needs_fixes": true,
+      "review_report": "efforts/phase3/wave1/implement-oci-client/.software-factory/CODE-REVIEW-REPORT.md",
+      "fix_engineer_spawned": "2025-09-25T03:16:48Z",
+      "fix_completed": "2025-09-25T03:23:00Z",
+      "fix_status": "COMPLETE",
+      "needs_re_review": true
     },
     "effort_311": {
       "effort": "3.1.1",
@@ -338,17 +340,5 @@
       "timestamp": "2025-09-25T03:16:48Z",
       "fixing": "R355 violations - mocks and TODOs in production"
     }
-  ],
-  "split_tracking": {
-    "client-interface-tests": {
-      "total_splits": 4,
-      "current_split": 0,
-      "splits": [],
-      "original_branch": "idpbuilderpush/phase3/wave1/client-interface-tests",
-      "status": "SPLIT_PLANNED",
-      "split_date": "2025-09-25T04:15:07Z",
-      "split_reason": "SIZE_VIOLATION - 2763 lines exceeds 800 line limit",
-      "split_inventory": "efforts/phase3/wave1/client-interface-tests/SPLIT-INVENTORY.md"
-    }
-  }
+  ]
 }

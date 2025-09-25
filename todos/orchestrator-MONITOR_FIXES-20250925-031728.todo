@@ -1,0 +1,21 @@
+## Orchestrator TODOs - MONITOR_FIXES State
+Generated: 2025-09-25T03:17:00Z
+
+### Completed:
+- [x] Read state-specific rules for SPAWN_ENGINEERS_FOR_FIXES per R290
+- [x] Read all 13 mandatory rule files
+- [x] Create R290 verification marker
+- [x] Review code review report for effort 3.1.2
+- [x] Spawn SW Engineer to fix R355 violations
+- [x] Update state file to MONITOR_FIXES
+
+### Next State (MONITOR_FIXES):
+- [ ] Monitor SW Engineer fix progress
+- [ ] Verify fixes are complete
+- [ ] Determine next action based on fix results
+
+### Context:
+- Phase 3, Wave 1
+- Effort 3.1.2 (Implement OCI Client) had R355 violations
+- SW Engineer spawned to fix mock files and TODO comments
+- SW Engineer reported successful completion
