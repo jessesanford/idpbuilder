@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cnoe-io/idpbuilder-push/client-interface-tests-split-003/pkg/oci"
+	"github.com/cnoe-io/idpbuilder-push/pkg/oci"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

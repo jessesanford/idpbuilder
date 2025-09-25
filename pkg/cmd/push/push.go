@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cnoe-io/idpbuilder-push/client-interface-tests-split-003/pkg/oci"
+	"github.com/cnoe-io/idpbuilder-push/pkg/oci"
 	"github.com/spf13/cobra"
 )
 

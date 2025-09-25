@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cnoe-io/idpbuilder-push/client-interface-tests-split-003/pkg/cmd/push"
+	"github.com/cnoe-io/idpbuilder-push/pkg/cmd/push"
 	"github.com/spf13/cobra"
 )
 
