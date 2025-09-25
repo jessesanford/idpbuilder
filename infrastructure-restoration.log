@@ -1,0 +1,29 @@
+Starting effort restoration at 2025-09-18 15:42:50 UTC
+═══════════════════════════════════════════════════════════════════════════
+🏭 SOFTWARE FACTORY 2.0 - COMPREHENSIVE INFRASTRUCTURE RESTORATION
+═══════════════════════════════════════════════════════════════════════════
+Timestamp: 2025-09-18 15:42:50 UTC
+Planning Repo: /home/vscode/workspaces/this-is-not-the-target-repo-this-is-for-orchestrator-planning-only
+═══════════════════════════════════════════════════════════════════════════
+[0;36m
+📋 Checking prerequisites...[0m
+[0;32m✅ All prerequisites met[0m
+[1m[0;36m
+🏭 Starting effort restoration from: /home/vscode/workspaces/this-is-not-the-target-repo-this-is-for-orchestrator-planning-only/orchestrator-state.json[0m
+[0;34m📍 Target repository: https://github.com/cnoe-io/idpbuilder.git[0m
+[1m[0;36m
+📋 Processing COMPLETED efforts...[0m
+[0;34m  Found 4 completed efforts[0m
+[0;34m  Processing additional kept efforts from phase1_wave1_new_plan...[0m
+[0;34m    Checking: kind-cert-extraction (E1.1.1) - Status: COMPLETE[0m
+[0;36m
+🔄 Processing effort: kind-cert-extraction[0m
+[0;34m  Branch: idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction[0m
+[0;34m  Path: /home/vscode/workspaces/this-is-not-the-target-repo-this-is-for-orchestrator-planning-only/efforts/phase1/wave1/kind-cert-extraction[0m
+[0;34m  Base: main[0m
+[0;34m  Target Repo: https://github.com/cnoe-io/idpbuilder.git[0m
+[0;34m  📥 Cloning fresh effort...[0m
+[1;33m  ⚠️  Branch 'idpbuilder-oci-build-push/phase1/wave1/kind-cert-extraction' does not exist in remote repository[0m
+[1;33m     This effort may not have been pushed yet or was deleted[0m
+[0;34m     Found local worktree at: /home/vscode/workspaces/idpbuilder-oci-build-push[0m
+[1;33m     You may need to push this branch from the local worktree[0m

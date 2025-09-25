@@ -1,0 +1,99 @@
+{
+  "transformation_id": "pr-ready-20250921-120000",
+  "current_state": "PR_READY_INIT",
+  "phase": "DISCOVERY",
+  "started_at": "2025-09-21T12:00:00Z",
+  "last_updated": "2025-09-21T12:00:00Z",
+
+  "branches_to_transform": [
+    "phase1-wave1-effort1",
+    "phase1-wave1-effort2",
+    "phase1-wave2-effort1",
+    "phase2-wave1-effort1"
+  ],
+
+  "artifacts_discovered": {
+    "phase1-wave1-effort1": {
+      "directories": ["todos/", "efforts/", "agent-states/"],
+      "files": ["orchestrator-state.json", "PROJECT-IMPLEMENTATION-PLAN.md"],
+      "total_count": 156,
+      "status": "pending_cleanup"
+    },
+    "phase1-wave1-effort2": {
+      "directories": ["rule-library/", "templates/"],
+      "files": ["CODE-REVIEW-REPORT.md", "SPLIT-PLAN.md"],
+      "total_count": 89,
+      "status": "pending_cleanup"
+    }
+  },
+
+  "cleanup_status": {
+    "phase1-wave1-effort1": {
+      "status": "not_started",
+      "artifacts_removed": 0,
+      "core_files_preserved": null,
+      "cleanup_sha": null
+    }
+  },
+
+  "consolidation_status": {
+    "phase1-wave1-effort1": {
+      "original_commits": 45,
+      "consolidated_to": null,
+      "commit_message": null,
+      "status": "not_started"
+    }
+  },
+
+  "integrity_status": {
+    "phase1-wave1-effort1": {
+      "core_files_intact": null,
+      "deletions_count": null,
+      "destructive_changes": null,
+      "status": "not_verified"
+    }
+  },
+
+  "rebase_status": {
+    "sequence": ["phase1-wave1-effort1", "phase1-wave1-effort2"],
+    "completed": [],
+    "conflicts": {},
+    "status": "not_started"
+  },
+
+  "validation_results": {
+    "merge_tests": {
+      "phase1-wave1-effort1": null
+    },
+    "build_status": null,
+    "test_results": null
+  },
+
+  "spawned_agents": {
+    "discovery": [],
+    "cleanup": [],
+    "consolidation": [],
+    "verification": [],
+    "rebase": [],
+    "validation": []
+  },
+
+  "errors": [],
+
+  "documentation": {
+    "pr_merge_guide": null,
+    "conflict_resolutions": null,
+    "transformation_report": null
+  },
+
+  "completion_status": {
+    "discovery": false,
+    "cleanup": false,
+    "consolidation": false,
+    "verification": false,
+    "rebase": false,
+    "validation": false,
+    "preparation": false,
+    "success": false
+  }
+}

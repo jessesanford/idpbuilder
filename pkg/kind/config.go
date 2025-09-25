@@ -1,127 +1,166 @@
 package kind
 
 import (
-	"embed"
 	"fmt"
-	"io"
-	"io/fs"
 	"os"
-	"path/filepath"
+	"strconv"
 	"strings"
-
-	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
-	"github.com/cnoe-io/idpbuilder/pkg/util/files"
 )
 
+// ClusterConfig represents configuration for a Kind cluster
+type ClusterConfig struct {
+	Name           string
+	KubeVersion    string
+	ControlPlanes  int
+	Workers        int
+	RegistryMirror string
+	PortMappings   []PortMapping
+}
+
+// PortMapping represents a port mapping for the cluster
 type PortMapping struct {
-	HostPort      string
-	ContainerPort string
+	ContainerPort int
+	HostPort      int
+	Protocol      string
 }
 
-type TemplateConfig struct {
-	v1alpha1.BuildCustomizationSpec
-	KubernetesVersion string
-	ExtraPortsMapping []PortMapping
-	RegistryConfig    string
-	RegistryCertsDir  string
+// NewClusterConfig creates a new ClusterConfig with default values
+func NewClusterConfig(name string) *ClusterConfig {
+	if name == "" {
+		name = getDefaultClusterName()
+	}
+
+	return &ClusterConfig{
+		Name:          name,
+		KubeVersion:   getDefaultKubeVersion(),
+		ControlPlanes: getDefaultControlPlanes(),
+		Workers:       getDefaultWorkers(),
+		RegistryMirror: getDefaultRegistryMirror(),
+		PortMappings:  getDefaultPortMappings(),
+	}
 }
 
-//go:embed resources/* testdata/custom-kind.yaml.tmpl
-var configFS embed.FS
+// Validate performs validation on the cluster configuration
+func (c *ClusterConfig) Validate() error {
+	if c.Name == "" {
+		return fmt.Errorf("cluster name cannot be empty")
+	}
 
-func loadConfig(path string, httpClient HttpClient) ([]byte, error) {
-	var rawConfigTempl []byte
-	var err error
-	if path != "" {
-		if strings.HasPrefix(path, "https://") || strings.HasPrefix(path, "http://") {
-			resp, err := httpClient.Get(path)
-			if err != nil {
-				return nil, fmt.Errorf("fetching remote kind config: %w", err)
+	if !isValidName(c.Name) {
+		return fmt.Errorf("cluster name must contain only alphanumeric characters and hyphens")
+	}
+
+	if c.KubeVersion == "" {
+		return fmt.Errorf("Kubernetes version cannot be empty")
+	}
+
+	if c.ControlPlanes < 1 {
+		return fmt.Errorf("must have at least 1 control plane node")
+	}
+
+	if c.Workers < 0 {
+		return fmt.Errorf("worker count cannot be negative")
+	}
+
+	return nil
+}
+
+// ToKindConfig generates the Kind cluster configuration YAML
+func (c *ClusterConfig) ToKindConfig() string {
+	var config strings.Builder
+
+	config.WriteString("kind: Cluster\n")
+	config.WriteString("apiVersion: kind.x-k8s.io/v1alpha4\n")
+
+	if c.KubeVersion != "" {
+		config.WriteString(fmt.Sprintf("kubeadmConfigPatches:\n"))
+		config.WriteString(fmt.Sprintf("- |\n"))
+		config.WriteString(fmt.Sprintf("  kind: ClusterConfiguration\n"))
+		config.WriteString(fmt.Sprintf("  kubernetesVersion: %s\n", c.KubeVersion))
+	}
+
+	config.WriteString("nodes:\n")
+
+	// Add control plane nodes
+	for i := 0; i < c.ControlPlanes; i++ {
+		config.WriteString("- role: control-plane\n")
+
+		if i == 0 && len(c.PortMappings) > 0 {
+			config.WriteString("  extraPortMappings:\n")
+			for _, pm := range c.PortMappings {
+				config.WriteString(fmt.Sprintf("  - containerPort: %d\n", pm.ContainerPort))
+				config.WriteString(fmt.Sprintf("    hostPort: %d\n", pm.HostPort))
+				config.WriteString(fmt.Sprintf("    protocol: %s\n", pm.Protocol))
 			}
-			defer resp.Body.Close()
-			if !(resp.StatusCode < 300 && resp.StatusCode >= 200) {
-				return nil, fmt.Errorf("got %d status code when fetching kind config", resp.StatusCode)
-			}
-			rawConfigTempl, err = io.ReadAll(resp.Body)
-			if err != nil {
-				return nil, fmt.Errorf("reading remote kind config body: %w", err)
-			}
-		} else {
-			rawConfigTempl, err = os.ReadFile(path)
 		}
-	} else {
-		rawConfigTempl, err = fs.ReadFile(configFS, "resources/kind.yaml.tmpl")
 	}
 
-	if err != nil {
-		return nil, fmt.Errorf("reading kind config: %w", err)
+	// Add worker nodes
+	for i := 0; i < c.Workers; i++ {
+		config.WriteString("- role: worker\n")
 	}
-	return rawConfigTempl, nil
+
+	return config.String()
 }
 
-func parsePortMappings(extraPortsMapping string) []PortMapping {
-	var portMappingPairs []PortMapping
-	if len(extraPortsMapping) > 0 {
-		// Split pairs of ports "11=1111","22=2222",etc
-		pairs := strings.Split(extraPortsMapping, ",")
-		// Create a slice to store PortMapping pairs.
-		portMappingPairs = make([]PortMapping, len(pairs))
-		// Parse each pair into PortPair objects.
-		for i, pair := range pairs {
-			parts := strings.Split(pair, ":")
-			if len(parts) == 2 {
-				portMappingPairs[i] = PortMapping{parts[0], parts[1]}
-			}
+// Helper functions for getting configuration values
+func getDefaultClusterName() string {
+	if name := os.Getenv("KIND_CLUSTER_NAME"); name != "" {
+		return name
+	}
+	return "idpbuilder-test"
+}
+
+func getDefaultKubeVersion() string {
+	if version := os.Getenv("KIND_KUBE_VERSION"); version != "" {
+		return version
+	}
+	return "v1.28.0"
+}
+
+func getDefaultControlPlanes() int {
+	if cp := os.Getenv("KIND_CONTROL_PLANES"); cp != "" {
+		if count, err := strconv.Atoi(cp); err == nil && count > 0 {
+			return count
 		}
 	}
-	return portMappingPairs
+	return 1
 }
 
-func findRegistryConfig(registryConfigPaths []string) string {
-	for _, s := range registryConfigPaths {
-		path := os.ExpandEnv(s)
-		if _, err := os.Stat(path); err == nil {
-			return path
+func getDefaultWorkers() int {
+	if workers := os.Getenv("KIND_WORKERS"); workers != "" {
+		if count, err := strconv.Atoi(workers); err == nil && count >= 0 {
+			return count
 		}
 	}
-	return ""
+	return 0
 }
 
-func renderRegistryCertsDir(cfg v1alpha1.BuildCustomizationSpec) (string, error) {
-	// Render out the template
-	rawConfigTempl, err := fs.ReadFile(configFS, "resources/hosts.toml.tmpl")
-	if err != nil {
-		return "", fmt.Errorf("reading insecure registry config %w", err)
+func getDefaultRegistryMirror() string {
+	return os.Getenv("KIND_REGISTRY_MIRROR")
+}
+
+func getDefaultPortMappings() []PortMapping {
+	// Default port mappings for common services
+	return []PortMapping{
+		{ContainerPort: 30080, HostPort: 30080, Protocol: "TCP"},
+		{ContainerPort: 30443, HostPort: 30443, Protocol: "TCP"},
+	}
+}
+
+func isValidName(name string) bool {
+	if len(name) == 0 {
+		return false
 	}
 
-	var retBuff []byte
-	if retBuff, err = files.ApplyTemplate(rawConfigTempl, cfg); err != nil {
-		return "", fmt.Errorf("templating insecure registry config %w", err)
+	for _, char := range name {
+		if !((char >= 'a' && char <= 'z') ||
+		     (char >= 'A' && char <= 'Z') ||
+		     (char >= '0' && char <= '9') ||
+		     char == '-') {
+			return false
+		}
 	}
 
-	// Generate the directory structure and write the file to hosts.toml
-	dir, err := os.MkdirTemp("", "idpbuilder-registry-certs.d-*")
-	if err != nil {
-		return "", fmt.Errorf("creating temp dir %w", err)
-	}
-
-	var hostAndPort string
-	if cfg.UsePathRouting {
-		hostAndPort = fmt.Sprintf("%s:%s", cfg.Host, cfg.Port)
-	} else {
-		hostAndPort = fmt.Sprintf("gitea.%s:%s", cfg.Host, cfg.Port)
-	}
-	hostCertsDir := filepath.Join(dir, hostAndPort)
-	err = os.Mkdir(hostCertsDir, 0700)
-	if err != nil {
-		return "", fmt.Errorf("creating temp dir for host %w", err)
-	}
-	hostsFile := filepath.Join(hostCertsDir, "hosts.toml")
-
-	err = os.WriteFile(hostsFile, retBuff, 0700)
-	if err != nil {
-		return "", fmt.Errorf("writing insecure registry config %w", err)
-	}
-
-	return dir, nil
+	return true
 }

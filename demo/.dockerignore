@@ -1,0 +1,5 @@
+# Ignore files not needed in the image
+*.tar
+*.log
+.git
+.gitignore

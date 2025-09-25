@@ -2,293 +2,195 @@ package kind
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"github.com/cnoe-io/idpbuilder/pkg/util"
-	"github.com/cnoe-io/idpbuilder/pkg/util/files"
-	"net/http"
-	"strconv"
+	"os"
+	"time"
 
-	"github.com/cnoe-io/idpbuilder/api/v1alpha1"
-	"github.com/go-logr/logr"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-	kindv1alpha4 "sigs.k8s.io/kind/pkg/apis/config/v1alpha4"
 	"sigs.k8s.io/kind/pkg/cluster"
-	"sigs.k8s.io/kind/pkg/cluster/nodes"
-	kindexec "sigs.k8s.io/kind/pkg/exec"
-	"sigs.k8s.io/yaml"
 )
 
-const (
-	ingressNginxNodeLabelKey   = "ingress-ready"
-	ingressNginxNodeLabelValue = "true"
-)
-
-var (
-	setupLog = log.Log.WithName("setup")
-)
-
-type HttpClient interface {
-	Get(url string) (resp *http.Response, err error)
+// ClusterManager manages Kind cluster lifecycle operations
+type ClusterManager struct {
+	provider *cluster.Provider
+	config   *ClusterConfig
+	logger   *KindLogger
 }
 
-type Cluster struct {
-	provider          IProvider
-	httpClient        HttpClient
-	name              string
-	kubeVersion       string
-	kubeConfigPath    string
-	kindConfigPath    string
-	extraPortsMapping string
-	registryConfig    []string
-	cfg               v1alpha1.BuildCustomizationSpec
-}
-
-type IProvider interface {
-	List() ([]string, error)
-	ListNodes(string) ([]nodes.Node, error)
-	CollectLogs(string, string) error
-	Delete(string, string) error
-	Create(string, ...cluster.CreateOption) error
-	ExportKubeConfig(string, string, bool) error
-}
-
-func (c *Cluster) getConfig() ([]byte, error) {
-	rawConfigTempl, err := loadConfig(c.kindConfigPath, c.httpClient)
-	if err != nil {
-		return nil, fmt.Errorf("loading config template: %w", err)
+// NewClusterManager creates a new ClusterManager with the given configuration
+func NewClusterManager(config *ClusterConfig) (*ClusterManager, error) {
+	if config == nil {
+		return nil, fmt.Errorf("cluster config cannot be nil")
 	}
 
-	portMappingPairs := parsePortMappings(c.extraPortsMapping)
-
-	registryConfig := findRegistryConfig(c.registryConfig)
-
-	registryCertsDir, err := renderRegistryCertsDir(c.cfg)
-
-	if err != nil {
-		return nil, fmt.Errorf("rendering insecure registry config: %w", err)
+	if err := config.Validate(); err != nil {
+		return nil, fmt.Errorf("invalid cluster config: %w", err)
 	}
 
-	if len(c.registryConfig) > 0 && registryConfig == "" {
-		return nil, errors.New("--registry-config flag used but no registry config was found")
-	}
+	// Create a logger for Kind operations
+	logger := NewKindLogger(os.Stdout)
 
-	var retBuff []byte
-	if retBuff, err = files.ApplyTemplate(rawConfigTempl, TemplateConfig{
-		BuildCustomizationSpec: c.cfg,
-		KubernetesVersion:      c.kubeVersion,
-		ExtraPortsMapping:      portMappingPairs,
-		RegistryConfig:         registryConfig,
-		RegistryCertsDir:       registryCertsDir,
-	}); err != nil {
-		return nil, err
-	}
+	// Create the Kind provider with the logger
+	provider := cluster.NewProvider(
+		cluster.ProviderWithLogger(logger),
+	)
 
-	if c.kindConfigPath != "" {
-		parsedCluster, err := c.ensureCorrectConfig(retBuff)
-		if err != nil {
-			return nil, fmt.Errorf("ensuring custom kind config is correct: %w", err)
-		}
-
-		out, err := yaml.Marshal(parsedCluster)
-		if err != nil {
-			return nil, fmt.Errorf("marshaling custom kind cluster config: %w", err)
-		}
-		return out, nil
-	}
-
-	return retBuff, nil
-}
-
-func NewCluster(name, kubeVersion, kubeConfigPath, kindConfigPath, extraPortsMapping string, registryConfig []string, cfg v1alpha1.BuildCustomizationSpec, cliLogger logr.Logger) (*Cluster, error) {
-	detectOpt, err := util.DetectKindNodeProvider()
-	if err != nil {
-		return nil, err
-	}
-
-	provider := cluster.NewProvider(cluster.ProviderWithLogger(KindLoggerFromLogr(&cliLogger)), detectOpt)
-
-	return &Cluster{
-		provider:          provider,
-		httpClient:        util.GetHttpClient(),
-		name:              name,
-		kindConfigPath:    kindConfigPath,
-		kubeVersion:       kubeVersion,
-		kubeConfigPath:    kubeConfigPath,
-		extraPortsMapping: extraPortsMapping,
-		registryConfig:    registryConfig,
-		cfg:               cfg,
+	return &ClusterManager{
+		provider: provider,
+		config:   config,
+		logger:   logger,
 	}, nil
 }
 
-func (c *Cluster) Exists() (bool, error) {
-	providerClusters, err := c.provider.List()
-	if err != nil {
-		return false, err
+// Create creates a new Kind cluster with the configured settings
+func (m *ClusterManager) Create(ctx context.Context) error {
+	if m.config == nil {
+		return fmt.Errorf("cluster configuration is required")
 	}
 
-	for _, pc := range providerClusters {
-		if pc == c.name {
+	if err := m.config.Validate(); err != nil {
+		return fmt.Errorf("cluster configuration is invalid: %w", err)
+	}
+
+	// Check if cluster already exists
+	exists, err := m.clusterExists(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to check if cluster exists: %w", err)
+	}
+
+	if exists {
+		return fmt.Errorf("cluster %s already exists", m.config.Name)
+	}
+
+	// Generate the Kind configuration
+	kindConfig := m.config.ToKindConfig()
+
+	// Create the cluster
+	err = m.provider.Create(
+		m.config.Name,
+		cluster.CreateWithRawConfig([]byte(kindConfig)),
+		cluster.CreateWithNodeImage(m.getNodeImage()),
+		cluster.CreateWithRetain(false),
+		cluster.CreateWithWaitForReady(5*time.Minute),
+		cluster.CreateWithKubeconfigPath(""),
+		cluster.CreateWithDisplayUsage(false),
+		cluster.CreateWithDisplaySalutation(false),
+	)
+
+	if err != nil {
+		return fmt.Errorf("failed to create cluster %s: %w", m.config.Name, err)
+	}
+
+	m.logger.Infof("Successfully created cluster: %s", m.config.Name)
+	return nil
+}
+
+// Delete removes the Kind cluster
+func (m *ClusterManager) Delete(ctx context.Context) error {
+	if m.config == nil {
+		return fmt.Errorf("cluster configuration is required")
+	}
+
+	// Check if cluster exists
+	exists, err := m.clusterExists(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to check if cluster exists: %w", err)
+	}
+
+	if !exists {
+		m.logger.Infof("Cluster %s does not exist, nothing to delete", m.config.Name)
+		return nil
+	}
+
+	// Delete the cluster
+	if err := m.provider.Delete(m.config.Name, ""); err != nil {
+		return fmt.Errorf("failed to delete cluster %s: %w", m.config.Name, err)
+	}
+
+	m.logger.Infof("Successfully deleted cluster: %s", m.config.Name)
+	return nil
+}
+
+// GetKubeconfig returns the kubeconfig for the cluster
+func (m *ClusterManager) GetKubeconfig() ([]byte, error) {
+	if m.config == nil {
+		return nil, fmt.Errorf("cluster configuration is required")
+	}
+
+	// Check if cluster exists
+	ctx := context.Background()
+	exists, err := m.clusterExists(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to check if cluster exists: %w", err)
+	}
+
+	if !exists {
+		return nil, fmt.Errorf("cluster %s does not exist", m.config.Name)
+	}
+
+	// Get the kubeconfig
+	kubeconfig, err := m.provider.KubeConfig(m.config.Name, false)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get kubeconfig for cluster %s: %w", m.config.Name, err)
+	}
+
+	return []byte(kubeconfig), nil
+}
+
+// GetConfig returns the cluster configuration
+func (m *ClusterManager) GetConfig() *ClusterConfig {
+	return m.config
+}
+
+// IsRunning checks if the cluster is running
+func (m *ClusterManager) IsRunning(ctx context.Context) (bool, error) {
+	if m.config == nil {
+		return false, fmt.Errorf("cluster configuration is required")
+	}
+
+	return m.clusterExists(ctx)
+}
+
+// GetProvider returns the underlying Kind provider
+func (m *ClusterManager) GetProvider() *cluster.Provider {
+	return m.provider
+}
+
+// Helper methods
+
+// clusterExists checks if a cluster with the configured name exists
+func (m *ClusterManager) clusterExists(ctx context.Context) (bool, error) {
+	clusters, err := m.provider.List()
+	if err != nil {
+		return false, fmt.Errorf("failed to list clusters: %w", err)
+	}
+
+	for _, clusterName := range clusters {
+		if clusterName == m.config.Name {
 			return true, nil
 		}
 	}
+
 	return false, nil
 }
 
-// getClusterHealthError returns a user-friendly error message for cluster health issues
-func (c *Cluster) getClusterHealthError(context string) error {
-	return fmt.Errorf(`%s: cluster %s is not healthy.
-
-To fix this:
-  1. Delete the existing cluster: kind delete cluster --name %s
-  2. Recreate the cluster: idpbuilder create --name %s
-
-For more options, run: idpbuilder create --help
-
-If the problem persists, check the cluster logs with: kind export logs --name %s
-`,
-		context, c.name, c.name, c.name, c.name)
-}
-
-// isHealthy checks if the cluster is in a healthy state by attempting to list nodes
-func (c *Cluster) isHealthy() bool {
-	nodes, err := c.provider.ListNodes(c.name)
-	if err != nil {
-		setupLog.V(1).Info("Failed to list cluster nodes", "cluster", c.name, "error", err)
-		return false
-	}
-	return len(nodes) > 0
-}
-
-func (c *Cluster) Reconcile(ctx context.Context, recreate bool) error {
-	clusterExists, err := c.Exists()
-	if err != nil {
-		return fmt.Errorf("checking if cluster exists: %w", err)
+// getNodeImage returns the appropriate node image for the Kubernetes version
+func (m *ClusterManager) getNodeImage() string {
+	// Use environment variable if set
+	if image := os.Getenv("KIND_NODE_IMAGE"); image != "" {
+		return image
 	}
 
-	if clusterExists {
-		if recreate {
-			setupLog.Info("Existing cluster found. Deleting.", "cluster", c.name)
-			err := c.provider.Delete(c.name, "")
-			if err != nil {
-				return fmt.Errorf("deleting cluster: %w", err)
-			}
-		} else {
-			setupLog.Info("Cluster already exists", "cluster", c.name)
-			if !c.isHealthy() {
-				return c.getClusterHealthError("Cluster exists but is not healthy")
-			}
-			return nil
-		}
+	// Map Kubernetes versions to node images
+	versionImageMap := map[string]string{
+		"v1.28.0": "kindest/node:v1.28.0@sha256:b7a4cad12c197af3ba43202d3efe03246b3f0793f162afaaea11d8c0b4c2c3a5",
+		"v1.27.3": "kindest/node:v1.27.3@sha256:3966ac761ae0136263ffdb6cfd4db23ef8a83cba8a463690e98317add2c9ba72",
+		"v1.26.6": "kindest/node:v1.26.6@sha256:6e2d8b28a5b601defe327b98bd1c2d1930b49e5d8c512e1895099e4504007adb",
 	}
 
-	rawConfig, err := c.getConfig()
-	if err != nil {
-		return err
+	if image, exists := versionImageMap[m.config.KubeVersion]; exists {
+		return image
 	}
 
-	fmt.Print("########################### Our kind config ############################\n")
-	fmt.Printf("%s", rawConfig)
-	fmt.Print("\n#########################   config end    ############################\n")
-
-	setupLog.Info("Creating kind cluster", "cluster", c.name)
-
-	if err = c.provider.Create(
-		c.name,
-		cluster.CreateWithRawConfig(rawConfig),
-	); err != nil {
-		t := &kindexec.RunError{}
-		if errors.As(err, &t) {
-			return fmt.Errorf("%w: %s", err, t.Output)
-		}
-		return err
-	}
-	setupLog.Info("Done creating cluster", "cluster", c.name)
-
-	return nil
-}
-
-func (c *Cluster) ExportKubeConfig(name string, internal bool) error {
-	// Verify cluster is healthy before exporting kubeconfig
-	if !c.isHealthy() {
-		return c.getClusterHealthError("Cannot export kubeconfig")
-	}
-
-	err := c.provider.ExportKubeConfig(name, c.kubeConfigPath, internal)
-	if err != nil {
-		return fmt.Errorf("%w\n%w", err, c.getClusterHealthError("Failed to export kubeconfig"))
-	}
-	return nil
-}
-
-func (c *Cluster) ensureCorrectConfig(in []byte) (kindv1alpha4.Cluster, error) {
-	// see pkg/kind/resources/kind.yaml.tmpl and pkg/controllers/localbuild/resources/nginx/k8s/ingress-nginx.yaml
-	// defines which container port we should be looking for.
-	containerPort := "443"
-	if c.cfg.Protocol == "http" {
-		containerPort = "80"
-	}
-	parsedCluster := kindv1alpha4.Cluster{}
-	err := yaml.Unmarshal(in, &parsedCluster)
-	if err != nil {
-		return kindv1alpha4.Cluster{}, fmt.Errorf("parsing kind config: %w", err)
-	}
-	// the port and ingress-nginx label must be on the same node to ensure nginx runs on the node with the right port.
-	appendNecessaryPort := true
-	appendIngressNodeLabel := true
-	// pick the first node for the ingress-nginx if we need to configure node port.
-	nodePosition := 0
-
-	if parsedCluster.Nodes == nil || len(parsedCluster.Nodes) == 0 {
-		return kindv1alpha4.Cluster{}, fmt.Errorf("provided kind config does not have the node field defined")
-	}
-
-nodes:
-	for i := range parsedCluster.Nodes {
-		node := parsedCluster.Nodes[i]
-		for _, pm := range node.ExtraPortMappings {
-			if strconv.Itoa(int(pm.HostPort)) == c.cfg.Port {
-				appendNecessaryPort = false
-				nodePosition = i
-				if node.Labels != nil {
-					v, ok := node.Labels[ingressNginxNodeLabelKey]
-					if ok && v == ingressNginxNodeLabelValue {
-						appendIngressNodeLabel = false
-					}
-				}
-				break nodes
-			}
-		}
-		if node.Labels != nil {
-			v, ok := node.Labels[ingressNginxNodeLabelKey]
-			if ok && v == ingressNginxNodeLabelValue {
-				appendIngressNodeLabel = false
-				nodePosition = i
-				break nodes
-			}
-		}
-	}
-
-	if appendNecessaryPort {
-		hp, err := strconv.Atoi(c.cfg.Port)
-		if err != nil {
-			return kindv1alpha4.Cluster{}, fmt.Errorf("converting port, %s, to int: %w", c.cfg.Port, err)
-		}
-		// either "80" or "443". No need to check for err
-		cp, _ := strconv.Atoi(containerPort)
-
-		if parsedCluster.Nodes[nodePosition].ExtraPortMappings == nil {
-			parsedCluster.Nodes[nodePosition].ExtraPortMappings = make([]kindv1alpha4.PortMapping, 0, 1)
-		}
-		parsedCluster.Nodes[nodePosition].ExtraPortMappings =
-			append(parsedCluster.Nodes[nodePosition].ExtraPortMappings, kindv1alpha4.PortMapping{ContainerPort: int32(cp), HostPort: int32(hp), Protocol: "TCP"})
-	}
-	if appendIngressNodeLabel {
-		if parsedCluster.Nodes[nodePosition].Labels == nil {
-			parsedCluster.Nodes[nodePosition].Labels = make(map[string]string)
-		}
-		parsedCluster.Nodes[nodePosition].Labels[ingressNginxNodeLabelKey] = ingressNginxNodeLabelValue
-	}
-
-	return parsedCluster, nil
+	// Default fallback
+	return "kindest/node:v1.28.0@sha256:b7a4cad12c197af3ba43202d3efe03246b3f0793f162afaaea11d8c0b4c2c3a5"
 }

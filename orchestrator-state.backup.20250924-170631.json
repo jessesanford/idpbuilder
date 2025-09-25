@@ -1,0 +1,173 @@
+{
+  "current_phase": 2,
+  "current_wave": 2,
+  "current_state": "MONITOR_IMPLEMENTATION",
+  "previous_state": "SPAWN_AGENTS",
+  "transition_time": "2025-09-24T16:57:36Z",
+  "transition_reason": "SW Engineers spawned and completed implementations",
+  "phases_planned": 4,
+  "waves_per_phase": [
+    1
+  ],
+  "efforts_completed": [
+    {
+      "effort": "1.1.1",
+      "name": "Write Command Tests",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase1/wave1/command-tests",
+      "status": "COMPLETE",
+      "size": 150
+    },
+    {
+      "effort": "1.1.2",
+      "name": "Implement Command Skeleton",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase1/wave1/command-skeleton",
+      "status": "COMPLETE",
+      "size": 133
+    },
+    {
+      "effort": "1.1.3",
+      "name": "Integration Tests",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase1/wave1/integration-tests",
+      "status": "COMPLETE",
+      "size": 150
+    },
+    {
+      "effort": "2.1.1",
+      "name": "Auth Interface Tests",
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase2/wave1/auth-interface-tests",
+      "status": "COMPLETE",
+      "size": 443
+    },
+    {
+      "effort": "2.1.2",
+      "name": "Implement Auth Module",
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase2/wave1/auth-implementation",
+      "status": "COMPLETE",
+      "size": 311
+    },
+    {
+      "effort": "2.1.3",
+      "name": "Mock Auth for Testing",
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase2/wave1/auth-mocks",
+      "status": "COMPLETE",
+      "size": 200
+    }
+  ],
+  "efforts_in_progress": [
+    {
+      "effort": "2.2.1",
+      "name": "Flow Tests",
+      "phase": 2,
+      "wave": 2,
+      "branch": "idpbuilderpush/phase2/wave2/flow-tests",
+      "status": "IMPLEMENTATION_COMPLETE",
+      "size_estimate": 200,
+      "plan_path": "efforts/phase2/wave2/flow-tests/.software-factory/IMPLEMENTATION-PLAN-20250924-163255.md",
+      "plan_created_at": "2025-09-24T16:32:55Z"
+    },
+    {
+      "effort": "2.2.2",
+      "name": "Implement Auth Flow",
+      "phase": 2,
+      "wave": 2,
+      "branch": "idpbuilderpush/phase2/wave2/auth-flow",
+      "status": "IMPLEMENTATION_COMPLETE",
+      "size_estimate": 300,
+      "plan_path": "efforts/phase2/wave2/auth-flow/.software-factory/phase2/wave2/auth-flow/IMPLEMENTATION-PLAN-20250924-163200.md",
+      "plan_created_at": "2025-09-24T16:32:00Z"
+    }
+  ],
+  "efforts_pending": [],
+  "project_info": {
+    "name": "idpbuilder-push",
+    "description": "Push command for idpbuilder",
+    "start_date": "2025-09-22"
+  },
+  "integration_workspaces": {
+    "phase1_wave1": {
+      "workspace": "/home/vscode/workspaces/idpbuilder-push/efforts/phase1/wave1/integration-workspace",
+      "merge_plan": "efforts/phase1/wave1/integration-workspace/MERGE-PLAN.md",
+      "created_at": "2025-09-23T14:39:39Z"
+    },
+    "phase2_wave1": {
+      "workspace": "/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave1/integration-workspace",
+      "branch": "idpbuilderpush/phase2/wave1/integration",
+      "base_branch": "phase1/wave1/integration",
+      "status": "integration_in_progress",
+      "created_at": "2025-09-23T23:32:19Z",
+      "merge_plan_requested": true,
+      "merge_plan_path": "efforts/phase2/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+      "integration_agent_spawned": true,
+      "integration_started_at": "2025-09-24T00:16:37Z"
+    }
+  },
+  "integration_branches": [
+    {
+      "phase": 1,
+      "wave": 1,
+      "branch": "phase1/wave1/integration",
+      "status": "COMPLETE",
+      "merged_efforts": [
+        "1.1.1",
+        "1.1.2",
+        "1.1.3"
+      ],
+      "completion_time": "2025-09-23T14:57:00Z"
+    },
+    {
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase2/wave1/integration",
+      "status": "COMPLETE",
+      "merged_efforts": [
+        "2.1.1",
+        "2.1.2",
+        "2.1.3"
+      ],
+      "completion_time": "2025-09-24T06:41:44Z"
+    }
+  ],
+  "backport_tracking": {
+    "source_branch": "phase2/wave1/integration",
+    "integration_issues": [
+      "auth module test failures",
+      "mock authentication conflicts",
+      "integration test coverage gaps"
+    ],
+    "backport_plan_requested": true,
+    "backport_plan_path": "efforts/phase2/wave1/integration-workspace/BACKPORT-PLAN.md",
+    "backports_required": [
+      "idpbuilderpush/phase2/wave1/auth-interface-tests",
+      "idpbuilderpush/phase2/wave1/auth-implementation",
+      "idpbuilderpush/phase2/wave1/auth-mocks"
+    ],
+    "backports_completed": [
+      "idpbuilderpush/phase2/wave1/auth-implementation"
+    ],
+    "backport_status": "completed",
+    "created_at": "2025-09-24T02:46:53Z",
+    "backport_plan_validated": true,
+    "target_effort": "idpbuilderpush/phase2/wave1/auth-implementation",
+    "backports_in_progress": [],
+    "sw_engineer_spawned": false,
+    "recovery_details": "Found uncommitted constructors in workspace, committed and pushed at 2025-09-24T06:40:00Z",
+    "recovery_completed": "2025-09-24T06:40:00Z",
+    "remaining_backports": [
+      "idpbuilderpush/phase2/wave1/auth-interface-tests",
+      "idpbuilderpush/phase2/wave1/auth-mocks"
+    ],
+    "integration_completed": "2025-09-24T06:41:44Z"
+  }
+}

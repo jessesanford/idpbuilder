@@ -1,0 +1,1005 @@
+{
+  "current_phase": 1,
+  "current_wave": 2,
+  "current_state": "WAVE_START",
+  "previous_state": "WAVE_COMPLETE",
+  "transition_time": "2025-08-25T03:05:00Z",
+  "transition_reason": "Wave 2 fully reset - all remote branches deleted, ready for Code Reviewers to create implementation plans",
+  "sub_state_machine": {
+    "_comment": "Tracks when main state machine has diverted to a sub-state machine (fix cascade, PR-ready, initialization, etc)",
+    "active": false,
+    "type": null,
+    "state_file": null,
+    "current_state": null,
+    "return_state": null,
+    "started_at": null,
+    "trigger_reason": null,
+    "nested_level": 0,
+    "parent_sub_state": null
+  },
+  "sub_state_history": [
+    {
+      "_comment": "Example of completed sub-state machine execution",
+      "type": "FIX_CASCADE",
+      "state_file": "orchestrator-gitea-api-fix-state.json",
+      "started_at": "2025-01-20T10:00:00Z",
+      "completed_at": "2025-01-20T12:30:00Z",
+      "trigger_reason": "Critical API authentication fix",
+      "return_state": "MONITORING",
+      "result": "SUCCESS",
+      "archived_to": "archived-fixes/2025/01/gitea-api-fix-20250120-123000.json"
+    }
+  ],
+  "active_sub_orchestrators": [
+    {
+      "_comment": "Currently running sub-orchestrators spawned by master",
+      "id": "fix-cascade-uuid-123",
+      "type": "FIX_CASCADE",
+      "pid": 12345,
+      "spawned_at": "2025-01-21T10:00:00Z",
+      "last_heartbeat": "2025-01-21T10:15:30Z",
+      "status": "RUNNING",
+      "progress": 60,
+      "current_state": "FIX_CASCADE_BACKPORT",
+      "parameter_file": "/tmp/params-uuid-123.json",
+      "heartbeat_file": "/tmp/sub-orch-uuid-123/heartbeat.json",
+      "output_file": "/tmp/sub-orch-uuid-123/output.json",
+      "checkpoint_file": "/tmp/sub-orch-uuid-123/checkpoint.json",
+      "log_file": "/tmp/sub-orch-uuid-123.log",
+      "expected_completion": "2025-01-21T11:00:00Z",
+      "retry_count": 0,
+      "max_retries": 3
+    }
+  ],
+  "sub_orchestrator_history": [
+    {
+      "_comment": "Completed sub-orchestrators with results",
+      "id": "integration-wave1-uuid-456",
+      "type": "INTEGRATION",
+      "started": "2025-01-21T09:00:00Z",
+      "completed": "2025-01-21T09:45:00Z",
+      "result": "SUCCESS",
+      "duration_seconds": 2700,
+      "output": {
+        "integration_branch": "wave-1-integration",
+        "merged_branches": ["effort-1", "effort-2"],
+        "test_status": "PASSED",
+        "build_status": "SUCCESS"
+      },
+      "archived_to": "archives/sub-orchestrators/integration-wave1-uuid-456/"
+    },
+    {
+      "id": "split-e11-uuid-789",
+      "type": "SPLIT_COORDINATION",
+      "started": "2025-01-21T08:00:00Z",
+      "completed": "2025-01-21T08:30:00Z",
+      "result": "PARTIAL",
+      "duration_seconds": 1800,
+      "output": {
+        "splits_completed": ["E1.1a", "E1.1b"],
+        "splits_failed": ["E1.1c"],
+        "reason": "E1.1c still exceeded size limit"
+      },
+      "retry_scheduled": true,
+      "archived_to": "archives/sub-orchestrators/split-e11-uuid-789/"
+    }
+  ],
+  "pending_sub_orchestrations": [
+    {
+      "_comment": "Queued sub-orchestrations waiting to be spawned",
+      "type": "FIX_CASCADE",
+      "reason": "Code review found critical issues in 3 branches",
+      "scheduled_for": "AFTER_CURRENT_COMPLETE",
+      "priority": "HIGH",
+      "parameters_prepared": false,
+      "estimated_duration": 3600
+    }
+  ],
+  "sub_orchestrator_monitoring": {
+    "_comment": "Monitoring configuration and metrics",
+    "monitoring_enabled": true,
+    "check_interval_seconds": 15,
+    "heartbeat_timeout_seconds": 120,
+    "max_concurrent": 5,
+    "current_concurrent": 1,
+    "total_spawned": 15,
+    "total_succeeded": 12,
+    "total_failed": 2,
+    "total_partial": 1,
+    "average_duration_seconds": 2250,
+    "last_monitor_check": "2025-01-21T10:16:00Z",
+    "monitor_daemon_pid": 54321,
+    "monitor_daemon_status": "RUNNING"
+  },
+  "sub_orchestrator_recovery": {
+    "_comment": "Recovery tracking for failed sub-orchestrators",
+    "active_recoveries": [],
+    "recovery_history": [
+      {
+        "sub_id": "fix-cascade-uuid-999",
+        "failure_type": "HEARTBEAT_STALE",
+        "recovery_strategy": "CHECKPOINT_RECOVERY",
+        "recovery_attempt": 1,
+        "recovered_at": "2025-01-21T07:30:00Z",
+        "recovery_successful": true
+      }
+    ],
+    "escalated_failures": [
+      {
+        "sub_id": "integration-phase1-uuid-888",
+        "failure_type": "SYSTEMATIC",
+        "escalated_at": "2025-01-21T06:00:00Z",
+        "reason": "Repeated merge conflicts after 3 attempts",
+        "preserved_artifacts": "/archives/failed/integration-phase1-uuid-888/"
+      }
+    ]
+  },
+  "current_wave_integration": {
+    "_comment": "Tracks current wave integration details including workspace location and freshness",
+    "workspace": "/path/to/wave/integration-workspace",
+    "branch": "wave-integration-branch-name",
+    "merge_plan": "/path/to/WAVE-MERGE-PLAN.md",
+    "created_at": "2025-08-25T10:00:00Z",
+    "created_early": true,
+    "has_tests": true,
+    "test_plan": "/path/to/WAVE-TEST-PLAN.md",
+    "efforts_last_updated_at": "2025-08-25T09:30:00Z",
+    "is_stale": false,
+    "staleness_reason": null,
+    "stale_since": null,
+    "stale_due_to_fixes": [],
+    "merged_efforts": [],
+    "last_freshness_check": "2025-08-25T10:05:00Z"
+  },
+  "current_phase_integration": {
+    "_comment": "Tracks current phase integration details including workspace location and freshness",
+    "workspace": "/path/to/phase/integration-workspace",
+    "branch": "phase-integration-branch-name",
+    "merge_plan": "/path/to/PHASE-MERGE-PLAN.md",
+    "created_at": "2025-08-25T12:00:00Z",
+    "created_early": true,
+    "has_tests": true,
+    "test_plan": "/path/to/PHASE-TEST-PLAN.md",
+    "waves_last_updated_at": "2025-08-25T11:30:00Z",
+    "is_stale": false,
+    "staleness_reason": null,
+    "stale_since": null,
+    "stale_due_to_fixes": [],
+    "merged_waves": [],
+    "last_freshness_check": "2025-08-25T12:05:00Z"
+  },
+  "deprecated_wave_integrations": [],
+  "deprecated_phase_integrations": [],
+  "project_integration": {
+    "_comment": "Tracks project-level integration branch created early per R342",
+    "branch": "project-integration",
+    "created_at": "2025-08-24T09:00:00Z",
+    "created_early": true,
+    "has_tests": true,
+    "test_plan": "/path/to/PROJECT-TEST-PLAN.md",
+    "test_harness": "/path/to/PROJECT-TEST-HARNESS.sh",
+    "workspace": "/efforts/project/integration-workspace"
+  },
+  "fix_cascade_summary": {
+    "_comment": "High-level summary only - detailed fix tracking in separate fix state files per R375",
+    "active_fix_cascades": 0,
+    "completed_fix_cascades": 3,
+    "last_fix_cascade_completed": "2025-01-20T12:30:00Z",
+    "fix_state_files": []
+  },
+  "integration_freshness": {
+    "_comment": "Simplified tracking - fix details moved to fix-specific state files",
+    "stale_integrations": [],
+    "last_freshness_check": "2025-08-25T12:05:00Z",
+    "requires_reintegration": false
+  },
+  "base_branch_decisions": {
+    "_comment": "R337: Single source of truth for all base branch decisions",
+    "current_wave_base": "phase1-wave1-integration",
+    "current_phase_base": "main",
+    "next_wave_base": "phase1-wave2-integration",
+    "next_phase_base": "phase1-integration",
+    "decision_log": [
+      {
+        "timestamp": "2025-08-25T10:00:00Z",
+        "decision": "Wave 2 efforts will use phase1-wave1-integration as base",
+        "reason": "R308 incremental branching - build on previous wave",
+        "decided_by": "orchestrator",
+        "affects": [
+          "buildah-builder-interface",
+          "gitea-registry-interface",
+          "stack-manager-interface"
+        ]
+      }
+    ]
+  },
+  "violations": [
+    {
+      "effort": "oci-types",
+      "lines": 974,
+      "limit": 800,
+      "requires_split": true,
+      "split_planned": true,
+      "splits_needed": 2,
+      "split_sizes": [
+        661,
+        313
+      ]
+    },
+    {
+      "effort": "registry-auth-types",
+      "lines": 965,
+      "limit": 800,
+      "requires_split": true,
+      "split_planned": true,
+      "splits_needed": 2,
+      "split_sizes": [
+        649,
+        310
+      ]
+    }
+  ],
+  "infrastructure_strategy": "just_in_time",
+  "effort_dependencies": {
+    "_comment": "R360 - Just-in-time infrastructure creation with dependency tracking",
+    "effort1": {
+      "depends_on": null,
+      "base_branch": "phase1/wave0/integration",
+      "branch": null,
+      "infrastructure_created": false,
+      "status": "pending"
+    },
+    "effort2": {
+      "depends_on": "effort1",
+      "base_branch": null,
+      "branch": null,
+      "infrastructure_created": false,
+      "status": "waiting_for_dependency"
+    },
+    "effort3": {
+      "depends_on": null,
+      "base_branch": "phase1/wave0/integration",
+      "branch": null,
+      "infrastructure_created": false,
+      "status": "pending"
+    }
+  },
+  "project_info": {
+    "name": "idpbuilder-oci-mgmt",
+    "description": "A feature addition to the idpbuilder cli that allows it to build and push images to from the local file system to the idpbuilder internal gitea at gitea.cnoe.localtest.me and accept the self signed certs that gitea is using while running on the local idpbuilder cluster.",
+    "start_date": "2025-08-24"
+  },
+  "phases_planned": 5,
+  "waves_per_phase": [
+    3,
+    4,
+    3,
+    3,
+    3
+  ],
+  "efforts_completed": [
+    {
+      "phase": 1,
+      "wave": 1,
+      "name": "oci-types",
+      "branch": "idpbuilder-oci-mgmt/phase1/wave1/oci-types",
+      "base_branch": "main",
+      "base_branch_tracking": {
+        "planned_base": "main",
+        "actual_base": "main",
+        "base_commit": "f4e2b7a9c3d8",
+        "branched_at": "2025-08-24T10:00:00Z",
+        "dependent_efforts": [],
+        "depends_on": [],
+        "requires_rebase": false,
+        "rebase_reason": null,
+        "last_rebase": null,
+        "integration_eligible": true
+      },
+      "workspace": "/path/to/efforts/phase1/wave1/oci-types",
+      "status": "SPLIT_DEPRECATED",
+      "deprecated_branch": "idpbuilder-oci-mgmt/phase1/wave1/oci-types-deprecated-split",
+      "replacement_splits": [
+        "idpbuilder-oci-mgmt/phase1/wave1/oci-types-split1",
+        "idpbuilder-oci-mgmt/phase1/wave1/oci-types-split2"
+      ],
+      "do_not_integrate": true,
+      "splits": 2,
+      "split_sizes": [
+        629,
+        376
+      ],
+      "review_status": "ACCEPTED",
+      "completion_time": "2025-08-25T01:00:00Z",
+      "split_completed_at": "2025-08-25T00:55:00Z",
+      "last_commit": "abc123",
+      "has_fixes_applied": false,
+      "fixes_applied_at": null
+    },
+    {
+      "phase": 1,
+      "wave": 1,
+      "name": "registry-auth-types",
+      "branch": "idpbuilder-oci-mgmt/phase1/wave1/registry-auth-types",
+      "base_branch": "main",
+      "base_branch_tracking": {
+        "planned_base": "main",
+        "actual_base": "main",
+        "base_commit": "f4e2b7a9c3d8",
+        "branched_at": "2025-08-24T10:15:00Z",
+        "dependent_efforts": [],
+        "depends_on": [],
+        "requires_rebase": false,
+        "rebase_reason": null,
+        "last_rebase": null,
+        "integration_eligible": true
+      },
+      "status": "SPLIT_DEPRECATED",
+      "deprecated_branch": "idpbuilder-oci-mgmt/phase1/wave1/registry-auth-types-deprecated-split",
+      "replacement_splits": [
+        "idpbuilder-oci-mgmt/phase1/wave1/registry-auth-types-split1",
+        "idpbuilder-oci-mgmt/phase1/wave1/registry-auth-types-split2"
+      ],
+      "do_not_integrate": true,
+      "splits": 2,
+      "split_sizes": [
+        860,
+        623
+      ],
+      "review_status": "ACCEPTED",
+      "completion_time": "2025-08-25T01:00:00Z",
+      "split_completed_at": "2025-08-25T00:55:00Z"
+    },
+    {
+      "phase": 1,
+      "wave": 1,
+      "name": "error-reporting-types",
+      "branch": "idpbuilder-oci-mgmt/phase1/wave1/error-reporting-types",
+      "base_branch": "main",
+      "base_branch_tracking": {
+        "planned_base": "main",
+        "actual_base": "main",
+        "base_commit": "f4e2b7a9c3d8",
+        "branched_at": "2025-08-24T10:30:00Z",
+        "dependent_efforts": [],
+        "depends_on": [],
+        "requires_rebase": false,
+        "rebase_reason": null,
+        "last_rebase": null,
+        "integration_eligible": true
+      },
+      "status": "SPLIT_DEPRECATED",
+      "deprecated_branch": "idpbuilder-oci-mgmt/phase1/wave1/error-reporting-types-deprecated-split",
+      "replacement_splits": [
+        "idpbuilder-oci-mgmt/phase1/wave1/error-reporting-types-split1",
+        "idpbuilder-oci-mgmt/phase1/wave1/error-reporting-types-split2"
+      ],
+      "do_not_integrate": true,
+      "splits": 2,
+      "split_sizes": [
+        600,
+        747
+      ],
+      "review_status": "ACCEPTED",
+      "completion_time": "2025-08-25T01:10:00Z",
+      "split_completed_at": "2025-08-25T01:05:00Z"
+    }
+  ],
+  "efforts_in_progress": [
+    {
+      "_comment": "Example showing comprehensive base_branch_tracking per R337",
+      "name": "example-effort-in-progress",
+      "phase": 2,
+      "wave": 1,
+      "branch": "project/phase2/wave1/example-effort",
+      "base_branch": "phase1-integration",
+      "base_branch_tracking": {
+        "planned_base": "phase1-integration",
+        "actual_base": "phase1-integration",
+        "base_commit": "a8c4f2e9b1d6",
+        "branched_at": "2025-08-25T08:00:00Z",
+        "dependent_efforts": [
+          "example-effort-2",
+          "example-effort-3"
+        ],
+        "depends_on": [],
+        "requires_rebase": false,
+        "rebase_reason": null,
+        "last_rebase": null,
+        "integration_eligible": true
+      },
+      "directory": "/efforts/phase2/wave1/example-effort",
+      "workspace": "/path/to/efforts/phase2/wave1/example-effort",
+      "last_commit": "abc123def456",
+      "last_updated_at": "2025-08-25T09:00:00Z",
+      "has_fixes_applied": false,
+      "status": "infrastructure_ready"
+    }
+  ],
+  "split_tracking": {
+    "_comment": "Example of split tracking with comprehensive base_branch_tracking per R337",
+    "example-effort": {
+      "total_splits": 3,
+      "current_split": 2,
+      "splits": [
+        {
+          "number": 1,
+          "branch": "phase2/wave1/example-effort-split-001",
+          "base_branch": "phase1-integration",
+          "base_branch_tracking": {
+            "planned_base": "phase1-integration",
+            "actual_base": "phase1-integration",
+            "base_commit": "a8c4f2e9b1d6",
+            "branched_at": "2025-08-25T10:00:00Z",
+            "dependent_efforts": [
+              "example-effort-split-002"
+            ],
+            "depends_on": [],
+            "requires_rebase": false,
+            "rebase_reason": null,
+            "last_rebase": null,
+            "integration_eligible": true
+          },
+          "status": "COMPLETED",
+          "lines": 450,
+          "created_at": "2025-08-25T10:00:00Z",
+          "completed_at": "2025-08-25T11:30:00Z"
+        },
+        {
+          "number": 2,
+          "branch": "phase2/wave1/example-effort-split-002",
+          "base_branch": "phase2/wave1/example-effort-split-001",
+          "base_branch_tracking": {
+            "planned_base": "phase2/wave1/example-effort-split-001",
+            "actual_base": "phase2/wave1/example-effort-split-001",
+            "base_commit": "b7d5e3f8a2c9",
+            "branched_at": "2025-08-25T11:35:00Z",
+            "dependent_efforts": [
+              "example-effort-split-003"
+            ],
+            "depends_on": [
+              "example-effort-split-001"
+            ],
+            "requires_rebase": false,
+            "rebase_reason": null,
+            "last_rebase": null,
+            "integration_eligible": false
+          },
+          "status": "IN_PROGRESS",
+          "created_at": "2025-08-25T11:35:00Z"
+        }
+      ]
+    }
+  },
+  "planning_files": {
+    "_comment": "R340: Comprehensive tracking of all planning file locations for instant discovery",
+    "effort_plans": {
+      "_comment": "Maps effort name to plan metadata - e.g., 'buildah-builder-interface'",
+      "_example": {
+        "buildah-builder-interface": {
+          "file_path": "/efforts/phase1/wave2/buildah-builder-interface/.software-factory/phase1/wave2/buildah-builder-interface/IMPLEMENTATION-PLAN-20250120-100000.md",
+          "created_at": "2025-01-20T10:00:00Z",
+          "created_by": "code-reviewer",
+          "target_branch": "phase1/wave2/buildah-builder-interface",
+          "phase": 1,
+          "wave": 2,
+          "effort_name": "buildah-builder-interface",
+          "status": "active",
+          "replaced_by": null
+        }
+      }
+    },
+    "split_plans": {
+      "_comment": "Maps split identifier to plan metadata - e.g., 'oci-types-split-001'",
+      "_example": {
+        "oci-types-split-001": {
+          "file_path": "/efforts/phase1/wave1/oci-types-split-001/.software-factory/phase1/wave1/oci-types-split-001/SPLIT-PLAN-20250120-110000.md",
+          "created_at": "2025-01-20T11:00:00Z",
+          "created_by": "code-reviewer",
+          "target_branch": "phase1/wave1/oci-types-split-001",
+          "parent_effort": "oci-types",
+          "split_number": 1,
+          "total_splits": 2,
+          "status": "completed"
+        }
+      }
+    },
+    "fix_plans": {
+      "_comment": "Maps fix identifier to plan metadata - e.g., 'registry-auth-types-fix-001'"
+    },
+    "merge_plans": {
+      "_comment": "Hierarchical merge plan tracking by level",
+      "wave": {
+        "_comment": "Wave merge plans - key format: 'phase{X}_wave{Y}'",
+        "_example": {
+          "phase1_wave1": {
+            "file_path": "/efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+            "created_at": "2025-01-20T12:00:00Z",
+            "created_by": "code-reviewer",
+            "target_branch": "phase1-wave1-integration",
+            "phase": 1,
+            "wave": 1,
+            "efforts_count": 3,
+            "status": "completed"
+          }
+        }
+      },
+      "phase": {
+        "_comment": "Phase merge plans - key format: 'phase{X}'"
+      },
+      "project": {
+        "_comment": "Project-level merge plan - single 'project' key"
+      }
+    },
+    "architecture_plans": {
+      "_comment": "Architecture plans by level",
+      "wave": {},
+      "phase": {}
+    },
+    "review_reports": {
+      "_comment": "Code review reports - key format: 'effort-name-review-{timestamp}'"
+    },
+    "test_plans": {
+      "_comment": "R341: TDD test plans and harnesses tracking per R340 pattern",
+      "phase": {
+        "_comment": "Phase-level test plans - key format: 'phase{X}'",
+        "_example": {
+          "phase1": {
+            "test_plan_path": "/phase-tests/phase-1/PHASE-TEST-PLAN.md",
+            "test_harness_path": "/phase-tests/phase-1/PHASE-TEST-HARNESS.sh",
+            "demo_plan_path": "/phase-tests/phase-1/PHASE-DEMO-PLAN.md",
+            "test_dir": "/phase-tests/phase-1/tests/phase",
+            "created_at": "2025-01-20T10:30:00Z",
+            "created_by": "code-reviewer",
+            "phase": 1,
+            "status": "active",
+            "test_count": 15,
+            "tests_passing": 0,
+            "tests_failing": 15,
+            "tdd_phase": "red"
+          }
+        }
+      },
+      "wave": {
+        "_comment": "Wave-level test plans - key format: 'phase{X}_wave{Y}'",
+        "_example": {
+          "phase1_wave1": {
+            "test_plan_path": "/wave-tests/phase-1/wave-1/WAVE-TEST-PLAN.md",
+            "test_harness_path": "/wave-tests/phase-1/wave-1/WAVE-TEST-HARNESS.sh",
+            "demo_plan_path": "/wave-tests/phase-1/wave-1/WAVE-DEMO-PLAN.md",
+            "test_dir": "/wave-tests/phase-1/wave-1/tests/wave",
+            "test_effort_mapping_path": "/wave-tests/phase-1/wave-1/test-effort-mapping.json",
+            "created_at": "2025-01-20T11:00:00Z",
+            "created_by": "code-reviewer",
+            "phase": 1,
+            "wave": 1,
+            "status": "active",
+            "test_count": 8,
+            "tests_passing": 0,
+            "tests_failing": 8,
+            "tdd_phase": "red",
+            "effort_assignments": {
+              "oci-types": [
+                "test_oci_types.test.js",
+                "test_stack_config.test.js"
+              ],
+              "registry-auth-types": [
+                "test_auth.test.js",
+                "test_certs.test.js"
+              ],
+              "error-reporting-types": [
+                "test_errors.test.js",
+                "test_progress.test.js"
+              ]
+            }
+          }
+        }
+      },
+      "effort": {
+        "_comment": "Effort-specific test assignments - key format: 'effort-name'",
+        "_example": {
+          "buildah-builder-interface": {
+            "assigned_tests": [
+              "/wave-tests/phase-1/wave-2/tests/wave/test_buildah.test.js",
+              "/wave-tests/phase-1/wave-2/tests/wave/test_builder.test.js"
+            ],
+            "phase": 1,
+            "wave": 2,
+            "effort_name": "buildah-builder-interface",
+            "test_count": 2,
+            "status": "assigned"
+          }
+        }
+      }
+    }
+  },
+  "efforts_pending": [
+    {
+      "phase": 1,
+      "wave": 2,
+      "efforts": [
+        {
+          "name": "buildah-builder-interface",
+          "description": "Buildah builder interface",
+          "target_lines": 400,
+          "status": "pending"
+        },
+        {
+          "name": "gitea-registry-interface",
+          "description": "Gitea registry client interface",
+          "target_lines": 400,
+          "status": "pending"
+        },
+        {
+          "name": "stack-manager-interface",
+          "description": "Stack manager interface",
+          "target_lines": 300,
+          "status": "pending"
+        }
+      ]
+    }
+  ],
+  "efforts_planned": [
+    {
+      "phase": 1,
+      "wave": 1,
+      "efforts": [
+        {
+          "name": "oci-types",
+          "description": "OCI types and stack configuration types",
+          "target_lines": 500,
+          "actual_lines": 974,
+          "status": "split_planned"
+        },
+        {
+          "name": "registry-auth-types",
+          "description": "Registry authentication and certificate types",
+          "target_lines": 400,
+          "actual_lines": 965,
+          "status": "split_planned"
+        },
+        {
+          "name": "error-reporting-types",
+          "description": "Error types and progress reporting types",
+          "target_lines": 300,
+          "status": "ready"
+        }
+      ]
+    }
+  ],
+  "current_integration": null,
+  "deprecated_integrations": [],
+  "integration_workspaces": {
+    "_comment": "Tracks all integration workspace locations for navigation",
+    "project": {
+      "workspace": "/path/to/efforts/project/integration-workspace",
+      "merge_plan": "/path/to/efforts/project/integration-workspace/PROJECT-MERGE-PLAN.md",
+      "created_at": "2025-08-25T14:00:00Z"
+    },
+    "phase1": {
+      "workspace": "/path/to/efforts/phase1/integration-workspace",
+      "merge_plan": "/path/to/efforts/phase1/integration-workspace/PHASE-MERGE-PLAN.md",
+      "created_at": "2025-08-25T12:00:00Z"
+    },
+    "phase1_wave1": {
+      "workspace": "/path/to/efforts/phase1/wave1/integration-workspace",
+      "merge_plan": "/path/to/efforts/phase1/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+      "created_at": "2025-08-25T10:00:00Z"
+    }
+  },
+  "repository_contexts": {
+    "_comment": "Clarifies which repository contains which branches",
+    "software_factory_repo": {
+      "path": "/home/vscode/software-factory-template",
+      "branches": [
+        "main",
+        "software-factory-2.0"
+      ],
+      "purpose": "Contains SF code, rules, and state files"
+    },
+    "target_repo_clones": {
+      "efforts": {
+        "pattern": "/path/to/efforts/*/*",
+        "purpose": "Contains actual project implementation code",
+        "branches_type": "effort branches (e.g., phase1/wave1/effort-name)"
+      },
+      "integration_workspaces": {
+        "pattern": "/path/to/efforts/*/integration-workspace",
+        "purpose": "Contains integration branches and merge operations",
+        "branches_type": "integration branches (e.g., phase1-integration, wave1-integration)"
+      }
+    }
+  },
+  "integration_branches": [
+    {
+      "branch": "phase1/wave1/integration",
+      "phase": 1,
+      "wave": 1,
+      "created_at": "2025-08-25T01:58:00Z",
+      "merged_splits": 6,
+      "architect_review": "PROCEED",
+      "review_time": "2025-08-25T02:10:00Z"
+    }
+  ],
+  "grading_history": {
+    "parallel_spawn_average": 0.0,
+    "review_first_try_rate": 0.0,
+    "integration_success_rate": 0.0
+  },
+  "last_checkpoint": "2025-08-25T02:20:00Z",
+  "wave_summary": {
+    "phase": 1,
+    "wave": 1,
+    "total_efforts": 3,
+    "completed_efforts": 3,
+    "total_splits": 6,
+    "all_splits_compliant": true,
+    "review_status": "ALL_ACCEPTED",
+    "integration_status": "COMPLETE",
+    "architect_decision": "PROCEED"
+  },
+  "notes": "Wave 2 clean slate - all artifacts removed. Ready to spawn Code Reviewers for implementation planning of buildah-builder-interface, gitea-registry-interface, and stack-manager-interface.",
+  "phase_architecture_plans": [],
+  "wave_architecture_plans": [],
+  "phase_implementation_plans": [],
+  "wave_implementation_plans": [],
+  "phase_directory_acknowledgments": [],
+  "wave_metadata_injections": [],
+  "code_reviewer_wave_acknowledgments": [],
+  "architect_review_states": {
+    "phase_assessments": [],
+    "wave_reviews": []
+  },
+  "code_reviewer_planning_states": {
+    "current_mode": "EFFORT_PLAN_CREATION",
+    "planning_queue": []
+  },
+  "extended_states": {
+    "orchestrator_states": [
+      "SPAWN_ARCHITECT_PHASE_PLANNING",
+      "SPAWN_ARCHITECT_WAVE_PLANNING",
+      "SPAWN_CODE_REVIEWER_PHASE_IMPL",
+      "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+      "WAITING_FOR_ARCHITECTURE_PLAN",
+      "WAITING_FOR_IMPLEMENTATION_PLAN"
+    ],
+    "architect_states": [
+      "PHASE_ARCHITECTURE_PLANNING",
+      "WAVE_ARCHITECTURE_PLANNING",
+      "ARCHITECTURE_VALIDATION"
+    ],
+    "code_reviewer_states": [
+      "PHASE_IMPLEMENTATION_PLANNING",
+      "WAVE_IMPLEMENTATION_PLANNING",
+      "WAVE_DIRECTORY_ACKNOWLEDGMENT"
+    ]
+  },
+  "metadata_locations": {
+    "_comment": "R344: Comprehensive metadata location tracking - NO filesystem searching allowed",
+    "project_planning": {
+      "branch": "idpbuilder-oci-mgmt/project-planning",
+      "working_copy": "/efforts/project-planning",
+      "architecture": "/efforts/project-planning/.software-factory/PROJECT-ARCHITECTURE.md",
+      "test_plan": "/efforts/project-planning/.software-factory/PROJECT-TEST-PLAN.md",
+      "demo_plan": "/efforts/project-planning/.software-factory/PROJECT-DEMO-PLAN.md",
+      "phase_breakdown": "/efforts/project-planning/.software-factory/PROJECT-PHASES.md",
+      "created_at": "2025-01-20T09:00:00Z",
+      "created_by": "orchestrator",
+      "status": "active"
+    },
+    "phase_planning": {
+      "phase1": {
+        "branch": "idpbuilder-oci-mgmt/phase1/phase-planning",
+        "working_copy": "/efforts/phase1/phase-planning",
+        "architecture": "/efforts/phase1/phase-planning/.software-factory/PHASE-ARCHITECTURE.md",
+        "test_plan": "/efforts/phase1/phase-planning/.software-factory/PHASE-TEST-PLAN.md",
+        "demo_plan": "/efforts/phase1/phase-planning/.software-factory/PHASE-DEMO-PLAN.md",
+        "wave_breakdown": "/efforts/phase1/phase-planning/.software-factory/PHASE-WAVES.md",
+        "created_at": "2025-01-20T10:00:00Z",
+        "created_by": "orchestrator",
+        "status": "active"
+      }
+    },
+    "wave_planning": {
+      "phase1_wave1": {
+        "branch": "idpbuilder-oci-mgmt/phase1/wave1/wave-planning",
+        "working_copy": "/efforts/phase1/wave1/wave-planning",
+        "architecture": "/efforts/phase1/wave1/wave-planning/.software-factory/WAVE-ARCHITECTURE.md",
+        "test_plan": "/efforts/phase1/wave1/wave-planning/.software-factory/WAVE-TEST-PLAN.md",
+        "demo_plan": "/efforts/phase1/wave1/wave-planning/.software-factory/WAVE-DEMO-PLAN.md",
+        "effort_breakdown": "/efforts/phase1/wave1/wave-planning/.software-factory/WAVE-EFFORTS.md",
+        "created_at": "2025-01-20T11:00:00Z",
+        "created_by": "orchestrator",
+        "status": "active"
+      }
+    },
+    "implementation_plans": {
+      "_comment": "Maps effort name to implementation plan location",
+      "oci-types": {
+        "file_path": "/efforts/phase1/wave1/oci-types/.software-factory/IMPLEMENTATION-PLAN.md",
+        "created_at": "2025-08-24T10:00:00Z",
+        "created_by": "code-reviewer",
+        "agent_id": "code-reviewer-wave1-001",
+        "phase": 1,
+        "wave": 1,
+        "effort": "oci-types"
+      },
+      "registry-auth-types": {
+        "file_path": "/efforts/phase1/wave1/registry-auth-types/.software-factory/IMPLEMENTATION-PLAN.md",
+        "created_at": "2025-08-24T10:05:00Z",
+        "created_by": "code-reviewer",
+        "agent_id": "code-reviewer-wave1-002",
+        "phase": 1,
+        "wave": 1,
+        "effort": "registry-auth-types"
+      }
+    },
+    "code_review_reports": {
+      "_comment": "Maps review ID to report location",
+      "oci-types-review-001": {
+        "file_path": "/efforts/phase1/wave1/oci-types/.software-factory/CODE-REVIEW-REPORT.md",
+        "created_at": "2025-08-24T12:00:00Z",
+        "created_by": "code-reviewer",
+        "reviewed_branch": "idpbuilder-oci-mgmt/phase1/wave1/oci-types",
+        "findings_count": 3,
+        "review_status": "NEEDS_FIXES"
+      },
+      "registry-auth-types-review-001": {
+        "file_path": "/efforts/phase1/wave1/registry-auth-types/.software-factory/CODE-REVIEW-REPORT.md",
+        "created_at": "2025-08-24T12:30:00Z",
+        "created_by": "code-reviewer",
+        "reviewed_branch": "idpbuilder-oci-mgmt/phase1/wave1/registry-auth-types",
+        "findings_count": 5,
+        "review_status": "NEEDS_SPLIT"
+      }
+    },
+    "integration_reports": {
+      "_comment": "Maps integration ID to report location",
+      "phase1_wave1": {
+        "file_path": "/efforts/phase1/wave1/integration-workspace/.software-factory/INTEGRATION-REPORT.md",
+        "created_at": "2025-08-24T14:00:00Z",
+        "created_by": "integration",
+        "integration_branch": "idpbuilder-oci-mgmt/phase1-wave1-integration",
+        "status": "PASSED",
+        "efforts_merged": [
+          "oci-types",
+          "registry-auth-types",
+          "cli-skeleton"
+        ]
+      }
+    },
+    "work_logs": {
+      "_comment": "Maps effort name to work log location",
+      "oci-types": {
+        "file_path": "/efforts/phase1/wave1/oci-types/.software-factory/work-log.md",
+        "created_at": "2025-08-24T10:30:00Z",
+        "created_by": "sw-engineer",
+        "last_updated": "2025-08-24T13:00:00Z",
+        "lines_added": 974,
+        "tests_added": 15
+      },
+      "registry-auth-types": {
+        "file_path": "/efforts/phase1/wave1/registry-auth-types/.software-factory/work-log.md",
+        "created_at": "2025-08-24T10:35:00Z",
+        "created_by": "sw-engineer",
+        "last_updated": "2025-08-24T13:30:00Z",
+        "lines_added": 965,
+        "tests_added": 12
+      }
+    },
+    "split_plans": {
+      "_comment": "Maps split ID to split plan location",
+      "oci-types-split": {
+        "file_path": "/efforts/phase1/wave1/oci-types/.software-factory/SPLIT-PLAN.md",
+        "created_at": "2025-08-24T11:00:00Z",
+        "created_by": "code-reviewer",
+        "total_splits": 2,
+        "split_branches": [
+          "idpbuilder-oci-mgmt/phase1/wave1/oci-types-split-001",
+          "idpbuilder-oci-mgmt/phase1/wave1/oci-types-split-002"
+        ],
+        "split_workspaces": [
+          "/efforts/phase1/wave1/oci-types-split-001",
+          "/efforts/phase1/wave1/oci-types-split-002"
+        ]
+      },
+      "registry-auth-types-split": {
+        "file_path": "/efforts/phase1/wave1/registry-auth-types/.software-factory/SPLIT-PLAN.md",
+        "created_at": "2025-08-24T11:30:00Z",
+        "created_by": "code-reviewer",
+        "total_splits": 2,
+        "split_branches": [
+          "idpbuilder-oci-mgmt/phase1/wave1/registry-auth-types-split-001",
+          "idpbuilder-oci-mgmt/phase1/wave1/registry-auth-types-split-002"
+        ],
+        "split_workspaces": [
+          "/efforts/phase1/wave1/registry-auth-types-split-001",
+          "/efforts/phase1/wave1/registry-auth-types-split-002"
+        ]
+      }
+    },
+    "fix_plans": {
+      "_comment": "Maps fix ID to fix plan location",
+      "oci-types-fix-001": {
+        "file_path": "/efforts/phase1/wave1/oci-types/.software-factory/FIX-PLAN-001.md",
+        "created_at": "2025-08-24T13:00:00Z",
+        "created_by": "code-reviewer",
+        "fixes_required": 3,
+        "effort": "oci-types",
+        "review_report": "/efforts/phase1/wave1/oci-types/.software-factory/CODE-REVIEW-REPORT.md"
+      },
+      "registry-auth-types-fix-001": {
+        "file_path": "/efforts/phase1/wave1/registry-auth-types/.software-factory/FIX-PLAN-001.md",
+        "created_at": "2025-08-24T13:30:00Z",
+        "created_by": "code-reviewer",
+        "fixes_required": 5,
+        "effort": "registry-auth-types",
+        "review_report": "/efforts/phase1/wave1/registry-auth-types/.software-factory/CODE-REVIEW-REPORT.md"
+      }
+    },
+    "test_results": {
+      "_comment": "Maps phase_wave to test results location",
+      "phase1_wave1": {
+        "file_path": "/efforts/phase1/wave1/integration-workspace/.software-factory/test-results.md",
+        "created_at": "2025-08-24T14:30:00Z",
+        "created_by": "integration",
+        "tests_passed": 45,
+        "tests_failed": 0,
+        "test_coverage": "87%",
+        "test_plan": "/efforts/phase1/wave1/wave-planning/.software-factory/WAVE-TEST-PLAN.md"
+      },
+      "phase1_wave2": {
+        "file_path": "/efforts/phase1/wave2/integration-workspace/.software-factory/test-results.md",
+        "created_at": "2025-08-25T14:30:00Z",
+        "created_by": "integration",
+        "tests_passed": 62,
+        "tests_failed": 0,
+        "test_coverage": "89%",
+        "test_plan": "/efforts/phase1/wave2/wave-planning/.software-factory/WAVE-TEST-PLAN.md"
+      }
+    },
+    "validation_results": {
+      "_comment": "Maps effort name to validation results location",
+      "oci-types": {
+        "file_path": "/efforts/phase1/wave1/oci-types/.software-factory/validation-results.md",
+        "created_at": "2025-08-24T15:00:00Z",
+        "created_by": "sw-engineer",
+        "validation_status": "PASSED",
+        "tests_run": 15,
+        "linting_passed": true,
+        "build_successful": true
+      },
+      "registry-auth-types": {
+        "file_path": "/efforts/phase1/wave1/registry-auth-types/.software-factory/validation-results.md",
+        "created_at": "2025-08-24T15:30:00Z",
+        "created_by": "sw-engineer",
+        "validation_status": "PASSED",
+        "tests_run": 12,
+        "linting_passed": true,
+        "build_successful": true
+      }
+    },
+    "demo_results": {
+      "_comment": "Maps phase_wave to demo results location",
+      "phase1_wave1": {
+        "file_path": "/efforts/phase1/wave1/integration-workspace/.software-factory/demo-results.md",
+        "created_at": "2025-08-24T16:00:00Z",
+        "created_by": "integration",
+        "demo_status": "SUCCESSFUL",
+        "demo_plan": "/efforts/phase1/wave1/wave-planning/.software-factory/WAVE-DEMO-PLAN.md",
+        "recording_location": "/efforts/phase1/wave1/integration-workspace/.software-factory/demo-recording.mp4"
+      },
+      "phase1": {
+        "file_path": "/efforts/phase1/phase-integration/.software-factory/demo-results.md",
+        "created_at": "2025-08-25T16:00:00Z",
+        "created_by": "integration",
+        "demo_status": "SUCCESSFUL",
+        "demo_plan": "/efforts/phase1/phase-planning/.software-factory/PHASE-DEMO-PLAN.md",
+        "recording_location": "/efforts/phase1/phase-integration/.software-factory/phase-demo-recording.mp4"
+      }
+    },
+    "architect_assessments": {
+      "_comment": "Maps assessment ID to architect assessment location"
+    }
+  }
+}

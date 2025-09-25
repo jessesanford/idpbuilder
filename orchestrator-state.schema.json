@@ -1,0 +1,1294 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Orchestrator State File Schema",
+  "description": "Schema for the Software Factory orchestrator state file",
+  "type": "object",
+  "required": [
+    "current_phase",
+    "current_wave",
+    "current_state",
+    "previous_state",
+    "transition_time",
+    "phases_planned",
+    "waves_per_phase",
+    "efforts_completed",
+    "efforts_in_progress",
+    "efforts_pending",
+    "project_info"
+  ],
+  "properties": {
+    "current_phase": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Current phase number (1-based)"
+    },
+    "current_wave": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Current wave number within the phase (0 = not in wave yet)"
+    },
+    "current_state": {
+      "type": "string",
+      "description": "Current state from the state machine",
+      "enum": [
+        "INIT",
+        "PLANNING",
+        "SETUP_EFFORT_INFRASTRUCTURE",
+        "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "WAITING_FOR_EFFORT_PLANS",
+        "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+        "SPAWN_AGENTS",
+        "MONITOR",
+        "MONITOR_IMPLEMENTATION",
+        "MONITOR_REVIEWS",
+        "MONITOR_FIXES",
+        "MONITORING_INTEGRATION",
+        "MONITORING_PHASE_INTEGRATION",
+        "MONITORING_PROJECT_INTEGRATION",
+        "MONITORING_PROJECT_FIXES",
+        "MONITORING_BACKPORT_PROGRESS",
+        "MONITORING_FIX_PROGRESS",
+        "WAVE_START",
+        "WAVE_COMPLETE",
+        "WAVE_REVIEW",
+        "WAVE_ARCHITECTURE_PLANNING",
+        "WAVE_IMPLEMENTATION_PLANNING",
+        "WAVE_DIRECTORY_ACKNOWLEDGMENT",
+        "INTEGRATION",
+        "PHASE_INTEGRATION",
+        "PHASE_INTEGRATION_FEEDBACK_REVIEW",
+        "PROJECT_INTEGRATION",
+        "PHASE_COMPLETE",
+        "PHASE_ASSESSMENT",
+        "PHASE_ARCHITECTURE_PLANNING",
+        "PHASE_IMPLEMENTATION_PLANNING",
+        "IMPLEMENTATION",
+        "SPLIT_IMPLEMENTATION",
+        "MEASURE_SIZE",
+        "MEASURE_IMPLEMENTATION_SIZE",
+        "CREATE_SPLIT_PLAN",
+        "CREATE_SPLIT_INVENTORY",
+        "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+        "FIX_ISSUES",
+        "CREATE_FIX_PLAN",
+        "COORDINATE_BUILD_FIXES",
+        "PERFORM_CODE_REVIEW",
+        "COMPLETED",
+        "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+        "SPAWN_ENGINEERS_FOR_FIXES",
+        "SPAWN_INTEGRATION_AGENT",
+        "SPAWN_INTEGRATION_AGENT_PHASE",
+        "SPAWN_INTEGRATION_AGENT_PROJECT",
+        "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+        "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
+        "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN",
+        "SPAWN_CODE_REVIEWER_FIX_PLAN",
+        "SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN",
+        "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
+        "SPAWN_CODE_REVIEWER_PROJECT_VALIDATION",
+        "SPAWN_CODE_REVIEWER_BACKPORT_PLAN",
+        "SPAWN_SW_ENGINEER_BACKPORT_FIXES",
+        "SPAWN_SW_ENGINEER_PROJECT_FIXES",
+        "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+        "WAITING_FOR_MERGE_PLAN",
+        "WAITING_FOR_PHASE_MERGE_PLAN",
+        "WAITING_FOR_PROJECT_MERGE_PLAN",
+        "WAITING_FOR_FIX_PLANS",
+        "WAITING_FOR_PHASE_FIX_PLANS",
+        "WAITING_FOR_PROJECT_FIX_PLANS",
+        "WAITING_FOR_PROJECT_VALIDATION",
+        "WAITING_FOR_PHASE_ASSESSMENT",
+        "WAITING_FOR_BACKPORT_PLAN",
+        "DISTRIBUTE_FIX_PLANS",
+        "EFFORT_PLAN_CREATION",
+        "CREATE_INTEGRATION_TESTING",
+        "INTEGRATION_TESTING",
+        "PRODUCTION_READY_VALIDATION",
+        "BUILD_VALIDATION",
+        "ANALYZE_BUILD_FAILURES",
+        "BACKPORT_FIXES",
+        "IMMEDIATE_BACKPORT_REQUIRED",
+        "PR_PLAN_CREATION",
+        "ERROR_RECOVERY",
+        "SUCCESS",
+        "HARD_STOP"
+      ]
+    },
+    "previous_state": {
+      "type": ["string", "null"],
+      "description": "Previous state before the last transition",
+      "enum": [
+        null,
+        "INIT",
+        "PLANNING",
+        "SETUP_EFFORT_INFRASTRUCTURE",
+        "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "WAITING_FOR_EFFORT_PLANS",
+        "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+        "SPAWN_AGENTS",
+        "MONITOR",
+        "MONITOR_IMPLEMENTATION",
+        "MONITOR_REVIEWS",
+        "MONITOR_FIXES",
+        "MONITORING_INTEGRATION",
+        "MONITORING_PHASE_INTEGRATION",
+        "MONITORING_PROJECT_INTEGRATION",
+        "MONITORING_PROJECT_FIXES",
+        "MONITORING_BACKPORT_PROGRESS",
+        "MONITORING_FIX_PROGRESS",
+        "WAVE_START",
+        "WAVE_COMPLETE",
+        "WAVE_REVIEW",
+        "WAVE_ARCHITECTURE_PLANNING",
+        "WAVE_IMPLEMENTATION_PLANNING",
+        "WAVE_DIRECTORY_ACKNOWLEDGMENT",
+        "INTEGRATION",
+        "PHASE_INTEGRATION",
+        "PHASE_INTEGRATION_FEEDBACK_REVIEW",
+        "PROJECT_INTEGRATION",
+        "PHASE_COMPLETE",
+        "PHASE_ASSESSMENT",
+        "PHASE_ARCHITECTURE_PLANNING",
+        "PHASE_IMPLEMENTATION_PLANNING",
+        "IMPLEMENTATION",
+        "SPLIT_IMPLEMENTATION",
+        "MEASURE_SIZE",
+        "MEASURE_IMPLEMENTATION_SIZE",
+        "CREATE_SPLIT_PLAN",
+        "CREATE_SPLIT_INVENTORY",
+        "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+        "FIX_ISSUES",
+        "CREATE_FIX_PLAN",
+        "COORDINATE_BUILD_FIXES",
+        "PERFORM_CODE_REVIEW",
+        "COMPLETED",
+        "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+        "SPAWN_ENGINEERS_FOR_FIXES",
+        "SPAWN_INTEGRATION_AGENT",
+        "SPAWN_INTEGRATION_AGENT_PHASE",
+        "SPAWN_INTEGRATION_AGENT_PROJECT",
+        "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+        "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
+        "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN",
+        "SPAWN_CODE_REVIEWER_FIX_PLAN",
+        "SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN",
+        "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
+        "SPAWN_CODE_REVIEWER_PROJECT_VALIDATION",
+        "SPAWN_CODE_REVIEWER_BACKPORT_PLAN",
+        "SPAWN_SW_ENGINEER_BACKPORT_FIXES",
+        "SPAWN_SW_ENGINEER_PROJECT_FIXES",
+        "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+        "WAITING_FOR_MERGE_PLAN",
+        "WAITING_FOR_PHASE_MERGE_PLAN",
+        "WAITING_FOR_PROJECT_MERGE_PLAN",
+        "WAITING_FOR_FIX_PLANS",
+        "WAITING_FOR_PHASE_FIX_PLANS",
+        "WAITING_FOR_PROJECT_FIX_PLANS",
+        "WAITING_FOR_PROJECT_VALIDATION",
+        "WAITING_FOR_PHASE_ASSESSMENT",
+        "WAITING_FOR_BACKPORT_PLAN",
+        "DISTRIBUTE_FIX_PLANS",
+        "EFFORT_PLAN_CREATION",
+        "CREATE_INTEGRATION_TESTING",
+        "INTEGRATION_TESTING",
+        "PRODUCTION_READY_VALIDATION",
+        "BUILD_VALIDATION",
+        "ANALYZE_BUILD_FAILURES",
+        "BACKPORT_FIXES",
+        "IMMEDIATE_BACKPORT_REQUIRED",
+        "PR_PLAN_CREATION",
+        "ERROR_RECOVERY",
+        "SUCCESS",
+        "HARD_STOP"
+      ]
+    },
+    "transition_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of the last state transition"
+    },
+    "transition_reason": {
+      "type": "string",
+      "description": "Reason for the last state transition"
+    },
+    "phases_planned": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Total number of phases planned for the project"
+    },
+    "waves_per_phase": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 1,
+      "description": "Number of waves planned for each phase"
+    },
+    "project_info": {
+      "type": "object",
+      "required": ["name", "description", "start_date"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "start_date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "efforts_completed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["phase", "wave", "name", "branch", "status"],
+        "properties": {
+          "phase": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "wave": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "branch": {
+            "type": "string",
+            "minLength": 1
+          },
+          "base_branch": {
+            "type": "string"
+          },
+          "workspace": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["COMPLETE", "SPLIT_DEPRECATED", "INTEGRATED", "MERGED"]
+          },
+          "deprecated_branch": {
+            "type": "string"
+          },
+          "replacement_splits": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "do_not_integrate": {
+            "type": "boolean"
+          },
+          "splits": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "split_sizes": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "review_status": {
+            "type": "string",
+            "enum": ["PENDING", "IN_PROGRESS", "PASSED", "ACCEPTED", "REJECTED", "FAILED"]
+          },
+          "completion_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "split_completed_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "last_commit": {
+            "type": "string"
+          },
+          "has_fixes_applied": {
+            "type": "boolean"
+          },
+          "fixes_applied_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "efforts_in_progress": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "phase", "wave", "branch"],
+        "properties": {
+          "_comment": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "phase": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "wave": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "branch": {
+            "type": "string",
+            "minLength": 1
+          },
+          "base_branch": {
+            "type": "string"
+          },
+          "directory": {
+            "type": "string"
+          },
+          "workspace": {
+            "type": "string"
+          },
+          "last_commit": {
+            "type": "string"
+          },
+          "last_updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "has_fixes_applied": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "efforts_pending": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["phase", "wave", "efforts"],
+        "properties": {
+          "phase": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "wave": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "efforts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "description"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": {
+                  "type": "string"
+                },
+                "target_lines": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "status": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "efforts_planned": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "phase": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "wave": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "efforts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "target_lines": {
+                  "type": "integer"
+                },
+                "actual_lines": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "split_tracking": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "total_splits": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "current_split": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "splits": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["number", "branch", "status"],
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "branch": {
+                  "type": "string"
+                },
+                "base_branch": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["PENDING", "IN_PROGRESS", "COMPLETED", "FAILED"]
+                },
+                "lines": {
+                  "type": "integer"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "completed_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "violations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["effort", "lines", "limit", "requires_split"],
+        "properties": {
+          "effort": {
+            "type": "string"
+          },
+          "lines": {
+            "type": "integer"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "requires_split": {
+            "type": "boolean"
+          },
+          "split_planned": {
+            "type": "boolean"
+          },
+          "splits_needed": {
+            "type": "integer"
+          },
+          "split_sizes": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "current_wave_integration": {
+      "type": ["object", "null"],
+      "properties": {
+        "_comment": {
+          "type": "string"
+        },
+        "workspace": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "merge_plan": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "efforts_last_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "is_stale": {
+          "type": "boolean"
+        },
+        "merged_efforts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "current_phase_integration": {
+      "type": ["object", "null"],
+      "properties": {
+        "_comment": {
+          "type": "string"
+        },
+        "workspace": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "merge_plan": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "waves_last_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "is_stale": {
+          "type": "boolean"
+        },
+        "merged_waves": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "current_integration": {
+      "type": ["object", "null"],
+      "properties": {
+        "branch": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["wave", "phase", "project"]
+        },
+        "phase": {
+          "type": "integer"
+        },
+        "wave": {
+          "type": "integer"
+        }
+      }
+    },
+    "deprecated_wave_integrations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "deprecated_phase_integrations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "deprecated_integrations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "integration_workspaces": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "workspace": {
+            "type": "string"
+          },
+          "merge_plan": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "repository_contexts": {
+      "type": "object",
+      "properties": {
+        "_comment": {
+          "type": "string"
+        },
+        "software_factory_repo": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "branches": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "purpose": {
+              "type": "string"
+            }
+          }
+        },
+        "target_repo_clones": {
+          "type": "object"
+        }
+      }
+    },
+    "integration_branches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "branch": {
+            "type": "string"
+          },
+          "phase": {
+            "type": "integer"
+          },
+          "wave": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "merged_splits": {
+            "type": "integer"
+          },
+          "architect_review": {
+            "type": "string"
+          },
+          "review_time": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "grading_history": {
+      "type": "object",
+      "properties": {
+        "parallel_spawn_average": {
+          "type": "number"
+        },
+        "review_first_try_rate": {
+          "type": "number"
+        },
+        "integration_success_rate": {
+          "type": "number"
+        }
+      }
+    },
+    "last_checkpoint": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "wave_summary": {
+      "type": ["object", "null"],
+      "properties": {
+        "phase": {
+          "type": "integer"
+        },
+        "wave": {
+          "type": "integer"
+        },
+        "total_efforts": {
+          "type": "integer"
+        },
+        "completed_efforts": {
+          "type": "integer"
+        },
+        "total_splits": {
+          "type": "integer"
+        },
+        "all_splits_compliant": {
+          "type": "boolean"
+        },
+        "review_status": {
+          "type": "string"
+        },
+        "integration_status": {
+          "type": "string"
+        },
+        "architect_decision": {
+          "type": "string"
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "effort_plan_paths": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "phase_architecture_plans": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "wave_architecture_plans": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "phase_implementation_plans": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "wave_implementation_plans": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "phase_directory_acknowledgments": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "wave_metadata_injections": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "code_reviewer_wave_acknowledgments": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "architect_review_states": {
+      "type": "object",
+      "properties": {
+        "phase_assessments": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "wave_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "code_reviewer_planning_states": {
+      "type": "object",
+      "properties": {
+        "current_mode": {
+          "type": "string"
+        },
+        "planning_queue": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "extended_states": {
+      "type": "object",
+      "properties": {
+        "orchestrator_states": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "architect_states": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "code_reviewer_states": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "test_plans": {
+      "type": "object",
+      "description": "TDD test plans and harnesses tracking per R341 and R340",
+      "properties": {
+        "_comment": {
+          "type": "string"
+        },
+        "phase": {
+          "type": "object",
+          "description": "Phase-level test plans",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "test_plan_path": {
+                "type": "string",
+                "description": "Path to PHASE-TEST-PLAN.md"
+              },
+              "test_harness_path": {
+                "type": "string",
+                "description": "Path to PHASE-TEST-HARNESS.sh"
+              },
+              "demo_plan_path": {
+                "type": "string",
+                "description": "Path to PHASE-DEMO-PLAN.md"
+              },
+              "test_dir": {
+                "type": "string",
+                "description": "Directory containing test files"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "created_by": {
+                "type": "string",
+                "description": "Agent that created the tests"
+              },
+              "phase": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "status": {
+                "type": "string",
+                "enum": ["active", "deprecated", "completed"]
+              },
+              "test_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "tests_passing": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "tests_failing": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "tdd_phase": {
+                "type": "string",
+                "enum": ["red", "green", "refactor"],
+                "description": "TDD phase: red (tests fail), green (tests pass), refactor"
+              }
+            },
+            "required": ["test_plan_path", "test_harness_path", "test_dir", "created_at", "created_by", "phase", "status", "tdd_phase"]
+          }
+        },
+        "wave": {
+          "type": "object",
+          "description": "Wave-level test plans",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "test_plan_path": {
+                "type": "string",
+                "description": "Path to WAVE-TEST-PLAN.md"
+              },
+              "test_harness_path": {
+                "type": "string",
+                "description": "Path to WAVE-TEST-HARNESS.sh"
+              },
+              "demo_plan_path": {
+                "type": "string",
+                "description": "Path to WAVE-DEMO-PLAN.md"
+              },
+              "test_dir": {
+                "type": "string",
+                "description": "Directory containing test files"
+              },
+              "test_effort_mapping_path": {
+                "type": "string",
+                "description": "Path to test-effort-mapping.json"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "created_by": {
+                "type": "string",
+                "description": "Agent that created the tests"
+              },
+              "phase": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "wave": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "status": {
+                "type": "string",
+                "enum": ["active", "deprecated", "completed"]
+              },
+              "test_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "tests_passing": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "tests_failing": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "tdd_phase": {
+                "type": "string",
+                "enum": ["red", "green", "refactor"],
+                "description": "TDD phase: red (tests fail), green (tests pass), refactor"
+              },
+              "effort_assignments": {
+                "type": "object",
+                "description": "Mapping of effort names to their assigned tests",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "required": ["test_plan_path", "test_harness_path", "test_dir", "created_at", "created_by", "phase", "wave", "status", "tdd_phase"]
+          }
+        },
+        "effort": {
+          "type": "object",
+          "description": "Effort-specific test assignments",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "assigned_tests": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of test files assigned to this effort"
+              },
+              "phase": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "wave": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "effort_name": {
+                "type": "string"
+              },
+              "test_count": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "status": {
+                "type": "string",
+                "enum": ["assigned", "in_progress", "completed"]
+              }
+            },
+            "required": ["assigned_tests", "phase", "wave", "effort_name", "status"]
+          }
+        }
+      }
+    },
+    "stale_integration_tracking": {
+      "type": "object",
+      "description": "R327/R348 cascade tracking for stale integrations",
+      "properties": {
+        "stale_integrations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "integration_type": {
+                "type": "string",
+                "enum": ["wave", "phase", "project"]
+              },
+              "integration_id": {
+                "type": "string"
+              },
+              "became_stale_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "stale_reason": {
+                "type": "string"
+              },
+              "triggering_fixes": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "recreation_required": {
+                "type": "boolean"
+              },
+              "recreation_completed": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "staleness_cascade": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cascade_sequence": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "level": {
+                      "type": "string",
+                      "enum": ["wave", "phase", "project"]
+                    },
+                    "integration": {
+                      "type": "string"
+                    },
+                    "recreation_status": {
+                      "type": "string",
+                      "enum": ["pending", "in_progress", "completed"]
+                    }
+                  }
+                }
+              },
+              "cascade_status": {
+                "type": "string",
+                "enum": ["pending", "in_progress", "completed"]
+              }
+            }
+          }
+        },
+        "fix_tracking": {
+          "type": "object",
+          "properties": {
+            "fixes_applied": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "fix_id": {
+                    "type": "string"
+                  },
+                  "commit": {
+                    "type": "string"
+                  },
+                  "branch": {
+                    "type": "string"
+                  },
+                  "applied_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "integrated_into": {
+                    "type": "object",
+                    "properties": {
+                      "wave": {
+                        "type": "boolean"
+                      },
+                      "phase": {
+                        "type": "boolean"
+                      },
+                      "project": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "fixes_pending_integration": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "validation_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "validation_type": {
+                "type": "string"
+              },
+              "result": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "dependency_graph": {
+      "type": "object",
+      "description": "R350 Complete Cascade Dependency Graph",
+      "properties": {
+        "effort_dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "effort": {
+                "type": "string"
+              },
+              "depends_on": {
+                "type": "string"
+              },
+              "dependency_type": {
+                "type": "string",
+                "enum": ["sequential", "parallel", "independent", "wave_base"]
+              },
+              "requires_rebase_on_change": {
+                "type": "boolean"
+              },
+              "tracked_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        "integration_dependencies": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "integration": {
+                "type": "string"
+              },
+              "depends_on": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "dependency_type": {
+                "type": "string",
+                "enum": ["source_efforts", "wave_integrations", "phase_integrations"]
+              },
+              "requires_recreation_on_change": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "cascade_chains": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cascade_id": {
+                "type": "string"
+              },
+              "trigger": {
+                "type": "string"
+              },
+              "triggered_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "operations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["rebase", "recreate", "delete"]
+                    },
+                    "target": {
+                      "type": "string"
+                    },
+                    "on": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": ["pending", "in_progress", "completed", "failed"]
+                    }
+                  }
+                }
+              },
+              "cascade_status": {
+                "type": "string",
+                "enum": ["pending", "in_progress", "completed", "failed"]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

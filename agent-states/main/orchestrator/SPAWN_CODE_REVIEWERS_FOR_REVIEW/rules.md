@@ -1,0 +1,405 @@
+# Orchestrator - SPAWN_CODE_REVIEWERS_FOR_REVIEW State Rules
+
+# PRIMARY DIRECTIVES
+
+You MUST read and acknowledge these rules:
+
+1. **R006** - Orchestrator cannot write code (BLOCKING)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md`
+
+2. **R251** - Initial Effort Planning Protocol (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R251-initial-effort-planning.md`
+
+3. **R309** - Primary Implementation Effort Planning (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R309-primary-implementation-effort-planning.md`
+
+4. **R287** - TODO Persistence Requirements (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R287-todo-persistence-comprehensive.md`
+
+5. **R288** - State File Update Requirements (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-requirements.md`
+
+6. **R304** - Mandatory Line Counter Usage (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R304-mandatory-line-counter-usage.md`
+
+7. **R322** - Mandatory Stop After Spawn States (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-after-spawn.md`
+
+8. **R324** - State Transition Validation (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R324-state-transition-validation.md`
+
+
+## 🛑🛑🛑 R322 MANDATORY STOP BEFORE STATE TRANSITIONS 🛑🛑🛑
+
+**SUPREME LAW - VIOLATION = -100% IMMEDIATE FAILURE**
+
+### YOU MUST STOP AFTER:
+1. ✅ Completing all TODOs for this state
+2. ✅ Updating orchestrator-state.json with new state
+3. ✅ Committing and pushing the state file  
+4. ✅ Providing work summary
+
+### YOU MUST NOT:
+- ❌ Continue to the next state automatically
+- ❌ Start work for the new state
+- ❌ Spawn agents for the new state
+- ❌ Assume permission to continue
+
+### STOP PROTOCOL:
+```markdown
+## 🛑 STATE TRANSITION CHECKPOINT: CURRENT_STATE → NEXT_STATE
+
+### ✅ Current State Work Completed:
+- [List completed work]
+
+### 📊 Current Status:
+- Current State: CURRENT_STATE
+- Next State: NEXT_STATE
+- TODOs Completed: X/Y
+- State Files: Updated and committed ✅
+
+### ⏸️ STOPPED - Awaiting User Continuation
+Ready to transition to NEXT_STATE. Please use /continue-orchestrating.
+```
+
+**STOP MEANS STOP - Exit and wait for /continue-orchestrating**
+
+---
+
+## 🔴🔴🔴 R322 MANDATORY: STOP BEFORE STATE TRANSITIONS 🔴🔴🔴
+
+**CRITICAL REQUIREMENT PER R322:**
+After spawning ANY agents in this state, you MUST:
+1. Record what was spawned in state file
+2. Save TODOs per R287
+3. Commit and push state changes
+4. Display stop message with continuation instructions
+5. EXIT immediately with code 0
+
+**VIOLATION = AUTOMATIC -100% FAILURE**
+
+See: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-after-spawn.md`
+
+---
+
+
+## 🔴🔴🔴 R290 ENFORCEMENT: READ THESE RULES FIRST! 🔴🔴🔴
+
+**SUPREME LAW #3 (R290): STATE RULES MUST BE READ BEFORE STATE ACTIONS**
+
+## 🔴🔴🔴 STOP! STATE RULE READING IS ABSOLUTELY FIRST! 🔴🔴🔴
+
+**YOU HAVE ENTERED SPAWN_CODE_REVIEWERS_FOR_REVIEW STATE - YOU MUST READ AND ACKNOWLEDGE ALL STATE RULES BEFORE DOING ANY STATE WORK!**
+
+## 🔴🔴🔴 R290 VERIFICATION REQUIREMENT 🔴🔴🔴
+
+**R290 ENFORCEMENT: CREATE VERIFICATION MARKER AFTER READING**
+
+After reading and acknowledging all state rules, you MUST create a verification marker:
+
+```bash
+# MANDATORY: Create verification marker after reading rules
+touch .state_rules_read_orchestrator_SPAWN_CODE_REVIEWERS_FOR_REVIEW
+echo "$(date +%s) - Rules read and acknowledged for SPAWN_CODE_REVIEWERS_FOR_REVIEW" > .state_rules_read_orchestrator_SPAWN_CODE_REVIEWERS_FOR_REVIEW
+```
+
+**FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**
+
+The system will check for this marker. No marker = Immediate failure.
+
+### ❌ DO NOT DO ANY SPAWN_CODE_REVIEWERS_FOR_REVIEW WORK UNTIL RULES ARE READ:
+- ❌ Start spawn code reviewer agents
+- ❌ Start assign review work
+- ❌ Start distribute review tasks
+- ❌ Update state files
+- ❌ Continue to next state
+- ❌ Think about what to do in this state
+
+### ✅ YOU MUST IMMEDIATELY:
+
+## 🔴🔴🔴 MANDATORY STATE RULE READING AND ACKNOWLEDGMENT 🔴🔴🔴
+
+### ❌ ANTI-PATTERNS THAT WILL CAUSE FAILURE:
+
+1. **Fake Acknowledgment Without Reading**:
+   ```
+   ❌ WRONG: "I acknowledge R151, R208, R053..."
+   (No Read tool calls detected = AUTOMATIC FAILURE)
+   ```
+
+2. **Bulk Acknowledgment**:
+   ```
+   ❌ WRONG: "I acknowledge all SPAWN_CODE_REVIEWERS_FOR_REVIEW rules"
+   (YOU Must READ AND ACKNOWLEDGE EACH rule individually)
+   ```
+
+3. **Silent Reading**:
+   ```
+   ❌ WRONG: [Reads rules but doesn't acknowledge]
+   "Now I've read the rules, let me start work..."
+   (MUST explicitly acknowledge EACH rule)
+   ```
+
+4. **Reading From Memory**:
+   ```
+   ❌ WRONG: "I know R208 requires CD before spawn..."
+   (Must READ from file, not recall from memory)
+   ```
+
+### ✅ CORRECT PATTERN FOR SPAWN_CODE_REVIEWERS_FOR_REVIEW:
+```
+1. READ: $CLAUDE_PROJECT_DIR/rule-library/[first-rule-file].md
+2. "I acknowledge [Rule#] - [Rule Name]: [Brief description]"
+3. READ: $CLAUDE_PROJECT_DIR/rule-library/[second-rule-file].md  
+4. "I acknowledge [Rule#] - [Rule Name]: [Brief description]"
+### 🚨 NO WORK UNTIL ACKNOWLEDGMENT COMPLETE 🚨
+**You may NOT begin ANY SPAWN_CODE_REVIEWERS_FOR_REVIEW work until:**
+### 🚨 FAILURE TO READ STATE RULES FIRST = IMMEDIATE EXIT 🚨
+**If you do ANY SPAWN_CODE_REVIEWERS_FOR_REVIEW work before reading and acknowledging rules:**
+- **STOP ALL WORK IMMEDIATELY**
+- **EXIT WITH FAILURE STATUS**
+- **YOU HAVE VIOLATED STATE COMPLIANCE**
+
+**THE SYSTEM IS MONITORING YOUR READ TOOL CALLS!**
+
+## 🔴🔴🔴 MANDATORY MEASUREMENT RULE - R304 🔴🔴🔴
+
+### ⚠️⚠️⚠️ CRITICAL MESSAGE FOR CODE REVIEWERS ⚠️⚠️⚠️
+**TELL CODE REVIEWERS: "YOU MUST USE tools/line-counter.sh - NO PARAMETERS NEEDED!"**
+
+**ABSOLUTE REQUIREMENTS FOR CODE REVIEWERS:**
+- ✅ MUST use `$CLAUDE_PROJECT_DIR/tools/line-counter.sh` for ALL line counting
+- ✅ Tool AUTO-DETECTS correct base branch - NO PARAMETERS NEEDED!
+- ❌ NEVER use `wc -l` or any manual counting method
+- ❌ NEVER use git diff for line counting
+- ❌ NEVER count lines any other way - this is a -100% automatic failure
+- ❌ NEVER use old -b or -c parameters (tool updated!)
+
+**MESSAGE TO SPAWN: "MUST use tools/line-counter.sh for ALL measurements per R304. Tool auto-detects base - just run it!"**
+
+**Failure to use the line counter tool = AUTOMATIC -100% GRADE**
+
+### State-Specific Rules (NOT in orchestrator.md):
+
+1. **🚨🚨🚨 R151** - Parallel Spawning Timestamp Requirement
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R151-parallel-agent-spawning-timing.md`
+   - Criticality: CRITICAL - Timestamps must be within 5s for parallel agents
+   - Summary: All parallel agents must emit timestamps within 5 seconds
+
+2. **R108** - Code Review Protocol
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R108-code-review-protocol.md`
+   - Criticality: BLOCKING - Complete review protocol
+   - Summary: Review for size limits, quality, patterns, and create reports
+
+3. **R222** - Code Review Gate
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R222-code-review-gate.md`
+   - Criticality: BLOCKING - Must create standardized reports
+   - Summary: Generate CODE-REVIEW-REPORT.md for all findings
+
+4. **R255** - Post-Agent Work Verification
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R255-post-agent-work-verification.md`
+   - Criticality: BLOCKING - Verify correct locations after completion
+   - Summary: Ensure all review work is in correct directories
+
+5. **🔴🔴🔴 R208** - CD Before Agent Spawn (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R208-cd-before-agent-spawn.md`
+   - Criticality: SUPREME LAW - CD to correct directory before spawn
+   - Summary: Must change to agent's working directory before spawning
+
+6. **🚨🚨🚨 R338** - Mandatory Line Count State Tracking
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R338-mandatory-line-count-state-tracking.md`
+   - Criticality: BLOCKING - -50% per missing tracking, -100% if none
+   - Summary: TELL Code Reviewers to use standardized SIZE MEASUREMENT REPORT format
+   - **CRITICAL**: Tell Code Reviewers: "Report 'Implementation Lines:' in standardized format per R338"
+
+7. **🔴🔴🔴 R353** - Cascade Focus Protocol (SUPREME LAW)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R353-cascade-focus-protocol.md`
+   - Criticality: SUPREME LAW - NO diversions during CASCADE operations
+   - Summary: During CASCADE mode, Code Reviewers MUST skip size checks and splits
+   - **CRITICAL**: Check cascade_mode in state file, pass context to Code Reviewers
+
+**Note**: Additional TODO persistence rules (R287) apply from orchestrator.md.
+
+## 🚨 SPAWN_CODE_REVIEWERS_FOR_REVIEW IS A VERB - START SPAWNING IMMEDIATELY! 🚨
+
+**See R151 for immediate action requirements when entering this state.**
+
+The SPAWN_CODE_REVIEWERS_FOR_REVIEW state requires IMMEDIATE spawning action - no pausing or waiting.
+
+## State Context
+You are spawning Code Reviewer agents to review:
+- Completed implementation work from SW Engineers
+- **INTEGRATION FIXES** when coming from MONITORING_FIX_PROGRESS
+- Any code that needs review before proceeding
+
+## 🔴🔴🔴 PREREQUISITES FOR SPAWN_CODE_REVIEWERS_FOR_REVIEW 🔴🔴🔴
+
+**BEFORE ENTERING THIS STATE, YOU MUST ALREADY HAVE:**
+1. ✅ All SW Engineers completed their implementation
+2. ✅ All code committed and pushed by SW Engineers
+3. ✅ Size measurements completed and within limits
+4. ✅ All effort directories contain implemented code
+5. ✅ **PARALLELIZATION ANALYSIS COMPLETE (ANALYZE_CODE_REVIEWER_PARALLELIZATION)**
+6. ✅ **Code Reviewer parallelization plan in orchestrator-state.json**
+
+**IF PARALLELIZATION NOT ANALYZED, GO BACK TO ANALYZE_CODE_REVIEWER_PARALLELIZATION!**
+
+## Review Assignment Protocol
+
+### 🔴🔴🔴 CASCADE MODE CHECK (R353) 🔴🔴🔴
+
+**CRITICAL: Check if we're in CASCADE mode BEFORE spawning!**
+```bash
+# Check CASCADE mode per R353
+CASCADE_MODE=$(jq -r '.cascade_coordination.cascade_mode // false' orchestrator-state.json)
+
+if [[ "$CASCADE_MODE" == "true" ]]; then
+    echo "🔴🔴🔴 CASCADE MODE ACTIVE - R353 CASCADE FOCUS PROTOCOL 🔴🔴🔴"
+    echo "📋 Code Reviewers will:"
+    echo "  - SKIP size measurements"
+    echo "  - SKIP split evaluations"
+    echo "  - ONLY validate rebases"
+    echo "  - ONLY check for conflicts/build issues"
+    CASCADE_CONTEXT="--cascade-mode=true --skip-size-checks --skip-split-evaluation --rebase-validation-only"
+else
+    echo "📊 Normal review mode - full validation enabled"
+    CASCADE_CONTEXT=""
+fi
+```
+
+### For Each Code Reviewer to Spawn:
+1. **CD to effort directory** (R208 SUPREME LAW)
+2. **Spawn with clear review scope AND CASCADE CONTEXT**:
+   - Which efforts to review
+   - What type of review (CASCADE vs NORMAL)
+   - Pass CASCADE_CONTEXT if cascade_mode=true
+   - Where to create reports
+3. **Track spawn timestamps** (R151 requirement)
+4. **Monitor completion** via orchestrator-state.json
+
+### Parallel vs Sequential Spawning:
+- **Parallel**: When reviewing independent efforts
+- **Sequential**: When reviewing split efforts or dependencies
+- **Decision made in**: ANALYZE_CODE_REVIEWER_PARALLELIZATION state
+
+## Expected Deliverables
+
+Each Code Reviewer must produce:
+1. **CODE-REVIEW-REPORT.md** in effort directory
+2. **Size compliance verification**
+3. **Quality assessment**
+4. **Recommendations for fixes if needed**
+
+## 🚨🚨🚨 CASCADE MODE SPAWNING (R353 + R354) 🚨🚨🚨
+
+**When CASCADE_MODE is active:**
+1. **TELL Code Reviewers**: "CASCADE MODE ACTIVE per R353 - skip size checks"
+2. **PASS cascade context**: Include cascade_mode=true in spawn instructions
+3. **EXPECT different output**: CASCADE_VALIDATION result, not size measurements
+4. **NO split transitions**: Even if reviewer mentions size, NO SPLITS during cascade
+
+**🔴🔴🔴 R354 POST-REBASE REVIEW ENFORCEMENT 🔴🔴🔴**
+
+```bash
+# Check for pending post-rebase reviews (R354)
+PENDING_REBASE_REVIEWS=$(jq -r '
+    .cascade_coordination.pending_reviews[]? |
+    select(.review_type == "post_rebase" and .review_status == "pending") |
+    .effort' orchestrator-state.json)
+
+if [[ -n "$PENDING_REBASE_REVIEWS" ]]; then
+    echo "🔴🔴🔴 R354 POST-REBASE REVIEWS REQUIRED 🔴🔴🔴"
+    echo "Spawning Code Reviewers for post-rebase validation:"
+
+    for effort in $PENDING_REBASE_REVIEWS; do
+        echo "  📋 $effort - needs post-rebase review"
+
+        # Get rebase details
+        REBASED_TO=$(jq -r --arg e "$effort" '
+            .cascade_coordination.pending_reviews[] |
+            select(.effort == $e and .review_type == "post_rebase") |
+            .rebased_to' orchestrator-state.json)
+
+        echo "Spawning Code Reviewer for $effort (rebased to $REBASED_TO)"
+
+        /spawn-agent code-reviewer \
+            --cascade-mode=true \
+            --review-type=post-rebase \
+            --r354-enforcement=true \
+            --skip-size-checks \
+            --skip-quality-checks \
+            --integration-validation-only \
+            --effort="$effort" \
+            --rebased-to="$REBASED_TO" \
+            --message="R354 POST-REBASE REVIEW: Validate integration after rebase to $REBASED_TO. Focus on build/test success ONLY per R353/R354."
+    done
+
+    echo "✅ Post-rebase reviewers spawned per R354"
+fi
+```
+
+**Example spawn with CASCADE + POST-REBASE context:**
+```bash
+if [[ "$CASCADE_MODE" == "true" && "$REVIEW_TYPE" == "post_rebase" ]]; then
+    echo "🔴 Spawning Code Reviewer for R354 POST-REBASE REVIEW"
+    /spawn-agent code-reviewer \
+        --cascade-mode=true \
+        --review-type=post-rebase \
+        --r354-mandated=true \
+        --skip-size-checks \
+        --skip-split-evaluation \
+        --rebase-validation-only \
+        --effort="$EFFORT_PATH" \
+        --message="R354 POST-REBASE REVIEW: Validate rebase success ONLY. Skip all quality/size checks per R353/R354."
+elif [[ "$CASCADE_MODE" == "true" ]]; then
+    echo "Spawning Code Reviewer with CASCADE FOCUS (R353)"
+    /spawn-agent code-reviewer \
+        --cascade-mode=true \
+        --skip-size-checks \
+        --rebase-validation-only \
+        --effort="$EFFORT_PATH" \
+        --message="CASCADE MODE: Only validate rebase success, skip size checks per R353"
+fi
+```
+
+## 🚨🚨🚨 SPECIAL CASE: REVIEWING INTEGRATION FIXES 🚨🚨🚨
+
+**When coming from MONITORING_FIX_PROGRESS:**
+1. You are reviewing FIXES to integration issues
+2. Focus review on:
+   - Did the fixes resolve the integration problems?
+   - Are the fixes properly implemented?
+   - Do the fixes maintain code quality?
+3. After successful review of fixes:
+   - Transition to MONITOR state
+   - Then to WAVE_COMPLETE
+   - Then BACK TO INTEGRATION for full re-run
+4. **NEVER skip directly to MONITORING_INTEGRATION**
+
+## State Transitions
+
+From SPAWN_CODE_REVIEWERS_FOR_REVIEW:
+- **REVIEWERS_COMPLETE** → WAVE_COMPLETE (All reviews done)
+- **REVIEWS_FAILED** → ERROR_RECOVERY (Critical issues found)
+- **NEED_FIXES** → SPAWN_AGENTS (Re-spawn SW Engineers for fixes)
+- **When reviewing fixes** → MONITOR → WAVE_COMPLETE → INTEGRATION (re-run)
+
+## Critical Rule Enforcement Order
+
+1. **R290**: Read these state rules FIRST and create verification marker
+3. **R208**: CD to correct directory BEFORE spawning
+4. **R151**: Ensure parallel timestamps within 5s
+5. **R053**: Follow complete review protocol
+6. **R054**: Generate standardized reports
+7. **R255**: Verify work in correct locations
+
+**Remember**: Code Reviewers check for size violations, quality issues, and create actionable reports for the orchestrator.
+
+## R322 VIOLATION DETECTION
+
+If you find yourself:
+- Starting work for a new state without /continue-orchestrating
+- Transitioning without stopping after state file commit
+- Continuing after completing state work
+
+**STOP IMMEDIATELY - You are violating R322!**

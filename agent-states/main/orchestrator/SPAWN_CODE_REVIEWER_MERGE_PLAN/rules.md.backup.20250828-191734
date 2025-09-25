@@ -1,0 +1,97 @@
+# Orchestrator - SPAWN_CODE_REVIEWER_MERGE_PLAN State Rules
+
+## State Definition
+The orchestrator spawns a Code Reviewer agent to create a merge plan for wave integration. The orchestrator has already set up the integration infrastructure (directory and branch).
+
+## Required Actions
+
+### 1. Verify Integration Infrastructure
+```bash
+# Confirm integration workspace is ready
+PHASE=$(yq '.current_phase' orchestrator-state.yaml)
+WAVE=$(yq '.current_wave' orchestrator-state.yaml)
+INTEGRATION_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
+
+if [ ! -d "$INTEGRATION_DIR" ]; then
+    echo "❌ Integration directory not found!"
+    exit 1
+fi
+
+# Verify integration branch exists
+cd "$INTEGRATION_DIR"
+CURRENT_BRANCH=$(git branch --show-current)
+if [[ ! "$CURRENT_BRANCH" =~ integration ]]; then
+    echo "❌ Integration branch not created!"
+    exit 1
+fi
+
+echo "✅ Integration infrastructure verified"
+echo "📁 Integration directory: $INTEGRATION_DIR"
+echo "🌿 Integration branch: $CURRENT_BRANCH"
+```
+
+### 2. Spawn Code Reviewer for Merge Plan
+```bash
+# Prepare spawn command for Code Reviewer
+cat > /tmp/code-reviewer-merge-plan-task.md << EOF
+Create WAVE MERGE PLAN for Phase ${PHASE} Wave ${WAVE} integration.
+
+CRITICAL REQUIREMENTS (R269, R270):
+1. Use ONLY original effort branches - NO integration branches!
+2. Analyze branch bases to determine correct merge order
+3. Exclude 'too-large' branches, include only splits
+4. Create WAVE-MERGE-PLAN.md with exact merge instructions
+5. DO NOT execute merges - only plan them!
+6. Document expected conflicts and resolution strategies
+
+Integration Directory: ${INTEGRATION_DIR}
+Target Branch: ${CURRENT_BRANCH}
+
+You are spawned into state: WAVE_MERGE_PLANNING
+EOF
+
+# Spawn Code Reviewer
+echo "🚀 Spawning Code Reviewer for merge plan creation..."
+/spawn code-reviewer WAVE_MERGE_PLANNING "$(cat /tmp/code-reviewer-merge-plan-task.md)"
+```
+
+### 3. Update State Tracking
+```yaml
+# Update orchestrator-state.yaml
+integration_status:
+  phase: ${PHASE}
+  wave: ${WAVE}
+  infrastructure_ready: true
+  integration_branch: "${CURRENT_BRANCH}"
+  integration_dir: "${INTEGRATION_DIR}"
+  merge_plan_requested: true
+  merge_plan_ready: false
+  waiting_for: "code-reviewer-merge-plan"
+```
+
+## Transition Rules
+- Immediate transition to: WAITING_FOR_MERGE_PLAN
+- Cannot skip to: SPAWN_INTEGRATION_AGENT (must wait for plan)
+- Must verify infrastructure before spawning
+
+## Success Criteria
+- Integration infrastructure verified
+- Code Reviewer spawned with correct state
+- Clear instructions provided including R269 and R270
+- State tracking updated
+
+---
+### ⚠️⚠️⚠️ RULE R269 - Code Reviewer Merge Plan No Execution
+**Source:** rule-library/R269-code-reviewer-merge-plan-no-execution.md
+**Criticality:** WARNING
+
+Remind Code Reviewer: Create plan ONLY, no execution!
+---
+
+---
+### 🔴🔴🔴 RULE R270 - No Integration Branches as Sources
+**Source:** rule-library/R270-no-integration-branches-as-sources.md
+**Criticality:** SUPREME
+
+Remind Code Reviewer: Use only original effort branches, never integration branches!
+---

@@ -1,0 +1,222 @@
+# WAVE_REVIEW State Rules
+
+## Core Wave Assessment Rules
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R074.0.0 - Wave Completion Architectural Review           │
+│ Source: rule-library/RULE-REGISTRY.md#R074                     │
+├─────────────────────────────────────────────────────────────────┤
+│ MANDATE: Architect must review completed waves before          │
+│ integration into phase. Assess effort integration quality,     │
+│ architectural consistency, and readiness for wave integration. │
+│                                                                 │
+│ ASSESSMENT CRITERIA:                                            │
+│ - Effort size compliance (<800 lines per effort)              │
+│ - KCP pattern consistency across all efforts                  │
+│ - API coherence within wave scope                             │
+│ - Integration test coverage and pass rates                    │
+│ - Performance impact on existing components                   │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R075.0.0 - Wave Integration Readiness                     │
+│ Source: rule-library/RULE-REGISTRY.md#R075                     │
+├─────────────────────────────────────────────────────────────────┤
+│ MANDATE: Before wave integration approval, verify all efforts  │
+│ are properly tested, documented, and maintain system           │
+│ stability when combined.                                       │
+│                                                                 │
+│ INTEGRATION REQUIREMENTS:                                       │
+│ - All efforts merge cleanly with wave integration branch      │
+│ - No architectural conflicts between efforts                   │
+│ - Combined wave maintains KCP multi-tenancy guarantees        │
+│ - Performance degradation within acceptable limits            │
+│ - Security boundaries preserved across all efforts            │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R076.0.0 - Effort Size Compliance Verification            │
+│ Source: rule-library/RULE-REGISTRY.md#R076                     │
+├─────────────────────────────────────────────────────────────────┤
+│ MANDATE: Every effort in wave must be ≤800 lines as measured   │
+│ by tmc-pr-line-counter.sh. Oversized efforts require split     │
+│ before wave approval.                                          │
+│                                                                 │
+│ ENFORCEMENT:                                                    │
+│ - Use ONLY tmc-pr-line-counter.sh for measurement             │
+│ - Exclude generated code (zz_generated*, *.pb.go, CRDs)       │
+│ - Split efforts >800 lines before integration                 │
+│ - Verify all splits maintain functional coherence             │
+│ - Document split rationale and dependencies                   │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│ RULE R037.0.0 - KCP Resource Pattern Enforcement               │
+│ Source: rule-library/RULE-REGISTRY.md#R037                     │
+├─────────────────────────────────────────────────────────────────┤
+│ MANDATE: All wave components must maintain KCP multi-tenant    │
+│ patterns with workspace isolation and logical cluster support. │
+│                                                                 │
+│ WAVE-LEVEL VALIDATION:                                          │
+│ - Consistent LogicalCluster field usage across efforts        │
+│ - Workspace-aware resource controllers                        │
+│ - Proper RBAC scoping for multi-tenancy                      │
+│ - Event and status propagation within workspace boundaries    │
+│ - Cross-effort API compatibility                              │
+└─────────────────────────────────────────────────────────────────┘
+
+## State-Specific Context
+
+### WAVE_REVIEW State Purpose
+This state is entered when all efforts in a wave are complete and need architectural review before wave integration. The architect validates effort cohesion, size compliance, and integration readiness.
+
+### State Transitions
+
+**ENTRY CONDITIONS:**
+- All efforts in wave marked as `EFFORT_COMPLETE`
+- Wave integration branch created by orchestrator
+- No outstanding code review issues (all efforts approved)
+
+**EXIT CONDITIONS:**
+- **PROCEED**: Wave meets all architectural standards → Approve wave integration
+- **CHANGES_REQUIRED**: Issues identified requiring fixes → Return to orchestrator with specific actions
+- **STOP**: Major architectural problems → Halt wave progression, require redesign
+
+**STATE TRANSITION FLOW:**
+```
+WAVE_REVIEW → [Assessment Complete] → Decision State
+├─ PROCEED → Wave Integration Approved
+├─ CHANGES_REQUIRED → Fix Cycle (orchestrator coordinates)
+└─ STOP → Wave Redesign Required
+```
+
+## Wave Assessment Criteria
+
+### Primary Assessment Areas
+
+| Area | Weight | Critical Threshold | Pass Criteria |
+|------|--------|-------------------|---------------|
+| Size Compliance | 25% | 100% efforts ≤800 lines | All pass |
+| KCP Pattern Consistency | 25% | No pattern violations | All pass |
+| Integration Stability | 20% | Clean merge + tests pass | 95% success |
+| API Coherence | 15% | No conflicting interfaces | All resolved |
+| Performance Impact | 10% | <10% degradation | Within limits |
+| Documentation Quality | 5% | Complete work logs | 90% coverage |
+
+### Size Compliance Assessment
+
+**CRITICAL REQUIREMENT**: Every effort must be ≤800 lines
+- **Measurement Tool**: `/workspaces/kcp-shared-tools/tmc-pr-line-counter.sh`
+- **Exclusions**: Generated code (zz_generated*.go, *.pb.go, CRDs, SDK clients)
+- **Action on Violation**: Immediate STOP, require effort splitting
+
+**Size Assessment Process**:
+1. Run line counter on each effort branch
+2. Document results in assessment report  
+3. Flag any efforts >800 lines for splitting
+4. Verify splits maintain logical coherence
+
+### KCP Pattern Consistency Assessment
+
+**CONSISTENCY REQUIREMENTS**:
+- Uniform LogicalCluster field usage across all efforts
+- Consistent workspace isolation patterns
+- Compatible RBAC models between efforts
+- Aligned event handling and status reporting
+
+**Pattern Validation Checklist**:
+- [ ] All CRDs include LogicalCluster metadata field
+- [ ] Controllers use workspace-scoped clients consistently
+- [ ] Resource indexing includes workspace context
+- [ ] Cross-effort APIs don't violate workspace boundaries
+- [ ] Event propagation respects multi-tenancy
+
+## Integration Readiness Validation
+
+### Pre-Integration Requirements
+
+1. **Clean Merge Validation**
+   - All effort branches merge without conflicts
+   - No duplicate resource definitions
+   - Consistent dependency versions
+
+2. **Integration Testing**
+   - Cross-effort integration tests pass
+   - Performance regression tests complete
+   - End-to-end workflows functional
+
+3. **API Compatibility**
+   - No breaking changes between efforts
+   - Consistent API patterns and naming
+   - Backward compatibility maintained
+
+### Wave Integration Approval Criteria
+
+**PROCEED CONDITIONS** (All must be true):
+- ✅ All efforts ≤800 lines (measured with tmc-pr-line-counter.sh)
+- ✅ All KCP patterns consistent across efforts
+- ✅ Wave integration branch merges cleanly
+- ✅ Integration tests pass with >95% success rate
+- ✅ Performance impact <10% degradation
+- ✅ No security boundary violations
+
+**CHANGES_REQUIRED CONDITIONS**:
+- Minor API inconsistencies between efforts
+- Integration test failures <5% (fixable issues)
+- Performance regression 10-20% (optimization needed)
+- Documentation gaps in work logs
+
+**STOP CONDITIONS**:
+- Any effort >800 lines (splitting required)
+- KCP pattern violations (multi-tenancy broken)
+- Major integration conflicts (architectural mismatch)
+- Performance regression >20% (design issue)
+- Security vulnerabilities introduced
+
+## Assessment Documentation Requirements
+
+### Required Wave Review Deliverables
+
+1. **Wave Assessment Report**
+   - Size compliance verification for each effort
+   - KCP pattern consistency evaluation
+   - Integration stability assessment
+   - Performance impact analysis
+
+2. **Integration Readiness Certification**
+   - Merge compatibility confirmation
+   - Test result summary
+   - API coherence validation
+   - Security boundary verification
+
+3. **Decision Record**
+   - PROCEED/CHANGES_REQUIRED/STOP decision
+   - Rationale for decision
+   - Specific action items (if CHANGES_REQUIRED)
+   - Architecture approval signature
+
+### Quality Gates
+
+**MANDATORY QUALITY GATES**:
+- Size compliance: 100% efforts ≤800 lines
+- Pattern compliance: 100% KCP pattern adherence
+- Integration tests: >95% pass rate
+- Security: Zero critical/high vulnerabilities
+
+**PERFORMANCE GATES**:
+- API response time: <10% increase from baseline
+- Memory usage: <15% increase from baseline  
+- Throughput: >90% of baseline performance
+- Resource utilization: Within acceptable limits
+
+### Review Timeline
+
+- **Standard Wave Review**: 4-8 hours
+- **Complex Wave Review**: 1-2 days
+- **Problem Wave Review**: 2-5 days (includes fix cycles)
+
+**Review Scope Factors**:
+- Number of efforts in wave (typically 3-7)
+- Complexity of inter-effort integration
+- Performance testing requirements
+- Documentation completeness

@@ -1,126 +1,200 @@
+/*
+Copyright 2024 The idpbuilder Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package v1alpha1
 
 import (
-	"fmt"
-
-	"github.com/cnoe-io/idpbuilder/globals"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-const (
-	// LastObservedCLIStartTimeAnnotation indicates when the controller acted on a resource.
-	LastObservedCLIStartTimeAnnotation = "cnoe.io/last-observed-cli-start-time"
-	// CliStartTimeAnnotation indicates when the CLI was invoked.
-	CliStartTimeAnnotation = "cnoe.io/cli-start-time"
-	FieldManager           = "idpbuilder"
-	// If GetSecretLabelKey is set to GetSecretLabelValue on a kubernetes secret, secret key and values can be used by the get command.
-	CLISecretLabelKey      = "cnoe.io/cli-secret"
-	CLISecretLabelValue    = "true"
-	PackageNameLabelKey    = "cnoe.io/package-name"
-	PackageTypeLabelKey    = "cnoe.io/package-type"
-	PackageTypeLabelCore   = "core"
-	PackageTypeLabelCustom = "custom"
+// LocalBuildSpec defines the desired state of LocalBuild
+type LocalBuildSpec struct {
+	// Source specifies the source configuration for the build
+	// +kubebuilder:validation:Required
+	Source LocalBuildSource `json:"source"`
 
-	ArgoCDPackageName       = "argocd"
-	GiteaPackageName        = "gitea"
-	IngressNginxPackageName = "nginx"
+	// Builder specifies the build configuration
+	// +kubebuilder:validation:Required
+	Builder LocalBuildConfiguration `json:"builder"`
+
+	// Output specifies where to push the built artifacts
+	// +kubebuilder:validation:Required
+	Output LocalBuildOutput `json:"output"`
+
+	// BuildArgs contains build-time variables
+	// +optional
+	BuildArgs map[string]string `json:"buildArgs,omitempty"`
+
+	// Labels contains labels to apply to the built image
+	// +optional
+	Labels map[string]string `json:"labels,omitempty"`
+
+	// Annotations contains annotations to apply to the built image
+	// +optional
+	Annotations map[string]string `json:"annotations,omitempty"`
+
+	// Timeout specifies the timeout for the build process
+	// +kubebuilder:validation:Type=string
+	// +kubebuilder:validation:Pattern=^([0-9]+(\.[0-9]+)?(ms|s|m|h))+$
+	// +kubebuilder:default="10m"
+	Timeout metav1.Duration `json:"timeout,omitempty"`
+
+	// Suspend tells the controller to suspend reconciliation
+	// +kubebuilder:default=false
+	Suspend bool `json:"suspend,omitempty"`
+}
+
+// LocalBuildSource defines the source for a local build
+type LocalBuildSource struct {
+	// GitRepository references a GitRepository resource
+	// +optional
+	GitRepository *GitRepositoryRef `json:"gitRepository,omitempty"`
+
+	// Path specifies a local filesystem path
+	// +optional
+	Path string `json:"path,omitempty"`
+}
+
+// LocalBuildConfiguration defines how to build the source
+type LocalBuildConfiguration struct {
+	// Strategy specifies the build strategy
+	// +kubebuilder:validation:Enum=dockerfile;buildpacks;kaniko;custom
+	// +kubebuilder:default="dockerfile"
+	Strategy BuildStrategy `json:"strategy"`
+
+	// Dockerfile specifies the Dockerfile configuration
+	// +optional
+	Dockerfile *DockerfileBuild `json:"dockerfile,omitempty"`
+
+	// Resources specifies resource requirements for the build
+	// +optional
+	Resources *BuildResources `json:"resources,omitempty"`
+}
+
+// BuildStrategy represents different build strategies
+type BuildStrategy string
+
+const (
+	// BuildStrategyDockerfile uses a Dockerfile for building
+	BuildStrategyDockerfile BuildStrategy = "dockerfile"
+	// BuildStrategyBuildpacks uses Cloud Native Buildpacks
+	BuildStrategyBuildpacks BuildStrategy = "buildpacks"
+	// BuildStrategyKaniko uses Kaniko for building
+	BuildStrategyKaniko BuildStrategy = "kaniko"
+	// BuildStrategyCustom uses a custom build process
+	BuildStrategyCustom BuildStrategy = "custom"
 )
 
-// ArgoPackageConfigSpec Allows for configuration of the ArgoCD Installation.
-// If no fields are specified then the binary embedded resources will be used to install ArgoCD.
-type ArgoPackageConfigSpec struct {
-	// Enabled controls whether to install ArgoCD.
-	Enabled bool `json:"enabled,omitempty"`
-}
+// DockerfileBuild defines Dockerfile-based build configuration
+type DockerfileBuild struct {
+	// Path is the path to the Dockerfile relative to the source root
+	// +kubebuilder:default="Dockerfile"
+	Path string `json:"path,omitempty"`
 
-// EmbeddedArgoApplicationsPackageConfigSpec Controls the installation of the embedded argo applications.
-type EmbeddedArgoApplicationsPackageConfigSpec struct {
-	// Enabled controls whether to install the embedded argo applications and the associated GitServer
-	Enabled bool `json:"enabled,omitempty"`
-}
+	// Context is the build context path relative to the source root
+	// +kubebuilder:default="."
+	Context string `json:"context,omitempty"`
 
-type PackageConfigsSpec struct {
-	Argo                     ArgoPackageConfigSpec                     `json:"argoPackageConfigs,omitempty"`
-	EmbeddedArgoApplications EmbeddedArgoApplicationsPackageConfigSpec `json:"embeddedArgoApplicationsPackageConfigs,omitempty"`
-	CustomPackageFiles       []string                                  `json:"customPackageFiles,omitempty"`
-	CustomPackageDirs        []string                                  `json:"customPackageDirs,omitempty"`
-	CustomPackageUrls        []string                                  `json:"customPackageUrls,omitempty"`
-	// +kubebuilder:validation:Optional
-	CorePackageCustomization map[string]PackageCustomization `json:"packageCustomization,omitempty"`
-}
-
-// BuildCustomizationSpec fields cannot change once a cluster is created
-type BuildCustomizationSpec struct {
-	Protocol       string `json:"protocol,omitempty"`
-	Host           string `json:"host,omitempty"`
-	IngressHost    string `json:"ingressHost,omitempty"`
-	Port           string `json:"port,omitempty"`
-	UsePathRouting bool   `json:"usePathRouting,omitempty"`
-	SelfSignedCert string `json:"selfSignedCert,omitempty"`
-	StaticPassword bool   `json:"staticPassword,omitempty"`
-}
-
-type LocalbuildSpec struct {
-	PackageConfigs     PackageConfigsSpec     `json:"packageConfigs,omitempty"`
-	BuildCustomization BuildCustomizationSpec `json:"buildCustomization,omitempty"`
-}
-
-// PackageCustomization defines how packages are customized
-type PackageCustomization struct {
-	// Name is the name of the package to be customized. e.g. argocd
-	Name string `json:"name,omitempty'"`
-	// FilePath is the absolute file path to a YAML file that contains Kubernetes manifests.
-	FilePath string `json:"filePath,omitempty"`
-}
-
-type LocalbuildStatus struct {
-	// ObservedGeneration is the 'Generation' of the Service that was last processed by the controller.
+	// Target specifies the target stage in a multi-stage Dockerfile
 	// +optional
-	ObservedGeneration int64        `json:"observedGeneration,omitempty"`
-	ArgoCD             ArgoCDStatus `json:"ArgoCD,omitempty"`
-	Nginx              NginxStatus  `json:"nginx,omitempty"`
-	Gitea              GiteaStatus  `json:"gitea,omitempty"`
+	Target string `json:"target,omitempty"`
 }
 
-type GiteaStatus struct {
-	Available                bool   `json:"available,omitempty"`
-	ExternalURL              string `json:"externalURL,omitempty"`
-	InternalURL              string `json:"internalURL,omitempty"`
-	AdminUserSecretName      string `json:"adminUserSecretNameecret,omitempty"`
-	AdminUserSecretNamespace string `json:"adminUserSecretNamespace,omitempty"`
+
+// BuildResources defines resource requirements for builds
+type BuildResources struct {
+	// CPU specifies CPU requirements
+	// +optional
+	CPU string `json:"cpu,omitempty"`
+
+	// Memory specifies memory requirements
+	// +optional
+	Memory string `json:"memory,omitempty"`
+
+	// Storage specifies storage requirements
+	// +optional
+	Storage string `json:"storage,omitempty"`
 }
 
-type ArgoCDStatus struct {
-	Available   bool `json:"available,omitempty"`
-	AppsCreated bool `json:"appsCreated,omitempty"`
+// LocalBuildOutput defines where to push built artifacts
+type LocalBuildOutput struct {
+	// Registry specifies the container registry configuration
+	// +kubebuilder:validation:Required
+	Registry LocalBuildRegistry `json:"registry"`
 }
 
-type NginxStatus struct {
-	Available bool `json:"available,omitempty"`
+// LocalBuildRegistry defines container registry configuration
+type LocalBuildRegistry struct {
+	// URL is the registry URL
+	// +kubebuilder:validation:Required
+	URL string `json:"url"`
+
+	// Repository is the repository within the registry
+	// +kubebuilder:validation:Required
+	Repository string `json:"repository"`
 }
+
+// LocalBuildStatus defines the observed state of LocalBuild
+type LocalBuildStatus struct {
+	// Phase represents the current phase of the build
+	// +kubebuilder:validation:Enum=Pending;Building;Ready;Failed
+	Phase LocalBuildPhase `json:"phase,omitempty"`
+
+	// Conditions contains details about the build state
+	// +optional
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
+}
+
+// LocalBuildPhase represents the phase of a local build
+type LocalBuildPhase string
+
+const (
+	// LocalBuildPhasePending means the build is pending
+	LocalBuildPhasePending LocalBuildPhase = "Pending"
+	// LocalBuildPhaseBuilding means the build is in progress
+	LocalBuildPhaseBuilding LocalBuildPhase = "Building"
+	// LocalBuildPhaseReady means the build completed successfully
+	LocalBuildPhaseReady LocalBuildPhase = "Ready"
+	// LocalBuildPhaseFailed means the build failed
+	LocalBuildPhaseFailed LocalBuildPhase = "Failed"
+)
+
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-// +kubebuilder:resource:path=localbuilds,scope=Cluster
-type Localbuild struct {
+// +kubebuilder:resource:scope=Namespaced,categories=idpbuilder
+// +kubebuilder:printcolumn:name="Strategy",type=string,JSONPath=".spec.builder.strategy"
+// +kubebuilder:printcolumn:name="Phase",type=string,JSONPath=".status.phase"
+// +kubebuilder:printcolumn:name="Age",type=date,JSONPath=".metadata.creationTimestamp"
+
+// LocalBuild is the Schema for the localbuilds API
+type LocalBuild struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   LocalbuildSpec   `json:"spec,omitempty"`
-	Status LocalbuildStatus `json:"status,omitempty"`
-}
-
-func (l *Localbuild) GetArgoProjectName() string {
-	return fmt.Sprintf("%s-%s-gitserver", globals.ProjectName, l.Name)
-}
-
-func (l *Localbuild) GetArgoApplicationName(name string) string {
-	return fmt.Sprintf("%s-%s-gitserver-%s", globals.ProjectName, l.Name, name)
+	Spec   LocalBuildSpec   `json:"spec,omitempty"`
+	Status LocalBuildStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
-type LocalbuildList struct {
+
+// LocalBuildList contains a list of LocalBuild
+type LocalBuildList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Localbuild `json:"items"`
+	Items           []LocalBuild `json:"items"`
 }
+

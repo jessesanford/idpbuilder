@@ -1,0 +1,457 @@
+# Orchestrator - ERROR_RECOVERY State Grading
+
+## Critical Performance Metrics
+
+---
+### ℹ️ RULE  - 
+**Source:** 
+**Criticality:** INFO - Best practice
+
+PRIMARY METRIC: Recovery Time Achievement
+Measurement: Actual vs Target recovery time
+Target: Within allocated time by severity
+Grade: PASS/FAIL (binary)
+Weight: 60% of overall orchestrator grade
+Consequence: FAIL = Human escalation required
+---
+
+## Grading Rubric by Error Severity
+
+| Error Severity | Target Time | Excellent | Good | Pass | FAIL |
+|----------------|-------------|-----------|------|------|------|
+| CRITICAL | 30 min | <15 min | 15-20 min | 20-30 min | >30 min |
+| HIGH | 60 min | <30 min | 30-45 min | 45-60 min | >60 min |
+| MEDIUM | 2 hours | <1 hour | 1-1.5 hours | 1.5-2 hours | >2 hours |
+| LOW | 4 hours | <2 hours | 2-3 hours | 3-4 hours | >4 hours |
+
+## Secondary Metrics
+
+| Metric | Excellent | Good | Acceptable | FAIL |
+|--------|-----------|------|------------|------|
+| Root Cause Accuracy | 100% | 95% | 90% | <90% |
+| Prevention Implementation | Complete | Partial | Basic | None |
+| State Preservation | 100% | 95% | 90% | <90% |
+| Agent Coordination | Seamless | Minor issues | Some delays | Major problems |
+
+## Real-Time Scoring
+
+```python
+class ErrorRecoveryGrader:
+    def __init__(self):
+        self.recovery_attempts = []
+        self.severity_targets = {
+            'CRITICAL': 30,  # minutes
+            'HIGH': 60,
+            'MEDIUM': 120,
+            'LOW': 240
+        }
+        
+    def grade_recovery_attempt(self, recovery_data):
+        """Grade an error recovery attempt"""
+        
+        # Critical: Time performance
+        time_grade = self.calculate_time_grade(recovery_data)
+        
+        # Root cause analysis accuracy
+        rca_grade = self.evaluate_root_cause_analysis(recovery_data)
+        
+        # State preservation quality
+        preservation_grade = self.evaluate_state_preservation(recovery_data)
+        
+        # Prevention implementation
+        prevention_grade = self.evaluate_prevention_measures(recovery_data)
+        
+        # Agent coordination efficiency
+        coordination_grade = self.evaluate_agent_coordination(recovery_data)
+        
+        overall = self.calculate_overall_grade(
+            time_grade, rca_grade, preservation_grade, 
+            prevention_grade, coordination_grade
+        )
+        
+        return {
+            'time': time_grade,
+            'root_cause': rca_grade,
+            'preservation': preservation_grade,
+            'prevention': prevention_grade,
+            'coordination': coordination_grade,
+            'overall': overall,
+            'timestamp': datetime.now().isoformat()
+        }
+    
+    def calculate_time_grade(self, data):
+        """Calculate recovery time grade"""
+        severity = data['error_severity']
+        target_minutes = self.severity_targets[severity]
+        
+        start_time = datetime.fromisoformat(data['started_at'].replace('Z', '+00:00'))
+        end_time = datetime.fromisoformat(data['completed_at'].replace('Z', '+00:00'))
+        actual_minutes = (end_time - start_time).total_seconds() / 60
+        
+        ratio = actual_minutes / target_minutes
+        
+        if ratio <= 0.5:
+            grade = 'EXCELLENT'
+            score = 100
+        elif ratio <= 0.75:
+            grade = 'GOOD'
+            score = 90
+        elif ratio <= 1.0:
+            grade = 'PASS'
+            score = 75
+        else:
+            grade = 'FAIL'
+            score = 0
+        
+        return {
+            'severity': severity,
+            'target_minutes': target_minutes,
+            'actual_minutes': actual_minutes,
+            'ratio': ratio,
+            'grade': grade,
+            'score': score
+        }
+    
+    def evaluate_root_cause_analysis(self, data):
+        """Evaluate accuracy of root cause identification"""
+        
+        # Check if root cause was correctly identified
+        identified_cause = data.get('identified_root_cause')
+        actual_cause = data.get('actual_root_cause', identified_cause)
+        
+        if identified_cause == actual_cause:
+            accuracy = 100
+            grade = 'EXCELLENT'
+        elif self.causes_related(identified_cause, actual_cause):
+            accuracy = 80
+            grade = 'GOOD'
+        else:
+            accuracy = 0
+            grade = 'FAIL'
+        
+        # Factor in time to identify
+        identification_time = data.get('root_cause_identified_at')
+        if identification_time:
+            start_time = datetime.fromisoformat(data['started_at'].replace('Z', '+00:00'))
+            id_time = datetime.fromisoformat(identification_time.replace('Z', '+00:00'))
+            minutes_to_identify = (id_time - start_time).total_seconds() / 60
+            
+            # Should identify within 10% of total recovery time
+            if minutes_to_identify > (data.get('target_minutes', 30) * 0.1):
+                grade = self.downgrade(grade)
+        
+        return {
+            'identified_cause': identified_cause,
+            'actual_cause': actual_cause,
+            'accuracy': accuracy,
+            'grade': grade,
+            'score': accuracy
+        }
+    
+    def evaluate_state_preservation(self, data):
+        """Evaluate how well state was preserved"""
+        
+        preservation_checks = data.get('state_preservation', {})
+        
+        checks = {
+            'working_directory_preserved': preservation_checks.get('wd_preserved', False),
+            'git_state_preserved': preservation_checks.get('git_preserved', False),
+            'agent_states_saved': preservation_checks.get('agents_saved', False),
+            'checkpoints_created': preservation_checks.get('checkpoints', False),
+            'rollback_available': preservation_checks.get('rollback', False)
+        }
+        
+        preserved_count = sum(checks.values())
+        total_checks = len(checks)
+        percentage = (preserved_count / total_checks) * 100
+        
+        if percentage == 100:
+            grade = 'EXCELLENT'
+        elif percentage >= 90:
+            grade = 'GOOD'
+        elif percentage >= 75:
+            grade = 'PASS'
+        else:
+            grade = 'FAIL'
+        
+        return {
+            'checks': checks,
+            'preserved_percentage': percentage,
+            'grade': grade,
+            'score': percentage
+        }
+    
+    def evaluate_prevention_measures(self, data):
+        """Evaluate prevention measures implemented"""
+        
+        prevention = data.get('prevention_measures', {})
+        
+        measures = {
+            'monitoring_enhanced': prevention.get('monitoring', False),
+            'process_improved': prevention.get('process', False),
+            'validation_added': prevention.get('validation', False),
+            'documentation_updated': prevention.get('documentation', False)
+        }
+        
+        implemented_count = sum(measures.values())
+        total_measures = len(measures)
+        percentage = (implemented_count / total_measures) * 100
+        
+        if percentage == 100:
+            grade = 'EXCELLENT'
+        elif percentage >= 75:
+            grade = 'GOOD'
+        elif percentage >= 50:
+            grade = 'PASS'
+        else:
+            grade = 'FAIL'
+        
+        return {
+            'measures': measures,
+            'implementation_percentage': percentage,
+            'grade': grade,
+            'score': percentage
+        }
+    
+    def evaluate_agent_coordination(self, data):
+        """Evaluate how well agents were coordinated during recovery"""
+        
+        coordination = data.get('agent_coordination', {})
+        
+        metrics = {
+            'spawn_efficiency': coordination.get('spawn_time', 0) < 5,  # <5 min
+            'communication_clarity': coordination.get('clear_instructions', False),
+            'parallel_execution': coordination.get('parallel_work', False),
+            'status_tracking': coordination.get('status_updates', False)
+        }
+        
+        score_count = sum(metrics.values())
+        total_metrics = len(metrics)
+        percentage = (score_count / total_metrics) * 100
+        
+        if percentage == 100:
+            grade = 'EXCELLENT'
+        elif percentage >= 75:
+            grade = 'GOOD'
+        elif percentage >= 50:
+            grade = 'PASS'
+        else:
+            grade = 'FAIL'
+        
+        return {
+            'metrics': metrics,
+            'coordination_percentage': percentage,
+            'grade': grade,
+            'score': percentage
+        }
+    
+    def calculate_overall_grade(self, time, rca, preservation, prevention, coordination):
+        """Calculate weighted overall grade"""
+        
+        # Time performance: 60% (critical)
+        # State preservation: 20%
+        # Root cause accuracy: 10%
+        # Prevention implementation: 5%
+        # Agent coordination: 5%
+        
+        weighted_score = (
+            time['score'] * 0.60 +
+            preservation['score'] * 0.20 +
+            rca['score'] * 0.10 +
+            prevention['score'] * 0.05 +
+            coordination['score'] * 0.05
+        )
+        
+        # Time failure overrides everything
+        if time['grade'] == 'FAIL':
+            overall_grade = 'FAIL'
+        elif weighted_score >= 90:
+            overall_grade = 'EXCELLENT'
+        elif weighted_score >= 80:
+            overall_grade = 'GOOD'
+        elif weighted_score >= 70:
+            overall_grade = 'PASS'
+        else:
+            overall_grade = 'FAIL'
+        
+        return {
+            'weighted_score': weighted_score,
+            'grade': overall_grade,
+            'critical_failure': time['grade'] == 'FAIL'
+        }
+    
+    def causes_related(self, identified, actual):
+        """Check if identified and actual causes are related"""
+        # Simple relationship mapping
+        relationships = {
+            'SIZE_LIMIT_VIOLATION': ['LARGE_IMPLEMENTATION', 'SCOPE_CREEP'],
+            'INTEGRATION_FAILURE': ['MERGE_CONFLICT', 'DEPENDENCY_ISSUE'],
+            'TEST_FAILURE': ['CODE_BUG', 'ENVIRONMENT_ISSUE']
+        }
+        
+        for primary, related in relationships.items():
+            if identified == primary and actual in related:
+                return True
+            if actual == primary and identified in related:
+                return True
+        
+        return False
+    
+    def downgrade(self, grade):
+        """Downgrade a grade by one level"""
+        downgrades = {
+            'EXCELLENT': 'GOOD',
+            'GOOD': 'PASS',
+            'PASS': 'FAIL',
+            'FAIL': 'FAIL'
+        }
+        return downgrades.get(grade, 'FAIL')
+```
+
+## Recovery Performance Tracking
+
+```yaml
+# Update orchestrator-state.json
+grading:
+  ERROR_RECOVERY:
+    latest:
+      timestamp: "2025-08-23T16:45:30Z"
+      error_id: "ERR-2025-08-23-001"
+      error_type: "SIZE_LIMIT_VIOLATION"
+      severity: "CRITICAL"
+      target_minutes: 30
+      actual_minutes: 28.5
+      time_grade: "PASS"
+      root_cause_accuracy: 100
+      state_preservation: 95
+      prevention_implementation: 75
+      agent_coordination: 90
+      overall: "PASS"
+    
+    history:
+      - {timestamp: "...", error_type: "INTEGRATION_FAILURE", grade: "GOOD", minutes: 42}
+      - {timestamp: "...", error_type: "TEST_FAILURE", grade: "EXCELLENT", minutes: 12}
+    
+    cumulative:
+      attempts: 8
+      excellent: 2
+      good: 3
+      pass: 2
+      fail: 1
+      avg_recovery_time: 34.7
+      by_severity:
+        CRITICAL: {attempts: 3, avg_time: 22.1, success_rate: 100}
+        HIGH: {attempts: 3, avg_time: 45.3, success_rate: 100}
+        MEDIUM: {attempts: 2, avg_time: 67.5, success_rate: 100}
+```
+
+## Warning Triggers
+
+---
+### 🚨 RULE  - 
+**Source:** 
+**Criticality:** CRITICAL - Major impact on grading
+
+RECOVERY PERFORMANCE WARNINGS
+First Time Failure:
+⚠️ WARNING: Recovery time exceeded target
+⚠️ Error: {type} took {actual} min (target: {target} min)
+⚠️ Review and optimize recovery procedures
+
+Second Time Failure:
+⚠️⚠️ PATTERN WARNING: Recurring recovery issues
+⚠️⚠️ Multiple recovery time failures detected
+⚠️⚠️ Process improvement required
+
+Three Failures (any severity):
+❌ CRITICAL: Recovery process breakdown
+❌ Human intervention required
+❌ System reliability compromised
+---
+
+## Performance Optimization
+
+```python
+def optimize_recovery_performance():
+    """Guidelines for excellent recovery grades"""
+    
+    optimization_strategies = {
+        'pre_error_preparation': [
+            'Maintain comprehensive state checkpoints',
+            'Pre-define recovery procedures for common errors',
+            'Keep agent spawn templates ready',
+            'Establish clear escalation paths'
+        ],
+        
+        'during_recovery': [
+            'Immediate classification and strategy selection',
+            'Parallel execution where possible',
+            'Continuous validation at each step',
+            'Proactive communication with spawned agents'
+        ],
+        
+        'post_recovery': [
+            'Thorough root cause analysis',
+            'Implementation of prevention measures',
+            'Documentation of lessons learned',
+            'Process improvement integration'
+        ]
+    }
+    
+    return optimization_strategies
+```
+
+## Automated Recovery Grading
+
+```python
+def automate_recovery_grading():
+    """Automatically grade recovery attempts"""
+    
+    def recovery_complete_hook(recovery_data):
+        """Hook called when recovery completes"""
+        
+        grader = ErrorRecoveryGrader()
+        grade_result = grader.grade_recovery_attempt(recovery_data)
+        
+        # Update orchestrator state
+        update_orchestrator_state_grading('ERROR_RECOVERY', grade_result)
+        
+        # Report results
+        print(f"🔧 ERROR RECOVERY COMPLETE")
+        print(f"Error: {recovery_data['error_type']} ({recovery_data['error_severity']})")
+        print(f"Recovery Time: {grade_result['time']['actual_minutes']:.1f}min")
+        print(f"Target Time: {grade_result['time']['target_minutes']}min")
+        print(f"Overall Grade: {grade_result['overall']['grade']}")
+        
+        # Trigger warnings if needed
+        if grade_result['overall']['grade'] == 'FAIL':
+            trigger_recovery_warning(recovery_data, grade_result)
+        
+        return grade_result
+    
+    return recovery_complete_hook
+```
+
+## Grade Reporting
+
+```python
+def report_recovery_metrics(period='week'):
+    """Generate recovery performance report"""
+    
+    recovery_data = load_recovery_history(period)
+    
+    metrics = {
+        'total_recoveries': len(recovery_data),
+        'avg_recovery_time': calculate_avg_recovery_time(recovery_data),
+        'success_rate': calculate_success_rate(recovery_data),
+        'by_error_type': group_by_error_type(recovery_data),
+        'trend': calculate_performance_trend(recovery_data)
+    }
+    
+    print(f"📊 ERROR RECOVERY METRICS ({period})")
+    print(f"Total Recoveries: {metrics['total_recoveries']}")
+    print(f"Average Time: {metrics['avg_recovery_time']:.1f} minutes")
+    print(f"Success Rate: {metrics['success_rate']:.1f}%")
+    print(f"Trend: {'🔺' if metrics['trend'] > 0 else '🔻'} {abs(metrics['trend']):.1f}% change")
+    
+    return metrics

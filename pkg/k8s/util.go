@@ -1,60 +1,64 @@
 package k8s
 
 import (
-	"embed"
-	"github.com/cnoe-io/idpbuilder/pkg/util/files"
-	"github.com/cnoe-io/idpbuilder/pkg/util/fs"
+	"fmt"
+
 	"k8s.io/apimachinery/pkg/runtime"
-	"os"
-	"sigs.k8s.io/controller-runtime/pkg/client"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func BuildCustomizedManifests(filePath, fsPath string, resourceFS embed.FS, scheme *runtime.Scheme, templateData any) ([][]byte, error) {
-	rawResources, err := fs.ConvertFSToBytes(resourceFS, fsPath, templateData)
-	if err != nil {
-		return nil, err
-	}
-
-	if filePath == "" {
-		return rawResources, nil
-	}
-
-	bs, _, err := applyOverrides(filePath, rawResources, scheme, templateData)
-	if err != nil {
-		return nil, err
-	}
-
-	return bs, nil
+// ResourceHelper provides utility functions for working with Kubernetes resources
+type ResourceHelper struct {
+	scheme *runtime.Scheme
 }
 
-func BuildCustomizedObjects(filePath, fsPath string, resourceFS embed.FS, scheme *runtime.Scheme, templateData any) ([]client.Object, error) {
-	rawResources, err := fs.ConvertFSToBytes(resourceFS, fsPath, templateData)
-	if err != nil {
-		return nil, err
+// NewResourceHelper creates a new ResourceHelper with a default scheme
+func NewResourceHelper() *ResourceHelper {
+	return &ResourceHelper{
+		scheme: NewSchemeBuilder().Build(),
 	}
-
-	if filePath == "" {
-		return ConvertRawResourcesToObjects(scheme, rawResources)
-	}
-
-	_, objs, err := applyOverrides(filePath, rawResources, scheme, templateData)
-	if err != nil {
-		return nil, err
-	}
-
-	return objs, nil
 }
 
-func applyOverrides(filePath string, originalFiles [][]byte, scheme *runtime.Scheme, templateData any) ([][]byte, []client.Object, error) {
-	customBS, err := os.ReadFile(filePath)
-	if err != nil {
-		return nil, nil, err
+// GetGVK returns the GroupVersionKind for a runtime object
+func (r *ResourceHelper) GetGVK(obj runtime.Object) schema.GroupVersionKind {
+	if obj == nil {
+		return schema.GroupVersionKind{}
 	}
 
-	rendered, err := files.ApplyTemplate(customBS, templateData)
-	if err != nil {
-		return nil, nil, err
+	// Get the type info from the scheme
+	gvks, _, err := r.scheme.ObjectKinds(obj)
+	if err != nil || len(gvks) == 0 {
+		return schema.GroupVersionKind{}
 	}
 
-	return ConvertYamlToObjectsWithOverride(scheme, originalFiles, rendered)
+	return gvks[0]
+}
+
+// IsKnownType checks if the given object type is known to the scheme
+func (r *ResourceHelper) IsKnownType(obj runtime.Object) bool {
+	if obj == nil {
+		return false
+	}
+
+	gvks, _, err := r.scheme.ObjectKinds(obj)
+	return err == nil && len(gvks) > 0
+}
+
+// GetAPIVersion returns the API version string for an object
+func (r *ResourceHelper) GetAPIVersion(obj runtime.Object) string {
+	gvk := r.GetGVK(obj)
+	if gvk.Group == "" {
+		return gvk.Version
+	}
+	return fmt.Sprintf("%s/%s", gvk.Group, gvk.Version)
+}
+
+// GetKind returns the Kind string for an object
+func (r *ResourceHelper) GetKind(obj runtime.Object) string {
+	return r.GetGVK(obj).Kind
+}
+
+// SetScheme updates the scheme used by this helper
+func (r *ResourceHelper) SetScheme(scheme *runtime.Scheme) {
+	r.scheme = scheme
 }

@@ -1,0 +1,520 @@
+# Software Factory 2.0 Rule Registry
+
+## Rule ID Format
+- **Format**: R{XXX}.{Y}.{Z}
+  - XXX: Rule number (001-999)
+  - Y: Variation (0-9)
+  - Z: Patch (0-9)
+
+## 🔴🔴🔴 SUPREME LAWS - ABSOLUTE HIGHEST PRIORITY 🔴🔴🔴
+
+**These rules supersede ALL other rules and CANNOT be violated for ANY reason:**
+
+1. **R234.0.0** - Mandatory State Traversal (HIGHEST SUPREME LAW - NO SKIPPING STATES!)
+2. **R221.0.0** - Bash Directory Reset Protocol (CD IN EVERY BASH COMMAND!)
+3. **R208.0.0** - Orchestrator CD Before Spawn (SPAWN WITHOUT CD = -100% FAIL!)
+4. **R235.0.0** - Mandatory Pre-Flight Verification (NO WORK IN WRONG LOCATION!)
+5. **STATE MACHINE** - SOFTWARE-FACTORY-STATE-MACHINE.md (ABSOLUTE AUTHORITY)
+6. **R280.0.0** - Main Branch Protection (NEVER MODIFY MAIN!)
+7. **R021.0.0** - Orchestrator Never Stops (CONTINUOUS OPERATION!)
+8. **R231.0.0** - Continuous Operation Through Transitions (STATES ARE VERBS!)
+9. **R232.0.0** - TodoWrite Pending Items Override (PENDING = COMMANDS!)
+10. **R288.0.0** - Mandatory State File Updates (UPDATE ON EVERY TRANSITION!)
+11. **R281.0.0** - Complete State File Initialization (ALL PHASES/WAVES/EFFORTS!)
+12. **R283.0.0** - Complete File Reading (READ EVERY LINE - NO PARTIAL READS!)
+13. **R236.0.0** - DEPRECATED - Consolidated into R290
+14. **R237.0.0** - DEPRECATED - Consolidated into R290
+15. **R290.0.0** - State Rule Reading and Verification (SUPREME LAW #3 - READ AND VERIFY STATE RULES!)
+16. **R299.0.0** - DEPRECATED - Consolidated into R300
+17. **R300.0.0** - Comprehensive Fix Management Protocol (ALL FIXES TO EFFORT BRANCHES - SUPREME LAW!)
+18. **R321.0.0** - Immediate Backport During Integration (FIX AT SOURCE IMMEDIATELY - NO DEFERRALS!)
+19. **R220.0.0** - Atomic PR Design Requirement (EVERY EFFORT = ONE ATOMIC PR TO MAIN!)
+20. **R302.0.0** - Comprehensive Split Tracking Protocol (Meticulous tracking of split operations)
+21. **R303.0.0** - Phase/Wave Document Location Protocol (Centralized document storage)
+22. **R309.0.0** - NEVER Create Efforts in SF Repo (PARAMOUNT LAW - -100% FOR VIOLATION!)
+23. **R312.0.0** - Git Config Immutability Protocol (SUPREME LAW - ROOT-OWNED + READONLY CONFIGS FOR DOUBLE PROTECTION!)
+24. **R323.0.0** - Mandatory Final Artifact Build (NO PROJECT SUCCESS WITHOUT DELIVERABLE!)
+25. **R329.0.0** - Orchestrator Never Performs Git Merges (SUPREME LAW - INTEGRATION AGENT HANDLES ALL MERGES!)
+26. **R337.0.0** - Base Branch Single Source of Truth (SUPREME LAW - ORCHESTRATOR-STATE.JSON IS SOLE ARBITER!)
+27. **R342.0.0** - Early Integration Branch Creation Protocol (SUPREME LAW - TESTS NEED HOMES IMMEDIATELY!)
+28. **R343.0.0** - Metadata Directory Standardization (SUPREME LAW - ALL METADATA IN .SOFTWARE-FACTORY!)
+29. **R344.0.0** - Metadata Location Tracking (SUPREME LAW - NO FILESYSTEM SEARCHING!)
+30. **R345.0.0** - Planning Branch Requirements (SUPREME LAW - PLANNING NEEDS DEDICATED BRANCHES!)
+31. **R353.0.0** - Cascade Focus Protocol (SUPREME LAW - NO DIVERSIONS DURING CASCADE!)
+32. **R362.0.0** - No Architectural Rewrites Without Approval (SUPREME LAW #7 - ABSOLUTELY FORBIDS CHANGING APPROVED ARCHITECTURE!)
+33. **R363.0.0** - Sequential Direct Mergeability (SUPREME LAW - FUNDAMENTAL ARCHITECTURE - EFFORTS MERGE DIRECTLY TO MAIN IN SEQUENCE!)
+34. **R364.0.0** - Integration Testing Only Branches (SUPREME LAW - INTEGRATION BRANCHES NEVER MERGE TO MAIN!)
+35. **R373.0.0** - Mandatory Code Reuse and Interface Compliance (SUPREME LAW - NO DUPLICATE IMPLEMENTATIONS - -100% FOR VIOLATION!)
+36. **R374.0.0** - Pre-Planning Research Protocol (SUPREME LAW - MUST RESEARCH EXISTING CODE BEFORE PLANNING!)
+37. **R381.0.0** - Library Version Consistency Protocol (SUPREME LAW - ALL VERSIONS IMMUTABLE - -100% FOR UNAUTHORIZED UPDATES!)
+38. **R382.0.0** - Version Update Fix Cascade Requirement (SUPREME LAW - MANDATORY CASCADE WHEN VERSIONS CHANGE - -100% FOR INCOMPLETE CASCADE!)
+39. **R383.0.0** - Software Factory Metadata File Organization (SUPREME LAW - ALL METADATA FILES REQUIRE TIMESTAMPS - -100% FOR VIOLATIONS!)
+
+## Rule Categories
+
+### Critical Rules (R001-R010) - ALWAYS LOADED
+- R001.0.0 - Pre-Flight Checks
+- R002.0.0 - Agent Acknowledgment Protocol
+- R003.0.0 - Performance Grading System
+- R004.0.0 - State Machine Navigation
+- R005.0.0 - Context Recovery
+- R006.0.0 - Orchestrator Never Writes Code
+- R007.0.0 - Size Limit Compliance (800 lines)
+- R008.0.0 - Monitoring Frequency Requirements
+- R009.0.0 - Mandatory Wave/Phase Integration Protocol (🔴🔴🔴 SUPREME LAW - Consolidates R104, R336)
+- R010.0.0 - Wrong Location Handling
+
+### Process Rules (R011-R030)
+- R011.0.0 - Agent Startup Requirements
+- R012.0.0 - Working Copy Creation (Sparse Clone)
+- R013.0.0 - Git Operations
+- R014.0.0 - Branch Naming Convention (phase/wave/effort)
+- R015.0.0 - Commit Message Format
+- R016.0.0 - TODO State Management
+- R017.0.0 - Checkpoint Creation
+- R018.0.0 - Progress Reporting
+- R019.0.0 - Error Recovery
+- R020.0.0 - State Transitions
+- R021.0.0 - Orchestrator Never Stops (🔴 SUPREME LAW #7)
+- R022.0.0 - Architect Size Verification Protocol
+
+### Quality Gates (R031-R050)
+- R031.0.0 - Mandatory Code Review
+- R032.0.0 - Test Coverage Requirements
+- R033.0.0 - Architect Review Gates
+- R034.0.0 - Integration Requirements
+- R035.0.0 - Phase Completion Testing
+- R036.0.0 - PR Readiness Assessment
+- R037.0.0 - Pattern Compliance
+- R038.0.0 - Security Review
+- R039.0.0 - Performance Validation
+- R040.0.0 - Documentation Requirements
+
+### Agent-Specific Rules (R051-R100)
+- R051.0.0 - Orchestrator State Ownership
+- R052.0.0 - Agent Spawning Protocol
+- R053.0.0 - Parallelization Decisions
+- R054.0.0 - Implementation Plan Creation
+- R055.0.0 - Review Decision Making
+- R056.0.0 - Split Plan Creation
+- R057.0.0 - Wave Review Authority
+- R058.0.0 - Phase Assessment Responsibility
+- R059.0.0 - Pattern Validation
+- R060.0.0 - Test Implementation
+
+### State-Specific Rules (R101-R150)
+- R101.0.0 - INIT State Rules
+- R102.0.0 - WAVE_START Rules
+- R103.0.0 - SPAWN_AGENTS Rules
+- R104.0.0 - [DEPRECATED - Merged into R009] Integration Branch Creation (workspace location)
+- R105.0.0 - WAVE_COMPLETE Rules
+- R106.0.0 - IMPLEMENTATION Rules
+- R107.0.0 - MEASURE_SIZE Rules
+- R108.0.0 - CODE_REVIEW Rules
+- R109.0.0 - PLANNING Rules
+- R110.0.0 - WAVE_REVIEW Rules
+
+### Performance Metrics (R151-R170)
+- R151.0.0 - Parallel Agent Spawning Timing and Acknowledgment
+- R152.0.0 - Implementation Speed Requirements (>50 lines/hour)
+- R153.0.0 - Review Turnaround and Quality Metrics
+- R154.0.0 - Test Coverage Achievement
+- R155.0.0 - State Transition Speed
+- R156.0.0 - Error Recovery Time
+- R157.0.0 - Integration Success Rate
+- R158.0.0 - Architecture Pattern Compliance Rate
+- R159.0.0 - Documentation Completeness
+- R160.0.0 - Overall Completion Time
+
+### Utility and Hook Management (R171-R180)
+- R171.0.0 - PreCompact Hook Configuration
+- R172.0.0 - Utility Script Execution
+- R173.0.0 - State Preservation Protocol
+- R174.0.0 - Context Recovery Detection
+- R175.0.0 - Manual Utility Usage
+- R176.0.0 - Workspace Isolation Requirement
+- R177.0.0 - Agent Working Directory Enforcement
+- R178.0.0 - Effort Directory Structure
+- R179.0.0 - Integration Phase Isolation
+- R180.0.0 - Workspace Violation Recovery
+
+### Orchestrator Workspace Preparation (R181-R185)
+- R181.0.0 - Orchestrator Workspace Setup Responsibility
+- R182.0.0 - Sparse Clone Requirement
+- R183.0.0 - Branch Creation Protocol
+- R184.0.0 - Effort Branch Naming Scheme
+- R185.0.0 - Workspace Verification Before Spawn
+
+### Automatic Compaction Detection (R186)
+- R186.0.0 - Mandatory Compaction Detection in Pre-Flight Checks
+
+### TODO State Persistence Requirements
+- R287.0.0 - Comprehensive TODO Persistence Protocol (Consolidates R187-R190)
+- R187.0.0 - [DEPRECATED - See R287] Mandatory TODO Save Triggers
+- R188.0.0 - [DEPRECATED - See R287] TODO Save Frequency Requirements
+- R189.0.0 - [DEPRECATED - See R287] TODO File Commit Protocol
+- R190.0.0 - [DEPRECATED - See R287] TODO Recovery Verification
+
+### Target Repository Management (R191-R195)
+- R191.0.0 - Target Repository Configuration
+- R192.0.0 - Repository Separation Enforcement
+- R193.0.0 - Effort Clone Protocol
+- R194.0.0 - Remote Branch Tracking
+- R195.0.0 - Branch Push Verification
+
+### Agent Lifecycle and Configuration (R196-R203)
+- R196.0.0 - Base Branch Selection from Config
+- R197.0.0 - One Agent Per Effort Rule
+- R198.0.0 - Line Counter Tool Usage
+- R199.0.0 - Single Reviewer for Split Planning
+- R200.0.0 - Measure Only Effort Changeset
+- R201.0.0 - Line Counter Tool Location
+- R202.0.0 - Single Agent Per Split Sequential Execution
+- R203.0.0 - State-Aware Agent Startup and Acknowledgment
+- R204.0.0 - Orchestrator Split Infrastructure Creation
+- R205.0.0 - SW Engineer Split Directory Navigation
+- R206.0.0 - State Machine Transition Validation
+- R207.0.0 - Split Boundary Validation Protocol
+- R208.0.0 - Orchestrator Working Directory Spawn Protocol (🔴 SUPREME LAW #3)
+- R310.0.0 - Split Scope Strict Adherence Protocol (🚨🚨🚨 BLOCKING)
+
+### Orchestrator Memory Management (R217-R218)
+- R217.0.0 - Post-Transition Rule Re-Acknowledgment Protocol (CRITICAL)
+- R218.0.0 - Orchestrator Parallel Code Reviewer Spawning for Effort Planning
+
+### Code Reviewer Planning Enhancement (R219)
+- R219.0.0 - Code Reviewer Dependency-Aware Effort Planning
+
+### Atomic PR Design (R220)
+- R220.0.0 - Atomic PR Design Requirement (🔴 SUPREME LAW - Every effort = one atomic PR to main)
+
+### Bash Directory Management (R221)
+- R221.0.0 - Bash Directory Reset Protocol (🔴 SUPREME LAW #2 - CD IN EVERY COMMAND!)
+
+### Code Review Gate Requirement (R222)
+- R222.0.0 - Code Review Gate Requirement (BLOCKING - No wave completion without ALL reviews passing)
+
+### State Machine Visualization and Continuity (R230-R237, R290)
+- R230.0.0 - State Machine Visualization Requirement
+- R231.0.0 - Continuous Operation Through Transitions (🔴 SUPREME LAW #8)
+- R232.0.0 - TodoWrite Pending Items Override (🔴 SUPREME LAW #9)
+- R233.0.0 - All States Require Immediate Action (CRITICAL)
+- R234.0.0 - Mandatory State Traversal (🔴 SUPREME LAW #1 - HIGHEST!)
+- R235.0.0 - Mandatory Pre-Flight Verification (🔴 SUPREME LAW #4)
+- R236.0.0 - DEPRECATED - Consolidated into R290
+- R237.0.0 - DEPRECATED - Consolidated into R290
+- R290.0.0 - State Rule Reading and Verification (🔴 SUPREME LAW #3)
+
+### Repository and State Management (R014, R251-R259)
+- R014.0.0 - Branch Naming Convention (Mandatory project prefix for all branches)
+- R251.0.0 - Repository Separation Law
+- R288.0.0 - Mandatory State File Updates (🔴 SUPREME LAW #10)
+- R288.0.0 - Mandatory State File Commit Push (CRITICAL)
+- R254.0.0 - Agent Error Reporting
+- R255.0.0 - Post Agent Work Verification
+- R256.0.0 - Mandatory Phase Assessment Gate
+- R257.0.0 - Mandatory Phase Assessment Report
+- R258.0.0 - Mandatory Wave Review Report
+- R259.0.0 - Mandatory Phase Integration After Fixes
+
+### Integration Rules (R260-R270)
+- R260.0.0 - Integration Agent Core Requirements (INTEGRATION_DIR acknowledgment)
+- R261.0.0 - Integration Planning Requirements
+- R262.0.0 - Merge Operation Protocols (CRITICAL)
+- R263.0.0 - Integration Documentation Requirements
+- R264.0.0 - Work Log Tracking Requirements
+- R265.0.0 - Integration Testing Requirements
+- R266.0.0 - Upstream Bug Documentation Protocol (CRITICAL)
+- R267.0.0 - Integration Agent Grading Criteria
+- R268.0.0 - Orchestrator Integration Agent Spawn Protocol
+- R269.0.0 - Code Reviewer Merge Plan No Execution
+- R270.0.0 - No Integration Branches as Sources (CRITICAL)
+
+### Production Delivery Rules (R271-R280) - CRITICAL FOR SUCCESS
+- R271.0.0 - Mandatory Production-Ready Validation (CRITICAL)
+- R272.0.0 - Integration Testing Branch Requirement (BLOCKING)
+- R273.0.0 - Runtime-Specific Validation (MANDATORY)
+- R274.0.0 - Production Readiness Checklist (BLOCKING)
+- R275.0.0 - Deployment Verification (MANDATORY)
+- R276.0.0 - Runbook Requirement (MANDATORY)
+- R277.0.0 - Continuous Build Verification (MANDATORY)
+- R278.0.0 - External User Validation (BLOCKING)
+- R279.0.0 - MASTER-PR-PLAN Requirement (CRITICAL)
+- R280.0.0 - Main Branch Protection (🔴 SUPREME LAW #6)
+- R281.0.0 - Complete State File Initialization (🔴 SUPREME LAW #11)
+- R282.0.0 - Phase Integration Protocol
+- R283.0.0 - Complete File Reading (🔴 SUPREME LAW #12)
+- R288.0.0 - State File Update and Commit Protocol | BLOCKING | State Management, Persistence
+- R289.0.0 - Orphaned State Detection and Prevention | BLOCKING | State Machine Integrity
+- R290.0.0 - State Rule Reading and Verification (🔴 SUPREME LAW #3)
+- R291.0.0 - Integration Demo Requirement | BLOCKING | Integration Validation
+- R292.0.0 - [DEPRECATED - Merged into R300] Integration fixes in effort branches
+- R293.0.0 - Integration Report Distribution Protocol | BLOCKING | Fix Distribution
+- R294.0.0 - Fix Plan Archival Protocol | BLOCKING | Plan Management
+- R295.0.0 - SW Engineer Spawn Clarity Protocol | SUPREME | Agent Communication
+- R296.0.0 - Deprecated Branch Marking Protocol | BLOCKING | Split Management, Integration Safety
+- R297.0.0 - Architect Split Detection Protocol | BLOCKING | Size Compliance, Split Recognition
+- R298.0.0 - DEPRECATED - Consolidated into R300
+- R299.0.0 - DEPRECATED - Consolidated into R300
+- R300.0.0 - Comprehensive Fix Management Protocol | 🔴 SUPREME LAW | Consolidates R299, R240, R292, R298 - ALL fixes to effort branches
+- R301.0.0 - File Naming Collision Prevention | BLOCKING | Prevents file overwrites during parallel operations
+- R302.0.0 - Comprehensive Split Tracking Protocol | 🚨 BLOCKING | Meticulous tracking of all split operations and relationships
+- R303.0.0 - Phase/Wave Document Location Protocol | 🚨 BLOCKING | Centralized storage of phase/wave documents in phase-plans directory
+- R304.0.0 - Mandatory Line Counter Enforcement | 🔴 SUPREME LAW | ONLY use line-counter.sh with correct base branch
+- R305.0.0 - SW Engineer Self-Monitoring Protocol | BLOCKING | Continuous size monitoring during implementation
+- R307.0.0 - Independent Branch Mergeability | 🔴 PARAMOUNT LAW | Every branch must be independently mergeable
+- R308.0.0 - Incremental Branching Strategy | 🔴 SUPREME LAW | Core tenant of trunk-based development
+- R309.0.0 - NEVER Create Efforts in SF Repo | 🔴 PARAMOUNT LAW | Automatic -100% failure for violations
+- R310.0.0 - Split Scope Strict Adherence Protocol | 🚨🚨🚨 BLOCKING | Prevents 3-5X overruns from vague split plans
+- R311.0.0 - Effort Scope Strict Adherence Protocol | 🚨🚨🚨 BLOCKING | Prevents over-engineering in regular efforts, -100% for violations
+- R312.0.0 - Git Config Immutability Protocol | 🔴🔴🔴 SUPREME LAW | DOUBLE PROTECTION: root:root ownership + 444 permissions for unbreakable effort isolation
+- R313.0.0 - [DEPRECATED - Merged into R322 Part A] | ⚠️ DEPRECATED | Now part of R322 comprehensive checkpoint rule
+- R314.0.0 through R318.0.0 - Reserved for future rules
+- R319.0.0 - Orchestrator Never Measures Code | 🚨🚨🚨 BLOCKING | Orchestrator NEVER uses line-counter.sh or assesses code - delegate ALL to Code Reviewers
+- R320.0.0 - No Stub Implementations | 🚨🚨🚨 BLOCKING | ANY stub implementation = CRITICAL BLOCKER = FAILED REVIEW (-50% penalty)
+- R321.0.0 - Immediate Backport During Integration | 🔴🔴🔴 SUPREME LAW | ALL fixes during integration MUST be immediately backported to source branches (-100% for violations)
+- R322.0.0 - Mandatory Orchestrator Checkpoints | 🔴🔴🔴 SUPREME LAW | Comprehensive checkpoint rule: spawns (Part A), reviews (Part B), assessments (Part C), monitoring (Part D) - MUST stop and wait for /continue-orchestrating (-100% for violations)
+- R323.0.0 - Mandatory Final Artifact Build | 🚨🚨🚨 BLOCKING | NO project can be SUCCESS without built deliverable artifact (-50% to -100% penalty)
+- R324.0.0 - State File Update Before Stop | 🔴🔴🔴 SUPREME LAW | MUST update current_state to new state BEFORE stopping to prevent infinite loops (-100% for violations)
+- R325.0.0 - Atomic State Transitions | 🔴🔴🔴 SUPREME LAW | State transitions must be atomic operations
+- R326.0.0 - Split File Placement Protocol | 🔴🔴🔴 SUPREME LAW | NEVER create split-XXX/ subdirectories - files go in standard project directories (-100% for violations)
+- R327.0.0 - Mandatory CASCADE Re-Integration After Fixes | 🔴🔴🔴 SUPREME LAW | After ANY fix: effort fix → wave recreation → phase recreation → project recreation - CASCADE IS MANDATORY (-100% AUTOMATIC FAILURE)
+- R328.0.0 - Integration Freshness Validation | 🚨🚨🚨 BLOCKING | MUST verify integration branch freshness before merging - stale branches cause lost fixes (-30% to -50% penalty)
+- R329.0.0 - Orchestrator Never Performs Git Merges | 🚨🚨🚨 BLOCKING | Orchestrator MUST spawn Integration Agent for ALL merges - NO EXCEPTIONS (-100% for violations)
+- R330.0.0 - Demo Planning Requirements | 🚨🚨🚨 BLOCKING | EVERY effort plan MUST include explicit demo requirements with size impact (-25% to -50% for violations)
+- R331.0.0 through R335.0.0 - Reserved for future rules
+- R336.0.0 - [DEPRECATED - Merged into R009] Mandatory Wave Integration Before Next Wave | Was SUPREME LAW | Now part of comprehensive R009
+- R337.0.0 - Base Branch Single Source of Truth | 🔴🔴🔴 SUPREME LAW | orchestrator-state.json is SOLE ARBITER of all base branch decisions - NO calculations, NO guessing (-100% for violations)
+- R338.0.0 - Mandatory Line Count State Tracking | 🚨🚨🚨 BLOCKING | EVERY effort/split MUST have comprehensive line_count_tracking in orchestrator-state.json - orchestrator records, code reviewer measures (-50% per missing, -100% if none)
+- R339.0.0 - Fix Grace Period Protocol | 🚨🚨🚨 BLOCKING | Fixes get 100-line grace period (up to 900 total) to prevent cascade disruption during re-integration - first fix only (-30% for incorrect split triggers)
+- R340.0.0 - Planning File Metadata Tracking | 🚨🚨🚨 BLOCKING | ALL planning files MUST be tracked with metadata in orchestrator-state.json for instant discovery - agents report, orchestrator tracks, users read from state (-20% per untracked file)
+- R341.0.0 - Test-Driven Development Enforcement | 🔴🔴🔴 SUPREME LAW | Tests MUST be written BEFORE implementation planning at phase and wave levels - architecture → tests → implementation plan → code (-100% for violations)
+- R342.0.0 - Early Integration Branch Creation Protocol | 🔴🔴🔴 SUPREME LAW | Integration branches MUST be created IMMEDIATELY after test planning to store tests - no deferrals, tests need homes immediately (-100% for violations)
+- R343.0.0 - Metadata Directory Standardization | 🔴🔴🔴 SUPREME LAW | ALL metadata, planning documents, and reports MUST be stored in .software-factory/ directories - standardizes organization across efforts, splits, and integration workspaces (-30% per violation)
+- R344.0.0 - Comprehensive metadata location tracking | 🚨🚨🚨 BLOCKING | ALL metadata locations MUST be tracked in orchestrator-state.json
+- R345.0.0 - Reserved for future use
+- R346.0.0 - State Metadata Synchronization | 🔴🔴🔴 SUPREME LAW | ALL state metadata updates MUST be atomic and synchronized across related fields - prevents inconsistent state from partial updates (-100% for violations)
+- R347.0.0 - Reserved for future use
+- R348.0.0 - Cascade State Transitions | 🔴🔴🔴 SUPREME LAW | Mandates use of CASCADE_REINTEGRATION state for ALL stale integration handling - persistent coordinator supporting multiple chains (-100% for violations)
+- R349.0.0 - Atomic Status Flag Cleanup | 🔴🔴🔴 SUPREME LAW | MANDATORY atomic operations for status flag cleanup - prevents flag corruption from partial updates (-100% for violations)
+- R350.0.0 - Complete Cascade Dependency Graph | 🔴🔴🔴 SUPREME LAW | Defines complete dependency tracking for cascade operations - ensures no dependency is missed (-100% for violations)
+- R351.0.0 - Cascade Execution Protocol | 🔴🔴🔴 SUPREME LAW | Exact protocol for executing cascade operations with overlapping support - handles rebases and recreations (-100% for violations)
+- R352.0.0 - Overlapping Cascade Protocol | 🔴🔴🔴 SUPREME LAW | Supports MULTIPLE overlapping cascade chains - persistent coordination ensures NO fix is lost, handles continuous fix arrival (-100% for violations)
+- R353.0.0 - Cascade Focus Protocol | 🔴🔴🔴 SUPREME LAW | NO diversions during CASCADE operations - Code Reviewers MUST skip size checks and split evaluations, maintain absolute focus on fix propagation (-100% for violations)
+- R354.0.0 - Post-Rebase Review Requirement | 🔴🔴🔴 SUPREME LAW | EVERY rebase operation MUST be followed by immediate Code Reviewer validation - ensures integration correctness, fixes from reviews join cascade (-100% for violations)
+- R355.0.0 - Production Ready Code Enforcement | 🔴🔴🔴 SUPREME LAW #5 | ZERO TOLERANCE for non-production code: NO stubs, NO mocks (except tests), NO hardcoded credentials, NO static values, NO TODO/FIXME markers - ALL code must be deployable (-100% for ANY violation)
+- R356.0.0 - Single Effort Parallelization Optimization | ⚠️⚠️⚠️ WARNING | When wave has only 1 effort, skip parallelization analysis states and spawn directly - improves efficiency by ~20% for single-effort waves
+- R357.0.0 - Reserved for future use
+- R358.0.0 - Integration Completion Detection | 🔴🔴🔴 SUPREME LAW | MONITORING_INTEGRATION states MUST detect completion within 30 seconds and transition IMMEDIATELY - no passive waiting, continuous checking required (-50% to -100% for violations)
+- R359.0.0 - Absolute Prohibition on Deleting Approved Code | 🔴🔴🔴 SUPREME LAW | NEVER delete code for size limits - split or refactor instead (-100% instant failure)
+- R360.0.0 - Just-In-Time Infrastructure Creation | 🚨🚨🚨 BLOCKING | Create infrastructure only when ready to use, supporting effort dependencies
+- R361.0.0 - Integration Conflict Resolution Only | 🔴🔴🔴 SUPREME LAW | Integration is ONLY for conflict resolution - NO new code/packages/adapters, max 50 lines changes (-100% for violations)
+- R362.0.0 - No Architectural Rewrites Without Approval | 🔴🔴🔴 SUPREME LAW #7 | ABSOLUTELY FORBIDS changing approved architecture, removing user-recommended libraries, or deviating from plan (-100% instant failure)
+- R363.0.0 - Sequential Direct Mergeability | 🔴🔴🔴 SUPREME LAW | EVERY effort and split MUST merge directly to main in SEQUENCE - no integration branch intermediaries (-100% for violations)
+- R364.0.0 - Integration Testing Only Branches | 🔴🔴🔴 SUPREME LAW | Integration branches exist SOLELY for testing and NEVER merge to main - they are deleted after validation (-100% for violations)
+- R365.0.0 - PR Artifact Detection and Inventory Protocol | 🚨🚨🚨 BLOCKING | Comprehensive detection and inventory of all Software Factory artifacts before PR creation to prevent production contamination (-50% for SF artifacts in PR)
+- R366.0.0 - PR Commit Consolidation Protocol | 🚨🚨🚨 BLOCKING | Consolidate development commits into clean atomic commits while preserving history and co-authorship (-100% for lost changes)
+- R367.0.0 - PR Branch Cleanup Protocol | 🚨🚨🚨 BLOCKING | Remove all SF artifacts and development remnants from branches before PR creation (-50% for artifacts in PR)
+- R368.0.0 - PR Sequential Rebase Protocol | 🔴🔴🔴 SUPREME LAW | Rebase all efforts onto main in correct dependency order for sequential mergeability per R363 (-100% for wrong order)
+- R369.0.0 - PR Validation and Integrity Protocol | 🚨🚨🚨 BLOCKING | Comprehensive validation of code integrity, tests, build, and production readiness before PR (-100% for failing tests)
+- R370.0.0 - PR Plan Creation Requirements | 🚨🚨🚨 BLOCKING | Create MASTER-PR-PLAN.md with exact human instructions for PR creation and merging (-40% for missing dependencies)
+- R380.0.0 - Fix Registry Management | 🚨🚨🚨 BLOCKING | ALL fixes tracked systematically with unique IDs, progressive discovery support, finite execution guaranteed (-100% for untracked fixes)
+
+## R360 - Just-In-Time Infrastructure Creation
+- **File**: rule-library/R360-just-in-time-infrastructure-creation.md
+- **Criticality**: HIGH
+- **Summary**: Create infrastructure only when ready to use, supporting effort dependencies
+- **Enforcement**: Exit code 360
+- **Scope**: Orchestrator infrastructure creation
+
+## R361 - Integration Conflict Resolution Only Protocol
+- **File**: rule-library/R361-integration-conflict-resolution-only.md
+- **Criticality**: 🔴🔴🔴 SUPREME LAW
+- **Summary**: Integration is for conflict resolution ONLY - absolutely NO new code, packages, adapters, or files (max 50 lines of changes)
+- **Enforcement**: Exit code 361, -100% automatic failure for violations
+- **Scope**: Integration agent, orchestrator INTEGRATION states
+
+## R362 - No Architectural Rewrites Without Approval
+- **File**: rule-library/R362-architectural-violation.md
+- **Criticality**: 🔴🔴🔴 SUPREME LAW
+- **Summary**: ABSOLUTELY FORBIDS changing approved architecture, removing user-recommended libraries, or deviating from plan
+- **Enforcement**: Exit code 362, -100% automatic failure for violations
+- **Scope**: All agents, all states
+
+## R363 - Sequential Direct Mergeability
+- **File**: rule-library/R363-sequential-direct-mergeability.md
+- **Criticality**: 🔴🔴🔴 SUPREME LAW (FUNDAMENTAL ARCHITECTURE PRINCIPLE)
+- **Summary**: EVERY effort and split branch MUST merge directly to main in SEQUENCE - no batch merging, no integration branch intermediaries
+- **Enforcement**: Exit code 363, -100% automatic failure for violations
+- **Scope**: Orchestrator, integration agent, all merge operations
+- **Key Requirements**:
+  - Efforts merge to main DIRECTLY
+  - Merges happen in SEQUENCE (E1→main, E2→main, E3→main)
+  - Integration branches are for TESTING ONLY
+  - Each merge must stand alone
+
+## R364 - Integration Testing Only Branches
+- **File**: rule-library/R364-integration-testing-only-branches.md
+- **Criticality**: 🔴🔴🔴 SUPREME LAW (ARCHITECTURE FOUNDATION)
+- **Summary**: Integration branches exist SOLELY for testing - they NEVER merge to main and are deleted after validation
+- **Enforcement**: Exit code 364, -100% automatic failure for violations
+- **Scope**: Integration agent, orchestrator, all integration operations
+- **Key Requirements**:
+  - Integration branches are TESTING ENVIRONMENTS
+  - They NEVER merge to main
+  - They get DELETED after testing
+  - They validate interfaces and interactions
+
+## R365 - PR Artifact Detection and Inventory Protocol
+- **File**: rule-library/R365-pr-artifact-detection-protocol.md
+- **Criticality**: 🚨🚨🚨 BLOCKING
+- **Summary**: Comprehensive detection and inventory of all Software Factory artifacts before PR creation
+- **Enforcement**: Exit code 365, -50% for SF artifacts in PR
+- **Scope**: PR-Ready operations, SW-Engineer PR_ARTIFACT_SCAN state
+- **Key Requirements**:
+  - Scan ALL branches for SF artifacts
+  - Create structured inventory (JSON + markdown)
+  - Categorize by criticality (critical/documentation/temporary)
+  - Block PR creation if artifacts present
+
+## R366 - PR Commit Consolidation Protocol
+- **File**: rule-library/R366-pr-commit-consolidation-protocol.md
+- **Criticality**: 🚨🚨🚨 BLOCKING
+- **Summary**: Consolidate multiple development commits into clean, atomic commits for PR submission
+- **Enforcement**: Exit code 366, -100% for lost changes during consolidation
+- **Scope**: Integration PR_COMMIT_SQUASH state
+- **Key Requirements**:
+  - ALWAYS backup before consolidation
+  - Preserve ALL commit messages and co-authorship
+  - Verify no changes lost after soft reset
+  - Use --force-with-lease for safety
+
+## R367 - PR Branch Cleanup Protocol
+- **File**: rule-library/R367-pr-branch-cleanup-protocol.md
+- **Criticality**: 🚨🚨🚨 BLOCKING
+- **Summary**: Remove all Software Factory artifacts and development remnants from branches
+- **Enforcement**: Exit code 367, -50% for artifacts in PR
+- **Scope**: SW-Engineer PR_ARTIFACT_REMOVAL state
+- **Key Requirements**:
+  - Remove ALL SF metadata (.software-factory/, *.todo, etc.)
+  - Clean development artifacts (*.log, *.tmp, *.orig)
+  - Evaluate documentation case-by-case
+  - Update .gitignore to prevent re-addition
+
+## R368 - PR Sequential Rebase Protocol
+- **File**: rule-library/R368-pr-sequential-rebase-protocol.md
+- **Criticality**: 🔴🔴🔴 SUPREME LAW
+- **Summary**: Rebase all effort branches onto main in correct dependency order
+- **Enforcement**: Exit code 368, -100% for wrong rebase order
+- **Scope**: Integration PR_REBASE_SEQUENCE state
+- **Key Requirements**:
+  - Determine dependency order (infrastructure → features → UI)
+  - Rebase sequentially to maintain mergeability
+  - Auto-resolve SF artifact conflicts
+  - Verify sequential mergeability after rebase
+
+## R369 - PR Validation and Integrity Protocol
+- **File**: rule-library/R369-pr-validation-and-integrity-protocol.md
+- **Criticality**: 🚨🚨🚨 BLOCKING
+- **Summary**: Comprehensive validation before PR creation
+- **Enforcement**: Exit code 369, -100% for failing tests in PR
+- **Scope**: Orchestrator PR_VALIDATION_TESTING state
+- **Key Requirements**:
+  - Verify no SF artifacts (R365)
+  - Ensure no stubs/TODOs (R355)
+  - All tests must pass
+  - Build must succeed
+  - Generate validation report
+
+## R370 - PR Plan Creation Requirements
+- **File**: rule-library/R370-pr-plan-creation-requirements.md
+- **Criticality**: 🚨🚨🚨 BLOCKING
+- **Summary**: Create comprehensive MASTER-PR-PLAN.md for human execution
+- **Enforcement**: Exit code 370, -40% for missing dependency order
+- **Scope**: Orchestrator PR_PLAN_CREATION state
+- **Key Requirements**:
+  - Include exact merge order with dependencies
+  - Provide complete PR templates (title + body)
+  - Include copy-paste CLI/GUI commands
+  - Document rollback procedures
+  - Create progress tracking checklist
+
+## R377 - Master-Sub Orchestrator Communication Protocol
+- **File**: rule-library/R377-master-sub-orchestrator-communication.md
+- **Criticality**: 🚨🚨🚨 BLOCKING
+- **Summary**: Defines mandatory communication protocol between master and sub-orchestrators
+- **Enforcement**: Exit code 377, -100% for protocol violations
+- **Scope**: Master and Sub-Orchestrator communication
+- **Key Requirements**:
+  - All communication through file-based contracts
+  - Heartbeat every 30 seconds required
+  - Explicit input/output schemas for each type
+  - Checkpoint data for recovery
+  - Clean completion signaling
+
+## R378 - Sub-Orchestrator Lifecycle Management
+- **File**: rule-library/R378-sub-orchestrator-lifecycle-management.md
+- **Criticality**: 🚨🚨🚨 BLOCKING
+- **Summary**: Governs complete lifecycle of sub-orchestrators from spawn to termination
+- **Enforcement**: Exit code 378, -100% for lifecycle violations
+- **Scope**: Sub-Orchestrator lifecycle phases
+- **Key Requirements**:
+  - Pre-spawn validation required
+  - Process tracking in master state
+  - Heartbeat monitoring active
+  - Proper cleanup on completion
+  - Resource limits enforced
+
+## R379 - Sub-Process Monitoring and Recovery
+- **File**: rule-library/R379-sub-process-monitoring-recovery.md
+- **Criticality**: 🚨🚨🚨 BLOCKING
+- **Summary**: Mandates continuous monitoring with automatic failure recovery
+- **Enforcement**: Exit code 379, -100% for monitoring failures
+- **Scope**: Sub-Orchestrator monitoring and recovery
+- **Key Requirements**:
+  - Health checks every 15 seconds
+  - 2-minute heartbeat timeout
+  - Checkpoint-based recovery
+  - Maximum 3 retry attempts
+  - Escalation for systematic failures
+
+## R380 - Fix Registry Management
+- **File**: rule-library/R380-fix-registry-management.md
+- **Criticality**: 🚨🚨🚨 BLOCKING
+- **Summary**: Ensures ALL fixes are systematically tracked from discovery through validation
+- **Enforcement**: Exit code 380, -100% for untracked fixes or infinite loops
+- **Scope**: Fix cascade operations and progressive discovery
+- **Key Requirements**:
+  - EVERY fix gets unique ID (FIX-001, FIX-002, etc.)
+  - Progressive discovery throughout cascade execution
+  - Finite execution guaranteed (max 20 cycles, 10 hour timeout)
+  - Complete audit trail maintained in registry
+  - Automatic recovery from interruptions
+  - NO ad-hoc fixes allowed outside registry
+
+## R381 - Library Version Consistency Protocol
+- **File**: rule-library/R381-library-version-consistency-protocol.md
+- **Criticality**: 🔴🔴🔴 SUPREME LAW
+- **Summary**: ALL library versions chosen in previous efforts are IMMUTABLE - no unauthorized updates allowed
+- **Enforcement**: Exit code 381, -100% for unauthorized version updates
+- **Scope**: All agents, all dependency management operations
+- **Key Requirements**:
+  - Metadata files are READ-ONLY for versions
+  - Previous version choices MUST be respected
+  - Only ADD new dependencies, never UPDATE existing
+  - Version consistency across entire project required
+  - Updates require explicit user approval and R382 cascade
+
+## R382 - Version Update Fix Cascade Requirement
+- **File**: rule-library/R382-version-update-fix-cascade-requirement.md
+- **Criticality**: 🔴🔴🔴 SUPREME LAW
+- **Summary**: When version update is required, mandatory cascade testing of ALL branches using old version
+- **Enforcement**: Exit code 382, -100% for incomplete cascade
+- **Scope**: Version update operations, all affected branches
+- **Key Requirements**:
+  - ALL work stops during cascade
+  - Test EVERY branch with new version
+  - Fix ALL incompatibilities found
+  - Create compatibility matrix documentation
+  - NO new work until cascade complete
+  - Only valid for security/critical bugs/deprecation

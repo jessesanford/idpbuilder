@@ -1,0 +1,57 @@
+{
+  "current_phase": 1,
+  "current_wave": 1,
+  "current_state": "SPAWN_ENGINEERS_FOR_FIXES",
+  "previous_state": "DISTRIBUTE_FIX_PLANS",
+  "transition_time": "2025-09-23T08:28:46Z",
+  "transition_reason": "Fix plans distributed to 1 effort (integration-tests)",
+  "phases_planned": 1,
+  "waves_per_phase": [
+    1
+  ],
+  "efforts_completed": [
+    {
+      "effort": "1.1.1",
+      "name": "Write Command Tests",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase1/wave1/command-tests",
+      "status": "COMPLETE",
+      "size": 150
+    },
+    {
+      "effort": "1.1.2",
+      "name": "Implement Command Skeleton",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase1/wave1/command-skeleton",
+      "status": "COMPLETE",
+      "size": 133
+    },
+    {
+      "effort": "1.1.3",
+      "name": "Integration Tests",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase1/wave1/integration-tests",
+      "status": "COMPLETE",
+      "size": 150
+    }
+  ],
+  "efforts_in_progress": [],
+  "efforts_pending": [],
+  "project_info": {
+    "name": "idpbuilder-push",
+    "description": "Push command for idpbuilder",
+    "start_date": "2025-09-22"
+  },
+  "integration_feedback": {
+    "wave1": {
+      "fix_plans_distributed": "2025-09-23T08:28:46Z",
+      "distribution_log": "efforts/phase1/wave1/FIX_DISTRIBUTION_LOG_20250923-082846.md",
+      "efforts_needing_fixes": [
+        "integration-tests"
+      ]
+    }
+  }
+}

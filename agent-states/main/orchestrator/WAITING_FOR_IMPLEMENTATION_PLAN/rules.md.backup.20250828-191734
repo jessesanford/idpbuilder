@@ -1,0 +1,41 @@
+# Orchestrator - WAITING_FOR_IMPLEMENTATION_PLAN State Rules
+
+## 🚨 WAITING_FOR_IMPLEMENTATION_PLAN IS A VERB - START ACTIVELY CHECKING IMMEDIATELY! 🚨
+
+### IMMEDIATE ACTIONS UPON ENTERING WAITING_FOR_IMPLEMENTATION_PLAN
+
+**THE MOMENT YOU ENTER THIS STATE, YOU MUST:**
+1. Check for implementation plan file NOW
+2. Poll phase/wave directory every few seconds
+3. Check TodoWrite for pending items and process them
+4. Verify plan completeness when found
+
+**FORBIDDEN - AUTOMATIC FAILURE:**
+- ❌ "STATE TRANSITION COMPLETE: Now in WAITING_FOR_IMPLEMENTATION_PLAN" [stops]
+- ❌ "Successfully entered WAITING_FOR_IMPLEMENTATION_PLAN state" [waits]
+- ❌ "Ready to start actively checking" [pauses]
+- ❌ "I'm in WAITING_FOR_IMPLEMENTATION_PLAN state" [does nothing]
+
+**REQUIRED - IMMEDIATE ACTION:**
+- ✅ "Entering WAITING_FOR_IMPLEMENTATION_PLAN, Check for implementation plan file NOW..."
+- ✅ "START ACTIVELY CHECKING, poll phase/wave directory every few seconds..."
+- ✅ "WAITING_FOR_IMPLEMENTATION_PLAN: Verify plan completeness when found..."
+
+## State Context
+This is the WAITING_FOR_IMPLEMENTATION_PLAN state for the orchestrator.
+
+## Acknowledgment Required
+Thank you for reading the rules file for the WAITING_FOR_IMPLEMENTATION_PLAN state.
+
+**IMPORTANT**: Please report that you have successfully read the WAITING_FOR_IMPLEMENTATION_PLAN rules file.
+
+Say: "✅ Successfully read WAITING_FOR_IMPLEMENTATION_PLAN rules for orchestrator"
+
+## State-Specific Rules
+No additional state-specific rules are defined for this state at this time.
+
+## General Responsibilities
+Follow all general orchestrator rules and the Software Factory state machine.
+
+## Next Steps
+Proceed with the standard workflow for the WAITING_FOR_IMPLEMENTATION_PLAN state as defined in the state machine.

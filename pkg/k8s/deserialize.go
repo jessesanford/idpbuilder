@@ -1,138 +1,184 @@
 package k8s
 
 import (
-	"bytes"
 	"fmt"
+	"strings"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/kustomize/kyaml/kio"
-	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
+	"sigs.k8s.io/yaml"
 )
 
-type ConversionError struct {
-	rtObject runtime.Object
+// Deserializer handles deserialization of Kubernetes objects from YAML/JSON
+type Deserializer struct {
+	scheme     *runtime.Scheme
+	codecs     serializer.CodecFactory
+	universal  runtime.Decoder
 }
 
-func (e *ConversionError) Error() string {
-	return fmt.Sprintf("Failed to convert object %q", e.rtObject.GetObjectKind().GroupVersionKind().String())
+// NewDeserializer creates a new Deserializer with the provided scheme
+func NewDeserializer(scheme *runtime.Scheme) *Deserializer {
+	if scheme == nil {
+		scheme = NewSchemeBuilder().Build()
+	}
+
+	codecs := serializer.NewCodecFactory(scheme)
+	universal := codecs.UniversalDeserializer()
+
+	return &Deserializer{
+		scheme:    scheme,
+		codecs:    codecs,
+		universal: universal,
+	}
 }
 
-func ConvertYamlToObjects(scheme *runtime.Scheme, objYamls []byte) ([]client.Object, error) {
-	decode := serializer.NewCodecFactory(scheme).UniversalDeserializer().Decode
+// Decode deserializes YAML or JSON data into a runtime.Object
+func (d *Deserializer) Decode(data []byte) (runtime.Object, error) {
+	if len(data) == 0 {
+		return nil, fmt.Errorf("data cannot be empty")
+	}
 
-	var k8sObjects []client.Object
+	// Try to determine if this is JSON or YAML
+	isJSON := d.isJSON(data)
 
-	for _, objYaml := range bytes.Split(objYamls, []byte{'\n', '-', '-', '-', '\n'}) {
-		if len(objYaml) == 0 {
+	var objData []byte
+	var err error
+
+	if isJSON {
+		objData = data
+	} else {
+		// Convert YAML to JSON
+		objData, err = yaml.YAMLToJSON(data)
+		if err != nil {
+			return nil, fmt.Errorf("failed to convert YAML to JSON: %w", err)
+		}
+	}
+
+	// Decode using the universal deserializer
+	obj, _, err := d.universal.Decode(objData, nil, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode object: %w", err)
+	}
+
+	return obj, nil
+}
+
+// DecodeInto deserializes data into a provided runtime.Object
+func (d *Deserializer) DecodeInto(data []byte, obj runtime.Object) error {
+	if len(data) == 0 {
+		return fmt.Errorf("data cannot be empty")
+	}
+
+	if obj == nil {
+		return fmt.Errorf("target object cannot be nil")
+	}
+
+	// Try to determine if this is JSON or YAML
+	isJSON := d.isJSON(data)
+
+	var objData []byte
+	var err error
+
+	if isJSON {
+		objData = data
+	} else {
+		// Convert YAML to JSON
+		objData, err = yaml.YAMLToJSON(data)
+		if err != nil {
+			return fmt.Errorf("failed to convert YAML to JSON: %w", err)
+		}
+	}
+
+	// Decode into the provided object
+	_, _, err = d.universal.Decode(objData, nil, obj)
+	if err != nil {
+		return fmt.Errorf("failed to decode into object: %w", err)
+	}
+
+	return nil
+}
+
+// isJSON checks if data appears to be JSON format
+func (d *Deserializer) isJSON(data []byte) bool {
+	// Simple heuristic: JSON typically starts with { or [
+	// This is not foolproof but good enough for our use case
+	if len(data) == 0 {
+		return false
+	}
+
+	// Skip whitespace
+	for _, b := range data {
+		if b == ' ' || b == '\t' || b == '\n' || b == '\r' {
+			continue
+		}
+		return b == '{' || b == '['
+	}
+
+	return false
+}
+
+// GetScheme returns the scheme used by this deserializer
+func (d *Deserializer) GetScheme() *runtime.Scheme {
+	return d.scheme
+}
+
+// ValidateObject performs basic validation on a decoded object
+func (d *Deserializer) ValidateObject(obj runtime.Object) error {
+	if obj == nil {
+		return fmt.Errorf("object cannot be nil")
+	}
+
+	// Check if the object is known to our scheme
+	gvks, _, err := d.scheme.ObjectKinds(obj)
+	if err != nil {
+		return fmt.Errorf("object type not recognized by scheme: %w", err)
+	}
+
+	if len(gvks) == 0 {
+		return fmt.Errorf("object has no associated GroupVersionKind")
+	}
+
+	return nil
+}
+
+// DecodeMultiple deserializes multiple YAML documents separated by ---
+func (d *Deserializer) DecodeMultiple(data []byte) ([]runtime.Object, error) {
+	if len(data) == 0 {
+		return nil, fmt.Errorf("data cannot be empty")
+	}
+
+	// Split by YAML document separator
+	docs := splitYAMLDocuments(string(data))
+	objects := make([]runtime.Object, 0, len(docs))
+
+	for docIndex, doc := range docs {
+		if len(doc) == 0 {
 			continue
 		}
 
-		rtObject, _, err := decode(objYaml, nil, nil)
+		obj, err := d.Decode([]byte(doc))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to decode document %d: %w", docIndex, err)
 		}
-		object, ok := rtObject.(client.Object)
-		if !ok {
-			return nil, &ConversionError{rtObject: rtObject}
-		}
-		k8sObjects = append(k8sObjects, object)
+
+		objects = append(objects, obj)
 	}
-	return k8sObjects, nil
+
+	return objects, nil
 }
 
-func ConvertRawResourcesToObjects(scheme *runtime.Scheme, rawResources [][]byte) ([]client.Object, error) {
-	var ret []client.Object
-	for _, resources := range rawResources {
-		objs, err := ConvertYamlToObjects(scheme, resources)
-		if err != nil {
-			return nil, err
+// splitYAMLDocuments splits a YAML stream into individual documents
+func splitYAMLDocuments(data string) []string {
+	// Split by YAML document separator (---)
+	docs := strings.Split(data, "---")
+	result := make([]string, 0, len(docs))
+
+	for _, doc := range docs {
+		trimmed := strings.TrimSpace(doc)
+		if len(trimmed) > 0 {
+			result = append(result, trimmed)
 		}
-		ret = append(ret, objs...)
-	}
-	return ret, nil
-}
-
-// replace k8s objects in given YAML doc with override objects. returns built yaml file and objects
-func ConvertYamlToObjectsWithOverride(scheme *runtime.Scheme, originalFiles [][]byte, overrideYamls []byte) ([][]byte, []client.Object, error) {
-
-	overrides, err := kio.FromBytes(overrideYamls)
-	if err != nil {
-		return nil, nil, err
 	}
 
-	overrideMap := make(map[string]*kyaml.RNode)
-	order := make([]string, 0, len(overrides))
-	for i := range overrides {
-		o := overrides[i]
-		id := GetObjectIdentifier(o)
-		overrideMap[id] = o
-		order = append(order, id)
-	}
-
-	outYaml := make([][]byte, len(originalFiles))
-	outObjs := make([]client.Object, 0, 10)
-
-	for i := range originalFiles {
-		originalFile := originalFiles[i]
-		originals, oErr := kio.FromBytes(originalFile)
-		if oErr != nil {
-			return nil, nil, oErr
-		}
-
-		for j := range originals {
-			id := GetObjectIdentifier(originals[j])
-
-			o, ok := overrideMap[id]
-			if ok {
-				// found an object that needs to be overridden. update manifest and remove from our map.
-				originals[j].SetYNode(o.YNode())
-				delete(overrideMap, id)
-			}
-		}
-
-		manifest, oErr := kio.StringAll(originals)
-		if oErr != nil {
-			return nil, nil, fmt.Errorf("converting overridden manifest to string: %w", oErr)
-		}
-
-		objs, oErr := ConvertYamlToObjects(scheme, []byte(manifest))
-		if oErr != nil {
-			return nil, nil, fmt.Errorf("converting overridden manifest to k8s objects: %w", oErr)
-		}
-		outObjs = append(outObjs, objs...)
-		outYaml[i] = []byte(manifest)
-	}
-
-	// if there are objects that are not overriding any original object, create a new file and add them to it.
-	if len(overrideMap) != 0 {
-		// must preserve original order
-		n := make([]*kyaml.RNode, 0, len(overrideYamls))
-		for i := range order {
-			o, ok := overrideMap[order[i]]
-			if ok {
-				n = append(n, o)
-			}
-		}
-
-		manifest, err := kio.StringAll(n)
-		if err != nil {
-			return nil, nil, fmt.Errorf("converting overridden manifest to string: %w", err)
-		}
-
-		objs, oErr := ConvertYamlToObjects(scheme, []byte(manifest))
-		if oErr != nil {
-			return nil, nil, fmt.Errorf("converting overridden manifest to k8s objects: %w", oErr)
-		}
-
-		outObjs = append(outObjs, objs...)
-		outYaml = append(outYaml, []byte(manifest))
-	}
-
-	return outYaml, outObjs, nil
-}
-
-func GetObjectIdentifier(n *kyaml.RNode) string {
-	return fmt.Sprintf("%s%s%s%s", n.GetApiVersion(), n.GetKind(), n.GetNamespace(), n.GetName())
+	return result
 }

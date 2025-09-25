@@ -1,0 +1,92 @@
+# Software Factory 2.0 Setup Configuration File
+# This file allows non-interactive setup when passed with --config flag
+# Example: ./setup.sh --config setup-config.yaml
+
+# Project Information (Step 1)
+project:
+  name: "my-project"                            # Required: Project name
+  description: "My awesome project"             # Optional: Project description
+  target_dir: "/workspaces/my-project"         # Required: Where to create SF instance
+  github_url: "https://github.com/org/repo"    # Optional: GitHub repository URL
+
+# Target Repository (Step 1.5)
+# This is the actual project repository that agents will work on
+target_repository:
+  url: "https://github.com/owner/target-repo.git"  # Required: Target repo to clone
+  base_branch: "main"                              # Default branch to work from
+  clone_depth: 100                                 # Clone depth (0 for full history)
+  auth_method: "https"                            # Auth method: https, ssh, or token
+  
+# Branch naming prefix is automatically derived from project.name above
+# Example: project name "IDPBuilder-OCI-Mgmt" becomes prefix "idpbuilder-oci-mgmt"
+# This results in branches like: idpbuilder-oci-mgmt/phase1/wave1/effort1
+
+# Technology Stack (Step 2)
+technology:
+  primary_language: "Go"                        # Required: Go, Python, TypeScript, Java, Rust, C++, or custom
+  # For predefined languages, select from available frameworks
+  # Go: Kubernetes/KCP, Gin Web Framework, GORM, Cobra CLI, gRPC, Prometheus
+  # Python: Django, FastAPI, Flask, SQLAlchemy, Celery, PyTorch, NumPy/Pandas
+  # TypeScript: React, Next.js, Node.js/Express, NestJS, Vue.js, Angular
+  frameworks:
+    - "Kubernetes/KCP"
+    - "Cobra CLI"
+    - "gRPC"
+  # Or for custom language, provide as comma-separated string:
+  # frameworks_custom: "Framework1, Framework2, Framework3"
+
+# Agent Configuration (Step 3)
+agents:
+  # List agents to include (Orchestrator is always included)
+  selected:
+    - "Software Engineer"
+    - "Code Reviewer"
+    - "Architect"
+  # Expertise areas - can be predefined or custom
+  expertise:
+    # Use predefined areas:
+    - "Cloud Architecture"
+    - "API Design"
+    - "Testing Strategies"
+    # Or provide custom (use expertise_custom instead):
+    # expertise_custom: "Custom Area 1, Custom Area 2"
+
+# Implementation Planning (Step 4)
+implementation:
+  # Options: "generate", "existing", "idpbuilder-example"
+  plan_type: "generate"
+  
+  # If plan_type is "generate", provide:
+  project_type: "Kubernetes Controller/Operator"
+  estimated_loc: 5000                           # Estimated lines of code
+  num_phases: 3                                 # Number of phases
+  test_coverage: 80                             # Test coverage target (%)
+  
+  # If plan_type is "existing", provide:
+  # existing_plan_path: "/path/to/plan.md"      # Path to existing plan
+  
+  # If plan_type is "idpbuilder-example", no additional config needed
+
+# Development Constraints (Step 5)
+constraints:
+  max_lines_per_effort: 800                    # Maximum lines per effort
+  max_parallel_agents: 3                       # Maximum parallel agents
+  code_review: "mandatory"                     # Code review requirement
+  security_level: 1                            # 0=Standard, 1=Enhanced, 2=Maximum
+
+# Directory Handling
+directory_handling:
+  # What to do if target directory exists
+  # Options: "backup", "delete", "ask" (default is "ask" for interactive)
+  if_exists: "backup"                          # backup, delete, or ask
+  
+  # If parent directory doesn't exist
+  # Options: "create", "fail", "ask" (default is "ask" for interactive)
+  create_parent: "create"                      # create, fail, or ask
+
+# Additional Options
+options:
+  skip_git_init: false                         # Skip git initialization
+  skip_remote: false                           # Skip adding git remote
+  verbose: true                                 # Show detailed output
+  create_line_counter: true                    # Create line counter script for Go/K8s projects

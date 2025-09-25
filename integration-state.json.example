@@ -1,0 +1,266 @@
+{
+  "sub_state_type": "INTEGRATION",
+  "current_state": "INTEGRATION_BUILD_VALIDATION",
+  "created_at": "2025-01-21T10:00:00Z",
+  "last_updated": "2025-01-21T10:45:00Z",
+
+  "integration_config": {
+    "type": "WAVE",
+    "identifier": "wave1",
+    "target_branch": "wave1-integration",
+    "base_branch": "main",
+    "attempt": 2,
+    "max_attempts": 10,
+    "started_at": "2025-01-21T10:00:00Z"
+  },
+
+  "branches": {
+    "to_integrate": [
+      "effort-E1.1",
+      "effort-E1.2",
+      "effort-E1.3"
+    ],
+    "merged": [
+      "effort-E1.1",
+      "effort-E1.2"
+    ],
+    "pending": [
+      "effort-E1.3"
+    ],
+    "failed": [],
+    "requiring_fixes": [
+      "effort-E1.2"
+    ]
+  },
+
+  "validation_requirements": {
+    "must_build": true,
+    "run_unit_tests": true,
+    "run_functional_tests": true,
+    "run_integration_tests": true,
+    "run_performance_tests": false,
+    "security_scan": false,
+    "code_coverage_threshold": 80
+  },
+
+  "validation_status": {
+    "merge": "IN_PROGRESS",
+    "build": "PENDING",
+    "unit_tests": "PENDING",
+    "functional_tests": "PENDING",
+    "integration_tests": "PENDING",
+    "performance": "SKIP",
+    "security": "SKIP"
+  },
+
+  "cycle_tracking": {
+    "current_attempt": 2,
+    "max_attempts": 10,
+    "total_duration": "45m",
+    "cycle_history": [
+      {
+        "attempt": 1,
+        "started": "2025-01-21T10:00:00Z",
+        "completed": "2025-01-21T10:15:00Z",
+        "duration": "15m",
+        "result": "BUILD_FAILED",
+        "exit_reason": "FIX_REQUIRED",
+        "issues": [
+          {
+            "type": "BUILD_FAILURE",
+            "severity": "BLOCKING",
+            "description": "Undefined symbol: authenticate in auth module",
+            "affected_files": ["src/auth/auth.c"],
+            "affected_branches": ["effort-E1.2"]
+          }
+        ],
+        "validation_reached": {
+          "merge": "COMPLETE",
+          "build": "FAILED",
+          "tests": "NOT_RUN"
+        }
+      }
+    ],
+    "fix_cycles": [
+      {
+        "cycle": 1,
+        "trigger": "BUILD_FAILURE",
+        "fixes_applied": 3,
+        "branches_fixed": ["effort-E1.2"],
+        "fix_duration": "30m"
+      }
+    ]
+  },
+
+  "current_operation": {
+    "stage": "BUILD_VALIDATION",
+    "started_at": "2025-01-21T10:45:00Z",
+    "timeout_at": "2025-01-21T11:15:00Z",
+    "command": "make clean && make all",
+    "workspace": "/workspaces/effort-repos/wave1-integration",
+    "status": "RUNNING"
+  },
+
+  "issues_tracking": {
+    "total_issues_found": 3,
+    "issues_fixed": 2,
+    "issues_pending": 1,
+    "blocking_issues": 0,
+    "warning_issues": 1,
+    "issue_history": [
+      {
+        "attempt": 1,
+        "issue_count": 3,
+        "blocking_count": 3,
+        "fixed_in_attempt": 2
+      }
+    ]
+  },
+
+  "merge_tracking": {
+    "merge_order": [
+      "effort-E1.1",
+      "effort-E1.2",
+      "effort-E1.3"
+    ],
+    "merge_log": [
+      {
+        "branch": "effort-E1.1",
+        "merged_at": "2025-01-21T10:05:00Z",
+        "commit": "abc123",
+        "conflicts": false,
+        "status": "SUCCESS"
+      },
+      {
+        "branch": "effort-E1.2",
+        "merged_at": "2025-01-21T10:08:00Z",
+        "commit": "def456",
+        "conflicts": true,
+        "conflicts_resolved": true,
+        "status": "SUCCESS"
+      }
+    ]
+  },
+
+  "test_results": {
+    "unit_tests": {
+      "total": 248,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PENDING"
+    },
+    "functional_tests": {
+      "total": 45,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PENDING"
+    },
+    "integration_tests": {
+      "total": 12,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PENDING"
+    }
+  },
+
+  "build_results": {
+    "status": "PENDING",
+    "start_time": null,
+    "end_time": null,
+    "duration": null,
+    "exit_code": null,
+    "artifacts_created": [],
+    "warnings": 0,
+    "errors": 0
+  },
+
+  "re_entry_checkpoint": {
+    "can_resume": true,
+    "resume_from_state": "INTEGRATION_BRANCH_SETUP",
+    "stale_branch_deletion_required": true,
+    "branches_already_validated": [],
+    "fixes_to_include": [
+      "fix-auth-undefined-symbol"
+    ],
+    "checkpoint_created": "2025-01-21T10:15:00Z"
+  },
+
+  "exit_context": {
+    "exit_pending": false,
+    "exit_reason": null,
+    "exit_preparation_complete": false,
+    "return_value_prepared": false,
+    "artifacts_saved": false
+  },
+
+  "parent_state_machine": {
+    "state_file": "orchestrator-state.json",
+    "return_state": "WAVE_COMPLETE",
+    "nested_level": 1,
+    "parent_type": "MAIN_ORCHESTRATOR",
+    "trigger_reason": "Wave 1 efforts complete, need integration"
+  },
+
+  "success_criteria": {
+    "all_branches_merged": false,
+    "build_successful": false,
+    "all_tests_passed": false,
+    "performance_acceptable": true,
+    "no_critical_issues": false,
+    "ready_for_review": false
+  },
+
+  "performance_metrics": {
+    "merge_time": "8m",
+    "build_time": null,
+    "test_time": null,
+    "total_integration_time": null,
+    "attempts_to_success": null
+  },
+
+  "integration_artifacts": {
+    "branch": "wave1-integration",
+    "commit": null,
+    "tag": null,
+    "reports": [
+      "INTEGRATION_ISSUES_1.md"
+    ],
+    "logs": [
+      "merge_log.txt",
+      "build_attempt_1.log"
+    ]
+  },
+
+  "quality_gates": {
+    "gate1_merge_complete": true,
+    "gate2_build_success": false,
+    "gate3_tests_pass": false,
+    "gate4_performance_met": true,
+    "gate5_security_clean": true,
+    "all_gates_passed": false
+  },
+
+  "convergence_tracking": {
+    "issues_decreasing": true,
+    "different_issues_each_attempt": true,
+    "progress_being_made": true,
+    "stuck_on_same_issue": false,
+    "convergence_confidence": 0.75
+  },
+
+  "escalation": {
+    "escalation_required": false,
+    "escalation_reason": null,
+    "escalation_threshold_reached": false,
+    "human_intervention_needed": false
+  },
+
+  "notes": [
+    "Attempt 1 failed due to missing auth implementation",
+    "Fix applied to effort-E1.2, re-attempting integration",
+    "Conflict resolution required manual intervention"
+  ]
+}

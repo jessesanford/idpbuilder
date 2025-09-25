@@ -1,0 +1,1485 @@
+# Software Factory 2.0 - State Machine Definition
+
+## 🚨 CRITICAL: This is the SINGLE SOURCE OF TRUTH for Valid States
+
+**RULE R206**: Agents MUST validate transitions against this file. Any state not listed here is INVALID.
+
+## 🛑🛑🛑 CRITICAL: EVERY STATE TRANSITION REQUIRES A STOP 🛑🛑🛑
+
+**FUNDAMENTAL LAW OF STATE MACHINES:**
+- Each state does ONE atomic operation (same TYPE of operation for all agents)
+- After completing that operation, the agent MUST STOP
+- State transitions are NEVER automatic
+- The orchestrator CANNOT continue through multiple states in one session
+
+**CLARIFICATION ON PARALLELIZATION (R151 COMPLIANT):**
+✅ **ALLOWED**: Spawning multiple agents of the SAME TYPE in parallel
+   - Multiple Code Reviewers for different effort plans (same phase: planning)
+   - Multiple SW Engineers for parallelizable implementations (same phase: implementation)
+   - Multiple Integration Agents for different branches (same phase: integration)
+   - All agents must be spawned with <5s timing delta per R151
+
+❌ **FORBIDDEN - PHASE MIXING (AUTOMATIC -100% FAILURE):**
+   - Spawning an agent then immediately monitoring them (different phases)
+   - Getting review results then immediately spawning fixes (planning → implementation)
+   - Spawning Code Reviewer then immediately spawning SW Engineer (different agent types)
+   - Completing one phase's work then starting next phase's work
+   - Any "flow through" behavior across phase boundaries without stops
+
+**CORRECT PATTERN:**
+✅ Enter state → Perform ONE TYPE of operation → Update state file → STOP → Wait for continuation
+✅ Multiple agents OK if same type and same phase (per R151)
+
+## 🔴🔴🔴 SUPREME LAW R233: ALL STATES REQUIRE IMMEDIATE ACTION 🔴🔴🔴
+
+**STATES ARE VERBS, NOT DESTINATIONS!**
+- Every state name is a command to execute
+- Upon entering ANY state, you MUST immediately perform that action
+- NO announcements about "being in" a state
+- NO waiting or pausing after state entry
+- ONLY terminal states (SUCCESS, HARD_STOP) may stop execution
+
+See rule-library/R233-all-states-immediate-action.md for complete requirements.
+
+## 🔴🔴🔴 SUPREME LAW R313: MANDATORY STOP AFTER SPAWNING AGENTS 🔴🔴🔴
+
+**CONTEXT PRESERVATION LAW - PREVENTS RULE LOSS!**
+
+The orchestrator MUST STOP IMMEDIATELY after ANY spawn state to preserve context:
+- Record what was spawned in state file
+- Save TODOs and commit state changes
+- EXIT with clear continuation instructions
+- This prevents agent responses from overflowing context and causing rule forgetting
+
+**SPAWN STATES REQUIRING MANDATORY STOP:**
+- SPAWN_AGENTS, SPAWN_CODE_REVIEWERS_EFFORT_PLANNING, SPAWN_CODE_REVIEWERS_FOR_REVIEW
+- SPAWN_ENGINEERS_FOR_FIXES, SPAWN_INTEGRATION_AGENT
+- All SPAWN_ARCHITECT_* and SPAWN_CODE_REVIEWER_* states
+
+See rule-library/R313-mandatory-stop-after-spawn.md for complete requirements.
+
+## ✅ PARALLELIZATION VS PHASE MIXING - CRITICAL DISTINCTION
+
+### ALLOWED PARALLEL SPAWNING PATTERNS (R151 COMPLIANT)
+
+**Example 1: Multiple Code Reviewers for Effort Planning**
+```
+STATE: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+ACTION: Spawn 3 Code Reviewers in parallel for efforts E1.1, E1.2, E1.3
+- All same agent type: Code Reviewer ✅
+- All same phase: Planning ✅
+- All same purpose: Create effort plans ✅
+- Timing: <5s delta between spawns (R151) ✅
+RESULT: ALLOWED - This is efficient parallelization
+```
+
+**Example 2: Multiple SW Engineers for Independent Implementations**
+```
+STATE: SPAWN_AGENTS
+ACTION: Spawn 4 SW Engineers for parallelizable efforts
+- All same agent type: SW Engineer ✅
+- All same phase: Implementation ✅
+- No dependencies between efforts (per plan) ✅
+- Timing: All spawned in one message (R151) ✅
+RESULT: ALLOWED - This maximizes throughput
+```
+
+**Example 3: Multiple Code Reviewers for Review Phase**
+```
+STATE: SPAWN_CODE_REVIEWERS_FOR_REVIEW
+ACTION: Spawn 3 Code Reviewers to review completed implementations
+- All same agent type: Code Reviewer ✅
+- All same phase: Review ✅
+- Each reviews different effort ✅
+RESULT: ALLOWED - Parallel review is efficient
+```
+
+### FORBIDDEN PHASE MIXING PATTERNS (AUTOMATIC FAILURE)
+
+**Violation 1: Mixing Planning and Implementation**
+```
+STATE: MONITOR_IMPLEMENTATION
+WRONG ACTION: SW Engineer completes, immediately spawn Code Reviewer for review
+- Different agent types: SW Engineer → Code Reviewer ❌
+- Different phases: Implementation → Review ❌
+- No state transition between phases ❌
+RESULT: FORBIDDEN - Must transition states between phases
+```
+
+**Violation 2: Chaining Different Operations**
+```
+STATE: SPAWN_CODE_REVIEWERS_FOR_REVIEW
+WRONG ACTION: Spawn reviewer, wait for result, spawn engineer for fixes
+- Multiple operations in one state ❌
+- Different phases without transition ❌
+- "Flow through" behavior ❌
+RESULT: FORBIDDEN - Each spawn needs its own state
+```
+
+**Violation 3: Sequential Different Agent Types**
+```
+STATE: SPAWN_AGENTS
+WRONG ACTION: Spawn Code Reviewer for planning, then SW Engineer for implementation
+- Different agent types in same state ❌
+- Different phases mixed together ❌
+- Violates state atomicity ❌
+RESULT: FORBIDDEN - Planning and implementation are separate states
+```
+
+### KEY PRINCIPLE: State Boundaries Are About PHASES, Not Parallelization
+
+**The state machine enforces PHASE SEPARATION, not agent limits:**
+- Planning states → spawn planners → stop
+- Implementation states → spawn implementers → stop
+- Review states → spawn reviewers → stop
+- Fix states → spawn fixers → stop
+- Integration states → spawn integrators → stop
+
+**Parallelization within a phase is ENCOURAGED when the plan allows it (R151).**
+
+## 🛑🛑🛑 SUPREME LAW R322: MANDATORY CHECKPOINT BEFORE STATE TRANSITIONS 🛑🛑🛑
+
+**USER REVIEW LAW - ENSURES PLAN APPROVAL BEFORE EXECUTION!**
+
+The orchestrator MUST STOP for user review at these critical transitions:
+- **WAITING_FOR_MERGE_PLAN → SPAWN_INTEGRATION_AGENT**: Review merge plan before execution
+- **WAITING_FOR_PHASE_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PHASE**: Review phase plan
+- **WAITING_FOR_PROJECT_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PROJECT**: Review project plan
+- **WAITING_FOR_FIX_PLANS → DISTRIBUTE_FIX_PLANS**: Review fix strategy
+- **WAITING_FOR_BACKPORT_PLAN → SPAWN_SW_ENGINEER_BACKPORT_FIXES**: Review backports
+
+**CHECKPOINT PROTOCOL:**
+1. Update state file to NEXT state
+2. Save TODOs with checkpoint reason
+3. Commit and push state changes
+4. Display checkpoint message with artifacts for review
+5. EXIT cleanly (not error) to await /continue-orchestrating
+
+See rule-library/R322-mandatory-stop-before-state-transitions.md for complete requirements.
+
+## 🔴🔴🔴 SUPREME LAW R336: MANDATORY WAVE INTEGRATION BEFORE NEXT WAVE 🔴🔴🔴
+
+**TRUNK-BASED DEVELOPMENT LAW - EACH WAVE BUILDS ON INTEGRATED PREVIOUS WAVE!**
+
+Every wave MUST be fully integrated before the next wave can start:
+- **WAVE_COMPLETE → INTEGRATION** (MANDATORY - cannot skip to next wave)
+- **Wave N integration branch** becomes the base for **Wave N+1 efforts** (per R308)
+- **NO wave may start** without previous wave's integration branch existing
+- **Architect reviews** the INTEGRATED wave, not individual efforts
+
+**THE INTEGRATION CHAIN IS SACRED:**
+```
+main → wave1-integration → wave2-integration → wave3-integration → phase-integration
+```
+
+See rule-library/R336-mandatory-wave-integration-before-next-wave.md for complete requirements.
+
+## 🔴🔴🔴 SUPREME LAW R321: IMMEDIATE BACKPORT DURING INTEGRATION 🔴🔴🔴
+
+**ALL FIXES DURING INTEGRATION MUST BE IMMEDIATELY BACKPORTED TO SOURCE BRANCHES!**
+- Integration branches are READ-ONLY for code - they can only receive merges
+- ANY fix needed during integration triggers IMMEDIATE_BACKPORT_REQUIRED state
+- Source branches must be fixed BEFORE continuing integration
+- Deferred backporting (BACKPORT_FIXES state) is DEPRECATED
+
+See rule-library/R321-immediate-backport-during-integration.md for complete requirements.
+
+## 🔴🔴🔴 SUPREME LAW R234: MANDATORY STATE TRAVERSAL - NO SKIPPING! 🔴🔴🔴
+
+**THIS IS THE HIGHEST LAW - SUPERSEDES ALL OTHER RULES!**
+
+The following sequences MUST be traversed EXACTLY - skipping ANY state = -100% GRADE:
+
+### CRITICAL MANDATORY SEQUENCE:
+```
+SETUP_EFFORT_INFRASTRUCTURE
+    ↓ (CANNOT SKIP)
+ANALYZE_CODE_REVIEWER_PARALLELIZATION
+    ↓ (CANNOT SKIP)
+SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+    ↓ (CANNOT SKIP)
+WAITING_FOR_EFFORT_PLANS
+    ↓ (CANNOT SKIP)
+ANALYZE_IMPLEMENTATION_PARALLELIZATION
+    ↓ (CANNOT SKIP)
+SPAWN_AGENTS
+```
+
+**FORBIDDEN TRANSITIONS (AUTOMATIC FAILURE):**
+- ❌ SETUP_EFFORT_INFRASTRUCTURE → SPAWN_AGENTS
+- ❌ SETUP_EFFORT_INFRASTRUCTURE → ANALYZE_IMPLEMENTATION_PARALLELIZATION
+- ❌ Any attempt to skip states for "efficiency" (except R356 optimization)
+
+See rule-library/R234-mandatory-state-traversal-supreme-law.md for complete enforcement.
+
+## ⚠️⚠️⚠️ R356: SINGLE-EFFORT OPTIMIZATION EXCEPTION ⚠️⚠️⚠️
+
+**PERFORMANCE OPTIMIZATION FOR SINGLE-EFFORT WAVES**
+
+When a wave contains ONLY ONE effort, parallelization analysis is pointless. R356 allows these optimized transitions:
+
+### ALLOWED OPTIMIZATION TRANSITIONS (R356):
+```
+Single Effort Code Reviewer Planning:
+SETUP_EFFORT_INFRASTRUCTURE
+    ↓ (1 effort detected)
+SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (skip ANALYZE_CODE_REVIEWER_PARALLELIZATION)
+
+Single Effort Implementation:
+WAITING_FOR_EFFORT_PLANS
+    ↓ (1 effort detected)
+SPAWN_AGENTS (skip ANALYZE_IMPLEMENTATION_PARALLELIZATION)
+```
+
+### R356 Requirements:
+1. **MUST verify single effort**: `jq '.efforts_in_progress | length'` equals 1
+2. **MUST document optimization**: Log "R356 optimization applied" in state file
+3. **MUST save minimal plan**: Create simplified parallelization plan with r356_applied flag
+4. **Early exit in analysis states**: If entered with 1 effort, immediately transition
+
+### Benefits:
+- Eliminates 2 unnecessary state transitions per wave for single efforts
+- Reduces orchestration time by ~20% for single-effort waves
+- Clearer logs without redundant "cannot parallelize single effort" messages
+
+**IMPORTANT**: This is the ONLY allowed exception to R234 mandatory traversal!
+
+See rule-library/R356-single-effort-parallelization-optimization.md for implementation details.
+
+## State Machine Overview
+
+```mermaid
+stateDiagram-v2
+    [*] --> INIT: Agent Startup
+    
+    %% Phase 1 Special Flow (No Assessment)
+    INIT --> PHASE_ARCHITECTURE_PLANNING: Phase 1 Start
+    
+    %% Architecture-Driven Planning Flow (Phase 2+)
+    PHASE_ASSESSMENT --> PHASE_ARCHITECTURE_PLANNING: Pass
+    PHASE_ARCHITECTURE_PLANNING --> SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING: TDD - Tests first!
+    SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING --> WAITING_FOR_PHASE_TEST_PLAN: Creating tests
+    WAITING_FOR_PHASE_TEST_PLAN --> PHASE_IMPLEMENTATION_PLANNING: Tests ready
+    PHASE_IMPLEMENTATION_PLANNING --> WAVE_START: Code Reviewer translates
+    
+    WAVE_REVIEW --> WAVE_ARCHITECTURE_PLANNING: Pass with request
+    WAVE_ARCHITECTURE_PLANNING --> SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING: TDD - Tests first!
+    SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING --> WAITING_FOR_WAVE_TEST_PLAN: Creating tests
+    WAITING_FOR_WAVE_TEST_PLAN --> WAVE_IMPLEMENTATION_PLANNING: Tests ready
+    WAVE_IMPLEMENTATION_PLANNING --> WAVE_DIRECTORY_ACKNOWLEDGMENT: Code Reviewer translates
+    WAVE_DIRECTORY_ACKNOWLEDGMENT --> EFFORT_PLAN_CREATION: R214 Acknowledged
+    
+    %% Standard Flow
+    INIT --> WAVE_START: Orchestrator begins wave
+    WAVE_START --> SPAWN_AGENTS: With plans ready
+    SPAWN_AGENTS --> MONITOR_IMPLEMENTATION: Agents working
+    %% MONITOR state deprecated - using specialized monitoring states
+    MONITOR_IMPLEMENTATION --> SPAWN_CODE_REVIEWERS_FOR_REVIEW: Implementation complete
+    SPAWN_CODE_REVIEWERS_FOR_REVIEW --> MONITOR_REVIEWS: Monitor review progress
+    MONITOR_REVIEWS --> CREATE_NEXT_INFRASTRUCTURE: Split plan exists, need infrastructure
+    MONITOR_REVIEWS --> SPAWN_ENGINEERS_FOR_FIXES: Review failed, fixes needed
+    MONITOR_REVIEWS --> WAVE_COMPLETE: ALL reviews passed
+    CREATE_NEXT_INFRASTRUCTURE --> SPAWN_AGENTS: Infrastructure ready for next split
+    MONITOR_FIXES --> SPAWN_CODE_REVIEWERS_FOR_REVIEW: Fixes complete, re-review needed
+    MONITOR_FIXES --> IMMEDIATE_BACKPORT_REQUIRED: R321 - Integration fixes need backporting
+    SPAWN_ENGINEERS_FOR_FIXES --> MONITOR_FIXES: Monitor fix progress
+    FIX_ISSUES --> SPAWN_CODE_REVIEWERS_FOR_REVIEW: Re-run review needed
+    
+    %% CODE_REVIEW state now split into specialized review states
+    MEASURE_IMPLEMENTATION_SIZE --> PERFORM_CODE_REVIEW: Size compliant (≤800 lines)
+    MEASURE_IMPLEMENTATION_SIZE --> CREATE_SPLIT_INVENTORY: Size violation (>800 lines)
+    PERFORM_CODE_REVIEW --> COMPLETED: Review passed
+    PERFORM_CODE_REVIEW --> CREATE_FIX_PLAN: Review failed
+    CREATE_SPLIT_INVENTORY --> COMPLETED: Split plans created
+    WAVE_COMPLETE --> INTEGRATION: Begin integration
+    INTEGRATION --> SETUP_INTEGRATION_INFRASTRUCTURE: Need infrastructure
+    SETUP_INTEGRATION_INFRASTRUCTURE --> SPAWN_CODE_REVIEWER_MERGE_PLAN: Infrastructure ready
+    SPAWN_CODE_REVIEWER_MERGE_PLAN --> WAITING_FOR_MERGE_PLAN: Creating plan
+    WAITING_FOR_MERGE_PLAN --> SPAWN_INTEGRATION_AGENT: Plan ready
+    SPAWN_INTEGRATION_AGENT --> MONITORING_INTEGRATION: Executing merges
+    MONITORING_INTEGRATION --> INTEGRATION_CODE_REVIEW: Integration complete, need review
+    INTEGRATION_CODE_REVIEW --> WAITING_FOR_INTEGRATION_CODE_REVIEW: Spawning reviewer
+    WAITING_FOR_INTEGRATION_CODE_REVIEW --> WAVE_REVIEW: Code review passed
+    WAITING_FOR_INTEGRATION_CODE_REVIEW --> SPAWN_CODE_REVIEWER_INTEGRATION_FIX_PLAN: Code review failed
+    WAVE_REVIEW --> WAVE_START: Approved, next wave
+    WAVE_REVIEW --> PHASE_INTEGRATION: Last wave complete (R285)
+    PHASE_INTEGRATION --> SETUP_PHASE_INTEGRATION_INFRASTRUCTURE: Need infrastructure
+    SETUP_PHASE_INTEGRATION_INFRASTRUCTURE --> SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN: Infrastructure ready
+    SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN --> WAITING_FOR_PHASE_MERGE_PLAN: Creating plan
+    WAITING_FOR_PHASE_MERGE_PLAN --> SPAWN_INTEGRATION_AGENT_PHASE: Plan ready
+    SPAWN_INTEGRATION_AGENT_PHASE --> MONITORING_PHASE_INTEGRATION: Executing merges
+    MONITORING_PHASE_INTEGRATION --> PHASE_INTEGRATION_CODE_REVIEW: Phase integration complete
+    PHASE_INTEGRATION_CODE_REVIEW --> WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW: Spawning reviewer
+    WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW --> SPAWN_ARCHITECT_PHASE_ASSESSMENT: Code review passed
+    WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW --> SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN: Code review failed
+    MONITORING_PHASE_INTEGRATION --> PHASE_INTEGRATION_FEEDBACK_REVIEW: Integration failed
+    PHASE_INTEGRATION_FEEDBACK_REVIEW --> SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN: Fixes needed
+    SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN --> WAITING_FOR_PHASE_FIX_PLANS: Creating fix plans
+    WAITING_FOR_PHASE_FIX_PLANS --> ERROR_RECOVERY: Complex fixes needed
+    SPAWN_ARCHITECT_PHASE_ASSESSMENT --> WAITING_FOR_PHASE_ASSESSMENT: Spawning architect
+    WAITING_FOR_PHASE_ASSESSMENT --> PHASE_COMPLETE: Assessment passed
+    PHASE_COMPLETE --> PROJECT_INTEGRATION: Last phase complete (R283)
+    PHASE_COMPLETE --> INIT: More phases exist
+    PROJECT_INTEGRATION --> SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE: Need infrastructure
+    SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE --> SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN: Infrastructure ready
+    SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN --> WAITING_FOR_PROJECT_MERGE_PLAN: Creating plan
+    WAITING_FOR_PROJECT_MERGE_PLAN --> SPAWN_INTEGRATION_AGENT_PROJECT: Plan ready
+    SPAWN_INTEGRATION_AGENT_PROJECT --> MONITORING_PROJECT_INTEGRATION: Merging all phases
+    MONITORING_PROJECT_INTEGRATION --> PROJECT_INTEGRATION_CODE_REVIEW: Project integration complete
+    PROJECT_INTEGRATION_CODE_REVIEW --> WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW: Spawning reviewer
+    WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW --> SPAWN_CODE_REVIEWER_PROJECT_VALIDATION: Code review passed
+    WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW --> SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING: Code review failed
+    MONITORING_PROJECT_INTEGRATION --> ERROR_RECOVERY: Integration failed catastrophically
+    SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING --> WAITING_FOR_PROJECT_FIX_PLANS: Creating fix plans
+    WAITING_FOR_PROJECT_FIX_PLANS --> SPAWN_SW_ENGINEER_PROJECT_FIXES: Fix plans ready
+    SPAWN_SW_ENGINEER_PROJECT_FIXES --> MONITORING_PROJECT_FIXES: Engineers fixing
+    MONITORING_PROJECT_FIXES --> PROJECT_INTEGRATION: 🔴 Re-run FULL integration with fixed sources
+    SPAWN_CODE_REVIEWER_PROJECT_VALIDATION --> WAITING_FOR_PROJECT_VALIDATION: Validating
+    WAITING_FOR_PROJECT_VALIDATION --> CREATE_INTEGRATION_TESTING: Validation passed
+    WAITING_FOR_PROJECT_VALIDATION --> ERROR_RECOVERY: Validation failed
+    CREATE_INTEGRATION_TESTING --> INTEGRATION_TESTING: Branch created
+    INTEGRATION_TESTING --> PRODUCTION_READY_VALIDATION: Project integrated and merged
+    PRODUCTION_READY_VALIDATION --> BUILD_VALIDATION: Tests pass
+    PRODUCTION_READY_VALIDATION --> ANALYZE_BUILD_FAILURES: Issues found
+    BUILD_VALIDATION --> ANALYZE_BUILD_FAILURES: Build fails
+    BUILD_VALIDATION --> SPAWN_CODE_REVIEWER_BACKPORT_PLAN: Build fixed inline, need backport plan
+    BUILD_VALIDATION --> PR_PLAN_CREATION: Build successful, no fixes
+    
+    %% FIX_BUILD_ISSUES state now split into specialized states  
+    ANALYZE_BUILD_FAILURES --> SPAWN_CODE_REVIEWER_FIX_PLAN: Analysis complete, need fix plans
+    SPAWN_CODE_REVIEWER_FIX_PLAN --> WAITING_FOR_FIX_PLANS: Creating fix plans
+    WAITING_FOR_FIX_PLANS --> COORDINATE_BUILD_FIXES: Fix plans ready
+    COORDINATE_BUILD_FIXES --> MONITOR_FIXES: SW Engineers spawned for fixes
+    MONITOR_FIXES --> BUILD_VALIDATION: Fixes complete, retry build
+    MONITOR_FIXES --> IMMEDIATE_BACKPORT_REQUIRED: R321 - Fixes need immediate backporting
+    SPAWN_CODE_REVIEWER_BACKPORT_PLAN --> WAITING_FOR_BACKPORT_PLAN: Spawned reviewer
+    WAITING_FOR_BACKPORT_PLAN --> SPAWN_SW_ENGINEER_BACKPORT_FIXES: Plan ready
+    SPAWN_SW_ENGINEER_BACKPORT_FIXES --> MONITORING_BACKPORT_PROGRESS: Engineers spawned
+    MONITORING_BACKPORT_PROGRESS --> PR_PLAN_CREATION: Backports complete
+    MONITORING_BACKPORT_PROGRESS --> ERROR_RECOVERY: Backports failed
+    BACKPORT_FIXES --> PR_PLAN_CREATION: DEPRECATED - use new backport flow
+    PR_PLAN_CREATION --> SUCCESS: MASTER-PR-PLAN.md created
+    WAITING_FOR_PHASE_ASSESSMENT --> ERROR_RECOVERY: Assessment failed
+    ERROR_RECOVERY --> PHASE_INTEGRATION: Phase fixes complete (R259)
+    PHASE_INTEGRATION --> SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN: Ready for reassessment
+    
+    %% Implementation Flow
+    INIT --> IMPLEMENTATION: SW Engineer begins work
+    IMPLEMENTATION --> MEASURE_SIZE: Check line count
+    MEASURE_SIZE --> CREATE_SPLIT_PLAN: Over 800 lines
+    CREATE_SPLIT_PLAN --> SPLIT_IMPLEMENTATION: Execute splits
+    
+    note right of ERROR_RECOVERY: Any state can transition here on error
+```
+
+## Phase Completion Gate
+
+**CRITICAL**: The orchestrator MUST NOT transition to SUCCESS without architect phase assessment. This ensures:
+1. All waves of the phase are properly integrated
+2. Phase-level architecture is validated
+3. No premature completion before architect approval
+
+**The Phase Assessment Flow (R285 - Mandatory Integration First):**
+1. WAVE_REVIEW determines this is the last wave of the phase
+2. Transitions to PHASE_INTEGRATION (not directly to assessment)
+3. Phase integration creates merge plan and executes all wave merges
+4. MONITORING_PHASE_INTEGRATION verifies integration success
+5. Transitions to SPAWN_ARCHITECT_PHASE_ASSESSMENT with integrated branch
+6. Architect assesses the INTEGRATED phase work (not individual waves)
+7. If PASS → PHASE_COMPLETE (phase assessment passed)
+8. If FAIL → ERROR_RECOVERY to fix issues
+9. If MORE_PHASES → PHASE_COMPLETE → INIT (next phase planning)
+10. If LAST_PHASE → PHASE_COMPLETE → PROJECT_INTEGRATION → ... → PR_PLAN_CREATION → SUCCESS
+
+## 🔴🔴🔴 Project Integration Gate (R283) 🔴🔴🔴
+
+**CRITICAL**: Before final validation, ALL phases MUST be integrated into a single project-level branch. This ensures:
+1. All phases work together as a cohesive system
+2. No inter-phase conflicts exist
+3. The complete project is validated as a whole
+
+**The Project Integration Flow (R283 - Mandatory Project Integration):**
+1. PHASE_COMPLETE determines this is the last phase
+2. Transitions to PROJECT_INTEGRATION (not directly to testing)
+3. PROJECT_INTEGRATION → SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE
+SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE → SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN
+4. Code Reviewer creates merge plan for all phase integration branches
+5. WAITING_FOR_PROJECT_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PROJECT
+6. Integration Agent merges all phase branches sequentially
+7. MONITORING_PROJECT_INTEGRATION verifies all phases merged
+8. SPAWN_CODE_REVIEWER_PROJECT_VALIDATION for comprehensive validation
+9. WAITING_FOR_PROJECT_VALIDATION → If PASS → CREATE_INTEGRATION_TESTING
+10. If FAIL → ERROR_RECOVERY to fix project-level issues
+11. CREATE_INTEGRATION_TESTING uses the project integration branch (not individual efforts)
+
+**Decision Logic in WAVE_REVIEW (R258 Report-Based):**
+```
+// First verify wave review report exists (R258)
+verify_wave_review_report(phase, wave)
+
+// Decision based on report's DECISION field
+switch(report.DECISION) {
+    case "PROCEED_NEXT_WAVE":
+        next_state = WAVE_START  // Continue to next wave
+        break
+    case "PROCEED_PHASE_ASSESSMENT":
+        next_state = SPAWN_ARCHITECT_PHASE_ASSESSMENT  // Last wave complete
+        break
+    case "CHANGES_REQUIRED":
+        next_state = ERROR_RECOVERY  // Fix issues first
+        break
+    case "WAVE_FAILED":
+        next_state = ERROR_RECOVERY  // Major rework needed
+        break
+}
+```
+
+**PHASE_COMPLETE State Responsibilities:**
+- Create phase-level integration branch
+- Document all phase achievements
+- Prepare phase completion report
+- Determine if more phases exist
+- Transition to PROJECT_INTEGRATION (last phase) or INIT (more phases)
+- NEVER transition directly to SUCCESS (must validate first)
+
+**Final Integration Flow (R271-R280, R283):**
+PHASE_COMPLETE → PROJECT_INTEGRATION → [Code Reviewer Merge Plan] → 
+[Integration Agent Merges All Phases] → [Code Reviewer Validation] → 
+CREATE_INTEGRATION_TESTING → INTEGRATION_TESTING → 
+PRODUCTION_READY_VALIDATION → BUILD_VALIDATION → [FIX_BUILD_ISSUES if needed] → 
+[SPAWN_CODE_REVIEWER_BACKPORT_PLAN if fixes applied] → 
+[WAITING_FOR_BACKPORT_PLAN] → [SPAWN_SW_ENGINEER_BACKPORT_FIXES] → 
+[MONITORING_BACKPORT_PROGRESS] → PR_PLAN_CREATION → SUCCESS
+
+**Key Points:**
+- Software Factory NEVER merges to main (R280)
+- All validation happens in integration-testing branch (R272)
+- MASTER-PR-PLAN.md provides instructions for humans (R279)
+- SUCCESS only after proving software works (R271)
+
+## 🔴🔴🔴 CRITICAL: INTEGRATION RE-RUN CYCLES AFTER FIXES 🔴🔴🔴
+
+**SUPREME LAW: After ANY fixes are applied to source branches, the ENTIRE integration MUST be re-run from scratch!**
+
+### The Problem This Solves:
+```
+❌ BROKEN PATTERN (what happens without re-integration):
+1. Integration fails with bugs
+2. Fixes applied to source branches
+3. Integration branch STILL HAS BROKEN CODE
+4. Binary cannot be built
+5. Project appears "fixed" but integration is broken
+
+✅ CORRECT PATTERN (with mandatory re-integration):
+1. Integration fails with bugs
+2. Fixes applied to source branches
+3. DELETE old integration branch
+4. CREATE fresh integration from main
+5. RE-MERGE all branches with fixes
+6. Binary can now be built with working code
+```
+
+## 🔴🔴🔴 CASCADE FLOW - Persistent Coordination During Re-Integration 🔴🔴🔴
+
+**CRITICAL: When in CASCADE mode, all integration states return to CASCADE_REINTEGRATION!**
+
+### CASCADE Flow Pattern
+```
+CASCADE_REINTEGRATION (sets cascade_mode=true)
+    ↓
+INTEGRATION (recreate wave)
+    ↓
+MONITORING_INTEGRATION
+    ↓ (cascade_mode check)
+CASCADE_REINTEGRATION (if cascade_mode=true)
+    ↓
+PHASE_INTEGRATION (recreate phase)
+    ↓
+... (similar flow)
+    ↓
+CASCADE_REINTEGRATION 
+    ↓
+PROJECT_INTEGRATION (recreate project)
+    ↓
+... (similar flow)
+    ↓
+CASCADE_REINTEGRATION (clears cascade_mode=false)
+    ↓
+INTEGRATION_CODE_REVIEW (all cascades complete)
+```
+
+### Key CASCADE Mode Behaviors (R352 - Overlapping Support)
+1. **CASCADE_REINTEGRATION sets cascade_mode=true** for persistent coordination
+2. **CASCADE_REINTEGRATION supports multiple overlapping cascade chains** (R352)
+3. **All integration states check cascade_mode** to determine transitions
+4. **When cascade_mode=true (R352 persistent coordination):**
+   - INTEGRATION → CASCADE_REINTEGRATION (after wave integration completes)
+   - PHASE_INTEGRATION → CASCADE_REINTEGRATION (after phase integration completes)
+   - PROJECT_INTEGRATION → CASCADE_REINTEGRATION (after project integration completes)
+   - MONITORING_INTEGRATION → CASCADE_REINTEGRATION (not INTEGRATION_CODE_REVIEW)
+   - WAITING_FOR_INTEGRATION_CODE_REVIEW → CASCADE_REINTEGRATION (not WAVE_REVIEW)
+   - WAVE_REVIEW → CASCADE_REINTEGRATION (not WAVE_START)
+5. **CASCADE_REINTEGRATION checks for new fixes after each operation** (R352)
+6. **CASCADE_REINTEGRATION clears cascade_mode=false** only when:
+   - All cascade chains are complete or merged
+   - No pending fixes exist without chains
+   - All integrations are fresh
+   - No new fixes detected in final check
+
+## 🔴🔴🔴 CASCADE_REINTEGRATION State - PERSISTENT COORDINATOR for R327/R352/R353 Enforcement 🔴🔴🔴
+
+**SUPREME LAW**: CASCADE_REINTEGRATION is a PERSISTENT COORDINATOR that enforces R327/R352/R353 CASCADE LAWS. It maintains control throughout ALL cascade operations, supports multiple overlapping cascade chains, checks for new fixes continuously, and ENFORCES ABSOLUTE CASCADE FOCUS per R353!
+
+### R353 CASCADE FOCUS PROTOCOL - NO DIVERSIONS!
+When cascade_mode=true:
+- ❌ NO size checks or split evaluations allowed
+- ❌ NO transitions to CREATE_NEXT_INFRASTRUCTURE 
+- ❌ NO quality assessments beyond build validation
+- ✅ ONLY rebase validation and conflict resolution
+- ✅ ALL agents receive cascade_mode=true context
+
+### CASCADE_REINTEGRATION State Definition
+
+**Type**: PERSISTENT_COORDINATOR (Maintains control throughout cascades)
+**Purpose**: Coordinate multiple overlapping cascade chains and ensure ALL fixes reach project level
+**Criticality**: SUPREME (Violation = -100% AUTOMATIC FAILURE)
+**Key Feature**: Supports unlimited overlapping cascade chains (R352)
+
+### Entry Triggers (MANDATORY)
+The orchestrator MUST transition to CASCADE_REINTEGRATION when:
+1. **From ERROR_RECOVERY**: After fixes are applied to effort branches
+2. **From MONITOR_FIXES**: When all fixes are complete and need re-integration
+3. **From MONITORING_INTEGRATION**: When stale integrations are detected
+4. **From WAVE_COMPLETE**: When fixes were applied during the wave
+5. **From PHASE_COMPLETE**: When pending cascades exist
+
+### State Behavior
+```yaml
+CASCADE_REINTEGRATION:
+  type: TRAP_STATE
+  
+  entry_actions:
+    - Load R350 dependency graph
+    - Calculate complete cascade chain
+    - Create R351 execution plan
+    - Begin cascade execution
+    
+  execution_loop:
+    1. SELECT_NEXT_OPERATION (from cascade chain)
+    2. VALIDATE_PREREQUISITES (dependencies satisfied)
+    3. EXECUTE_OPERATION (rebase or recreate)
+    4. VERIFY_SUCCESS (operation completed)
+    5. UPDATE_CASCADE_STATUS (mark complete)
+    6. LOOP or EXIT (when all complete)
+  
+  allowed_transitions:
+    - CASCADE_REINTEGRATION → INTEGRATION (recreate wave)
+    - CASCADE_REINTEGRATION → PHASE_INTEGRATION (recreate phase)
+    - CASCADE_REINTEGRATION → PROJECT_INTEGRATION (recreate project)
+    - CASCADE_REINTEGRATION → CASCADE_REINTEGRATION (more cascades)
+    - CASCADE_REINTEGRATION → INTEGRATION_CODE_REVIEW (all complete)
+  
+  forbidden_transitions:
+    - CASCADE_REINTEGRATION → WAVE_COMPLETE (❌ CANNOT skip)
+    - CASCADE_REINTEGRATION → PHASE_COMPLETE (❌ CANNOT skip)
+    - CASCADE_REINTEGRATION → SUCCESS (❌ CANNOT skip)
+    - CASCADE_REINTEGRATION → Any other state (❌ BLOCKED)
+```
+
+### Cascade Execution Order (R350/R351)
+1. **Calculate dependency chain** using R350 dependency graph
+2. **Execute effort rebases** in dependency order
+3. **Delete stale wave integrations**
+4. **Recreate wave integrations** with rebased efforts
+5. **Delete stale phase integrations**  
+6. **Recreate phase integrations** with fresh waves
+7. **Delete stale project integration**
+8. **Recreate project integration** with fresh phases
+
+### Exit Conditions (ALL must be true)
+- ✅ All cascade operations completed
+- ✅ No stale integrations remain
+- ✅ All dependencies satisfied
+- ✅ Freshness validation passed
+
+### State Tracking Requirements
+```json
+"current_state": "CASCADE_REINTEGRATION",
+"stale_integration_tracking": {
+  "staleness_cascade": [...],
+  "cascade_status": "in_progress",
+  "operations_pending": 7,
+  "operations_completed": 3
+},
+"dependency_graph": {
+  "cascade_chains": [...]
+}
+```
+
+## Integration Feedback Cycle (R238, R300, R321)
+
+**CRITICAL**: Integration failures MUST be detected and fixed through a proper feedback cycle with MANDATORY re-integration:
+
+### Wave Integration Feedback Flow (R321 Enforced):
+1. **MONITORING_INTEGRATION** checks for INTEGRATION_REPORT.md
+2. If integration FAILED or BLOCKED:
+   - → **IMMEDIATE_BACKPORT_REQUIRED** (R321: fix in source branches immediately)
+   - → **SPAWN_ENGINEERS_FOR_FIXES** (spawn engineers for source fixes)
+   - → **MONITORING_FIX_PROGRESS** (track source branch fixes)
+   - → **WAVE_COMPLETE** (once source branches fixed)
+   - → **INTEGRATION** (re-run FULL integration with fixed sources)
+3. If integration SUCCESS:
+   - → **WAVE_REVIEW** (proceed normally)
+
+### Phase Integration Feedback Flow (R321 Enforced):
+1. **MONITORING_PHASE_INTEGRATION** checks for PHASE_INTEGRATION_REPORT.md
+2. If phase integration FAILED:
+   - → **IMMEDIATE_BACKPORT_REQUIRED** (R321: fix in source branches immediately)
+   - → **SPAWN_ENGINEERS_FOR_FIXES** (fix effort branches)
+   - → **MONITORING_FIX_PROGRESS** (track source fixes)
+   - → **PHASE_INTEGRATION** (re-run with fixed sources)
+3. If phase integration SUCCESS:
+   - → **SPAWN_ARCHITECT_PHASE_ASSESSMENT** (proceed)
+
+### Project Integration Feedback Flow (R321 Enforced):
+1. **MONITORING_PROJECT_INTEGRATION** checks for PROJECT_INTEGRATION_REPORT.md
+2. If project integration has bugs or fails:
+   - → **SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING** (spawn Code Reviewer to create fix plans)
+   - → **WAITING_FOR_PROJECT_FIX_PLANS** (monitor plan creation)
+   - → **SPAWN_SW_ENGINEER_PROJECT_FIXES** (fix in source branches)
+   - → **MONITORING_PROJECT_FIXES** (track fixes)
+   - → **PROJECT_INTEGRATION** (🔴 CRITICAL: re-run FULL project integration)
+3. If project integration SUCCESS:
+   - → **SPAWN_CODE_REVIEWER_PROJECT_VALIDATION** (proceed)
+
+**Key Points:**
+- NEVER ignore integration failures (R238)
+- Fix plans must be distributed to effort directories (R239)
+- Engineers execute fixes, not orchestrator (R300)
+- After fixes, MUST re-run ENTIRE integration (R321)
+
+## 🔴🔴🔴 CRITICAL: INTEGRATION RE-RUN AFTER FIXES 🔴🔴🔴
+
+**After fixes are reviewed and approved (from MONITORING_FIX_PROGRESS flow):**
+1. **MONITORING_FIX_PROGRESS** → **SPAWN_CODE_REVIEWERS_FOR_REVIEW** (review fixes)
+2. **SPAWN_CODE_REVIEWERS_FOR_REVIEW** → **MONITOR_REVIEWS** (monitor reviews)
+3. **MONITOR_REVIEWS** → **WAVE_COMPLETE** (reviews pass)
+4. **WAVE_COMPLETE** → **INTEGRATION** (RE-RUN FULL INTEGRATION)
+5. **INTEGRATION** → **MONITORING_INTEGRATION** (monitor new attempt)
+
+**NEVER:**
+- Skip from MONITORING_FIX_PROGRESS directly to MONITORING_INTEGRATION ❌
+- Manually copy fixed files to integration workspace ❌
+- Bypass the full integration re-run ❌
+
+**The integration MUST be completely re-executed after fixes!**
+- All fixes must be reviewed before retry
+- Maximum retry limit prevents infinite loops
+
+## Code Review Gate (R222)
+
+**CRITICAL R232 & R233 ENFORCEMENT**: 
+
+**R232 - MONITOR State Requirements**: Before ANY transition from MONITOR_* states, the orchestrator MUST:
+1. Check TodoWrite for pending items
+2. Process ALL pending items IMMEDIATELY
+3. NO "I will..." statements - only "I am..." with action
+4. VIOLATION = AUTOMATIC FAILURE
+
+**R233 - Immediate Action in ALL States**: Every state transition requires:
+1. Immediate action upon entry - no announcements
+2. Active work starting within the first line of response
+3. States are VERBS to execute, not places to rest
+4. Even "waiting" states must actively poll, not passively wait
+
+**CRITICAL**: The transition from `MONITOR_REVIEWS` to `WAVE_COMPLETE` is BLOCKED unless:
+1. ALL implementations are COMPLETE
+2. ALL Code Reviews have been SPAWNED for completed implementations
+3. ALL Code Reviews have PASSED (no REJECTED or FAILED states)
+4. ALL efforts are ≤800 lines (verified by Code Reviewer)
+5. NO efforts are in FIX_ISSUES state
+6. NO efforts are BLOCKED
+
+**The Implementation-Review Flow (WITH MANDATORY STOPS PER R322):**
+1. SW Engineer completes implementation → sets implementation_status: COMPLETE
+2. **ORCHESTRATOR IN MONITOR_IMPLEMENTATION DETECTS THIS → TRANSITIONS TO SPAWN_CODE_REVIEWERS_FOR_REVIEW**
+3. **🛑 STOP per R322** - Orchestrator updates state file and exits, awaiting /continue-orchestrating
+4. **ORCHESTRATOR IN SPAWN_CODE_REVIEWERS_FOR_REVIEW** → Spawns Code Reviewers for completed implementations
+5. **🛑 STOP per R322** - Orchestrator records spawned reviewers and exits
+6. **ORCHESTRATOR IN MONITOR_REVIEWS** → Monitors Code Reviewer progress
+7. Code Reviewer completes review with one of three outcomes:
+   - If PASSED → effort marked complete with review_status: PASSED
+   - If FAILED → Orchestrator transitions to SPAWN_ENGINEERS_FOR_FIXES
+   - If NEEDS_SPLIT → Orchestrator transitions to CREATE_NEXT_INFRASTRUCTURE
+8. **🛑 STOP per R322** - After determining next state based on review outcome
+9. For FAILED reviews:
+   → **ORCHESTRATOR IN SPAWN_ENGINEERS_FOR_FIXES** spawns SW Engineers to fix issues
+   → **🛑 STOP per R322**
+   → **ORCHESTRATOR IN MONITOR_FIXES** monitors fix progress
+10. For NEEDS_SPLIT:
+   → **ORCHESTRATOR IN CREATE_NEXT_INFRASTRUCTURE** creates split infrastructure (R204)
+   → **🛑 STOP per R322**
+   → **ORCHESTRATOR IN SPAWN_AGENTS** spawns SW Engineer for next split
+
+If any review fails or cannot be run:
+1. Orchestrator spawns SW Engineer to FIX_ISSUES state
+2. SW Engineer fixes the issues identified
+3. SW Engineer completes fixes → implementation_status: COMPLETE again
+4. **ORCHESTRATOR DETECTS AND SPAWNS CODE REVIEWER AGAIN**
+5. Code Reviewer re-runs the review
+6. If review passes → back to MONITOR_REVIEWS → check all efforts
+7. If review fails → back to step 1 (FIX_ISSUES)
+8. This cycle continues until ALL reviews pass
+9. Only then can transition to WAVE_COMPLETE occur
+
+**The Review-Fix Loop (WITH MANDATORY R322 STOPS):**
+```
+MONITOR_IMPLEMENTATION (detects implementation COMPLETE)
+    ↓ [🛑 STOP]
+SPAWN_CODE_REVIEWERS_FOR_REVIEW (spawns reviewers)
+    ↓ [🛑 STOP]
+MONITOR_REVIEWS (monitors review progress)
+    ↓ (if review FAILED) [🛑 STOP]
+SPAWN_ENGINEERS_FOR_FIXES (spawns engineers to fix)
+    ↓ [🛑 STOP]
+MONITOR_FIXES (monitors fix progress)
+    ↓ (when fixes COMPLETE) [🛑 STOP]
+SPAWN_CODE_REVIEWERS_FOR_REVIEW (re-review fixed code)
+    ↓ [🛑 STOP]
+MONITOR_REVIEWS (monitors re-review)
+    ↓ (if PASSED)
+WAVE_COMPLETE (all reviews passed)
+```
+
+**CRITICAL: Each [🛑 STOP] requires:**
+1. Update orchestrator-state.json with next state
+2. Commit and push state changes
+3. Exit and await /continue-orchestrating
+4. NO automatic continuation to next state
+
+## Split Infrastructure Flow
+
+**🔴🔴🔴 CRITICAL: ORCHESTRATOR CREATES SPLIT INFRASTRUCTURE JUST-IN-TIME (R204) 🔴🔴🔴**
+
+When an effort exceeds size limits, the split flow is:
+
+1. **SW Engineer**: Detects >800 lines → reports to orchestrator
+2. **Orchestrator**: Spawns Code Reviewer for CREATE_SPLIT_PLAN
+3. **Code Reviewer**: Creates SPLIT-INVENTORY.md and SPLIT-PLAN-XXX.md files
+4. **Code Reviewer**: Commits and pushes split plans to too-large branch
+5. **🔴 ORCHESTRATOR - JUST-IN-TIME CREATION 🔴**:
+   - **First split**: Creates infrastructure for split-001 ONLY
+     - Directory: effort-name-SPLIT-001
+     - Clone: Based on same base as original effort (R308)
+     - Branch: effort--split-001
+     - Copy: SPLIT-PLAN-001.md from too-large branch
+     - Push: Branch to remote
+   - Spawns SW Engineer for split-001 implementation
+   - Monitors until split-001 complete
+   - **Next split**: Transitions to CREATE_NEXT_INFRASTRUCTURE
+     - Creates infrastructure for split-002 ONLY
+     - Clone: Based on split-001 branch (SEQUENTIAL!)
+     - Branch: effort--split-002
+     - Continues pattern for each subsequent split
+6. **Orchestrator**: Spawns SW Engineer for each split implementation
+7. **SW Engineer**: Implements one split at a time in just-created infrastructure
+8. **Orchestrator**: After all splits complete, marks original as SPLIT_DEPRECATED (R296)
+
+**WHO DOES WHAT:**
+- **Code Reviewer**: Creates split PLANS (documentation)
+- **Orchestrator**: Creates split INFRASTRUCTURE (directories/repos)
+- **SW Engineer**: IMPLEMENTS in existing infrastructure
+
+## Phase 1 Special Flow
+
+**CRITICAL**: Phase 1 has no PHASE_ASSESSMENT since it's the initial phase. The flow is:
+
+1. **Orchestrator**: `INIT` → `SPAWN_ARCHITECT_PHASE_PLANNING`
+2. **Architect**: Creates Phase 1 Architecture Plan (R210)
+3. **Orchestrator**: `WAITING_FOR_ARCHITECTURE_PLAN` → `SPAWN_CODE_REVIEWER_PHASE_IMPL`
+4. **Code Reviewer**: Creates Phase 1 Implementation Plan from Architecture (R211)
+5. **Orchestrator**: `WAITING_FOR_IMPLEMENTATION_PLAN` → `WAVE_START`
+
+Then for each wave in Phase 1:
+1. **Orchestrator**: `WAVE_START` → `SPAWN_ARCHITECT_WAVE_PLANNING`
+2. **Architect**: Creates Wave Architecture Plan (R210)
+3. **Orchestrator**: `WAITING_FOR_ARCHITECTURE_PLAN` → `SPAWN_CODE_REVIEWER_WAVE_IMPL`
+4. **Code Reviewer**: Creates Wave Implementation Plan (R211)
+5. **Orchestrator**: `INJECT_WAVE_METADATA` (R213)
+6. **Orchestrator**: `WAITING_FOR_IMPLEMENTATION_PLAN` → `SETUP_EFFORT_INFRASTRUCTURE` (deprecated, passes through)
+7. **Orchestrator**: `SETUP_EFFORT_INFRASTRUCTURE` → `CREATE_NEXT_INFRASTRUCTURE` (R360 JIT)
+8. **Orchestrator**: Creates infrastructure just-in-time for each effort as needed
+9. **Orchestrator**: `CREATE_NEXT_INFRASTRUCTURE` → `ANALYZE_CODE_REVIEWER_PARALLELIZATION`
+9. **Orchestrator**: MANDATORY - Analyzes wave plan parallelization metadata (R218 + R151)
+10. **Orchestrator**: `ANALYZE_CODE_REVIEWER_PARALLELIZATION` → `SPAWN_CODE_REVIEWERS_EFFORT_PLANNING`
+11. **Code Reviewers**: Create individual effort implementation plans in their directories
+12. **Orchestrator**: `WAITING_FOR_EFFORT_PLANS` → `ANALYZE_IMPLEMENTATION_PARALLELIZATION`
+13. **Orchestrator**: MANDATORY - Analyzes effort plans for SW Engineer parallelization
+14. **Orchestrator**: `ANALYZE_IMPLEMENTATION_PARALLELIZATION` → `SPAWN_AGENTS`
+
+## Orchestrator States
+
+The orchestrator coordinates all work and manages the overall flow.
+
+### Valid States:
+- **INIT** - Initial state, loading configuration
+- **SPAWN_ARCHITECT_MASTER_PLANNING** - Spawn Architect to create master architecture
+- **WAITING_FOR_MASTER_ARCHITECTURE** - Waiting for Architect to complete master architecture
+- **SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING** - Spawn Code Reviewer to create project-level tests (R341 TDD)
+- **WAITING_FOR_PROJECT_TEST_PLAN** - Waiting for Code Reviewer to complete project tests (R342 enforcement)
+- **CREATE_PROJECT_INTEGRATION_BRANCH_EARLY** - Create project-integration branch with tests (R342 mandatory)
+- **WAVE_START** - Beginning a new wave of efforts
+- **SETUP_EFFORT_INFRASTRUCTURE** - DEPRECATED: Now passes through to CREATE_NEXT_INFRASTRUCTURE (R360)
+- **CREATE_NEXT_INFRASTRUCTURE** - Creating infrastructure just-in-time for efforts and splits (R360)
+- **ANALYZE_CODE_REVIEWER_PARALLELIZATION** - Analyzing wave plan to determine Code Reviewer spawn strategy (MANDATORY)
+- **SPAWN_CODE_REVIEWERS_EFFORT_PLANNING** - Spawning code reviewers to create effort plans
+- **WAITING_FOR_EFFORT_PLANS** - Waiting for code reviewers to complete effort plans
+- **ANALYZE_IMPLEMENTATION_PARALLELIZATION** - Analyzing effort plans to determine SW Engineer spawn strategy (MANDATORY)
+- **SPAWN_AGENTS** - Spawning SW engineers for implementation
+- **SPAWN_ARCHITECT_PHASE_PLANNING** - Request architect to create phase architecture (R210)
+- **SPAWN_ARCHITECT_WAVE_PLANNING** - Request architect to create wave architecture (R210)
+- **SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING** - Spawn Code Reviewer to create phase-level tests from architecture (TDD)
+- **WAITING_FOR_PHASE_TEST_PLAN** - Waiting for Code Reviewer to complete phase test plan and test harness
+- **CREATE_PHASE_INTEGRATION_BRANCH_EARLY** - Create phase-N-integration branch with tests (R342 mandatory)
+- **SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING** - Spawn Code Reviewer to create wave-level tests from architecture (TDD)
+- **WAITING_FOR_WAVE_TEST_PLAN** - Waiting for Code Reviewer to complete wave test plan and test harness
+- **CREATE_WAVE_INTEGRATION_BRANCH_EARLY** - Create phase-N-wave-M-integration branch with tests (R342 mandatory)
+- **SPAWN_CODE_REVIEWER_PHASE_IMPL** - Request code reviewer to create phase implementation from architecture (R211)
+- **SPAWN_CODE_REVIEWER_WAVE_IMPL** - Request code reviewer to create wave implementation from architecture (R211)
+- **WAITING_FOR_ARCHITECTURE_PLAN** - Waiting for architect to complete architecture plan
+- **WAITING_FOR_IMPLEMENTATION_PLAN** - Waiting for code reviewer to complete implementation plan
+- **INJECT_WAVE_METADATA** - Injecting R213 wave metadata into plans
+- **MONITOR_IMPLEMENTATION** - Actively monitoring SW Engineers implementing features
+- **MONITOR_REVIEWS** - Actively monitoring Code Reviewers performing reviews and handling split needs
+- **MONITOR_FIXES** - Actively monitoring SW Engineers fixing review issues or build failures
+  - ⚠️ R232: MUST process all pending TodoWrite items before considering transition
+  - ⚠️ R021: CANNOT stop in this state - must continue working
+- **CREATE_NEXT_INFRASTRUCTURE** - Creating infrastructure for the next split in sequence (R204 just-in-time)
+  - Creates ONLY the next split's directory, clone, and branch
+  - Bases new split on previously completed split (sequential dependency)
+- **WAVE_COMPLETE** - All efforts completed AND all reviews passed (BLOCKED if any fail)
+- **CASCADE_REINTEGRATION** - TRAP state for enforcing cascade recreation of stale integrations (R327/R348)
+- **INTEGRATION** - Coordinating wave integration process (coordination only - infrastructure via SETUP_INTEGRATION_INFRASTRUCTURE)
+- **SETUP_INTEGRATION_INFRASTRUCTURE** - Creating wave integration workspace, branch, and remote tracking (R308 enforced)
+- **SPAWN_CODE_REVIEWER_MERGE_PLAN** - Spawning Code Reviewer to create merge plan
+- **WAITING_FOR_MERGE_PLAN** - Waiting for Code Reviewer merge plan completion
+- **SPAWN_INTEGRATION_AGENT** - Spawning Integration Agent to execute merges
+- **MONITORING_INTEGRATION** - Monitoring Integration Agent progress and checking for reports (R238)
+- **INTEGRATION_CODE_REVIEW** - Spawning Code Reviewer to review integrated code quality
+- **WAITING_FOR_INTEGRATION_CODE_REVIEW** - Waiting for integration code review completion
+- **SPAWN_CODE_REVIEWER_FIX_PLAN** - Spawning Code Reviewer to create fix plans for failures
+- **WAITING_FOR_FIX_PLANS** - Waiting for Code Reviewer to complete fix plans
+- **DISTRIBUTE_FIX_PLANS** - Distributing fix plans to effort directories (R239)
+- **SPAWN_ENGINEERS_FOR_FIXES** - Spawning SW Engineers to implement integration fixes
+- **MONITORING_FIX_PROGRESS** - Monitoring engineers implementing fixes
+- **SPAWN_CODE_REVIEWERS_FOR_REVIEW** - Spawning Code Reviewers to review fixed code
+- **WAVE_REVIEW** - Architect reviewing wave (R258: Must create wave review report)
+- **SPAWN_ARCHITECT_PHASE_ASSESSMENT** - Request architect to assess complete phase (last wave only)
+- **WAITING_FOR_PHASE_ASSESSMENT** - Waiting for architect phase assessment decision
+- **PHASE_COMPLETE** - Phase assessment passed, handling phase-level integration
+- **PHASE_INTEGRATION** - Coordinating phase integration process (coordination only - infrastructure via SETUP_PHASE_INTEGRATION_INFRASTRUCTURE)
+- **SETUP_PHASE_INTEGRATION_INFRASTRUCTURE** - Creating phase integration workspace with R308 incremental base
+- **PROJECT_INTEGRATION** - Coordinating project integration process (coordination only - infrastructure via SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE)
+- **SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE** - Creating project integration workspace with R308 incremental base
+- **SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN** - Spawning Code Reviewer to create project merge plan
+- **WAITING_FOR_PROJECT_MERGE_PLAN** - Waiting for Code Reviewer project merge plan
+- **SPAWN_INTEGRATION_AGENT_PROJECT** - Spawning Integration Agent to merge all phases
+- **MONITORING_PROJECT_INTEGRATION** - Monitoring project-level integration progress
+- **PROJECT_INTEGRATION_CODE_REVIEW** - Spawning Code Reviewer to review project integrated code quality
+- **WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW** - Waiting for project integration code review completion
+- **SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING** - Spawning Code Reviewer to create fix plans for bugs (R266 follow-up)
+- **WAITING_FOR_PROJECT_FIX_PLANS** - Waiting for Code Reviewer to complete project fix plans
+- **SPAWN_SW_ENGINEER_PROJECT_FIXES** - Spawning SW Engineers to fix project integration bugs
+- **MONITORING_PROJECT_FIXES** - Monitoring SW Engineers fixing project-level bugs
+- **SPAWN_CODE_REVIEWER_PROJECT_VALIDATION** - Spawning Code Reviewer for project validation
+- **WAITING_FOR_PROJECT_VALIDATION** - Waiting for project validation results
+- **CREATE_INTEGRATION_TESTING** - Creating integration-testing branch from project integration (R272)
+- **INTEGRATION_TESTING** - Final validation in integration-testing branch (R271)
+- **PRODUCTION_READY_VALIDATION** - Validating software is production-ready (R273-R275)
+- **BUILD_VALIDATION** - Final build and deployment verification (R277)
+- **ANALYZE_BUILD_FAILURES** - Orchestrator analyzing build errors and categorizing failures
+- **COORDINATE_BUILD_FIXES** - Orchestrator distributing fix work to SW Engineers with proper tracking
+- **IMMEDIATE_BACKPORT_REQUIRED** - R321 enforcement: fixing source branches immediately when integration issues found
+- **SPAWN_CODE_REVIEWER_BACKPORT_PLAN** - Spawn Code Reviewer to create backport plan
+- **WAITING_FOR_BACKPORT_PLAN** - Waiting for Code Reviewer to complete backport plan
+- **SPAWN_SW_ENGINEER_BACKPORT_FIXES** - Spawn SW Engineers to implement backport fixes
+- **MONITORING_BACKPORT_PROGRESS** - Monitor SW Engineers implementing backports
+- **PR_PLAN_CREATION** - Generating MASTER-PR-PLAN.md for human PRs (R279)
+- **SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN** - Spawning Code Reviewer for phase merge plan
+- **WAITING_FOR_PHASE_MERGE_PLAN** - Waiting for Code Reviewer phase merge plan
+- **SPAWN_INTEGRATION_AGENT_PHASE** - Spawning Integration Agent for phase merges
+- **MONITORING_PHASE_INTEGRATION** - Monitoring Integration Agent phase progress and checking reports (R238)
+- **PHASE_INTEGRATION_CODE_REVIEW** - Spawning Code Reviewer to review phase integrated code quality
+- **WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW** - Waiting for phase integration code review completion
+- **SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN** - Spawning Code Reviewer for phase-level fix plans
+- **WAITING_FOR_PHASE_FIX_PLANS** - Waiting for phase-level fix plans
+- **ERROR_RECOVERY** - Handling errors and issues
+- **SUCCESS** - Successful completion (terminal - only after phase approved)
+- **HARD_STOP** - Critical failure (terminal)
+
+### Valid Transitions:
+```
+INIT → WAVE_START (if plans already exist)
+INIT → SPAWN_ARCHITECT_MASTER_PLANNING (when no master plan exists)
+INIT → SPAWN_ARCHITECT_PHASE_PLANNING (Phase 1 start OR after phase assessment pass)
+SPAWN_ARCHITECT_MASTER_PLANNING → WAITING_FOR_MASTER_ARCHITECTURE
+WAITING_FOR_MASTER_ARCHITECTURE → SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING
+SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING → WAITING_FOR_PROJECT_TEST_PLAN
+WAITING_FOR_PROJECT_TEST_PLAN → CREATE_PROJECT_INTEGRATION_BRANCH_EARLY
+CREATE_PROJECT_INTEGRATION_BRANCH_EARLY → INIT (proceed to Phase 1)
+WAVE_START → SPAWN_ARCHITECT_WAVE_PLANNING (if no wave architecture)
+WAVE_START → SPAWN_CODE_REVIEWER_WAVE_IMPL (if wave architecture exists)
+WAVE_START → SETUP_EFFORT_INFRASTRUCTURE (if wave implementation plan exists)
+SPAWN_ARCHITECT_PHASE_PLANNING → WAITING_FOR_ARCHITECTURE_PLAN
+SPAWN_ARCHITECT_WAVE_PLANNING → WAITING_FOR_ARCHITECTURE_PLAN
+WAITING_FOR_ARCHITECTURE_PLAN → SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING (for phase architecture)
+WAITING_FOR_ARCHITECTURE_PLAN → SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING (for wave architecture)
+SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING → WAITING_FOR_PHASE_TEST_PLAN
+WAITING_FOR_PHASE_TEST_PLAN → CREATE_PHASE_INTEGRATION_BRANCH_EARLY
+CREATE_PHASE_INTEGRATION_BRANCH_EARLY → SPAWN_CODE_REVIEWER_PHASE_IMPL
+SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING → WAITING_FOR_WAVE_TEST_PLAN
+WAITING_FOR_WAVE_TEST_PLAN → CREATE_WAVE_INTEGRATION_BRANCH_EARLY
+CREATE_WAVE_INTEGRATION_BRANCH_EARLY → SPAWN_CODE_REVIEWER_WAVE_IMPL
+SPAWN_CODE_REVIEWER_PHASE_IMPL → WAITING_FOR_IMPLEMENTATION_PLAN
+SPAWN_CODE_REVIEWER_WAVE_IMPL → INJECT_WAVE_METADATA
+INJECT_WAVE_METADATA → WAITING_FOR_IMPLEMENTATION_PLAN
+WAITING_FOR_IMPLEMENTATION_PLAN → WAVE_START (for phase plans)
+WAITING_FOR_IMPLEMENTATION_PLAN → SETUP_EFFORT_INFRASTRUCTURE (for wave plans)
+SETUP_EFFORT_INFRASTRUCTURE → ANALYZE_CODE_REVIEWER_PARALLELIZATION (R234 MANDATORY)
+ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (R234 MANDATORY)
+SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → WAITING_FOR_EFFORT_PLANS (R234 MANDATORY)
+WAITING_FOR_EFFORT_PLANS → ANALYZE_IMPLEMENTATION_PARALLELIZATION (R234 MANDATORY)
+ANALYZE_IMPLEMENTATION_PARALLELIZATION → SPAWN_AGENTS (R234 MANDATORY SEQUENCE COMPLETE)
+SPAWN_AGENTS → MONITOR_IMPLEMENTATION
+MONITOR_IMPLEMENTATION → SPAWN_CODE_REVIEWERS_FOR_REVIEW (implementation complete)
+SPAWN_CODE_REVIEWERS_FOR_REVIEW → MONITOR_REVIEWS (monitor review progress)
+MONITOR_REVIEWS → CREATE_NEXT_INFRASTRUCTURE (split plan exists, need next split - FORBIDDEN if cascade_mode=true per R353)
+MONITOR_REVIEWS → SPAWN_ENGINEERS_FOR_FIXES (review failed, fixes needed)
+MONITOR_REVIEWS → WAVE_COMPLETE (ALL reviews passed)
+CREATE_NEXT_INFRASTRUCTURE → SPAWN_AGENTS (infrastructure ready for next split)
+MONITOR_FIXES → CASCADE_REINTEGRATION (fixes complete, cascade required - R327/R348)
+MONITOR_FIXES → SPAWN_CODE_REVIEWERS_FOR_REVIEW (fixes complete, re-review needed)
+MONITOR_FIXES → IMMEDIATE_BACKPORT_REQUIRED (R321 - Integration fixes need backporting)
+SPAWN_ENGINEERS_FOR_FIXES → MONITOR_FIXES (monitor fix progress)
+WAVE_COMPLETE → CASCADE_REINTEGRATION (fixes applied during wave - R327/R348)
+WAVE_COMPLETE → INTEGRATION (no fixes, proceed normally)
+CASCADE_REINTEGRATION → INTEGRATION (recreate wave integration)
+CASCADE_REINTEGRATION → PHASE_INTEGRATION (recreate phase integration)
+CASCADE_REINTEGRATION → PROJECT_INTEGRATION (recreate project integration)
+CASCADE_REINTEGRATION → CASCADE_REINTEGRATION (more cascades pending)
+CASCADE_REINTEGRATION → INTEGRATION_CODE_REVIEW (all cascades complete)
+INTEGRATION → SETUP_INTEGRATION_INFRASTRUCTURE
+SETUP_INTEGRATION_INFRASTRUCTURE → SPAWN_CODE_REVIEWER_MERGE_PLAN
+SPAWN_CODE_REVIEWER_MERGE_PLAN → WAITING_FOR_MERGE_PLAN
+WAITING_FOR_MERGE_PLAN → SPAWN_INTEGRATION_AGENT (R322: MANDATORY CHECKPOINT - User must review plan!)
+SPAWN_INTEGRATION_AGENT → MONITORING_INTEGRATION
+MONITORING_INTEGRATION → CASCADE_REINTEGRATION (stale integrations detected - R327/R348)
+MONITORING_INTEGRATION → CASCADE_REINTEGRATION (cascade_mode active - R351)
+MONITORING_INTEGRATION → INTEGRATION_CODE_REVIEW (integration complete, need review)
+INTEGRATION_CODE_REVIEW → WAITING_FOR_INTEGRATION_CODE_REVIEW
+WAITING_FOR_INTEGRATION_CODE_REVIEW → CASCADE_REINTEGRATION (cascade_mode active, review passed - R351)
+WAITING_FOR_INTEGRATION_CODE_REVIEW → WAVE_REVIEW (code review passed, normal flow)
+WAITING_FOR_INTEGRATION_CODE_REVIEW → SPAWN_CODE_REVIEWER_INTEGRATION_FIX_PLAN (code review failed)
+MONITORING_INTEGRATION → IMMEDIATE_BACKPORT_REQUIRED (integration failed - R321)
+IMMEDIATE_BACKPORT_REQUIRED → SPAWN_ENGINEERS_FOR_FIXES (spawn engineers for source fixes)
+SPAWN_CODE_REVIEWER_FIX_PLAN → WAITING_FOR_FIX_PLANS
+WAITING_FOR_FIX_PLANS → DISTRIBUTE_FIX_PLANS (plans ready)
+WAITING_FOR_FIX_PLANS → ERROR_RECOVERY (timeout)
+DISTRIBUTE_FIX_PLANS → SPAWN_ENGINEERS_FOR_FIXES
+SPAWN_ENGINEERS_FOR_FIXES → MONITORING_FIX_PROGRESS
+MONITORING_FIX_PROGRESS → SPAWN_CODE_REVIEWERS_FOR_REVIEW (fixes complete)
+MONITORING_FIX_PROGRESS → ERROR_RECOVERY (timeout)
+SPAWN_CODE_REVIEWERS_FOR_REVIEW → MONITOR_REVIEWS (re-enter review cycle)
+WAVE_REVIEW → CASCADE_REINTEGRATION (cascade_mode active - R351)
+WAVE_REVIEW → WAVE_START (next wave - R336: ONLY after integration verified!)
+WAVE_REVIEW → PHASE_INTEGRATION (last wave of phase - R285)
+SPAWN_ARCHITECT_PHASE_ASSESSMENT → WAITING_FOR_PHASE_ASSESSMENT
+WAITING_FOR_PHASE_ASSESSMENT → PHASE_COMPLETE (assessment passed)
+WAITING_FOR_PHASE_ASSESSMENT → ERROR_RECOVERY (assessment failed)
+PHASE_COMPLETE → CASCADE_REINTEGRATION (pending cascades detected - R327/R348)
+PHASE_COMPLETE → PROJECT_INTEGRATION (last phase complete - R283)
+PHASE_COMPLETE → INIT (more phases exist)
+PROJECT_INTEGRATION → SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE
+SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE → SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN
+SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN → WAITING_FOR_PROJECT_MERGE_PLAN
+WAITING_FOR_PROJECT_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PROJECT (R322: MANDATORY CHECKPOINT - Review project plan!)
+SPAWN_INTEGRATION_AGENT_PROJECT → MONITORING_PROJECT_INTEGRATION
+MONITORING_PROJECT_INTEGRATION → PROJECT_INTEGRATION_CODE_REVIEW (project integration complete)
+PROJECT_INTEGRATION_CODE_REVIEW → WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW
+WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW → SPAWN_CODE_REVIEWER_PROJECT_VALIDATION (code review passed)
+WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW → SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING (code review failed)
+MONITORING_PROJECT_INTEGRATION → ERROR_RECOVERY (integration failed catastrophically)
+SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING → WAITING_FOR_PROJECT_FIX_PLANS (spawned reviewer)
+WAITING_FOR_PROJECT_FIX_PLANS → SPAWN_SW_ENGINEER_PROJECT_FIXES (fix plans ready)
+SPAWN_SW_ENGINEER_PROJECT_FIXES → MONITORING_PROJECT_FIXES (engineers spawned)
+MONITORING_PROJECT_FIXES → PROJECT_INTEGRATION (🔴 CRITICAL: fixes complete, MUST re-run FULL integration with fixed sources)
+MONITORING_PROJECT_FIXES → ERROR_RECOVERY (fixes failed)
+SPAWN_CODE_REVIEWER_PROJECT_VALIDATION → WAITING_FOR_PROJECT_VALIDATION
+WAITING_FOR_PROJECT_VALIDATION → CREATE_INTEGRATION_TESTING (validation passed)
+WAITING_FOR_PROJECT_VALIDATION → ERROR_RECOVERY (validation failed)
+CREATE_INTEGRATION_TESTING → INTEGRATION_TESTING
+INTEGRATION_TESTING → PRODUCTION_READY_VALIDATION
+PRODUCTION_READY_VALIDATION → BUILD_VALIDATION (tests pass)
+PRODUCTION_READY_VALIDATION → ANALYZE_BUILD_FAILURES (test failures or issues found)
+BUILD_VALIDATION → PR_PLAN_CREATION (build successful, no fixes needed)
+BUILD_VALIDATION → ANALYZE_BUILD_FAILURES (build failures found)
+BUILD_VALIDATION → SPAWN_CODE_REVIEWER_BACKPORT_PLAN (build succeeded after inline fixes)
+ANALYZE_BUILD_FAILURES → COORDINATE_BUILD_FIXES (categorized failures)
+COORDINATE_BUILD_FIXES → BUILD_VALIDATION (fixes coordinated)
+SPAWN_CODE_REVIEWER_BACKPORT_PLAN → WAITING_FOR_BACKPORT_PLAN (reviewer spawned)
+WAITING_FOR_BACKPORT_PLAN → SPAWN_SW_ENGINEER_BACKPORT_FIXES (plan ready)
+SPAWN_SW_ENGINEER_BACKPORT_FIXES → MONITORING_BACKPORT_PROGRESS (engineers spawned)
+MONITORING_BACKPORT_PROGRESS → PR_PLAN_CREATION (backports complete)
+MONITORING_BACKPORT_PROGRESS → ERROR_RECOVERY (backports failed)
+IMMEDIATE_BACKPORT_REQUIRED → SPAWN_CODE_REVIEWER_BACKPORT_PLAN (need plan first)
+IMMEDIATE_BACKPORT_REQUIRED → SPAWN_ENGINEERS_FOR_FIXES (legacy direct spawn)
+PR_PLAN_CREATION → SUCCESS (MASTER-PR-PLAN.md ready)
+ERROR_RECOVERY → CASCADE_REINTEGRATION (fixes applied to effort branches - R327/R348 MANDATORY)
+ERROR_RECOVERY → PHASE_INTEGRATION (phase assessment fixes complete - R259)
+ERROR_RECOVERY → SPAWN_AGENTS (retry standard errors)
+ERROR_RECOVERY → INTEGRATION (wave review fixes complete)
+ERROR_RECOVERY → HARD_STOP (unrecoverable)
+PHASE_INTEGRATION → SETUP_PHASE_INTEGRATION_INFRASTRUCTURE
+SETUP_PHASE_INTEGRATION_INFRASTRUCTURE → SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN
+SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN → WAITING_FOR_PHASE_MERGE_PLAN
+WAITING_FOR_PHASE_MERGE_PLAN → SPAWN_INTEGRATION_AGENT_PHASE (R322: MANDATORY CHECKPOINT - Review phase plan!)
+SPAWN_INTEGRATION_AGENT_PHASE → MONITORING_PHASE_INTEGRATION
+MONITORING_PHASE_INTEGRATION → PHASE_INTEGRATION_CODE_REVIEW (phase integration complete)
+PHASE_INTEGRATION_CODE_REVIEW → WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW
+WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW → SPAWN_ARCHITECT_PHASE_ASSESSMENT (code review passed)
+WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW → SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN (code review failed)
+MONITORING_PHASE_INTEGRATION → IMMEDIATE_BACKPORT_REQUIRED (integration failed - R321)
+SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN → WAITING_FOR_PHASE_FIX_PLANS
+WAITING_FOR_PHASE_FIX_PLANS → ERROR_RECOVERY (complex phase fixes needed)
+ANY → ERROR_RECOVERY (on error)
+```
+
+## SW Engineer States
+
+SW Engineers implement code according to plans.
+
+### Valid States:
+- **INIT** - Initial state, reading plan
+- **IMPLEMENTATION** - Writing code
+- **MEASURE_SIZE** - Checking line count
+- **FIX_ISSUES** - Addressing review feedback
+- **SPLIT_IMPLEMENTATION** - Working on splits
+- **TEST_WRITING** - Writing tests
+- **REQUEST_REVIEW** - Request Code Reviewer to re-review after fixes
+- **COMPLETED** - Work complete (terminal)
+- **BLOCKED** - Blocked by issue (terminal)
+
+### Valid Transitions:
+```
+INIT → IMPLEMENTATION
+IMPLEMENTATION → MEASURE_SIZE
+MEASURE_SIZE → TEST_WRITING (under limit)
+MEASURE_SIZE → SPLIT_IMPLEMENTATION (over limit)
+SPLIT_IMPLEMENTATION → MEASURE_SIZE
+FIX_ISSUES → IMPLEMENTATION
+IMPLEMENTATION → REQUEST_REVIEW (after fixes)
+REQUEST_REVIEW → COMPLETED (review requested, waiting for orchestrator)
+TEST_WRITING → COMPLETED
+ANY → BLOCKED (on blocking issue)
+```
+
+## Code Reviewer States
+
+Code Reviewers create plans and review implementations.
+
+### Valid States:
+- **INIT** - Initial state
+- **PROJECT_TEST_PLANNING** - Creating project-level tests from master architecture (TDD - before Phase 1)
+- **PHASE_TEST_PLANNING** - Creating phase-level tests from architecture (TDD - before implementation)
+- **WAVE_TEST_PLANNING** - Creating wave-level tests from architecture (TDD - before implementation)
+- **PHASE_IMPLEMENTATION_PLANNING** - Creating phase implementation from architecture (R211)
+- **WAVE_IMPLEMENTATION_PLANNING** - Creating wave implementation from architecture (R211)
+- **WAVE_DIRECTORY_ACKNOWLEDGMENT** - Acknowledging wave directory from metadata (R214)
+- **EFFORT_PLAN_CREATION** - Creating effort implementation plan
+- **WAVE_MERGE_PLANNING** - Creating wave merge plan (R269, R270)
+- **PHASE_MERGE_PLANNING** - Creating phase merge plan (R269, R270)
+- **CODE_REVIEW** - (DEPRECATED - Split into specialized states) Reviewing implementation
+- **MEASURE_IMPLEMENTATION_SIZE** - Code Reviewer measuring implementation size with line-counter.sh
+- **PERFORM_CODE_REVIEW** - Code Reviewer performing comprehensive review after size compliance verified
+- **CREATE_SPLIT_INVENTORY** - Code Reviewer creating split plans for oversized implementation
+- **CREATE_SPLIT_PLAN** - Planning splits for oversized effort
+- **SPLIT_REVIEW** - Reviewing split implementation
+- **VALIDATION** - Final validation
+- **COMPLETED** - Review complete (terminal)
+
+### Valid Transitions:
+```
+INIT → PROJECT_TEST_PLANNING (from orchestrator for project-level TDD)
+INIT → PHASE_TEST_PLANNING (from orchestrator for TDD)
+INIT → WAVE_TEST_PLANNING (from orchestrator for TDD)
+INIT → PHASE_IMPLEMENTATION_PLANNING (from orchestrator request)
+INIT → WAVE_IMPLEMENTATION_PLANNING (from orchestrator request)
+INIT → WAVE_MERGE_PLANNING (from orchestrator for integration)
+INIT → PHASE_MERGE_PLANNING (from orchestrator for phase integration)
+INIT → EFFORT_PLAN_CREATION
+INIT → CODE_REVIEW
+PROJECT_TEST_PLANNING → COMPLETED
+PHASE_TEST_PLANNING → COMPLETED
+WAVE_TEST_PLANNING → COMPLETED
+PHASE_IMPLEMENTATION_PLANNING → COMPLETED
+WAVE_IMPLEMENTATION_PLANNING → WAVE_DIRECTORY_ACKNOWLEDGMENT
+WAVE_DIRECTORY_ACKNOWLEDGMENT → EFFORT_PLAN_CREATION
+EFFORT_PLAN_CREATION → COMPLETED
+WAVE_MERGE_PLANNING → COMPLETED
+PHASE_MERGE_PLANNING → COMPLETED
+CODE_REVIEW → VALIDATION (approved)
+CODE_REVIEW → CREATE_SPLIT_PLAN (over size)
+CREATE_SPLIT_PLAN → SPLIT_REVIEW (ready to review splits)
+SPLIT_REVIEW → VALIDATION
+VALIDATION → COMPLETED
+```
+
+## Architect States
+
+Architects review waves and phases for compliance.
+
+### Valid States:
+- **INIT** - Initial state
+- **PHASE_ARCHITECTURE_PLANNING** - Creating phase architecture plan (R210)
+- **WAVE_ARCHITECTURE_PLANNING** - Creating wave architecture plan (R210)
+- **PHASE_DIRECTORY_ACKNOWLEDGMENT** - Acknowledging phase directory structure (R212)
+- **WAVE_REVIEW** - Reviewing completed wave
+- **PHASE_ASSESSMENT** - Assessing phase readiness
+- **INTEGRATION_REVIEW** - Reviewing integration branches
+- **ARCHITECTURE_AUDIT** - Deep architecture review
+- **ARCHITECTURE_VALIDATION** - Validating architecture consistency
+- **DECISION** - Making go/no-go decision (terminal)
+
+### Valid Transitions:
+```
+INIT → PHASE_ARCHITECTURE_PLANNING (Phase 1 start OR from orchestrator after PHASE_ASSESSMENT pass)
+INIT → WAVE_ARCHITECTURE_PLANNING (from orchestrator for wave planning)
+INIT → WAVE_REVIEW
+INIT → PHASE_ASSESSMENT (for Phase 2+)
+INIT → INTEGRATION_REVIEW
+PHASE_ARCHITECTURE_PLANNING → PHASE_DIRECTORY_ACKNOWLEDGMENT
+PHASE_DIRECTORY_ACKNOWLEDGMENT → DECISION
+WAVE_ARCHITECTURE_PLANNING → DECISION
+WAVE_REVIEW → DECISION (if fail/pass without architecture request)
+WAVE_REVIEW → WAVE_ARCHITECTURE_PLANNING (if pass with architecture request)
+PHASE_ASSESSMENT → DECISION (if fail)
+PHASE_ASSESSMENT → PHASE_ARCHITECTURE_PLANNING (if pass)
+INTEGRATION_REVIEW → ARCHITECTURE_AUDIT
+ARCHITECTURE_AUDIT → ARCHITECTURE_VALIDATION
+ARCHITECTURE_VALIDATION → DECISION
+```
+
+## State Validation Examples
+
+### ✅ Valid Transitions
+
+```bash
+# Orchestrator
+"WAVE_COMPLETE" → "INTEGRATION"  # Valid
+"MONITOR_REVIEWS" → "WAVE_COMPLETE"      # Valid
+"ERROR_RECOVERY" → "SPAWN_AGENTS" # Valid (retry)
+"INTEGRATION" → "WAVE_REVIEW"     # Valid
+"WAVE_REVIEW" → "PHASE_INTEGRATION" # Valid (last wave - R285)
+"WAITING_FOR_PHASE_ASSESSMENT" → "PHASE_COMPLETE" # Valid (passed)
+"PHASE_COMPLETE" → "PROJECT_INTEGRATION" # Valid (last phase - R283)
+"PHASE_COMPLETE" → "INIT"         # Valid (more phases)
+"PROJECT_INTEGRATION" → "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN" # Valid
+"MONITORING_PROJECT_INTEGRATION" → "SPAWN_CODE_REVIEWER_PROJECT_VALIDATION" # Valid
+"WAITING_FOR_PROJECT_VALIDATION" → "CREATE_INTEGRATION_TESTING" # Valid (passed)
+"PR_PLAN_CREATION" → "SUCCESS"    # Valid (plan complete)
+
+# SW Engineer  
+"IMPLEMENTATION" → "MEASURE_SIZE" # Valid
+"MEASURE_SIZE" → "TEST_WRITING"   # Valid (under limit)
+"MEASURE_SIZE" → "SPLIT_IMPLEMENTATION" # Valid (over limit)
+"FIX_ISSUES" → "IMPLEMENTATION"  # Valid
+"IMPLEMENTATION" → "REQUEST_REVIEW" # Valid (after fixes)
+
+# Code Reviewer
+"CODE_REVIEW" → "VALIDATION"      # Valid
+"CODE_REVIEW" → "CREATE_SPLIT_PLAN" # Valid (over size)
+"EFFORT_PLAN_CREATION" → "COMPLETED" # Valid
+"SPLIT_REVIEW" → "VALIDATION"     # Valid
+
+# Architect
+"WAVE_REVIEW" → "DECISION"        # Valid
+"INTEGRATION_REVIEW" → "ARCHITECTURE_AUDIT" # Valid
+"PHASE_ASSESSMENT" → "DECISION"   # Valid
+```
+
+### ❌ Invalid Transitions
+
+```bash
+# WRONG - State doesn't exist
+"WAVE_COMPLETE" → "WAITING_FOR_COFFEE"  # No such state!
+"MONITOR_IMPLEMENTATION" → "HAVING_LUNCH"        # Not a real state!
+"IMPLEMENTATION" → "DEBUGGING"    # Debugging isn't a state!
+
+# WRONG - Wrong agent type
+"IMPLEMENTATION" → "WAVE_REVIEW"  # SW Engineer can't review waves!
+"CODE_REVIEW" → "SPAWN_AGENTS"    # Code Reviewer can't spawn!
+"WAVE_REVIEW" → "IMPLEMENTATION"  # Architect can't implement!
+
+# WRONG - Typo
+"WAVE_COMPELTE" → "INTEGRATION"   # Typo in state name!
+"IMPLEMENATION" → "MEASURE_SIZE"  # Typo in IMPLEMENTATION!
+"INTERGRATION" → "WAVE_REVIEW"    # Typo in INTEGRATION!
+
+# WRONG - Made up state
+"MONITOR_REVIEWS" → "THINKING_ABOUT_IT"   # Not a real state!
+"CODE_REVIEW" → "COFFEE_BREAK"    # No breaks in state machine!
+"WAVE_START" → "PROCRASTINATING"  # No procrastination state!
+
+# WRONG - Invalid sequence
+"INIT" → "WAVE_COMPLETE"          # Can't skip to completion!
+"SPAWN_AGENTS" → "SUCCESS"        # Can't jump to terminal!
+"BLOCKED" → "IMPLEMENTATION"      # Can't leave terminal state!
+"WAVE_REVIEW" → "SUCCESS"         # Can't skip phase assessment!
+"INTEGRATION" → "SUCCESS"         # Must go through phase assessment!
+"PHASE_COMPLETE" → "SUCCESS"      # Must go through integration testing first!
+```
+
+### 📝 Validation Code Examples
+
+#### Example 1: Orchestrator Validating Transition
+```bash
+# Before transition
+CURRENT_STATE="WAVE_COMPLETE"
+TARGET_STATE="INTEGRATION"
+
+# Validate
+if grep -q "## Orchestrator States" -A 50 SOFTWARE-FACTORY-STATE-MACHINE.md | \
+   grep -q "- **$TARGET_STATE**"; then \
+    echo "✅ Valid transition to $TARGET_STATE"; \
+    echo "current_state: $TARGET_STATE" > state.yaml; \
+else \
+    echo "❌ INVALID STATE: $TARGET_STATE does not exist!"; \
+    exit 1; \
+fi
+```
+
+#### Example 2: SW Engineer Checking Valid States
+```bash
+# List all valid states for SW Engineer
+echo "Valid SW Engineer states:"
+sed -n '/## SW Engineer States/,/## Code Reviewer States/p' \
+    SOFTWARE-FACTORY-STATE-MACHINE.md | \
+    grep "^- \*\*" | \
+    sed 's/- \*\*//' | \
+    sed 's/\*\*.*//'
+```
+
+#### Example 3: Code Reviewer Split Detection
+```bash
+# Code Reviewer detecting need for split state (per R304)
+# Find project root and use line-counter.sh with mandatory -b parameter
+PROJECT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$CLAUDE_PROJECT_DIR")
+BASE_BRANCH=$(grep "current_phase_integration:" $PROJECT_ROOT/orchestrator-state.json -A 2 | grep "branch:" | awk '{print $2}')
+CURRENT_BRANCH=$(git branch --show-current)
+# Line counter auto-detects base branch - no parameters needed
+LINE_COUNT=$($PROJECT_ROOT/tools/line-counter.sh | grep "Total" | awk '{print $NF}')
+
+if [ "$LINE_COUNT" -gt 800 ]; then \
+    # Validate CREATE_SPLIT_PLAN exists
+    if grep -q "## Code Reviewer States" -A 50 SOFTWARE-FACTORY-STATE-MACHINE.md | \
+       grep -q "- **CREATE_SPLIT_PLAN**"; then \
+        echo "Transitioning to CREATE_SPLIT_PLAN"; \
+        CURRENT_STATE="CREATE_SPLIT_PLAN"; \
+    else \
+        echo "❌ CREATE_SPLIT_PLAN state missing!"; \
+        exit 1; \
+    fi; \
+fi
+```
+
+#### Example 4: Architect Decision Validation
+```bash
+# Architect making decision - must be valid terminal state
+DECISION="DECISION"  # Terminal state for architect
+
+# Validate it's a terminal state
+if grep -q "## Architect States" -A 50 SOFTWARE-FACTORY-STATE-MACHINE.md | \
+   grep -q "- **$DECISION**.*terminal"; then \
+    echo "✅ Valid terminal state"; \
+    echo "decision: PROCEED" > decision.yaml; \
+else \
+    echo "❌ Invalid decision state"; \
+    exit 1; \
+fi
+```
+
+## State Machine Rules
+
+1. **Validation Required** (R206): Always validate target state exists before transition
+2. **Agent-Specific**: Each agent type has its own valid states
+3. **No Creation**: Never create new states not in this document
+4. **Terminal States**: SUCCESS, HARD_STOP, COMPLETED, BLOCKED, DECISION are terminal
+5. **Error Recovery**: Any state can transition to ERROR_RECOVERY on error
+
+## How to Validate Transitions
+
+```bash
+# 1. Read this file
+STATE_MACHINE="SOFTWARE-FACTORY-STATE-MACHINE.md"
+
+# 2. Check if target state exists for your agent type
+AGENT_TYPE="orchestrator"  # or sw-engineer, code-reviewer, architect
+TARGET_STATE="INTEGRATION"
+
+# 3. Validate
+if grep -q "## $AGENT_TYPE States" -A 50 "$STATE_MACHINE" | grep -q "- **$TARGET_STATE**"; then
+    echo "✅ Valid state"
+else
+    echo "❌ Invalid state"
+    exit 1
+fi
+```
+
+## State File Locations
+
+Each agent type has state-specific rule files:
+
+```
+agent-states/
+├── main/                    # Main SF2.0 operation states
+│   ├── orchestrator/
+│   │   ├── INIT/rules.md
+│   │   ├── WAVE_START/rules.md
+│   │   ├── SPAWN_AGENTS/rules.md
+│   │   └── ...
+│   ├── sw-engineer/
+│   │   ├── IMPLEMENTATION/rules.md
+│   │   ├── MEASURE_SIZE/rules.md
+│   │   └── ...
+│   ├── code-reviewer/
+│   │   ├── EFFORT_PLAN_CREATION/rules.md
+│   │   ├── CODE_REVIEW/rules.md
+│   │   └── ...
+│   └── architect/
+│       ├── WAVE_REVIEW/rules.md
+│       ├── PHASE_ASSESSMENT/rules.md
+│       └── ...
+├── pr-ready/               # PR-Ready state machine states
+│   ├── orchestrator/
+│   │   ├── PR_READY_INIT/rules.md
+│   │   └── ...
+│   └── integration/
+│       ├── PR_BRANCH_INVENTORY/rules.md
+│       └── ...
+├── initialization/         # Initialization state machine states
+│   ├── orchestrator/
+│   │   ├── INIT_START/rules.md
+│   │   └── ...
+│   └── architect/
+│       ├── INIT_LOAD_EXAMPLES/rules.md
+│       └── ...
+└── integration/            # Integration sub-state machine states
+    ├── INTEGRATION_INIT/rules.md
+    ├── INTEGRATION_BRANCH_SETUP/rules.md
+    ├── INTEGRATION_BUILD_VALIDATION/rules.md
+    ├── INTEGRATION_EXIT_FOR_FIX/rules.md
+    ├── INTEGRATION_SUCCESS/rules.md
+    └── ...
+```
+
+## Sub-State Machine Integration
+
+### INTEGRATION Sub-State Machine
+
+The INTEGRATION state in the main state machine can divert to a specialized sub-state machine for complex integration workflows that involve multiple fix cycles.
+
+#### When to Use INTEGRATION Sub-State
+The main state machine enters the INTEGRATION sub-state machine when:
+- **WAVE_COMPLETE** → INTEGRATION (wave integration needed)
+- **PHASE_COMPLETE** → PHASE_INTEGRATION (phase integration needed)
+- **PROJECT_INTEGRATION** → (project integration needed)
+
+#### Sub-State Machine Details
+- **Definition File**: `SOFTWARE-FACTORY-INTEGRATION-STATE-MACHINE.md`
+- **State File**: `integration-[type]-[identifier]-state.json`
+- **State Directory**: `agent-states/integration/[STATE]/rules.md`
+
+#### Integration-Fix Cycle Pattern
+```
+Main State: WAVE_COMPLETE
+    ↓
+Enter Sub-State: INTEGRATION
+    → Attempt 1: Merge branches → Build fails
+    → Exit with: FIX_REQUIRED
+    ↓
+Main State: Triggers FIX_CASCADE
+    → Fixes applied to source branches
+    → Exit with: COMPLETE
+    ↓
+Re-enter Sub-State: INTEGRATION
+    → Attempt 2: Delete stale, re-merge → Tests fail
+    → Exit with: FIX_REQUIRED
+    ↓
+Main State: Triggers FIX_CASCADE again
+    → More fixes applied
+    → Exit with: COMPLETE
+    ↓
+Re-enter Sub-State: INTEGRATION
+    → Attempt 3: All validations pass
+    → Exit with: SUCCESS
+    ↓
+Main State: Continue to next phase
+```
+
+#### Key Features
+- **Cycle Support**: Handles multiple integration attempts with fixes
+- **Stale Branch Management**: Automatically deletes and recreates integration branches
+- **Progressive Validation**: Build → Unit Tests → Functional Tests → Performance
+- **Fix Tracking**: Maintains history of all issues found and fixed
+- **Convergence Tracking**: Ensures progress toward successful integration
+
+#### Integration Types Supported
+1. **WAVE Integration**: Merges all efforts in a wave
+2. **PHASE Integration**: Merges all waves in a phase
+3. **PROJECT Integration**: Merges all phases for final validation
+
+#### Exit Conditions
+- **SUCCESS**: All branches merged, all validations passed
+- **FIX_REQUIRED**: Issues found, needs FIX_CASCADE
+- **ABORT**: Max attempts exceeded or unrecoverable error
+
+#### State File Management
+The integration sub-state maintains its own state file separate from the main orchestrator state:
+```json
+{
+  "sub_state_type": "INTEGRATION",
+  "current_state": "INTEGRATION_BUILD_VALIDATION",
+  "integration_config": {
+    "type": "WAVE",
+    "attempt": 2,
+    "max_attempts": 10
+  },
+  "cycle_tracking": {
+    "current_attempt": 2,
+    "cycle_history": [...]
+  }
+}
+```
+
+See `integration-state.json.example` for complete structure.
+
+```
+
+## Critical Reminders
+
+- 🚨 **This file is the ONLY source of valid states**
+- 🚨 **R206 requires validation against this file**
+- 🚨 **Never transition to unlisted states**
+- 🚨 **Check for typos - they cause failures**
+- 🚨 **Each agent has different valid states**
+
+## Summary
+
+Before ANY state transition:
+1. Check this file for valid states
+2. Verify state exists for your agent type
+3. Validate transition is allowed
+4. Only then update current_state
+5. Exit with error if validation fails
+
+This prevents system corruption and ensures proper flow through the factory.

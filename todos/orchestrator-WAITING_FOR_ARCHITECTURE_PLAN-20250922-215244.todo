@@ -1,0 +1,32 @@
+[
+  {
+    "content": "Read state-specific rules for SPAWN_ARCHITECT_PHASE_PLANNING",
+    "status": "completed",
+    "activeForm": "Reading state-specific rules for SPAWN_ARCHITECT_PHASE_PLANNING"
+  },
+  {
+    "content": "Spawn Architect for Phase 1 architecture planning",
+    "status": "completed",
+    "activeForm": "Spawning Architect for Phase 1 architecture planning"
+  },
+  {
+    "content": "Update orchestrator state file after spawning",
+    "status": "completed",
+    "activeForm": "Updating orchestrator state file after spawning"
+  },
+  {
+    "content": "Save TODOs per R287",
+    "status": "completed",
+    "activeForm": "Saving TODOs per R287"
+  },
+  {
+    "content": "Commit and push state changes",
+    "status": "in_progress",
+    "activeForm": "Committing and pushing state changes"
+  },
+  {
+    "content": "Stop and await continuation per R322",
+    "status": "pending",
+    "activeForm": "Stopping and awaiting continuation per R322"
+  }
+]

@@ -1,0 +1,344 @@
+{
+  "current_phase": 3,
+  "current_wave": 1,
+  "current_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+  "previous_state": "MONITOR_FIXES",
+  "transition_time": "2025-09-25T03:23:00Z",
+  "transition_reason": "Fixes complete for effort 3.1.2 - ready for re-review",
+  "phases_planned": 4,
+  "waves_per_phase": [
+    1
+  ],
+  "efforts_completed": [
+    {
+      "effort": "1.1.1",
+      "name": "Write Command Tests",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase1/wave1/command-tests",
+      "status": "COMPLETE",
+      "size": 150
+    },
+    {
+      "effort": "1.1.2",
+      "name": "Implement Command Skeleton",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase1/wave1/command-skeleton",
+      "status": "COMPLETE",
+      "size": 133
+    },
+    {
+      "effort": "1.1.3",
+      "name": "Integration Tests",
+      "phase": 1,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase1/wave1/integration-tests",
+      "status": "COMPLETE",
+      "size": 150
+    },
+    {
+      "effort": "2.1.1",
+      "name": "Auth Interface Tests",
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase2/wave1/auth-interface-tests",
+      "status": "COMPLETE",
+      "size": 443
+    },
+    {
+      "effort": "2.1.2",
+      "name": "Implement Auth Module",
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase2/wave1/auth-implementation",
+      "status": "COMPLETE",
+      "size": 311
+    },
+    {
+      "effort": "2.1.3",
+      "name": "Mock Auth for Testing",
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase2/wave1/auth-mocks",
+      "status": "COMPLETE",
+      "size": 200
+    },
+    {
+      "effort": "2.2.2",
+      "name": "Implement Auth Flow",
+      "phase": 2,
+      "wave": 2,
+      "branch": "idpbuilderpush/phase2/wave2/auth-flow",
+      "status": "COMPLETE",
+      "size": 151,
+      "directory": "efforts/phase2/wave2/auth-flow"
+    },
+    {
+      "effort": "2.2.3",
+      "name": "Push Command Integration",
+      "phase": 2,
+      "wave": 2,
+      "branch": "idpbuilderpush/phase2/wave2/push-command",
+      "status": "COMPLETE",
+      "size": 250,
+      "directory": "efforts/phase2/wave2/push-command"
+    },
+    {
+      "effort": "3.1.1",
+      "name": "Client Interface Tests",
+      "phase": 3,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase3/wave1/client-interface-tests",
+      "status": "COMPLETE",
+      "size": 1518,
+      "directory": "efforts/phase3/wave1/client-interface-tests",
+      "test_infrastructure": true,
+      "completed_at": "2025-09-25T02:31:14Z"
+    }
+  ],
+  "efforts_in_progress": [],
+  "efforts_pending": [
+    {
+      "effort": "3.1.2",
+      "name": "Implement OCI Client",
+      "phase": 3,
+      "wave": 1,
+      "status": "pending_infrastructure",
+      "size_estimate": 400,
+      "dependencies": [
+        "3.1.1"
+      ],
+      "sequential": true
+    },
+    {
+      "effort": "3.1.3",
+      "name": "Insecure Mode Handling",
+      "phase": 3,
+      "wave": 1,
+      "status": "pending_infrastructure",
+      "size_estimate": 200,
+      "dependencies": [
+        "3.1.2"
+      ],
+      "sequential": true
+    }
+  ],
+  "project_info": {
+    "name": "idpbuilder-push",
+    "description": "Push command for idpbuilder",
+    "start_date": "2025-09-22"
+  },
+  "integration_workspaces": {
+    "phase1_wave1": {
+      "workspace": "/home/vscode/workspaces/idpbuilder-push/efforts/phase1/wave1/integration-workspace",
+      "merge_plan": "efforts/phase1/wave1/integration-workspace/MERGE-PLAN.md",
+      "created_at": "2025-09-23T14:39:39Z"
+    },
+    "phase2_wave1": {
+      "workspace": "/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave1/integration-workspace",
+      "branch": "idpbuilderpush/phase2/wave1/integration",
+      "base_branch": "phase1/wave1/integration",
+      "status": "integration_in_progress",
+      "created_at": "2025-09-23T23:32:19Z",
+      "merge_plan_requested": true,
+      "merge_plan_path": "efforts/phase2/wave1/integration-workspace/WAVE-MERGE-PLAN.md",
+      "integration_agent_spawned": true,
+      "integration_started_at": "2025-09-24T00:16:37Z"
+    }
+  },
+  "integration_branches": [
+    {
+      "phase": 1,
+      "wave": 1,
+      "branch": "phase1/wave1/integration",
+      "status": "COMPLETE",
+      "merged_efforts": [
+        "1.1.1",
+        "1.1.2",
+        "1.1.3"
+      ],
+      "completion_time": "2025-09-23T14:57:00Z"
+    },
+    {
+      "phase": 2,
+      "wave": 1,
+      "branch": "idpbuilderpush/phase2/wave1/integration",
+      "status": "COMPLETE",
+      "merged_efforts": [
+        "2.1.1",
+        "2.1.2",
+        "2.1.3"
+      ],
+      "completion_time": "2025-09-24T06:41:44Z"
+    },
+    {
+      "phase": 2,
+      "wave": 2,
+      "branch": "idpbuilderpush/phase2/wave2/integration",
+      "status": "COMPLETE",
+      "merged_efforts": [
+        "2.2.2",
+        "2.2.3"
+      ],
+      "completion_time": "2025-09-25T00:55:00Z"
+    }
+  ],
+  "current_wave_integration": {
+    "phase": 2,
+    "wave": 2,
+    "branch": "idpbuilderpush/phase2/wave2/integration",
+    "status": "code_review_complete",
+    "created_at": "2025-09-24T21:55:33Z",
+    "type": "initial",
+    "is_stale": false,
+    "staleness_reason": null,
+    "stale_since": null,
+    "stale_due_to_fixes": [],
+    "last_freshness_check": "2025-09-24T21:55:33Z",
+    "infrastructure_verified_at": "2025-09-24T22:02:57Z",
+    "merge_plan_requested": true,
+    "merge_plan_ready": true,
+    "merge_plan_path": "efforts/phase2/wave2/integration-workspace/WAVE-MERGE-PLAN.md",
+    "waiting_for": "wave_completion",
+    "integration_completed_at": "2025-09-25T00:43:33Z",
+    "integration_agent_spawned": true,
+    "code_review_completed_at": "2025-09-25T00:54:00Z",
+    "code_review_result": "PASS",
+    "code_review_report": "efforts/phase2/wave2/integration-workspace/INTEGRATION_CODE_REVIEW_REPORT.md"
+  },
+  "test_plans": {
+    "phase3": {
+      "test_plan_path": "/phase-tests/phase-3/PHASE-TEST-PLAN.md",
+      "test_harness_path": "/phase-tests/phase-3/PHASE-TEST-HARNESS.sh",
+      "demo_plan_path": "/phase-tests/phase-3/PHASE-DEMO-PLAN.md",
+      "test_dir": "/phase-tests/phase-3/tests/phase3",
+      "created_at": "2025-09-25T01:50:43Z",
+      "created_by": "code-reviewer",
+      "phase": 3,
+      "status": "active",
+      "tdd_phase": "red",
+      "implementation_plan_path": "/phase-plans/phase3/PHASE-IMPLEMENTATION-PLAN.md",
+      "implementation_plan_created": "2025-09-25T01:54:30Z",
+      "implementation_status": "ready"
+    }
+  },
+  "phase3_implementation_plan": {
+    "plan_path": "/phase-plans/phase3/PHASE-IMPLEMENTATION-PLAN.md",
+    "effort_summary_path": "/phase-plans/phase3/EFFORT-SUMMARY.md",
+    "verified_at": "2025-09-25T02:03:32Z",
+    "total_efforts": 5,
+    "wave1_efforts": 3,
+    "wave2_efforts": 2,
+    "parallelization": "NONE - Sequential TDD"
+  },
+  "infrastructure_strategy": "just_in_time",
+  "effort_dependencies": {
+    "client-interface-tests": {
+      "effort_id": "3.1.1",
+      "depends_on": null,
+      "infrastructure_created": true,
+      "status": "complete",
+      "sequential": true,
+      "base_branch": "idpbuilderpush/phase2/wave2/integration",
+      "branch": "idpbuilderpush/phase3/wave1/client-interface-tests",
+      "directory": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests",
+      "completed_at": "2025-09-25T02:31:44Z"
+    },
+    "implement-oci-client": {
+      "effort_id": "3.1.2",
+      "depends_on": "client-interface-tests",
+      "infrastructure_created": false,
+      "status": "pending",
+      "sequential": true
+    },
+    "insecure-mode-handling": {
+      "effort_id": "3.1.3",
+      "depends_on": "implement-oci-client",
+      "infrastructure_created": false,
+      "status": "pending",
+      "sequential": true
+    }
+  },
+  "planning_files": {
+    "split_plans": {
+      "client-interface-tests-split-001": {
+        "file_path": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests/.software-factory/phase3/wave1/client-interface-tests-split-001/SPLIT-PLAN-20250925-025856.md",
+        "created_at": "2025-09-25T02:58:56Z",
+        "created_by": "code-reviewer",
+        "target_branch": "idpbuilderpush/phase3/wave1/client-interface-tests-split-001",
+        "parent_effort": "client-interface-tests",
+        "split_number": 1,
+        "total_splits": 4,
+        "estimated_size": 700,
+        "status": "active"
+      },
+      "client-interface-tests-split-002": {
+        "file_path": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests/.software-factory/phase3/wave1/client-interface-tests-split-002/SPLIT-PLAN-20250925-025856.md",
+        "created_at": "2025-09-25T02:58:56Z",
+        "created_by": "code-reviewer",
+        "target_branch": "idpbuilderpush/phase3/wave1/client-interface-tests-split-002",
+        "parent_effort": "client-interface-tests",
+        "split_number": 2,
+        "total_splits": 4,
+        "estimated_size": 600,
+        "status": "active"
+      },
+      "client-interface-tests-split-003": {
+        "file_path": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests/.software-factory/phase3/wave1/client-interface-tests-split-003/SPLIT-PLAN-20250925-025856.md",
+        "created_at": "2025-09-25T02:58:56Z",
+        "created_by": "code-reviewer",
+        "target_branch": "idpbuilderpush/phase3/wave1/client-interface-tests-split-003",
+        "parent_effort": "client-interface-tests",
+        "split_number": 3,
+        "total_splits": 4,
+        "estimated_size": 700,
+        "status": "active"
+      },
+      "client-interface-tests-split-004": {
+        "file_path": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests/.software-factory/phase3/wave1/client-interface-tests-split-004/SPLIT-PLAN-20250925-025856.md",
+        "created_at": "2025-09-25T02:58:56Z",
+        "created_by": "code-reviewer",
+        "target_branch": "idpbuilderpush/phase3/wave1/client-interface-tests-split-004",
+        "parent_effort": "client-interface-tests",
+        "split_number": 4,
+        "total_splits": 4,
+        "estimated_size": 763,
+        "status": "active"
+      }
+    }
+  },
+  "review_status": {
+    "effort_312": {
+      "effort": "3.1.2",
+      "name": "Implement OCI Client",
+      "review_result": "FAILED",
+      "failure_reason": "R355 violations - mocks/TODOs in production",
+      "needs_fixes": true,
+      "review_report": "efforts/phase3/wave1/implement-oci-client/.software-factory/CODE-REVIEW-REPORT.md",
+      "fix_engineer_spawned": "2025-09-25T03:16:48Z",
+      "fix_completed": "2025-09-25T03:23:00Z",
+      "fix_status": "COMPLETE",
+      "needs_re_review": true
+    },
+    "effort_311": {
+      "effort": "3.1.1",
+      "name": "Client Interface Tests",
+      "review_result": "NEEDS_SPLIT",
+      "current_size": 2763,
+      "splits_required": 4,
+      "split_plan_created": true,
+      "split_inventory": "efforts/phase3/wave1/client-interface-tests/SPLIT-INVENTORY.md"
+    }
+  },
+  "agents_spawned": [
+    {
+      "type": "sw-engineer",
+      "task": "fix_issues",
+      "effort": "3.1.2",
+      "state": "FIX_ISSUES",
+      "timestamp": "2025-09-25T03:16:48Z",
+      "fixing": "R355 violations - mocks and TODOs in production"
+    }
+  ]
+}

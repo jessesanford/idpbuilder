@@ -1,64 +1,61 @@
 package k8s
 
 import (
-	"context"
 	"fmt"
-	corev1 "k8s.io/api/core/v1"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/rest"
 )
 
-func EnsureObject(ctx context.Context, kubeClient client.Client, obj client.Object, namespace string) error {
-	curObj := &unstructured.Unstructured{}
-	curObj.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
-
-	// Fallback to object's namespace
-	if namespace == "" {
-		namespace = obj.GetNamespace()
-	}
-
-	// Get Object if it exists
-	err := kubeClient.Get(
-		ctx,
-		types.NamespacedName{
-			Namespace: namespace,
-			Name:      obj.GetName(),
-		},
-		curObj,
-	)
-
-	if err == nil {
-		// Object already exists
-		return nil
-	}
-
-	err = kubeClient.Create(ctx, obj)
-	if err != nil {
-		return err
-	}
-
-	// hacky way to restore the GVK for the object after create corrupts it. didn't dig. not sure why?
-	obj.GetObjectKind().SetGroupVersionKind(curObj.GroupVersionKind())
-	return nil
+// Client provides a Kubernetes client with scheme management
+type Client struct {
+	restConfig *rest.Config
+	scheme     *runtime.Scheme
+	helper     *ResourceHelper
 }
 
-func EnsureNamespace(ctx context.Context, kubeClient client.Client, name string) error {
-	ns := &corev1.Namespace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: name,
-		},
+// NewClient creates a new Client with the provided rest config
+func NewClient(config *rest.Config) (*Client, error) {
+	if config == nil {
+		return nil, fmt.Errorf("rest config cannot be nil")
 	}
 
-	err := kubeClient.Get(ctx, client.ObjectKeyFromObject(ns), ns)
-	if err != nil {
-		if k8serrors.IsNotFound(err) {
-			return kubeClient.Create(ctx, ns)
-		} else {
-			return fmt.Errorf("getting namespace %s: %w", name, err)
-		}
+	// Validate config has required fields
+	if config.Host == "" {
+		return nil, fmt.Errorf("rest config must have a host")
 	}
-	return nil
+
+	// Build the scheme
+	schemeBuilder := NewSchemeBuilder()
+	scheme := schemeBuilder.Build()
+
+	// Create the helper
+	helper := NewResourceHelper()
+	helper.SetScheme(scheme)
+
+	return &Client{
+		restConfig: config,
+		scheme:     scheme,
+		helper:     helper,
+	}, nil
+}
+
+// GetScheme returns the runtime scheme used by this client
+func (c *Client) GetScheme() *runtime.Scheme {
+	return c.scheme
+}
+
+// GetHelper returns the resource helper used by this client
+func (c *Client) GetHelper() *ResourceHelper {
+	return c.helper
+}
+
+// GetConfig returns the rest config used by this client
+func (c *Client) GetConfig() *rest.Config {
+	return c.restConfig
+}
+
+// IsHealthy performs a basic health check on the client configuration
+func (c *Client) IsHealthy() bool {
+	return c.restConfig != nil && c.scheme != nil && c.helper != nil
 }

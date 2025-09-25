@@ -2,67 +2,92 @@ package kind
 
 import (
 	"fmt"
+	"io"
+	"os"
 
-	"github.com/go-logr/logr"
-	kindlog "sigs.k8s.io/kind/pkg/log"
+	"sigs.k8s.io/kind/pkg/log"
 )
 
-// this is a wrapper of logr.Logger made specifically for kind' logger.
-// this is needed because kind's implementation is internal.
-// https://github.com/kubernetes-sigs/kind/blob/1a8f0473a0785e0975e26739524513e8ee696be3/pkg/log/types.go
-type kindLogger struct {
-	cliLogger *logr.Logger
+// KindLogger implements the Kind cluster.Logger interface
+type KindLogger struct {
+	writer io.Writer
+	level  log.Level
 }
 
-func (l *kindLogger) Warn(message string) {
-	l.cliLogger.Info(message)
-}
+// NewKindLogger creates a new KindLogger that writes to the specified writer
+func NewKindLogger(w io.Writer) *KindLogger {
+	if w == nil {
+		w = os.Stdout
+	}
 
-func (l *kindLogger) Warnf(message string, args ...interface{}) {
-	l.cliLogger.Info(fmt.Sprintf(message, args...))
-}
-
-func (l *kindLogger) Error(message string) {
-	l.cliLogger.Error(fmt.Errorf(message), "")
-}
-
-func (l *kindLogger) Errorf(message string, args ...interface{}) {
-	msg := fmt.Sprintf(message, args...)
-	l.cliLogger.Error(fmt.Errorf(msg), "")
-}
-
-func (l *kindLogger) V(level kindlog.Level) kindlog.InfoLogger {
-	return newKindInfoLogger(l.cliLogger, int(level))
-}
-
-// KindLoggerFromLogr is a wrapper of logr.Logger made specifically for kind's InfoLogger.
-// https://github.com/kubernetes-sigs/kind/blob/1a8f0473a0785e0975e26739524513e8ee696be3/pkg/log/types.go
-func KindLoggerFromLogr(logrLogger *logr.Logger) *kindLogger {
-	return &kindLogger{
-		cliLogger: logrLogger,
+	return &KindLogger{
+		writer: w,
+		level:  log.Level(0), // Default to info level
 	}
 }
 
-func newKindInfoLogger(logrLogger *logr.Logger, level int) *kindInfoLogger {
-	return &kindInfoLogger{
-		cliLogger: logrLogger,
-		level:     level + 1, // push log level down. e.g. info log becomes debug+1.
+// Write implements io.Writer interface
+func (l *KindLogger) Write(p []byte) (int, error) {
+	if l.writer == nil {
+		return len(p), nil // Discard if no writer
+	}
+	return l.writer.Write(p)
+}
+
+// V implements log.Logger interface for verbose logging
+func (l *KindLogger) V(level log.Level) log.InfoLogger {
+	// Create a copy with the specified verbosity level
+	newLogger := &KindLogger{
+		writer: l.writer,
+		level:  level,
+	}
+	return newLogger
+}
+
+// Info implements cluster.Logger interface
+func (l *KindLogger) Info(message string) {
+	if l.shouldLog(log.Level(0)) {
+		l.Write([]byte("[INFO] " + message + "\n"))
 	}
 }
 
-type kindInfoLogger struct {
-	cliLogger *logr.Logger
-	level     int
+// Infof implements cluster.Logger interface
+func (l *KindLogger) Infof(format string, args ...interface{}) {
+	if l.shouldLog(log.Level(0)) {
+		l.Write([]byte(fmt.Sprintf("[INFO] "+format+"\n", args...)))
+	}
 }
 
-func (k *kindInfoLogger) Info(message string) {
-	k.cliLogger.V(k.level).Info(message)
+// Warn implements cluster.Logger interface
+func (l *KindLogger) Warn(message string) {
+	if l.shouldLog(log.Level(1)) {
+		l.Write([]byte("[WARN] " + message + "\n"))
+	}
 }
 
-func (k *kindInfoLogger) Infof(message string, args ...interface{}) {
-	k.cliLogger.V(k.level).Info(fmt.Sprintf(message, args...))
+// Warnf implements cluster.Logger interface
+func (l *KindLogger) Warnf(format string, args ...interface{}) {
+	if l.shouldLog(log.Level(1)) {
+		l.Write([]byte(fmt.Sprintf("[WARN] "+format+"\n", args...)))
+	}
 }
 
-func (k *kindInfoLogger) Enabled() bool {
-	return k.cliLogger.Enabled()
+// Error implements cluster.Logger interface
+func (l *KindLogger) Error(message string) {
+	l.Write([]byte("[ERROR] " + message + "\n"))
+}
+
+// Errorf implements cluster.Logger interface
+func (l *KindLogger) Errorf(format string, args ...interface{}) {
+	l.Write([]byte(fmt.Sprintf("[ERROR] "+format+"\n", args...)))
+}
+
+// Enabled implements log.InfoLogger interface
+func (l *KindLogger) Enabled() bool {
+	return l.writer != nil
+}
+
+// shouldLog determines if a message at the given level should be logged
+func (l *KindLogger) shouldLog(messageLevel log.Level) bool {
+	return messageLevel <= l.level
 }

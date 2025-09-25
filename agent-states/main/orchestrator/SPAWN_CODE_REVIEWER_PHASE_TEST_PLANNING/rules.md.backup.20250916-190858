@@ -1,0 +1,106 @@
+# SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING State Rules
+
+## State Purpose
+Spawn Code Reviewer to create phase-level tests BEFORE implementation planning begins. This enforces Test-Driven Development (TDD) at the phase level.
+
+## 🔴🔴🔴 CRITICAL: TEST-DRIVEN DEVELOPMENT ENFORCEMENT 🔴🔴🔴
+
+**TESTS MUST BE WRITTEN BEFORE IMPLEMENTATION PLANNING!**
+- Architecture defines WHAT to build
+- Tests define HOW to verify it works
+- Implementation plans define HOW to make tests pass
+
+## Entry Conditions
+- Phase architecture plan exists (from Architect)
+- Current state is WAITING_FOR_ARCHITECTURE_PLAN
+- Phase-level test planning not yet done
+
+## Required Actions
+
+### 1. Prepare Test Planning Context
+```bash
+# Load phase architecture
+PHASE_ARCH_FILE="phase-plans/phase-${PHASE_NUM}-architecture.md"
+
+# Create test planning directory
+mkdir -p phase-tests/phase-${PHASE_NUM}
+
+# Prepare test planning instructions
+cat > test-planning-instructions.md << 'EOF'
+# PHASE TEST PLANNING INSTRUCTIONS (TDD)
+
+## Your Mission
+Create comprehensive tests for Phase ${PHASE_NUM} BEFORE implementation begins.
+
+## Required Deliverables
+1. PHASE-TEST-PLAN.md - What functionality to test
+2. PHASE-TEST-HARNESS.sh - Test runner for phase
+3. tests/phase/*.test.* - Actual functional tests (failing initially)
+4. PHASE-DEMO-PLAN.md - Demo scenarios integrated with tests
+
+## Test Requirements
+- Tests must be FUNCTIONAL/BEHAVIORAL (not unit tests)
+- Tests must validate ALL promised capabilities from architecture
+- Tests must FAIL initially (no implementation yet)
+- Tests must be executable and automated
+- Tests must include both success and failure scenarios
+
+## Demo Integration (R330/R291 Consolidation)
+- Demo scenarios must be designed alongside tests
+- Demo requirements from R330 are now part of test planning
+- Each test should have a corresponding demo scenario
+- Integration demos (R291) are validated through these tests
+
+## Success Criteria
+- All architectural promises have corresponding tests
+- Test harness is executable (even if tests fail)
+- Demo scenarios are clearly defined
+- Tests are ready for implementation teams to target
+EOF
+```
+
+### 2. Spawn Code Reviewer for Test Planning
+```bash
+/spawn-agent code-reviewer \
+    --state PHASE_TEST_PLANNING \
+    --working-dir phase-tests/phase-${PHASE_NUM} \
+    --context "Create phase-level tests from architecture" \
+    --deliverables "PHASE-TEST-PLAN.md,PHASE-TEST-HARNESS.sh,tests/,PHASE-DEMO-PLAN.md" \
+    --timeout 30m
+```
+
+### 3. Update State File
+```json
+{
+    "current_state": "WAITING_FOR_PHASE_TEST_PLAN",
+    "phase_test_planning": {
+        "phase": "${PHASE_NUM}",
+        "spawned_at": "timestamp",
+        "code_reviewer_id": "agent_id",
+        "expected_deliverables": [
+            "PHASE-TEST-PLAN.md",
+            "PHASE-TEST-HARNESS.sh",
+            "tests/phase/*.test.*",
+            "PHASE-DEMO-PLAN.md"
+        ]
+    }
+}
+```
+
+## Exit Conditions
+- Transition to WAITING_FOR_PHASE_TEST_PLAN
+- Code Reviewer spawned with clear TDD instructions
+- State file updated with test planning context
+
+## Success Criteria
+- ✅ Code Reviewer understands TDD requirements
+- ✅ Test planning happens BEFORE implementation planning
+- ✅ Demo requirements integrated into test planning
+- ✅ Clear deliverables specified
+
+## Related Rules
+- R341: Test-Driven Development Enforcement (new)
+- R330: Demo Planning Requirements (consolidated)
+- R291: Integration Demo Requirement (consolidated)
+- R210: Architecture Planning
+- R313: Mandatory Stop After Spawn
