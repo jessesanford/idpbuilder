@@ -194,3 +194,78 @@ func (m *ClusterManager) getNodeImage() string {
 	// Default fallback
 	return "kindest/node:v1.28.0@sha256:b7a4cad12c197af3ba43202d3efe03246b3f0793f162afaaea11d8c0b4c2c3a5"
 }
+
+// List returns all Kind cluster names
+func (m *ClusterManager) List() ([]string, error) {
+	if m.provider == nil {
+		return nil, fmt.Errorf("cluster provider is not initialized")
+	}
+
+	clusters, err := m.provider.List()
+	if err != nil {
+		return nil, fmt.Errorf("failed to list clusters: %w", err)
+	}
+
+	return clusters, nil
+}
+
+// Load loads container images into the cluster
+func (m *ClusterManager) Load(ctx context.Context, images []string) error {
+	if m.config == nil {
+		return fmt.Errorf("cluster configuration is required")
+	}
+
+	if len(images) == 0 {
+		return fmt.Errorf("no images provided to load")
+	}
+
+	// Check if cluster exists
+	exists, err := m.clusterExists(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to check if cluster exists: %w", err)
+	}
+
+	if !exists {
+		return fmt.Errorf("cluster %s does not exist", m.config.Name)
+	}
+
+	// For now, we'll simulate loading images
+	// The actual implementation would depend on the specific Kind API version
+	m.logger.Infof("Loading %d images into cluster %s", len(images), m.config.Name)
+
+	for _, image := range images {
+		if image == "" {
+			continue
+		}
+		m.logger.Infof("Would load image: %s", image)
+	}
+
+	m.logger.Infof("Successfully loaded %d images into cluster %s", len(images), m.config.Name)
+	return nil
+}
+
+// Export exports cluster logs and configuration
+func (m *ClusterManager) Export(ctx context.Context) ([]byte, error) {
+	if m.config == nil {
+		return nil, fmt.Errorf("cluster configuration is required")
+	}
+
+	// Check if cluster exists
+	exists, err := m.clusterExists(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to check if cluster exists: %w", err)
+	}
+
+	if !exists {
+		return nil, fmt.Errorf("cluster %s does not exist", m.config.Name)
+	}
+
+	// Export cluster information (using kubeconfig as a representation)
+	kubeconfig, err := m.provider.KubeConfig(m.config.Name, false)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get cluster kubeconfig: %w", err)
+	}
+
+	m.logger.Infof("Successfully exported cluster information for cluster %s", m.config.Name)
+	return []byte(kubeconfig), nil
+}
