@@ -1,9 +1,6 @@
 package v1alpha1
 
 import (
-	"fmt"
-
-	"github.com/cnoe-io/idpbuilder/globals"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -108,14 +105,6 @@ type Localbuild struct {
 
 	Spec   LocalbuildSpec   `json:"spec,omitempty"`
 	Status LocalbuildStatus `json:"status,omitempty"`
-}
-
-func (l *Localbuild) GetArgoProjectName() string {
-	return fmt.Sprintf("%s-%s-gitserver", globals.ProjectName, l.Name)
-}
-
-func (l *Localbuild) GetArgoApplicationName(name string) string {
-	return fmt.Sprintf("%s-%s-gitserver-%s", globals.ProjectName, l.Name, name)
 }
 
 // +kubebuilder:object:root=true

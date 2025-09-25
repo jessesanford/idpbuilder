@@ -1,29 +1,19 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
-
-	"github.com/cnoe-io/idpbuilder/pkg/cmd"
 )
 
+const version = "split-001-dev"
+
 func main() {
-	interrupted := make(chan os.Signal, 1)
-	defer close(interrupted)
-	signal.Notify(interrupted, os.Interrupt, syscall.SIGTERM)
-	defer signal.Stop(interrupted)
+	if len(os.Args) > 1 && os.Args[1] == "--version" {
+		fmt.Printf("idpbuilder %s (Split 001 - API Types Only)\n", version)
+		return
+	}
 
-	ctx, cancel := context.WithCancelCause(context.Background())
-
-	go func() {
-		select {
-		case <-interrupted:
-			cancel(fmt.Errorf("command interrupted"))
-		}
-	}()
-
-	cmd.Execute(ctx)
+	fmt.Println("idpbuilder Split 001: API Types and Core")
+	fmt.Println("This split contains only type definitions.")
+	fmt.Println("Use --version to see version info.")
 }

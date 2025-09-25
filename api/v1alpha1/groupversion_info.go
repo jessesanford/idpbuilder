@@ -19,7 +19,6 @@ var (
 )
 
 func init() {
-	SchemeBuilder.Register(&Localbuild{}, &LocalbuildList{})
-	SchemeBuilder.Register(&GitRepository{}, &GitRepositoryList{})
-	SchemeBuilder.Register(&CustomPackage{}, &CustomPackageList{})
+	// Type registration will be completed when DeepCopy methods are generated
+	// Currently types are defined but not registered to avoid missing DeepCopyObject methods
 }
