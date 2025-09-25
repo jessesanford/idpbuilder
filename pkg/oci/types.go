@@ -2,6 +2,7 @@ package oci
 
 import (
 	"context"
+	"net/http"
 	"time"
 )
 
@@ -63,4 +64,24 @@ func (c *Credentials) IsExpired() bool {
 // IsValid checks if credentials are minimally valid
 func (c *Credentials) IsValid() bool {
 	return c != nil && (c.Username != "" || c.Token != "")
+}
+
+// RegistryClient defines the expected interface for OCI registry client
+// This interface is implemented by OCIClient in client.go
+type RegistryClient interface {
+	Connect(ctx context.Context, registry string) error
+	Authenticate(credentials *ClientCredentials) error
+	SetInsecure(insecure bool)
+	GetTransport() http.RoundTripper
+	Close() error
+}
+
+// ClientCredentials represents the authentication information for registry access
+// Integrates with Phase 2 authentication system
+// Note: Renamed to avoid conflict with existing Credentials type
+type ClientCredentials struct {
+	Username string
+	Password string
+	Token    string
+	Registry string
 }
