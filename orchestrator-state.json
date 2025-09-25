@@ -1,10 +1,10 @@
 {
   "current_phase": 3,
   "current_wave": 1,
-  "current_state": "CREATE_NEXT_INFRASTRUCTURE",
-  "previous_state": "MONITOR_REVIEWS",
-  "transition_time": "2025-09-25T04:15:07Z",
-  "transition_reason": "Split infrastructure needed for effort 3.1.1 - 2763 lines requires 4 splits",
+  "current_state": "SPAWN_AGENTS",
+  "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
+  "transition_time": "2025-09-25T04:20:00Z",
+  "transition_reason": "Infrastructure created for client-interface-tests-split-001, ready to spawn SW Engineer",
   "phases_planned": 4,
   "waves_per_phase": [
     1
@@ -342,10 +342,20 @@
   "split_tracking": {
     "client-interface-tests": {
       "total_splits": 4,
-      "current_split": 0,
-      "splits": [],
+      "current_split": 1,
+      "splits": [
+        {
+          "split_number": 1,
+          "branch": "idpbuilderpush/phase3/wave1/client-interface-tests-split-001",
+          "base_branch": "idpbuilderpush/phase2/wave2/integration",
+          "directory": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests-split-001",
+          "infrastructure_created": "2025-09-25T04:19:00Z",
+          "status": "ready",
+          "plan_path": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests/.software-factory/phase3/wave1/client-interface-tests-split-001/SPLIT-PLAN-20250925-025856.md"
+        }
+      ],
       "original_branch": "idpbuilderpush/phase3/wave1/client-interface-tests",
-      "status": "SPLIT_PLANNED",
+      "status": "IN_PROGRESS",
       "split_date": "2025-09-25T04:15:07Z",
       "split_reason": "SIZE_VIOLATION - 2763 lines exceeds 800 line limit",
       "split_inventory": "efforts/phase3/wave1/client-interface-tests/SPLIT-INVENTORY.md"
