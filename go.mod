@@ -5,10 +5,11 @@ go 1.24.0
 toolchain go1.24.7
 
 require (
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.9.1
 	github.com/stretchr/testify v1.10.0
 	k8s.io/apimachinery v0.34.1
 	k8s.io/client-go v0.34.1
+	sigs.k8s.io/controller-runtime v0.22.1
 	sigs.k8s.io/kind v0.30.0
 	sigs.k8s.io/yaml v1.6.0
 )
@@ -17,7 +18,7 @@ require (
 	al.essio.dev/pkg/shellescape v1.5.1 // indirect
 	github.com/BurntSushi/toml v1.4.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/evanphx/json-patch/v5 v5.6.0 // indirect
+	github.com/evanphx/json-patch/v5 v5.9.11 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
