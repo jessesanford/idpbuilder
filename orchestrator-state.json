@@ -1,10 +1,10 @@
 {
   "current_phase": 3,
   "current_wave": 1,
-  "current_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
-  "previous_state": "MONITOR_REVIEWS",
-  "transition_time": "2025-09-25T05:13:44Z",
-  "transition_reason": "Split-001 complete and reviewed, need split-002 infrastructure",
+  "current_state": "INTEGRATION",
+  "previous_state": "WAVE_COMPLETE",
+  "transition_time": "2025-09-25T15:49:33Z",
+  "transition_reason": "Wave 3.1 complete with all reviews passed. NOTE: R009 violation detected - branches based on wrong base",
   "phases_planned": 4,
   "waves_per_phase": [
     1
@@ -260,5 +260,14 @@
       "split_reason": "SIZE_VIOLATION - 2763 lines exceeds 800 line limit",
       "split_inventory": "efforts/phase3/wave1/client-interface-tests/SPLIT-INVENTORY.md"
     }
+  },
+  "r009_violation": {
+    "detected_at": "2025-09-25T15:49:26Z",
+    "phase": 3,
+    "wave": 1,
+    "issue": "All Phase 3 Wave 1 effort branches based on main instead of idpbuilderpush/phase2/wave2/integration",
+    "impact": "Phase 3 Wave 1 missing all Phase 2 changes - breaks trunk-based development",
+    "grading_penalty": "-100%",
+    "recovery_needed": "Phase 3 Wave 1 integration will need special handling to incorporate Phase 2 changes"
   }
 }
