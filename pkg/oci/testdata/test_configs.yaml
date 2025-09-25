@@ -1,0 +1,212 @@
+# Test configuration scenarios for OCI client testing
+# These configurations define various registry connection scenarios
+
+test_registries:
+  - name: secure_registry
+    url: https://registry.example.com
+    auth: basic
+    description: "Standard secure registry with basic authentication"
+    expected_behavior:
+      - tls_verification: true
+      - auth_header: "Basic"
+      - retry_on_failure: true
+
+  - name: insecure_registry
+    url: http://localhost:5000
+    insecure: true
+    description: "Local insecure registry (HTTP only)"
+    expected_behavior:
+      - tls_verification: false
+      - warning_logged: true
+      - connection_type: "insecure"
+
+  - name: token_registry
+    url: https://token.registry.com
+    auth: bearer
+    token: "jwt-token-example"
+    description: "Registry using Bearer token authentication"
+    expected_behavior:
+      - auth_header: "Bearer"
+      - token_refresh: true
+      - scope_validation: true
+
+  - name: dockerhub_registry
+    url: https://registry-1.docker.io
+    auth: basic
+    description: "Docker Hub official registry"
+    expected_behavior:
+      - auth_realm: "https://auth.docker.io/token"
+      - service: "registry.docker.io"
+      - token_exchange: true
+
+  - name: public_registry
+    url: https://public.registry.com
+    auth: none
+    description: "Public registry with no authentication required"
+    expected_behavior:
+      - anonymous_access: true
+      - no_auth_header: true
+
+  - name: rate_limited_registry
+    url: https://ratelimited.registry.com
+    auth: basic
+    rate_limit: 100
+    description: "Registry with rate limiting enabled"
+    expected_behavior:
+      - retry_after_header: true
+      - exponential_backoff: true
+      - max_retries: 3
+
+# Authentication test scenarios
+auth_scenarios:
+  - name: basic_auth_success
+    username: testuser
+    password: testpass
+    expected_header: "Basic dGVzdHVzZXI6dGVzdHBhc3M="
+    should_succeed: true
+
+  - name: basic_auth_invalid
+    username: invalid
+    password: wrong
+    expected_status: 401
+    should_succeed: false
+
+  - name: token_auth_success
+    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+    expected_header: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+    should_succeed: true
+
+  - name: token_auth_expired
+    token: "expired.jwt.token"
+    expected_status: 401
+    should_succeed: false
+    should_refresh: true
+
+  - name: anonymous_access
+    token: null
+    username: null
+    expected_header: null
+    should_succeed: true
+
+# Network error scenarios for testing
+network_errors:
+  - name: dns_failure
+    registry: https://non-existent-domain-12345.com
+    error_type: "dns"
+    expected_error: "no such host"
+    retryable: false
+
+  - name: connection_timeout
+    registry: https://10.255.255.255
+    error_type: "timeout"
+    expected_error: "context deadline exceeded"
+    retryable: true
+
+  - name: connection_refused
+    registry: https://localhost:9999
+    error_type: "connection"
+    expected_error: "connection refused"
+    retryable: true
+
+  - name: tls_certificate_error
+    registry: https://expired.badssl.com
+    error_type: "tls"
+    expected_error: "certificate"
+    retryable: false
+
+# Transport configuration test cases
+transport_configs:
+  - name: default_transport
+    description: "Default HTTP transport configuration"
+    settings:
+      max_idle_conns: 10
+      idle_conn_timeout: "30s"
+      tls_handshake_timeout: "10s"
+      expect_continue_timeout: "1s"
+
+  - name: high_throughput_transport
+    description: "Optimized for high throughput operations"
+    settings:
+      max_idle_conns: 100
+      max_idle_conns_per_host: 10
+      idle_conn_timeout: "90s"
+      disable_compression: false
+
+  - name: low_latency_transport
+    description: "Optimized for low latency operations"
+    settings:
+      max_idle_conns: 50
+      idle_conn_timeout: "10s"
+      tls_handshake_timeout: "5s"
+      disable_keep_alives: false
+
+  - name: proxy_transport
+    description: "Transport with HTTP proxy configuration"
+    settings:
+      proxy_url: "http://proxy.example.com:8080"
+      proxy_auth: "proxy_user:proxy_pass"
+      no_proxy: "localhost,127.0.0.1,*.local"
+
+# Retry policy test scenarios
+retry_scenarios:
+  - name: exponential_backoff
+    description: "Standard exponential backoff with jitter"
+    policy:
+      max_retries: 3
+      base_delay: "100ms"
+      max_delay: "5s"
+      backoff_factor: 2.0
+      jitter: true
+
+  - name: fixed_interval
+    description: "Fixed interval retry policy"
+    policy:
+      max_retries: 5
+      base_delay: "1s"
+      max_delay: "1s"
+      backoff_factor: 1.0
+      jitter: false
+
+  - name: no_retry
+    description: "No retry policy - fail immediately"
+    policy:
+      max_retries: 0
+      base_delay: "0ms"
+      max_delay: "0ms"
+      backoff_factor: 1.0
+      jitter: false
+
+# Expected OCI API endpoints for registry testing
+oci_endpoints:
+  - path: "/v2/"
+    method: "GET"
+    description: "API version check"
+    expected_response:
+      status: 200
+      content_type: "application/json"
+      body: "{}"
+
+  - path: "/v2/_catalog"
+    method: "GET"
+    description: "Repository catalog"
+    auth_required: true
+    expected_response:
+      status: 200
+      content_type: "application/json"
+      body: '{"repositories":["library/alpine","library/ubuntu"]}'
+
+  - path: "/v2/{name}/manifests/{reference}"
+    method: "GET"
+    description: "Get image manifest"
+    auth_required: true
+    expected_response:
+      status: 200
+      content_type: "application/vnd.docker.distribution.manifest.v2+json"
+
+  - path: "/v2/{name}/blobs/{digest}"
+    method: "GET"
+    description: "Get blob/layer"
+    auth_required: true
+    expected_response:
+      status: 200
+      content_type: "application/octet-stream"

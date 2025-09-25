@@ -1,0 +1,230 @@
+{
+  "v2_base": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "Docker-Distribution-API-Version": "registry/2.0"
+    },
+    "body": {}
+  },
+  "unauthorized": {
+    "status": 401,
+    "headers": {
+      "WWW-Authenticate": "Bearer realm=\"https://auth.docker.io/token\",service=\"registry.docker.io\",scope=\"registry:catalog:*\"",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "errors": [
+        {
+          "code": "UNAUTHORIZED",
+          "message": "authentication required",
+          "detail": "Access to the requested resource is not authorized"
+        }
+      ]
+    }
+  },
+  "forbidden": {
+    "status": 403,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "errors": [
+        {
+          "code": "DENIED",
+          "message": "requested access to the resource is denied",
+          "detail": "insufficient privileges"
+        }
+      ]
+    }
+  },
+  "not_found": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "errors": [
+        {
+          "code": "NAME_UNKNOWN",
+          "message": "repository name not known to registry",
+          "detail": "repository not found"
+        }
+      ]
+    }
+  },
+  "rate_limited": {
+    "status": 429,
+    "headers": {
+      "Retry-After": "60",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "errors": [
+        {
+          "code": "TOOMANYREQUESTS",
+          "message": "too many requests",
+          "detail": "rate limit exceeded"
+        }
+      ]
+    }
+  },
+  "server_error": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "errors": [
+        {
+          "code": "UNKNOWN",
+          "message": "internal server error",
+          "detail": "an internal error occurred"
+        }
+      ]
+    }
+  },
+  "bad_gateway": {
+    "status": 502,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "errors": [
+        {
+          "code": "UNAVAILABLE",
+          "message": "service unavailable",
+          "detail": "upstream server error"
+        }
+      ]
+    }
+  },
+  "service_unavailable": {
+    "status": 503,
+    "headers": {
+      "Retry-After": "30",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "errors": [
+        {
+          "code": "UNAVAILABLE",
+          "message": "service temporarily unavailable",
+          "detail": "maintenance in progress"
+        }
+      ]
+    }
+  },
+  "catalog_response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "repositories": [
+        "library/alpine",
+        "library/ubuntu",
+        "library/nginx",
+        "myorg/myapp"
+      ]
+    }
+  },
+  "manifest_v2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/vnd.docker.distribution.manifest.v2+json",
+      "Docker-Content-Digest": "sha256:abc123def456"
+    },
+    "body": {
+      "schemaVersion": 2,
+      "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+      "config": {
+        "mediaType": "application/vnd.docker.container.image.v1+json",
+        "size": 1234,
+        "digest": "sha256:config123"
+      },
+      "layers": [
+        {
+          "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+          "size": 5432109,
+          "digest": "sha256:layer123"
+        }
+      ]
+    }
+  },
+  "manifest_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/vnd.docker.distribution.manifest.list.v2+json",
+      "Docker-Content-Digest": "sha256:list123def456"
+    },
+    "body": {
+      "schemaVersion": 2,
+      "mediaType": "application/vnd.docker.distribution.manifest.list.v2+json",
+      "manifests": [
+        {
+          "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+          "size": 1234,
+          "digest": "sha256:amd64manifest",
+          "platform": {
+            "architecture": "amd64",
+            "os": "linux"
+          }
+        },
+        {
+          "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
+          "size": 1234,
+          "digest": "sha256:arm64manifest",
+          "platform": {
+            "architecture": "arm64",
+            "os": "linux"
+          }
+        }
+      ]
+    }
+  },
+  "token_response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLmRvY2tlci5pbyIsImF1ZCI6InJlZ2lzdHJ5LmRvY2tlci5pbyIsIm5iZiI6MTUwMDAwMDAwMCwiaWF0IjoxNTAwMDAwMDAwLCJleHAiOjE1MDAwMDM2MDAsImFjY2VzcyI6W3sidHlwZSI6InJlcG9zaXRvcnkiLCJuYW1lIjoibGlicmFyeS9hbHBpbmUiLCJhY3Rpb25zIjpbInB1bGwiXX1dfQ",
+      "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhdXRoLmRvY2tlci5pbyIsImF1ZCI6InJlZ2lzdHJ5LmRvY2tlci5pbyIsIm5iZiI6MTUwMDAwMDAwMCwiaWF0IjoxNTAwMDAwMDAwLCJleHAiOjE1MDAwMDM2MDAsImFjY2VzcyI6W3sidHlwZSI6InJlcG9zaXRvcnkiLCJuYW1lIjoibGlicmFyeS9hbHBpbmUiLCJhY3Rpb25zIjpbInB1bGwiXX1dfQ",
+      "expires_in": 3600,
+      "issued_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  "blob_upload_initiated": {
+    "status": 202,
+    "headers": {
+      "Location": "/v2/library/alpine/blobs/uploads/abc123",
+      "Range": "0-0",
+      "Docker-Upload-UUID": "abc123"
+    },
+    "body": ""
+  },
+  "blob_upload_completed": {
+    "status": 201,
+    "headers": {
+      "Location": "/v2/library/alpine/blobs/sha256:layer123",
+      "Docker-Content-Digest": "sha256:layer123"
+    },
+    "body": ""
+  },
+  "manifest_created": {
+    "status": 201,
+    "headers": {
+      "Location": "/v2/library/alpine/manifests/sha256:manifest123",
+      "Docker-Content-Digest": "sha256:manifest123"
+    },
+    "body": ""
+  },
+  "ping_response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/plain"
+    },
+    "body": "OK"
+  }
+}
