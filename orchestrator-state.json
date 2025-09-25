@@ -1,10 +1,10 @@
 {
   "current_phase": 3,
   "current_wave": 1,
-  "current_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
-  "previous_state": "MONITOR_IMPLEMENTATION",
-  "transition_time": "2025-09-25T05:00:23Z",
-  "transition_reason": "Split-001 implementation complete - ready for review",
+  "current_state": "CREATE_NEXT_SPLIT_INFRASTRUCTURE",
+  "previous_state": "MONITOR_REVIEWS",
+  "transition_time": "2025-09-25T05:13:44Z",
+  "transition_reason": "Split-001 complete and reviewed, need split-002 infrastructure",
   "phases_planned": 4,
   "waves_per_phase": [
     1
@@ -113,7 +113,6 @@
   "efforts_in_progress": [],
   "efforts_pending": [
     {
-      "effort": "3.1.3",
       "name": "Insecure Mode Handling",
       "phase": 3,
       "wave": 1,
@@ -122,7 +121,12 @@
       "dependencies": [
         "3.1.2"
       ],
-      "sequential": true
+      "sequential": true,
+      "efforts": [
+        {
+          "effort": "3.1.3"
+        }
+      ]
     }
   ],
   "project_info": {
@@ -224,131 +228,6 @@
       "implementation_status": "ready"
     }
   },
-  "phase3_implementation_plan": {
-    "plan_path": "/phase-plans/phase3/PHASE-IMPLEMENTATION-PLAN.md",
-    "effort_summary_path": "/phase-plans/phase3/EFFORT-SUMMARY.md",
-    "verified_at": "2025-09-25T02:03:32Z",
-    "total_efforts": 5,
-    "wave1_efforts": 3,
-    "wave2_efforts": 2,
-    "parallelization": "NONE - Sequential TDD"
-  },
-  "infrastructure_strategy": "just_in_time",
-  "effort_dependencies": {
-    "client-interface-tests": {
-      "effort_id": "3.1.1",
-      "depends_on": null,
-      "infrastructure_created": true,
-      "status": "complete",
-      "sequential": true,
-      "base_branch": "idpbuilderpush/phase2/wave2/integration",
-      "branch": "idpbuilderpush/phase3/wave1/client-interface-tests",
-      "directory": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests",
-      "completed_at": "2025-09-25T02:31:44Z"
-    },
-    "implement-oci-client": {
-      "effort_id": "3.1.2",
-      "depends_on": "client-interface-tests",
-      "infrastructure_created": false,
-      "status": "pending",
-      "sequential": true
-    },
-    "insecure-mode-handling": {
-      "effort_id": "3.1.3",
-      "depends_on": "implement-oci-client",
-      "infrastructure_created": false,
-      "status": "pending",
-      "sequential": true
-    }
-  },
-  "planning_files": {
-    "split_plans": {
-      "client-interface-tests-split-001": {
-        "file_path": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests/.software-factory/phase3/wave1/client-interface-tests-split-001/SPLIT-PLAN-20250925-025856.md",
-        "created_at": "2025-09-25T02:58:56Z",
-        "created_by": "code-reviewer",
-        "target_branch": "idpbuilderpush/phase3/wave1/client-interface-tests-split-001",
-        "parent_effort": "client-interface-tests",
-        "split_number": 1,
-        "total_splits": 4,
-        "estimated_size": 700,
-        "status": "active"
-      },
-      "client-interface-tests-split-002": {
-        "file_path": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests/.software-factory/phase3/wave1/client-interface-tests-split-002/SPLIT-PLAN-20250925-025856.md",
-        "created_at": "2025-09-25T02:58:56Z",
-        "created_by": "code-reviewer",
-        "target_branch": "idpbuilderpush/phase3/wave1/client-interface-tests-split-002",
-        "parent_effort": "client-interface-tests",
-        "split_number": 2,
-        "total_splits": 4,
-        "estimated_size": 600,
-        "status": "active"
-      },
-      "client-interface-tests-split-003": {
-        "file_path": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests/.software-factory/phase3/wave1/client-interface-tests-split-003/SPLIT-PLAN-20250925-025856.md",
-        "created_at": "2025-09-25T02:58:56Z",
-        "created_by": "code-reviewer",
-        "target_branch": "idpbuilderpush/phase3/wave1/client-interface-tests-split-003",
-        "parent_effort": "client-interface-tests",
-        "split_number": 3,
-        "total_splits": 4,
-        "estimated_size": 700,
-        "status": "active"
-      },
-      "client-interface-tests-split-004": {
-        "file_path": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests/.software-factory/phase3/wave1/client-interface-tests-split-004/SPLIT-PLAN-20250925-025856.md",
-        "created_at": "2025-09-25T02:58:56Z",
-        "created_by": "code-reviewer",
-        "target_branch": "idpbuilderpush/phase3/wave1/client-interface-tests-split-004",
-        "parent_effort": "client-interface-tests",
-        "split_number": 4,
-        "total_splits": 4,
-        "estimated_size": 763,
-        "status": "active"
-      }
-    }
-  },
-  "review_status": {
-    "effort_312": {
-      "effort": "3.1.2",
-      "name": "Implement OCI Client",
-      "review_result": "PASSED",
-      "re_review_completed": "2025-09-25T04:09:56Z",
-      "r355_violations_resolved": true,
-      "size": 347,
-      "ready_for_integration": true
-    },
-    "effort_311": {
-      "effort": "3.1.1",
-      "name": "Client Interface Tests",
-      "review_result": "NEEDS_SPLIT",
-      "current_size": 2763,
-      "splits_required": 4,
-      "split_plan_created": true,
-      "split_inventory": "efforts/phase3/wave1/client-interface-tests/SPLIT-INVENTORY.md"
-    }
-  },
-  "agents_spawned": [
-    {
-      "type": "sw-engineer",
-      "task": "fix_issues",
-      "effort": "3.1.2",
-      "state": "FIX_ISSUES",
-      "timestamp": "2025-09-25T03:16:48Z",
-      "fixing": "R355 violations - mocks and TODOs in production"
-    },
-    {
-      "type": "sw-engineer",
-      "task": "implement_split",
-      "effort": "3.1.1-split-001",
-      "state": "IMPLEMENTATION",
-      "timestamp": "2025-09-25T04:26:22Z",
-      "split_number": 1,
-      "total_splits": 4,
-      "split_plan": "/home/vscode/workspaces/idpbuilder-push/efforts/phase3/wave1/client-interface-tests/.software-factory/phase3/wave1/client-interface-tests-split-001/SPLIT-PLAN-20250925-025856.md"
-    }
-  ],
   "split_tracking": {
     "client-interface-tests": {
       "total_splits": 4,
@@ -366,7 +245,13 @@
           "completed_at": "2025-09-25T04:53:00Z",
           "recovery_completed": true,
           "implementation_lines": 361,
-          "number": 1
+          "number": 1,
+          "review_status": "PASSED",
+          "review_completed": "2025-09-25T05:05:00Z",
+          "review_issues": [
+            "Minor typo: AdminUserSecretNameecret"
+          ],
+          "review_verdict": "PASS"
         }
       ],
       "original_branch": "idpbuilderpush/phase3/wave1/client-interface-tests",
