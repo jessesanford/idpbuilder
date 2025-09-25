@@ -16,7 +16,7 @@ limitations under the License.
 
 package main
 
-import "github.com/cnoe-io/idpbuilder-push/client-interface-tests-split-003/cmd/push/root"
+import "github.com/cnoe-io/idpbuilder-push/client-interface-tests-split-004a/cmd/push/root"
 
 func main() {
 	root.Execute()

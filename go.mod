@@ -1,4 +1,4 @@
-module github.com/cnoe-io/idpbuilder-push/client-interface-tests-split-003
+module github.com/cnoe-io/idpbuilder-push/client-interface-tests-split-004a
 
 go 1.24.0
 
