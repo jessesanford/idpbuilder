@@ -1,0 +1,328 @@
+?   	github.com/cnoe-io/idpbuilder	[no test files]
+?   	github.com/cnoe-io/idpbuilder/api/v1alpha1	[no test files]
+?   	github.com/cnoe-io/idpbuilder/globals	[no test files]
+=== RUN   TestPushCommandRegistration
+--- PASS: TestPushCommandRegistration (0.00s)
+=== RUN   TestPushCommandFlags
+--- PASS: TestPushCommandFlags (0.00s)
+=== RUN   TestPushCommandArgValidation
+--- PASS: TestPushCommandArgValidation (0.00s)
+=== RUN   TestPushCommandHelp
+--- PASS: TestPushCommandHelp (0.00s)
+=== RUN   TestPushCommandFlagShorthands
+--- PASS: TestPushCommandFlagShorthands (0.00s)
+=== RUN   TestPushCommandEnvVariables
+--- PASS: TestPushCommandEnvVariables (0.00s)
+=== RUN   TestPushCommandDefaults
+--- PASS: TestPushCommandDefaults (0.00s)
+=== RUN   TestPushCommandIntegration
+    integration_test.go:24: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/cmd/push/integration_test.go:24
+        	Error:      	"" does not contain "push"
+        	Test:       	TestPushCommandIntegration
+--- FAIL: TestPushCommandIntegration (0.00s)
+=== RUN   TestFlagPrecedence
+Error: unknown flag: --registry
+Error: unknown flag: --dry-run
+    integration_test.go:54: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/cmd/push/integration_test.go:54
+        	Error:      	Should be true
+        	Test:       	TestFlagPrecedence
+--- FAIL: TestFlagPrecedence (0.00s)
+=== RUN   TestErrorPropagation
+Usage:
+
+Flags:
+  -h, --help   help for idpbuilder
+
+--- PASS: TestErrorPropagation (0.00s)
+=== RUN   TestHelpTextGeneration
+    integration_test.go:87: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/cmd/push/integration_test.go:87
+        	Error:      	"" does not contain "Usage:"
+        	Test:       	TestHelpTextGeneration
+    integration_test.go:88: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/cmd/push/integration_test.go:88
+        	Error:      	"" does not contain "push"
+        	Test:       	TestHelpTextGeneration
+    integration_test.go:92: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/cmd/push/integration_test.go:92
+        	Error:      	"" does not contain "--registry"
+        	Test:       	TestHelpTextGeneration
+    integration_test.go:92: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/cmd/push/integration_test.go:92
+        	Error:      	"" does not contain "--help"
+        	Test:       	TestHelpTextGeneration
+--- FAIL: TestHelpTextGeneration (0.00s)
+=== RUN   TestCommandDiscovery
+    integration_test.go:105: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/cmd/push/integration_test.go:105
+        	Error:      	"" does not contain "push"
+        	Test:       	TestCommandDiscovery
+--- FAIL: TestCommandDiscovery (0.00s)
+=== RUN   TestSubcommandInteraction
+--- PASS: TestSubcommandInteraction (0.00s)
+FAIL
+FAIL	github.com/cnoe-io/idpbuilder/cmd/push	0.002s
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/create	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/delete	[no test files]
+=== RUN   TestIsCompatible
+--- PASS: TestIsCompatible (0.00s)
+=== RUN   TestCreateSelfSignedCertificate
+--- PASS: TestCreateSelfSignedCertificate (0.00s)
+=== RUN   TestGetOrCreateIngressCertificateAndKey
+--- PASS: TestGetOrCreateIngressCertificateAndKey (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/build	0.009s
+=== RUN   TestPrintPackageSecrets
+no secrets found
+--- PASS: TestPrintPackageSecrets (0.00s)
+=== RUN   TestPrintAllPackageSecrets
+--- PASS: TestPrintAllPackageSecrets (0.00s)
+=== RUN   TestOutput
+--- PASS: TestOutput (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/get	0.011s
+=== RUN   TestValidateKubernetesYaml
+--- PASS: TestValidateKubernetesYaml (0.00s)
+=== RUN   TestParsePackageStrings
+--- PASS: TestParsePackageStrings (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/helpers	0.011s
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/version	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/controllers	[no test files]
+=== RUN   TestPushCmd
+=== RUN   TestPushCmd/command_exists
+=== RUN   TestPushCmd/requires_exactly_one_argument
+--- PASS: TestPushCmd (0.00s)
+    --- PASS: TestPushCmd/command_exists (0.00s)
+    --- PASS: TestPushCmd/requires_exactly_one_argument (0.00s)
+=== RUN   TestPushFlags
+=== RUN   TestPushFlags/has_all_expected_flags
+--- PASS: TestPushFlags (0.00s)
+    --- PASS: TestPushFlags/has_all_expected_flags (0.00s)
+=== RUN   TestExtractRegistry
+=== RUN   TestExtractRegistry/docker_hub_simple_name
+=== RUN   TestExtractRegistry/docker_hub_with_tag
+=== RUN   TestExtractRegistry/localhost_registry
+=== RUN   TestExtractRegistry/private_registry
+=== RUN   TestExtractRegistry/gcr_registry
+=== RUN   TestExtractRegistry/docker_hub_with_namespace
+=== RUN   TestExtractRegistry/empty_image_reference
+--- PASS: TestExtractRegistry (0.00s)
+    --- PASS: TestExtractRegistry/docker_hub_simple_name (0.00s)
+    --- PASS: TestExtractRegistry/docker_hub_with_tag (0.00s)
+    --- PASS: TestExtractRegistry/localhost_registry (0.00s)
+    --- PASS: TestExtractRegistry/private_registry (0.00s)
+    --- PASS: TestExtractRegistry/gcr_registry (0.00s)
+    --- PASS: TestExtractRegistry/docker_hub_with_namespace (0.00s)
+    --- PASS: TestExtractRegistry/empty_image_reference (0.00s)
+=== RUN   TestReplaceTag
+=== RUN   TestReplaceTag/replace_existing_tag
+=== RUN   TestReplaceTag/add_tag_to_image_without_tag
+=== RUN   TestReplaceTag/replace_tag_in_complex_registry_path
+=== RUN   TestReplaceTag/simple_image_name
+--- PASS: TestReplaceTag (0.00s)
+    --- PASS: TestReplaceTag/replace_existing_tag (0.00s)
+    --- PASS: TestReplaceTag/add_tag_to_image_without_tag (0.00s)
+    --- PASS: TestReplaceTag/replace_tag_in_complex_registry_path (0.00s)
+    --- PASS: TestReplaceTag/simple_image_name (0.00s)
+=== RUN   TestSetupAuthentication
+=== RUN   TestSetupAuthentication/flags_mode_without_credentials
+=== RUN   TestSetupAuthentication/flags_mode_with_credentials
+=== RUN   TestSetupAuthentication/docker-config_mode
+=== RUN   TestSetupAuthentication/auto_mode_with_flags
+=== RUN   TestSetupAuthentication/auto_mode_without_flags
+=== RUN   TestSetupAuthentication/invalid_auth_mode
+--- PASS: TestSetupAuthentication (0.00s)
+    --- PASS: TestSetupAuthentication/flags_mode_without_credentials (0.00s)
+    --- PASS: TestSetupAuthentication/flags_mode_with_credentials (0.00s)
+    --- PASS: TestSetupAuthentication/docker-config_mode (0.00s)
+    --- PASS: TestSetupAuthentication/auto_mode_with_flags (0.00s)
+    --- PASS: TestSetupAuthentication/auto_mode_without_flags (0.00s)
+    --- PASS: TestSetupAuthentication/invalid_auth_mode (0.00s)
+=== RUN   TestCreateAuthConfig
+=== RUN   TestCreateAuthConfig/with_valid_credentials
+=== RUN   TestCreateAuthConfig/with_empty_credentials
+=== RUN   TestCreateAuthConfig/with_partial_credentials
+--- PASS: TestCreateAuthConfig (0.00s)
+    --- PASS: TestCreateAuthConfig/with_valid_credentials (0.00s)
+    --- PASS: TestCreateAuthConfig/with_empty_credentials (0.00s)
+    --- PASS: TestCreateAuthConfig/with_partial_credentials (0.00s)
+=== RUN   TestPrePushE
+--- PASS: TestPrePushE (0.00s)
+=== RUN   TestPushImageValidation
+=== RUN   TestPushImageValidation/validates_required_image_argument
+--- PASS: TestPushImageValidation (0.00s)
+    --- PASS: TestPushImageValidation/validates_required_image_argument (0.00s)
+=== RUN   TestCommandUsageMessages
+=== RUN   TestCommandUsageMessages/usage_messages_are_present
+=== RUN   TestCommandUsageMessages/usage_messages_contain_expected_content
+--- PASS: TestCommandUsageMessages (0.00s)
+    --- PASS: TestCommandUsageMessages/usage_messages_are_present (0.00s)
+    --- PASS: TestCommandUsageMessages/usage_messages_contain_expected_content (0.00s)
+=== RUN   TestCommandExamples
+=== RUN   TestCommandExamples/long_description_contains_examples
+--- PASS: TestCommandExamples (0.00s)
+    --- PASS: TestCommandExamples/long_description_contains_examples (0.00s)
+=== RUN   TestCommandFlagDefaults
+=== RUN   TestCommandFlagDefaults/username
+=== RUN   TestCommandFlagDefaults/password
+=== RUN   TestCommandFlagDefaults/insecure
+=== RUN   TestCommandFlagDefaults/auth-mode
+=== RUN   TestCommandFlagDefaults/tag
+=== RUN   TestCommandFlagDefaults/quiet
+=== RUN   TestCommandFlagDefaults/force
+--- PASS: TestCommandFlagDefaults (0.00s)
+    --- PASS: TestCommandFlagDefaults/username (0.00s)
+    --- PASS: TestCommandFlagDefaults/password (0.00s)
+    --- PASS: TestCommandFlagDefaults/insecure (0.00s)
+    --- PASS: TestCommandFlagDefaults/auth-mode (0.00s)
+    --- PASS: TestCommandFlagDefaults/tag (0.00s)
+    --- PASS: TestCommandFlagDefaults/quiet (0.00s)
+    --- PASS: TestCommandFlagDefaults/force (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/push	0.010s
+=== RUN   TestReconcileCustomPkg
+    controller_test.go:52: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/pkg/controllers/custompackage/controller_test.go:52
+        	Error:      	Received unexpected error:
+        	            	unable to start control plane itself: failed to start the controlplane. retried 5 times: fork/exec ../../../bin/k8s/1.29.1-linux-arm64/etcd: no such file or directory
+        	Test:       	TestReconcileCustomPkg
+--- FAIL: TestReconcileCustomPkg (0.00s)
+=== RUN   TestReconcileCustomPkgAppSet
+    controller_test.go:265: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/pkg/controllers/custompackage/controller_test.go:265
+        	Error:      	Expected nil, but got: &fmt.wrapError{msg:"unable to start control plane itself: failed to start the controlplane. retried 5 times: fork/exec ../../../bin/k8s/1.29.1-linux-arm64/etcd: no such file or directory", err:(*fmt.wrapError)(0x4000244100)}
+        	Test:       	TestReconcileCustomPkgAppSet
+    controller_test.go:271: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/pkg/controllers/custompackage/controller_test.go:271
+        	Error:      	Expected nil, but got: &errors.errorString{s:"must specify Config"}
+        	Test:       	TestReconcileCustomPkgAppSet
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0x1 addr=0xa0 pc=0x132dd50]
+
+goroutine 61 [running]:
+github.com/cnoe-io/idpbuilder/pkg/controllers/custompackage.TestReconcileCustomPkgAppSet.func1()
+	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/pkg/controllers/custompackage/controller_test.go:276 +0x30
+created by github.com/cnoe-io/idpbuilder/pkg/controllers/custompackage.TestReconcileCustomPkgAppSet in goroutine 48
+	/home/vscode/workspaces/idpbuilder-push/efforts/phase2/wave2/integration-workspace/pkg/controllers/custompackage/controller_test.go:275 +0x4e8
+FAIL	github.com/cnoe-io/idpbuilder/pkg/controllers/custompackage	0.019s
+=== RUN   TestGitRepositoryContentReconcile
+=== RUN   TestGitRepositoryContentReconcile/files_modified
+--- PASS: TestGitRepositoryContentReconcile (0.02s)
+    --- PASS: TestGitRepositoryContentReconcile/files_modified (0.02s)
+=== RUN   TestGitRepositoryContentReconcileEmbedded
+=== RUN   TestGitRepositoryContentReconcileEmbedded/should_update_content
+--- PASS: TestGitRepositoryContentReconcileEmbedded (0.01s)
+    --- PASS: TestGitRepositoryContentReconcileEmbedded/should_update_content (0.01s)
+=== RUN   TestGitRepositoryReconcile
+/tmp/test4241473258
+=== RUN   TestGitRepositoryReconcile/repo_updates
+--- PASS: TestGitRepositoryReconcile (0.01s)
+    --- PASS: TestGitRepositoryReconcile/repo_updates (0.01s)
+=== RUN   TestGitRepositoryPostReconcile
+--- PASS: TestGitRepositoryPostReconcile (0.00s)
+=== RUN   TestGitHubCreateRepository
+--- PASS: TestGitHubCreateRepository (0.00s)
+=== RUN   TestGitHubGetProviderCredentials
+--- PASS: TestGitHubGetProviderCredentials (0.00s)
+=== RUN   TestGitHubGetRepository
+--- PASS: TestGitHubGetRepository (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/controllers/gitrepository	0.044s
+?   	github.com/cnoe-io/idpbuilder/pkg/logger	[no test files]
+# github.com/cnoe-io/idpbuilder/pkg/oci [github.com/cnoe-io/idpbuilder/pkg/oci.test]
+pkg/oci/auth_test.go:62:50: auth.Username undefined (type *DefaultAuthenticator has no field or method Username)
+pkg/oci/auth_test.go:110:39: auth.Username undefined (type *DefaultAuthenticator has no field or method Username)
+pkg/oci/auth_test.go:126:48: auth.Username undefined (type *DefaultAuthenticator has no field or method Username)
+pkg/oci/auth_test.go:146:15: undefined: NewAuthenticatorWithPrecedence
+pkg/oci/auth_test.go:198:51: too many arguments in call to NewAuthenticator
+	have (string, string)
+	want (*AuthConfig)
+pkg/oci/auth_test.go:198:66: NewAuthenticator(auth.Username, auth.Password).GetAuthConfig undefined (type *DefaultAuthenticator has no field or method GetAuthConfig)
+pkg/oci/auth_test.go:219:50: too many arguments in call to NewAuthenticator
+	have (string, string)
+	want (*AuthConfig)
+pkg/oci/auth_test.go:219:65: NewAuthenticator(auth.Username, auth.Password).GetAuthConfig undefined (type *DefaultAuthenticator has no field or method GetAuthConfig)
+pkg/oci/auth_test.go:228:50: too many arguments in call to NewAuthenticator
+	have (string, string)
+	want (*AuthConfig)
+pkg/oci/auth_test.go:228:65: NewAuthenticator(auth.Username, auth.Password).GetAuthConfig undefined (type *DefaultAuthenticator has no field or method GetAuthConfig)
+pkg/oci/auth_test.go:228:65: too many errors
+FAIL	github.com/cnoe-io/idpbuilder/pkg/oci [build failed]
+?   	github.com/cnoe-io/idpbuilder/pkg/oci/testutil	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/printer	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/printer/types	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/resources/localbuild	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/util/files	[no test files]
+=== RUN   TestGetRawInstallResources
+--- PASS: TestGetRawInstallResources (0.00s)
+=== RUN   TestGetK8sInstallResources
+--- PASS: TestGetK8sInstallResources (0.05s)
+=== RUN   TestArgoCDAppAnnotation
+--- PASS: TestArgoCDAppAnnotation (0.00s)
+=== RUN   TestGetGiteaToken
+--- PASS: TestGetGiteaToken (35.01s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/controllers/localbuild	35.069s
+=== RUN   TestConvertYamlToObjects
+=== RUN   TestConvertYamlToObjects/Single_Deployment
+=== RUN   TestConvertYamlToObjects/Multi_Deployment
+--- PASS: TestConvertYamlToObjects (0.00s)
+    --- PASS: TestConvertYamlToObjects/Single_Deployment (0.00s)
+    --- PASS: TestConvertYamlToObjects/Multi_Deployment (0.00s)
+=== RUN   TestBuildCustomizedManifests
+--- PASS: TestBuildCustomizedManifests (0.25s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/k8s	0.254s
+=== RUN   TestGetConfig
+--- PASS: TestGetConfig (0.02s)
+=== RUN   TestExtraPortMappings
+--- PASS: TestExtraPortMappings (0.01s)
+=== RUN   TestGetConfigCustom
+--- PASS: TestGetConfigCustom (0.02s)
+=== RUN   TestLoadConfig
+--- PASS: TestLoadConfig (0.00s)
+=== RUN   TestExtraPortMappingsUtilFunc
+--- PASS: TestExtraPortMappingsUtilFunc (0.00s)
+=== RUN   TestFindRegistryConfig
+--- PASS: TestFindRegistryConfig (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/kind	0.053s
+=== RUN   TestCloneRemoteRepoToDir
+--- PASS: TestCloneRemoteRepoToDir (1.73s)
+=== RUN   TestCopyTreeToTree
+--- PASS: TestCopyTreeToTree (0.44s)
+=== RUN   TestGetWorktreeYamlFiles
+--- PASS: TestGetWorktreeYamlFiles (0.48s)
+=== RUN   TestGiteaBaseUrl
+--- PASS: TestGiteaBaseUrl (0.00s)
+=== RUN   TestURLParse
+--- PASS: TestURLParse (0.00s)
+=== RUN   TestGeneratePassword
+--- PASS: TestGeneratePassword (0.03s)
+=== RUN   TestSetPackageLabels
+=== RUN   TestSetPackageLabels/No_initial_labels
+=== RUN   TestSetPackageLabels/With_initial_labels
+=== RUN   TestSetPackageLabels/ArgoCD_package
+=== RUN   TestSetPackageLabels/Gitea_package
+=== RUN   TestSetPackageLabels/IngressNginx_package
+--- PASS: TestSetPackageLabels (0.00s)
+    --- PASS: TestSetPackageLabels/No_initial_labels (0.00s)
+    --- PASS: TestSetPackageLabels/With_initial_labels (0.00s)
+    --- PASS: TestSetPackageLabels/ArgoCD_package (0.00s)
+    --- PASS: TestSetPackageLabels/Gitea_package (0.00s)
+    --- PASS: TestSetPackageLabels/IngressNginx_package (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/util	2.694s
+=== RUN   TestWriteFS
+=== RUN   TestWriteFS/single_file
+=== RUN   TestWriteFS/file_in_subdir
+--- PASS: TestWriteFS (0.00s)
+    --- PASS: TestWriteFS/single_file (0.00s)
+    --- PASS: TestWriteFS/file_in_subdir (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/util/fs	0.001s
+FAIL
