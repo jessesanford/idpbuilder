@@ -1,0 +1,19 @@
+## Orchestrator TODOs - SPAWN_CODE_REVIEWERS_FOR_REVIEW State
+Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+### Completed:
+- [x] Monitor SW Engineer fix progress for effort 3.1.2
+- [x] Check if R355 violations are fixed 
+- [x] Verify fixes are complete and ready for re-review
+- [x] Update orchestrator state to reflect fix completion
+- [x] Transition to SPAWN_CODE_REVIEWERS_FOR_REVIEW state
+
+### Next State Actions:
+- [ ] Spawn Code Reviewer to re-review effort 3.1.2
+- [ ] Monitor re-review progress
+- [ ] Handle review results (pass/fail)
+
+### Context:
+- Phase 3, Wave 1
+- Effort 3.1.2 (Implement OCI Client) fixes complete
+- Ready for re-review after fixing R355 violations
