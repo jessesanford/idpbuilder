@@ -43,9 +43,9 @@ type BuildContextManager interface {
 
 // contextImpl implements BuildContext
 type contextImpl struct {
-	root      string
-	files     map[string][]byte
-	tempDir   bool
+	root    string
+	files   map[string][]byte
+	tempDir bool
 }
 
 // NewBuildContext creates a new build context
