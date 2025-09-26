@@ -17,3 +17,11 @@ Completed at: 2025-09-26 22:38:32 UTC
 Branch: igp/phase2/wave1/effort-2.1.3-build-caching-implementation
 Total lines: 340 implementation lines
 Status: MERGED
+
+Effort 2.1.4 - Build Options and Arguments:
+Completed at: 2025-09-26 21:11:41 UTC
+Branch: igp/phase2/wave1/effort-2.1.4-build-options-and-args
+Total lines: 133 implementation lines (after formatting)
+Status: MERGED
+
+TOTAL: 1,060 lines (all within limits)
