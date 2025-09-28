@@ -1,0 +1,19 @@
+Completed at: 2025-09-28 01:14:28 UTC
+Effort: P1W1-E2-oci-package-format
+Branch: phase1/wave1/P1W1-E2-oci-package-format
+Backport fixes applied: 2
+Status: BACKPORT COMPLETE
+
+Fixes Applied:
+1. ✅ Removed duplicate PushCmd declaration causing build failure
+   - Created proper push command structure in pkg/cmd/push/root.go
+   - Removed conflicting duplicate declaration
+   - Build now succeeds without "PushCmd redeclared" error
+
+2. ✅ Created R291 compliant demo script demo-features.sh
+   - Executable script demonstrating OCI package format features
+   - Shows push command functionality and usage examples
+   - Validates push command implementation exists
+
+Final commit: 55f9034 (fix: Remove duplicate PushCmd and add R291 demo script)
+Integration ready: YES
