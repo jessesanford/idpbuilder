@@ -1,0 +1,7 @@
+Completed at: 2025-09-28 14:56:38 UTC
+Effort: builder-interface
+Branch: phase1/wave2/builder-interface
+Core implementation lines: 438 lines
+Files: pkg/build/{buildah_adapter.go,builder.go,errors.go,types.go}
+Tests: Comprehensive interface and mock testing
+Status: IMPLEMENTATION COMPLETE
