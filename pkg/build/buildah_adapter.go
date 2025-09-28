@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -32,7 +31,7 @@ func newBuildahAdapter(opts *BuildOptions) (Builder, error) {
 	unshare.MaybeReexecUsingUserNamespace(false)
 
 	// Initialize storage
-	storeOpts, err := storage.DefaultStoreOptions(unshare.IsRootless(), unshare.GetRootlessUID())
+	storeOpts, err := storage.DefaultStoreOptions()
 	if err != nil {
 		return nil, WrapBuildError("storage_init", err, "failed to get default storage options")
 	}
@@ -78,10 +77,10 @@ func (b *buildahAdapter) Build(ctx context.Context, config *BuildConfig) (*Build
 
 	// Create buildah builder options
 	buildOpts := buildah.BuilderOptions{
-		FromImage:        config.BaseImage,
-		Container:        buildID,
-		PullPolicy:       define.PullIfMissing,
-		IsolationDefault: define.IsolationDefault,
+		FromImage:  config.BaseImage,
+		Container:  buildID,
+		PullPolicy: define.PullIfMissing,
+		Isolation:  define.IsolationDefault,
 	}
 
 	// Create the builder
@@ -228,7 +227,7 @@ func (b *buildahAdapter) Finalize(ctx context.Context, buildCtx *BuildContext) (
 	}
 
 	// Commit the container to create an image
-	imageRef, err := builder.Commit(ctx, "", buildah.CommitOptions{})
+	imageRef, _, _, err := builder.Commit(ctx, nil, buildah.CommitOptions{})
 	if err != nil {
 		return nil, WrapBuildError("finalize", err, "failed to commit container")
 	}
@@ -256,8 +255,9 @@ func (b *buildahAdapter) Finalize(ctx context.Context, buildCtx *BuildContext) (
 
 	// Get image digest
 	digest := ""
-	if image.Digest() != nil {
-		digest = image.Digest().String()
+	imageDigest := image.Digest()
+	if imageDigest.String() != "" {
+		digest = imageDigest.String()
 	}
 
 	result := &BuildResult{
