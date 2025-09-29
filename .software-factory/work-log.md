@@ -110,3 +110,13 @@ Command: git add work-log.md .software-factory/work-log.md
 Command: git commit -m "resolve: merge conflicts for E1.1.2-split-001 integration (660 lines)"
 MERGED: E1.1.2-split-001 at 2025-09-29T14:13:00Z
 Verification: 1759 insertions, mock registry infrastructure added
+
+## Operation 6: Merge E1.1.2-split-002 (Test Utilities)
+Command: git merge effort-E1.1.2-split-002/phase1/wave1/unit-test-framework-split-002 --no-ff
+Result: Conflicts in pkg/testutils/framework_test.go and test_helpers.go
+Resolution: Accepted split-002 versions (theirs) since they build on split-001
+Command: git checkout --theirs pkg/testutils/framework_test.go pkg/testutils/test_helpers.go
+Command: git add pkg/testutils/framework_test.go pkg/testutils/test_helpers.go
+Command: git commit -m "resolve: merge conflicts for E1.1.2-split-002 integration (802 lines)"
+MERGED: E1.1.2-split-002 at 2025-09-29T14:15:00Z
+Verification: 1026 insertions(+), 522 deletions(-), assertions.go added
