@@ -1,237 +1,338 @@
 package testutils
 
 import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
 	"context"
+	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/url"
-	"os"
-	"path/filepath"
-	"testing"
+	"io"
+	"strings"
 	"time"
+
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1/empty"
+	"github.com/google/go-containerregistry/pkg/v1/mutate"
+	"github.com/google/go-containerregistry/pkg/v1/tarball"
+	"github.com/google/go-containerregistry/pkg/v1/types"
 )
 
-// TestFixtures manages test environment setup and cleanup
-type TestFixtures struct {
-	Registry    *MockRegistry
-	AuthConfig  *AuthConfig
-	TempDir     string
-	TestContext context.Context
-	TestCancel  context.CancelFunc
-	Transport   *MockAuthTransport
+// ImageConfig represents configuration for creating test images
+type ImageConfig struct {
+	Architecture string
+	OS           string
+	Environment  []string
+	Labels       map[string]string
+	WorkingDir   string
+	Entrypoint   []string
+	Cmd          []string
+	ExposedPorts map[string]struct{}
 }
 
-// SetupTestFixtures initializes a complete test environment
-func SetupTestFixtures(t *testing.T, authEnabled bool) *TestFixtures {
-	// Create test context with timeout
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-
-	// Create auth configuration
-	authConfig := &AuthConfig{
-		Username: "testuser",
-		Password: "testpass",
-		Token:    "test-token-123",
-		Enabled:  authEnabled,
+// DefaultImageConfig returns a default configuration for test images
+func DefaultImageConfig() *ImageConfig {
+	return &ImageConfig{
+		Architecture: "amd64",
+		OS:           "linux",
+		Environment:  []string{"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"},
+		Labels:       make(map[string]string),
+		WorkingDir:   "/",
+		ExposedPorts: make(map[string]struct{}),
 	}
+}
 
-	// Create mock registry
-	registry := NewMockRegistry(authConfig)
+// CreateTestImage creates a simple test image with the given name and tags
+func CreateTestImage(name string, tags []string) (v1.Image, error) {
+	return CreateTestImageWithConfig(name, tags, DefaultImageConfig())
+}
 
-	// Create temporary directory for test files
-	tempDir, err := os.MkdirTemp("", "idpbuilder-test-*")
+// CreateTestImageWithConfig creates a test image with custom configuration
+func CreateTestImageWithConfig(name string, tags []string, config *ImageConfig) (v1.Image, error) {
+	// Start with empty image
+	base := empty.Image
+
+	// Create a simple layer with some test content
+	layer, err := createTestLayer(fmt.Sprintf("test-content-for-%s", name))
 	if err != nil {
-		t.Fatalf("Failed to create temp directory: %v", err)
+		return nil, fmt.Errorf("failed to create test layer: %w", err)
 	}
 
-	// Create transport
-	transport := NewMockAuthTransport(authConfig)
-
-	fixtures := &TestFixtures{
-		Registry:    registry,
-		AuthConfig:  authConfig,
-		TempDir:     tempDir,
-		TestContext: ctx,
-		TestCancel:  cancel,
-		Transport:   transport,
+	// Add the layer to the image
+	image, err := mutate.AppendLayers(base, layer)
+	if err != nil {
+		return nil, fmt.Errorf("failed to append layer: %w", err)
 	}
 
-	// Log setup for debugging
-	t.Logf("Test fixtures created:")
-	t.Logf("  Registry URL: %s", registry.URL())
-	t.Logf("  Auth enabled: %t", authEnabled)
-	t.Logf("  Temp dir: %s", tempDir)
+	// Configure the image
+	configFile := &v1.ConfigFile{
+		Architecture: config.Architecture,
+		OS:           config.OS,
+		Config: v1.Config{
+			Env:          config.Environment,
+			Labels:       config.Labels,
+			WorkingDir:   config.WorkingDir,
+			Entrypoint:   config.Entrypoint,
+			Cmd:          config.Cmd,
+			ExposedPorts: config.ExposedPorts,
+		},
+		RootFS: v1.RootFS{
+			Type: "layers",
+		},
+		History: []v1.History{
+			{
+				Created:   v1.Time{Time: time.Now()},
+				CreatedBy: fmt.Sprintf("test-image-builder for %s", name),
+				Comment:   "Test image layer",
+			},
+		},
+	}
 
-	return fixtures
+	// Apply configuration
+	image, err = mutate.ConfigFile(image, configFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set config: %w", err)
+	}
+
+	return image, nil
 }
 
-// CleanupTestFixtures cleans up all test resources
-func (f *TestFixtures) CleanupTestFixtures(t *testing.T) {
-	// Cancel context
-	if f.TestCancel != nil {
-		f.TestCancel()
+// createTestLayer creates a simple tar.gz layer with test content
+func createTestLayer(content string) (v1.Layer, error) {
+	var buf bytes.Buffer
+	gw := gzip.NewWriter(&buf)
+	tw := tar.NewWriter(gw)
+
+	// Create a simple file in the layer
+	hdr := &tar.Header{
+		Name: "test-file.txt",
+		Mode: 0644,
+		Size: int64(len(content)),
 	}
 
-	// Close mock registry
-	if f.Registry != nil {
-		f.Registry.Close()
-		t.Logf("Mock registry closed")
+	if err := tw.WriteHeader(hdr); err != nil {
+		return nil, fmt.Errorf("failed to write tar header: %w", err)
 	}
 
-	// Remove temporary directory
-	if f.TempDir != "" {
-		err := os.RemoveAll(f.TempDir)
+	if _, err := tw.Write([]byte(content)); err != nil {
+		return nil, fmt.Errorf("failed to write tar content: %w", err)
+	}
+
+	if err := tw.Close(); err != nil {
+		return nil, fmt.Errorf("failed to close tar writer: %w", err)
+	}
+
+	if err := gw.Close(); err != nil {
+		return nil, fmt.Errorf("failed to close gzip writer: %w", err)
+	}
+
+	// Create layer from the tar.gz content
+	layer, err := tarball.LayerFromReader(&buf)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create layer from tarball: %w", err)
+	}
+
+	return layer, nil
+}
+
+// CreateMultiArchImage creates a multi-architecture image index
+func CreateMultiArchImage(name string, platforms []Platform) (v1.ImageIndex, error) {
+	index := empty.Index
+
+	for _, platform := range platforms {
+		config := DefaultImageConfig()
+		config.Architecture = platform.Architecture
+		config.OS = platform.OS
+
+		image, err := CreateTestImageWithConfig(
+			fmt.Sprintf("%s-%s-%s", name, platform.OS, platform.Architecture),
+			[]string{},
+			config,
+		)
 		if err != nil {
-			t.Logf("Warning: Failed to remove temp directory %s: %v", f.TempDir, err)
-		} else {
-			t.Logf("Temp directory removed: %s", f.TempDir)
+			return nil, fmt.Errorf("failed to create image for platform %s/%s: %w", platform.OS, platform.Architecture, err)
 		}
+
+		// Add image to index with platform info
+		desc, err := createDescriptorForImage(image, &platform)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create descriptor: %w", err)
+		}
+
+		index = mutate.AppendManifests(index, mutate.IndexAddendum{
+			Add:        image,
+			Descriptor: *desc,
+		})
 	}
+
+	return index, nil
 }
 
-// GetTestReference creates a test image reference pointing to the mock registry
-func (f *TestFixtures) GetTestReference(repository, tag string) (string, error) {
-	registryHost := f.Registry.Host()
-	if repository == "" {
-		return "", fmt.Errorf("repository cannot be empty")
-	}
-	if tag == "" {
-		return "", fmt.Errorf("tag cannot be empty")
-	}
-
-	refStr := fmt.Sprintf("%s/%s:%s", registryHost, repository, tag)
-	return refStr, nil
+// Platform represents a target platform for multi-arch images
+type Platform struct {
+	Architecture string
+	OS           string
+	Variant      string
 }
 
-// GetAuthHeaders returns authentication headers for the configured transport
-func (f *TestFixtures) GetAuthHeaders() map[string]string {
-	return f.Transport.GetAuthHeaders()
-}
-
-// GetHTTPClient returns an HTTP client configured with the mock transport
-func (f *TestFixtures) GetHTTPClient() *http.Client {
-	return &http.Client{
-		Transport: f.Transport,
-		Timeout:   30 * time.Second,
-	}
-}
-
-// CreateTestFile creates a test file in the temporary directory
-func (f *TestFixtures) CreateTestFile(filename, content string) (string, error) {
-	fullPath := filepath.Join(f.TempDir, filename)
-
-	// Ensure directory exists
-	dir := filepath.Dir(fullPath)
-	if err := os.MkdirAll(dir, 0755); err != nil {
-		return "", fmt.Errorf("failed to create directory %s: %w", dir, err)
-	}
-
-	// Write file
-	if err := os.WriteFile(fullPath, []byte(content), 0644); err != nil {
-		return "", fmt.Errorf("failed to write file %s: %w", fullPath, err)
-	}
-
-	return fullPath, nil
-}
-
-// ReadTestFile reads a file from the temporary directory
-func (f *TestFixtures) ReadTestFile(filename string) ([]byte, error) {
-	fullPath := filepath.Join(f.TempDir, filename)
-	content, err := os.ReadFile(fullPath)
+// createDescriptorForImage creates a descriptor for an image with platform info
+func createDescriptorForImage(image v1.Image, platform *Platform) (*v1.Descriptor, error) {
+	digest, err := image.Digest()
 	if err != nil {
-		return nil, fmt.Errorf("failed to read file %s: %w", fullPath, err)
-	}
-	return content, nil
-}
-
-// AssertRegistryURL validates that the registry URL is accessible
-func (f *TestFixtures) AssertRegistryURL(t *testing.T) {
-	registryURL := f.Registry.URL()
-	if registryURL == "" {
-		t.Fatal("Registry URL is empty")
+		return nil, fmt.Errorf("failed to get image digest: %w", err)
 	}
 
-	// Parse URL to validate format
-	parsedURL, err := url.Parse(registryURL)
+	size, err := image.Size()
 	if err != nil {
-		t.Fatalf("Invalid registry URL %s: %v", registryURL, err)
+		return nil, fmt.Errorf("failed to get image size: %w", err)
 	}
 
-	if parsedURL.Host == "" {
-		t.Fatalf("Registry URL missing host: %s", registryURL)
+	mediaType, err := image.MediaType()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get media type: %w", err)
 	}
 
-	t.Logf("Registry URL validated: %s", registryURL)
+	return &v1.Descriptor{
+		MediaType: mediaType,
+		Size:      size,
+		Digest:    digest,
+		Platform: &v1.Platform{
+			Architecture: platform.Architecture,
+			OS:           platform.OS,
+			Variant:      platform.Variant,
+		},
+	}, nil
 }
 
-// AssertAuthConfig validates authentication configuration
-func (f *TestFixtures) AssertAuthConfig(t *testing.T) {
-	if f.AuthConfig == nil {
-		t.Fatal("Auth config is nil")
+// PushTestImage pushes a test image to the mock registry
+func PushTestImage(ctx context.Context, registry *MockRegistry, ref string, image v1.Image) error {
+	if registry == nil {
+		return fmt.Errorf("registry cannot be nil")
 	}
 
-	if f.AuthConfig.Enabled {
-		if f.AuthConfig.Username == "" && f.AuthConfig.Token == "" {
-			t.Fatal("Auth enabled but no username or token provided")
+	if image == nil {
+		return fmt.Errorf("image cannot be nil")
+	}
+
+	// Store the image in the mock registry
+	return registry.StoreImage(ref, image)
+}
+
+// CreateImageWithLayers creates an image with multiple layers
+func CreateImageWithLayers(name string, layerContents []string) (v1.Image, error) {
+	base := empty.Image
+
+	for i, content := range layerContents {
+		layer, err := createTestLayer(fmt.Sprintf("%s-layer-%d", content, i))
+		if err != nil {
+			return nil, fmt.Errorf("failed to create layer %d: %w", i, err)
 		}
 
-		if f.AuthConfig.Username != "" && f.AuthConfig.Password == "" {
-			t.Fatal("Username provided but password is empty")
-		}
-
-		t.Logf("Auth config validated - Username: %s, Token: %s",
-			f.AuthConfig.Username,
-			maskString(f.AuthConfig.Token))
-	} else {
-		t.Log("Auth config validated - authentication disabled")
-	}
-}
-
-// GetRegistryStats returns statistics about the mock registry
-func (f *TestFixtures) GetRegistryStats() RegistryStats {
-	return RegistryStats{
-		RequestCount: f.Registry.GetRequestCount(),
-		URL:          f.Registry.URL(),
-		Host:         f.Registry.Host(),
-		AuthEnabled:  f.AuthConfig.Enabled,
-	}
-}
-
-// RegistryStats holds statistics about the mock registry
-type RegistryStats struct {
-	RequestCount int
-	URL          string
-	Host         string
-	AuthEnabled  bool
-}
-
-// Helper functions
-
-// maskString masks sensitive strings for logging
-func maskString(s string) string {
-	if len(s) <= 4 {
-		return "***"
-	}
-	return s[:2] + "***" + s[len(s)-2:]
-}
-
-// WaitForRegistry waits for the registry to be ready
-func (f *TestFixtures) WaitForRegistry(t *testing.T, timeout time.Duration) error {
-	ctx, cancel := context.WithTimeout(f.TestContext, timeout)
-	defer cancel()
-
-	ticker := time.NewTicker(100 * time.Millisecond)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ctx.Done():
-			return fmt.Errorf("timeout waiting for registry to be ready")
-		case <-ticker.C:
-			// Try to access the registry root endpoint
-			if f.Registry.URL() != "" {
-				t.Logf("Registry ready at: %s", f.Registry.URL())
-				return nil
-			}
+		base, err = mutate.AppendLayers(base, layer)
+		if err != nil {
+			return nil, fmt.Errorf("failed to append layer %d: %w", i, err)
 		}
 	}
+
+	// Set basic configuration
+	config := DefaultImageConfig()
+	configFile := &v1.ConfigFile{
+		Architecture: config.Architecture,
+		OS:           config.OS,
+		Config: v1.Config{
+			Env:        config.Environment,
+			Labels:     config.Labels,
+			WorkingDir: config.WorkingDir,
+		},
+		RootFS: v1.RootFS{
+			Type: "layers",
+		},
+	}
+
+	// Add history for each layer
+	for i := range layerContents {
+		configFile.History = append(configFile.History, v1.History{
+			Created:   v1.Time{Time: time.Now()},
+			CreatedBy: fmt.Sprintf("test-layer-%d", i),
+			Comment:   fmt.Sprintf("Test layer %d for %s", i, name),
+		})
+	}
+
+	image, err := mutate.ConfigFile(base, configFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set config: %w", err)
+	}
+
+	return image, nil
+}
+
+// CompareImages compares two images and returns true if they're equivalent
+func CompareImages(img1, img2 v1.Image) (bool, error) {
+	if img1 == nil || img2 == nil {
+		return false, fmt.Errorf("images cannot be nil")
+	}
+
+	digest1, err := img1.Digest()
+	if err != nil {
+		return false, fmt.Errorf("failed to get digest for first image: %w", err)
+	}
+
+	digest2, err := img2.Digest()
+	if err != nil {
+		return false, fmt.Errorf("failed to get digest for second image: %w", err)
+	}
+
+	return digest1 == digest2, nil
+}
+
+// GetImageInfo returns basic information about an image
+func GetImageInfo(image v1.Image) (*ImageInfo, error) {
+	if image == nil {
+		return nil, fmt.Errorf("image cannot be nil")
+	}
+
+	digest, err := image.Digest()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get digest: %w", err)
+	}
+
+	size, err := image.Size()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get size: %w", err)
+	}
+
+	layers, err := image.Layers()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get layers: %w", err)
+	}
+
+	configFile, err := image.ConfigFile()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get config: %w", err)
+	}
+
+	return &ImageInfo{
+		Digest:       digest,
+		Size:         size,
+		LayerCount:   len(layers),
+		Architecture: configFile.Architecture,
+		OS:           configFile.OS,
+		Created:      configFile.Created.Time,
+	}, nil
+}
+
+// ImageInfo contains basic information about an image
+type ImageInfo struct {
+	Digest       v1.Hash
+	Size         int64
+	LayerCount   int
+	Architecture string
+	OS           string
+	Created      time.Time
+}
+
+// String returns a string representation of the image info
+func (info *ImageInfo) String() string {
+	return fmt.Sprintf("Image{digest=%s, size=%d, layers=%d, arch=%s, os=%s}",
+		info.Digest.String()[:12], info.Size, info.LayerCount, info.Architecture, info.OS)
 }

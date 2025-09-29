@@ -101,3 +101,12 @@ Command: git add .software-factory/work-log.md IMPLEMENTATION-COMPLETE.marker
 Command: git commit -m "resolve: merge conflicts for E1.1.1 integration (29 lines)"
 MERGED: E1.1.1 at 2025-09-29T14:11:00Z
 Verification: 875 insertions total, 2 files added from E1.1.1
+
+## Operation 5: Merge E1.1.2-split-001 (Mock Registry Core)
+Command: git merge effort-E1.1.2-split-001/phase1/wave1/unit-test-framework-split-001 --no-ff
+Result: Conflict in work-log.md
+Resolution: Merged both work log sections
+Command: git add work-log.md .software-factory/work-log.md
+Command: git commit -m "resolve: merge conflicts for E1.1.2-split-001 integration (660 lines)"
+MERGED: E1.1.2-split-001 at 2025-09-29T14:13:00Z
+Verification: 1759 insertions, mock registry infrastructure added
