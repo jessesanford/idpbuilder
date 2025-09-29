@@ -1,0 +1,28 @@
+EFFORT SCOPE ACKNOWLEDGMENT: E1.1.3 - Integration Test Setup
+Created: 2025-09-29 05:42:55 UTC
+SW Engineer: claude-sonnet-4
+
+SCOPE LOCKED:
+✓ Functions: EXACTLY 8 (SetupTestRegistry, CreateTestCluster, CleanupTestCluster, PushTestImage, PullTestImage, GenerateTestCredentials, VerifyImageInRegistry, SetupInsecureCertTest)
+✓ Types: EXACTLY 3 (ClusterInfo, Credentials, IntegrationTestConfig)
+✓ Integration Tests: EXACTLY 5 scenarios (registry connection, auth flow, insecure certs, image push/pull, cluster lifecycle)
+✓ Test Helpers: Integration test support ONLY
+✗ Push Command: NONE (E1.2.1)
+✗ Production Auth: NONE (E1.2.2)
+✗ Actual Push Logic: NONE (E1.2.3)
+
+FORBIDDEN IMPLEMENTATIONS ACKNOWLEDGED:
+- NO actual push command implementation
+- NO production authentication logic
+- NO CLI command structure
+- NO rate limiting or retry logic
+- NO progress indicators
+- NO comprehensive error handling beyond test needs
+- NO logging framework
+- NO performance benchmarks
+- NO documentation
+- NO refactoring of existing code
+
+SIZE CONSTRAINT: 650 lines target, 800 lines HARD LIMIT
+
+This scope is LOCKED and IMMUTABLE for this effort.
