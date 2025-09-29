@@ -1,0 +1,53 @@
+EFFORT SCOPE ACKNOWLEDGMENT - E1.1.2 Unit Test Framework
+=========================================================
+
+Created: 2025-09-29T05:19:58Z
+Agent: sw-engineer
+Branch: phase1/wave1/unit-test-framework
+
+SCOPE LOCKED TO:
+================
+
+✓ Functions: EXACTLY 8 (listed below)
+  1. NewMockRegistry() *MockRegistry
+  2. NewMockAuthTransport(username, password) Transport
+  3. SetupTestFixtures(t *testing.T) *TestFixtures
+  4. CreateTestImage(name, tag string) v1.Image
+  5. AssertPushSucceeds(t *testing.T, img v1.Image)
+  6. AssertAuthRequired(t *testing.T, endpoint string)
+  7. MockInsecureTransport() http.RoundTripper
+  8. CleanupTestFixtures(fixtures *TestFixtures)
+
+✓ Types: EXACTLY 5 (MockRegistry, AuthConfig, TestFixtures, PushTestCase, MockAuthTransport)
+
+✓ Test Files: EXACTLY 1 framework test file (framework_test.go)
+
+✓ Tests: EXACTLY 4 basic framework tests
+  1. TestMockRegistryCreation
+  2. TestAuthTransport
+  3. TestImageCreation
+  4. TestCleanup
+
+FORBIDDEN IN THIS EFFORT:
+========================
+
+✗ Real registry: NONE (E1.1.3 does that)
+✗ Actual push: NONE (Wave 2)
+✗ CLI integration: NONE (E1.2.1)
+✗ Real authentication: NONE (E1.2.2)
+✗ Integration tests: NONE (E1.1.3)
+✗ Performance/benchmarks: NONE
+✗ Retry logic: NONE (Wave 2)
+✗ Progress indicators: NONE (Wave 2)
+
+PRODUCTION CODE REQUIREMENTS (R355):
+=====================================
+✓ NO stubs - all functions fully implemented
+✓ NO TODO/FIXME markers
+✓ NO hardcoded credentials
+✓ NO panic("not implemented") patterns
+✓ NO static values - configurable mocks
+
+TARGET: 450 lines (HARD LIMIT: 800 lines)
+
+ACKNOWLEDGED: I understand this scope and will NOT deviate from it.
