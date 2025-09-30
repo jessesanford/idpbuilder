@@ -1,0 +1,8 @@
+{
+  "split_number": 3,
+  "parent_effort": "E1.2.3-image-push-operations",
+  "base_branch": "phase1/wave2/image-push-operations-split-002",
+  "description": "Main operation orchestration and integration",
+  "target_lines": 389,
+  "created_at": "2025-09-30T01:04:45Z"
+}
