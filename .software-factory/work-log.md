@@ -12,3 +12,8 @@ Result: phase1-wave2-integration
 
 ## Operation 1: Merge E1.2.1-command-structure
 Command: git merge e121/phase1/wave2/command-structure --no-ff -m 'integrate: E1.2.1-command-structure into phase1-wave2-integration'
+Result: Success (with conflict resolution in orchestrator-state.json)
+MERGED: E1.2.1-command-structure at Tue Sep 30 13:30:47 UTC 2025
+
+## Operation 2: Merge E1.2.2-split-001 (auth basics)
+Command: git merge e122s1/phase1/wave2/registry-authentication-split-001 --no-ff -m 'integrate: E1.2.2-split-001 auth basics into phase1-wave2-integration'
