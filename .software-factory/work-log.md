@@ -37,3 +37,5 @@ MERGED: E1.2.3-split-002 at Tue Sep 30 13:34:42 UTC 2025
 
 ## Operation 6: Merge E1.2.3-split-003 (integration tests)
 Command: git merge e123s3/phase1/wave2/image-push-operations-split-003 --no-ff -m 'integrate: E1.2.3-split-003 integration tests into phase1-wave2-integration'
+Result: Success (with conflict resolution in operations.go and go.mod)
+MERGED: E1.2.3-split-003 at Tue Sep 30 13:35:44 UTC 2025
