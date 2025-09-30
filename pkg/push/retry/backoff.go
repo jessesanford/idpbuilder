@@ -1,126 +1,142 @@
 package retry
 
 import (
+	"context"
 	"math"
 	"math/rand"
 	"time"
 )
 
-// BackoffStrategy defines the exponential backoff configuration for retries
-type BackoffStrategy struct {
-	// InitialInterval is the initial retry interval
-	InitialInterval time.Duration
-	// MaxInterval is the maximum retry interval
-	MaxInterval time.Duration
-	// Multiplier is the backoff multiplier for exponential growth
+// BackoffStrategy defines an interface for retry backoff strategies.
+type BackoffStrategy interface {
+	// NextDelay calculates the delay for the next retry attempt.
+	// Returns the duration to wait before the next attempt.
+	NextDelay(attempt int) time.Duration
+
+	// Reset resets the backoff strategy to its initial state.
+	Reset()
+}
+
+// ExponentialBackoff implements exponential backoff with jitter.
+// This prevents thundering herd problems in distributed systems.
+type ExponentialBackoff struct {
+	// BaseDelay is the initial delay for the first retry.
+	BaseDelay time.Duration
+
+	// MaxDelay is the maximum delay between retries.
+	MaxDelay time.Duration
+
+	// Multiplier is the factor by which delay increases each attempt.
+	// Typically 2.0 for exponential backoff.
 	Multiplier float64
-	// MaxRetries is the maximum number of retry attempts
-	MaxRetries int
-	// Jitter adds randomness to retry intervals to avoid thundering herd
-	Jitter bool
+
+	// JitterFraction is the fraction of delay to add as jitter (0.0 to 1.0).
+	// For example, 0.1 means up to 10% jitter.
+	JitterFraction float64
+
+	// random source for jitter calculation
+	rng *rand.Rand
 }
 
-// DefaultBackoff returns a default backoff strategy suitable for registry operations
-func DefaultBackoff() *BackoffStrategy {
-	return &BackoffStrategy{
-		InitialInterval: 1 * time.Second,
-		MaxInterval:     30 * time.Second,
-		Multiplier:      2.0,
-		MaxRetries:      10, // 5-10 retries as specified in requirements
-		Jitter:          true,
+// NewExponentialBackoff creates a new exponential backoff strategy with defaults.
+func NewExponentialBackoff() *ExponentialBackoff {
+	return &ExponentialBackoff{
+		BaseDelay:      100 * time.Millisecond,
+		MaxDelay:       30 * time.Second,
+		Multiplier:     2.0,
+		JitterFraction: 0.1,
+		rng:            rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
 }
 
-// ConservativeBackoff returns a more conservative backoff strategy
-func ConservativeBackoff() *BackoffStrategy {
-	return &BackoffStrategy{
-		InitialInterval: 2 * time.Second,
-		MaxInterval:     60 * time.Second,
-		Multiplier:      1.5,
-		MaxRetries:      5,
-		Jitter:          true,
+// NewExponentialBackoffWithConfig creates a backoff strategy with custom configuration.
+func NewExponentialBackoffWithConfig(baseDelay, maxDelay time.Duration, multiplier, jitter float64) *ExponentialBackoff {
+	return &ExponentialBackoff{
+		BaseDelay:      baseDelay,
+		MaxDelay:       maxDelay,
+		Multiplier:     multiplier,
+		JitterFraction: jitter,
+		rng:            rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
 }
 
-// AggressiveBackoff returns an aggressive backoff strategy for quick retries
-func AggressiveBackoff() *BackoffStrategy {
-	return &BackoffStrategy{
-		InitialInterval: 500 * time.Millisecond,
-		MaxInterval:     10 * time.Second,
-		Multiplier:      2.5,
-		MaxRetries:      15,
-		Jitter:          true,
-	}
-}
-
-// NextInterval calculates the next retry interval based on the attempt number
-func (b *BackoffStrategy) NextInterval(attempt int) time.Duration {
-	if attempt >= b.MaxRetries {
-		return 0 // No more retries
+// NextDelay calculates the delay for the next retry attempt using exponential backoff with jitter.
+func (b *ExponentialBackoff) NextDelay(attempt int) time.Duration {
+	if attempt < 0 {
+		attempt = 0
 	}
 
-	// Calculate exponential backoff interval
-	interval := float64(b.InitialInterval) * math.Pow(b.Multiplier, float64(attempt))
+	// Calculate exponential delay: baseDelay * multiplier^attempt
+	delay := float64(b.BaseDelay) * math.Pow(b.Multiplier, float64(attempt))
 
-	// Cap at maximum interval
-	if interval > float64(b.MaxInterval) {
-		interval = float64(b.MaxInterval)
+	// Cap at max delay
+	if delay > float64(b.MaxDelay) {
+		delay = float64(b.MaxDelay)
 	}
 
 	// Add jitter to prevent thundering herd
-	if b.Jitter {
-		// Apply jitter: multiply by random factor between 0.5 and 1.5
-		jitterFactor := 0.5 + rand.Float64()
-		interval = interval * jitterFactor
+	jitter := b.calculateJitter(delay)
+	finalDelay := time.Duration(delay + jitter)
+
+	// Ensure we don't exceed max delay after jitter
+	if finalDelay > b.MaxDelay {
+		finalDelay = b.MaxDelay
 	}
 
-	return time.Duration(interval)
+	return finalDelay
 }
 
-// TotalMaxDuration calculates the maximum total duration for all retries
-func (b *BackoffStrategy) TotalMaxDuration() time.Duration {
-	total := time.Duration(0)
-	for i := 0; i < b.MaxRetries; i++ {
-		// Use worst-case scenario without jitter for max calculation
-		interval := float64(b.InitialInterval) * math.Pow(b.Multiplier, float64(i))
-		if interval > float64(b.MaxInterval) {
-			interval = float64(b.MaxInterval)
-		}
-
-		// Add jitter worst case (1.5x multiplier)
-		if b.Jitter {
-			interval = interval * 1.5
-		}
-
-		total += time.Duration(interval)
+// calculateJitter adds randomness to the delay to distribute retry load.
+// The jitter is uniformly distributed between 0 and (delay * jitterFraction).
+func (b *ExponentialBackoff) calculateJitter(delay float64) float64 {
+	if b.JitterFraction <= 0 {
+		return 0
 	}
-	return total
+
+	maxJitter := delay * b.JitterFraction
+	return b.rng.Float64() * maxJitter
 }
 
-// Validate checks if the backoff strategy configuration is valid
-func (b *BackoffStrategy) Validate() error {
-	if b.InitialInterval <= 0 {
-		return ErrInvalidInterval
-	}
-	if b.MaxInterval <= 0 || b.MaxInterval < b.InitialInterval {
-		return ErrInvalidMaxInterval
-	}
-	if b.Multiplier <= 1.0 {
-		return ErrInvalidMultiplier
-	}
-	if b.MaxRetries < 0 {
-		return ErrInvalidMaxRetries
-	}
-	return nil
+// Reset resets the backoff strategy. For exponential backoff, this is a no-op
+// as each attempt's delay is calculated independently.
+func (b *ExponentialBackoff) Reset() {
+	// Exponential backoff is stateless - each NextDelay call uses the attempt number
+	// No state to reset
 }
 
-// Clone creates a copy of the backoff strategy
-func (b *BackoffStrategy) Clone() *BackoffStrategy {
-	return &BackoffStrategy{
-		InitialInterval: b.InitialInterval,
-		MaxInterval:     b.MaxInterval,
-		Multiplier:      b.Multiplier,
-		MaxRetries:      b.MaxRetries,
-		Jitter:          b.Jitter,
+// Wait waits for the backoff duration with context cancellation support.
+// Returns nil if the wait completed, or ctx.Err() if context was cancelled.
+func Wait(ctx context.Context, delay time.Duration) error {
+	timer := time.NewTimer(delay)
+	defer timer.Stop()
+
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-timer.C:
+		return nil
 	}
+}
+
+// ConstantBackoff implements a constant delay backoff strategy.
+// Useful for testing or specific retry scenarios.
+type ConstantBackoff struct {
+	Delay time.Duration
+}
+
+// NewConstantBackoff creates a constant backoff strategy.
+func NewConstantBackoff(delay time.Duration) *ConstantBackoff {
+	return &ConstantBackoff{
+		Delay: delay,
+	}
+}
+
+// NextDelay returns a constant delay regardless of attempt number.
+func (c *ConstantBackoff) NextDelay(attempt int) time.Duration {
+	return c.Delay
+}
+
+// Reset is a no-op for constant backoff.
+func (c *ConstantBackoff) Reset() {
+	// Constant backoff has no state to reset
 }

@@ -1,11 +1,19 @@
 package retry
 
-import "errors"
+import "fmt"
 
-// Backoff strategy validation errors
-var (
-	ErrInvalidInterval    = errors.New("initial interval must be positive")
-	ErrInvalidMaxInterval = errors.New("max interval must be positive and >= initial interval")
-	ErrInvalidMultiplier  = errors.New("multiplier must be > 1.0")
-	ErrInvalidMaxRetries  = errors.New("max retries must be >= 0")
-)
+// MaxRetriesExceededError is returned when an operation fails after exhausting all retry attempts.
+type MaxRetriesExceededError struct {
+	Attempts int
+	LastErr  error
+}
+
+// Error implements the error interface.
+func (e *MaxRetriesExceededError) Error() string {
+	return fmt.Sprintf("max retries exceeded after %d attempts: %v", e.Attempts, e.LastErr)
+}
+
+// Unwrap returns the underlying error for error chain unwrapping.
+func (e *MaxRetriesExceededError) Unwrap() error {
+	return e.LastErr
+}
