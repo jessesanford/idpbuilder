@@ -1,28 +1,27 @@
-# Integration Plan
-Date: 2025-09-26T07:50:00Z
+# Integration Plan - Phase 1 Wave 2
+Date: 2025-09-30
 Target Branch: phase1-wave2-integration
 Base Branch: phase1-wave1-integration
-Integration Agent: Integration Agent
 
-## Branches to Integrate (ordered by lineage)
-1. effort-1.2.1/igp/phase1/wave2/effort-1.2.1-test-fixtures-setup (parent: phase1-wave1-integration)
-   - Size: 9 lines
-   - Provides: Test fixtures and helpers foundation
-
-2. effort-1.2.2/igp/phase1/wave2/effort-1.2.2-command-testing-framework (parent: phase1-wave1-integration)
-   - Size: 106 lines
-   - Depends on: effort-1.2.1 test fixtures
-   - Provides: Command testing framework
+## Branches to Integrate (ordered by R501 and dependencies)
+1. phase1/wave2/command-structure (E1.2.1 - base framework)
+2. phase1/wave2/registry-authentication-split-001 (E1.2.2 - auth basics)
+3. phase1/wave2/registry-authentication-split-002 (E1.2.2 - retry mechanism)
+4. phase1/wave2/image-push-operations-split-001 (E1.2.3 - core operations)
+5. phase1/wave2/image-push-operations-split-002 (E1.2.3 - tests)
+6. phase1/wave2/image-push-operations-split-003 (E1.2.3 - integration)
 
 ## Merge Strategy
-- Order based on dependencies
-- effort-1.2.1 MUST be merged before effort-1.2.2
-- Minimize conflicts by correct ordering
-- Document all conflict resolutions
+- Follow R501 Progressive Trunk-Based Development
+- Resolve conflicts per R361 (integration only, no new code)
+- Version consistency per R381 (keep base versions)
+- Document all conflicts and resolutions
+
+## Expected Conflicts
+1. E1.2.2 splits: retry package overlaps (split-002 has complete version)
+2. E1.2.3 splits: multiple overlaps in discovery.go, pusher.go, etc.
 
 ## Expected Outcome
 - Fully integrated branch with all Wave 2 features
-- Complete test coverage for Wave 1 functionality
 - No broken builds
-- All tests passing
-- Complete documentation
+- Complete documentation of any issues
