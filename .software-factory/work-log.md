@@ -24,3 +24,6 @@ MERGED: E1.2.2-split-001 at Tue Sep 30 13:31:42 UTC 2025
 Command: git merge e122s2/phase1/wave2/registry-authentication-split-002 --no-ff -m 'integrate: E1.2.2-split-002 retry tests into phase1-wave2-integration'
 Result: Success (with conflict resolution in retry package)
 MERGED: E1.2.2-split-002 at Tue Sep 30 13:32:26 UTC 2025
+
+## Operation 4: Merge E1.2.3-split-001 (core operations)
+Command: git merge e123s1/phase1/wave2/image-push-operations-split-001 --no-ff -m 'integrate: E1.2.3-split-001 core operations into phase1-wave2-integration'
