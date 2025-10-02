@@ -17,6 +17,7 @@ type mockProgressReporter struct {
 	finishedImages []string
 	startedLayers  []string
 	finishedLayers []string
+	errors         map[string]error
 }
 
 func (m *mockProgressReporter) StartImage(digest string, totalSize int64) {
@@ -33,6 +34,13 @@ func (m *mockProgressReporter) FinishLayer(digest string) {
 
 func (m *mockProgressReporter) FinishImage(digest string) {
 	m.finishedImages = append(m.finishedImages, digest)
+}
+
+func (m *mockProgressReporter) SetError(digest string, err error) {
+	if m.errors == nil {
+		m.errors = make(map[string]error)
+	}
+	m.errors[digest] = err
 }
 
 func TestDefaultPusherOptions(t *testing.T) {
