@@ -1,0 +1,6 @@
+[
+  {"content": "Update state for Phase 2 Wave 1 completion", "status": "completed"},
+  {"content": "Spawn Code Reviewers for Phase 2 Wave 1", "status": "pending"},
+  {"content": "Monitor review progress", "status": "pending"},
+  {"content": "Handle any split requirements", "status": "pending"}
+]

@@ -1,0 +1,159 @@
+# Test image configurations for integration tests
+# These define various test scenarios for OCI image pushing
+
+images:
+  # Small single-architecture image for basic tests
+  - name: test-small-amd64
+    description: Small AMD64 image for basic push tests
+    architecture: amd64
+    os: linux
+    size: small
+    layers: 2
+    tags:
+      - latest
+      - v1.0.0
+      - test
+
+  # Multi-architecture image
+  - name: test-multiarch
+    description: Multi-architecture image with ARM and AMD64 variants
+    manifests:
+      - architecture: amd64
+        os: linux
+        size: medium
+        layers: 3
+      - architecture: arm64
+        os: linux
+        size: medium
+        layers: 3
+    tags:
+      - latest
+      - multiarch-v1
+
+  # Large image for performance testing
+  - name: test-large
+    description: Large image to test chunked uploads
+    architecture: amd64
+    os: linux
+    size: large
+    layers: 5
+    layerSizes:
+      - 50MB
+      - 100MB
+      - 75MB
+      - 25MB
+      - 10MB
+    tags:
+      - latest
+
+  # Image with many layers
+  - name: test-many-layers
+    description: Image with many small layers
+    architecture: amd64
+    os: linux
+    size: medium
+    layers: 20
+    tags:
+      - latest
+
+  # Windows container image
+  - name: test-windows
+    description: Windows container image
+    architecture: amd64
+    os: windows
+    osVersion: "10.0.17763.1234"
+    size: large
+    layers: 4
+    tags:
+      - latest
+      - ltsc2019
+
+  # Image with special characters in tags
+  - name: test-special-tags
+    description: Image to test special tag handling
+    architecture: amd64
+    os: linux
+    size: small
+    layers: 2
+    tags:
+      - "v1.0.0-alpha.1"
+      - "v1.0.0+build.123"
+      - "feature_branch-test"
+      - "sha-abc123def456"
+
+  # Minimal scratch-based image
+  - name: test-scratch
+    description: Minimal scratch-based image
+    architecture: amd64
+    os: linux
+    size: minimal
+    layers: 1
+    fromScratch: true
+    tags:
+      - latest
+
+# Registry test scenarios
+registries:
+  - name: gitea-local
+    type: gitea
+    tls: true
+    selfSigned: true
+    auth:
+      type: basic
+      username: testuser
+      password: testpass123
+
+  - name: gitea-noauth
+    type: gitea
+    tls: false
+    auth:
+      type: none
+
+  - name: gitea-token
+    type: gitea
+    tls: true
+    auth:
+      type: token
+
+# Test scenarios combining images and registries
+scenarios:
+  - name: basic-push
+    image: test-small-amd64
+    registry: gitea-local
+    expectedResult: success
+
+  - name: multiarch-push
+    image: test-multiarch
+    registry: gitea-local
+    expectedResult: success
+
+  - name: large-image-push
+    image: test-large
+    registry: gitea-local
+    expectedResult: success
+    timeout: 5m
+
+  - name: no-auth-push
+    image: test-small-amd64
+    registry: gitea-noauth
+    expectedResult: success
+
+  - name: token-auth-push
+    image: test-small-amd64
+    registry: gitea-token
+    expectedResult: success
+
+  - name: invalid-credentials
+    image: test-small-amd64
+    registry: gitea-local
+    auth:
+      username: invalid
+      password: invalid
+    expectedResult: authFailure
+
+  - name: network-error-retry
+    image: test-small-amd64
+    registry: gitea-local
+    networkCondition: intermittent
+    expectedResult: successAfterRetry
+    maxRetries: 3
