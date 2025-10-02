@@ -220,7 +220,7 @@ func TestE2ECompleteWorkflow(t *testing.T) {
 		"--password", env.GiteaPassword,
 	)
 
-	output1, err1 := cmd1.CombinedOutput()
+	_, err1 := cmd1.CombinedOutput()
 	require.NoError(t, err1, "Base image push failed: %v", err1)
 	t.Log("Base image pushed successfully")
 
@@ -238,7 +238,7 @@ func TestE2ECompleteWorkflow(t *testing.T) {
 		"--password", env.GiteaPassword,
 	)
 
-	output2, err2 := cmd2.CombinedOutput()
+	_, err2 := cmd2.CombinedOutput()
 	require.NoError(t, err2, "Tagged image push failed: %v", err2)
 	t.Log("Tagged image pushed successfully")
 
