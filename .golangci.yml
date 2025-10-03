@@ -1,0 +1,71 @@
+linters:
+  enable:
+    - gofmt        # Check code formatting
+    - golint       # Lint Go code
+    - govet        # Vet examines Go source code
+    - ineffassign  # Detect ineffectual assignments
+    - misspell     # Find commonly misspelled English words
+    - unconvert    # Remove unnecessary type conversions
+    - gocritic     # Comprehensive Go source code linter
+    - gocyclo      # Compute cyclomatic complexity
+    - errcheck     # Check for unchecked errors
+    - staticcheck  # Go static analysis
+    - unused       # Check for unused constants, variables, functions
+    - gosimple     # Simplify code
+    - stylecheck   # Replacement for golint
+
+  disable:
+    - deadcode     # Deprecated, replaced by unused
+    - structcheck  # Deprecated, replaced by unused
+    - varcheck     # Deprecated, replaced by unused
+
+linters-settings:
+  gocyclo:
+    min-complexity: 15  # Maximum cyclomatic complexity
+
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport
+      - ifElseChain
+      - octalLiteral
+      - whyNoLint
+      - wrapperFunc
+
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+  govet:
+    check-shadowing: true
+    enable-all: true
+
+  staticcheck:
+    go: "1.21"
+    checks: ["all"]
+
+run:
+  timeout: 5m
+  tests: true
+  skip-dirs:
+    - vendor
+    - testdata
+    - examples
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - ".*_gen\\.go$"
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude-use-default: false
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
