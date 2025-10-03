@@ -1,9 +1,9 @@
 {
   "current_phase": 1,
   "current_wave": 1,
-  "current_state": "PLANNING",
-  "previous_state": "SPAWN_ARCHITECT_MASTER_PLANNING",
-  "transition_time": "2025-09-23T17:31:45Z",
+  "current_state": "MONITOR_REVIEWS",
+  "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+  "transition_time": "2025-10-03T03:21:01Z",
   "efforts_in_progress": [],
   "efforts_completed": [],
   "split_tracking": {},
@@ -58,5 +58,34 @@
       "measurement_command": "bash /home/vscode/workspaces/idpbuilder-gitea-push/tools/line-counter.sh",
       "within_limit": true
     }
-  }
+  },
+  "reviews_in_progress": [
+    "E2.2.1-user-documentation",
+    "E2.2.2-code-refinement"
+  ],
+  "review_results": {
+    "E2.2.1-user-documentation": {
+      "status": "APPROVED",
+      "lines": 17,
+      "review_date": "2025-10-03T03:21:01Z",
+      "review_file": "efforts/phase2/wave2/E2.2.1-user-documentation/.software-factory/CODE-REVIEW-REPORT-20251003-015900.md"
+    },
+    "E2.2.2-code-refinement": {
+      "status": "NEEDS_FIXES",
+      "lines": 278,
+      "review_date": "2025-10-03T03:21:01Z",
+      "review_file": "efforts/phase2/wave2/E2.2.2-code-refinement/.software-factory/CODE-REVIEW-REPORT-20251003-031407.md",
+      "instructions_file": "efforts/phase2/wave2/E2.2.2-code-refinement/.software-factory/CODE-REVIEW-INSTRUCTIONS-20251003-031407.md",
+      "issues": "Missing test coverage for metrics.go and performance.go"
+    }
+  },
+  "transition_reason": "Code reviewers spawned and completed for E2.2.1 (APPROVED) and E2.2.2 (NEEDS_FIXES) [R324]",
+  "state_transition_log": [
+    {
+      "from": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+      "to": "MONITOR_REVIEWS",
+      "timestamp": "2025-10-03T03:21:01Z",
+      "reason": "Code Reviewers completed for 2 efforts in Phase 2 Wave 2"
+    }
+  ]
 }
