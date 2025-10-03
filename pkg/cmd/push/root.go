@@ -6,6 +6,7 @@ import (
 
 	"github.com/cnoe-io/idpbuilder/pkg/auth"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/helpers"
+	"github.com/cnoe-io/idpbuilder/pkg/push"
 	"github.com/spf13/cobra"
 )
 
@@ -41,38 +42,38 @@ func init() {
 
 // runPush executes the push command with the provided image name
 func runPush(cmd *cobra.Command, ctx context.Context, imageName string) error {
-	// Extract credentials from flags
-	creds, err := auth.ExtractCredentialsFromFlags(cmd)
+	// Create logger
+	logger := helpers.CmdLogger
+
+	// Create push operation from command flags
+	// NewPushOperationFromCommand extracts all flags (auth, TLS, registry, etc.)
+	operation, err := push.NewPushOperationFromCommand(cmd, logger)
 	if err != nil {
-		return fmt.Errorf("failed to extract credentials: %w", err)
+		return fmt.Errorf("failed to create push operation: %w", err)
 	}
 
-	// Validate credentials
-	validator := &auth.DefaultValidator{}
-	if err := validator.ValidateCredentials(creds); err != nil {
-		return fmt.Errorf("credential validation failed: %w", err)
+	// Execute the actual push operation
+	// This calls the complete implementation in pkg/push/operations.go
+	result, err := operation.Execute(ctx)
+	if err != nil {
+		return fmt.Errorf("push operation failed: %w", err)
 	}
 
-	// Create auth config
-	authConfig := auth.NewAuthConfig(creds)
-
-	// Log authentication status
-	if authConfig.Required {
-		helpers.CmdLogger.Info("Pushing with authentication", "username", creds.Username)
+	// Report success with summary
+	if result.ImagesPushed > 0 {
+		fmt.Printf("\nSuccessfully pushed %d image(s) to registry\n", result.ImagesPushed)
+		fmt.Printf("Total bytes transferred: %d\n", result.TotalBytes)
+		fmt.Printf("Duration: %s\n", result.TotalDuration)
 	} else {
-		helpers.CmdLogger.Info("Pushing without authentication")
+		fmt.Println("\nNo images were pushed")
 	}
 
-	// Log what we would push (stub implementation for now)
-	helpers.CmdLogger.Info("Push command executed", "image", imageName, "auth_required", authConfig.Required)
-
-	// TODO: Implement actual push logic in Phase 2
-	fmt.Printf("Successfully prepared push for image: %s\n", imageName)
-
-	if authConfig.Required {
-		fmt.Printf("Authentication configured for user: %s\n", creds.Username)
-	} else {
-		fmt.Println("No authentication configured")
+	// Show failures if any
+	if result.ImagesFailed > 0 {
+		fmt.Printf("\nWarning: %d image(s) failed to push\n", result.ImagesFailed)
+		for _, err := range result.Errors {
+			fmt.Printf("  - %v\n", err)
+		}
 	}
 
 	return nil
