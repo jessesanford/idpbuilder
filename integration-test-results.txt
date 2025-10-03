@@ -1,0 +1,974 @@
+?   	github.com/cnoe-io/idpbuilder	[no test files]
+?   	github.com/cnoe-io/idpbuilder/api/v1alpha1	[no test files]
+?   	github.com/cnoe-io/idpbuilder/globals	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/auth	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/create	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/delete	[no test files]
+=== RUN   TestIsCompatible
+--- PASS: TestIsCompatible (0.00s)
+=== RUN   TestCreateSelfSignedCertificate
+--- PASS: TestCreateSelfSignedCertificate (0.00s)
+=== RUN   TestGetOrCreateIngressCertificateAndKey
+--- PASS: TestGetOrCreateIngressCertificateAndKey (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/build	0.011s
+=== RUN   TestPrintPackageSecrets
+no secrets found
+--- PASS: TestPrintPackageSecrets (0.00s)
+=== RUN   TestPrintAllPackageSecrets
+--- PASS: TestPrintAllPackageSecrets (0.00s)
+=== RUN   TestOutput
+--- PASS: TestOutput (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/get	0.011s
+=== RUN   TestValidateKubernetesYaml
+--- PASS: TestValidateKubernetesYaml (0.00s)
+=== RUN   TestParsePackageStrings
+--- PASS: TestParsePackageStrings (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/helpers	0.011s
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/version	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/controllers	[no test files]
+=== RUN   Test_PushCommand_Basic
+=== RUN   Test_PushCommand_Basic/command_exists
+=== RUN   Test_PushCommand_Basic/requires_exactly_one_argument
+=== RUN   Test_PushCommand_Basic/has_required_flags
+--- PASS: Test_PushCommand_Basic (0.00s)
+    --- PASS: Test_PushCommand_Basic/command_exists (0.00s)
+    --- PASS: Test_PushCommand_Basic/requires_exactly_one_argument (0.00s)
+    --- PASS: Test_PushCommand_Basic/has_required_flags (0.00s)
+=== RUN   Test_PushCommand_Flags
+=== RUN   Test_PushCommand_Flags/basic_image_URL
+=== RUN   Test_PushCommand_Flags/with_username
+=== RUN   Test_PushCommand_Flags/with_username_shorthand
+=== RUN   Test_PushCommand_Flags/with_password
+=== RUN   Test_PushCommand_Flags/with_password_shorthand
+=== RUN   Test_PushCommand_Flags/with_insecure_TLS
+=== RUN   Test_PushCommand_Flags/all_flags_combined
+=== RUN   Test_PushCommand_Flags/no_arguments
+Error: accepts 1 arg(s), received 0
+Usage:
+  push IMAGE_URL [flags]
+
+Flags:
+  -h, --help              help for push
+      --insecure-tls      Skip TLS certificate verification
+  -p, --password string   Registry password
+  -u, --username string   Registry username
+
+=== RUN   Test_PushCommand_Flags/too_many_arguments
+Error: accepts 1 arg(s), received 2
+Usage:
+  push IMAGE_URL [flags]
+
+Flags:
+  -h, --help              help for push
+      --insecure-tls      Skip TLS certificate verification
+  -p, --password string   Registry password
+  -u, --username string   Registry username
+
+--- PASS: Test_PushCommand_Flags (0.00s)
+    --- PASS: Test_PushCommand_Flags/basic_image_URL (0.00s)
+    --- PASS: Test_PushCommand_Flags/with_username (0.00s)
+    --- PASS: Test_PushCommand_Flags/with_username_shorthand (0.00s)
+    --- PASS: Test_PushCommand_Flags/with_password (0.00s)
+    --- PASS: Test_PushCommand_Flags/with_password_shorthand (0.00s)
+    --- PASS: Test_PushCommand_Flags/with_insecure_TLS (0.00s)
+    --- PASS: Test_PushCommand_Flags/all_flags_combined (0.00s)
+    --- PASS: Test_PushCommand_Flags/no_arguments (0.00s)
+    --- PASS: Test_PushCommand_Flags/too_many_arguments (0.00s)
+=== RUN   Test_PushCommand_Execute
+=== RUN   Test_PushCommand_Execute/valid_image_URL
+=== RUN   Test_PushCommand_Execute/with_authentication
+=== RUN   Test_PushCommand_Execute/with_insecure_TLS
+=== RUN   Test_PushCommand_Execute/invalid_image_URL_format
+Error: invalid image URL format: invalid-image-url
+=== RUN   Test_PushCommand_Execute/empty_image_URL
+Error: invalid image URL format: 
+--- PASS: Test_PushCommand_Execute (0.00s)
+    --- PASS: Test_PushCommand_Execute/valid_image_URL (0.00s)
+    --- PASS: Test_PushCommand_Execute/with_authentication (0.00s)
+    --- PASS: Test_PushCommand_Execute/with_insecure_TLS (0.00s)
+    --- PASS: Test_PushCommand_Execute/invalid_image_URL_format (0.00s)
+    --- PASS: Test_PushCommand_Execute/empty_image_URL (0.00s)
+=== RUN   Test_PushCommand_Auth
+=== RUN   Test_PushCommand_Auth/with_valid_credentials
+=== RUN   Test_PushCommand_Auth/with_username_only
+=== RUN   Test_PushCommand_Auth/with_password_only
+=== RUN   Test_PushCommand_Auth/without_credentials
+--- PASS: Test_PushCommand_Auth (0.00s)
+    --- PASS: Test_PushCommand_Auth/with_valid_credentials (0.00s)
+    --- PASS: Test_PushCommand_Auth/with_username_only (0.00s)
+    --- PASS: Test_PushCommand_Auth/with_password_only (0.00s)
+    --- PASS: Test_PushCommand_Auth/without_credentials (0.00s)
+=== RUN   Test_PushCommand_TLS
+=== RUN   Test_PushCommand_TLS/secure_connection_(default)
+=== RUN   Test_PushCommand_TLS/insecure_TLS_enabled
+--- PASS: Test_PushCommand_TLS (0.00s)
+    --- PASS: Test_PushCommand_TLS/secure_connection_(default) (0.00s)
+    --- PASS: Test_PushCommand_TLS/insecure_TLS_enabled (0.00s)
+=== RUN   Test_PushCommand_Errors
+=== RUN   Test_PushCommand_Errors/missing_required_argument
+Error: accepts 1 arg(s), received 0
+Usage:
+  push [flags]
+
+Flags:
+  -h, --help   help for push
+
+=== RUN   Test_PushCommand_Errors/invalid_image_format_-_no_slash
+Error: invalid image URL format: invalidimage
+Usage:
+  push [flags]
+
+Flags:
+  -h, --help   help for push
+
+=== RUN   Test_PushCommand_Errors/invalid_image_format_-_just_colon
+Error: invalid image URL format: :tag
+Usage:
+  push [flags]
+
+Flags:
+  -h, --help   help for push
+
+=== RUN   Test_PushCommand_Errors/valid_image_format
+=== RUN   Test_PushCommand_Errors/valid_image_format_with_port
+=== RUN   Test_PushCommand_Errors/localhost_registry
+--- PASS: Test_PushCommand_Errors (0.00s)
+    --- PASS: Test_PushCommand_Errors/missing_required_argument (0.00s)
+    --- PASS: Test_PushCommand_Errors/invalid_image_format_-_no_slash (0.00s)
+    --- PASS: Test_PushCommand_Errors/invalid_image_format_-_just_colon (0.00s)
+    --- PASS: Test_PushCommand_Errors/valid_image_format (0.00s)
+    --- PASS: Test_PushCommand_Errors/valid_image_format_with_port (0.00s)
+    --- PASS: Test_PushCommand_Errors/localhost_registry (0.00s)
+=== RUN   TestPushCommand
+=== RUN   TestPushCommand/valid_image_name
+Successfully prepared push for image: myapp:latest
+No authentication configured
+=== RUN   TestPushCommand/valid_simple_image_name
+Successfully prepared push for image: myapp
+No authentication configured
+=== RUN   TestPushCommand/valid_image_with_namespace
+Successfully prepared push for image: namespace/myapp:v1.0
+No authentication configured
+=== RUN   TestPushCommand/missing_image_name
+=== RUN   TestPushCommand/too_many_arguments
+--- PASS: TestPushCommand (0.00s)
+    --- PASS: TestPushCommand/valid_image_name (0.00s)
+    --- PASS: TestPushCommand/valid_simple_image_name (0.00s)
+    --- PASS: TestPushCommand/valid_image_with_namespace (0.00s)
+    --- PASS: TestPushCommand/missing_image_name (0.00s)
+    --- PASS: TestPushCommand/too_many_arguments (0.00s)
+=== RUN   TestImageNameValidation
+=== RUN   TestImageNameValidation/valid_simple_name
+Successfully prepared push for image: myapp
+No authentication configured
+=== RUN   TestImageNameValidation/valid_with_tag
+Successfully prepared push for image: myapp:latest
+No authentication configured
+=== RUN   TestImageNameValidation/valid_with_namespace
+Successfully prepared push for image: namespace/myapp:v1.0
+No authentication configured
+=== RUN   TestImageNameValidation/valid_complex_name
+Successfully prepared push for image: registry.example.com/namespace/myapp:v1.2.3
+No authentication configured
+=== RUN   TestImageNameValidation/empty_name
+--- PASS: TestImageNameValidation (0.00s)
+    --- PASS: TestImageNameValidation/valid_simple_name (0.00s)
+    --- PASS: TestImageNameValidation/valid_with_tag (0.00s)
+    --- PASS: TestImageNameValidation/valid_with_namespace (0.00s)
+    --- PASS: TestImageNameValidation/valid_complex_name (0.00s)
+    --- PASS: TestImageNameValidation/empty_name (0.00s)
+=== RUN   TestPushCommandHelp
+--- PASS: TestPushCommandHelp (0.00s)
+=== RUN   TestPushCommandUsage
+--- PASS: TestPushCommandUsage (0.00s)
+=== RUN   TestRunPushFunction
+=== RUN   TestRunPushFunction/valid_execution
+--- PASS: TestRunPushFunction (0.00s)
+    --- PASS: TestRunPushFunction/valid_execution (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/push	0.011s
+=== RUN   TestReconcileCustomPkg
+    controller_test.go:52: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/pkg/controllers/custompackage/controller_test.go:52
+        	Error:      	Received unexpected error:
+        	            	unable to start control plane itself: failed to start the controlplane. retried 5 times: fork/exec ../../../bin/k8s/1.29.1-linux-arm64/etcd: no such file or directory
+        	Test:       	TestReconcileCustomPkg
+--- FAIL: TestReconcileCustomPkg (0.00s)
+=== RUN   TestReconcileCustomPkgAppSet
+    controller_test.go:265: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/pkg/controllers/custompackage/controller_test.go:265
+        	Error:      	Expected nil, but got: &fmt.wrapError{msg:"unable to start control plane itself: failed to start the controlplane. retried 5 times: fork/exec ../../../bin/k8s/1.29.1-linux-arm64/etcd: no such file or directory", err:(*fmt.wrapError)(0x40002339e0)}
+        	Test:       	TestReconcileCustomPkgAppSet
+    controller_test.go:271: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/pkg/controllers/custompackage/controller_test.go:271
+        	Error:      	Expected nil, but got: &errors.errorString{s:"must specify Config"}
+        	Test:       	TestReconcileCustomPkgAppSet
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0x1 addr=0xa0 pc=0x132dd50]
+
+goroutine 70 [running]:
+github.com/cnoe-io/idpbuilder/pkg/controllers/custompackage.TestReconcileCustomPkgAppSet.func1()
+	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/pkg/controllers/custompackage/controller_test.go:276 +0x30
+created by github.com/cnoe-io/idpbuilder/pkg/controllers/custompackage.TestReconcileCustomPkgAppSet in goroutine 58
+	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/pkg/controllers/custompackage/controller_test.go:275 +0x4e8
+FAIL	github.com/cnoe-io/idpbuilder/pkg/controllers/custompackage	0.024s
+=== RUN   TestGitRepositoryContentReconcile
+=== RUN   TestGitRepositoryContentReconcile/files_modified
+--- PASS: TestGitRepositoryContentReconcile (0.02s)
+    --- PASS: TestGitRepositoryContentReconcile/files_modified (0.02s)
+=== RUN   TestGitRepositoryContentReconcileEmbedded
+=== RUN   TestGitRepositoryContentReconcileEmbedded/should_update_content
+--- PASS: TestGitRepositoryContentReconcileEmbedded (0.01s)
+    --- PASS: TestGitRepositoryContentReconcileEmbedded/should_update_content (0.01s)
+=== RUN   TestGitRepositoryReconcile
+/tmp/test2699817698
+=== RUN   TestGitRepositoryReconcile/repo_updates
+--- PASS: TestGitRepositoryReconcile (0.01s)
+    --- PASS: TestGitRepositoryReconcile/repo_updates (0.01s)
+=== RUN   TestGitRepositoryPostReconcile
+--- PASS: TestGitRepositoryPostReconcile (0.00s)
+=== RUN   TestGitHubCreateRepository
+--- PASS: TestGitHubCreateRepository (0.00s)
+=== RUN   TestGitHubGetProviderCredentials
+--- PASS: TestGitHubGetProviderCredentials (0.00s)
+=== RUN   TestGitHubGetRepository
+--- PASS: TestGitHubGetRepository (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/controllers/gitrepository	0.046s
+?   	github.com/cnoe-io/idpbuilder/pkg/logger	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/printer	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/printer/types	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/push/auth	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/push/errors	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/resources/localbuild	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/util/files	[no test files]
+=== RUN   TestGetRawInstallResources
+--- PASS: TestGetRawInstallResources (0.00s)
+=== RUN   TestGetK8sInstallResources
+--- PASS: TestGetK8sInstallResources (0.05s)
+=== RUN   TestArgoCDAppAnnotation
+--- PASS: TestArgoCDAppAnnotation (0.00s)
+=== RUN   TestGetGiteaToken
+--- PASS: TestGetGiteaToken (35.01s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/controllers/localbuild	35.076s
+=== RUN   TestConvertYamlToObjects
+=== RUN   TestConvertYamlToObjects/Single_Deployment
+=== RUN   TestConvertYamlToObjects/Multi_Deployment
+--- PASS: TestConvertYamlToObjects (0.00s)
+    --- PASS: TestConvertYamlToObjects/Single_Deployment (0.00s)
+    --- PASS: TestConvertYamlToObjects/Multi_Deployment (0.00s)
+=== RUN   TestBuildCustomizedManifests
+--- PASS: TestBuildCustomizedManifests (0.25s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/k8s	0.262s
+=== RUN   TestGetConfig
+--- PASS: TestGetConfig (0.06s)
+=== RUN   TestExtraPortMappings
+--- PASS: TestExtraPortMappings (0.01s)
+=== RUN   TestGetConfigCustom
+--- PASS: TestGetConfigCustom (0.03s)
+=== RUN   TestLoadConfig
+--- PASS: TestLoadConfig (0.00s)
+=== RUN   TestExtraPortMappingsUtilFunc
+--- PASS: TestExtraPortMappingsUtilFunc (0.00s)
+=== RUN   TestFindRegistryConfig
+--- PASS: TestFindRegistryConfig (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/kind	0.104s
+=== RUN   TestDefaultDiscoveryOptions
+--- PASS: TestDefaultDiscoveryOptions (0.00s)
+=== RUN   TestDiscoverLocalImages_NonExistentPath
+--- PASS: TestDiscoverLocalImages_NonExistentPath (0.00s)
+=== RUN   TestDiscoverLocalImages_EmptyDirectory
+--- PASS: TestDiscoverLocalImages_EmptyDirectory (0.00s)
+=== RUN   TestDiscoverLocalImagesWithOptions_CustomExtensions
+--- PASS: TestDiscoverLocalImagesWithOptions_CustomExtensions (0.00s)
+=== RUN   TestIsSupportedTarball
+=== RUN   TestIsSupportedTarball/tar_file
+=== RUN   TestIsSupportedTarball/tar.gz_file
+=== RUN   TestIsSupportedTarball/tgz_file
+=== RUN   TestIsSupportedTarball/unsupported_extension
+=== RUN   TestIsSupportedTarball/no_extension
+--- PASS: TestIsSupportedTarball (0.00s)
+    --- PASS: TestIsSupportedTarball/tar_file (0.00s)
+    --- PASS: TestIsSupportedTarball/tar.gz_file (0.00s)
+    --- PASS: TestIsSupportedTarball/tgz_file (0.00s)
+    --- PASS: TestIsSupportedTarball/unsupported_extension (0.00s)
+    --- PASS: TestIsSupportedTarball/no_extension (0.00s)
+=== RUN   TestLocalImageStruct
+--- PASS: TestLocalImageStruct (0.00s)
+=== RUN   TestDiscoverLocalImagesWithOptions_MaxSizeLimit
+--- PASS: TestDiscoverLocalImagesWithOptions_MaxSizeLimit (0.00s)
+=== RUN   TestDiscoverLocalImagesWithOptions_FollowLinksOption
+--- PASS: TestDiscoverLocalImagesWithOptions_FollowLinksOption (0.00s)
+=== RUN   TestNoOpMetricsImplementsInterface
+--- PASS: TestNoOpMetricsImplementsInterface (0.00s)
+=== RUN   TestNoOpMetricsRecordPushStart
+--- PASS: TestNoOpMetricsRecordPushStart (0.00s)
+=== RUN   TestNoOpMetricsRecordPushComplete
+--- PASS: TestNoOpMetricsRecordPushComplete (0.00s)
+=== RUN   TestNoOpMetricsRecordRetry
+--- PASS: TestNoOpMetricsRecordRetry (0.00s)
+=== RUN   TestNoOpMetricsRecordProgress
+--- PASS: TestNoOpMetricsRecordProgress (0.00s)
+=== RUN   TestNoOpMetricsRecordLayerUpload
+--- PASS: TestNoOpMetricsRecordLayerUpload (0.00s)
+=== RUN   TestNoOpMetricsAllMethodsConcurrent
+--- PASS: TestNoOpMetricsAllMethodsConcurrent (0.00s)
+=== RUN   TestNoOpMetricsNoSideEffects
+--- PASS: TestNoOpMetricsNoSideEffects (0.00s)
+=== RUN   TestNewPushOperationFromCommand
+=== RUN   TestNewPushOperationFromCommand/valid_configuration
+=== RUN   TestNewPushOperationFromCommand/anonymous_auth
+=== RUN   TestNewPushOperationFromCommand/default_build_path
+--- PASS: TestNewPushOperationFromCommand (0.00s)
+    --- PASS: TestNewPushOperationFromCommand/valid_configuration (0.00s)
+    --- PASS: TestNewPushOperationFromCommand/anonymous_auth (0.00s)
+    --- PASS: TestNewPushOperationFromCommand/default_build_path (0.00s)
+=== RUN   TestSetupAuthentication
+=== RUN   TestSetupAuthentication/anonymous_auth
+=== RUN   TestSetupAuthentication/basic_auth
+--- PASS: TestSetupAuthentication (0.00s)
+    --- PASS: TestSetupAuthentication/anonymous_auth (0.00s)
+    --- PASS: TestSetupAuthentication/basic_auth (0.00s)
+=== RUN   TestSetupTransport
+=== RUN   TestSetupTransport/secure_transport
+=== RUN   TestSetupTransport/insecure_transport
+--- PASS: TestSetupTransport (0.00s)
+    --- PASS: TestSetupTransport/secure_transport (0.00s)
+    --- PASS: TestSetupTransport/insecure_transport (0.00s)
+=== RUN   TestPushOperationResult
+--- PASS: TestPushOperationResult (0.00s)
+=== RUN   TestFormatBytes
+=== RUN   TestFormatBytes/bytes
+=== RUN   TestFormatBytes/kilobytes
+=== RUN   TestFormatBytes/megabytes
+=== RUN   TestFormatBytes/gigabytes
+--- PASS: TestFormatBytes (0.00s)
+    --- PASS: TestFormatBytes/bytes (0.00s)
+    --- PASS: TestFormatBytes/kilobytes (0.00s)
+    --- PASS: TestFormatBytes/megabytes (0.00s)
+    --- PASS: TestFormatBytes/gigabytes (0.00s)
+=== RUN   TestPushImagesWithNoImages
+--- PASS: TestPushImagesWithNoImages (0.00s)
+=== RUN   TestDiscoverImages
+--- PASS: TestDiscoverImages (0.00s)
+=== RUN   TestValidateImages
+--- PASS: TestValidateImages (0.00s)
+=== RUN   TestPushImagesCommand
+--- PASS: TestPushImagesCommand (0.00s)
+=== RUN   TestPushOperationWithContext
+--- PASS: TestPushOperationWithContext (0.00s)
+=== RUN   TestPushOperationDefaults
+--- PASS: TestPushOperationDefaults (0.00s)
+=== RUN   TestPushOperationResultMetrics
+--- PASS: TestPushOperationResultMetrics (0.00s)
+=== RUN   TestPushOperation_ErrorHandling
+=== RUN   TestPushOperation_ErrorHandling/valid_empty_directory
+--- PASS: TestPushOperation_ErrorHandling (0.00s)
+    --- PASS: TestPushOperation_ErrorHandling/valid_empty_directory (0.00s)
+=== RUN   TestStreamingPusherBufferPool
+--- PASS: TestStreamingPusherBufferPool (0.00s)
+=== RUN   TestStreamingPusherOptions
+=== RUN   TestStreamingPusherOptions/default_options
+=== RUN   TestStreamingPusherOptions/custom_chunk_size
+=== RUN   TestStreamingPusherOptions/custom_max_concurrent
+=== RUN   TestStreamingPusherOptions/both_options
+--- PASS: TestStreamingPusherOptions (0.00s)
+    --- PASS: TestStreamingPusherOptions/default_options (0.00s)
+    --- PASS: TestStreamingPusherOptions/custom_chunk_size (0.00s)
+    --- PASS: TestStreamingPusherOptions/custom_max_concurrent (0.00s)
+    --- PASS: TestStreamingPusherOptions/both_options (0.00s)
+=== RUN   TestStreamingPusherConcurrency
+--- PASS: TestStreamingPusherConcurrency (0.01s)
+=== RUN   TestStreamingPusherConcurrencyWithCancellation
+--- PASS: TestStreamingPusherConcurrencyWithCancellation (0.00s)
+=== RUN   TestStreamWithProgress
+=== RUN   TestStreamWithProgress/small_data
+=== RUN   TestStreamWithProgress/large_data
+=== RUN   TestStreamWithProgress/empty_data
+--- PASS: TestStreamWithProgress (0.00s)
+    --- PASS: TestStreamWithProgress/small_data (0.00s)
+    --- PASS: TestStreamWithProgress/large_data (0.00s)
+    --- PASS: TestStreamWithProgress/empty_data (0.00s)
+=== RUN   TestStreamWithProgressCancellation
+--- PASS: TestStreamWithProgressCancellation (0.05s)
+=== RUN   TestStreamWithProgressNilProgress
+--- PASS: TestStreamWithProgressNilProgress (0.00s)
+=== RUN   TestStreamWithProgressWriteError
+--- PASS: TestStreamWithProgressWriteError (0.00s)
+=== RUN   TestConnectionPoolGetPut
+--- PASS: TestConnectionPoolGetPut (0.00s)
+=== RUN   TestConnectionPoolMultipleRegistries
+--- PASS: TestConnectionPoolMultipleRegistries (0.00s)
+=== RUN   TestConnectionPoolClose
+--- PASS: TestConnectionPoolClose (0.00s)
+=== RUN   TestConnectionPoolConcurrency
+--- PASS: TestConnectionPoolConcurrency (0.00s)
+=== RUN   TestDefaultPusherOptions
+--- PASS: TestDefaultPusherOptions (0.00s)
+=== RUN   TestNewImagePusher
+--- PASS: TestNewImagePusher (0.00s)
+=== RUN   TestNewImagePusherWithOptions
+--- PASS: TestNewImagePusherWithOptions (0.00s)
+=== RUN   TestNewImagePusher_NilTransport
+--- PASS: TestNewImagePusher_NilTransport (0.00s)
+=== RUN   TestPushResult
+--- PASS: TestPushResult (0.00s)
+=== RUN   TestIsRetryableError
+=== RUN   TestIsRetryableError/connection_refused
+=== RUN   TestIsRetryableError/connection_reset
+=== RUN   TestIsRetryableError/timeout
+=== RUN   TestIsRetryableError/503_service_unavailable
+=== RUN   TestIsRetryableError/502_bad_gateway
+=== RUN   TestIsRetryableError/rate_limit
+=== RUN   TestIsRetryableError/network_unreachable
+=== RUN   TestIsRetryableError/non-retryable_error
+=== RUN   TestIsRetryableError/authentication_failed
+--- PASS: TestIsRetryableError (0.00s)
+    --- PASS: TestIsRetryableError/connection_refused (0.00s)
+    --- PASS: TestIsRetryableError/connection_reset (0.00s)
+    --- PASS: TestIsRetryableError/timeout (0.00s)
+    --- PASS: TestIsRetryableError/503_service_unavailable (0.00s)
+    --- PASS: TestIsRetryableError/502_bad_gateway (0.00s)
+    --- PASS: TestIsRetryableError/rate_limit (0.00s)
+    --- PASS: TestIsRetryableError/network_unreachable (0.00s)
+    --- PASS: TestIsRetryableError/non-retryable_error (0.00s)
+    --- PASS: TestIsRetryableError/authentication_failed (0.00s)
+=== RUN   TestContains
+=== RUN   TestContains/exact_match
+=== RUN   TestContains/substring_at_start
+=== RUN   TestContains/substring_at_end
+=== RUN   TestContains/substring_in_middle
+=== RUN   TestContains/not_found
+=== RUN   TestContains/empty_substring
+--- PASS: TestContains (0.00s)
+    --- PASS: TestContains/exact_match (0.00s)
+    --- PASS: TestContains/substring_at_start (0.00s)
+    --- PASS: TestContains/substring_at_end (0.00s)
+    --- PASS: TestContains/substring_in_middle (0.00s)
+    --- PASS: TestContains/not_found (0.00s)
+    --- PASS: TestContains/empty_substring (0.00s)
+=== RUN   TestPusherOptions_CustomConfiguration
+--- PASS: TestPusherOptions_CustomConfiguration (0.00s)
+=== RUN   TestBuildRemoteOptions
+--- PASS: TestBuildRemoteOptions (0.00s)
+=== RUN   TestProgressReporter_Interface
+--- PASS: TestProgressReporter_Interface (0.00s)
+=== RUN   TestPusher_WithCancellation
+--- PASS: TestPusher_WithCancellation (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/push	0.069s
+=== RUN   TestExponentialBackoff_NextDelay
+=== RUN   TestExponentialBackoff_NextDelay/first_attempt
+=== RUN   TestExponentialBackoff_NextDelay/second_attempt
+=== RUN   TestExponentialBackoff_NextDelay/third_attempt
+=== RUN   TestExponentialBackoff_NextDelay/fourth_attempt
+=== RUN   TestExponentialBackoff_NextDelay/capped_at_max
+--- PASS: TestExponentialBackoff_NextDelay (0.00s)
+    --- PASS: TestExponentialBackoff_NextDelay/first_attempt (0.00s)
+    --- PASS: TestExponentialBackoff_NextDelay/second_attempt (0.00s)
+    --- PASS: TestExponentialBackoff_NextDelay/third_attempt (0.00s)
+    --- PASS: TestExponentialBackoff_NextDelay/fourth_attempt (0.00s)
+    --- PASS: TestExponentialBackoff_NextDelay/capped_at_max (0.00s)
+=== RUN   TestExponentialBackoff_WithJitter
+--- PASS: TestExponentialBackoff_WithJitter (0.00s)
+=== RUN   TestExponentialBackoff_MaxDelayEnforced
+--- PASS: TestExponentialBackoff_MaxDelayEnforced (0.00s)
+=== RUN   TestExponentialBackoff_NegativeAttempt
+--- PASS: TestExponentialBackoff_NegativeAttempt (0.00s)
+=== RUN   TestWait_CompletesSuccessfully
+--- PASS: TestWait_CompletesSuccessfully (0.01s)
+=== RUN   TestWait_ContextCancellation
+--- PASS: TestWait_ContextCancellation (0.00s)
+=== RUN   TestWait_ContextTimeout
+--- PASS: TestWait_ContextTimeout (0.05s)
+=== RUN   TestConstantBackoff_NextDelay
+--- PASS: TestConstantBackoff_NextDelay (0.00s)
+=== RUN   TestConstantBackoff_Reset
+--- PASS: TestConstantBackoff_Reset (0.00s)
+=== RUN   TestNewExponentialBackoff_Defaults
+--- PASS: TestNewExponentialBackoff_Defaults (0.00s)
+=== RUN   TestNewExponentialBackoffWithConfig
+--- PASS: TestNewExponentialBackoffWithConfig (0.00s)
+=== RUN   TestMaxRetriesExceededError_Error
+--- PASS: TestMaxRetriesExceededError_Error (0.00s)
+=== RUN   TestMaxRetriesExceededError_Unwrap
+--- PASS: TestMaxRetriesExceededError_Unwrap (0.00s)
+=== RUN   TestMaxRetriesExceededError_Is
+--- PASS: TestMaxRetriesExceededError_Is (0.00s)
+=== RUN   TestWithRetry_Success
+--- PASS: TestWithRetry_Success (0.00s)
+=== RUN   TestWithRetry_SuccessAfterRetries
+--- PASS: TestWithRetry_SuccessAfterRetries (0.02s)
+=== RUN   TestWithRetry_MaxRetriesExceeded
+--- PASS: TestWithRetry_MaxRetriesExceeded (0.02s)
+=== RUN   TestWithRetry_NonRetryableError
+--- PASS: TestWithRetry_NonRetryableError (0.00s)
+=== RUN   TestWithRetry_ContextCanceled
+--- PASS: TestWithRetry_ContextCanceled (0.10s)
+=== RUN   TestWithRetry_InvalidMaxAttempts
+--- PASS: TestWithRetry_InvalidMaxAttempts (0.00s)
+=== RUN   TestWithRetry_NilConfig
+--- PASS: TestWithRetry_NilConfig (0.00s)
+=== RUN   TestWithRetry_CustomShouldRetry
+--- PASS: TestWithRetry_CustomShouldRetry (0.01s)
+=== RUN   TestIsRetryable_ContextErrors
+=== RUN   TestIsRetryable_ContextErrors/nil_error
+=== RUN   TestIsRetryable_ContextErrors/context_canceled
+=== RUN   TestIsRetryable_ContextErrors/context_deadline_exceeded
+--- PASS: TestIsRetryable_ContextErrors (0.00s)
+    --- PASS: TestIsRetryable_ContextErrors/nil_error (0.00s)
+    --- PASS: TestIsRetryable_ContextErrors/context_canceled (0.00s)
+    --- PASS: TestIsRetryable_ContextErrors/context_deadline_exceeded (0.00s)
+=== RUN   TestIsRetryable_NetworkErrors
+=== RUN   TestIsRetryable_NetworkErrors/connection_refused
+=== RUN   TestIsRetryable_NetworkErrors/connection_reset
+=== RUN   TestIsRetryable_NetworkErrors/broken_pipe
+=== RUN   TestIsRetryable_NetworkErrors/timeout
+=== RUN   TestIsRetryable_NetworkErrors/error_message_with_connection_refused
+=== RUN   TestIsRetryable_NetworkErrors/error_message_with_i/o_timeout
+=== RUN   TestIsRetryable_NetworkErrors/error_message_with_EOF
+--- PASS: TestIsRetryable_NetworkErrors (0.00s)
+    --- PASS: TestIsRetryable_NetworkErrors/connection_refused (0.00s)
+    --- PASS: TestIsRetryable_NetworkErrors/connection_reset (0.00s)
+    --- PASS: TestIsRetryable_NetworkErrors/broken_pipe (0.00s)
+    --- PASS: TestIsRetryable_NetworkErrors/timeout (0.00s)
+    --- PASS: TestIsRetryable_NetworkErrors/error_message_with_connection_refused (0.00s)
+    --- PASS: TestIsRetryable_NetworkErrors/error_message_with_i/o_timeout (0.00s)
+    --- PASS: TestIsRetryable_NetworkErrors/error_message_with_EOF (0.00s)
+=== RUN   TestIsRetryable_HTTPErrors
+=== RUN   TestIsRetryable_HTTPErrors/HTTP_408
+=== RUN   TestIsRetryable_HTTPErrors/HTTP_429
+=== RUN   TestIsRetryable_HTTPErrors/HTTP_500
+=== RUN   TestIsRetryable_HTTPErrors/HTTP_502
+=== RUN   TestIsRetryable_HTTPErrors/HTTP_503
+=== RUN   TestIsRetryable_HTTPErrors/HTTP_504
+=== RUN   TestIsRetryable_HTTPErrors/HTTP_200
+=== RUN   TestIsRetryable_HTTPErrors/HTTP_404
+--- PASS: TestIsRetryable_HTTPErrors (0.00s)
+    --- PASS: TestIsRetryable_HTTPErrors/HTTP_408 (0.00s)
+    --- PASS: TestIsRetryable_HTTPErrors/HTTP_429 (0.00s)
+    --- PASS: TestIsRetryable_HTTPErrors/HTTP_500 (0.00s)
+    --- PASS: TestIsRetryable_HTTPErrors/HTTP_502 (0.00s)
+    --- PASS: TestIsRetryable_HTTPErrors/HTTP_503 (0.00s)
+    --- PASS: TestIsRetryable_HTTPErrors/HTTP_504 (0.00s)
+    --- PASS: TestIsRetryable_HTTPErrors/HTTP_200 (0.00s)
+    --- PASS: TestIsRetryable_HTTPErrors/HTTP_404 (0.00s)
+=== RUN   TestIsRetryable_NonRetryableErrors
+=== RUN   TestIsRetryable_NonRetryableErrors/generic_error
+=== RUN   TestIsRetryable_NonRetryableErrors/validation_error
+=== RUN   TestIsRetryable_NonRetryableErrors/not_found
+--- PASS: TestIsRetryable_NonRetryableErrors (0.00s)
+    --- PASS: TestIsRetryable_NonRetryableErrors/generic_error (0.00s)
+    --- PASS: TestIsRetryable_NonRetryableErrors/validation_error (0.00s)
+    --- PASS: TestIsRetryable_NonRetryableErrors/not_found (0.00s)
+=== RUN   TestWithRetrySimple_Success
+--- PASS: TestWithRetrySimple_Success (0.00s)
+=== RUN   TestWithRetryN_CustomAttempts
+--- PASS: TestWithRetryN_CustomAttempts (1.62s)
+=== RUN   TestRetryIfTransient_OnlyRetriesNetworkErrors
+=== RUN   TestRetryIfTransient_OnlyRetriesNetworkErrors/retries_network_error
+=== RUN   TestRetryIfTransient_OnlyRetriesNetworkErrors/does_not_retry_non-network_error
+--- PASS: TestRetryIfTransient_OnlyRetriesNetworkErrors (0.11s)
+    --- PASS: TestRetryIfTransient_OnlyRetriesNetworkErrors/retries_network_error (0.11s)
+    --- PASS: TestRetryIfTransient_OnlyRetriesNetworkErrors/does_not_retry_non-network_error (0.00s)
+=== RUN   TestDefaultConfig
+--- PASS: TestDefaultConfig (0.00s)
+=== RUN   TestIsRetryable_TemporaryNetError
+=== RUN   TestIsRetryable_TemporaryNetError/temporary_error
+=== RUN   TestIsRetryable_TemporaryNetError/timeout_error
+=== RUN   TestIsRetryable_TemporaryNetError/both_temporary_and_timeout
+=== RUN   TestIsRetryable_TemporaryNetError/neither_temporary_nor_timeout
+--- PASS: TestIsRetryable_TemporaryNetError (0.00s)
+    --- PASS: TestIsRetryable_TemporaryNetError/temporary_error (0.00s)
+    --- PASS: TestIsRetryable_TemporaryNetError/timeout_error (0.00s)
+    --- PASS: TestIsRetryable_TemporaryNetError/both_temporary_and_timeout (0.00s)
+    --- PASS: TestIsRetryable_TemporaryNetError/neither_temporary_nor_timeout (0.00s)
+=== RUN   TestWithRetry_AttemptNumber
+--- PASS: TestWithRetry_AttemptNumber (0.02s)
+=== RUN   ExampleWithRetry
+--- PASS: ExampleWithRetry (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/push/retry	1.984s
+=== RUN   TestNewConfig
+=== RUN   TestNewConfig/secure_mode_(default)
+=== RUN   TestNewConfig/insecure_mode_for_development
+--- PASS: TestNewConfig (0.00s)
+    --- PASS: TestNewConfig/secure_mode_(default) (0.00s)
+    --- PASS: TestNewConfig/insecure_mode_for_development (0.00s)
+=== RUN   TestToTLSConfig
+=== RUN   TestToTLSConfig/secure_TLS_config
+=== RUN   TestToTLSConfig/insecure_TLS_config
+--- PASS: TestToTLSConfig (0.00s)
+    --- PASS: TestToTLSConfig/secure_TLS_config (0.00s)
+    --- PASS: TestToTLSConfig/insecure_TLS_config (0.00s)
+=== RUN   TestApplyToHTTPClient
+=== RUN   TestApplyToHTTPClient/apply_to_client_with_nil_transport
+⚠️  TLS certificate verification disabled for HTTP client
+=== RUN   TestApplyToHTTPClient/apply_to_client_with_existing_transport
+=== RUN   TestApplyToHTTPClient/apply_insecure_config
+⚠️  TLS certificate verification disabled for HTTP client
+--- PASS: TestApplyToHTTPClient (0.00s)
+    --- PASS: TestApplyToHTTPClient/apply_to_client_with_nil_transport (0.00s)
+    --- PASS: TestApplyToHTTPClient/apply_to_client_with_existing_transport (0.00s)
+    --- PASS: TestApplyToHTTPClient/apply_insecure_config (0.00s)
+=== RUN   TestApplyToTransport
+=== RUN   TestApplyToTransport/apply_secure_config_to_transport
+=== RUN   TestApplyToTransport/apply_insecure_config_to_transport
+⚠️  TLS certificate verification disabled for HTTP transport
+--- PASS: TestApplyToTransport (0.00s)
+    --- PASS: TestApplyToTransport/apply_secure_config_to_transport (0.00s)
+    --- PASS: TestApplyToTransport/apply_insecure_config_to_transport (0.00s)
+=== RUN   TestIsSecure
+=== RUN   TestIsSecure/secure_configuration
+=== RUN   TestIsSecure/insecure_configuration
+--- PASS: TestIsSecure (0.00s)
+    --- PASS: TestIsSecure/secure_configuration (0.00s)
+    --- PASS: TestIsSecure/insecure_configuration (0.00s)
+=== RUN   TestString
+=== RUN   TestString/secure_configuration_string
+=== RUN   TestString/insecure_configuration_string
+--- PASS: TestString (0.00s)
+    --- PASS: TestString/secure_configuration_string (0.00s)
+    --- PASS: TestString/insecure_configuration_string (0.00s)
+=== RUN   TestConfigurationIntegration
+=== RUN   TestConfigurationIntegration/complete_secure_configuration_flow
+=== RUN   TestConfigurationIntegration/complete_insecure_configuration_flow
+⚠️  TLS certificate verification disabled for HTTP transport
+--- PASS: TestConfigurationIntegration (0.00s)
+    --- PASS: TestConfigurationIntegration/complete_secure_configuration_flow (0.00s)
+    --- PASS: TestConfigurationIntegration/complete_insecure_configuration_flow (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/tls	0.002s
+=== RUN   TestCloneRemoteRepoToDir
+--- PASS: TestCloneRemoteRepoToDir (2.00s)
+=== RUN   TestCopyTreeToTree
+--- PASS: TestCopyTreeToTree (0.77s)
+=== RUN   TestGetWorktreeYamlFiles
+--- PASS: TestGetWorktreeYamlFiles (0.75s)
+=== RUN   TestGiteaBaseUrl
+--- PASS: TestGiteaBaseUrl (0.00s)
+=== RUN   TestURLParse
+--- PASS: TestURLParse (0.00s)
+=== RUN   TestGeneratePassword
+--- PASS: TestGeneratePassword (0.03s)
+=== RUN   TestSetPackageLabels
+=== RUN   TestSetPackageLabels/No_initial_labels
+=== RUN   TestSetPackageLabels/With_initial_labels
+=== RUN   TestSetPackageLabels/ArgoCD_package
+=== RUN   TestSetPackageLabels/Gitea_package
+=== RUN   TestSetPackageLabels/IngressNginx_package
+--- PASS: TestSetPackageLabels (0.00s)
+    --- PASS: TestSetPackageLabels/No_initial_labels (0.00s)
+    --- PASS: TestSetPackageLabels/With_initial_labels (0.00s)
+    --- PASS: TestSetPackageLabels/ArgoCD_package (0.00s)
+    --- PASS: TestSetPackageLabels/Gitea_package (0.00s)
+    --- PASS: TestSetPackageLabels/IngressNginx_package (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/util	3.554s
+=== RUN   TestWriteFS
+=== RUN   TestWriteFS/single_file
+=== RUN   TestWriteFS/file_in_subdir
+--- PASS: TestWriteFS (0.00s)
+    --- PASS: TestWriteFS/single_file (0.00s)
+    --- PASS: TestWriteFS/file_in_subdir (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/util/fs	0.001s
+=== RUN   TestGetFixturePath
+--- PASS: TestGetFixturePath (0.00s)
+=== RUN   TestLoadFixture
+--- PASS: TestLoadFixture (0.00s)
+=== RUN   TestLoadJSONFixture
+--- PASS: TestLoadJSONFixture (0.00s)
+=== RUN   TestCreateTempRegistry
+--- PASS: TestCreateTempRegistry (0.00s)
+=== RUN   TestSetupTestCredentials
+--- PASS: TestSetupTestCredentials (0.00s)
+=== RUN   TestSetupTestTLS
+--- PASS: TestSetupTestTLS (0.00s)
+=== RUN   TestMockGiteaRegistry
+--- PASS: TestMockGiteaRegistry (0.00s)
+=== RUN   TestCreateTestImageFixture
+--- PASS: TestCreateTestImageFixture (0.00s)
+=== RUN   TestCompareManifests
+--- PASS: TestCompareManifests (0.00s)
+=== RUN   TestSetupTestEnvironment
+--- PASS: TestSetupTestEnvironment (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/test	0.002s
+=== RUN   TestBasicAuthentication
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497330 --config /tmp/idpbuilder-test-2593735619/idpbuilder-config.yaml --wait
+    auth_scenarios_test.go:22: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/auth_scenarios_test.go:22
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestBasicAuthentication
+--- FAIL: TestBasicAuthentication (0.06s)
+=== RUN   TestTokenAuthentication
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497330 --config /tmp/idpbuilder-test-2660900120/idpbuilder-config.yaml --wait
+    auth_scenarios_test.go:104: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/auth_scenarios_test.go:104
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestTokenAuthentication
+--- FAIL: TestTokenAuthentication (0.09s)
+=== RUN   TestNoAuthRegistry
+    auth_scenarios_test.go:177: No-auth registry not available in test environment
+--- SKIP: TestNoAuthRegistry (0.00s)
+=== RUN   TestAuthenticationWithTLS
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497330 --config /tmp/idpbuilder-test-2723509952/idpbuilder-config.yaml --wait
+    auth_scenarios_test.go:201: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/auth_scenarios_test.go:201
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestAuthenticationWithTLS
+--- FAIL: TestAuthenticationWithTLS (0.06s)
+=== RUN   TestCredentialCaching
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497330 --config /tmp/idpbuilder-test-3641531146/idpbuilder-config.yaml --wait
+    auth_scenarios_test.go:309: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/auth_scenarios_test.go:309
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestCredentialCaching
+--- FAIL: TestCredentialCaching (0.08s)
+=== RUN   TestAuthEnvironmentVariables
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497330 --config /tmp/idpbuilder-test-708151572/idpbuilder-config.yaml --wait
+    auth_scenarios_test.go:354: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/auth_scenarios_test.go:354
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestAuthEnvironmentVariables
+--- FAIL: TestAuthEnvironmentVariables (0.13s)
+=== RUN   TestE2EBasicPush
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497330 --config /tmp/idpbuilder-test-4099383901/idpbuilder-config.yaml --wait
+    push_e2e_test.go:23: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/push_e2e_test.go:23
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestE2EBasicPush
+--- FAIL: TestE2EBasicPush (0.10s)
+=== RUN   TestE2EMultiArchPush
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497330 --config /tmp/idpbuilder-test-4139120592/idpbuilder-config.yaml --wait
+    push_e2e_test.go:55: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/push_e2e_test.go:55
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestE2EMultiArchPush
+--- FAIL: TestE2EMultiArchPush (0.23s)
+=== RUN   TestE2ELargeImagePush
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497330 --config /tmp/idpbuilder-test-4262258876/idpbuilder-config.yaml --wait
+    push_e2e_test.go:86: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/push_e2e_test.go:86
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestE2ELargeImagePush
+--- FAIL: TestE2ELargeImagePush (0.13s)
+=== RUN   TestE2ETagValidation
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497331 --config /tmp/idpbuilder-test-3269283796/idpbuilder-config.yaml --wait
+    push_e2e_test.go:120: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/push_e2e_test.go:120
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestE2ETagValidation
+--- FAIL: TestE2ETagValidation (0.14s)
+=== RUN   TestE2EDigestValidation
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497331 --config /tmp/idpbuilder-test-3010761508/idpbuilder-config.yaml --wait
+    push_e2e_test.go:170: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/push_e2e_test.go:170
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestE2EDigestValidation
+--- FAIL: TestE2EDigestValidation (0.15s)
+=== RUN   TestE2ECompleteWorkflow
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497331 --config /tmp/idpbuilder-test-201447825/idpbuilder-config.yaml --wait
+    push_e2e_test.go:206: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/push_e2e_test.go:206
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestE2ECompleteWorkflow
+--- FAIL: TestE2ECompleteWorkflow (0.20s)
+=== RUN   TestE2EStreamingProgress
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497331 --config /tmp/idpbuilder-test-915818708/idpbuilder-config.yaml --wait
+    push_e2e_test.go:260: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/push_e2e_test.go:260
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestE2EStreamingProgress
+--- FAIL: TestE2EStreamingProgress (0.07s)
+=== RUN   TestE2EErrorRecovery
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497331 --config /tmp/idpbuilder-test-187435932/idpbuilder-config.yaml --wait
+    push_e2e_test.go:395: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/push_e2e_test.go:395
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestE2EErrorRecovery
+--- FAIL: TestE2EErrorRecovery (0.08s)
+=== RUN   TestNetworkFailureRecovery
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497331 --config /tmp/idpbuilder-test-3107752471/idpbuilder-config.yaml --wait
+    retry_logic_test.go:22: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/retry_logic_test.go:22
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestNetworkFailureRecovery
+--- FAIL: TestNetworkFailureRecovery (0.19s)
+=== RUN   TestTransientErrorHandling
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497331 --config /tmp/idpbuilder-test-154781282/idpbuilder-config.yaml --wait
+    retry_logic_test.go:95: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/retry_logic_test.go:95
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestTransientErrorHandling
+--- FAIL: TestTransientErrorHandling (0.19s)
+=== RUN   TestBackoffStrategy
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497332 --config /tmp/idpbuilder-test-1098844782/idpbuilder-config.yaml --wait
+    retry_logic_test.go:175: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/retry_logic_test.go:175
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestBackoffStrategy
+--- FAIL: TestBackoffStrategy (0.05s)
+=== RUN   TestMaxRetryLimit
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497332 --config /tmp/idpbuilder-test-705000550/idpbuilder-config.yaml --wait
+    retry_logic_test.go:247: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/retry_logic_test.go:247
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestMaxRetryLimit
+--- FAIL: TestMaxRetryLimit (0.11s)
+=== RUN   TestConcurrentRetriesIsolation
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497332 --config /tmp/idpbuilder-test-646635200/idpbuilder-config.yaml --wait
+    retry_logic_test.go:315: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/retry_logic_test.go:315
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestConcurrentRetriesIsolation
+--- FAIL: TestConcurrentRetriesIsolation (0.10s)
+=== RUN   TestRetryMetrics
+    setup_test.go:46: Starting idpbuilder cluster setup...
+    setup_test.go:84: Executing: idpbuilder create --name idp-test-1759497332 --config /tmp/idpbuilder-test-3337864867/idpbuilder-config.yaml --wait
+    retry_logic_test.go:371: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-push-oci/efforts/phase2/wave2/integration-workspace/test/integration/retry_logic_test.go:371
+        	Error:      	Received unexpected error:
+        	            	failed to start idpbuilder: exec: "idpbuilder": executable file not found in $PATH
+        	Test:       	TestRetryMetrics
+--- FAIL: TestRetryMetrics (0.07s)
+=== RUN   TestPushIntegrationSuite
+    suite_test.go:33: Integration test suite setup completed
+    suite_test.go:34: Test registry: localhost:5000
+    suite_test.go:35: Test image: localhost:5000/test-image:integration-test
+=== RUN   TestPushIntegrationSuite/TestPushIntegration_BasicFlow
+    suite_test.go:52: Starting test: TestPushIntegrationSuite/TestPushIntegration_BasicFlow
+    push_integration_test.go:15: Testing basic push flow with image: localhost:5000/test-image:integration-test
+    push_integration_test.go:26: Basic push flow test completed successfully
+    suite_test.go:57: Completed test: TestPushIntegrationSuite/TestPushIntegration_BasicFlow
+=== RUN   TestPushIntegrationSuite/TestPushIntegration_ConcurrentPush
+    suite_test.go:52: Starting test: TestPushIntegrationSuite/TestPushIntegration_ConcurrentPush
+    push_integration_test.go:161: Testing concurrent push operations
+    push_integration_test.go:172: Concurrent push 1: localhost:5000/test-image:concurrent-1
+    push_integration_test.go:172: Concurrent push 2: localhost:5000/test-image:concurrent-2
+    push_integration_test.go:172: Concurrent push 3: localhost:5000/test-image:concurrent-3
+    push_integration_test.go:177: Concurrent push test completed
+    suite_test.go:57: Completed test: TestPushIntegrationSuite/TestPushIntegration_ConcurrentPush
+=== RUN   TestPushIntegrationSuite/TestPushIntegration_ErrorHandling
+    suite_test.go:52: Starting test: TestPushIntegrationSuite/TestPushIntegration_ErrorHandling
+=== RUN   TestPushIntegrationSuite/TestPushIntegration_ErrorHandling/missing_image_URL
+    push_integration_test.go:108: Testing error scenario: missing image URL
+    push_integration_test.go:109: Args: [push]
+    push_integration_test.go:110: Expect error: true
+    push_integration_test.go:115: Expected error message should contain: required
+=== RUN   TestPushIntegrationSuite/TestPushIntegration_ErrorHandling/invalid_image_format
+    push_integration_test.go:108: Testing error scenario: invalid image format
+    push_integration_test.go:109: Args: [push invalid-image]
+    push_integration_test.go:110: Expect error: true
+    push_integration_test.go:115: Expected error message should contain: invalid image URL format
+=== RUN   TestPushIntegrationSuite/TestPushIntegration_ErrorHandling/too_many_arguments
+    push_integration_test.go:108: Testing error scenario: too many arguments
+    push_integration_test.go:109: Args: [push image1 image2]
+    push_integration_test.go:110: Expect error: true
+    push_integration_test.go:115: Expected error message should contain: too many
+=== RUN   TestPushIntegrationSuite/TestPushIntegration_ErrorHandling/valid_image_URL
+    push_integration_test.go:108: Testing error scenario: valid image URL
+    push_integration_test.go:109: Args: [push localhost:5000/test-image:integration-test]
+    push_integration_test.go:110: Expect error: false
+    push_integration_test.go:117: Command should execute successfully
+=== NAME  TestPushIntegrationSuite/TestPushIntegration_ErrorHandling
+    suite_test.go:57: Completed test: TestPushIntegrationSuite/TestPushIntegration_ErrorHandling
+=== RUN   TestPushIntegrationSuite/TestPushIntegration_RealCommandExecution
+    suite_test.go:52: Starting test: TestPushIntegrationSuite/TestPushIntegration_RealCommandExecution
+    push_integration_test.go:125: Testing real command execution structure
+    push_integration_test.go:132: Simulating push command registration check
+    push_integration_test.go:133: In a real implementation, this would verify push command is registered in root
+    push_integration_test.go:137: Push command registration test completed
+    suite_test.go:57: Completed test: TestPushIntegrationSuite/TestPushIntegration_RealCommandExecution
+=== RUN   TestPushIntegrationSuite/TestPushIntegration_Timeout
+    suite_test.go:52: Starting test: TestPushIntegrationSuite/TestPushIntegration_Timeout
+    push_integration_test.go:142: Testing command timeout handling
+    push_integration_test.go:147: Testing with timeout: 5s
+    push_integration_test.go:148: Image URL: localhost:5000/test-image:timeout-test
+    push_integration_test.go:156: Command completed in: 84ns
+    suite_test.go:57: Completed test: TestPushIntegrationSuite/TestPushIntegration_Timeout
+=== RUN   TestPushIntegrationSuite/TestPushIntegration_WithAuth
+    suite_test.go:52: Starting test: TestPushIntegrationSuite/TestPushIntegration_WithAuth
+    push_integration_test.go:35: Testing push with authentication - User: testuser, Password: testpass, Image: localhost:5000/test-image:auth-test
+    push_integration_test.go:46: Expected output: Pushing image to: localhost:5000/test-image:auth-test
+    push_integration_test.go:46: Expected output: Using authentication for user: testuser
+    push_integration_test.go:46: Expected output: Image pushed successfully
+    push_integration_test.go:49: Authentication test completed successfully
+    suite_test.go:57: Completed test: TestPushIntegrationSuite/TestPushIntegration_WithAuth
+=== RUN   TestPushIntegrationSuite/TestPushIntegration_WithTLS
+    suite_test.go:52: Starting test: TestPushIntegrationSuite/TestPushIntegration_WithTLS
+    push_integration_test.go:56: Testing push with insecure TLS - Image: localhost:5000/test-image:tls-test
+    push_integration_test.go:67: Expected TLS output: Pushing image to: localhost:5000/test-image:tls-test
+    push_integration_test.go:67: Expected TLS output: Warning: Using insecure TLS connection
+    push_integration_test.go:67: Expected TLS output: Image pushed successfully
+    push_integration_test.go:70: TLS configuration test completed successfully
+    suite_test.go:57: Completed test: TestPushIntegrationSuite/TestPushIntegration_WithTLS
+=== NAME  TestPushIntegrationSuite
+    suite_test.go:47: Integration test suite cleanup completed
+--- PASS: TestPushIntegrationSuite (0.00s)
+    --- PASS: TestPushIntegrationSuite/TestPushIntegration_BasicFlow (0.00s)
+    --- PASS: TestPushIntegrationSuite/TestPushIntegration_ConcurrentPush (0.00s)
+    --- PASS: TestPushIntegrationSuite/TestPushIntegration_ErrorHandling (0.00s)
+        --- PASS: TestPushIntegrationSuite/TestPushIntegration_ErrorHandling/missing_image_URL (0.00s)
+        --- PASS: TestPushIntegrationSuite/TestPushIntegration_ErrorHandling/invalid_image_format (0.00s)
+        --- PASS: TestPushIntegrationSuite/TestPushIntegration_ErrorHandling/too_many_arguments (0.00s)
+        --- PASS: TestPushIntegrationSuite/TestPushIntegration_ErrorHandling/valid_image_URL (0.00s)
+    --- PASS: TestPushIntegrationSuite/TestPushIntegration_RealCommandExecution (0.00s)
+    --- PASS: TestPushIntegrationSuite/TestPushIntegration_Timeout (0.00s)
+    --- PASS: TestPushIntegrationSuite/TestPushIntegration_WithAuth (0.00s)
+    --- PASS: TestPushIntegrationSuite/TestPushIntegration_WithTLS (0.00s)
+FAIL
+FAIL	github.com/cnoe-io/idpbuilder/test/integration	2.226s
+=== RUN   TestPushCommandFlags
+    push_flags_test.go:30: Expected username short flag (-u) to exist
+    push_flags_test.go:35: Expected password short flag (-p) to exist
+--- FAIL: TestPushCommandFlags (0.00s)
+=== RUN   TestCredentialExtraction
+--- PASS: TestCredentialExtraction (0.00s)
+FAIL
+FAIL	github.com/cnoe-io/idpbuilder/tests/cmd	0.009s
+FAIL
