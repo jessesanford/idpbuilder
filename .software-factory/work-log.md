@@ -265,3 +265,11 @@ MERGED: E1.2.2-split-001 at $(date -Iseconds)
 
 ## MERGE 3/6: registry-authentication-split-002 (434 lines)
 **Start Time**: $(date -Iseconds)
+**Result**: SUCCESS - Conflicts in pkg/push/retry/ files resolved
+**Resolution**: Accepted split-002 versions (extends split-001 functionality per R302)
+**Commit**: c73d950
+**Files Added**: pkg/push/retry/*_test.go test files (434 lines)
+MERGED: E1.2.2-split-002 at $(date -Iseconds)
+
+## MERGE 4/6: image-push-operations-split-001 (552 lines)
+**Start Time**: $(date -Iseconds)
