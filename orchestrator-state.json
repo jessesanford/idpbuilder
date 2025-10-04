@@ -1,12 +1,31 @@
 {
   "current_phase": 1,
   "current_wave": 1,
-  "current_state": "PLANNING",
-  "previous_state": "SPAWN_ARCHITECT_MASTER_PLANNING",
-  "transition_time": "2025-09-23T17:31:45Z",
+  "current_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+  "previous_state": "MONITOR_IMPLEMENTATION",
+  "transition_time": "2025-09-29T20:32:41Z",
   "efforts_in_progress": [],
   "efforts_completed": [],
-  "split_tracking": {},
+  "split_tracking": {
+    "E1.2.2-registry-authentication": {
+      "splits": [
+        {
+          "status": "IMPLEMENTATION_COMPLETE",
+          "implementation_complete": "2025-09-29T20:26:20Z",
+          "actual_lines": 519
+        }
+      ]
+    },
+    "E1.2.3-image-push-operations": {
+      "splits": [
+        {
+          "status": "IMPLEMENTATION_COMPLETE",
+          "implementation_complete": "2025-09-29T20:23:00Z",
+          "actual_lines": 552
+        }
+      ]
+    }
+  },
   "metadata_locations": {
     "project_plan": "/home/vscode/idpbuilder/planning/project/PROJECT-IMPLEMENTATION-PLAN.md",
     "phase1_plans": "/home/vscode/idpbuilder/planning/phase1/",
@@ -17,7 +36,7 @@
   "planning_files": {
     "master_plan": "/home/vscode/idpbuilder/planning/project/PROJECT-IMPLEMENTATION-PLAN.md"
   },
-  "notes": "MONITOR_REVIEWS: 2 efforts complete and accepted (1.1.1=79 lines, 1.1.3=161 lines). Effort 1.1.2 implementation incomplete (stalled after creating 1/4 files). Cannot transition to WAVE_COMPLETE until all efforts complete.",
+  "notes": "INTEGRATION: Phase 1 Wave 2 integration in progress. Wave 1 complete (4 efforts merged). Now integrating Wave 2 efforts (E1.2.1 command-structure + 5 splits from E1.2.2 and E1.2.3).",
   "efforts_reviewed": [
     {
       "effort": "effort-1.1.1-push-command-skeleton",

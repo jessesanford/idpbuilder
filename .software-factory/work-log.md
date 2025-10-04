@@ -246,3 +246,5 @@ Total: 2938 lines
 
 ---
 
+## MERGE 1/6: command-structure (351 lines)
+**Start Time**: 2025-10-04T15:45:56+00:00
