@@ -301,3 +301,31 @@ MERGED: E1.2.3-split-003 at $(date -Iseconds)
 
 All 6 merges complete. Now executing 4 mandatory gates...
 
+### R291 GATE 1: BUILD
+**Start**: 2025-10-04T15:49:00+00:00
+**Status**: FAILED
+**Exit Code**: 1
+**Errors Found**:
+1. pkg/cmd/push/root.go:13:5: PushCmd redeclared (duplicate in push.go)
+2. pkg/push/pusher.go:18:6: ProgressReporter redeclared
+3. pkg/push/auth/authenticator.go:116:20: undefined: retry.DefaultBackoff
+4. pkg/testutils/assertions.go:48:15: registry.HasImage undefined
+5. pkg/kind/cluster_test.go:238:81: undefined: types.ContainerListOptions
+
+**R266 COMPLIANCE**: These are UPSTREAM BUGS - documented but NOT fixed by integration agent
+MERGED: Integration branch NOT ready for production use (upstream bugs present)
+
+---
+
+## R291 GATE STATUS
+
+### GATE 1: BUILD - FAILED
+### GATE 2: TEST - SKIPPED (build failed)
+### GATE 3: ARTIFACT - SKIPPED (build failed)
+### GATE 4: DEMO - SKIPPED (build failed)
+
+## R291 ENFORCEMENT: ERROR_RECOVERY REQUIRED
+
+Per R291, integration with ANY gate failure MUST transition to ERROR_RECOVERY state.
+Build failures indicate upstream bugs that must be fixed in effort branches per R300.
+
