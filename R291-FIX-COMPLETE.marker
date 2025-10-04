@@ -1,0 +1,24 @@
+Fix Completed: R291 Registry Routing Bug
+Date: 2025-10-04 01:44:28 UTC
+Effort: E1.2.3-image-push-operations-split-002
+Branch: idpbuilder-push-oci/phase1/wave2/image-push-operations-split-002
+Commit: 546bfb8
+
+Fix Summary:
+- Added extractImageNameFromTarball() helper function
+- Modified loadTarballImage() to extract from manifest.json
+- Preserves full registry/repo:tag reference from tarballs
+- Fallback to filename if manifest parsing fails
+
+Test Results:
+- Build: SUCCESS
+- All tests: PASS (19 tests)
+- No regressions detected
+
+Next Steps:
+- This fix addresses the primary bug in split-002
+- Split-003 (operations.go) requires complementary fix
+- Integration cascade needed after both splits fixed
+- R291 demo validation required after integration
+
+Status: IMPLEMENTATION COMPLETE - READY FOR INTEGRATION
