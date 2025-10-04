@@ -4,6 +4,7 @@ package push
 import (
 	"archive/tar"
 	"compress/gzip"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -180,17 +181,21 @@ func loadTarballImage(path string) (*LocalImage, error) {
 		return nil, nil // Not a Docker tarball, skip
 	}
 
+	// Extract the original image reference from tarball manifest
+	name, err := extractImageNameFromTarball(path)
+	if err != nil || name == "" {
+		// Fallback to filename if manifest parsing fails
+		name = filepath.Base(path)
+		name = strings.TrimSuffix(name, filepath.Ext(name))
+		if strings.HasSuffix(name, ".tar") {
+			name = strings.TrimSuffix(name, ".tar")
+		}
+	}
+
 	// Load the tarball image
 	image, err := tarball.ImageFromPath(path, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load tarball image from %s: %w", path, err)
-	}
-
-	// Extract name from file path (remove extension)
-	name := filepath.Base(path)
-	name = strings.TrimSuffix(name, filepath.Ext(name))
-	if strings.HasSuffix(name, ".tar") {
-		name = strings.TrimSuffix(name, ".tar")
 	}
 
 	return &LocalImage{
@@ -199,6 +204,60 @@ func loadTarballImage(path string) (*LocalImage, error) {
 		Format: "tarball",
 		Image:  image,
 	}, nil
+}
+
+// extractImageNameFromTarball reads the manifest.json from a Docker tarball
+// and extracts the original image reference (including registry)
+func extractImageNameFromTarball(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	var reader io.Reader = file
+
+	// Handle gzipped tarballs
+	if strings.HasSuffix(strings.ToLower(path), ".gz") || strings.HasSuffix(strings.ToLower(path), ".tgz") {
+		gzReader, err := gzip.NewReader(file)
+		if err != nil {
+			return "", err
+		}
+		defer gzReader.Close()
+		reader = gzReader
+	}
+
+	tarReader := tar.NewReader(reader)
+
+	// Search for manifest.json
+	for {
+		header, err := tarReader.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return "", err
+		}
+
+		if header.Name == "manifest.json" {
+			// Parse the manifest
+			var manifest []struct {
+				RepoTags []string `json:"RepoTags"`
+			}
+
+			decoder := json.NewDecoder(tarReader)
+			if err := decoder.Decode(&manifest); err != nil {
+				return "", fmt.Errorf("failed to decode manifest.json: %w", err)
+			}
+
+			// Use the first repo tag if available
+			if len(manifest) > 0 && len(manifest[0].RepoTags) > 0 {
+				return manifest[0].RepoTags[0], nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("no RepoTags found in manifest")
 }
 
 // isValidDockerTarball checks if a tarball contains Docker image data
