@@ -1,24 +1,64 @@
-Fix Completed: R291 Registry Routing Bug
-Date: 2025-10-04 01:44:28 UTC
-Effort: E1.2.3-image-push-operations-split-002
-Branch: idpbuilder-push-oci/phase1/wave2/image-push-operations-split-002
-Commit: 546bfb8
+═══════════════════════════════════════════════════════════════
+R291 DEMO FAILURE FIX - SPLIT-002 COMPLETE
+═══════════════════════════════════════════════════════════════
 
-Fix Summary:
-- Added extractImageNameFromTarball() helper function
-- Modified loadTarballImage() to extract from manifest.json
-- Preserves full registry/repo:tag reference from tarballs
-- Fallback to filename if manifest parsing fails
+**Completed**: 2025-10-04 00:43:15 UTC
+**SW Engineer**: Assigned to split-002 R291 fix task
+**Status**: ✅ COMPLETE
 
-Test Results:
-- Build: SUCCESS
-- All tests: PASS (19 tests)
-- No regressions detected
+## Fix Summary
 
-Next Steps:
-- This fix addresses the primary bug in split-002
-- Split-003 (operations.go) requires complementary fix
-- Integration cascade needed after both splits fixed
-- R291 demo validation required after integration
+### Changes Implemented
+1. ✅ Added `encoding/json` import to discovery.go
+2. ✅ Created `extractImageNameFromTarball()` helper function (52 lines)
+3. ✅ Modified `loadTarballImage()` to use manifest parsing with fallback
+4. ✅ Preserves full registry prefix from Docker tarball metadata
 
-Status: IMPLEMENTATION COMPLETE - READY FOR INTEGRATION
+### Files Modified
+- `pkg/push/discovery.go`: +66 lines, -7 lines
+
+### Commit Details
+- **Commit**: 546bfb8836ac68265cea4c038f62811900d8ee65
+- **Message**: "fix: extract image reference from tarball manifest (R291 fix)"
+- **Status**: Committed and pushed to remote
+- **Marker**: 264b22f "marker: R291 fix complete for split-002"
+
+### Testing Results
+✅ Build successful: `go build ./...` - PASS
+✅ Unit tests: `go test ./pkg/push/... -v` - ALL PASS (18 tests)
+✅ No compilation errors
+✅ No test failures
+✅ No regressions detected
+
+### Technical Details
+
+**Root Cause Fixed**:
+The original code extracted image names from filenames, losing the registry
+prefix embedded in Docker tarball metadata (manifest.json). This caused
+images to route to Docker Hub instead of the target Gitea registry.
+
+**Solution**:
+The fix parses the tarball's manifest.json to extract the RepoTags field,
+which contains the full image reference including registry prefix. Falls
+back to filename-based naming if manifest parsing fails.
+
+**Impact**:
+- Images with registry prefix now preserve full reference
+- Push operations route to correct registry
+- Backward compatibility maintained (fallback logic)
+- Supports both regular and gzipped tarballs
+
+### Next Steps
+
+Per the fix plan, split-003 also needs similar changes in operations.go.
+However, split-002 is now COMPLETE and ready for:
+
+1. Integration into wave2 integration branch
+2. Re-running R291 demo script for verification
+3. Code reviewer validation of implementation
+
+═══════════════════════════════════════════════════════════════
+**Fix Status**: COMPLETE
+**Effort Branch**: idpbuilder-push-oci/phase1/wave2/image-push-operations-split-002
+**Ready For**: Integration and R291 demo re-test
+═══════════════════════════════════════════════════════════════
