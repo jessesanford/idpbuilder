@@ -14,6 +14,21 @@ import (
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 )
 
+// ProgressReporter defines the interface for reporting push progress
+type ProgressReporter interface {
+	// StartImage indicates the start of pushing an image
+	StartImage(digest string, totalSize int64)
+
+	// UpdateLayer reports progress on a specific layer
+	UpdateLayer(digest string, written int64)
+
+	// FinishLayer indicates a layer push has completed
+	FinishLayer(digest string)
+
+	// FinishImage indicates an image push has completed
+	FinishImage(digest string)
+}
+
 // ImagePusher encapsulates the logic for pushing OCI images to registries
 type ImagePusher struct {
 	auth      authn.Authenticator
