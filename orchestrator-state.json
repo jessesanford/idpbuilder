@@ -1,9 +1,9 @@
 {
   "current_phase": 1,
   "current_wave": 1,
-  "current_state": "MONITOR_REVIEWS",
-  "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
-  "transition_time": "2025-10-03T03:21:01Z",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "MONITOR_REVIEWS",
+  "transition_time": "2025-10-04T06:40:26Z",
   "efforts_in_progress": [],
   "efforts_completed": [],
   "split_tracking": {},
@@ -79,7 +79,7 @@
       "issues": "Missing test coverage for metrics.go and performance.go"
     }
   },
-  "transition_reason": "Code reviewers spawned and completed for E2.2.1 (APPROVED) and E2.2.2 (NEEDS_FIXES) [R324]",
+  "transition_reason": "Project integration NEEDS_FIXES - repository structure issue (R327)",
   "state_transition_log": [
     {
       "from": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
@@ -105,5 +105,12 @@
         "impact": "Feature exists but routing incorrect"
       }
     ]
+  },
+  "error_context": {
+    "error_type": "INFRASTRUCTURE_FAILURE",
+    "severity": "BLOCKING",
+    "description": "Branches in separate repos with unrelated git histories",
+    "requires": "Manual merge strategy decision",
+    "documented_in": "efforts/project-integration/PROJECT-INTEGRATION-REPORT.md"
   }
 }
