@@ -273,3 +273,11 @@ MERGED: E1.2.2-split-002 at $(date -Iseconds)
 
 ## MERGE 4/6: image-push-operations-split-001 (552 lines)
 **Start Time**: $(date -Iseconds)
+**Result**: SUCCESS - Conflicts in go.mod, go.sum, R359 markers resolved
+**Resolution**: Kept base versions per R381
+**Commit**: fca5e7c
+**Files Added**: pkg/push/ core infrastructure (552 lines)
+MERGED: E1.2.3-split-001 at 2025-10-04T15:48:27+00:00
+
+## MERGE 5/6: image-push-operations-split-002 (689 lines)
+**Start Time**: 2025-10-04T15:48:27+00:00
