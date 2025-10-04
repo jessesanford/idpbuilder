@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-logr/logr"
@@ -298,8 +299,17 @@ func (op *PushOperation) pushImages(ctx context.Context, images []*LocalImage) (
 	// Convert images to reference map for batch push
 	imageMap := make(map[name.Reference]v1.Image)
 	for _, img := range images {
-		// Construct the full registry reference
-		refString := fmt.Sprintf("%s/%s:latest", op.Registry, img.Name)
+		var refString string
+
+		// Check if img.Name already contains a full reference (registry/repo:tag)
+		if strings.Contains(img.Name, "/") || strings.Contains(img.Name, ":") {
+			// Name includes registry/repo/tag - use it directly
+			refString = img.Name
+		} else {
+			// Name is just image name - prepend registry
+			refString = fmt.Sprintf("%s/%s:latest", op.Registry, img.Name)
+		}
+
 		ref, err := name.ParseReference(refString)
 		if err != nil {
 			op.Logger.LogError(err, "Failed to parse reference", "ref", refString)
