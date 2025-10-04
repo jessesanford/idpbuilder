@@ -257,3 +257,11 @@ MERGED: E1.2.1 command-structure at $(date -Iseconds)
 
 ## MERGE 2/6: registry-authentication-split-001 (523 lines)
 **Start Time**: 2025-10-04T15:46:52+00:00
+**Result**: SUCCESS - Conflicts in work-log.md, go.mod, go.sum resolved
+**Resolution**: Kept base versions per R381 (no version updates during integration)
+**Commit**: 3ac5f9c
+**Files Added**: pkg/push/auth/, pkg/push/retry/, pkg/push/errors/ (523 lines)
+MERGED: E1.2.2-split-001 at $(date -Iseconds)
+
+## MERGE 3/6: registry-authentication-split-002 (434 lines)
+**Start Time**: $(date -Iseconds)
