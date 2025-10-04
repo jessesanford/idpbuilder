@@ -1,0 +1,98 @@
+[0;34m==========================================
+R291 INTEGRATION DEMO (v3 - CORRECTED)
+idpbuilder push to Gitea Registry
+==========================================[0m
+
+[1;33mDemo Configuration:[0m
+  Registry: gitea.cnoe.localtest.me:8443
+  User: giteaAdmin
+  Base Image: alpine:latest
+  Target Image: gitea.cnoe.localtest.me:8443/giteaadmin/r291-demo:20251004-011404
+  Tarball: r291-demo.tar
+
+[0;34m[Step 1/6] Verifying Prerequisites[0m
+----------------------------------------
+[0;32m✓ idpbuilder binary exists[0m
+[0;32m✓ Registry is accessible[0m
+[0;32m✓ Docker is available[0m
+
+[0;34m[Step 2/6] Preparing Image with Registry Tag[0m
+----------------------------------------
+Pulling alpine:latest...
+[0;32m✓ Base image pulled[0m
+Tagging as: gitea.cnoe.localtest.me:8443/giteaadmin/r291-demo:20251004-011404
+[0;32m✓ Image tagged for registry[0m
+[0;32m✓ Tag verified[0m
+
+[0;34m[Step 3/6] Saving Tagged Image as Tarball[0m
+----------------------------------------
+Saving gitea.cnoe.localtest.me:8443/giteaadmin/r291-demo:20251004-011404 to r291-demo.tar...
+[0;32m✓ Tarball created (8.4M)[0m
+
+[0;34m[Step 4/6] Executing idpbuilder push[0m
+----------------------------------------
+Command:
+  ./idpbuilder push r291-demo.tar \
+    --username 'giteaAdmin' \
+    --password '<hidden>' \
+    --insecure \
+    --verbose
+
+📤 Pushing image sha256:83413 (size: 4.3 MB)
+📤 Pushing image sha256:83413 (size: 4.3 MB)
+✅ Image sha256:83413 pushed successfully (4.3 MB in 0.2s, 19.9 MB/s)
+
+No images were pushed
+
+Warning: 2 image(s) failed to push
+  - failed to push image /r291-demo-20251004-011250:latest: GET https://auth.docker.io/token?scope=repository%3A%2Fr291-demo-20251004-011250%3Apush%2Cpull&service=registry.docker.io: unexpected status code 401 Unauthorized: {"details":"incorrect username or password"}
+
+  - failed to push image /r291-demo:latest: GET https://auth.docker.io/token?scope=repository%3A%2Fr291-demo%3Apush%2Cpull&service=registry.docker.io: unexpected status code 401 Unauthorized: {"details":"incorrect username or password"}
+
+
+[0;32m✓ Push command completed without errors[0m
+
+[0;34m[Step 5/6] Analyzing Push Results[0m
+----------------------------------------
+[1;33m⚠ No images were pushed (checking why...)[0m
+
+Push output:
+📤 Pushing image sha256:83413 (size: 4.3 MB)
+📤 Pushing image sha256:83413 (size: 4.3 MB)
+✅ Image sha256:83413 pushed successfully (4.3 MB in 0.2s, 19.9 MB/s)
+
+No images were pushed
+
+Warning: 2 image(s) failed to push
+  - failed to push image /r291-demo-20251004-011250:latest: GET https://auth.docker.io/token?scope=repository%3A%2Fr291-demo-20251004-011250%3Apush%2Cpull&service=registry.docker.io: unexpected status code 401 Unauthorized: {"details":"incorrect username or password"}
+
+  - failed to push image /r291-demo:latest: GET https://auth.docker.io/token?scope=repository%3A%2Fr291-demo%3Apush%2Cpull&service=registry.docker.io: unexpected status code 401 Unauthorized: {"details":"incorrect username or password"}
+
+
+This might indicate:
+  - Image discovery issue
+  - Tarball format issue
+  - Need to check implementation logs
+
+Checking registry for image...
+[1;33m⚠ Image not found in registry[0m
+Response: {"errors":[{"code":"MANIFEST_UNKNOWN","message":""}]}
+
+[0;34m[Step 6/6] Generating Verification Report[0m
+----------------------------------------
+[0;32m✓ Verification report created: DEMO-VERIFICATION-R291.md[0m
+
+[1;33m==========================================
+DEMO COMPLETED
+==========================================[0m
+
+Status: [1;33m⚠ NEEDS INVESTIGATION[0m
+
+Evidence:
+  - Verification Report: DEMO-VERIFICATION-R291.md
+  - Push Log: /tmp/push-r291.log
+  - Image Tarball: r291-demo.tar
+
+[0;34mR291 Gate 4:[0m
+  [1;33m⚠️ NEEDS REVIEW[0m
+

@@ -1,0 +1,46 @@
+[0;34m==========================================
+R291 INTEGRATION DEMO
+idpbuilder push to Gitea Registry
+==========================================[0m
+
+[1;33mDemo Configuration:[0m
+  Registry: gitea.cnoe.localtest.me:8443
+  User: giteaAdmin
+  Source Image: alpine:latest
+  Target: gitea.cnoe.localtest.me:8443/giteaadmin/r291-demo:20251004-011053
+
+[0;34m[Step 1/6] Verifying Prerequisites[0m
+----------------------------------------
+[0;32m✓ idpbuilder binary exists[0m
+[0;32m✓ Registry is accessible[0m
+[0;32m✓ Docker is available[0m
+
+[0;34m[Step 2/6] Preparing Test Image[0m
+----------------------------------------
+Pulling alpine:latest...
+[0;32m✓ Test image ready[0m
+Tagging as: gitea.cnoe.localtest.me:8443/giteaadmin/r291-demo:20251004-011053
+[0;32m✓ Image tagged for Gitea registry[0m
+
+[0;34m[Step 3/6] Executing idpbuilder push[0m
+----------------------------------------
+Command: ./idpbuilder push gitea.cnoe.localtest.me:8443/giteaadmin/r291-demo:20251004-011053 --username <user> --password <hidden> --insecure --verbose
+
+
+No images were pushed
+
+[0;32m✓ Push command completed successfully[0m
+
+[0;34m[Step 4/6] Verifying via OCI Registry API[0m
+----------------------------------------
+Checking registry catalog...
+Catalog response: {"repositories":[]}
+[1;33m⚠ Repository not in catalog (may be normal for Gitea)[0m
+
+Checking image tags...
+Tags response: {"errors":[{"code":"NAME_UNKNOWN","message":""}]}
+[1;33m⚠ Tag not found via API (checking manifest...)[0m
+
+Checking image manifest...
+[0;31m✗ Could not retrieve manifest[0m
+Response: {"errors":[{"code":"MANIFEST_UNKNOWN","message":""}]}

@@ -1,0 +1,74 @@
+[0;34m==========================================
+R291 INTEGRATION DEMO (CORRECTED)
+idpbuilder push to Gitea Registry
+==========================================[0m
+
+[1;33mDemo Configuration:[0m
+  Registry: gitea.cnoe.localtest.me:8443
+  User: giteaAdmin
+  Source Image: alpine:latest
+  Target Repository: r291-demo
+  Tag: 20251004-011250
+  Build Directory: ./build-r291-demo
+
+[0;34m[Step 1/7] Verifying Prerequisites[0m
+----------------------------------------
+[0;32m✓ idpbuilder binary exists[0m
+[0;32m✓ Registry is accessible[0m
+[0;32m✓ Docker is available[0m
+
+[0;34m[Step 2/7] Preparing Build Directory[0m
+----------------------------------------
+[0;32m✓ Build directory created: ./build-r291-demo[0m
+
+[0;34m[Step 3/7] Saving Image as Tarball[0m
+----------------------------------------
+Pulling alpine:latest...
+[0;32m✓ Test image pulled[0m
+Saving image to: ./build-r291-demo/r291-demo-20251004-011250.tar
+[0;32m✓ Image saved as tarball (8.4M)[0m
+
+[0;34m[Step 4/7] Executing idpbuilder push[0m
+----------------------------------------
+Command: ./idpbuilder push r291-demo-20251004-011250.tar \
+  --username 'giteaAdmin' \
+  --password '<hidden>' \
+  --registry 'gitea.cnoe.localtest.me:8443' \
+  --build-path './build-r291-demo' \
+  --insecure \
+  --verbose
+
+Error: unknown flag: --registry
+Usage:
+  idpbuilder push [IMAGE] [flags]
+
+Flags:
+  -h, --help              help for push
+      --insecure          Allow insecure registry connections
+  -p, --password string   Registry password for authentication
+  -u, --username string   Registry username for authentication
+  -v, --verbose           Enable verbose logging
+
+Global Flags:
+      --color              Enable colored log messages.
+  -l, --log-level string   Set the log verbosity. Supported values are: debug, info, warn, and error. (default "info")
+
+unknown flag: --registry
+[0;31m✗ Push command failed![0m
+Full output:
+Error: unknown flag: --registry
+Usage:
+  idpbuilder push [IMAGE] [flags]
+
+Flags:
+  -h, --help              help for push
+      --insecure          Allow insecure registry connections
+  -p, --password string   Registry password for authentication
+  -u, --username string   Registry username for authentication
+  -v, --verbose           Enable verbose logging
+
+Global Flags:
+      --color              Enable colored log messages.
+  -l, --log-level string   Set the log verbosity. Supported values are: debug, info, warn, and error. (default "info")
+
+unknown flag: --registry
