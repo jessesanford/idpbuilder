@@ -248,3 +248,12 @@ Total: 2938 lines
 
 ## MERGE 1/6: command-structure (351 lines)
 **Start Time**: 2025-10-04T15:45:56+00:00
+**Result**: SUCCESS - Conflict in orchestrator-state.json resolved
+**Resolution**: Kept Wave 1 tracking data + updated notes for Wave 2 integration (R361 additive merge)
+**Commit**: 64e934d
+**Files Added**: pkg/cmd/push/ command structure (351 lines)
+MERGED: E1.2.1 command-structure at $(date -Iseconds)
+
+
+## MERGE 2/6: registry-authentication-split-001 (523 lines)
+**Start Time**: 2025-10-04T15:46:52+00:00
