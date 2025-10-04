@@ -1,0 +1,13 @@
+Completed at: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Fix Type: R291 Demo Failure - Reference Construction Bug
+Effort: E1.2.3-image-push-operations-split-003
+Branch: idpbuilder-push-oci/phase1/wave2/image-push-operations-split-003
+Files Modified: pkg/push/operations.go
+Changes:
+  - Added strings import
+  - Modified pushImages() to detect full image references
+  - Conditional logic handles both full refs and simple names
+  - Backward compatibility maintained
+Test Results: All tests pass (14/14)
+Commit: 6628dff
+Status: FIX COMPLETE
