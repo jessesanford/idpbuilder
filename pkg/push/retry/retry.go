@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"net/http"
 	"strings"
 	"time"
 )
@@ -56,16 +55,9 @@ func IsRetryable(err error) bool {
 	}
 
 	// HTTP status code based retry logic
-	if httpErr, ok := err.(*http.Response); ok {
-		switch httpErr.StatusCode {
-		case http.StatusTooManyRequests,      // 429
-			 http.StatusInternalServerError,   // 500
-			 http.StatusBadGateway,           // 502
-			 http.StatusServiceUnavailable,   // 503
-			 http.StatusGatewayTimeout:       // 504
-			return true
-		}
-	}
+	// Note: http.Response does not implement error interface
+	// HTTP-specific retry logic should be handled at the call site
+	// by wrapping HTTP errors with context before passing to IsRetryable
 
 	// Registry-specific transient errors
 	registryErrors := []string{
