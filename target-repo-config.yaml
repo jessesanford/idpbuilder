@@ -6,7 +6,7 @@ target_repository:
   base_branch: "main"
 
 branch_naming:
-  project_prefix: "idpbuilder"
+  project_prefix: "idpbuilder-push-oci"
   pattern: "phase{phase}/wave{wave}/{effort_name}"
 
 integration:
