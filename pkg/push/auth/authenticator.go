@@ -113,9 +113,9 @@ func (a *Authenticator) AuthenticateWithRetry(ctx context.Context, registry stri
 		return fmt.Errorf("invalid authenticator configuration: %w", err)
 	}
 
-	strategy := retry.DefaultBackoff()
+	config := retry.DefaultConfig()
 
-	return retry.WithRetry(ctx, func() error {
+	return retry.WithRetry(ctx, config, func(ctx context.Context, attempt int) error {
 		// Test authentication by attempting to authenticate with the registry
 		// This is a placeholder for the actual authentication test
 		// In a real implementation, this might ping the registry or attempt to list catalog
@@ -133,7 +133,7 @@ func (a *Authenticator) AuthenticateWithRetry(ctx context.Context, registry stri
 		}
 
 		return nil
-	}, strategy)
+	})
 }
 
 // HasCredentials returns true if explicit credentials are configured
