@@ -1,9 +1,9 @@
 {
   "current_phase": 1,
   "current_wave": 1,
-  "current_state": "MONITOR_REVIEWS",
-  "previous_state": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
-  "transition_time": "2025-10-03T03:21:01Z",
+  "current_state": "SPAWN_ENGINEERS_FOR_FIXES",
+  "previous_state": "MONITOR_REVIEWS",
+  "transition_time": "2025-10-05T23:13:07Z",
   "efforts_in_progress": [],
   "efforts_completed": [],
   "split_tracking": {},
@@ -63,23 +63,39 @@
     "E2.2.1-user-documentation",
     "E2.2.2-code-refinement"
   ],
-  "review_results": {
-    "E2.2.1-user-documentation": {
-      "status": "APPROVED",
-      "lines": 17,
-      "review_date": "2025-10-03T03:21:01Z",
-      "review_file": "efforts/phase2/wave2/E2.2.1-user-documentation/.software-factory/CODE-REVIEW-REPORT-20251003-015900.md"
+  "review_results": [
+    {
+      "effort": "E2.1.1-unit-test-execution",
+      "reviewer_status": "ACCEPTED",
+      "reviewed_at": "2025-10-05T23:12:34Z",
+      "cascade_mode": true,
+      "blocking_issues": []
     },
-    "E2.2.2-code-refinement": {
-      "status": "NEEDS_FIXES",
-      "lines": 278,
-      "review_date": "2025-10-03T03:21:01Z",
-      "review_file": "efforts/phase2/wave2/E2.2.2-code-refinement/.software-factory/CODE-REVIEW-REPORT-20251003-031407.md",
-      "instructions_file": "efforts/phase2/wave2/E2.2.2-code-refinement/.software-factory/CODE-REVIEW-INSTRUCTIONS-20251003-031407.md",
-      "issues": "Missing test coverage for metrics.go and performance.go"
+    {
+      "effort": "E2.1.2-integration-test-execution",
+      "reviewer_status": "ACCEPTED",
+      "reviewed_at": "2025-10-05T23:12:34Z",
+      "cascade_mode": true,
+      "blocking_issues": []
+    },
+    {
+      "effort": "E2.2.1-user-documentation",
+      "reviewer_status": "NEEDS_FIXES",
+      "reviewed_at": "2025-10-05T23:12:34Z",
+      "cascade_mode": true,
+      "blocking_issues": [
+        "R383 SUPREME LAW VIOLATION: 33 metadata files in wrong location"
+      ]
+    },
+    {
+      "effort": "E2.2.2-code-refinement",
+      "reviewer_status": "ACCEPTED",
+      "reviewed_at": "2025-10-05T23:12:34Z",
+      "cascade_mode": true,
+      "blocking_issues": []
     }
-  },
-  "transition_reason": "Code reviewers spawned and completed for E2.2.1 (APPROVED) and E2.2.2 (NEEDS_FIXES) [R324]",
+  ],
+  "transition_reason": "Code review found blocking R383 issue in E2.2.1-user-documentation",
   "state_transition_log": [
     {
       "from": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
@@ -87,5 +103,12 @@
       "timestamp": "2025-10-03T03:21:01Z",
       "reason": "Code Reviewers completed for 2 efforts in Phase 2 Wave 2"
     }
+  ],
+  "last_reviewer_spawn": "2025-10-05T23:12:34Z",
+  "reviewers_completed": [
+    "E2.1.1",
+    "E2.1.2",
+    "E2.2.1",
+    "E2.2.2"
   ]
 }
