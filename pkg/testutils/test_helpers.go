@@ -5,17 +5,13 @@ import (
 	"bytes"
 	"compress/gzip"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"strings"
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/empty"
 	"github.com/google/go-containerregistry/pkg/v1/mutate"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
-	"github.com/google/go-containerregistry/pkg/v1/types"
 )
 
 // ImageConfig represents configuration for creating test images
@@ -137,8 +133,9 @@ func createTestLayer(content string) (v1.Layer, error) {
 
 // CreateMultiArchImage creates a multi-architecture image index
 func CreateMultiArchImage(name string, platforms []Platform) (v1.ImageIndex, error) {
-	index := empty.Index
+	var index v1.ImageIndex = empty.Index
 
+	var addenda []mutate.IndexAddendum
 	for _, platform := range platforms {
 		config := DefaultImageConfig()
 		config.Architecture = platform.Architecture
@@ -159,12 +156,13 @@ func CreateMultiArchImage(name string, platforms []Platform) (v1.ImageIndex, err
 			return nil, fmt.Errorf("failed to create descriptor: %w", err)
 		}
 
-		index = mutate.AppendManifests(index, mutate.IndexAddendum{
+		addenda = append(addenda, mutate.IndexAddendum{
 			Add:        image,
 			Descriptor: *desc,
 		})
 	}
 
+	index = mutate.AppendManifests(index, addenda...)
 	return index, nil
 }
 
