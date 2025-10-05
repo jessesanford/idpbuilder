@@ -476,3 +476,38 @@ func (m *MockRegistry) HasLayer(digest v1.Hash) bool {
 func (m *MockRegistry) GetURL() string {
 	return m.URL()
 }
+
+// GetManifestCount returns the number of manifests stored in the registry
+func (m *MockRegistry) GetManifestCount() int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return len(m.manifests)
+}
+
+// GetBlobCount returns the number of blobs stored in the registry
+func (m *MockRegistry) GetBlobCount() int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return len(m.blobs)
+}
+
+// GetTagCount returns the number of tags stored in the registry
+func (m *MockRegistry) GetTagCount() int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return len(m.tags)
+}
+
+// GetImageCount returns the number of images stored in the registry
+func (m *MockRegistry) GetImageCount() int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return len(m.images)
+}
+
+// GetLayerCount returns the number of layers stored in the registry
+func (m *MockRegistry) GetLayerCount() int {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return len(m.layers)
+}
