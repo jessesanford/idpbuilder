@@ -1,0 +1,50 @@
+BUG-008 FIX COMPLETED
+=====================
+
+Bug ID: BUG-008
+Severity: MEDIUM
+Category: build_failure
+Description: MockRegistry method visibility
+
+Fix Applied:
+------------
+Exported MockRegistry state accessor methods to resolve visibility issues
+during CASCADE layer 1 reintegration.
+
+Changes Made:
+-------------
+File: pkg/testutils/mock_registry.go
+- Added GetManifestCount() - exported method to get manifest count
+- Added GetBlobCount() - exported method to get blob count
+- Added GetTagCount() - exported method to get tag count
+- Added GetImageCount() - exported method to get image count
+- Added GetLayerCount() - exported method to get layer count
+
+All methods:
+- Properly exported (capitalized names)
+- Thread-safe (use mutex locks)
+- Follow Go conventions
+- Enable external state inspection for assertions
+
+Verification:
+-------------
+- Code builds successfully: go build ./pkg/testutils/...
+- No compilation errors
+- All new methods are exported and accessible
+- Mutex synchronization ensures thread safety
+
+Commit Information:
+------------------
+Commit Hash: e6fd14c
+Branch: idpbuilder-push-oci/phase1/wave1/unit-test-framework-split-002
+Pushed to: origin
+
+Compliance:
+-----------
+✅ R300: Fix applied to effort branch only (NOT integration branch)
+✅ R006: No orchestrator code involvement
+✅ All changes committed and pushed to remote
+
+Fix Completed: 2025-10-05
+Time Taken: < 30 minutes
+Status: READY FOR REINTEGRATION
