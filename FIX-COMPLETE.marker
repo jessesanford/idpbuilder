@@ -1,0 +1,6 @@
+Completed at: 2025-10-05 01:45:42 UTC
+Bug ID: BUG-cascade-20251005-013208-005
+Severity: MEDIUM
+Description: undefined: types.ContainerListOptions
+Commit SHA: 31e3a2789efaf4cfd19f2bdc4fb6b14620206cda
+Status: FIX COMPLETE
