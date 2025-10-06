@@ -356,3 +356,21 @@ Files Added:
   - .software-factory/split-metadata.json
 Test Result: PASS (go test ./pkg/push/retry/)
 Timestamp: 2025-10-06 00:30:00 UTC
+
+### Operation 6: Merge E1.2.3-split-001 - Core Push Operations
+Command: git merge effort-E1.2.3-split-001/idpbuilder-push-oci/phase1/wave2/image-push-operations-split-001 --no-ff
+Result: CONFLICTS in .software-factory/R359-FIX-PLAN.md, R359-FIX-COMPLETE.marker, go.mod, go.sum
+Resolution: Kept integration workspace versions per R262/R381
+  - Metadata files: Kept ours (integration workspace state)
+  - go.mod/go.sum: Kept ours (no version updates per R381)
+Command: git add .software-factory/R359-FIX-PLAN.md R359-FIX-COMPLETE.marker go.mod go.sum
+Command: git commit -m "integrate: E1.2.3-split-001 core push operations"
+MERGED: E1.2.3-split-001 at 2025-10-06 00:30:30 UTC
+Files Added:
+  - pkg/push/discovery.go
+  - pkg/push/logging.go
+  - pkg/push/operations.go
+  - pkg/push/progress.go
+  - pkg/push/pusher.go
+Build Test: SUCCESS (go build ./pkg/push/)
+Timestamp: 2025-10-06 00:31:00 UTC
