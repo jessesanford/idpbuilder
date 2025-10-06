@@ -1,16 +1,17 @@
-# E1.2.3 Split 002 - Image Discovery and Pusher
+# E1.2.3 Split 003 - Operation Orchestration
 
 ## Overview
-This split implements the image discovery mechanism and pusher implementation for OCI images.
+This split implements the main operation orchestration and integration for the push command.
 
-## Target: 689 lines
+## Target: 389 lines
 
 ## Components
-- Image discovery logic
-- Pusher implementation
-- Image manifest handling
-- Layer management
+- Main push operation orchestrator
+- Integration with all components
+- Error aggregation and reporting
+- Final validation and cleanup
 
 ## Dependencies
-- Builds on split-001 logging and progress infrastructure
+- Builds on split-002 discovery and pusher
+- Integrates with split-001 logging/progress
 
