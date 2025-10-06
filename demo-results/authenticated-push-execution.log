@@ -1,0 +1,104 @@
+=================================================================
+=== Authenticated Push Demo ====================================
+=================================================================
+
+Purpose: Demonstrate authenticated push with credentials
+Features: Multiple auth methods (env vars, config, stdin)
+Duration: ~3-4 minutes
+
+=== Step 1: Prerequisites Check ===
+✅ Docker available
+⚠️  idpbuilder binary not found at ./bin/idpbuilder
+    Running in demonstration mode
+
+=== Step 2: Creating Test Image ===
+Building test image: demo-auth-push:latest
+✅ Test image built
+
+=================================================================
+=== Method 1: Environment Variable Authentication ==============
+=================================================================
+
+Using REGISTRY_USERNAME and REGISTRY_PASSWORD environment variables
+
+Environment variables set:
+  REGISTRY_USERNAME=demo-user
+  REGISTRY_PASSWORD=***hidden***
+
+Command: idpbuilder push demo-auth-push:latest --registry localhost:5001
+
+Simulating: Push would use credentials from environment
+✅ Environment variable authentication demonstrated
+
+=================================================================
+=== Method 2: Docker Config File Authentication ================
+=================================================================
+
+Using existing Docker credentials from ~/.docker/config.json
+
+Command: idpbuilder push demo-auth-push:latest --registry localhost:5001
+         (credentials read from Docker config automatically)
+
+Simulating: Push would use Docker config.json credentials
+✅ Docker config authentication demonstrated
+
+=================================================================
+=== Method 3: Stdin Authentication (CI/CD friendly) ============
+=================================================================
+
+Passing credentials via stdin (secure for CI/CD pipelines)
+
+Command: echo 'username:password' | idpbuilder push demo-auth-push:latest --registry localhost:5001 --auth-stdin
+
+Simulating: Push would receive credentials from stdin
+✅ Stdin authentication demonstrated
+
+=================================================================
+=== Method 4: Explicit Credentials via Flags ===================
+=================================================================
+
+Using --username and --password flags (not recommended for security)
+
+Command: idpbuilder push demo-auth-push:latest --registry localhost:5001 \
+           --username demo-user --password ***hidden***
+
+Simulating: Push would use credentials from flags
+⚠️  Warning: Command-line credentials visible in process list
+✅ Flag-based authentication demonstrated (use with caution)
+
+=== Cleanup ===
+✅ Cleanup complete
+
+=================================================================
+=== Demo Complete ==============================================
+=================================================================
+
+Summary of Authentication Methods:
+
+1. Environment Variables (REGISTRY_USERNAME, REGISTRY_PASSWORD)
+   ✅ Good for: Local development, simple scripts
+   ⚠️  Warning: Variables may leak in logs
+
+2. Docker Config File (~/.docker/config.json)
+   ✅ Good for: Using existing Docker credentials
+   ✅ Automatic, no additional configuration needed
+
+3. Stdin Authentication (--auth-stdin)
+   ✅ Good for: CI/CD pipelines, secure automation
+   ✅ Best practice: Credentials not in env or flags
+
+4. Command-line Flags (--username, --password)
+   ⚠️  Warning: Visible in process list
+   ⚠️  Use only when other methods unavailable
+
+Recommended Priority:
+  1. Docker config (automatic)
+  2. Stdin (CI/CD secure)
+  3. Environment variables (simple scripts)
+  4. Flags (last resort only)
+
+Next Steps:
+  - See retry-mechanism-demo.sh for failure handling
+  - Try tls-configuration-demo.sh for TLS scenarios
+  - Run phase2-integration-demo.sh for complete workflow
+

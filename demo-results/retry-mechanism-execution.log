@@ -1,0 +1,151 @@
+=================================================================
+=== Retry Mechanism Demo =======================================
+=================================================================
+
+Purpose: Demonstrate retry logic on transient failures
+Features: Automatic retries, backoff, max retry limits
+Duration: ~4-5 minutes
+
+=== Step 1: Prerequisites Check ===
+✅ Docker available
+⚠️  idpbuilder binary not found at ./bin/idpbuilder
+    Running in simulation mode
+
+=== Step 2: Creating Test Image ===
+Building test image: demo-retry:latest
+✅ Test image built
+
+=================================================================
+=== Scenario 1: Transient Network Failure (Auto-Retry) ========
+=================================================================
+
+Simulating transient network error that resolves after retry
+
+Command: idpbuilder push demo-retry:latest --registry localhost:5002 --max-retries 3
+
+Attempt 1: Pushing image...
+❌ Error: connection refused (transient failure)
+
+⏳ Retry 1/3 after 1s backoff...
+Attempt 2: Pushing image...
+❌ Error: connection timeout (transient failure)
+
+⏳ Retry 2/3 after 2s backoff...
+Attempt 3: Pushing image...
+✅ Success! Push completed
+
+✅ Retry mechanism succeeded after 2 retries
+
+=================================================================
+=== Scenario 2: Exponential Backoff Demonstration ==============
+=================================================================
+
+Showing exponential backoff between retry attempts
+
+Configuration:
+  Initial backoff: 1 second
+  Backoff multiplier: 2x
+  Max backoff: 30 seconds
+
+Simulating exponential backoff pattern:
+Attempt 1: Pushing image...
+❌ Transient error
+⏳ Waiting 1s before retry...
+
+Attempt 2: Pushing image...
+❌ Transient error
+⏳ Waiting 2s before retry...
+
+Attempt 3: Pushing image...
+✅ Success after 2 retries
+
+=================================================================
+=== Scenario 3: Max Retry Limit Reached ========================
+=================================================================
+
+Demonstrating behavior when max retries exhausted
+
+Command: idpbuilder push demo-retry:latest --registry localhost:5002 --max-retries 2
+
+Simulating max retry limit:
+Attempt 1: Pushing image...
+❌ Error: connection refused
+
+⏳ Retry 1/2 after 1s...
+Attempt 2: Pushing image...
+❌ Error: connection refused
+
+⏳ Retry 2/2 after 2s...
+Attempt 3: Pushing image...
+❌ Error: connection refused
+
+❌ Max retries (2) reached. Operation failed.
+Exit code: 1
+
+=================================================================
+=== Scenario 4: Non-Retryable Errors ===========================
+=================================================================
+
+Demonstrating immediate failure for non-retryable errors
+
+Non-retryable error types:
+  - Authentication failures (401, 403)
+  - Image not found (404)
+  - Invalid image format
+  - Quota exceeded (413)
+
+Simulating non-retryable error:
+Attempt 1: Pushing image...
+❌ Error: authentication failed (401 Unauthorized)
+
+❌ Non-retryable error detected. Operation aborted.
+Exit code: 1
+
+✅ Correctly avoided unnecessary retries for permanent errors
+
+=== Cleanup ===
+✅ Cleanup complete
+
+=================================================================
+=== Demo Complete ==============================================
+=================================================================
+
+Summary of Retry Behavior:
+
+Retryable Errors (transient failures):
+  ✅ Network timeouts
+  ✅ Connection refused
+  ✅ Service unavailable (503)
+  ✅ Rate limited (429)
+  ✅ Temporary server errors (5xx except 501)
+
+Non-Retryable Errors (permanent failures):
+  ❌ Authentication errors (401, 403)
+  ❌ Not found (404)
+  ❌ Invalid request (400)
+  ❌ Quota exceeded (413)
+  ❌ Method not allowed (405)
+
+Retry Configuration Options:
+  --max-retries N       Maximum retry attempts (default: 3)
+  --initial-backoff T   Initial backoff duration (default: 1s)
+  --max-backoff T       Maximum backoff duration (default: 30s)
+  --no-retry           Disable retry mechanism
+
+Best Practices:
+  1. Use default retry settings for most cases
+  2. Increase max-retries for unstable networks
+  3. Disable retries for CI/CD fast-fail scenarios
+  4. Monitor retry patterns to detect infrastructure issues
+
+Key Takeaways:
+  ✅ Automatic retries improve reliability
+  ✅ Exponential backoff prevents server overload
+  ✅ Non-retryable errors fail fast
+  ✅ Configurable for different use cases
+
+Next Steps:
+  - Try tls-configuration-demo.sh for TLS scenarios
+  - See authenticated-push-demo.sh for auth methods
+  - Run phase2-integration-demo.sh for complete workflow
+

@@ -1,0 +1,30 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 440B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/alpine:latest
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [builder 1/3] FROM docker.io/library/alpine:latest
+#4 DONE 0.0s
+
+#5 [builder 2/3] WORKDIR /app
+#5 CACHED
+
+#6 [builder 3/3] RUN echo '#!/bin/sh' > demo-app &&     echo 'echo "Phase 2 Demo Application - idpbuilder push"' >> demo-app &&     echo 'echo "All features integrated and working"' >> demo-app &&     chmod +x demo-app
+#6 DONE 0.1s
+
+#7 [stage-1 3/3] COPY --from=builder /app/demo-app /app/
+#7 DONE 0.0s
+
+#8 exporting to image
+#8 exporting layers 0.0s done
+#8 writing image sha256:bdc09c0d4f138614333d2e0a86ebc572e63551a5c1449761c672f0a643f368a9 done
+#8 naming to docker.io/library/demo-app:phase2 done
+#8 DONE 0.0s
