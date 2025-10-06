@@ -322,3 +322,23 @@ Status: UPSTREAM BUG - Documented per R266 (DO NOT FIX)
 Analysis: E1.2.1 has conflicting root.go and push.go with duplicate PushCmd/runPush
 Action: Continue integration, document in INTEGRATION-REPORT.md
 Timestamp: 2025-10-06 00:28:00 UTC
+
+### Operation 4: Merge E1.2.2-split-001 - Authentication Basics
+Command: git merge effort-E1.2.2-split-001/idpbuilder-push-oci/phase1/wave2/registry-authentication-split-001 --no-ff
+Result: CONFLICTS in work-log.md, go.mod, go.sum
+Resolution:
+  - work-log.md: Kept integration workspace version per R262 (git checkout --ours)
+  - go.mod/go.sum: Kept base versions per R381 (no version updates)
+Command: git add .software-factory/work-log.md go.mod go.sum
+Command: git commit -m "integrate: E1.2.2-split-001 authentication basics"
+MERGED: E1.2.2-split-001 at 2025-10-06 00:28:30 UTC
+Files Added:
+  - pkg/push/auth/authenticator.go
+  - pkg/push/auth/credentials.go
+  - pkg/push/auth/insecure.go
+  - pkg/push/errors/auth_errors.go
+  - pkg/push/retry/backoff.go, backoff_test.go
+  - pkg/push/retry/retry.go, retry_test.go
+  - pkg/push/retry/errors.go, errors_test.go
+Build Test: SUCCESS (go build ./pkg/push/...)
+Timestamp: 2025-10-06 00:29:00 UTC
