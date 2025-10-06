@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/cnoe-io/idpbuilder/pkg/push"
 	"github.com/spf13/cobra"
 )
 
@@ -77,15 +78,18 @@ func runPush(cmd *cobra.Command, args []string) error {
 		fmt.Fprintf(os.Stderr, "   Only use with self-signed certificates in development\n\n")
 	}
 
-	// TODO: In E1.2.3, implement actual push logic here
-	// For now, just log the configuration
-	log.Printf("INFO: Push configuration validated successfully")
-
+	// Handle dry-run mode
 	if opts.DryRun {
 		fmt.Printf("DRY RUN: Would push %s to %s\n", opts.ImageRef, opts.RegistryURL)
 		return nil
 	}
 
-	fmt.Printf("✅ Push command structure ready (implementation pending E1.2.3)\n")
+	// Call actual push implementation from pkg/push/operations.go
+	imageNames := []string{opts.ImageRef}
+	if err := push.PushImages(cmd, imageNames); err != nil {
+		return fmt.Errorf("push failed: %w", err)
+	}
+
+	fmt.Printf("✅ Successfully pushed %s to %s\n", opts.ImageRef, opts.RegistryURL)
 	return nil
 }
