@@ -1,0 +1,33 @@
+BUG-006 Fix Complete
+====================
+
+Bug ID: BUG-006
+Severity: CRITICAL
+Category: build_failure
+Effort: E1.2.1-command-structure
+
+Fix Applied:
+- Removed duplicate file: pkg/cmd/push/validation_new.go
+- This file was a duplicate of validation.go containing identical function declarations
+
+Root Cause:
+- Duplicate validation file created accidentally
+- Caused build failure with "redeclared in this block" errors for:
+  - validatePushOptions
+  - validateRegistryURL
+  - validateImageRef
+  - requiresAuth
+
+Verification:
+- Build succeeds: go build ./... ✓
+- Tests pass: go test ./pkg/cmd/push/... ✓
+- No duplicate declarations remain ✓
+
+Commit: 56bb133
+Branch: idpbuilder-push-oci/phase1/wave2/command-structure
+Pushed: Yes (to remote effort branch)
+
+R300 Compliance: Fix applied ONLY to effort branch (NOT integration branch)
+
+Completed: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Time Taken: ~10 minutes (well within 30-minute CRITICAL constraint)
