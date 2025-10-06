@@ -374,3 +374,21 @@ Files Added:
   - pkg/push/pusher.go
 Build Test: SUCCESS (go build ./pkg/push/)
 Timestamp: 2025-10-06 00:31:00 UTC
+
+### Operation 7: Merge E1.2.3-split-002 - Operation Tests
+Command: git merge effort-E1.2.3-split-002/idpbuilder-push-oci/phase1/wave2/image-push-operations-split-002 --no-ff
+Result: Multiple CONFLICTS in metadata files, go.mod, go.sum, discovery.go
+Resolution: Kept integration workspace versions per R262/R381
+  - Metadata files: Kept ours (integration workspace state)
+  - go.mod/go.sum: Kept ours (no version updates per R381)
+  - discovery.go: Kept ours (split-001 established base implementation)
+Command: git add . && git commit -m "integrate: E1.2.3-split-002 operation tests"
+MERGED: E1.2.3-split-002 at 2025-10-06 00:32:00 UTC
+Files Added:
+  - pkg/push/discovery_test.go
+  - pkg/push/pusher_test.go
+Test Build: FAILED - mockProgressReporter missing SetError method
+Status: UPSTREAM BUG - Documented per R266 (DO NOT FIX)
+Analysis: Test mocks don't match ProgressReporter interface (missing SetError method)
+Action: Continue integration, document in INTEGRATION-REPORT.md
+Timestamp: 2025-10-06 00:32:30 UTC
