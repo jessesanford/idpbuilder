@@ -342,3 +342,17 @@ Files Added:
   - pkg/push/retry/errors.go, errors_test.go
 Build Test: SUCCESS (go build ./pkg/push/...)
 Timestamp: 2025-10-06 00:29:00 UTC
+
+### Operation 5: Merge E1.2.2-split-002 - Retry Logic Complete
+Command: git merge effort-E1.2.2-split-002/idpbuilder-push-oci/phase1/wave2/registry-authentication-split-002 --no-ff
+Result: CONFLICT in CODE-REVIEW-REPORT.md only (NO retry package conflicts as expected!)
+Analysis: Split-001 already had complete retry implementation with tests, so no code conflicts
+Resolution: Kept integration workspace CODE-REVIEW-REPORT.md per R262 (git checkout --ours)
+Command: git add CODE-REVIEW-REPORT.md
+Command: git commit -m "integrate: E1.2.2-split-002 retry logic complete"
+MERGED: E1.2.2-split-002 at 2025-10-06 00:29:30 UTC
+Files Added:
+  - SPLIT-PLAN-002.md
+  - .software-factory/split-metadata.json
+Test Result: PASS (go test ./pkg/push/retry/)
+Timestamp: 2025-10-06 00:30:00 UTC
