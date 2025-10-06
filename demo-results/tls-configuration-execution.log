@@ -1,0 +1,172 @@
+=================================================================
+=== TLS Configuration Demo =====================================
+=================================================================
+
+Purpose: Demonstrate TLS certificate handling
+Features: TLS verification, custom CAs, self-signed certs
+Duration: ~3-4 minutes
+
+=== Step 1: Prerequisites Check ===
+✅ Docker available
+✅ OpenSSL available
+⚠️  idpbuilder binary not found at ./bin/idpbuilder
+    Running in simulation mode
+
+=== Step 2: Creating Test Image ===
+Building test image: demo-tls:latest
+✅ Test image built
+
+=================================================================
+=== Scenario 1: Default TLS Verification (Strict) =============
+=================================================================
+
+Default behavior: Strict TLS certificate verification
+
+Command: idpbuilder push demo-tls:latest --registry localhost:5443
+
+Simulating strict TLS verification:
+Connecting to localhost:5443...
+Validating TLS certificate...
+❌ Error: x509: certificate signed by unknown authority
+
+✅ Default behavior correctly enforces TLS verification
+
+=================================================================
+=== Scenario 2: Disabling TLS Verification (Insecure) ==========
+=================================================================
+
+⚠️  WARNING: Only use for testing/development!
+
+Command: idpbuilder push demo-tls:latest --registry localhost:5443 --tls-verify=false
+
+Simulating insecure TLS connection:
+Connecting to localhost:5443...
+⚠️  Skipping TLS certificate verification
+✅ Push succeeded (insecure mode)
+
+⚠️  WARNING: TLS verification disabled!
+   - Use only for testing with self-signed certificates
+   - Never use in production environments
+   - Vulnerable to man-in-the-middle attacks
+
+=================================================================
+=== Scenario 3: Custom CA Certificate ===========================
+=================================================================
+
+Using custom CA certificate for private registry
+
+✅ Test certificates found at ./test/fixtures/certs
+Command: idpbuilder push demo-tls:latest --registry localhost:5443 --ca-cert ./test/fixtures/certs/ca.crt
+
+Simulating custom CA certificate usage:
+Loading CA certificate: ./test/fixtures/certs/ca.crt
+Connecting to localhost:5443...
+Validating with custom CA...
+✅ Certificate validated successfully
+✅ Push completed with custom CA
+
+=================================================================
+=== Scenario 4: System CA Bundle Usage =========================
+=================================================================
+
+Using system's default CA certificate bundle
+
+System CA locations checked (in order):
+  1. /etc/ssl/certs/ca-certificates.crt (Debian/Ubuntu)
+  2. /etc/pki/tls/certs/ca-bundle.crt (RHEL/CentOS)
+  3. /etc/ssl/ca-bundle.pem (OpenSUSE)
+  4. /etc/ssl/cert.pem (Alpine)
+
+✅ Found system CA bundle: /etc/ssl/certs/ca-certificates.crt
+✅ System CA bundle loaded automatically
+
+=================================================================
+=== Scenario 5: Certificate Directory ===========================
+=================================================================
+
+Loading multiple certificates from a directory
+
+Certificate directory structure:
+  /tmp/tmp.iCLCVfq8T8/certs/
+  ├── registry-ca.crt
+  ├── corporate-ca.crt
+  └── additional-ca.crt
+
+Command: idpbuilder push demo-tls:latest --registry localhost:5443 --ca-cert-dir /tmp/tmp.iCLCVfq8T8/certs
+
+Loading certificates from directory...
+  Found: registry-ca.crt
+  Found: corporate-ca.crt
+  Found: additional-ca.crt
+✅ All certificates loaded
+✅ Push completed with multiple CAs
+
+=== Cleanup ===
+✅ Cleanup complete
+
+=================================================================
+=== Demo Complete ==============================================
+=================================================================
+
+Summary of TLS Configuration Options:
+
+1. Default Behavior (Strict Verification)
+   ✅ Validates certificates against system CA bundle
+   ✅ Secure by default
+   ✅ Recommended for production
+
+2. Disable Verification (--tls-verify=false)
+   ⚠️  INSECURE - use only for testing
+   ⚠️  Vulnerable to MITM attacks
+   ⚠️  Never use in production
+
+3. Custom CA Certificate (--ca-cert <file>)
+   ✅ For private/internal registries
+   ✅ Single CA file
+   ✅ Secure with proper certificate management
+
+4. CA Certificate Directory (--ca-cert-dir <dir>)
+   ✅ Multiple CA certificates
+   ✅ Good for corporate environments
+   ✅ Loads all .crt/.pem files in directory
+
+5. System CA Bundle (automatic)
+   ✅ Default for public registries
+   ✅ No configuration needed
+   ✅ Uses OS certificate store
+
+Configuration File Support:
+  TLS settings can also be specified in config file:
+
+  # ~/.idpbuilder/config.yaml
+  tls:
+    verify: true
+    ca_cert: /path/to/ca.crt
+    ca_cert_dir: /path/to/certs/
+
+Environment Variables:
+  IDPBUILDER_TLS_VERIFY=false       # Disable verification
+  IDPBUILDER_CA_CERT=/path/to/ca    # Custom CA
+
+Best Practices:
+  1. Always use TLS verification in production
+  2. Store CA certificates in secure location
+  3. Use system CA bundle when possible
+  4. Document certificate requirements clearly
+  5. Rotate certificates regularly
+
+Common Issues and Solutions:
+  - 'x509: certificate signed by unknown authority'
+    → Add registry CA to system bundle or use --ca-cert
+
+  - 'x509: certificate has expired'
+    → Update registry certificate
+
+  - 'x509: certificate is valid for X, not Y'
+    → Use correct registry hostname
+
+Next Steps:
+  - Try authenticated-push-demo.sh for auth scenarios
+  - See retry-mechanism-demo.sh for failure handling
+  - Run phase2-integration-demo.sh for complete workflow
+
