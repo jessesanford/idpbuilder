@@ -1,2 +1,7 @@
-efforts/
-.state_rules_*
+idpbuilder
+bin/*
+.DS_Store
+cover.out
+__debug*
+.vscode
+.idea

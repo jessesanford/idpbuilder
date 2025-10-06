@@ -1,78 +1,22 @@
-# Target Repository Configuration
-# This file specifies the actual project repository that Software Factory will work on
-# Generated: Sat Sep  6 14:09:01 UTC 2025
+# Target Repository Configuration for Software Factory
+# This file specifies the ACTUAL project repository to work on
 
 target_repository:
-  # The upstream repository URL
   url: "https://github.com/jessesanford/idpbuilder.git"
-  
-  # The default base branch to work from
   base_branch: "main"
-  
-  # Clone depth for sparse checkouts (0 for full history)
-  clone_depth: 100
-  
-  # Authentication method
-  auth_method: "https"
 
-# Branch naming configuration
 branch_naming:
-  # Project prefix for all branches (lowercase kebab-case)
-  # This will be prepended to all branch names with a slash
-  project_prefix: "idpbuilder-oci-build-push"
-  
-  # Format for effort branches
-  # Variables: {prefix}, {phase}, {wave}, {effort_name}
-  # Note: {prefix} includes the trailing slash if project_prefix is set
-  effort_format: "{prefix}phase{phase}/wave{wave}/{effort_name}"
-  
-  # Format for integration branches
-  # Variables: {prefix}, {phase}, {wave}
-  integration_format: "{prefix}phase{phase}/wave{wave}/integration"
-  
-  # Format for phase integration branches
-  # Variables: {prefix}, {phase}
-  phase_integration_format: "{prefix}phase{phase}/integration"
+  project_prefix: "idpbuilder"
+  pattern: "phase{phase}/wave{wave}/{effort_name}"
 
-# Workspace configuration
+integration:
+  create_integration_branches: true
+  integration_pattern: "phase{phase}-wave{wave}-integration"
+
 workspace:
-  # Root directory for effort workspaces
-  efforts_root: "efforts"
-  
-  # Structure under efforts_root
-  effort_path: "phase{phase}/wave{wave}/{effort_name}"
-  
-  # Sparse checkout patterns (empty for full checkout)
-  sparse_patterns: []
+  effort_directory_pattern: "efforts/phase{phase}/wave{wave}/{effort_name}"
 
-# Repository separation enforcement
-separation:
-  # Prevent agents from modifying SF instance repository
-  protect_sf_instance: true
-  
-  # List of protected paths in SF instance
-  protected_paths:
-    - "rule-library/"
-    - "utilities/"
-    - ".claude/"
-    - "*.yaml"
-    - "*.md"
-  
-  # Allowed operations in SF instance repo
-  allowed_in_sf_instance:
-    - "read"
-    - "state"
-
-# Validation rules
-validation:
-  # Require all effort branches to track remote
-  require_remote_tracking: true
-  
-  # Require push verification after commits
-  require_push_verification: true
-  
-  # Maximum time between push attempts (minutes)
-  max_push_delay: 5
-  
-  # Require clean git status before switching efforts
-  require_clean_status: true
+# Software Factory Settings
+software_factory:
+  repo_path: "/home/vscode/idpbuilder"
+  state_file: "orchestrator-state.json"
