@@ -1,9 +1,9 @@
 {
   "current_phase": 1,
   "current_wave": 1,
-  "current_state": "PLANNING",
-  "previous_state": "SPAWN_ARCHITECT_MASTER_PLANNING",
-  "transition_time": "2025-09-23T17:31:45Z",
+  "current_state": "SPAWN_ENGINEERS_FOR_FIXES",
+  "previous_state": "MONITOR_REVIEWS",
+  "transition_time": "2025-10-05T23:13:07Z",
   "efforts_in_progress": [],
   "efforts_completed": [],
   "split_tracking": {},
@@ -58,5 +58,57 @@
       "measurement_command": "bash /home/vscode/workspaces/idpbuilder-gitea-push/tools/line-counter.sh",
       "within_limit": true
     }
-  }
+  },
+  "reviews_in_progress": [
+    "E2.2.1-user-documentation",
+    "E2.2.2-code-refinement"
+  ],
+  "review_results": [
+    {
+      "effort": "E2.1.1-unit-test-execution",
+      "reviewer_status": "ACCEPTED",
+      "reviewed_at": "2025-10-05T23:12:34Z",
+      "cascade_mode": true,
+      "blocking_issues": []
+    },
+    {
+      "effort": "E2.1.2-integration-test-execution",
+      "reviewer_status": "ACCEPTED",
+      "reviewed_at": "2025-10-05T23:12:34Z",
+      "cascade_mode": true,
+      "blocking_issues": []
+    },
+    {
+      "effort": "E2.2.1-user-documentation",
+      "reviewer_status": "NEEDS_FIXES",
+      "reviewed_at": "2025-10-05T23:12:34Z",
+      "cascade_mode": true,
+      "blocking_issues": [
+        "R383 SUPREME LAW VIOLATION: 33 metadata files in wrong location"
+      ]
+    },
+    {
+      "effort": "E2.2.2-code-refinement",
+      "reviewer_status": "ACCEPTED",
+      "reviewed_at": "2025-10-05T23:12:34Z",
+      "cascade_mode": true,
+      "blocking_issues": []
+    }
+  ],
+  "transition_reason": "Code review found blocking R383 issue in E2.2.1-user-documentation",
+  "state_transition_log": [
+    {
+      "from": "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+      "to": "MONITOR_REVIEWS",
+      "timestamp": "2025-10-03T03:21:01Z",
+      "reason": "Code Reviewers completed for 2 efforts in Phase 2 Wave 2"
+    }
+  ],
+  "last_reviewer_spawn": "2025-10-05T23:12:34Z",
+  "reviewers_completed": [
+    "E2.1.1",
+    "E2.1.2",
+    "E2.2.1",
+    "E2.2.2"
+  ]
 }
