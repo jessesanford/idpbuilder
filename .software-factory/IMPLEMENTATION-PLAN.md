@@ -1,16 +1,16 @@
-# E1.2.2 Split 002 - Retry Mechanism
+# E1.2.3 Split 002 - Image Discovery and Pusher
 
 ## Overview
-This split implements the retry mechanism with backoff logic for registry operations.
+This split implements the image discovery mechanism and pusher implementation for OCI images.
 
-## Target: 346 lines
+## Target: 689 lines
 
 ## Components
-- Retry configuration
-- Exponential backoff implementation
-- Retry wrapper for registry operations
-- Error categorization for retryable vs non-retryable
+- Image discovery logic
+- Pusher implementation
+- Image manifest handling
+- Layer management
 
 ## Dependencies
-- Builds on split-001 authentication base
+- Builds on split-001 logging and progress infrastructure
 
