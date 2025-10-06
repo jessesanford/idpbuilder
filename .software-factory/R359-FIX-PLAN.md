@@ -1,152 +1,228 @@
-# Fix Plan for E1.2.2-split-001 (R359 SUPREME LAW VIOLATION)
+# Fix Plan for E1.2.3-split-001 (R359 SUPREME LAW VIOLATION)
 
 ## Issue Summary
-Split-001 catastrophically violated R359 by DELETING 380 lines of existing retry package code instead of partitioning the 900 lines of NEW work that was added in the parent effort.
+Split-001 catastrophically violated R359 by DELETING 1085 lines of existing code (discovery.go, operations.go, pusher.go) instead of partitioning the 1706 lines of NEW work that was added in the parent effort.
 
 ## Root Cause
-**FUNDAMENTAL MISUNDERSTANDING**: The SW Engineer incorrectly believed that splits should contain ONLY the portion of code for that split, deleting everything else. This is completely wrong!
+**CRITICAL MISUNDERSTANDING**: The SW Engineer believed splits should be self-contained units with ONLY their portion of code. This led to DELETING over 1000 lines of existing, approved code - a catastrophic violation that could destroy the project.
 
 **What Actually Happened:**
-- Parent effort (E1.2.2-registry-authentication) added 900 lines of NEW code
-- Split-001 should have contained ~500 lines of those NEW additions
-- Instead, Split-001 DELETED the existing retry package (380 lines)
-- This is a SUPREME LAW violation that could destroy the codebase
+- Parent effort (E1.2.3-image-push-operations) added 1706 lines of NEW code
+- Split-001 should have contained ~550 lines of those NEW additions
+- Instead, Split-001 DELETED three entire existing files (1085 lines)
+- This is the WORST kind of R359 violation - deleting core functionality
 
 ## The Correct Understanding of Splits
 
-### What "Split" REALLY Means
-When an effort exceeds 800 lines, we split the NEW WORK into pieces:
-- Split-001: First ~500 lines of NEW code
-- Split-002: Next ~400 lines of NEW code
-- Each split ADDS to the codebase, never deletes
+### Critical Concept: Additive Development
+```
+EXISTING CODEBASE: Like a building with 10 floors
+YOUR EFFORT:       Adds 3 new floors (1706 lines)
+SPLITTING:         Build floor 11 first (550 lines)
+                   Then floor 12 (550 lines)
+                   Then floor 13 (606 lines)
 
-### Visual Example
+NEVER:             Demolish floors 7-9 to make room!
+```
+
+### What This Means in Practice
 ```
 BEFORE EFFORT (main branch): 10,000 lines existing code
-AFTER EFFORT (full work):     10,900 lines (added 900 NEW lines)
+AFTER FULL EFFORT:           11,706 lines (added 1706 NEW lines)
 
 CORRECT SPLITTING:
-Split-001: 10,500 lines (10,000 existing + 500 NEW)
-Split-002: 10,400 lines (10,000 existing + 400 NEW)
-When merged: 10,900 lines total
+Split-001: 10,550 lines (10,000 existing + 550 NEW)
+Split-002: 10,550 lines (10,000 existing + 550 NEW)
+Split-003: 10,606 lines (10,000 existing + 606 NEW)
+When all merged: 11,706 lines total
 
 WRONG (what happened):
-Split-001: 9,620 lines (DELETED 380 lines!)
-This is CATASTROPHIC!
+Split-001: 8,915 lines (DELETED 1085 lines of existing code!)
+This would DESTROY the project!
 ```
 
-## Correct Split Strategy for E1.2.2
+## Correct Split Strategy for E1.2.3
 
-The 900 lines of NEW authentication work should be divided as:
+The 1706 lines of NEW push operations work should be divided as:
 
-### Split-001 (Target: ~500 lines of NEW code)
+### Split-001 (Target: ~550 lines of NEW code)
 Should contain:
-- Core authentication types and interfaces
-- Basic credential management structures
-- Essential authentication methods
+- Core push command structure
+- Basic configuration types
+- Essential validation logic
 - Core error types
-- Basic validation logic
+- Fundamental push interfaces
 
-### Split-002 (Target: ~400 lines of NEW code)
+### Split-002 (Target: ~550 lines of NEW code)
 Should contain:
-- Retry mechanism with backoff
-- Advanced authentication features
-- Additional helper methods
-- Extended error handling
+- Image discovery mechanisms
+- Registry interaction logic
+- Authentication integration
+- Progress tracking basics
+
+### Split-003 (Target: ~606 lines of NEW code)
+Should contain:
+- Advanced operations
+- Retry and error recovery
+- Detailed logging
+- Performance optimizations
 - Integration utilities
 
 ## Fix Instructions
 
-### Step 1: Understand What Went Wrong
-1. Read this entire document carefully
-2. Read R359 rule at `rule-library/R359-code-deletion-prohibition.md`
-3. Understand: Splits partition NEW work, NEVER delete existing code
+### Step 1: Understand the Violation
+1. Read this entire document twice
+2. Study R359 at `rule-library/R359-code-deletion-prohibition.md`
+3. Understand: You DELETED 1085 lines that should NEVER have been touched
 
-### Step 2: Restore All Deleted Code
+### Step 2: Restore ALL Deleted Files
 ```bash
 # From the split-001 directory
-git checkout phase1/wave2/registry-authentication -- pkg/push/retry/
-# This restores the ENTIRE retry package that was deleted
+# Restore the THREE deleted files
+git checkout phase1/wave2/image-push-operations -- pkg/push/discovery.go
+git checkout phase1/wave2/image-push-operations -- pkg/push/operations.go
+git checkout phase1/wave2/image-push-operations -- pkg/push/pusher.go
+
+# Verify restoration
+ls -la pkg/push/
+# Should see discovery.go, operations.go, pusher.go restored
 ```
 
-### Step 3: Identify the NEW Code to Keep
-Review what was added in the parent effort and identify which ~500 lines belong in split-001:
-- Focus on core authentication logic
-- Keep foundational types and methods
-- Save advanced features for split-002
+### Step 3: Identify Correct Split-001 Content
+From the 1706 lines of NEW code added in parent effort, select ~550 lines:
+- Focus on foundational push command code
+- Keep basic structures and types
+- Save complex operations for later splits
 
-### Step 4: Verify No Deletions
+### Step 4: Verification (CRITICAL)
 ```bash
-# This MUST show ONLY additions, NO deletions
-git diff phase1/wave2/registry-authentication..HEAD --stat
-# If you see any deletions, you're doing it wrong!
+# This command MUST show ZERO deletions
+git diff --numstat phase1/wave2/image-push-operations..HEAD
+# Look at second column - MUST be 0 for all files
+
+# If ANY deletions exist:
+echo "FATAL: Still deleting code! R359 VIOLATION!"
+exit 359
 ```
 
-### Step 5: Measure Correctly
+### Step 5: Correct Measurement
 ```bash
-# Use the official line counter
+# Navigate to split directory and measure
 PROJECT_ROOT=$(pwd)
 while [ "$PROJECT_ROOT" != "/" ]; do
     [ -f "$PROJECT_ROOT/orchestrator-state.json" ] && break
     PROJECT_ROOT=$(dirname "$PROJECT_ROOT")
 done
 $PROJECT_ROOT/tools/line-counter.sh
-# Should show ~500 lines of NEW code
+# Should show ~550 lines of NEW additions
 ```
 
-## Files to Restore (CRITICAL)
-These files were DELETED and MUST be restored:
-- `pkg/push/retry/` - ENTIRE package (380 lines)
-  - All retry logic
-  - Backoff algorithms
-  - Error handling for retries
+## Files to Restore (CATASTROPHIC DELETIONS)
+These files were COMPLETELY DELETED and MUST be restored immediately:
+
+### 1. `pkg/push/discovery.go` (~350 lines)
+- Image discovery logic
+- Registry scanning
+- Manifest detection
+
+### 2. `pkg/push/operations.go` (~400 lines)
+- Core push operations
+- Transfer logic
+- Progress tracking
+
+### 3. `pkg/push/pusher.go` (~335 lines)
+- Push orchestration
+- Error handling
+- State management
+
+**TOTAL DELETED: 1085 lines of EXISTING, WORKING CODE**
 
 ## Files to Keep (NEW work for split-001)
-Focus on core authentication from the 900 NEW lines:
-- Basic auth types and interfaces (~150 lines)
-- Credential structures (~100 lines)
-- Core authentication methods (~200 lines)
-- Essential error types (~50 lines)
+From the 1706 NEW lines, keep ~550 lines focusing on:
+- Push command cobra setup (~150 lines)
+- Configuration structures (~100 lines)
+- Basic validation (~100 lines)
+- Core interfaces (~100 lines)
+- Essential types (~100 lines)
 
 ## Verification Steps
 
-### 1. Check for Deletions (MUST BE ZERO)
+### 1. Absolute Deletion Check
 ```bash
-deleted=$(git diff --numstat phase1/wave2/registry-authentication..HEAD | awk '{sum+=$2} END {print sum}')
+#!/bin/bash
+deleted=$(git diff --numstat phase1/wave2/image-push-operations..HEAD | awk '{sum+=$2} END {print sum}')
 if [ "$deleted" -gt 0 ]; then
-    echo "FAIL: Still deleting $deleted lines!"
+    echo "🔴🔴🔴 FATAL R359 VIOLATION!"
+    echo "You are STILL deleting $deleted lines!"
+    echo "This is a SUPREME LAW violation!"
     exit 359
 fi
+echo "✅ No deletions detected"
 ```
 
-### 2. Verify Size is Correct
+### 2. File Existence Check
 ```bash
-# Should show ~500 lines of NEW code, not total repository size
-$PROJECT_ROOT/tools/line-counter.sh
+# All these files MUST exist
+for file in discovery.go operations.go pusher.go; do
+    if [ ! -f "pkg/push/$file" ]; then
+        echo "🔴 MISSING: pkg/push/$file was deleted!"
+        exit 359
+    fi
+done
+echo "✅ All files restored"
 ```
 
-### 3. Ensure Compilation
+### 3. Size Verification
+```bash
+$PROJECT_ROOT/tools/line-counter.sh
+# Must show ~550 lines of NEW code
+# NOT the total repository size
+```
+
+### 4. Build Test
 ```bash
 go build ./...
 go test ./...
+# Must compile and pass tests
 ```
 
 ## Critical Learning Points
 
-1. **The 800-line limit applies ONLY to NEW code you ADD**
-2. **NEVER delete existing code to fit the limit**
-3. **Splits partition your NEW additions into manageable pieces**
-4. **Each split builds ON TOP of existing code, not instead of it**
-5. **The repository grows with each effort - that's EXPECTED**
+### The Devastating Impact
+1. You deleted **1085 lines** of working code
+2. Three entire files were removed
+3. This would have broken ALL push functionality
+4. The project would be unusable
+
+### The Correct Mental Model
+Think of splits like this:
+- You're adding chapters to a book
+- The book already has 100 chapters
+- You need to add 3 new chapters (too long for one commit)
+- So you add chapter 101 first, then 102, then 103
+- You NEVER tear out chapters 70-80 to make room!
+
+### Remember
+- **Splits partition NEW work into smaller pieces**
+- **Each split is additive to the existing codebase**
+- **NEVER delete existing code for size reasons**
+- **The repository GROWS with each effort - this is normal**
 
 ## Severity Notice
-This is a SUPREME LAW violation (R359). The penalty for this violation is -1000% and immediate termination. This fix plan MUST be followed exactly to correct the catastrophic misunderstanding.
+This is a SUPREME LAW R359 violation with the HIGHEST severity:
+- **Lines Deleted**: 1085 (catastrophic)
+- **Files Deleted**: 3 entire files
+- **Penalty**: -1000% and immediate termination
+- **Impact**: Would destroy the project
 
-## Expected Outcome
-After fixing:
-- Split-001 will ADD ~500 lines to the existing codebase
-- NO deletions of any existing code
-- The retry package will be fully restored
-- The split will contain the first portion of NEW authentication work
+This fix plan MUST be followed EXACTLY. There is ZERO tolerance for deletions.
 
-Remember: You're adding a new floor to a building, not demolishing floors to make room!
+## Expected Outcome After Fix
+- ALL 1085 lines of deleted code restored
+- Split-001 contains ~550 lines of NEW push command code
+- ZERO deletions from the parent branch
+- Full compilation and test success
+- Proper additive development
+
+## Final Warning
+Deleting existing code to meet size limits is like burning down rooms in your house to make it "smaller." It's not just wrong - it's destructive. NEVER do this again. Splits ADD functionality in pieces, they don't DELETE to make room.
