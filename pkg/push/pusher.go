@@ -25,12 +25,12 @@ type ImagePusher struct {
 
 // PusherOptions configures the ImagePusher behavior
 type PusherOptions struct {
-	MaxRetries       int           // Maximum number of retry attempts
-	InitialBackoff   time.Duration // Initial backoff duration
-	BackoffMultiplier float64     // Multiplier for exponential backoff
-	MaxBackoff       time.Duration // Maximum backoff duration
-	Insecure         bool          // Allow insecure (HTTP) registries
-	UserAgent        string        // Custom user agent
+	MaxRetries        int           // Maximum number of retry attempts
+	InitialBackoff    time.Duration // Initial backoff duration
+	BackoffMultiplier float64       // Multiplier for exponential backoff
+	MaxBackoff        time.Duration // Maximum backoff duration
+	Insecure          bool          // Allow insecure (HTTP) registries
+	UserAgent         string        // Custom user agent
 }
 
 // DefaultPusherOptions returns sensible defaults for push operations
@@ -72,12 +72,12 @@ func NewImagePusherWithOptions(auth authn.Authenticator, transport *http.Transpo
 
 // PushResult contains the result of a push operation
 type PushResult struct {
-	ImageName  string        // Name of the pushed image
-	Digest     string        // Digest of the pushed image
-	Size       int64         // Size of the pushed image in bytes
-	Duration   time.Duration // Time taken for the push
-	Error      error         // Error if push failed
-	Retries    int           // Number of retries attempted
+	ImageName string        // Name of the pushed image
+	Digest    string        // Digest of the pushed image
+	Size      int64         // Size of the pushed image in bytes
+	Duration  time.Duration // Time taken for the push
+	Error     error         // Error if push failed
+	Retries   int           // Number of retries attempted
 }
 
 // Push pushes a single image to the specified registry reference
@@ -283,11 +283,11 @@ func isRetryableError(err error) bool {
 // contains checks if a string contains a substring (case insensitive)
 func contains(s, substr string) bool {
 	return len(s) >= len(substr) &&
-		   (s == substr ||
+		(s == substr ||
 			len(s) > len(substr) &&
-			(s[:len(substr)] == substr ||
-			 s[len(s)-len(substr):] == substr ||
-			 containsInner(s, substr)))
+				(s[:len(substr)] == substr ||
+					s[len(s)-len(substr):] == substr ||
+					containsInner(s, substr)))
 }
 
 func containsInner(s, substr string) bool {
@@ -312,7 +312,7 @@ func (p *ImagePusher) BatchPush(ctx context.Context, images map[name.Reference]v
 	// Start goroutines for each image
 	for ref, img := range images {
 		go func(ref name.Reference, img v1.Image) {
-			semaphore <- struct{}{} // Acquire semaphore
+			semaphore <- struct{}{}        // Acquire semaphore
 			defer func() { <-semaphore }() // Release semaphore
 
 			result, _ := p.PushWithRetry(ctx, img, ref)

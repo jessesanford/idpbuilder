@@ -135,10 +135,10 @@ type ConnectionPool struct {
 
 // PooledConnection represents a pooled connection with metadata
 type PooledConnection struct {
-	conn      interface{}
-	lastUsed  int64
-	useCount  int
-	registry  string
+	conn     interface{}
+	lastUsed int64
+	useCount int
+	registry string
 }
 
 // NewConnectionPool creates a new connection pool

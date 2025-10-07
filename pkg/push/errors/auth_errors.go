@@ -99,13 +99,13 @@ func (e *RegistryError) IsRetryable() bool {
 	// Retry on server errors and rate limiting
 	switch e.StatusCode {
 	case 429, // Too Many Requests
-		 500, // Internal Server Error
-		 502, // Bad Gateway
-		 503, // Service Unavailable
-		 504: // Gateway Timeout
+		500, // Internal Server Error
+		502, // Bad Gateway
+		503, // Service Unavailable
+		504: // Gateway Timeout
 		return true
 	case 401, // Unauthorized
-		 403: // Forbidden
+		403: // Forbidden
 		return false // Auth errors shouldn't be retried
 	default:
 		// For other errors, check the underlying cause

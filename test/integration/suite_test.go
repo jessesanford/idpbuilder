@@ -10,12 +10,12 @@ import (
 type PushIntegrationSuite struct {
 	suite.Suite
 	// Mock registry configuration
-	registryHost   string
-	registryPort   string
-	registryURL    string
-	testImageName  string
-	testImageTag   string
-	cleanup        []func() error
+	registryHost  string
+	registryPort  string
+	registryURL   string
+	testImageName string
+	testImageTag  string
+	cleanup       []func() error
 }
 
 // SetupSuite initializes the test environment before running the test suite

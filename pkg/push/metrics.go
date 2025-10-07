@@ -39,4 +39,5 @@ func (n *NoOpMetrics) RecordRetry(image, registry string, attempt int, reason st
 func (n *NoOpMetrics) RecordProgress(image string, bytes int64, total int64) {}
 
 // RecordLayerUpload implements Metrics interface
-func (n *NoOpMetrics) RecordLayerUpload(image string, layerDigest string, size int64, duration time.Duration) {}
+func (n *NoOpMetrics) RecordLayerUpload(image string, layerDigest string, size int64, duration time.Duration) {
+}

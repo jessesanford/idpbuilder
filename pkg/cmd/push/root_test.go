@@ -10,10 +10,10 @@ import (
 
 func TestPushCommand(t *testing.T) {
 	tests := []struct {
-		name      string
-		args      []string
-		wantErr   bool
-		errMsg    string
+		name    string
+		args    []string
+		wantErr bool
+		errMsg  string
 	}{
 		{
 			name:    "valid image name",

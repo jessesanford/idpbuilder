@@ -430,9 +430,9 @@ func (m *mockTemporaryError) Timeout() bool   { return m.timeout }
 
 func TestIsRetryable_TemporaryNetError(t *testing.T) {
 	tests := []struct {
-		name      string
-		err       error
-		expected  bool
+		name     string
+		err      error
+		expected bool
 	}{
 		{
 			"temporary error",

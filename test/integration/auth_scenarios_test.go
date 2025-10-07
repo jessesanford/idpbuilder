@@ -202,11 +202,11 @@ func TestAuthenticationWithTLS(t *testing.T) {
 	defer env.Cleanup(t)
 
 	testCases := []struct {
-		name           string
-		useTLS         bool
-		skipVerify     bool
-		provideCert    bool
-		expectSuccess  bool
+		name          string
+		useTLS        bool
+		skipVerify    bool
+		provideCert   bool
+		expectSuccess bool
 	}{
 		{
 			name:          "TLS with certificate verification",

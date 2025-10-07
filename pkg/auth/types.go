@@ -28,11 +28,11 @@ type AuthValidator interface {
 
 // Common authentication errors
 var (
-	ErrEmptyUsername = errors.New("username cannot be empty when password is provided")
-	ErrEmptyPassword = errors.New("password cannot be empty when username is provided")
+	ErrEmptyUsername         = errors.New("username cannot be empty when password is provided")
+	ErrEmptyPassword         = errors.New("password cannot be empty when username is provided")
 	ErrInvalidUsernameFormat = errors.New("username contains invalid characters")
-	ErrUsernameTooLong = errors.New("username exceeds maximum length")
-	ErrPasswordTooLong = errors.New("password exceeds maximum length")
+	ErrUsernameTooLong       = errors.New("username exceeds maximum length")
+	ErrPasswordTooLong       = errors.New("password exceeds maximum length")
 )
 
 // Validation constants

@@ -17,10 +17,10 @@ func TestExponentialBackoff_NextDelay(t *testing.T) {
 	}
 
 	tests := []struct {
-		attempt      int
-		expectedMin  time.Duration
-		expectedMax  time.Duration
-		description  string
+		attempt     int
+		expectedMin time.Duration
+		expectedMax time.Duration
+		description string
 	}{
 		{0, 100 * time.Millisecond, 100 * time.Millisecond, "first attempt"},
 		{1, 200 * time.Millisecond, 200 * time.Millisecond, "second attempt"},

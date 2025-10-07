@@ -17,10 +17,10 @@ import (
 
 // LocalImage represents a discovered local OCI image
 type LocalImage struct {
-	Name     string   // Name/tag of the image
-	Path     string   // Local path to the image
-	Format   string   // Format: "tarball", "oci-layout"
-	Image    v1.Image // The actual image object
+	Name   string   // Name/tag of the image
+	Path   string   // Local path to the image
+	Format string   // Format: "tarball", "oci-layout"
+	Image  v1.Image // The actual image object
 }
 
 // DiscoveryOptions configures image discovery behavior

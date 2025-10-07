@@ -53,17 +53,17 @@ func NewTransportOption(insecure bool) remote.Option {
 func IsInsecureRegistry(registryURL string) bool {
 	// Check for common indicators of insecure registries
 	insecureIndicators := []string{
-		"http://",      // Plain HTTP
-		"localhost",    // Local development
-		"127.0.0.1",   // Loopback
-		"::1",         // IPv6 loopback
-		".local",      // mDNS domains
+		"http://",   // Plain HTTP
+		"localhost", // Local development
+		"127.0.0.1", // Loopback
+		"::1",       // IPv6 loopback
+		".local",    // mDNS domains
 	}
 
 	for _, indicator := range insecureIndicators {
 		if len(registryURL) >= len(indicator) &&
-		   registryURL[:len(indicator)] == indicator ||
-		   len(registryURL) > len(indicator) && registryURL[len(registryURL)-len(indicator):] == indicator {
+			registryURL[:len(indicator)] == indicator ||
+			len(registryURL) > len(indicator) && registryURL[len(registryURL)-len(indicator):] == indicator {
 			return true
 		}
 	}

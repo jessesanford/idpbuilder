@@ -12,10 +12,10 @@ import (
 
 // CleanupManager handles cleanup of test resources
 type CleanupManager struct {
-	tempDirs      []string
+	tempDirs       []string
 	registryImages []string
-	kubeResources []kubeResource
-	logFiles      []string
+	kubeResources  []kubeResource
+	logFiles       []string
 }
 
 type kubeResource struct {
@@ -27,10 +27,10 @@ type kubeResource struct {
 // NewCleanupManager creates a new cleanup manager
 func NewCleanupManager() *CleanupManager {
 	return &CleanupManager{
-		tempDirs:      make([]string, 0),
+		tempDirs:       make([]string, 0),
 		registryImages: make([]string, 0),
-		kubeResources: make([]kubeResource, 0),
-		logFiles:      make([]string, 0),
+		kubeResources:  make([]kubeResource, 0),
+		logFiles:       make([]string, 0),
 	}
 }
 

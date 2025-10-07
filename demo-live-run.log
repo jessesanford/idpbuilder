@@ -1,0 +1,36 @@
+=================================================================
+=== Basic Push Demo - idpbuilder push command =================
+=================================================================
+
+Purpose: Demonstrate basic image push workflow
+Features: Basic push to local registry
+Duration: ~2-3 minutes
+
+=== Step 1: Checking Prerequisites ===
+✅ Docker available
+
+=== Step 2: Creating Test Image ===
+Creating a simple test image for demonstration...
+Building test image: demo-basic-push:latest
+✅ Test image built successfully
+
+=== Step 3: Pushing Image to Registry ===
+Target registry: localhost:5000
+Command: idpbuilder push demo-basic-push:latest --registry localhost:5000
+
+Error: unknown flag: --registry
+Usage:
+  idpbuilder push [IMAGE] [flags]
+
+Flags:
+  -h, --help              help for push
+      --insecure          Allow insecure registry connections
+  -p, --password string   Registry password for authentication
+  -u, --username string   Registry username for authentication
+  -v, --verbose           Enable verbose logging
+
+Global Flags:
+      --color              Enable colored log messages.
+  -l, --log-level string   Set the log verbosity. Supported values are: debug, info, warn, and error. (default "info")
+
+unknown flag: --registry

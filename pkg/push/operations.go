@@ -17,33 +17,33 @@ import (
 
 // PushOperation represents a complete push operation configuration
 type PushOperation struct {
-	Registry     string                // Target registry URL
-	Username     string                // Registry username
-	Password     string                // Registry password
-	Insecure     bool                  // Allow insecure (HTTP) connections
-	BuildPath    string                // Path to search for images
-	UserAgent    string                // Custom user agent
-	MaxRetries   int                   // Maximum retry attempts
-	Concurrency  int                   // Maximum concurrent pushes
-	Auth         authn.Authenticator   // Authentication configuration
-	Transport    *http.Transport       // HTTP transport configuration
-	Progress     ProgressReporter      // Progress reporting
-	Logger       *PushLogger           // Push-specific logger
+	Registry       string              // Target registry URL
+	Username       string              // Registry username
+	Password       string              // Registry password
+	Insecure       bool                // Allow insecure (HTTP) connections
+	BuildPath      string              // Path to search for images
+	UserAgent      string              // Custom user agent
+	MaxRetries     int                 // Maximum retry attempts
+	Concurrency    int                 // Maximum concurrent pushes
+	Auth           authn.Authenticator // Authentication configuration
+	Transport      *http.Transport     // HTTP transport configuration
+	Progress       ProgressReporter    // Progress reporting
+	Logger         *PushLogger         // Push-specific logger
 	FilterCriteria *FilterCriteria     // Image filtering criteria
 }
 
 // PushOperationResult contains the results of a push operation
 type PushOperationResult struct {
-	StartTime     time.Time      // When the operation started
-	EndTime       time.Time      // When the operation completed
-	TotalDuration time.Duration  // Total time taken
-	ImagesFound   int            // Number of images discovered
-	ImagesPushed  int            // Number of images successfully pushed
-	ImagesFailed  int            // Number of images that failed to push
-	TotalBytes    int64          // Total bytes pushed
-	Results       []*PushResult  // Individual push results
-	Errors        []error        // Any errors encountered
-	Metrics       *PushMetrics   // Detailed performance metrics
+	StartTime     time.Time     // When the operation started
+	EndTime       time.Time     // When the operation completed
+	TotalDuration time.Duration // Total time taken
+	ImagesFound   int           // Number of images discovered
+	ImagesPushed  int           // Number of images successfully pushed
+	ImagesFailed  int           // Number of images that failed to push
+	TotalBytes    int64         // Total bytes pushed
+	Results       []*PushResult // Individual push results
+	Errors        []error       // Any errors encountered
+	Metrics       *PushMetrics  // Detailed performance metrics
 }
 
 // NewPushOperationFromCommand creates a PushOperation from cobra command flags

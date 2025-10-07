@@ -27,11 +27,11 @@ func TestNetworkFailureRecovery(t *testing.T) {
 	// Simulate intermittent network issues using network policies
 	// This is a simplified test - real implementation would use chaos engineering
 	testCases := []struct {
-		name              string
-		maxRetries        int
-		failureRate       float64
-		expectSuccess     bool
-		expectedAttempts  int
+		name             string
+		maxRetries       int
+		failureRate      float64
+		expectSuccess    bool
+		expectedAttempts int
 	}{
 		{
 			name:             "Single transient failure",
@@ -176,13 +176,13 @@ func TestBackoffStrategy(t *testing.T) {
 	defer env.Cleanup(t)
 
 	testCases := []struct {
-		name                 string
-		initialDelay         time.Duration
-		maxDelay             time.Duration
-		backoffMultiplier    float64
-		expectedMinDuration  time.Duration
-		expectedMaxDuration  time.Duration
-		numRetries           int
+		name                string
+		initialDelay        time.Duration
+		maxDelay            time.Duration
+		backoffMultiplier   float64
+		expectedMinDuration time.Duration
+		expectedMaxDuration time.Duration
+		numRetries          int
 	}{
 		{
 			name:                "Exponential backoff",

@@ -58,10 +58,10 @@ func (v *DefaultValidator) validateUsernameFormat(username string) error {
 
 	// Additional checks for problematic characters
 	if strings.Contains(username, " ") ||
-	   strings.Contains(username, "\t") ||
-	   strings.Contains(username, "\n") ||
-	   strings.Contains(username, ":") ||
-	   strings.Contains(username, "/") {
+		strings.Contains(username, "\t") ||
+		strings.Contains(username, "\n") ||
+		strings.Contains(username, ":") ||
+		strings.Contains(username, "/") {
 		return ErrInvalidUsernameFormat
 	}
 
