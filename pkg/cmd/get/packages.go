@@ -113,7 +113,15 @@ func getIDPNamespace(ctx context.Context, kubeClient client.Client) (string, err
 	if err != nil {
 		return "", err
 	}
-	// TODO: We assume that only one LocalBuild has been created for one cluster !
+
+	// Phase 1 Design Decision: Single LocalBuild Per Cluster
+	// The current implementation assumes one LocalBuild resource per cluster.
+	// This simplification is intentional for Phase 1 and will be enhanced
+	// in future phases if multiple LocalBuild support is required.
+	if len(build.Items) == 0 {
+		return "", fmt.Errorf("no LocalBuild found for cluster")
+	}
+
 	idpNamespace := v1alpha1.FieldManager + "-" + build.Items[0].Name
 	return idpNamespace, nil
 }

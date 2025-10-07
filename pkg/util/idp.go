@@ -25,7 +25,14 @@ func GetConfig(ctx context.Context) (v1alpha1.BuildCustomizationSpec, error) {
 		return b, err
 	}
 
-	// TODO: We assume that only one LocalBuild exists !
+	// Phase 1 Design Decision: Single LocalBuild Assumption
+	// GetLocalBuild returns the first LocalBuild resource found.
+	// Phase 1 deployment model supports one LocalBuild per cluster.
+	// Multi-LocalBuild support is deferred to Phase 2+ as needed.
+	if len(list.Items) == 0 {
+		return b, fmt.Errorf("no LocalBuild resource found")
+	}
+
 	return list.Items[0].Spec.BuildCustomization, nil
 }
 
