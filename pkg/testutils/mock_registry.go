@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 )
 
 // AuthConfig represents authentication configuration for the mock registry
@@ -76,10 +78,12 @@ func (m *MockAuthTransport) GetAuthHeaders() map[string]string {
 // MockRegistry provides a mock OCI registry for testing
 type MockRegistry struct {
 	server     *httptest.Server
-	authConfig *AuthConfig
+	AuthConfig *AuthConfig // Exported for test access
 	manifests  map[string][]byte
 	blobs      map[string][]byte
 	tags       map[string]string
+	images     map[string]v1.Image // Store v1.Image objects
+	layers     map[v1.Hash]bool    // Track layer existence
 	mu         sync.RWMutex
 	reqCount   int
 	lastReq    *http.Request
@@ -88,10 +92,12 @@ type MockRegistry struct {
 // NewMockRegistry creates a new mock registry instance
 func NewMockRegistry(authConfig *AuthConfig) *MockRegistry {
 	registry := &MockRegistry{
-		authConfig: authConfig,
+		AuthConfig: authConfig,
 		manifests:  make(map[string][]byte),
 		blobs:      make(map[string][]byte),
 		tags:       make(map[string]string),
+		images:     make(map[string]v1.Image),
+		layers:     make(map[v1.Hash]bool),
 	}
 
 	mux := http.NewServeMux()
@@ -272,7 +278,7 @@ func (m *MockRegistry) recordRequest(r *http.Request) {
 
 // checkAuth verifies authentication if enabled
 func (m *MockRegistry) checkAuth(w http.ResponseWriter, r *http.Request) bool {
-	if !m.authConfig.Enabled {
+	if !m.AuthConfig.Enabled {
 		return true
 	}
 
@@ -284,13 +290,13 @@ func (m *MockRegistry) checkAuth(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	// Verify auth header matches expected credentials
-	if m.authConfig.Token != "" {
-		expected := "Bearer " + m.authConfig.Token
+	if m.AuthConfig.Token != "" {
+		expected := "Bearer " + m.AuthConfig.Token
 		if authHeader != expected {
 			w.WriteHeader(http.StatusForbidden)
 			return false
 		}
-	} else if m.authConfig.Username != "" {
+	} else if m.AuthConfig.Username != "" {
 		// Basic auth verification would go here
 		// For testing purposes, we accept any basic auth
 	}
@@ -376,6 +382,92 @@ func (m *MockRegistry) headBlob(w http.ResponseWriter, r *http.Request, digest s
 
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(blob)))
 	w.WriteHeader(http.StatusOK)
+}
+
+// HasImage checks if an image exists in the registry
+func (m *MockRegistry) HasImage(imageName string) bool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	// Check if image exists by name
+	if _, ok := m.images[imageName]; ok {
+		return true
+	}
+
+	// Also check tag mapping
+	if digest, ok := m.tags[imageName]; ok {
+		_, exists := m.manifests[digest]
+		return exists
+	}
+
+	return false
+}
+
+// GetImage retrieves an image by name
+func (m *MockRegistry) GetImage(imageName string) v1.Image {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.images[imageName]
+}
+
+// StoreImage stores a v1.Image in the registry for testing
+func (m *MockRegistry) StoreImage(imageName string, image v1.Image) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	m.images[imageName] = image
+
+	// Also store in manifest map for API compatibility
+	manifest, err := image.RawManifest()
+	if err != nil {
+		return err
+	}
+
+	digest := generateDigest(manifest)
+	m.manifests[digest] = manifest
+
+	// Extract tag from imageName
+	if strings.Contains(imageName, ":") {
+		parts := strings.Split(imageName, ":")
+		if len(parts) == 2 {
+			m.tags[parts[1]] = digest
+		}
+	}
+
+	return nil
+}
+
+// GetManifest retrieves a manifest by reference
+func (m *MockRegistry) GetManifest(ref string) []byte {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+
+	// Check if ref is a tag
+	if digest, ok := m.tags[ref]; ok {
+		return m.manifests[digest]
+	}
+
+	// Otherwise treat as digest
+	return m.manifests[ref]
+}
+
+// HasLayer checks if a layer exists in the registry
+func (m *MockRegistry) HasLayer(digest v1.Hash) bool {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	return m.layers[digest]
+}
+
+// AddLayer stores a layer in the registry
+func (m *MockRegistry) AddLayer(digest v1.Hash) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.layers[digest] = true
+}
+
+// GetURL returns the registry URL (alias for URL method)
+func (m *MockRegistry) GetURL() string {
+	return m.URL()
 }
 
 // Helper functions
