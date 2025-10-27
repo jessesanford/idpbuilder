@@ -7,6 +7,8 @@ echo "running install-kind.sh"
 .devcontainer/install-kind.sh 
 echo "running install-claude-code.sh"
 .devcontainer/install-claude-code.sh
+echo "running install-byobu.sh"
+bash .devcontainer/install-byobu.sh
 
 
 # Configure git if environment variables are set
