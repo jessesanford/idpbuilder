@@ -1,0 +1,93 @@
+{
+  "_comment": "Template for SPLIT_COORDINATION sub-orchestrator parameters",
+  "sub_orchestrator_type": "SPLIT_COORDINATION",
+  "unique_id": "GENERATE_UUID_HERE",
+  "master_state_file": "orchestrator-state-v3.json",
+  "input_parameters": {
+    "original_effort": "E1.1",
+    "original_branch": "phase1/wave1/effort-name",
+    "split_plan": {
+      "splits": [
+        "E1.1a",
+        "E1.1b",
+        "E1.1c"
+      ],
+      "split_descriptions": {
+        "E1.1a": "First logical component - authentication",
+        "E1.1b": "Second logical component - data processing",
+        "E1.1c": "Third logical component - UI components"
+      },
+      "dependencies": {
+        "_comment": "Define which splits depend on others",
+        "E1.1b": ["E1.1a"],
+        "E1.1c": ["E1.1a", "E1.1b"]
+      },
+      "sequential": true,
+      "parallelizable_groups": [
+        ["E1.1a"],
+        ["E1.1b", "E1.1c"]
+      ],
+      "estimated_sizes": {
+        "E1.1a": 650,
+        "E1.1b": 680,
+        "E1.1c": 450
+      },
+      "priority_order": ["E1.1a", "E1.1b", "E1.1c"]
+    },
+    "size_limit": 700,
+    "size_measurement": {
+      "use_line_counter_tool": true,
+      "exclude_generated": true,
+      "exclude_tests": false,
+      "exclude_docs": true
+    },
+    "validation_after_each": true,
+    "review_configuration": {
+      "review_required": true,
+      "review_type": "STANDARD|EXPEDITED",
+      "auto_spawn_reviewer": true,
+      "review_timeout": 3600
+    },
+    "merge_strategy": {
+      "merge_splits_when_complete": true,
+      "merge_to_original": true,
+      "create_integration_branch": false,
+      "preserve_split_branches": true
+    },
+    "sw_engineer_configuration": {
+      "reuse_implementation_plan": true,
+      "share_context_between_splits": true,
+      "maintain_code_style": true
+    },
+    "failure_handling": {
+      "on_size_exceeded": "CREATE_SUB_SPLIT|ESCALATE|CONTINUE",
+      "on_implementation_failure": "RETRY|SKIP|ESCALATE",
+      "on_review_failure": "FIX|RETRY_REVIEW|ESCALATE",
+      "max_sub_splits": 3
+    }
+  },
+  "output_location": "/tmp/sub-orch-UUID/output.json",
+  "heartbeat_file": "/tmp/sub-orch-UUID/heartbeat.json",
+  "checkpoint_file": "/tmp/sub-orch-UUID/checkpoint.json",
+  "log_file": "/tmp/sub-orch-UUID.log",
+  "max_duration_seconds": 10800,
+  "checkpoint_interval": 30,
+  "resource_limits": {
+    "max_memory_mb": 2048,
+    "max_cpu_percent": 70,
+    "max_disk_mb": 500
+  },
+  "monitoring": {
+    "heartbeat_interval": 30,
+    "progress_update_interval": 60,
+    "track_per_split_progress": true,
+    "detailed_logging": false
+  },
+  "recovery": {
+    "max_retries": 2,
+    "retry_delay_seconds": 300,
+    "checkpoint_after_each_split": true,
+    "preserve_completed_splits": true,
+    "resume_from_failed_split": true
+  }
+}

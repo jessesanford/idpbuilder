@@ -1,0 +1,132 @@
+{
+  "fix_identifier": "[fix-name]",
+  "fix_type": "[HOTFIX|BACKPORT|FORWARD_PORT|INTEGRATE_WAVE_EFFORTS_FIX]",
+  "current_state": "FIX_CASCADE_INIT",
+  "created_at": "[ISO-8601-timestamp]",
+  "status": "IN_PROGRESS",
+  "source_branch": "[branch-where-fix-originated]",
+  "target_branches": [],
+
+  "_comment_r380": "Fix Registry - EVERY fix must be tracked here with unique ID",
+  "fix_registry": {
+    "_example_FIX_001": {
+      "discovered_at": "[ISO-8601-timestamp]",
+      "discovered_during": "[initial_analysis|integration|validation|code_review|build]",
+      "branch": "[branch-name]",
+      "issue": "[description-of-issue]",
+      "status": "[pending|in_progress|applied|validated|failed|skipped]",
+      "attempts": 0,
+      "max_attempts": 3,
+      "resolution": "[how-it-was-fixed-if-complete]",
+      "pr_number": null,
+      "commit_hash": null
+    }
+  },
+
+  "_comment_convergence": "R380 Convergence Metrics - Ensures finite execution",
+  "convergence_metrics": {
+    "fixes_pending": 0,
+    "fixes_completed": 0,
+    "fixes_failed": 0,
+    "fixes_skipped": 0,
+    "progress_rate": 0.0,
+    "cycle_count": 0,
+    "max_cycles": 20,
+    "last_progress_cycle": 0,
+    "stalled_cycles": 0,
+    "started_at": "[ISO-8601-timestamp]",
+    "total_timeout_hours": 10,
+    "escalation_triggered": false,
+    "escalation_reason": null
+  },
+
+  "_comment_checkpoints": "R380 Checkpoint Management - Git hashes for recovery",
+  "checkpoints": {
+    "_example_before_FIX_001": "[git-commit-hash]",
+    "_example_after_FIX_001": "[git-commit-hash]",
+    "_example_validation_FIX_001": "[passed|failed|skipped]"
+  },
+
+  "_comment_cascade": "Traditional cascade tracking for compatibility",
+  "cascade_progress": {
+    "backports": {
+      "_example_release_2_0": {
+        "status": "[PENDING|IN_PROGRESS|COMPLETED|FAILED]",
+        "pr_number": null,
+        "validation": "[PENDING|PASSED|FAILED]",
+        "fix_ids": ["FIX-001", "FIX-002"]
+      }
+    },
+    "forward_ports": {
+      "_example_feature_branch": {
+        "status": "[PENDING|IN_PROGRESS|COMPLETED|FAILED]",
+        "pr_number": null,
+        "validation": "[PENDING|PASSED|FAILED]",
+        "fix_ids": []
+      }
+    },
+    "quality_gates": {
+      "gate_1_backport": {
+        "_example_release_2_0": "[PENDING|PASSED|FAILED]"
+      },
+      "gate_2_forward_port": {},
+      "gate_3_conflict_resolution": {},
+      "gate_4_comprehensive": "[PENDING|PASSED|FAILED]"
+    }
+  },
+
+  "_comment_discovery": "R380 Progressive Discovery Tracking",
+  "discovery_tracking": {
+    "discovery_points": [
+      {
+        "timestamp": "[ISO-8601-timestamp]",
+        "state": "[state-where-discovered]",
+        "fixes_found": 0,
+        "fix_ids": []
+      }
+    ],
+    "total_fixes_discovered": 0,
+    "discovery_enabled": true,
+    "last_discovery_check": "[ISO-8601-timestamp]"
+  },
+
+  "_comment_recovery": "R380 Recovery Information",
+  "recovery_info": {
+    "last_checkpoint": "[checkpoint-name]",
+    "last_successful_fix": "[FIX-ID]",
+    "recovery_attempted": false,
+    "recovery_timestamp": null,
+    "recovery_from_state": null
+  },
+
+  "validation_results": {
+    "_comment": "Results from comprehensive validation",
+    "all_builds_pass": false,
+    "all_tests_pass": false,
+    "no_regressions": false,
+    "fixes_verified": false,
+    "final_check_timestamp": null
+  },
+
+  "errors_encountered": [
+    {
+      "timestamp": "[ISO-8601-timestamp]",
+      "state": "[state-name]",
+      "error": "[error-description]",
+      "recovery_action": "[action-taken]"
+    }
+  ],
+
+  "notes": [
+    "[Any important notes about this cascade]"
+  ],
+
+  "_metadata": {
+    "schema_version": "2.0",
+    "r380_compliant": true,
+    "created_by": "[agent-name]",
+    "last_updated": "[ISO-8601-timestamp]",
+    "archived": false,
+    "archive_location": null
+  }
+}

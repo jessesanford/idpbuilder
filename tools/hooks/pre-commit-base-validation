@@ -1,0 +1,362 @@
+#!/bin/bash
+# Pre-commit hook for base branch validation
+# Prevents commits when branch is based on incorrect parent branch
+# Part of Software Factory 2.0 Branch Tracking System (R500)
+
+set -euo pipefail
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Function to print colored messages
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1" >&2
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[OK]${NC} $1"
+}
+
+# Get current branch and directory
+CURRENT_BRANCH=$(git branch --show-current)
+CURRENT_DIR=$(pwd)
+
+# Find the root of the Software Factory project
+find_project_root() {
+    local dir="$CURRENT_DIR"
+    while [ "$dir" != "/" ]; do
+        if [ -f "$dir/orchestrator-state-v3.json" ]; then
+            echo "$dir"
+            return 0
+        fi
+        dir=$(dirname "$dir")
+    done
+    # Not in a Software Factory project - let the commit proceed
+    exit 0
+}
+
+PROJECT_ROOT=$(find_project_root)
+STATE_FILE="$PROJECT_ROOT/orchestrator-state-v3.json"
+
+# Check if orchestrator-state-v3.json exists
+if [ ! -f "$STATE_FILE" ]; then
+    print_warning "orchestrator-state-v3.json not found - skipping base branch validation"
+    exit 0
+fi
+
+# Extract branch type and context from directory structure
+determine_branch_context() {
+    local rel_path="${CURRENT_DIR#$PROJECT_ROOT}"
+    rel_path="${rel_path#/}" # Remove leading slash if present
+
+    # Parse the path to determine context
+    if [[ "$rel_path" =~ ^efforts/phase([0-9]+)/wave([0-9]+)/([^/]+)(/split-[0-9]+)?$ ]]; then
+        PHASE="${BASH_REMATCH[1]}"
+        WAVE="${BASH_REMATCH[2]}"
+        EFFORT_NAME="${BASH_REMATCH[3]}"
+        SPLIT_NUM="${BASH_REMATCH[4]}"
+
+        if [ -n "$SPLIT_NUM" ]; then
+            BRANCH_TYPE="split"
+            SPLIT_NUM="${SPLIT_NUM#/split-}" # Remove '/split-' prefix
+        else
+            BRANCH_TYPE="effort"
+        fi
+    elif [[ "$rel_path" =~ ^efforts/phase([0-9]+)/wave([0-9]+)-integration$ ]]; then
+        PHASE="${BASH_REMATCH[1]}"
+        WAVE="${BASH_REMATCH[2]}"
+        BRANCH_TYPE="integration"
+    elif [[ "$rel_path" =~ ^efforts/phase([0-9]+)-integration$ ]]; then
+        PHASE="${BASH_REMATCH[1]}"
+        BRANCH_TYPE="phase-integration"
+    elif [[ "$rel_path" =~ ^efforts/project-integration$ ]]; then
+        BRANCH_TYPE="project-integration"
+    else
+        # Not in an effort directory - let the commit proceed
+        exit 0
+    fi
+}
+
+# Determine expected base branch from orchestrator-state-v3.json
+get_expected_base_branch() {
+    local branch_info
+
+    # Check if branch is tracked in orchestrator-state-v3.json
+    if command -v jq &> /dev/null; then
+        branch_info=$(jq -r ".branch_head_tracking.branches.\"$CURRENT_BRANCH\"" "$STATE_FILE" 2>/dev/null || echo "null")
+
+        if [ "$branch_info" != "null" ]; then
+            EXPECTED_BASE=$(echo "$branch_info" | jq -r '.base_branch // empty')
+            if [ -n "$EXPECTED_BASE" ]; then
+                return 0
+            fi
+        fi
+    fi
+
+    # Fall back to pattern-based determination
+    case "$BRANCH_TYPE" in
+        "effort")
+            # Check if this is the first effort in the wave
+            local effort_count=$(jq -r ".efforts_completed[] | select(.phase==$PHASE and .wave==$WAVE)" "$STATE_FILE" 2>/dev/null | wc -l || echo "0")
+            local in_progress_count=$(jq -r ".efforts_in_progress[] | select(.phase==$PHASE and .wave==$WAVE)" "$STATE_FILE" 2>/dev/null | wc -l || echo "0")
+
+            if [ "$effort_count" -eq "0" ] && [ "$in_progress_count" -le "1" ]; then
+                # First effort in wave
+                if [ "$WAVE" -eq "1" ] && [ "$PHASE" -eq "1" ]; then
+                    EXPECTED_BASE="main"
+                else
+                    # Should be based on previous integration
+                    if [ "$WAVE" -gt "1" ]; then
+                        EXPECTED_BASE="phase${PHASE}/wave$((WAVE-1))-integration"
+                    else
+                        EXPECTED_BASE="phase$((PHASE-1))-integration"
+                    fi
+                fi
+            else
+                # Not first effort - find the previous effort branch
+                local prev_effort=$(jq -r ".efforts_completed[] | select(.phase==$PHASE and .wave==$WAVE) | .current_branch // .branch" "$STATE_FILE" 2>/dev/null | tail -n1)
+                if [ -n "$prev_effort" ]; then
+                    EXPECTED_BASE="$prev_effort"
+                else
+                    print_warning "Could not determine previous effort branch"
+                    EXPECTED_BASE="unknown"
+                fi
+            fi
+            ;;
+
+        "split")
+            # Splits are based on previous splits or the oversized effort
+            if [ "$SPLIT_NUM" -eq "1" ] || [ "$SPLIT_NUM" -eq "001" ]; then
+                # First split - base on the oversized effort branch
+                EXPECTED_BASE="phase${PHASE}/wave${WAVE}/${EFFORT_NAME}"
+            else
+                # Subsequent split - base on previous split
+                local prev_split_num=$(printf "%03d" $((10#$SPLIT_NUM - 1)))
+                EXPECTED_BASE="phase${PHASE}/wave${WAVE}/${EFFORT_NAME}--split-${prev_split_num}"
+            fi
+            ;;
+
+        "integration")
+            # Wave integration is based on the last effort in the wave
+            local last_effort=$(jq -r ".efforts_completed[] | select(.phase==$PHASE and .wave==$WAVE) | .current_branch // .branch" "$STATE_FILE" 2>/dev/null | tail -n1)
+            if [ -n "$last_effort" ]; then
+                EXPECTED_BASE="$last_effort"
+            else
+                print_warning "No completed efforts found for wave integration"
+                EXPECTED_BASE="unknown"
+            fi
+            ;;
+
+        "phase-integration")
+            # Phase integration is based on the last wave integration
+            local last_wave=$(jq -r ".waves_per_phase[$((PHASE-1))]" "$STATE_FILE" 2>/dev/null)
+            if [ -n "$last_wave" ] && [ "$last_wave" != "null" ]; then
+                EXPECTED_BASE="phase${PHASE}/wave${last_wave}-integration"
+            else
+                print_warning "Could not determine last wave for phase integration"
+                EXPECTED_BASE="unknown"
+            fi
+            ;;
+
+        "project-integration")
+            # Project integration is based on the last phase integration
+            local last_phase=$(jq -r ".phases_planned" "$STATE_FILE" 2>/dev/null)
+            if [ -n "$last_phase" ] && [ "$last_phase" != "null" ]; then
+                EXPECTED_BASE="phase${last_phase}-integration"
+            else
+                print_warning "Could not determine last phase for project integration"
+                EXPECTED_BASE="unknown"
+            fi
+            ;;
+    esac
+}
+
+# Verify the current branch contains commits from the expected base
+verify_base_branch() {
+    if [ "$EXPECTED_BASE" = "unknown" ]; then
+        print_warning "Could not determine expected base branch - proceeding with caution"
+        return 0
+    fi
+
+    # Check if expected base branch exists
+    if ! git show-ref --verify --quiet "refs/heads/$EXPECTED_BASE" 2>/dev/null; then
+        # Try with origin/ prefix
+        if git show-ref --verify --quiet "refs/remotes/origin/$EXPECTED_BASE" 2>/dev/null; then
+            EXPECTED_BASE="origin/$EXPECTED_BASE"
+        else
+            print_warning "Expected base branch '$EXPECTED_BASE' not found locally or in origin"
+            return 0
+        fi
+    fi
+
+    # Get the merge-base between current branch and expected base
+    local merge_base=$(git merge-base "$CURRENT_BRANCH" "$EXPECTED_BASE" 2>/dev/null || echo "")
+
+    if [ -z "$merge_base" ]; then
+        print_error "Current branch '$CURRENT_BRANCH' has no common ancestor with expected base '$EXPECTED_BASE'"
+        print_error "This likely means the branch was created from the wrong base branch!"
+        return 1
+    fi
+
+    # Check if the expected base is an ancestor of the current branch
+    if ! git merge-base --is-ancestor "$EXPECTED_BASE" "$CURRENT_BRANCH" 2>/dev/null; then
+        # Check if we're missing commits from the expected base
+        local missing_commits=$(git rev-list "$EXPECTED_BASE" "^$CURRENT_BRANCH" 2>/dev/null | wc -l)
+
+        if [ "$missing_commits" -gt "0" ]; then
+            print_error "Current branch is missing $missing_commits commits from expected base '$EXPECTED_BASE'"
+            print_error "This indicates the branch may have been created from the wrong base!"
+
+            # Show what the actual base appears to be
+            local common_branches=$(git branch --contains "$merge_base" 2>/dev/null | sed 's/^[* ] //' | grep -v "$CURRENT_BRANCH" | head -5)
+            if [ -n "$common_branches" ]; then
+                print_error "Current branch appears to be based on one of:"
+                echo "$common_branches" | while read -r branch; do
+                    echo "  - $branch"
+                done
+            fi
+
+            return 1
+        fi
+    fi
+
+    # Additional check: Verify critical files from base exist
+    # This catches cases where someone created a branch from main instead of the effort branch
+    verify_critical_files
+}
+
+# Verify critical files from the base branch exist
+verify_critical_files() {
+    # Get list of files that should exist from the base branch
+    local base_files=""
+
+    case "$BRANCH_TYPE" in
+        "split"|"fix")
+            # Splits should contain all files from the effort they're splitting
+            base_files=$(git ls-tree -r --name-only "$EXPECTED_BASE" 2>/dev/null || echo "")
+            ;;
+        "integration"|"phase-integration"|"project-integration")
+            # Integration branches should contain marker files from efforts
+            # Check for effort completion markers or key files
+            if [ -f "$PROJECT_ROOT/integration-requirements.txt" ]; then
+                base_files=$(cat "$PROJECT_ROOT/integration-requirements.txt" 2>/dev/null || echo "")
+            fi
+            ;;
+    esac
+
+    if [ -n "$base_files" ]; then
+        local missing_files=()
+        while IFS= read -r file; do
+            if [ -n "$file" ] && ! git ls-tree -r --name-only HEAD | grep -q "^$file$"; then
+                missing_files+=("$file")
+            fi
+        done <<< "$base_files"
+
+        if [ ${#missing_files[@]} -gt 0 ]; then
+            print_error "Branch is missing critical files from expected base '$EXPECTED_BASE':"
+            for file in "${missing_files[@]:0:10}"; do  # Show max 10 files
+                echo "  - $file"
+            done
+            if [ ${#missing_files[@]} -gt 10 ]; then
+                echo "  ... and $((${#missing_files[@]} - 10)) more files"
+            fi
+            return 1
+        fi
+    fi
+
+    return 0
+}
+
+# Main execution
+main() {
+    echo "Running base branch validation hook..."
+
+    # Determine branch context
+    determine_branch_context
+
+    echo "Branch type: $BRANCH_TYPE"
+    echo "Current branch: $CURRENT_BRANCH"
+
+    # Get expected base branch
+    get_expected_base_branch
+
+    if [ "$EXPECTED_BASE" = "unknown" ]; then
+        print_warning "Could not determine expected base branch - skipping validation"
+        exit 0
+    fi
+
+    echo "Expected base: $EXPECTED_BASE"
+
+    # Verify the base branch
+    if verify_base_branch; then
+        print_success "Branch validation passed - base branch is correct"
+
+        # Update branch tracking in orchestrator-state-v3.json if possible
+        if command -v jq &> /dev/null && [ -w "$STATE_FILE" ]; then
+            # Update HEAD tracking (non-blocking - don't fail commit if this fails)
+            {
+                local head_commit=$(git rev-parse --short HEAD)
+                local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+                # Create temporary file for atomic update
+                local temp_file=$(mktemp)
+
+                # Update or add branch tracking
+                jq --arg branch "$CURRENT_BRANCH" \
+                   --arg head "$head_commit" \
+                   --arg ts "$timestamp" \
+                   --arg base "$EXPECTED_BASE" \
+                   --arg type "$BRANCH_TYPE" \
+                   --arg phase "${PHASE:-null}" \
+                   --arg wave "${WAVE:-null}" \
+                   --arg effort "${EFFORT_NAME:-null}" \
+                   '.branch_head_tracking.branches[$branch] = {
+                      head_commit: $head,
+                      last_updated: $ts,
+                      base_branch: $base,
+                      branch_type: $type,
+                      phase: ($phase | if . == "null" then null else tonumber end),
+                      wave: ($wave | if . == "null" then null else tonumber end),
+                      effort_name: ($effort | if . == "null" then null else . end),
+                      validation_status: "valid",
+                      validation_message: null,
+                      expected_files_from_base: [],
+                      dependent_branches: []
+                    } | .branch_head_tracking.last_sync = $ts | .branch_head_tracking.sync_count += 1' \
+                    "$STATE_FILE" > "$temp_file" && mv "$temp_file" "$STATE_FILE"
+
+                print_success "Updated branch HEAD tracking in orchestrator-state-v3.json"
+            } 2>/dev/null || print_warning "Could not update branch tracking (non-critical)"
+        fi
+
+        exit 0
+    else
+        print_error "COMMIT BLOCKED: Branch validation failed!"
+        print_error ""
+        print_error "REQUIRED ACTIONS:"
+        print_error "1. DO NOT attempt to fix with rebase or cherry-pick"
+        print_error "2. Notify the orchestrator or team lead immediately"
+        print_error "3. The branch may need to be recreated from the correct base"
+        print_error ""
+        print_error "To bypass this check (ONLY with explicit approval):"
+        print_error "  git commit --no-verify -m 'your message'"
+        print_error ""
+        print_error "Context:"
+        print_error "  Directory: $CURRENT_DIR"
+        print_error "  Branch Type: $BRANCH_TYPE"
+        print_error "  Phase: ${PHASE:-N/A}, Wave: ${WAVE:-N/A}"
+        print_error "  Effort: ${EFFORT_NAME:-N/A}"
+
+        exit 1
+    fi
+}
+
+# Run main function
+main
