@@ -1,7 +1,7 @@
 {
-  "current_state": "MONITORING_SWE_PROGRESS",
-  "previous_state": "SPAWN_SW_ENGINEERS",
-  "transition_time": "2025-10-29T04:25:00Z",
+  "current_state": "SPAWN_SW_ENGINEERS",
+  "previous_state": "MONITORING_SWE_PROGRESS",
+  "transition_time": "2025-10-29T04:30:49Z",
   "current_phase": 1,
   "current_wave": 1,
   "phases_planned": 3,
@@ -10,10 +10,10 @@
     "2": 3,
     "3": 2
   },
-  "efforts_completed": [],
-  "efforts_in_progress": [
+  "efforts_completed": [
     "1.1.1"
   ],
+  "efforts_in_progress": [],
   "efforts_pending": [],
   "project_info": {
     "name": "idpbuilder-oci-push-command",
@@ -24,8 +24,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "MONITORING_SWE_PROGRESS",
-    "previous_state": "SPAWN_SW_ENGINEERS",
+    "current_state": "SPAWN_SW_ENGINEERS",
+    "previous_state": "MONITORING_SWE_PROGRESS",
     "loop_detection": {
       "last_two_states": [
         "SPAWN_SW_ENGINEERS",
@@ -745,7 +745,7 @@
         }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T04:25:00Z",
+    "last_transition_timestamp": "2025-10-29T04:30:49Z",
     "last_transition": "2025-10-29T04:25:00Z",
     "transition_time": "2025-10-29T04:25:00Z"
   },
