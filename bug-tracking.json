@@ -1,11 +1,48 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-29T18:15:00Z",
-  "bugs": [],
-  "active_bug_count": 0,
+  "last_updated": "2025-10-29T21:35:00Z",
+  "bugs": [
+    {
+      "bug_id": "BUG-001-STUCK-LOOP-EFFORT-4",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "detected_at": "2025-10-29T21:35:00Z",
+      "detected_by": "state-manager",
+      "state": "VALIDATE_INFRASTRUCTURE",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "1.2.4",
+      "description": "CREATE_NEXT_INFRASTRUCTURE failed to create Effort 1.2.4 (TLS) infrastructure after 9 loop iterations. Physical directory does not exist.",
+      "symptoms": [
+        "VALIDATE_INFRASTRUCTURE loop exceeded 5 iterations (reached 9)",
+        "efforts/phase1/wave2/effort-4-tls directory does not exist",
+        "State file shows created=false for phase1_wave2_effort_4_tls",
+        "Efforts 1.2.1, 1.2.2, 1.2.3 created successfully"
+      ],
+      "root_cause": "Unknown - CREATE_NEXT_INFRASTRUCTURE systemic failure for Effort 1.2.4",
+      "impact": "Wave 2 implementation cannot proceed without TLS infrastructure",
+      "resolution_plan": [
+        "Investigate CREATE_NEXT_INFRASTRUCTURE logs for Effort 1.2.4 attempts",
+        "Manually create missing infrastructure",
+        "Update state file",
+        "Resume from appropriate state"
+      ],
+      "assigned_to": "orchestrator",
+      "related_efforts": [
+        "1.2.1",
+        "1.2.2",
+        "1.2.3",
+        "1.2.4"
+      ],
+      "state_transition": "VALIDATE_INFRASTRUCTURE → ERROR_RECOVERY"
+    }
+  ],
+  "active_bug_count": 1,
   "resolved_bug_count": 0,
   "bug_categories": {
-    "integration_failures": [],
+    "integration_failures": [
+      "BUG-001-STUCK-LOOP-EFFORT-4"
+    ],
     "build_failures": [],
     "test_failures": [],
     "review_findings": []

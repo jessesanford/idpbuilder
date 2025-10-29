@@ -1,7 +1,7 @@
 {
-  "current_state": "VALIDATE_INFRASTRUCTURE",
-  "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
-  "transition_time": "2025-10-29T21:18:14Z",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "VALIDATE_INFRASTRUCTURE",
+  "transition_time": "2025-10-29T21:35:00Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "VALIDATE_INFRASTRUCTURE",
-    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "current_state": "ERROR_RECOVERY",
+    "previous_state": "VALIDATE_INFRASTRUCTURE",
     "loop_detection": {
       "last_two_states": [
         "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -1137,16 +1137,48 @@
             "ERROR_RECOVERY"
           ]
         }
+      },
+      {
+        "from_state": "VALIDATE_INFRASTRUCTURE",
+        "to_state": "ERROR_RECOVERY",
+        "timestamp": "2025-10-29T21:35:00Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-stuck-loop-recovery",
+        "orchestrator_proposal": "ERROR_RECOVERY",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "STUCK LOOP DETECTED: VALIDATE_INFRASTRUCTURE loop exceeded maximum iterations (9 > 5). Effort 1.2.4 (TLS) never created despite multiple CREATE_NEXT_INFRASTRUCTURE attempts. Physical directory does not exist. Per VALIDATE_INFRASTRUCTURE/rules.md lines 57-62, this indicates systemic failure requiring ERROR_RECOVERY.",
+        "validation_checks": {
+          "loop_count": 9,
+          "loop_limit": 5,
+          "loop_exceeded_by": 4,
+          "uncreated_efforts_count": 1,
+          "uncreated_effort_id": "1.2.4",
+          "uncreated_effort_name": "TLS Configuration Implementation",
+          "physical_directory_exists": false,
+          "expected_directory": "efforts/phase1/wave2/effort-4-tls",
+          "state_file_created_flag": false,
+          "state_file_validated_flag": false,
+          "root_cause": "CREATE_NEXT_INFRASTRUCTURE failed to create Effort 1.2.4 infrastructure",
+          "entries_created_successfully": [
+            "1.2.1",
+            "1.2.2",
+            "1.2.3"
+          ],
+          "transition_allowed_by_state_machine": true,
+          "state_rules_compliance": "VERIFIED",
+          "mandatory_transition": true
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T21:18:14Z",
+    "last_transition_timestamp": "2025-10-29T21:35:00Z",
     "last_transition": "2025-10-29T21:18:14Z",
     "transition_time": "2025-10-29T21:09:13Z",
     "last_two_states": [
       "VALIDATE_INFRASTRUCTURE",
-      "CREATE_NEXT_INFRASTRUCTURE"
+      "ERROR_RECOVERY"
     ],
-    "last_progress_timestamp": "2025-10-29T21:18:14Z"
+    "last_progress_timestamp": "2025-10-29T21:35:00Z"
   },
   "project_progression": {
     "current_project": {
@@ -1479,7 +1511,49 @@
     },
     "project_prefix": "idpbuilder-oci-push"
   },
-  "error_context": null,
+  "error_context": {
+    "error_type": "STUCK_LOOP",
+    "stuck_state": "VALIDATE_INFRASTRUCTURE",
+    "loop_counter": 9,
+    "max_iterations": 5,
+    "failed_effort": {
+      "effort_id": "1.2.4",
+      "effort_name": "TLS Configuration Implementation",
+      "expected_directory": "efforts/phase1/wave2/effort-4-tls",
+      "expected_branch": "idpbuilder-oci-push/phase1/wave2/effort-4-tls",
+      "created": false,
+      "validated": false
+    },
+    "successful_efforts": [
+      {
+        "effort_id": "1.2.1",
+        "directory": "efforts/phase1/wave2/effort-1-docker-client",
+        "status": "created_and_validated"
+      },
+      {
+        "effort_id": "1.2.2",
+        "directory": "efforts/phase1/wave2/effort-2-registry-client",
+        "status": "created_and_validated"
+      },
+      {
+        "effort_id": "1.2.3",
+        "directory": "efforts/phase1/wave2/effort-3-auth",
+        "status": "created_and_validated"
+      }
+    ],
+    "investigation_needed": [
+      "Why did CREATE_NEXT_INFRASTRUCTURE fail for Effort 1.2.4?",
+      "Was there an error in the effort metadata extraction?",
+      "Was there a filesystem or git error?",
+      "Review CREATE_NEXT_INFRASTRUCTURE state execution logs"
+    ],
+    "recovery_plan": [
+      "Manually create Effort 1.2.4 infrastructure",
+      "Update state file to mark as created",
+      "Validate infrastructure",
+      "Resume from VALIDATE_INFRASTRUCTURE or SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
+    ]
+  },
   "sw_engineer_parallelization": null,
   "code_reviewer_parallelization": null,
   "active_agents": [],
