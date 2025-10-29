@@ -1260,7 +1260,11 @@
       "requires": {
         "conditions": [
           "Implementation plans exist for all efforts",
-          "Effort infrastructure ready"
+          "Effort infrastructure ready",
+          "Infrastructure validated: pre_planned_infrastructure.efforts[*].validated == true",
+          "All effort Git branches exist on remote (verified by VALIDATE_INFRASTRUCTURE)",
+          "All effort workspace directories created",
+          "Parallelization analysis complete (from ANALYZE_IMPLEMENTATION_PARALLELIZATION)"
         ]
       },
       "actions": [
@@ -1629,7 +1633,6 @@
       "iteration_type": "MONITORING",
       "allowed_transitions": [
         "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-        "SPAWN_SW_ENGINEERS",
         "ERROR_RECOVERY"
       ],
       "requires": {
@@ -1645,12 +1648,9 @@
         "Check for quality gate failures",
         "Coordinate escalation if plans fail validation",
         "Update orchestrator-state-v3.json with monitoring status",
-        "Apply R356 optimization: single effort \u2192 SPAWN_SW_ENGINEERS, multiple \u2192 ANALYZE_IMPLEMENTATION_PARALLELIZATION"
+        "Must transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION to validate infrastructure existence"
       ],
-      "guards": {
-        "SPAWN_SW_ENGINEERS": "effort_count == 1 (R356 optimization)",
-        "ANALYZE_IMPLEMENTATION_PARALLELIZATION": "effort_count > 1 (parallelization analysis required)"
-      }
+      "note": "R356 optimization applies to parallelization analysis complexity, NOT state machine traversal. ALL waves must go through ANALYZE_IMPLEMENTATION_PARALLELIZATION to check if infrastructure exists before spawning SW Engineers."
     },
     "WAITING_FOR_FIX_PLANS": {
       "description": "Monitor Code Reviewer creating wave-level fix plans for integration failures. Actively check for fix plan completion with R340 quality validation before proceeding to fix distribution.",

@@ -1,0 +1,14 @@
+{
+  "schema_version": "3.0",
+  "last_updated": "2025-10-29T02:45:00Z",
+  "project_integration": {
+    "status": "NOT_STARTED",
+    "branch": null,
+    "workspace": null,
+    "phases_integrated": []
+  },
+  "phase_integrations": [],
+  "wave_integrations": [],
+  "integration_history": [],
+  "active_integrations": []
+}

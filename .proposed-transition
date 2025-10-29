@@ -1,4 +1,0 @@
-PROPOSED_NEXT_STATE="SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING"
-TRANSITION_REASON="Master architecture already exists at planning/PROJECT-ARCHITECTURE.md (COMPLETE), skipping to test planning per R341 TDD requirements"
-CURRENT_STATE="SPAWN_ARCHITECT_MASTER_PLANNING"
-TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"

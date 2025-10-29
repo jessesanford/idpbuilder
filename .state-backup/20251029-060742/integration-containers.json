@@ -1,0 +1,37 @@
+{
+  "schema_version": "3.0",
+  "last_updated": "2025-10-29T05:26:04Z",
+  "project_integration": {
+    "status": "NOT_STARTED",
+    "branch": null,
+    "workspace": null,
+    "phases_integrated": []
+  },
+  "phase_integrations": [],
+  "wave_integrations": [
+    {
+      "container_id": "wave-phase1-wave2",
+      "phase": 1,
+      "wave": 2,
+      "status": "INFRASTRUCTURE_READY",
+      "iteration": 0,
+      "max_iterations": 10,
+      "branch": "idpbuilder-oci-push/phase1/wave2/integration",
+      "workspace": "efforts/phase1/wave2/integration",
+      "base_branch": "idpbuilder-oci-push/phase1/wave1/integration",
+      "created_at": "2025-10-29T05:26:04Z",
+      "integration_started_at": null,
+      "last_iteration_at": null,
+      "convergence_metrics": {
+        "bugs_remaining": 0,
+        "test_failures": 0,
+        "build_failures": 0
+      },
+      "efforts_to_integrate": [],
+      "integration_plan_file": null,
+      "notes": "Wave 2 infrastructure setup complete. Ready for Wave 2 efforts to be planned and implemented. Per R336, this container will track integration iterations once efforts complete."
+    }
+  ],
+  "integration_history": [],
+  "active_integrations": []
+}
