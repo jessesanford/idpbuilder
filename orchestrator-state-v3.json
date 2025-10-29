@@ -1,7 +1,7 @@
 {
-  "current_state": "VALIDATE_INFRASTRUCTURE",
-  "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
-  "transition_time": "2025-10-29T18:15:00Z",
+  "current_state": "CREATE_NEXT_INFRASTRUCTURE",
+  "previous_state": "VALIDATE_INFRASTRUCTURE",
+  "transition_time": "2025-10-29T20:52:30Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "VALIDATE_INFRASTRUCTURE",
-    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "previous_state": "VALIDATE_INFRASTRUCTURE",
     "loop_detection": {
       "last_two_states": [
         "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -1026,16 +1026,47 @@
             "ERROR_RECOVERY"
           ]
         }
+      },
+      {
+        "from_state": "VALIDATE_INFRASTRUCTURE",
+        "to_state": "CREATE_NEXT_INFRASTRUCTURE",
+        "timestamp": "2025-10-29T20:52:30Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-wave2-validate-to-create-loop",
+        "orchestrator_proposal": "CREATE_NEXT_INFRASTRUCTURE",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "Effort 1.2.1 validated successfully. 3 more efforts need infrastructure creation (1.2.2, 1.2.3, 1.2.4). Returning to CREATE_NEXT_INFRASTRUCTURE to continue sequential infrastructure creation loop. This is the designed loop pattern for effort infrastructure creation.",
+        "validation_checks": {
+          "validate_infrastructure_state_complete": true,
+          "entry_conditions_performed": true,
+          "validation_script_executed": true,
+          "effort_1_2_1_validated": true,
+          "effort_1_2_1_workspace": "efforts/phase1/wave2/effort-1-docker-client",
+          "effort_1_2_1_branch": "idpbuilder-oci-push/phase1/wave2/effort-1-docker-client",
+          "remaining_efforts_identified": true,
+          "uncreated_efforts_count": 3,
+          "uncreated_efforts": ["1.2.2", "1.2.3", "1.2.4"],
+          "transition_allowed_by_state_machine": true,
+          "allowed_transitions_from_validate": [
+            "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+            "CREATE_NEXT_INFRASTRUCTURE",
+            "ERROR_RECOVERY"
+          ],
+          "loop_mechanism": "controlled_sequential_creation",
+          "loop_status": "1_of_4_efforts_created",
+          "loop_should_continue": true
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T18:15:00Z",
-    "last_transition": "2025-10-29T06:53:32Z",
-    "transition_time": "2025-10-29T18:15:00Z",
+    "last_transition_timestamp": "2025-10-29T20:52:30Z",
+    "last_transition": "2025-10-29T20:52:30Z",
+    "transition_time": "2025-10-29T20:52:30Z",
     "last_two_states": [
-      "INJECT_WAVE_METADATA",
-      "ANALYZE_CODE_REVIEWER_PARALLELIZATION"
+      "VALIDATE_INFRASTRUCTURE",
+      "CREATE_NEXT_INFRASTRUCTURE"
     ],
-    "last_progress_timestamp": "2025-10-29T07:00:02Z"
+    "last_progress_timestamp": "2025-10-29T20:52:30Z"
   },
   "project_progression": {
     "current_project": {
