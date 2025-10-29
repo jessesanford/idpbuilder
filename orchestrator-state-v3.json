@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_ARCHITECT_PHASE_PLANNING",
-    "previous_state": "INIT",
+    "current_state": "WAITING_FOR_PHASE_ARCHITECTURE",
+    "previous_state": "SPAWN_ARCHITECT_PHASE_PLANNING",
     "state_history": [
       {
         "state": "INIT",
@@ -135,9 +135,30 @@
           "r191_compliance": "VERIFIED",
           "r192_compliance": "VERIFIED"
         }
+      },
+      {
+        "from_state": "SPAWN_ARCHITECT_PHASE_PLANNING",
+        "to_state": "WAITING_FOR_PHASE_ARCHITECTURE",
+        "timestamp": "2025-10-29T01:03:18+00:00",
+        "validated_by": "state-manager",
+        "reason": "Architect spawned for Phase 1 architecture planning - PHASE-1-ARCHITECTURE.md created successfully (2,240 lines, 68KB) per R340 PSEUDOCODE requirements",
+        "validation_checks": {
+          "architecture_document_exists": true,
+          "architecture_document_path": "phase-plans/PHASE-1-ARCHITECTURE.md",
+          "architecture_document_size_bytes": 68000,
+          "architecture_document_line_count": 2240,
+          "r340_pseudocode_compliance": "VERIFIED",
+          "state_machine_compliance": "VERIFIED",
+          "allowed_transition": true,
+          "work_products_complete": true,
+          "todos_saved": true,
+          "todos_committed": true,
+          "orchestrator_proposed_state": "WAITING_FOR_PHASE_ARCHITECTURE",
+          "state_manager_decision": "APPROVED"
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T00:51:57Z",
+    "last_transition_timestamp": "2025-10-29T01:03:18+00:00",
     "last_transition": "2025-10-29T00:40:52Z"
   },
   "project_progression": {
