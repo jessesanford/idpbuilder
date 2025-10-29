@@ -1,11 +1,15 @@
 {
-  "current_state": "WAVE_START",
-  "previous_state": "WAITING_FOR_PHASE_IMPLEMENTATION_PLAN",
-  "transition_time": "2025-10-29T01:27:30Z",
+  "current_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+  "previous_state": "WAVE_START",
+  "transition_time": "2025-10-29T01:43:28Z",
   "current_phase": 1,
   "current_wave": 1,
   "phases_planned": 3,
-  "waves_per_phase": {"1": 2, "2": 3, "3": 2},
+  "waves_per_phase": {
+    "1": 2,
+    "2": 3,
+    "3": 2
+  },
   "efforts_completed": [],
   "efforts_in_progress": [],
   "efforts_pending": [],
@@ -18,8 +22,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAVE_START",
-    "previous_state": "WAITING_FOR_PHASE_IMPLEMENTATION_PLAN",
+    "current_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+    "previous_state": "WAVE_START",
     "loop_detection": {
       "last_two_states": [],
       "ping_pong_count": 0,
@@ -29,109 +33,66 @@
     },
     "state_history": [
       {
-        "state": "INIT",
+        "from_state": "INIT",
+        "to_state": "INIT",
         "timestamp": "2025-10-28T23:40:45+00:00",
-        "action": "Non-interactive initialization started",
-        "requirements_bundle": "init-state-temp.json"
+        "validated_by": "state-manager",
+        "reason": "Non-interactive initialization started"
       },
       {
-        "state": "SPAWN_PRODUCT_MANAGER_PRD_CREATION",
+        "from_state": "INIT",
+        "to_state": "SPAWN_PRODUCT_MANAGER_PRD_CREATION",
         "timestamp": "2025-10-28T23:43:10+00:00",
-        "action": "Transitioning from INIT to spawn Product Manager for PRD generation"
+        "validated_by": "state-manager",
+        "reason": "Transitioning from INIT to spawn Product Manager for PRD generation"
       },
       {
-        "state": "WAITING_FOR_PRD_CREATION",
+        "from_state": "SPAWN_PRODUCT_MANAGER_PRD_CREATION",
+        "to_state": "WAITING_FOR_PRD_CREATION",
         "timestamp": "2025-10-28T23:47:57+00:00",
-        "action": "Product Manager completed PRD generation - CONTINUE=TRUE",
-        "prd_status": "complete",
-        "prd_file": "prd/idpbuilder-oci-push-command-prd.md"
+        "validated_by": "state-manager",
+        "reason": "Product Manager completed PRD generation - CONTINUE=TRUE"
       },
       {
-        "state": "SPAWN_ARCHITECT_MASTER_PLANNING",
+        "from_state": "WAITING_FOR_PRD_CREATION",
+        "to_state": "SPAWN_ARCHITECT_MASTER_PLANNING",
         "timestamp": "2025-10-28T23:59:30+00:00",
-        "action": "Transition to architecture phase - PRD complete and approved",
         "validated_by": "state-manager",
-        "transition_reason": "PRD generation complete (non-interactive mode), ready for master architecture planning",
-        "validation_checks": {
-          "prd_file_exists": true,
-          "prd_size_bytes": 29184,
-          "prd_status": "complete",
-          "prd_approval_status": "APPROVED FOR ARCHITECTURE PLANNING",
-          "continue_flag_interpretation": "TRUE (non-interactive mode with complete PRD)",
-          "mandatory_sequence_compliance": "VALID - follows project_initialization sequence"
-        }
+        "reason": "Transition to architecture phase - PRD complete and approved"
       },
       {
-        "state": "WAITING_FOR_MASTER_ARCHITECTURE",
+        "from_state": "SPAWN_ARCHITECT_MASTER_PLANNING",
+        "to_state": "WAITING_FOR_MASTER_ARCHITECTURE",
         "timestamp": "2025-10-29T00:14:58+00:00",
-        "action": "Transition to waiting for master architecture completion",
         "validated_by": "state-manager",
-        "transition_reason": "Architecture is complete. PROJECT-ARCHITECTURE.md exists and is comprehensive (3 phases, 7 waves, 13 efforts, all R340 requirements met). Completion timestamp: 2025-10-29T00:02:00+00:00.",
-        "validation_checks": {
-          "architecture_file_exists": true,
-          "architecture_file_path": "planning/PROJECT-ARCHITECTURE.md",
-          "architecture_status": "COMPLETE",
-          "total_phases": 3,
-          "total_waves": 7,
-          "total_efforts": 13,
-          "r340_compliance": "VERIFIED",
-          "interface_first_design": true,
-          "parallelization_opportunities_identified": true,
-          "all_size_estimates_within_limits": true
-        }
+        "reason": "Transition to waiting for master architecture completion"
       },
       {
-        "state": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
+        "from_state": "WAITING_FOR_MASTER_ARCHITECTURE",
+        "to_state": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
         "timestamp": "2025-10-29T00:26:56+00:00",
-        "action": "Transition to project test planning per R341 TDD requirements",
         "validated_by": "state-manager",
-        "transition_reason": "Master architecture complete and validated. R341 TDD enforcement requires test planning before implementation begins. Orchestrator proposed this transition after architecture validation.",
-        "validation_checks": {
-          "state_machine_compliance": "VERIFIED",
-          "allowed_transition": true,
-          "work_products_complete": true,
-          "architecture_file_exists": true,
-          "architecture_comprehensive": true,
-          "r340_requirements_met": true,
-          "r341_tdd_applicable": true,
-          "blocking_issues": "none",
-          "orchestrator_proposed_state": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
-          "state_manager_decision": "APPROVED"
-        }
+        "reason": "Transition to project test planning per R341 TDD requirements"
       },
       {
-        "from": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
-        "to": "WAITING_FOR_PROJECT_TEST_PLAN",
+        "from_state": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
+        "to_state": "WAITING_FOR_PROJECT_TEST_PLAN",
         "timestamp": "2025-10-29T00:38:21Z",
+        "validated_by": "state-manager",
         "reason": "Code Reviewer spawned for project test planning - PROJECT-TEST-PLAN.md created with comprehensive TDD strategy"
       },
       {
-        "state": "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
+        "from_state": "WAITING_FOR_PROJECT_TEST_PLAN",
+        "to_state": "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
         "timestamp": "2025-10-29T00:40:52+00:00",
-        "action": "Transition to early integration branch creation per R342",
         "validated_by": "state-manager",
-        "transition_reason": "Project test plan completed successfully. PROJECT-TEST-PLAN.md exists with comprehensive TDD strategy (1969 lines). R342 TDD requires early integration branch creation for test storage before implementation begins.",
-        "validation_checks": {
-          "test_plan_file_exists": true,
-          "test_plan_file_path": "planning/PROJECT-TEST-PLAN.md",
-          "test_plan_size_bytes": 55000,
-          "test_plan_line_count": 1969,
-          "test_plan_status": "COMPLETE",
-          "r341_tdd_compliance": "VERIFIED",
-          "test_pyramid_defined": true,
-          "coverage_targets_defined": true,
-          "test_first_workflow_documented": true,
-          "state_machine_compliance": "VERIFIED",
-          "allowed_transition": true,
-          "orchestrator_proposed_state": "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
-          "state_manager_decision": "APPROVED"
-        }
+        "reason": "Transition to early integration branch creation per R342"
       },
       {
         "from_state": "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
         "to_state": "INIT",
         "timestamp": "2025-10-29T00:47:00Z",
-        "validated_by": "orchestrator",
+        "validated_by": "state-manager",
         "reason": "Project integration branch created with test plan per R342. Ready for Phase 1.",
         "artifacts_created": [
           "project-integration branch",
@@ -142,7 +103,7 @@
         "from_state": "INIT",
         "to_state": "SPAWN_ARCHITECT_PHASE_PLANNING",
         "timestamp": "2025-10-29T00:51:57Z",
-        "validated_by": "orchestrator",
+        "validated_by": "state-manager",
         "reason": "INIT complete - all planning artifacts exist (PRD, master architecture, test plan, project integration branch, target repo config), ready for Phase 1 detailed planning",
         "artifacts_created": [
           "target-repo-config.yaml",
@@ -183,7 +144,7 @@
         "from_state": "WAITING_FOR_PHASE_ARCHITECTURE",
         "to_state": "SPAWN_CODE_REVIEWER_PHASE_IMPL",
         "timestamp": "2025-10-29T01:06:58Z",
-        "validated_by": "orchestrator",
+        "validated_by": "state-manager",
         "reason": "Phase architecture complete and validated",
         "validation_checks": {
           "architecture_file_exists": true,
@@ -202,7 +163,7 @@
         "from_state": "SPAWN_CODE_REVIEWER_PHASE_IMPL",
         "to_state": "WAITING_FOR_PHASE_IMPLEMENTATION_PLAN",
         "timestamp": "2025-10-29T01:11:29Z",
-        "validated_by": "orchestrator",
+        "validated_by": "state-manager",
         "reason": "Code Reviewer spawned for phase implementation planning - phase-plans/PHASE-1-IMPLEMENTATION.md created successfully (12 KB, HIGH-LEVEL wave list only per R502)",
         "validation_checks": {
           "code_reviewer_spawned": true,
@@ -220,39 +181,48 @@
       {
         "from_state": "WAITING_FOR_PHASE_IMPLEMENTATION_PLAN",
         "to_state": "WAVE_START",
-        "timestamp": "2025-10-29T01:27:30+00:00",
+        "timestamp": "2025-10-29T01:27:30Z",
         "validated_by": "state-manager",
-        "reason": "Phase implementation plan validated successfully. PHASE-1-IMPLEMENTATION.md contains 2 waves extracted and ready for wave iteration. All R502 quality gates passed (wave list only, no detailed efforts).",
-        "validation_checks": {
-          "implementation_plan_file_exists": true,
-          "implementation_plan_file_path": "phase-plans/PHASE-1-IMPLEMENTATION.md",
-          "implementation_plan_size_bytes": 12035,
-          "r502_compliance": "VERIFIED",
-          "wave_list_fidelity": "CONFIRMED",
-          "total_waves_extracted": 2,
-          "state_machine_compliance": "VERIFIED",
-          "allowed_transition": true,
-          "mandatory_sequence": "project_initialization",
-          "sequence_completion": true,
-          "orchestrator_proposed_state": "WAVE_START",
-          "state_manager_decision": "REQUIRED"
-        }
+        "reason": "Phase implementation plan validated successfully. PHASE-1-IMPLEMENTATION.md contains 2 waves extracted and ready for wave iteration. All R502 quality gates passed (wave list only, no detailed efforts)."
+      },
+      {
+        "from_state": "WAVE_START",
+        "to_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+        "timestamp": "2025-10-29T01:43:28Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-1761702208",
+        "orchestrator_proposal": "SPAWN_ARCHITECT_WAVE_PLANNING",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "Wave 1 initialized successfully. R213 Progressive Fidelity Planning requires wave architecture before implementation planning. This ensures detailed pseudocode architecture before effort planning begins."
       }
     ],
-    "last_transition_timestamp": "2025-10-29T01:27:30+00:00",
-    "last_transition": "2025-10-29T01:27:30+00:00"
+    "last_transition_timestamp": "2025-10-29T01:43:28Z",
+    "last_transition": "2025-10-29T01:43:28Z"
   },
   "project_progression": {
-    "current_project": "idpbuilder-oci-push-command",
-    "current_phase": 1,
+    "current_project": {
+      "project_id": "idpbuilder-oci-push-command",
+      "name": "idpbuilder-oci-push-command",
+      "iteration": 1
+    },
+    "current_phase": {
+      "phase_number": 1,
+      "name": "Foundation & Interfaces",
+      "iteration": 1,
+      "total_waves_in_phase": 2,
+      "waves_completed": 0
+    },
     "current_wave": {
       "wave_number": 1,
+      "name": "Interface & Contract Definitions",
+      "iteration": 1,
       "wave_name": "Interface & Contract Definitions",
       "wave_description": "Define ALL interfaces upfront to freeze contracts and enable Phase 1 Wave 2 parallel implementation",
       "estimated_lines": 650,
       "parallelization": "sequential",
       "depends_on": [],
-      "status": "starting"
+      "status": "IN_PROGRESS"
     },
     "phases_completed": [],
     "waves_completed": [],
@@ -264,6 +234,7 @@
       "waves": [
         {
           "wave_number": 1,
+          "name": "Interface & Contract Definitions",
           "wave_name": "Interface & Contract Definitions",
           "wave_description": "Define ALL interfaces upfront to freeze contracts and enable Phase 1 Wave 2 parallel implementation",
           "estimated_lines": 650,
@@ -273,6 +244,7 @@
         },
         {
           "wave_number": 2,
+          "name": "Core Package Implementations",
           "wave_name": "Core Package Implementations",
           "wave_description": "Implement all four core packages in parallel using frozen Wave 1 interfaces",
           "estimated_lines": 1550,
@@ -301,12 +273,11 @@
   "non_interactive_mode": true,
   "prd_pre_exists": false,
   "timestamp": "2025-10-28T23:40:45+00:00",
-  "efforts_in_progress": [],
   "blocked_items": [],
   "next_actions": [
     "Start Wave 1 execution sequence per wave_execution mandatory sequence",
     "Transition to SPAWN_ARCHITECT_WAVE_PLANNING for Wave 1 detailed architecture",
-    "Follow progressive fidelity planning: Architecture → Tests → Implementation",
+    "Follow progressive fidelity planning: Architecture \u2192 Tests \u2192 Implementation",
     "Begin Wave 1: Interface & Contract Definitions (sequential, ~650 lines)"
   ],
   "planning_artifacts": {
