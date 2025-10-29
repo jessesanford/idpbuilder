@@ -1,7 +1,7 @@
 {
-  "current_state": "VALIDATE_INFRASTRUCTURE",
-  "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
-  "transition_time": "2025-10-29T21:01:57Z",
+  "current_state": "CREATE_NEXT_INFRASTRUCTURE",
+  "previous_state": "VALIDATE_INFRASTRUCTURE",
+  "transition_time": "2025-10-29T21:09:13Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "VALIDATE_INFRASTRUCTURE",
-    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "previous_state": "VALIDATE_INFRASTRUCTURE",
     "loop_detection": {
       "last_two_states": [
         "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -1046,7 +1046,11 @@
           "effort_1_2_1_branch": "idpbuilder-oci-push/phase1/wave2/effort-1-docker-client",
           "remaining_efforts_identified": true,
           "uncreated_efforts_count": 3,
-          "uncreated_efforts": ["1.2.2", "1.2.3", "1.2.4"],
+          "uncreated_efforts": [
+            "1.2.2",
+            "1.2.3",
+            "1.2.4"
+          ],
           "transition_allowed_by_state_machine": true,
           "allowed_transitions_from_validate": [
             "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
@@ -1086,7 +1090,10 @@
           "r510_single_branch_from_base": "VERIFIED",
           "more_efforts_pending": true,
           "remaining_efforts": 3,
-          "remaining_effort_ids": ["1.2.3", "1.2.4"],
+          "remaining_effort_ids": [
+            "1.2.3",
+            "1.2.4"
+          ],
           "state_machine_transition_valid": true,
           "allowed_transitions_from_create_next": [
             "VALIDATE_INFRASTRUCTURE",
@@ -1095,14 +1102,14 @@
         }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T21:01:57Z",
+    "last_transition_timestamp": "2025-10-29T21:09:13Z",
     "last_transition": "2025-10-29T21:01:57Z",
-    "transition_time": "2025-10-29T21:01:57Z",
+    "transition_time": "2025-10-29T21:09:13Z",
     "last_two_states": [
       "CREATE_NEXT_INFRASTRUCTURE",
       "VALIDATE_INFRASTRUCTURE"
     ],
-    "last_progress_timestamp": "2025-10-29T21:01:57Z"
+    "last_progress_timestamp": "2025-10-29T21:09:13Z"
   },
   "project_progression": {
     "current_project": {
