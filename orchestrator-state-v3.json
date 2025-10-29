@@ -1,7 +1,7 @@
 {
-  "current_state": "ERROR_RECOVERY",
-  "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-  "transition_time": "2025-10-29T21:40:08Z",
+  "current_state": "WAITING_FOR_EFFORT_PLANS",
+  "previous_state": "ERROR_RECOVERY",
+  "transition_time": "2025-10-29T21:50:02Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,7 +27,7 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "current_state": "WAITING_FOR_EFFORT_PLANS",
     "previous_state": "ERROR_RECOVERY",
     "loop_detection": {
       "last_two_states": [
@@ -1235,14 +1235,38 @@
           "Retry Code Reviewer for Effort 1.2.1",
           "Transition to WAITING_FOR_EFFORT_PLANS when all effort plans complete"
         ]
+      },
+      {
+        "from_state": "ERROR_RECOVERY",
+        "to_state": "WAITING_FOR_EFFORT_PLANS",
+        "timestamp": "2025-10-29T21:50:02Z",
+        "validated_by": "orchestrator",
+        "consultation_id": "error-recovery-effort-plans-complete",
+        "reason": "ERROR_RECOVERY complete: Workspace contamination resolved. All 4 Wave 2 effort plans created successfully (1.2.1, 1.2.2, 1.2.3, 1.2.4). Ready to validate effort plans and proceed with implementation.",
+        "validation_checks": {
+          "error_recovered": true,
+          "workspace_contamination_resolved": true,
+          "effort_1_2_1_plan_created": true,
+          "all_effort_plans_exist": true,
+          "effort_count": 4,
+          "effort_plans": [
+            "1.2.1: IMPLEMENTATION-PLAN--20251029-214603.md",
+            "1.2.2: IMPLEMENTATION-PLAN--20251029-213344.md",
+            "1.2.3: IMPLEMENTATION-PLAN--20251029-213326.md",
+            "1.2.4: IMPLEMENTATION-PLAN--20251029-213316.md"
+          ],
+          "ready_for_implementation": true,
+          "allowed_transition": true,
+          "state_machine_compliance": "VERIFIED"
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T21:28:30Z",
+    "last_transition_timestamp": "2025-10-29T21:50:02Z",
     "last_transition": "2025-10-29T21:18:14Z",
-    "transition_time": "2025-10-29T21:28:30Z",
+    "transition_time": "2025-10-29T21:50:02Z",
     "last_two_states": [
-      "VALIDATE_INFRASTRUCTURE",
-      "ERROR_RECOVERY"
+      "ERROR_RECOVERY",
+      "WAITING_FOR_EFFORT_PLANS"
     ],
     "last_progress_timestamp": "2025-10-29T21:28:30Z"
   },
