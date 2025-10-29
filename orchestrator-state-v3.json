@@ -795,8 +795,10 @@
         "full_path": "efforts/phase1/wave1/effort-3-auth-tls-interfaces",
         "estimated_lines": 140,
         "dependencies": [],
-        "created": false,
-        "validated": false
+        "created": true,
+        "validated": true,
+        "validation_failure_reason": null,
+        "created_at": "2025-10-29T03:29:26Z"
       },
       "phase1_wave1_effort-4-command-structure": {
         "effort_id": "1.1.4",
