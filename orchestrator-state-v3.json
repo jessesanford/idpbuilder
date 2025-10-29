@@ -1,7 +1,7 @@
 {
-  "current_state": "INTEGRATE_WAVE_EFFORTS",
-  "previous_state": "START_WAVE_ITERATION",
-  "transition_time": "2025-10-29T17:28:15Z",
+  "current_state": "CREATE_NEXT_INFRASTRUCTURE",
+  "previous_state": "WAITING_FOR_WAVE_IMPLEMENTATION_PLAN",
+  "transition_time": "2025-10-29T18:05:00Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "INTEGRATE_WAVE_EFFORTS",
-    "previous_state": "START_WAVE_ITERATION",
+    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "previous_state": "WAITING_FOR_WAVE_IMPLEMENTATION_PLAN",
     "loop_detection": {
       "last_two_states": [
         "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -973,6 +973,26 @@
           "ready_for_integration": true,
           "state_machine_compliance": "VERIFIED"
         }
+      },
+      {
+        "from_state": "INTEGRATE_WAVE_EFFORTS",
+        "to_state": "CREATE_NEXT_INFRASTRUCTURE",
+        "timestamp": "2025-10-29T18:05:00Z",
+        "validated_by": "manual-reset",
+        "consultation_id": "manual-reset-20251029-180500",
+        "orchestrator_proposal": null,
+        "proposal_accepted": null,
+        "transition_invalid": true,
+        "reason": "MANUAL STATE RESET: Previous transition to INTEGRATE_WAVE_EFFORTS was invalid (no efforts to integrate). Wave 2 planning complete (architecture, test plan, implementation plan exist). Wave 2 integration branch exists and pushed to remote. Resetting to CREATE_NEXT_INFRASTRUCTURE to begin effort workspace creation per implementation plan. Error documented in INTEGRATE_WAVE_EFFORTS-ERROR-ANALYSIS-20251029-173304.md and ROOT-CAUSE-ANALYSIS-INTEGRATE-WAVE_EFFORTS.md.",
+        "reset_metadata": {
+          "reset_type": "INVALID_STATE_RECOVERY",
+          "previous_error": "INTEGRATE_WAVE_EFFORTS with empty efforts_to_integrate array",
+          "wave_planning_status": "COMPLETE",
+          "wave_integration_branch_status": "EXISTS_AND_PUSHED",
+          "next_required_action": "Create effort workspaces per WAVE-2-IMPLEMENTATION.md",
+          "efforts_to_create": 4,
+          "parallelization": "parallel_4_efforts"
+        }
       }
     ],
     "last_transition_timestamp": "2025-10-29T17:28:15Z",
@@ -1247,27 +1267,7 @@
     },
     "project_prefix": "idpbuilder-oci-push"
   },
-  "error_context": {
-    "error_type": "INVALID_STATE_TRANSITION",
-    "detected_at": "2025-10-29T17:45:00Z",
-    "current_state": "INTEGRATE_WAVE_EFFORTS",
-    "problem": "State expects efforts to integrate but none exist",
-    "details": {
-      "wave": 2,
-      "phase": 1,
-      "efforts_to_integrate": [],
-      "wave_status": "RESET",
-      "missing_items": [
-        "Wave 2 implementation plan (wave-plans/WAVE-2-IMPLEMENTATION.md)",
-        "Wave 2 effort branches (no branches exist)",
-        "Wave 2 effort directories (only integration dir exists)"
-      ]
-    },
-    "impact": "Cannot execute INTEGRATE_WAVE_EFFORTS checklist - no efforts to merge",
-    "proposed_recovery": "Transition to ERROR_RECOVERY or back to SETUP_WAVE_INFRASTRUCTURE to restart Wave 2 properly",
-    "analysis_document": "INTEGRATE_WAVE_EFFORTS-ERROR-ANALYSIS-20251029-*.md",
-    "requires_manual_intervention": true
-  },
+  "error_context": null,
   "sw_engineer_parallelization": null,
   "code_reviewer_parallelization": null,
   "active_agents": [],
