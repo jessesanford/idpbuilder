@@ -1,6 +1,6 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
-  "previous_state": "MONITORING_EFFORT_REVIEWS",
+  "current_state": "WAITING_FOR_FIX_PLANS",
+  "previous_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
   "transition_time": "2025-10-29T23:32:28Z",
   "current_phase": 1,
   "current_wave": 2,
@@ -1835,5 +1835,28 @@
         "effort-4-tls: 3 uncommitted files + not pushed"
       ]
     }
-  ]
+  ],
+  "last_state_transition": "2025-10-29T23:44:36Z",
+  "state_history": [
+    {
+      "from_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+      "to_state": "WAITING_FOR_FIX_PLANS",
+      "timestamp": "2025-10-29T23:44:36Z",
+      "validated_by": "state-manager",
+      "reason": "Code Reviewer spawned to create fix plans for wave 2 integration failures",
+      "phase": 1,
+      "wave": 2
+    }
+  ],
+  "monitoring_data": {
+    "fix_plan_creation": {
+      "started": "2025-10-29T23:44:36Z",
+      "code_reviewer_spawned": true,
+      "efforts_requiring_fixes": [
+        "effort-2-registry-client",
+        "effort-3-auth"
+      ],
+      "fix_plan_summary": "efforts/phase1/wave2/fix-plans/FIX-PLAN-SUMMARY--20251029-233955.yaml"
+    }
+  }
 }
