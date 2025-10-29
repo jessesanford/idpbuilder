@@ -1,0 +1,8 @@
+Completed at: 2025-10-29 04:24:18 UTC
+Effort: effort-1-docker-interface
+Branch: idpbuilder-oci-push/phase1/wave1/effort-1-docker-interface
+Total lines: 173 lines (implementation only)
+Final commit: 7fc4b31 feat(docker): add Docker client interface definition
+Test coverage: 100%
+All tests passing: YES
+Status: IMPLEMENTATION COMPLETE
