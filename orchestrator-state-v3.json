@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
-    "previous_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+    "current_state": "INJECT_WAVE_METADATA",
+    "previous_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
     "loop_detection": {
       "last_two_states": [
         "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
@@ -1126,16 +1126,52 @@
           "state_machine_compliance": "VERIFIED",
           "code_reviewer_continue": true
         }
+      },
+      {
+        "from_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
+        "to_state": "INJECT_WAVE_METADATA",
+        "timestamp": "2025-10-29T06:30:00Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-wave2-impl-validated-corrected",
+        "orchestrator_proposal": "CREATE_NEXT_INFRASTRUCTURE",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "Orchestrator attempted to skip INJECT_WAVE_METADATA which is mandatory per state machine",
+        "transition_invalid": false,
+        "state_manager_override": true,
+        "reason": "State Manager OVERRIDE: Mandatory sequence requires INJECT_WAVE_METADATA after WAITING_FOR_IMPLEMENTATION_PLAN. Wave 2 implementation plan complete (1,148 lines, 41KB) with EXACT fidelity and complete R213 metadata for all 4 efforts. Per mandatory sequence enforcement, orchestrator MUST inject R213 metadata before infrastructure creation.",
+        "validation_checks": {
+          "implementation_plan_exists": true,
+          "implementation_plan_path": "wave-plans/WAVE-2-IMPLEMENTATION.md",
+          "implementation_plan_size_bytes": 41000,
+          "implementation_plan_line_count": 1148,
+          "fidelity_level": "EXACT",
+          "r213_compliance": "VERIFIED",
+          "r502_compliance": "VERIFIED",
+          "effort_count": 4,
+          "total_estimated_lines": 1550,
+          "parallelization": "parallel_4_efforts",
+          "all_efforts_have_r213_metadata": true,
+          "metadata_fields_complete": true,
+          "quality_gates_passed": 8,
+          "mandatory_sequence_position": 7,
+          "mandatory_sequence_next": "INJECT_WAVE_METADATA",
+          "allowed_transitions_from_waiting": [
+            "INJECT_WAVE_METADATA",
+            "ERROR_RECOVERY"
+          ],
+          "orchestrator_proposed_invalid_skip": true,
+          "correct_next_state": "INJECT_WAVE_METADATA"
+        }
       }
     ],
     "last_transition_timestamp": "2025-10-29T06:08:36Z",
     "last_transition": "2025-10-29T06:23:05Z",
-    "transition_time": "2025-10-29T06:23:05Z",
+    "transition_time": "2025-10-29T06:30:00Z",
     "last_two_states": [
-      "SPAWN_CODE_REVIEWER_WAVE_IMPL",
-      "WAITING_FOR_IMPLEMENTATION_PLAN"
+      "WAITING_FOR_IMPLEMENTATION_PLAN",
+      "INJECT_WAVE_METADATA"
     ],
-    "last_progress_timestamp": "2025-10-29T06:23:05Z"
+    "last_progress_timestamp": "2025-10-29T06:30:00Z"
   },
   "project_progression": {
     "current_project": {
