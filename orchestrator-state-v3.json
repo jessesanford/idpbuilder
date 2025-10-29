@@ -711,8 +711,10 @@
         "full_path": "efforts/phase1/wave1/effort-2-registry-interface",
         "estimated_lines": 200,
         "dependencies": [],
-        "created": false,
-        "validated": false
+        "created": true,
+        "validated": true,
+        "created_at": "2025-10-29T03:20:23Z",
+        "validation_failure_reason": null
       },
       "phase1_wave1_effort-3-auth-tls-interfaces": {
         "effort_id": "1.1.3",
