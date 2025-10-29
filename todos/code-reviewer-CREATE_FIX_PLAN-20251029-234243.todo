@@ -1,0 +1,28 @@
+# Code Reviewer TODOs - Trigger: R287_TODOWRITE_TRIGGER
+# State: CREATE_FIX_PLAN
+# Effort: Phase 1 Wave 2 Fix Planning
+# Timestamp: $(date -Iseconds)
+
+## Completed Tasks
+- [x] Create FIX-PLAN for effort-2-registry-client (R320 stub violations)
+- [x] Create FIX-PLAN for effort-3-auth (R383 metadata violation)
+- [x] Create FIX-PLAN-SUMMARY.yaml with all fix plans
+
+## Fix Plans Created
+1. FIX-PLAN-effort-2-registry-client--20251029-233955.md
+   - Severity: CRITICAL
+   - Issue: R320 stub implementations with panic()
+   - Time: 45m
+
+2. FIX-PLAN-effort-3-auth--20251029-233955.md
+   - Severity: MINOR
+   - Issue: R383 metadata file placement
+   - Time: 15m
+
+3. FIX-PLAN-SUMMARY--20251029-233955.yaml
+   - Total efforts needing fixes: 2
+   - Total time: 60m
+
+## State Transition Ready
+Current State: CREATE_FIX_PLAN
+Next State: COMPLETED (orchestrator will spawn SW engineers)
