@@ -1,7 +1,7 @@
 {
-  "current_state": "SPAWN_SW_ENGINEERS",
-  "previous_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-  "transition_time": "2025-10-29T21:57:26Z",
+  "current_state": "MONITORING_SWE_PROGRESS",
+  "previous_state": "SPAWN_SW_ENGINEERS",
+  "transition_time": "2025-10-29T22:12:59Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -1698,7 +1698,40 @@
     }
   },
   "code_reviewer_parallelization": null,
-  "active_agents": [],
+  "active_agents": [
+    {
+      "agent_type": "sw-engineer",
+      "effort": "1.2.1-docker-client",
+      "effort_dir": "efforts/phase1/wave2/effort-1-docker-client",
+      "spawned_at": "2025-10-29T22:12:59Z",
+      "status": "COMPLETE",
+      "implementation_plan": ".software-factory/phase1/wave2/effort-1-docker-client/IMPLEMENTATION-PLAN--20251029-214603.md"
+    },
+    {
+      "agent_type": "sw-engineer",
+      "effort": "1.2.2-registry-client",
+      "effort_dir": "efforts/phase1/wave2/effort-2-registry-client",
+      "spawned_at": "2025-10-29T22:12:59Z",
+      "status": "FAILED_WRONG_DIRECTORY",
+      "implementation_plan": ".software-factory/phase1/wave2/effort-2-registry-client/IMPLEMENTATION-PLAN--20251029-213344.md"
+    },
+    {
+      "agent_type": "sw-engineer",
+      "effort": "1.2.3-auth",
+      "effort_dir": "efforts/phase1/wave2/effort-3-auth",
+      "spawned_at": "2025-10-29T22:12:59Z",
+      "status": "COMPLETE",
+      "implementation_plan": ".software-factory/phase1/wave2/effort-3-auth/IMPLEMENTATION-PLAN--20251029-213326.md"
+    },
+    {
+      "agent_type": "sw-engineer",
+      "effort": "1.2.4-tls",
+      "effort_dir": "efforts/phase1/wave2/effort-4-tls",
+      "spawned_at": "2025-10-29T22:12:59Z",
+      "status": "COMPLETE",
+      "implementation_plan": ".software-factory/phase1/wave2/effort-4-tls/IMPLEMENTATION-PLAN--20251029-213316.md"
+    }
+  ],
   "line_count_tracking": {
     "wave": "1.1",
     "efforts": {
@@ -1735,5 +1768,11 @@
     "wave_total_estimated": 650,
     "wave_variance": -91,
     "recorded_at": "2025-10-29T05:17:25Z"
+  },
+  "spawn_timing": {
+    "start_timestamp": 1761775302,
+    "end_timestamp": 1761775302,
+    "delta_seconds": 0,
+    "r151_compliant": true
   }
 }
