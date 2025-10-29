@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_PROJECT_TEST_PLAN",
-    "previous_state": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
+    "current_state": "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
+    "previous_state": "WAITING_FOR_PROJECT_TEST_PLAN",
     "state_history": [
       {
         "state": "INIT",
@@ -82,10 +82,32 @@
         "to": "WAITING_FOR_PROJECT_TEST_PLAN",
         "timestamp": "2025-10-29T00:38:21Z",
         "reason": "Code Reviewer spawned for project test planning - PROJECT-TEST-PLAN.md created with comprehensive TDD strategy"
+      },
+      {
+        "state": "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
+        "timestamp": "2025-10-29T00:40:52+00:00",
+        "action": "Transition to early integration branch creation per R342",
+        "validated_by": "state-manager",
+        "transition_reason": "Project test plan completed successfully. PROJECT-TEST-PLAN.md exists with comprehensive TDD strategy (1969 lines). R342 TDD requires early integration branch creation for test storage before implementation begins.",
+        "validation_checks": {
+          "test_plan_file_exists": true,
+          "test_plan_file_path": "planning/PROJECT-TEST-PLAN.md",
+          "test_plan_size_bytes": 55000,
+          "test_plan_line_count": 1969,
+          "test_plan_status": "COMPLETE",
+          "r341_tdd_compliance": "VERIFIED",
+          "test_pyramid_defined": true,
+          "coverage_targets_defined": true,
+          "test_first_workflow_documented": true,
+          "state_machine_compliance": "VERIFIED",
+          "allowed_transition": true,
+          "orchestrator_proposed_state": "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
+          "state_manager_decision": "APPROVED"
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T00:26:56+00:00",
-    "last_transition": "2025-10-29T00:38:21Z"
+    "last_transition_timestamp": "2025-10-29T00:40:52+00:00",
+    "last_transition": "2025-10-29T00:40:52Z"
   },
   "project_progression": {
     "current_project": "idpbuilder-oci-push-command",
@@ -112,10 +134,10 @@
   "efforts_in_progress": [],
   "blocked_items": [],
   "next_actions": [
-    "Spawn Code Reviewer agent for project-level test planning (R341 TDD requirement)",
-    "Code Reviewer will create PROJECT-TEST-PLAN.md from architecture",
-    "Test planning MUST occur before implementation begins",
-    "Following mandatory sequence: project_initialization"
+    "Create project-integration branch from main (R342 early branch creation)",
+    "Add project test plan to integration branch",
+    "Set up integration branch tracking and protection",
+    "Transition to SPAWN_ARCHITECT_PHASE_PLANNING to begin Phase 1 planning"
   ],
   "planning_artifacts": {
     "master_architecture_file": "planning/PROJECT-ARCHITECTURE.md",
@@ -134,6 +156,22 @@
       "Phase 2 Wave 2: 2 parallel efforts (Registry override, Env vars)",
       "Phase 3 Wave 1: 2 parallel efforts (Core tests, Edge case tests)",
       "Phase 3 Wave 2: 2 parallel efforts (Documentation, Build integration)"
-    ]
+    ],
+    "project_test_plan_file": "planning/PROJECT-TEST-PLAN.md",
+    "project_test_plan_status": "COMPLETE",
+    "test_plan_completion_timestamp": "2025-10-29T00:36:00+00:00",
+    "test_plan_line_count": 1969,
+    "test_plan_size_bytes": 55000,
+    "test_approach": "Test-First Development (R341 TDD)",
+    "coverage_targets": {
+      "unit_tests": "85% minimum",
+      "integration_tests": "80% minimum",
+      "e2e_critical_paths": "95% minimum"
+    },
+    "test_pyramid": {
+      "unit_tests": "60% of all tests (Phase 1)",
+      "integration_tests": "30% of all tests (Phase 2)",
+      "e2e_tests": "10% of all tests (Phase 3)"
+    }
   }
 }
