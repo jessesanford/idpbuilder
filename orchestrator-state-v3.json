@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
-    "previous_state": "WAITING_FOR_MASTER_ARCHITECTURE",
+    "current_state": "WAITING_FOR_PROJECT_TEST_PLAN",
+    "previous_state": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
     "state_history": [
       {
         "state": "INIT",
@@ -76,9 +76,16 @@
           "orchestrator_proposed_state": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
           "state_manager_decision": "APPROVED"
         }
+      },
+      {
+        "from": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
+        "to": "WAITING_FOR_PROJECT_TEST_PLAN",
+        "timestamp": "2025-10-29T00:38:21Z",
+        "reason": "Code Reviewer spawned for project test planning - PROJECT-TEST-PLAN.md created with comprehensive TDD strategy"
       }
     ],
-    "last_transition_timestamp": "2025-10-29T00:26:56+00:00"
+    "last_transition_timestamp": "2025-10-29T00:26:56+00:00",
+    "last_transition": "2025-10-29T00:38:21Z"
   },
   "project_progression": {
     "current_project": "idpbuilder-oci-push-command",
