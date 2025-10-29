@@ -1,7 +1,7 @@
 {
-  "current_state": "START_WAVE_ITERATION",
-  "previous_state": "SETUP_WAVE_INFRASTRUCTURE",
-  "transition_time": "2025-10-29T17:26:08Z",
+  "current_state": "INTEGRATE_WAVE_EFFORTS",
+  "previous_state": "START_WAVE_ITERATION",
+  "transition_time": "2025-10-29T17:28:15Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "START_WAVE_ITERATION",
-    "previous_state": "SETUP_WAVE_INFRASTRUCTURE",
+    "current_state": "INTEGRATE_WAVE_EFFORTS",
+    "previous_state": "START_WAVE_ITERATION",
     "loop_detection": {
       "last_two_states": [
         "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -941,11 +941,43 @@
           "correct_next_state": "START_WAVE_ITERATION",
           "rationale": "Infrastructure creation is part of integration flow, not a standalone next step"
         }
+      },
+      {
+        "from_state": "START_WAVE_ITERATION",
+        "to_state": "INTEGRATE_WAVE_EFFORTS",
+        "timestamp": "2025-10-29T17:28:15Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-wave2-iteration2-start",
+        "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "Wave 2 iteration 2 started successfully. Iteration counter incremented from 1 to 2 (within max 10). Ready to proceed with wave integration per state machine flow.",
+        "validation_checks": {
+          "current_state_valid": true,
+          "proposed_next_state_valid": true,
+          "transition_allowed_by_state_machine": true,
+          "allowed_transitions_from_current": [
+            "INTEGRATE_WAVE_EFFORTS",
+            "ERROR_RECOVERY"
+          ],
+          "iteration_container_exists": true,
+          "wave_integration_container_id": "wave-phase1-wave2",
+          "iteration_incremented": true,
+          "iteration_before": 1,
+          "iteration_after": 2,
+          "max_iterations": 10,
+          "within_iteration_limit": true,
+          "phase": 1,
+          "wave": 2,
+          "wave_1_complete_per_r336": true,
+          "ready_for_integration": true,
+          "state_machine_compliance": "VERIFIED"
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T17:26:08Z",
+    "last_transition_timestamp": "2025-10-29T17:28:15Z",
     "last_transition": "2025-10-29T06:53:32Z",
-    "transition_time": "2025-10-29T17:26:08Z",
+    "transition_time": "2025-10-29T17:28:15Z",
     "last_two_states": [
       "INJECT_WAVE_METADATA",
       "ANALYZE_CODE_REVIEWER_PARALLELIZATION"
@@ -968,7 +1000,7 @@
     "current_wave": {
       "wave_number": 2,
       "name": "Core Package Implementations",
-      "iteration": 1,
+      "iteration": 2,
       "status": "RESET"
     },
     "phases_completed": [],
@@ -1019,6 +1051,9 @@
           "status": "RESET"
         }
       ]
+    },
+    "iteration_tracking": {
+      "last_progress_timestamp": "2025-10-29T17:28:15+00:00"
     }
   },
   "references": {
