@@ -1,7 +1,7 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
-  "previous_state": "MONITORING_EFFORT_REVIEWS",
-  "transition_time": "2025-10-29T23:32:28Z",
+  "current_state": "MONITORING_EFFORT_REVIEWS",
+  "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+  "transition_time": "2025-10-29T23:22:28Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,17 +27,17 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
-    "previous_state": "MONITORING_EFFORT_REVIEWS",
+    "current_state": "MONITORING_EFFORT_REVIEWS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
     "loop_detection": {
       "last_two_states": [
-        "MONITORING_EFFORT_REVIEWS",
-        "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW"
+        "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+        "ERROR_RECOVERY"
       ],
       "ping_pong_count": 0,
       "same_state_count": 0,
       "error_recovery_entries": 0,
-      "last_progress_timestamp": "2025-10-29T23:32:28Z",
+      "last_progress_timestamp": "2025-10-29T23:22:28Z",
       "validate_infrastructure_loops": 0
     },
     "state_history": [
@@ -1309,19 +1309,6 @@
         "timestamp": "2025-10-29T23:22:28Z",
         "validated_by": "state-manager",
         "reason": "All 4 Code Reviewers spawned successfully for Phase 1 Wave 2 efforts"
-      },
-      {
-        "from_state": "MONITORING_EFFORT_REVIEWS",
-        "to_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
-        "timestamp": "2025-10-29T23:32:28Z",
-        "validated_by": "state-manager",
-        "consultation_id": "shutdown-1761780748",
-        "orchestrator_proposal": "SPAWN_SW_ENGINEERS",
-        "proposal_accepted": false,
-        "proposal_rejected_reason": "Proposed state SPAWN_SW_ENGINEERS is not in allowed_transitions from MONITORING_EFFORT_REVIEWS. Allowed transitions: [SPAWN_CODE_REVIEWER_FIX_PLAN, WAVE_COMPLETE, ERROR_RECOVERY]. State machine requires Code Reviewer to create fix plans before spawning SW Engineers. This enforces proper review-fix workflow.",
-        "transition_invalid": false,
-        "state_manager_override": true,
-        "reason": "State Manager OVERRIDE: MONITORING_EFFORT_REVIEWS → SPAWN_CODE_REVIEWER_FIX_PLAN (REQUIRED). Orchestrator proposed SPAWN_SW_ENGINEERS but state machine mandates SPAWN_CODE_REVIEWER_FIX_PLAN for NEEDS_FIXES outcomes. 2/4 efforts require fixes (effort-2-registry-client, effort-3-auth). Code Reviewer must create fix plans before SW Engineers address issues."
       }
     ],
     "last_transition_timestamp": "2025-10-29T21:57:26Z",
