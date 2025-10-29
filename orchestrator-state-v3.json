@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
-    "previous_state": "MONITORING_EFFORT_REVIEWS",
+    "current_state": "CREATE_WAVE_FIX_PLAN",
+    "previous_state": "WAITING_FOR_FIX_PLANS",
     "loop_detection": {
       "last_two_states": [
         "MONITORING_EFFORT_REVIEWS",
@@ -1322,9 +1322,16 @@
         "transition_invalid": false,
         "state_manager_override": true,
         "reason": "State Manager OVERRIDE: MONITORING_EFFORT_REVIEWS → SPAWN_CODE_REVIEWER_FIX_PLAN (REQUIRED). Orchestrator proposed SPAWN_SW_ENGINEERS but state machine mandates SPAWN_CODE_REVIEWER_FIX_PLAN for NEEDS_FIXES outcomes. 2/4 efforts require fixes (effort-2-registry-client, effort-3-auth). Code Reviewer must create fix plans before SW Engineers address issues."
+      },
+      {
+        "from_state": "WAITING_FOR_FIX_PLANS",
+        "to_state": "CREATE_WAVE_FIX_PLAN",
+        "timestamp": "2025-10-29T23:50:44Z",
+        "validated_by": "orchestrator",
+        "reason": "Fix plans complete - 2 efforts need fixes (effort-2-registry-client: R320 critical, effort-3-auth: R383 minor)"
       }
     ],
-    "last_transition_timestamp": "2025-10-29T21:57:26Z",
+    "last_transition_timestamp": "2025-10-29T23:50:44Z",
     "last_transition": "2025-10-29T21:18:14Z",
     "transition_time": "2025-10-29T21:50:02Z",
     "last_two_states": [
