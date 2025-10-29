@@ -1,5 +1,5 @@
 {
-  "current_state": "ERROR_RECOVERY",
+  "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
   "previous_state": "VALIDATE_INFRASTRUCTURE",
   "transition_time": "2025-10-29T21:35:00Z",
   "current_phase": 1,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ERROR_RECOVERY",
-    "previous_state": "VALIDATE_INFRASTRUCTURE",
+    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "previous_state": "ERROR_RECOVERY",
     "loop_detection": {
       "last_two_states": [
         "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -38,7 +38,7 @@
       "same_state_count": 0,
       "error_recovery_entries": 0,
       "last_progress_timestamp": "2025-10-29T21:01:57Z",
-      "validate_infrastructure_loops": 9
+      "validate_infrastructure_loops": 0
     },
     "state_history": [
       {
@@ -1169,16 +1169,40 @@
           "state_rules_compliance": "VERIFIED",
           "mandatory_transition": true
         }
+      },
+      {
+        "from_state": "ERROR_RECOVERY",
+        "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "timestamp": "2025-10-29T21:28:41Z",
+        "validated_by": "state-manager",
+        "consultation_id": "error-recovery-effort-1-2-4-created",
+        "reason": "ERROR_RECOVERY complete: Effort 1.2.4 infrastructure created successfully. All 4 Wave 2 effort infrastructures validated. Ready to spawn Code Reviewers for effort planning.",
+        "validation_checks": {
+          "error_recovered": true,
+          "stuck_loop_resolved": true,
+          "effort_1_2_4_created": true,
+          "all_efforts_infrastructure_validated": true,
+          "effort_count": 4,
+          "efforts_with_valid_infrastructure": [
+            "1.2.1",
+            "1.2.2",
+            "1.2.3",
+            "1.2.4"
+          ],
+          "ready_for_code_reviewer_spawning": true,
+          "allowed_transition": true,
+          "state_machine_compliance": "VERIFIED"
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T21:35:00Z",
+    "last_transition_timestamp": "2025-10-29T21:28:30Z",
     "last_transition": "2025-10-29T21:18:14Z",
-    "transition_time": "2025-10-29T21:09:13Z",
+    "transition_time": "2025-10-29T21:28:30Z",
     "last_two_states": [
       "VALIDATE_INFRASTRUCTURE",
       "ERROR_RECOVERY"
     ],
-    "last_progress_timestamp": "2025-10-29T21:35:00Z"
+    "last_progress_timestamp": "2025-10-29T21:28:30Z"
   },
   "project_progression": {
     "current_project": {
@@ -1505,54 +1529,11 @@
         "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
         "planning_remote": "origin",
         "integration_branch": "idpbuilder-oci-push/phase1/wave2/integration",
-        "created": false,
-        "validated": false
+        "created": true,
+        "validated": true
       }
     },
     "project_prefix": "idpbuilder-oci-push"
-  },
-  "error_context": {
-    "error_type": "STUCK_LOOP",
-    "stuck_state": "VALIDATE_INFRASTRUCTURE",
-    "loop_counter": 9,
-    "max_iterations": 5,
-    "failed_effort": {
-      "effort_id": "1.2.4",
-      "effort_name": "TLS Configuration Implementation",
-      "expected_directory": "efforts/phase1/wave2/effort-4-tls",
-      "expected_branch": "idpbuilder-oci-push/phase1/wave2/effort-4-tls",
-      "created": false,
-      "validated": false
-    },
-    "successful_efforts": [
-      {
-        "effort_id": "1.2.1",
-        "directory": "efforts/phase1/wave2/effort-1-docker-client",
-        "status": "created_and_validated"
-      },
-      {
-        "effort_id": "1.2.2",
-        "directory": "efforts/phase1/wave2/effort-2-registry-client",
-        "status": "created_and_validated"
-      },
-      {
-        "effort_id": "1.2.3",
-        "directory": "efforts/phase1/wave2/effort-3-auth",
-        "status": "created_and_validated"
-      }
-    ],
-    "investigation_needed": [
-      "Why did CREATE_NEXT_INFRASTRUCTURE fail for Effort 1.2.4?",
-      "Was there an error in the effort metadata extraction?",
-      "Was there a filesystem or git error?",
-      "Review CREATE_NEXT_INFRASTRUCTURE state execution logs"
-    ],
-    "recovery_plan": [
-      "Manually create Effort 1.2.4 infrastructure",
-      "Update state file to mark as created",
-      "Validate infrastructure",
-      "Resume from VALIDATE_INFRASTRUCTURE or SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
-    ]
   },
   "sw_engineer_parallelization": null,
   "code_reviewer_parallelization": null,
