@@ -1247,7 +1247,27 @@
     },
     "project_prefix": "idpbuilder-oci-push"
   },
-  "error_context": null,
+  "error_context": {
+    "error_type": "INVALID_STATE_TRANSITION",
+    "detected_at": "2025-10-29T17:45:00Z",
+    "current_state": "INTEGRATE_WAVE_EFFORTS",
+    "problem": "State expects efforts to integrate but none exist",
+    "details": {
+      "wave": 2,
+      "phase": 1,
+      "efforts_to_integrate": [],
+      "wave_status": "RESET",
+      "missing_items": [
+        "Wave 2 implementation plan (wave-plans/WAVE-2-IMPLEMENTATION.md)",
+        "Wave 2 effort branches (no branches exist)",
+        "Wave 2 effort directories (only integration dir exists)"
+      ]
+    },
+    "impact": "Cannot execute INTEGRATE_WAVE_EFFORTS checklist - no efforts to merge",
+    "proposed_recovery": "Transition to ERROR_RECOVERY or back to SETUP_WAVE_INFRASTRUCTURE to restart Wave 2 properly",
+    "analysis_document": "INTEGRATE_WAVE_EFFORTS-ERROR-ANALYSIS-20251029-*.md",
+    "requires_manual_intervention": true
+  },
   "sw_engineer_parallelization": null,
   "code_reviewer_parallelization": null,
   "active_agents": [],
