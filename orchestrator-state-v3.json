@@ -1,7 +1,7 @@
 {
-  "current_state": "SPAWN_SW_ENGINEERS",
-  "previous_state": "WAITING_FOR_EFFORT_PLANS",
-  "transition_time": "2025-10-29T07:02:00Z",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "SPAWN_SW_ENGINEERS",
+  "transition_time": "2025-10-29T07:15:30Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -1500,7 +1500,37 @@
     },
     "project_prefix": "idpbuilder-oci-push"
   },
-  "error_context": null,
+  "error_context": {
+    "error_type": "INFRASTRUCTURE_INCOMPLETE",
+    "failed_state": "SPAWN_SW_ENGINEERS",
+    "timestamp": "2025-10-29T07:15:30Z",
+    "description": "Wave 2 effort branches never created before spawning SW Engineers. CREATE_NEXT_INFRASTRUCTURE state was skipped.",
+    "blocked_efforts": [
+      "1.2.2",
+      "1.2.3",
+      "1.2.4"
+    ],
+    "successful_efforts": [
+      "1.2.1"
+    ],
+    "infrastructure_status": {
+      "directories_exist": true,
+      "branches_exist": false,
+      "pre_planned_infrastructure_populated": false,
+      "wave2_integration_branch_exists": true
+    },
+    "remediation_required": [
+      "Create Git branches for efforts 1.2.2, 1.2.3, 1.2.4",
+      "Update pre_planned_infrastructure with Wave 2 efforts",
+      "Validate infrastructure per R509",
+      "Re-spawn blocked SW Engineers (1.2.2, 1.2.3, 1.2.4)"
+    ],
+    "grading_impact": {
+      "r151_parallelization": "FAILED - timing violation",
+      "workspace_isolation": "FAILED - 3/4 agents blocked",
+      "projected_score": "17.5%"
+    }
+  },
   "sw_engineer_parallelization": {
     "analyzed_at": "2025-10-29T06:59:41Z",
     "decision": "PARALLEL",
