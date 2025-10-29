@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
-    "previous_state": "WAITING_FOR_PROJECT_TEST_PLAN",
+    "current_state": "INIT",
+    "previous_state": "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
     "state_history": [
       {
         "state": "INIT",
@@ -104,9 +104,20 @@
           "orchestrator_proposed_state": "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
           "state_manager_decision": "APPROVED"
         }
+      },
+      {
+        "from_state": "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
+        "to_state": "INIT",
+        "timestamp": "2025-10-29T00:47:00Z",
+        "validated_by": "orchestrator",
+        "reason": "Project integration branch created with test plan per R342. Ready for Phase 1.",
+        "artifacts_created": [
+          "project-integration branch",
+          "docs/planning/PROJECT-TEST-PLAN.md"
+        ]
       }
     ],
-    "last_transition_timestamp": "2025-10-29T00:40:52+00:00",
+    "last_transition_timestamp": "2025-10-29T00:47:00Z",
     "last_transition": "2025-10-29T00:40:52Z"
   },
   "project_progression": {
@@ -173,5 +184,14 @@
       "integration_tests": "30% of all tests (Phase 2)",
       "e2e_tests": "10% of all tests (Phase 3)"
     }
+  },
+  "project_integration": {
+    "branch": "project-integration",
+    "created_at": "2025-10-29T00:46:50+00:00",
+    "has_tests": true,
+    "workspace": "efforts/project/integration-workspace",
+    "test_plan_file": "docs/planning/PROJECT-TEST-PLAN.md",
+    "repository": "https://github.com/jessesanford/idpbuilder.git",
+    "status": "created"
   }
 }
