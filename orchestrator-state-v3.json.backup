@@ -1,7 +1,7 @@
 {
-  "current_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-  "previous_state": "WAITING_FOR_EFFORT_PLANS",
-  "transition_time": "2025-10-29T07:02:00Z",
+  "current_state": "SETUP_WAVE_INFRASTRUCTURE",
+  "previous_state": "WAVE_COMPLETE",
+  "transition_time": "2025-10-29T16:31:02Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -17,12 +17,7 @@
     "1.1.4"
   ],
   "efforts_in_progress": [],
-  "efforts_pending": [
-    "1.2.1",
-    "1.2.2",
-    "1.2.3",
-    "1.2.4"
-  ],
+  "efforts_pending": [],
   "project_info": {
     "name": "idpbuilder-oci-push-command",
     "description": "Implement IDPBuilder OCI image-push command",
@@ -32,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_EFFORT_PLANS",
-    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "current_state": "SETUP_WAVE_INFRASTRUCTURE",
+    "previous_state": "WAVE_COMPLETE",
     "loop_detection": {
       "last_two_states": [
         "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -912,327 +907,16 @@
         "timestamp": "2025-10-29T05:28:46Z",
         "validated_by": "state-manager",
         "reason": "Wave 2 infrastructure setup complete. Integration branch created (idpbuilder-oci-push/phase1/wave2/integration) based on Wave 1 integration per R336. Iteration container initialized. Ready for Wave 2 architecture planning per R213 progressive fidelity."
-      },
-      {
-        "from_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
-        "to_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-        "timestamp": "2025-10-29T05:40:00Z",
-        "validated_by": "state-manager",
-        "consultation_id": "shutdown-wave2-arch-complete",
-        "orchestrator_proposal": "WAITING_FOR_WAVE_ARCHITECTURE",
-        "proposal_accepted": true,
-        "transition_invalid": false,
-        "reason": "Architect completed Wave 2 architecture with CONCRETE fidelity (1,359 lines, 41KB). Real Go implementations for all 4 packages. R340 quality gates passed: concrete designs, real code examples, actual implementations using frozen Wave 1 interfaces.",
-        "validation_checks": {
-          "architecture_file_exists": true,
-          "architecture_file_path": "wave-plans/WAVE-2-ARCHITECTURE.md",
-          "architecture_file_size_bytes": 41000,
-          "architecture_file_line_count": 1359,
-          "fidelity_level": "CONCRETE",
-          "r340_concrete_compliance": "VERIFIED",
-          "real_go_code_present": true,
-          "interface_implementations_complete": true,
-          "quality_gates_passed": 4,
-          "architect_continue_flag": true,
-          "estimated_wave_lines": 1550,
-          "parallelization_strategy": "parallel_4_teams",
-          "efforts_planned": 4
-        }
-      },
-      {
-        "from_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-        "to_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
-        "timestamp": "2025-10-29T05:49:18Z",
-        "validated_by": "state-manager",
-        "consultation_id": "shutdown-wave2-arch-validated",
-        "orchestrator_proposal": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
-        "proposal_accepted": false,
-        "proposal_rejected_reason": "Orchestrator attempted to skip SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING which violates mandatory sequence and R341 TDD requirements",
-        "transition_invalid": false,
-        "state_manager_override": true,
-        "reason": "State Manager OVERRIDE: Mandatory sequence requires SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING before SPAWN_CODE_REVIEWER_WAVE_IMPL. Wave 2 architecture complete (1,359 lines, 41KB, 28 function signatures, 6 type definitions, 8 Go code blocks). Per R341 TDD, test plan must be created BEFORE implementation planning.",
-        "validation_checks": {
-          "architecture_file_path": "wave-plans/WAVE-2-ARCHITECTURE.md",
-          "architecture_file_size_bytes": 41984,
-          "architecture_file_line_count": 1359,
-          "fidelity_level": "CONCRETE",
-          "r340_concrete_compliance": "VERIFIED",
-          "real_function_signatures": 28,
-          "type_definitions": 6,
-          "go_code_blocks": 8,
-          "has_real_code": true,
-          "adaptation_notes_present": true,
-          "quality_gates_passed": 5,
-          "mandatory_sequence_position": 3,
-          "mandatory_sequence_next": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
-          "allowed_transitions_from_waiting": [
-            "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
-            "ERROR_RECOVERY"
-          ],
-          "orchestrator_proposed_invalid_skip": true
-        }
-      },
-      {
-        "from_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
-        "to_state": "WAITING_FOR_WAVE_TEST_PLAN",
-        "timestamp": "2025-10-29T05:58:00Z",
-        "validated_by": "state-manager",
-        "consultation_id": "shutdown-wave2-test-plan-complete",
-        "orchestrator_proposal": "WAITING_FOR_WAVE_TEST_PLAN",
-        "proposal_accepted": true,
-        "transition_invalid": false,
-        "reason": "Code Reviewer completed Wave 2 test plan creation - WAVE-2-TEST-PLAN.md created successfully (1,966 lines, ~50 test cases). R341 TDD compliance verified - tests designed using PROGRESSIVE REALISM (actual Wave 1 code as test infrastructure). Coverage targets: 85%+ unit, 90%+ security packages.",
-        "validation_checks": {
-          "test_plan_file_exists": true,
-          "test_plan_file_path": "wave-plans/WAVE-2-TEST-PLAN.md",
-          "test_plan_line_count": 1966,
-          "test_plan_approach": "Progressive Realism + TDD",
-          "uses_wave1_actual_code": true,
-          "r341_tdd_compliance": "VERIFIED",
-          "covers_all_wave2_packages": true,
-          "package_coverage": 4,
-          "estimated_test_cases": 50,
-          "coverage_target_unit": "85%+",
-          "coverage_target_security": "90%+",
-          "quality_gates_passed": 6,
-          "code_reviewer_continue": true,
-          "allowed_transition": true,
-          "state_machine_compliance": "VERIFIED",
-          "progressive_realism_verified": true,
-          "wave1_interface_imports": true
-        }
-      },
-      {
-        "from_state": "WAITING_FOR_WAVE_TEST_PLAN",
-        "to_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-        "timestamp": "2025-10-29T06:07:38Z",
-        "validated_by": "state-manager",
-        "consultation_id": "shutdown-wave2-test-plan-to-integration-branch",
-        "orchestrator_proposal": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-        "proposal_accepted": true,
-        "transition_invalid": false,
-        "reason": "Wave 2 test plan complete - R342 mandates early integration branch creation immediately after test planning, before implementation planning. Test plan validated (1,966 lines, Progressive Realism + TDD, covers all 4 Wave 2 packages, uses actual Wave 1 code).",
-        "validation_checks": {
-          "test_plan_file_exists": true,
-          "test_plan_file_path": "wave-plans/WAVE-2-TEST-PLAN.md",
-          "test_plan_line_count": 1966,
-          "test_plan_approach": "Progressive Realism + TDD",
-          "uses_wave1_actual_code": true,
-          "r341_tdd_compliance": "VERIFIED",
-          "covers_all_wave2_packages": true,
-          "package_coverage": 4,
-          "r342_early_integration_mandate": "VERIFIED",
-          "mandatory_sequence_position": 5,
-          "mandatory_sequence_next": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-          "allowed_transitions_from_waiting": [
-            "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-            "ERROR_RECOVERY"
-          ],
-          "transition_allowed_by_state_machine": true,
-          "state_machine_compliance": "VERIFIED"
-        }
-      },
-      {
-        "from_state": "WAITING_FOR_WAVE_TEST_PLAN",
-        "to_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-        "timestamp": "2025-10-29T06:08:36Z",
-        "validated_by": "state-manager",
-        "consultation_id": "shutdown-wave2-test-plan-to-integration-branch",
-        "orchestrator_proposal": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-        "proposal_accepted": true,
-        "transition_invalid": false,
-        "reason": "Wave 2 test plan complete - R342 mandates early integration branch creation immediately after test planning, before implementation planning. Test plan validated (1,966 lines, Progressive Realism + TDD, covers all 4 Wave 2 packages, uses actual Wave 1 code).",
-        "validation_checks": {
-          "test_plan_file_exists": true,
-          "test_plan_file_path": "wave-plans/WAVE-2-TEST-PLAN.md",
-          "test_plan_line_count": 1966,
-          "test_plan_approach": "Progressive Realism + TDD",
-          "uses_wave1_actual_code": true,
-          "r341_tdd_compliance": "VERIFIED",
-          "covers_all_wave2_packages": true,
-          "package_coverage": 4,
-          "r342_early_integration_mandate": "VERIFIED",
-          "mandatory_sequence_position": 5,
-          "mandatory_sequence_next": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-          "allowed_transitions_from_waiting": [
-            "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-            "ERROR_RECOVERY"
-          ],
-          "transition_allowed_by_state_machine": true,
-          "state_machine_compliance": "VERIFIED"
-        }
-      },
-      {
-        "from_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-        "to_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
-        "timestamp": "2025-10-29T06:14:46Z",
-        "validated_by": "state-manager",
-        "consultation_id": "shutdown-wave2-integration-branch-created",
-        "orchestrator_proposal": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
-        "proposal_accepted": true,
-        "transition_invalid": false,
-        "reason": "Wave 2 integration branch created successfully per R342 early integration requirements. Branch idpbuilder-oci-push/phase1/wave2/integration pushed to remote with upstream tracking configured. Test plan committed (1,966 lines). All R342 quality gates passed. Ready for wave implementation planning.",
-        "validation_checks": {
-          "wave_integration_branch_created": true,
-          "branch_name": "idpbuilder-oci-push/phase1/wave2/integration",
-          "branch_pushed_to_remote": true,
-          "upstream_tracking_configured": true,
-          "git_config_remote": "origin",
-          "git_config_merge": "refs/heads/idpbuilder-oci-push/phase1/wave2/integration",
-          "remote_url": "https://github.com/jessesanford/idpbuilder.git",
-          "test_plan_committed": true,
-          "test_plan_path": "docs/testing/WAVE-2-TEST-PLAN.md",
-          "test_plan_line_count": 1966,
-          "branch_based_from": "idpbuilder-oci-push/phase1/wave1/integration",
-          "r342_compliance": "VERIFIED",
-          "r342_early_integration": "COMPLETE",
-          "quality_gates_passed": 7,
-          "allowed_transition": true,
-          "state_machine_compliance": "VERIFIED"
-        }
-      },
-      {
-        "from_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
-        "to_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
-        "timestamp": "2025-10-29T06:23:05Z",
-        "validated_by": "state-manager",
-        "consultation_id": "shutdown-wave2-impl-plan-complete",
-        "orchestrator_proposal": "WAITING_FOR_WAVE_IMPLEMENTATION_PLAN",
-        "state_name_corrected": "WAITING_FOR_IMPLEMENTATION_PLAN",
-        "proposal_accepted": true,
-        "transition_invalid": false,
-        "reason": "Code Reviewer completed Wave 2 implementation planning - WAVE-2-IMPLEMENTATION.md created successfully (1,148 lines, 41KB) with EXACT fidelity and complete R213 metadata for all 4 efforts. Total estimated lines: 1,550 (within limit). Parallelization strategy: 4 parallel efforts.",
-        "validation_checks": {
-          "implementation_plan_exists": true,
-          "implementation_plan_path": "wave-plans/WAVE-2-IMPLEMENTATION.md",
-          "implementation_plan_size_bytes": 41000,
-          "implementation_plan_line_count": 1148,
-          "fidelity_level": "EXACT",
-          "r213_compliance": "VERIFIED",
-          "r502_compliance": "VERIFIED",
-          "r341_test_plan_integrated": true,
-          "effort_count": 4,
-          "total_estimated_lines": 1550,
-          "parallelization": "parallel",
-          "parallel_effort_count": 4,
-          "all_efforts_have_metadata": true,
-          "metadata_fields_complete": [
-            "effort_id",
-            "effort_name",
-            "estimated_lines",
-            "dependencies",
-            "files_touched",
-            "branch_name",
-            "parallelization",
-            "base_branch"
-          ],
-          "quality_gates_passed": 8,
-          "allowed_transition": true,
-          "state_machine_compliance": "VERIFIED",
-          "code_reviewer_continue": true
-        }
-      },
-      {
-        "from_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
-        "to_state": "INJECT_WAVE_METADATA",
-        "timestamp": "2025-10-29T06:30:00Z",
-        "validated_by": "state-manager",
-        "consultation_id": "shutdown-wave2-impl-validated-corrected",
-        "orchestrator_proposal": "CREATE_NEXT_INFRASTRUCTURE",
-        "proposal_accepted": false,
-        "proposal_rejected_reason": "Orchestrator attempted to skip INJECT_WAVE_METADATA which is mandatory per state machine",
-        "transition_invalid": false,
-        "state_manager_override": true,
-        "reason": "State Manager OVERRIDE: Mandatory sequence requires INJECT_WAVE_METADATA after WAITING_FOR_IMPLEMENTATION_PLAN. Wave 2 implementation plan complete (1,148 lines, 41KB) with EXACT fidelity and complete R213 metadata for all 4 efforts. Per mandatory sequence enforcement, orchestrator MUST inject R213 metadata before infrastructure creation.",
-        "validation_checks": {
-          "implementation_plan_exists": true,
-          "implementation_plan_path": "wave-plans/WAVE-2-IMPLEMENTATION.md",
-          "implementation_plan_size_bytes": 41000,
-          "implementation_plan_line_count": 1148,
-          "fidelity_level": "EXACT",
-          "r213_compliance": "VERIFIED",
-          "r502_compliance": "VERIFIED",
-          "effort_count": 4,
-          "total_estimated_lines": 1550,
-          "parallelization": "parallel_4_efforts",
-          "all_efforts_have_r213_metadata": true,
-          "metadata_fields_complete": true,
-          "quality_gates_passed": 8,
-          "mandatory_sequence_position": 7,
-          "mandatory_sequence_next": "INJECT_WAVE_METADATA",
-          "allowed_transitions_from_waiting": [
-            "INJECT_WAVE_METADATA",
-            "ERROR_RECOVERY"
-          ],
-          "orchestrator_proposed_invalid_skip": true,
-          "correct_next_state": "INJECT_WAVE_METADATA"
-        }
-      },
-      {
-        "from_state": "INJECT_WAVE_METADATA",
-        "to_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-        "timestamp": "2025-10-29T06:33:12Z",
-        "validated_by": "state-manager",
-        "consultation_id": "shutdown-inject-wave-metadata-to-analyze",
-        "orchestrator_proposal": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-        "proposal_accepted": true,
-        "transition_invalid": false,
-        "reason": "INJECT_WAVE_METADATA complete - R213 metadata validated for all 4 Wave 2 efforts. All efforts have project_prefix in branch names. Parallelization strategy: parallel_4_efforts. Per mandatory sequence (R234), orchestrator must analyze Code Reviewer parallelization strategy before spawning Code Reviewers.",
-        "validation_checks": {
-          "r213_metadata_validated": true,
-          "effort_count": 4,
-          "efforts_pending": [
-            "1.2.1",
-            "1.2.2",
-            "1.2.3",
-            "1.2.4"
-          ],
-          "all_efforts_have_project_prefix": true,
-          "project_prefix": "idpbuilder-oci-push",
-          "parallelization_strategy": "parallel_4_efforts",
-          "all_efforts_can_parallelize": true,
-          "mandatory_sequence_position": 8,
-          "mandatory_sequence_next": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-          "allowed_transitions_from_inject": [
-            "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-            "ERROR_RECOVERY"
-          ],
-          "state_machine_compliance": "VERIFIED",
-          "r234_analysis_required": true
-        }
-      },
-      {
-        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-        "to_state": "WAITING_FOR_EFFORT_PLANS",
-        "timestamp": "2025-10-29T06:53:40Z",
-        "validated_by": "state-manager",
-        "reason": "Code Reviewer spawned for Wave 2 effort planning - All 4 effort plans created successfully",
-        "validation_checks": {
-          "code_reviewer_spawned": true,
-          "working_directory": "efforts/phase1/wave2/integration",
-          "r208_protocol_followed": true,
-          "r218_wave_plan_acknowledged": true,
-          "plans_created": 4,
-          "plans_completed": 4,
-          "efforts_planned": [
-            "1.2.1",
-            "1.2.2",
-            "1.2.3",
-            "1.2.4"
-          ],
-          "total_estimated_lines": 1550,
-          "all_can_parallelize": true
-        }
       }
     ],
     "last_transition_timestamp": "2025-10-29T06:08:36Z",
     "last_transition": "2025-10-29T06:53:32Z",
-    "transition_time": "2025-10-29T06:53:32Z",
+    "transition_time": "2025-10-29T07:00:02Z",
     "last_two_states": [
       "INJECT_WAVE_METADATA",
       "ANALYZE_CODE_REVIEWER_PARALLELIZATION"
     ],
-    "last_progress_timestamp": "2025-10-29T06:33:12Z"
+    "last_progress_timestamp": "2025-10-29T07:00:02Z"
   },
   "project_progression": {
     "current_project": {
@@ -1249,15 +933,9 @@
     },
     "current_wave": {
       "wave_number": 2,
-      "wave_name": "Core Package Implementations",
-      "wave_description": "Implement all four core packages in parallel using frozen Wave 1 interfaces",
-      "estimated_total_lines": 1550,
-      "parallelization_strategy": "parallel_4_teams",
-      "depends_on_wave": 1,
-      "efforts_planned": 4,
-      "status": "METADATA_VALIDATED",
       "name": "Core Package Implementations",
-      "iteration": 1
+      "iteration": 1,
+      "status": "RESET"
     },
     "phases_completed": [],
     "waves_completed": [
@@ -1304,7 +982,7 @@
           "depends_on": [
             1
           ],
-          "status": "TEST_PLANNING_COMPLETE"
+          "status": "RESET"
         }
       ]
     }
@@ -1501,39 +1179,8 @@
     "project_prefix": "idpbuilder-oci-push"
   },
   "error_context": null,
-  "sw_engineer_parallelization": {
-    "analyzed_at": "2025-10-29T04:15:45Z",
-    "decision": "SEQUENTIAL",
-    "rationale": "All 4 efforts marked CAN_PARALLELIZE=No by Code Reviewer. Effort 1.1.4 depends on 1.1.1,1.1.2,1.1.3. Must execute sequentially.",
-    "execution_order": [
-      "1.1.1",
-      "1.1.2",
-      "1.1.3",
-      "1.1.4"
-    ],
-    "spawn_strategy": "one_at_a_time",
-    "parallel_count": 1,
-    "plan_source": "wave-plans/WAVE-1-IMPLEMENTATION.md",
-    "r151_compliance": "Sequential spawn - no timing requirement",
-    "r219_compliance": "Dependencies analyzed - sequential required"
-  },
-  "code_reviewer_parallelization": {
-    "analyzed_at": "2025-10-29T06:35:57Z",
-    "decision": "PARALLEL",
-    "rationale": "All 4 efforts marked can_parallelize=true with no dependency constraints. All depend only on completed Wave 1.",
-    "execution_strategy": "spawn_all_parallel",
-    "parallel_count": 4,
-    "parallel_efforts": [
-      "1.2.1",
-      "1.2.2",
-      "1.2.3",
-      "1.2.4"
-    ],
-    "sequential_efforts": [],
-    "plan_source": "wave-plans/WAVE-2-IMPLEMENTATION.md",
-    "r151_compliance": "Parallel spawn - must achieve <5s delta",
-    "r218_compliance": "Wave plan read and acknowledged"
-  },
+  "sw_engineer_parallelization": null,
+  "code_reviewer_parallelization": null,
   "active_agents": [],
   "line_count_tracking": {
     "wave": "1.1",
