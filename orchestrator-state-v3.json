@@ -1,5 +1,5 @@
 {
-  "current_state": "SETUP_WAVE_INFRASTRUCTURE",
+  "current_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
   "previous_state": "WAVE_COMPLETE",
   "transition_time": "2025-10-29T05:18:45Z",
   "current_phase": 1,
@@ -926,31 +926,14 @@
       "waves_completed": 0
     },
     "current_wave": {
-      "wave_number": 1,
-      "name": "Interface & Contract Definitions",
-      "iteration": 1,
-      "wave_name": "Interface & Contract Definitions",
-      "wave_description": "Define ALL interfaces upfront to freeze contracts and enable Phase 1 Wave 2 parallel implementation",
-      "estimated_lines": 650,
-      "parallelization": "sequential",
-      "depends_on": [],
-      "status": "COMPLETE",
-      "wave_architecture_file": "wave-plans/WAVE-1-ARCHITECTURE.md",
-      "wave_test_plan_file": "wave-plans/WAVE-1-TEST-PLAN.md",
-      "wave_implementation_plan_file": "wave-plans/WAVE-1-IMPLEMENTATION.md",
-      "wave_implementation_plan_created_at": "2025-10-29T02:43:00Z",
-      "wave_implementation_plan_fidelity": "EXACT",
-      "wave_implementation_plan_effort_count": 4,
-      "wave_integration": {
-        "branch": "idpbuilder-oci-push/phase1/wave2/integration",
-        "created_at": "2025-10-29T05:28:46Z",
-        "has_tests": true,
-        "workspace": "efforts/phase1/wave2/integration",
-        "test_plan_file": "docs/testing/WAVE-1-TEST-PLAN.md",
-        "repository": "https://github.com/jessesanford/idpbuilder.git",
-        "base_branch": "project-integration",
-        "status": "created"
-      }
+      "wave_number": 2,
+      "wave_name": "Core Package Implementations",
+      "wave_description": "Implement all four core packages in parallel using frozen Wave 1 interfaces",
+      "estimated_total_lines": 1550,
+      "parallelization_strategy": "parallel_4_teams",
+      "depends_on_wave": 1,
+      "efforts_planned": 4,
+      "status": "PLANNING"
     },
     "phases_completed": [],
     "waves_completed": [],
