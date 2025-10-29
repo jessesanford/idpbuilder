@@ -1,7 +1,7 @@
 {
-  "current_state": "CREATE_NEXT_INFRASTRUCTURE",
-  "previous_state": "WAITING_FOR_WAVE_IMPLEMENTATION_PLAN",
-  "transition_time": "2025-10-29T18:05:00Z",
+  "current_state": "VALIDATE_INFRASTRUCTURE",
+  "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
+  "transition_time": "2025-10-29T18:15:00Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
-    "previous_state": "WAITING_FOR_WAVE_IMPLEMENTATION_PLAN",
+    "current_state": "VALIDATE_INFRASTRUCTURE",
+    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
     "loop_detection": {
       "last_two_states": [
         "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -37,8 +37,8 @@
       "ping_pong_count": 0,
       "same_state_count": 0,
       "error_recovery_entries": 0,
-      "last_progress_timestamp": "2025-10-29T06:14:46Z",
-      "validate_infrastructure_loops": 6
+      "last_progress_timestamp": "2025-10-29T18:15:00Z",
+      "validate_infrastructure_loops": 7
     },
     "state_history": [
       {
@@ -993,11 +993,44 @@
           "efforts_to_create": 4,
           "parallelization": "parallel_4_efforts"
         }
+      },
+      {
+        "from_state": "CREATE_NEXT_INFRASTRUCTURE",
+        "to_state": "VALIDATE_INFRASTRUCTURE",
+        "timestamp": "2025-10-29T18:15:00Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-wave2-effort1-infrastructure-complete",
+        "orchestrator_proposal": "VALIDATE_INFRASTRUCTURE",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "Wave 2 Effort 1.2.1 (Docker Client Implementation) infrastructure created successfully. Branch: idpbuilder-oci-push/phase1/wave2/effort-1-docker-client, workspace: efforts/phase1/wave2/effort-1-docker-client. All R508, R509, R510, R312 quality gates passed. 3 more efforts remain to be created. Must validate before proceeding.",
+        "validation_checks": {
+          "effort_infrastructure_created": true,
+          "effort_id": "1.2.1",
+          "effort_name": "Docker Client Implementation",
+          "branch_name": "idpbuilder-oci-push/phase1/wave2/effort-1-docker-client",
+          "workspace_path": "efforts/phase1/wave2/effort-1-docker-client",
+          "branch_pushed_to_remote": true,
+          "upstream_tracking_configured": true,
+          "git_config_locked": true,
+          "r312_compliance": "VERIFIED",
+          "base_branch": "idpbuilder-oci-push/phase1/wave2/integration",
+          "r509_base_not_main": "VERIFIED",
+          "r510_single_branch_from_base": "VERIFIED",
+          "r508_post_creation_validation": "VERIFIED",
+          "more_efforts_pending": true,
+          "remaining_efforts": 3,
+          "state_machine_transition_valid": true,
+          "allowed_transitions_from_create_next": [
+            "VALIDATE_INFRASTRUCTURE",
+            "ERROR_RECOVERY"
+          ]
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T17:28:15Z",
+    "last_transition_timestamp": "2025-10-29T18:15:00Z",
     "last_transition": "2025-10-29T06:53:32Z",
-    "transition_time": "2025-10-29T17:28:15Z",
+    "transition_time": "2025-10-29T18:15:00Z",
     "last_two_states": [
       "INJECT_WAVE_METADATA",
       "ANALYZE_CODE_REVIEWER_PARALLELIZATION"

@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-29T18:05:00Z",
+  "last_updated": "2025-10-29T18:15:00Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -13,7 +13,7 @@
       "container_id": "wave-phase1-wave2",
       "phase": 1,
       "wave": 2,
-      "status": "EFFORT_CREATION_PENDING",
+      "status": "EFFORT_INFRASTRUCTURE_CREATED",
       "iteration": 2,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase1/wave2/integration",
@@ -21,7 +21,7 @@
       "base_branch": "idpbuilder-oci-push/phase1/wave1/integration",
       "created_at": "2025-10-29T05:26:04Z",
       "integration_started_at": null,
-      "last_iteration_at": "2025-10-29T18:05:00Z",
+      "last_iteration_at": "2025-10-29T18:15:00Z",
       "convergence_metrics": {
         "bugs_remaining": 0,
         "test_failures": 0,
@@ -29,7 +29,7 @@
       },
       "efforts_to_integrate": [],
       "integration_plan_file": null,
-      "notes": "Wave 2 iteration 2: Manual reset from invalid INTEGRATE_WAVE_EFFORTS state. Planning complete (architecture, test plan, implementation plan exist). Integration branch exists and pushed to remote. Ready to create effort workspaces per WAVE-2-IMPLEMENTATION.md (4 efforts, parallel execution)."
+      "notes": "Wave 2 iteration 2: Effort 1.2.1 infrastructure created (branch: idpbuilder-oci-push/phase1/wave2/effort-1-docker-client, workspace: efforts/phase1/wave2/effort-1-docker-client). 3 more efforts remain. Validation in progress."
     }
   ],
   "integration_history": [],
