@@ -1,10 +1,32 @@
 {
+  "current_state": "WAVE_START",
+  "previous_state": "WAITING_FOR_PHASE_IMPLEMENTATION_PLAN",
+  "transition_time": "2025-10-29T01:27:30Z",
+  "current_phase": 1,
+  "current_wave": 1,
+  "phases_planned": 3,
+  "waves_per_phase": {"1": 2, "2": 3, "3": 2},
+  "efforts_completed": [],
+  "efforts_in_progress": [],
+  "efforts_pending": [],
+  "project_info": {
+    "name": "idpbuilder-oci-push-command",
+    "description": "Implement IDPBuilder OCI image-push command",
+    "target_repo": "https://github.com/jessesanford/idpbuilder.git"
+  },
   "state_machine": {
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
     "current_state": "WAVE_START",
     "previous_state": "WAITING_FOR_PHASE_IMPLEMENTATION_PLAN",
+    "loop_detection": {
+      "last_two_states": [],
+      "ping_pong_count": 0,
+      "same_state_count": 0,
+      "error_recovery_entries": 0,
+      "last_progress_timestamp": "2025-10-29T01:38:00Z"
+    },
     "state_history": [
       {
         "state": "INIT",
@@ -223,7 +245,15 @@
   "project_progression": {
     "current_project": "idpbuilder-oci-push-command",
     "current_phase": 1,
-    "current_wave": 1,
+    "current_wave": {
+      "wave_number": 1,
+      "wave_name": "Interface & Contract Definitions",
+      "wave_description": "Define ALL interfaces upfront to freeze contracts and enable Phase 1 Wave 2 parallel implementation",
+      "estimated_lines": 650,
+      "parallelization": "sequential",
+      "depends_on": [],
+      "status": "starting"
+    },
     "phases_completed": [],
     "waves_completed": [],
     "efforts_completed": [],
@@ -247,7 +277,9 @@
           "wave_description": "Implement all four core packages in parallel using frozen Wave 1 interfaces",
           "estimated_lines": 1550,
           "parallelization": "parallel_4_teams",
-          "depends_on": [1],
+          "depends_on": [
+            1
+          ],
           "status": "not_started"
         }
       ]
