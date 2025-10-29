@@ -1,7 +1,7 @@
 {
-  "current_state": "ERROR_RECOVERY",
-  "previous_state": "MONITORING_SWE_PROGRESS",
-  "transition_time": "2025-10-29T22:17:24Z",
+  "current_state": "SPAWN_SW_ENGINEERS",
+  "previous_state": "ERROR_RECOVERY",
+  "transition_time": "2025-10-29T22:24:33Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
