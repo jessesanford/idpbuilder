@@ -1,9 +1,9 @@
 {
-  "current_state": "WAVE_COMPLETE",
-  "previous_state": "MONITORING_EFFORT_REVIEWS",
-  "transition_time": "2025-10-29T05:17:25Z",
+  "current_state": "SETUP_WAVE_INFRASTRUCTURE",
+  "previous_state": "WAVE_COMPLETE",
+  "transition_time": "2025-10-29T05:18:45Z",
   "current_phase": 1,
-  "current_wave": 1,
+  "current_wave": 2,
   "phases_planned": 3,
   "waves_per_phase": {
     "1": 2,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAVE_COMPLETE",
-    "previous_state": "MONITORING_EFFORT_REVIEWS",
+    "current_state": "SETUP_WAVE_INFRASTRUCTURE",
+    "previous_state": "WAVE_COMPLETE",
     "loop_detection": {
       "last_two_states": [
         "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
@@ -891,9 +891,17 @@
         "proposal_accepted": true,
         "transition_invalid": false,
         "reason": "All 4 Wave 1 effort reviews APPROVED with 0 blocking issues. Total implementation: 559 lines (under 650 estimate). All quality gates passed. Ready for wave completion."
+      },
+      {
+        "from_state": "WAVE_COMPLETE",
+        "to_state": "SETUP_WAVE_INFRASTRUCTURE",
+        "timestamp": "2025-10-29T05:18:45Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-wave1-to-wave2-transition",
+        "reason": "Wave 1 complete with all efforts APPROVED. Phase 1 has 2 waves total. Ready to setup infrastructure for Wave 2 (Core Package Implementations)."
       }
     ],
-    "last_transition_timestamp": "2025-10-29T05:17:25Z",
+    "last_transition_timestamp": "2025-10-29T05:18:45Z",
     "last_transition": "2025-10-29T05:10:00Z",
     "transition_time": "2025-10-29T05:17:25Z"
   },
