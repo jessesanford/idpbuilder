@@ -1,7 +1,7 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
-  "previous_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-  "transition_time": "2025-10-29T02:35:15Z",
+  "current_state": "WAITING_FOR_WAVE_IMPLEMENTATION_PLAN",
+  "previous_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+  "transition_time": "2025-10-29T02:45:00Z",
   "current_phase": 1,
   "current_wave": 1,
   "phases_planned": 3,
@@ -22,8 +22,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
-    "previous_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+    "current_state": "WAITING_FOR_WAVE_IMPLEMENTATION_PLAN",
+    "previous_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
     "loop_detection": {
       "last_two_states": [],
       "ping_pong_count": 0,
@@ -331,10 +331,38 @@
           "allowed_transition": true,
           "state_machine_compliance": "VERIFIED"
         }
+      },
+      {
+        "from_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "to_state": "WAITING_FOR_WAVE_IMPLEMENTATION_PLAN",
+        "timestamp": "2025-10-29T02:45:00Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-wave1-impl-plan-complete",
+        "orchestrator_proposal": "WAITING_FOR_WAVE_IMPLEMENTATION_PLAN",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "Code Reviewer completed Wave 1 implementation planning - WAVE-1-IMPLEMENTATION.md created successfully (1,501 lines, 43KB) with EXACT fidelity and complete R213 metadata for all 4 efforts. Total estimated lines: 650 (within limit). Sequential execution required.",
+        "validation_checks": {
+          "implementation_plan_exists": true,
+          "implementation_plan_path": "wave-plans/WAVE-1-IMPLEMENTATION.md",
+          "implementation_plan_size_bytes": 43000,
+          "implementation_plan_line_count": 1501,
+          "fidelity_level": "EXACT",
+          "r213_compliance": "VERIFIED",
+          "effort_count": 4,
+          "total_estimated_lines": 650,
+          "parallelization": "sequential",
+          "all_efforts_have_metadata": true,
+          "metadata_fields_complete": ["effort_id", "estimated_lines", "dependencies", "files_touched", "branch_name", "parallelization", "base_branch"],
+          "quality_gates_passed": 7,
+          "allowed_transition": true,
+          "state_machine_compliance": "VERIFIED",
+          "code_reviewer_continue": true
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T02:35:15Z",
-    "last_transition": "2025-10-29T02:35:15Z"
+    "last_transition_timestamp": "2025-10-29T02:45:00Z",
+    "last_transition": "2025-10-29T02:45:00Z"
   },
   "project_progression": {
     "current_project": {
@@ -359,6 +387,12 @@
       "parallelization": "sequential",
       "depends_on": [],
       "status": "IN_PROGRESS",
+      "wave_architecture_file": "wave-plans/WAVE-1-ARCHITECTURE.md",
+      "wave_test_plan_file": "wave-plans/WAVE-1-TEST-PLAN.md",
+      "wave_implementation_plan_file": "wave-plans/WAVE-1-IMPLEMENTATION.md",
+      "wave_implementation_plan_created_at": "2025-10-29T02:43:00Z",
+      "wave_implementation_plan_fidelity": "EXACT",
+      "wave_implementation_plan_effort_count": 4,
       "wave_integration": {
         "branch": "idpbuilder-oci-push/phase1/wave1/integration",
         "created_at": "2025-10-29T02:29:42Z",
@@ -421,12 +455,11 @@
   "timestamp": "2025-10-28T23:40:45+00:00",
   "blocked_items": [],
   "next_actions": [
-    "Create wave-1-integration branch from main (current state: CREATE_WAVE_INTEGRATION_BRANCH_EARLY)",
-    "Copy WAVE-1-TEST-PLAN.md to branch as test quality gate",
-    "Create test infrastructure directories if needed",
-    "Commit test plan to integration branch",
-    "Push wave-1-integration branch to remote",
-    "After creation: transition to SPAWN_CODE_REVIEWER_WAVE_IMPL"
+    "Validate Wave 1 implementation plan completeness and R213 compliance",
+    "Extract effort metadata from WAVE-1-IMPLEMENTATION.md",
+    "Inject wave metadata into orchestrator-state-v3.json (INJECT_WAVE_METADATA state)",
+    "Analyze parallelization opportunities for Code Reviewer effort planning",
+    "Transition to INJECT_WAVE_METADATA to prepare for infrastructure creation"
   ],
   "planning_artifacts": {
     "master_architecture_file": "planning/PROJECT-ARCHITECTURE.md",
