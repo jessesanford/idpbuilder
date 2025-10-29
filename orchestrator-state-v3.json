@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_MASTER_ARCHITECTURE",
-    "previous_state": "SPAWN_ARCHITECT_MASTER_PLANNING",
+    "current_state": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
+    "previous_state": "WAITING_FOR_MASTER_ARCHITECTURE",
     "state_history": [
       {
         "state": "INIT",
@@ -57,9 +57,28 @@
           "parallelization_opportunities_identified": true,
           "all_size_estimates_within_limits": true
         }
+      },
+      {
+        "state": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
+        "timestamp": "2025-10-29T00:26:56+00:00",
+        "action": "Transition to project test planning per R341 TDD requirements",
+        "validated_by": "state-manager",
+        "transition_reason": "Master architecture complete and validated. R341 TDD enforcement requires test planning before implementation begins. Orchestrator proposed this transition after architecture validation.",
+        "validation_checks": {
+          "state_machine_compliance": "VERIFIED",
+          "allowed_transition": true,
+          "work_products_complete": true,
+          "architecture_file_exists": true,
+          "architecture_comprehensive": true,
+          "r340_requirements_met": true,
+          "r341_tdd_applicable": true,
+          "blocking_issues": "none",
+          "orchestrator_proposed_state": "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
+          "state_manager_decision": "APPROVED"
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T00:14:58+00:00"
+    "last_transition_timestamp": "2025-10-29T00:26:56+00:00"
   },
   "project_progression": {
     "current_project": "idpbuilder-oci-push-command",
@@ -86,8 +105,9 @@
   "efforts_in_progress": [],
   "blocked_items": [],
   "next_actions": [
-    "Spawn Architect agent for master architecture planning",
-    "Architect will create PROJECT-ARCHITECTURE-PLAN.md from PRD",
+    "Spawn Code Reviewer agent for project-level test planning (R341 TDD requirement)",
+    "Code Reviewer will create PROJECT-TEST-PLAN.md from architecture",
+    "Test planning MUST occur before implementation begins",
     "Following mandatory sequence: project_initialization"
   ],
   "planning_artifacts": {
