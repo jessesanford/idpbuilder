@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-29T06:23:05Z",
+  "last_updated": "2025-10-29T17:26:08Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -13,15 +13,15 @@
       "container_id": "wave-phase1-wave2",
       "phase": 1,
       "wave": 2,
-      "status": "IMPLEMENTATION_PLAN_READY",
-      "iteration": 0,
+      "status": "ITERATION_STARTING",
+      "iteration": 1,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase1/wave2/integration",
       "workspace": "efforts/phase1/wave2/integration",
       "base_branch": "idpbuilder-oci-push/phase1/wave1/integration",
       "created_at": "2025-10-29T05:26:04Z",
       "integration_started_at": null,
-      "last_iteration_at": null,
+      "last_iteration_at": "2025-10-29T17:26:08Z",
       "convergence_metrics": {
         "bugs_remaining": 0,
         "test_failures": 0,

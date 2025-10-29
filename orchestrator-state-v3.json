@@ -1,7 +1,7 @@
 {
-  "current_state": "SETUP_WAVE_INFRASTRUCTURE",
-  "previous_state": "WAVE_COMPLETE",
-  "transition_time": "2025-10-29T16:31:02Z",
+  "current_state": "START_WAVE_ITERATION",
+  "previous_state": "SETUP_WAVE_INFRASTRUCTURE",
+  "transition_time": "2025-10-29T17:26:08Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SETUP_WAVE_INFRASTRUCTURE",
-    "previous_state": "WAVE_COMPLETE",
+    "current_state": "START_WAVE_ITERATION",
+    "previous_state": "SETUP_WAVE_INFRASTRUCTURE",
     "loop_detection": {
       "last_two_states": [
         "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -907,11 +907,45 @@
         "timestamp": "2025-10-29T05:28:46Z",
         "validated_by": "state-manager",
         "reason": "Wave 2 infrastructure setup complete. Integration branch created (idpbuilder-oci-push/phase1/wave2/integration) based on Wave 1 integration per R336. Iteration container initialized. Ready for Wave 2 architecture planning per R213 progressive fidelity."
+      },
+      {
+        "from_state": "SETUP_WAVE_INFRASTRUCTURE",
+        "to_state": "START_WAVE_ITERATION",
+        "timestamp": "2025-10-29T17:26:08Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-wave2-infra-to-iteration-1761758768",
+        "orchestrator_proposal": "CREATE_NEXT_INFRASTRUCTURE",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "State machine requires START_WAVE_ITERATION after SETUP_WAVE_INFRASTRUCTURE. Cannot skip to CREATE_NEXT_INFRASTRUCTURE. Allowed transitions: [START_WAVE_ITERATION, ERROR_RECOVERY]. Infrastructure creation happens within integration flow, not standalone.",
+        "state_manager_override": true,
+        "reason": "State Manager OVERRIDE: Wave 2 infrastructure setup complete (integration branch, workspace, iteration container all created). While planning artifacts exist from pre-reset state, state machine MANDATES START_WAVE_ITERATION next. This begins the wave iteration cycle which will handle effort infrastructure creation internally.",
+        "validation_checks": {
+          "wave_integration_branch_created": true,
+          "wave_integration_branch": "idpbuilder-oci-push/phase1/wave2/integration",
+          "wave_integration_workspace": "efforts/phase1/wave2/integration",
+          "iteration_container_initialized": true,
+          "container_status": "IMPLEMENTATION_PLAN_READY",
+          "planning_artifacts_exist": true,
+          "wave_architecture_file": "wave-plans/WAVE-2-ARCHITECTURE.md",
+          "wave_test_plan_file": "wave-plans/WAVE-2-TEST-PLAN.md",
+          "wave_implementation_plan_file": "wave-plans/WAVE-2-IMPLEMENTATION.md",
+          "r213_metadata_complete": true,
+          "total_efforts": 4,
+          "estimated_lines": 1550,
+          "parallelization": "parallel_4_efforts",
+          "state_machine_allowed_transitions": [
+            "START_WAVE_ITERATION",
+            "ERROR_RECOVERY"
+          ],
+          "orchestrator_proposed_invalid": true,
+          "correct_next_state": "START_WAVE_ITERATION",
+          "rationale": "Infrastructure creation is part of integration flow, not a standalone next step"
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T06:08:36Z",
+    "last_transition_timestamp": "2025-10-29T17:26:08Z",
     "last_transition": "2025-10-29T06:53:32Z",
-    "transition_time": "2025-10-29T07:00:02Z",
+    "transition_time": "2025-10-29T17:26:08Z",
     "last_two_states": [
       "INJECT_WAVE_METADATA",
       "ANALYZE_CODE_REVIEWER_PARALLELIZATION"
