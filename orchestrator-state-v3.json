@@ -1,7 +1,7 @@
 {
-  "current_state": "MONITORING_SWE_PROGRESS",
-  "previous_state": "SPAWN_SW_ENGINEERS",
-  "transition_time": "2025-10-29T22:12:59Z",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "MONITORING_SWE_PROGRESS",
+  "transition_time": "2025-10-29T22:17:24Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -1774,5 +1774,6 @@
     "end_timestamp": 1761775302,
     "delta_seconds": 0,
     "r151_compliant": true
-  }
+  },
+  "transition_reason": "Multiple verification failures: Effort 1.2.2 incomplete (no implementation markers), 3/4 efforts missing work logs (R343 violations), Effort 1.2.4 has uncommitted files"
 }
