@@ -1,7 +1,7 @@
 {
-  "current_state": "CREATE_NEXT_INFRASTRUCTURE",
-  "previous_state": "VALIDATE_INFRASTRUCTURE",
-  "transition_time": "2025-10-29T21:09:13Z",
+  "current_state": "VALIDATE_INFRASTRUCTURE",
+  "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
+  "transition_time": "2025-10-29T21:18:14Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
-    "previous_state": "VALIDATE_INFRASTRUCTURE",
+    "current_state": "VALIDATE_INFRASTRUCTURE",
+    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
     "loop_detection": {
       "last_two_states": [
         "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -38,7 +38,7 @@
       "same_state_count": 0,
       "error_recovery_entries": 0,
       "last_progress_timestamp": "2025-10-29T21:01:57Z",
-      "validate_infrastructure_loops": 8
+      "validate_infrastructure_loops": 9
     },
     "state_history": [
       {
@@ -1100,16 +1100,53 @@
             "ERROR_RECOVERY"
           ]
         }
+      },
+      {
+        "from_state": "CREATE_NEXT_INFRASTRUCTURE",
+        "to_state": "VALIDATE_INFRASTRUCTURE",
+        "timestamp": "2025-10-29T21:18:14Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-effort-1-2-3-infrastructure-complete",
+        "orchestrator_proposal": "VALIDATE_INFRASTRUCTURE",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "Effort 1.2.3 (Authentication Implementation) infrastructure created successfully. Branch idpbuilder-oci-push/phase1/wave2/effort-3-auth created, pushed to remote with upstream tracking configured, git config locked per R312. All R510/R509/R508 quality gates passed. 1 more effort (1.2.4) remains uncreated. Must validate infrastructure before proceeding to next effort creation.",
+        "validation_checks": {
+          "effort_infrastructure_created": true,
+          "effort_id": "1.2.3",
+          "effort_name": "Authentication Implementation",
+          "branch_name": "idpbuilder-oci-push/phase1/wave2/effort-3-auth",
+          "workspace_path": "efforts/phase1/wave2/effort-3-auth",
+          "branch_pushed_to_remote": true,
+          "upstream_tracking_configured": true,
+          "git_config_locked": true,
+          "r312_compliance": "VERIFIED",
+          "base_branch": "idpbuilder-oci-push/phase1/wave2/integration",
+          "r501_cascade_compliance": "VERIFIED",
+          "r509_base_not_main": "VERIFIED",
+          "r510_single_branch_from_base": "VERIFIED",
+          "r508_post_creation_validation": "VERIFIED",
+          "more_efforts_pending": true,
+          "remaining_efforts": 1,
+          "remaining_effort_ids": [
+            "1.2.4"
+          ],
+          "state_machine_transition_valid": true,
+          "allowed_transitions_from_create_next": [
+            "VALIDATE_INFRASTRUCTURE",
+            "ERROR_RECOVERY"
+          ]
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T21:09:13Z",
-    "last_transition": "2025-10-29T21:01:57Z",
+    "last_transition_timestamp": "2025-10-29T21:18:14Z",
+    "last_transition": "2025-10-29T21:18:14Z",
     "transition_time": "2025-10-29T21:09:13Z",
     "last_two_states": [
-      "CREATE_NEXT_INFRASTRUCTURE",
-      "VALIDATE_INFRASTRUCTURE"
+      "VALIDATE_INFRASTRUCTURE",
+      "CREATE_NEXT_INFRASTRUCTURE"
     ],
-    "last_progress_timestamp": "2025-10-29T21:09:13Z"
+    "last_progress_timestamp": "2025-10-29T21:18:14Z"
   },
   "project_progression": {
     "current_project": {
