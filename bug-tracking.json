@@ -3,12 +3,9 @@
   "last_updated": "2025-10-29T21:35:00Z",
   "bugs": [
     {
-      "bug_id": "BUG-001-STUCK-LOOP-EFFORT-4",
+      "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
       "severity": "CRITICAL",
       "status": "OPEN",
-      "detected_at": "2025-10-29T21:35:00Z",
-      "detected_by": "state-manager",
-      "state": "VALIDATE_INFRASTRUCTURE",
       "phase": 1,
       "wave": 2,
       "effort_id": "1.2.4",
@@ -27,14 +24,22 @@
         "Update state file",
         "Resume from appropriate state"
       ],
-      "assigned_to": "orchestrator",
       "related_efforts": [
         "1.2.1",
         "1.2.2",
         "1.2.3",
         "1.2.4"
       ],
-      "state_transition": "VALIDATE_INFRASTRUCTURE → ERROR_RECOVERY"
+      "discovered_by": "orchestrator",
+      "discovered_at": "2025-10-29T21:35:00Z",
+      "title": "CREATE_NEXT_INFRASTRUCTURE systemic failure for Effort 1.2.4 (TLS)",
+      "affected_effort": "1.2.4",
+      "location": {
+        "file_path": "orchestrator-state-v3.json",
+        "line_number": null,
+        "function_name": null,
+        "context": "CREATE_NEXT_INFRASTRUCTURE state - Effort 1.2.4 creation"
+      }
     }
   ],
   "active_bug_count": 1,
