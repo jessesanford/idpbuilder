@@ -1,7 +1,7 @@
 {
-  "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-  "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
-  "transition_time": "2025-10-29T05:40:00Z",
+  "current_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+  "previous_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+  "transition_time": "2025-10-29T05:49:18Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,17 +27,17 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-    "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+    "current_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+    "previous_state": "WAITING_FOR_WAVE_ARCHITECTURE",
     "loop_detection": {
       "last_two_states": [
-        "SPAWN_ARCHITECT_WAVE_PLANNING",
-        "WAITING_FOR_WAVE_ARCHITECTURE"
+        "WAITING_FOR_WAVE_ARCHITECTURE",
+        "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING"
       ],
       "ping_pong_count": 0,
       "same_state_count": 0,
       "error_recovery_entries": 0,
-      "last_progress_timestamp": "2025-10-29T05:40:00Z",
+      "last_progress_timestamp": "2025-10-29T05:49:18Z",
       "validate_infrastructure_loops": 6
     },
     "state_history": [
@@ -932,9 +932,42 @@
           "parallelization_strategy": "parallel_4_teams",
           "efforts_planned": 4
         }
+      },
+      {
+        "from_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "to_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+        "timestamp": "2025-10-29T05:49:18Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-wave2-arch-validated",
+        "orchestrator_proposal": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "Orchestrator attempted to skip SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING which violates mandatory sequence and R341 TDD requirements",
+        "transition_invalid": false,
+        "state_manager_override": true,
+        "reason": "State Manager OVERRIDE: Mandatory sequence requires SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING before SPAWN_CODE_REVIEWER_WAVE_IMPL. Wave 2 architecture complete (1,359 lines, 41KB, 28 function signatures, 6 type definitions, 8 Go code blocks). Per R341 TDD, test plan must be created BEFORE implementation planning.",
+        "validation_checks": {
+          "architecture_file_path": "wave-plans/WAVE-2-ARCHITECTURE.md",
+          "architecture_file_size_bytes": 41984,
+          "architecture_file_line_count": 1359,
+          "fidelity_level": "CONCRETE",
+          "r340_concrete_compliance": "VERIFIED",
+          "real_function_signatures": 28,
+          "type_definitions": 6,
+          "go_code_blocks": 8,
+          "has_real_code": true,
+          "adaptation_notes_present": true,
+          "quality_gates_passed": 5,
+          "mandatory_sequence_position": 3,
+          "mandatory_sequence_next": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+          "allowed_transitions_from_waiting": [
+            "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+            "ERROR_RECOVERY"
+          ],
+          "orchestrator_proposed_invalid_skip": true
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T05:40:00Z",
+    "last_transition_timestamp": "2025-10-29T05:49:18Z",
     "last_transition": "2025-10-29T05:40:00Z",
     "transition_time": "2025-10-29T05:40:00Z"
   },
