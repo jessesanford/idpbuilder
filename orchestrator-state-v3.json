@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_ARCHITECT_MASTER_PLANNING",
-    "previous_state": "WAITING_FOR_PRD_CREATION",
+    "current_state": "WAITING_FOR_MASTER_ARCHITECTURE",
+    "previous_state": "SPAWN_ARCHITECT_MASTER_PLANNING",
     "state_history": [
       {
         "state": "INIT",
@@ -38,9 +38,28 @@
           "continue_flag_interpretation": "TRUE (non-interactive mode with complete PRD)",
           "mandatory_sequence_compliance": "VALID - follows project_initialization sequence"
         }
+      },
+      {
+        "state": "WAITING_FOR_MASTER_ARCHITECTURE",
+        "timestamp": "2025-10-29T00:14:58+00:00",
+        "action": "Transition to waiting for master architecture completion",
+        "validated_by": "state-manager",
+        "transition_reason": "Architecture is complete. PROJECT-ARCHITECTURE.md exists and is comprehensive (3 phases, 7 waves, 13 efforts, all R340 requirements met). Completion timestamp: 2025-10-29T00:02:00+00:00.",
+        "validation_checks": {
+          "architecture_file_exists": true,
+          "architecture_file_path": "planning/PROJECT-ARCHITECTURE.md",
+          "architecture_status": "COMPLETE",
+          "total_phases": 3,
+          "total_waves": 7,
+          "total_efforts": 13,
+          "r340_compliance": "VERIFIED",
+          "interface_first_design": true,
+          "parallelization_opportunities_identified": true,
+          "all_size_estimates_within_limits": true
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-28T23:59:30+00:00"
+    "last_transition_timestamp": "2025-10-29T00:14:58+00:00"
   },
   "project_progression": {
     "current_project": "idpbuilder-oci-push-command",
