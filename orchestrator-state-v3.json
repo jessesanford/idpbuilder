@@ -1,7 +1,7 @@
 {
-  "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-  "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
-  "transition_time": "2025-10-29T01:51:00Z",
+  "current_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+  "previous_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+  "transition_time": "2025-10-29T01:56:59Z",
   "current_phase": 1,
   "current_wave": 1,
   "phases_planned": 3,
@@ -22,8 +22,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-    "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+    "current_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+    "previous_state": "WAITING_FOR_WAVE_ARCHITECTURE",
     "loop_detection": {
       "last_two_states": [],
       "ping_pong_count": 0,
@@ -217,10 +217,40 @@
           "interface_definitions_complete": true,
           "quality_gates_passed": 4
         }
+      },
+      {
+        "from_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "to_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+        "timestamp": "2025-10-29T01:56:59Z",
+        "validated_by": "state-manager",
+        "consultation_id": "state-mgr-wave1-test-planning",
+        "orchestrator_proposal": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "Orchestrator attempted to skip SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING which violates mandatory sequence and R341 TDD requirements",
+        "transition_invalid": false,
+        "state_manager_override": true,
+        "reason": "State Manager OVERRIDE: Mandatory sequence requires SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING before SPAWN_CODE_REVIEWER_WAVE_IMPL. Wave architecture complete (1,540 lines, 47.9KB, 16 Go code blocks, 6 interfaces). Per R341 TDD, test plan must be created BEFORE implementation planning.",
+        "validation_checks": {
+          "architecture_file_path": "wave-plans/WAVE-1-ARCHITECTURE.md",
+          "architecture_file_size_bytes": 47939,
+          "architecture_file_line_count": 1540,
+          "fidelity_level": "CONCRETE",
+          "r340_concrete_compliance": "VERIFIED",
+          "go_code_blocks": 16,
+          "interface_definitions": 6,
+          "quality_gates_passed": 4,
+          "mandatory_sequence_position": 3,
+          "mandatory_sequence_next": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+          "allowed_transitions_from_waiting": [
+            "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+            "ERROR_RECOVERY"
+          ],
+          "orchestrator_proposed_invalid_skip": true
+        }
       }
     ],
-    "last_transition_timestamp": "2025-10-29T01:51:00Z",
-    "last_transition": "2025-10-29T01:51:00Z"
+    "last_transition_timestamp": "2025-10-29T01:56:59Z",
+    "last_transition": "2025-10-29T01:56:59Z"
   },
   "project_progression": {
     "current_project": {
@@ -297,10 +327,11 @@
   "timestamp": "2025-10-28T23:40:45+00:00",
   "blocked_items": [],
   "next_actions": [
-    "Continue wave_execution mandatory sequence: next is SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
-    "Spawn Code Reviewer to create Wave 1 test plan (R341 TDD requirements)",
-    "Provide WAVE-1-ARCHITECTURE.md as input with concrete Go interfaces",
-    "Code Reviewer creates WAVE-1-TEST-PLAN.md for test-first development"
+    "Spawn Code Reviewer agent for Wave 1 test planning (current state: SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING)",
+    "Provide WAVE-1-ARCHITECTURE.md as input (1,540 lines, 47.9KB, 16 Go code blocks, 6 interfaces)",
+    "Code Reviewer creates WAVE-1-TEST-PLAN.md per R341 TDD requirements",
+    "Test plan must define tests BEFORE implementation planning begins",
+    "After test plan complete: transition to WAITING_FOR_WAVE_TEST_PLAN"
   ],
   "planning_artifacts": {
     "master_architecture_file": "planning/PROJECT-ARCHITECTURE.md",
