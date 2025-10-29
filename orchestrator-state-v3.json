@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SETUP_WAVE_INFRASTRUCTURE",
-    "previous_state": "WAVE_COMPLETE",
+    "current_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+    "previous_state": "SETUP_WAVE_INFRASTRUCTURE",
     "loop_detection": {
       "last_two_states": [
         "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
@@ -899,11 +899,18 @@
         "validated_by": "state-manager",
         "consultation_id": "shutdown-wave1-to-wave2-transition",
         "reason": "Wave 1 complete with all efforts APPROVED. Phase 1 has 2 waves total. Ready to setup infrastructure for Wave 2 (Core Package Implementations)."
+      },
+      {
+        "from_state": "SETUP_WAVE_INFRASTRUCTURE",
+        "to_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+        "timestamp": "2025-10-29T05:28:46Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2 infrastructure setup complete. Integration branch created (idpbuilder-oci-push/phase1/wave2/integration) based on Wave 1 integration per R336. Iteration container initialized. Ready for Wave 2 architecture planning per R213 progressive fidelity."
       }
     ],
-    "last_transition_timestamp": "2025-10-29T05:18:45Z",
+    "last_transition_timestamp": "2025-10-29T05:28:46Z",
     "last_transition": "2025-10-29T05:10:00Z",
-    "transition_time": "2025-10-29T05:17:25Z"
+    "transition_time": "2025-10-29T05:28:46Z"
   },
   "project_progression": {
     "current_project": {
@@ -935,10 +942,10 @@
       "wave_implementation_plan_fidelity": "EXACT",
       "wave_implementation_plan_effort_count": 4,
       "wave_integration": {
-        "branch": "idpbuilder-oci-push/phase1/wave1/integration",
-        "created_at": "2025-10-29T02:29:42Z",
+        "branch": "idpbuilder-oci-push/phase1/wave2/integration",
+        "created_at": "2025-10-29T05:28:46Z",
         "has_tests": true,
-        "workspace": "efforts/phase1/wave1/integration",
+        "workspace": "efforts/phase1/wave2/integration",
         "test_plan_file": "docs/testing/WAVE-1-TEST-PLAN.md",
         "repository": "https://github.com/jessesanford/idpbuilder.git",
         "base_branch": "project-integration",
@@ -996,9 +1003,8 @@
   "timestamp": "2025-10-28T23:40:45+00:00",
   "blocked_items": [],
   "next_actions": [
-    "Validate all 4 effort infrastructures (branches exist, remote tracking, workspaces clean)",
-    "Verify all R508 quality gates passed for all efforts",
-    "After successful validation: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (R356 single reviewer for wave)"
+    "Spawn Architect to create Wave 2 detailed architecture",
+    "Follow progressive fidelity planning sequence per R213"
   ],
   "planning_artifacts": {
     "master_architecture_file": "planning/PROJECT-ARCHITECTURE.md",
