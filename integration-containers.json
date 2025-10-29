@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-29T18:15:00Z",
+  "last_updated": "2025-10-29T21:01:57Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -21,7 +21,7 @@
       "base_branch": "idpbuilder-oci-push/phase1/wave1/integration",
       "created_at": "2025-10-29T05:26:04Z",
       "integration_started_at": null,
-      "last_iteration_at": "2025-10-29T18:15:00Z",
+      "last_iteration_at": "2025-10-29T21:01:57Z",
       "convergence_metrics": {
         "bugs_remaining": 0,
         "test_failures": 0,
@@ -29,7 +29,7 @@
       },
       "efforts_to_integrate": [],
       "integration_plan_file": null,
-      "notes": "Wave 2 iteration 2: Effort 1.2.1 infrastructure created (branch: idpbuilder-oci-push/phase1/wave2/effort-1-docker-client, workspace: efforts/phase1/wave2/effort-1-docker-client). 3 more efforts remain. Validation in progress."
+      "notes": "Wave 2 iteration 2: Effort 1.2.2 infrastructure created (branch: idpbuilder-oci-push/phase1/wave2/effort-2-registry-client, workspace: efforts/phase1/wave2/effort-2-registry-client). 2 more efforts remain (1.2.3, 1.2.4). Validation in progress."
     }
   ],
   "integration_history": [],
