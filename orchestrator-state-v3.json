@@ -326,7 +326,17 @@
       "estimated_lines": 650,
       "parallelization": "sequential",
       "depends_on": [],
-      "status": "IN_PROGRESS"
+      "status": "IN_PROGRESS",
+      "wave_integration": {
+        "branch": "idpbuilder-oci-push/phase1/wave1/integration",
+        "created_at": "2025-10-29T02:29:42Z",
+        "has_tests": true,
+        "workspace": "efforts/phase1/wave1/integration",
+        "test_plan_file": "docs/testing/WAVE-1-TEST-PLAN.md",
+        "repository": "https://github.com/jessesanford/idpbuilder.git",
+        "base_branch": "project-integration",
+        "status": "created"
+      }
     },
     "phases_completed": [],
     "waves_completed": [],
