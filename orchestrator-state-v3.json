@@ -1,7 +1,7 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-  "previous_state": "VALIDATE_INFRASTRUCTURE",
-  "transition_time": "2025-10-29T21:35:00Z",
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+  "transition_time": "2025-10-29T21:40:08Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -1193,6 +1193,48 @@
           "allowed_transition": true,
           "state_machine_compliance": "VERIFIED"
         }
+      },
+      {
+        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "to_state": "ERROR_RECOVERY",
+        "timestamp": "2025-10-29T21:40:08Z",
+        "validated_by": "state-manager",
+        "consultation_type": "SHUTDOWN",
+        "reason": "Code Reviewer for Effort 1.2.1 (Docker Client Implementation) detected workspace contamination per R235 SUPREME LAW. Workspace contains planning repository instead of target repository (idpbuilder). This violates R176 workspace isolation. Effort 1.2.2, 1.2.3, 1.2.4 Code Reviewers succeeded. Must fix infrastructure for 1.2.1 before proceeding.",
+        "root_cause_analysis": {
+          "error_type": "WORKSPACE_CONTAMINATION",
+          "affected_effort": "1.2.1",
+          "affected_workspace": "efforts/phase1/wave2/effort-1-docker-client",
+          "expected_repository": "idpbuilder (target repo)",
+          "actual_repository": "Planning repository",
+          "violation": "R176 workspace isolation - agent detected mismatch and correctly stopped per R235",
+          "detection_agent": "code-reviewer-1-2-1",
+          "code_reviewers_succeeded": [
+            "1.2.2",
+            "1.2.3",
+            "1.2.4"
+          ],
+          "code_reviewers_failed": [
+            "1.2.1"
+          ]
+        },
+        "validation_checks": {
+          "transition_allowed_by_state_machine": true,
+          "allowed_transitions": [
+            "WAITING_FOR_EFFORT_PLANS",
+            "ERROR_RECOVERY"
+          ],
+          "r235_compliance": "VERIFIED - Agent stopped correctly on workspace contamination",
+          "r176_compliance_violated": true,
+          "state_machine_compliance": "VERIFIED"
+        },
+        "next_required_actions": [
+          "Fix Effort 1.2.1 workspace contamination",
+          "Verify correct target repository in workspace",
+          "Re-validate workspace structure per R176 and R235",
+          "Retry Code Reviewer for Effort 1.2.1",
+          "Transition to WAITING_FOR_EFFORT_PLANS when all effort plans complete"
+        ]
       }
     ],
     "last_transition_timestamp": "2025-10-29T21:28:30Z",
