@@ -140,7 +140,7 @@
     {
       "bug_id": "wave-1-2-integration-001",
       "severity": "CRITICAL",
-      "status": "OPEN",
+      "status": "FIXED",
       "phase": 1,
       "wave": 2,
       "effort_id": "integration",
@@ -168,12 +168,20 @@
         "Run 'go mod tidy' to update go.sum",
         "Verify all tests pass after fix",
         "Commit and push go.sum changes"
-      ]
+      ],
+      "fixed_at": "2025-10-30T01:47:50Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "already_resolved",
+      "fix_verification": {
+        "tests_pass": true,
+        "already_had_correct_entries": true,
+        "no_action_required": true
+      }
     },
     {
       "bug_id": "wave-1-2-integration-002",
       "severity": "HIGH",
-      "status": "OPEN",
+      "status": "FIXED",
       "phase": 1,
       "wave": 2,
       "effort_id": "integration",
@@ -202,12 +210,21 @@
         "Replace strings.Split with strings.LastIndex to find last colon",
         "Add test cases for multi-colon image names",
         "Verify all existing tests still pass"
-      ]
+      ],
+      "fixed_at": "2025-10-30T01:47:50Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "3bd1ee6",
+      "fix_verification": {
+        "tests_pass": true,
+        "test_count": 31,
+        "new_tests_added": 2,
+        "fix_verified": true
+      }
     },
     {
       "bug_id": "wave-1-2-integration-003",
       "severity": "MEDIUM",
-      "status": "OPEN",
+      "status": "FIXED",
       "phase": 1,
       "wave": 2,
       "effort_id": "integration",
@@ -236,11 +253,20 @@
         "Ensure channel is closed in all error paths",
         "Add goroutine leak test",
         "Document channel closure requirements"
-      ]
+      ],
+      "fixed_at": "2025-10-30T01:47:50Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "9f29b3c",
+      "fix_verification": {
+        "tests_pass": true,
+        "defer_close_added": true,
+        "panic_recovery_added": true,
+        "resource_leak_prevented": true
+      }
     }
   ],
-  "active_bug_count": 3,
-  "resolved_bug_count": 3,
+  "active_bug_count": 0,
+  "resolved_bug_count": 6,
   "bug_categories": {
     "integration_failures": [
       "wave-1-2-integration-001",
