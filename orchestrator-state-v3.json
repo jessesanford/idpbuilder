@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "BUILD_VALIDATION",
-    "previous_state": "REVIEW_WAVE_ARCHITECTURE",
+    "current_state": "PR_PLAN_CREATION",
+    "previous_state": "BUILD_VALIDATION",
     "loop_detection": {
       "last_two_states": [
         "WAITING_FOR_FIX_PLANS",
@@ -1438,6 +1438,35 @@
         "timestamp": "2025-10-30T03:24:27Z",
         "validated_by": "orchestrator",
         "reason": "Wave 2 integration review complete - all 3 bugs verified fixed, bugs_found=0, proceeding to architecture review"
+      },
+      {
+        "from_state": "BUILD_VALIDATION",
+        "to_state": "PR_PLAN_CREATION",
+        "timestamp": "2025-10-30T03:53:13Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-20251030-034507",
+        "orchestrator_proposal": "PR_PLAN_CREATION",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "BUILD_VALIDATION complete - functional 65MB executable artifact built and verified per R323. Build succeeded with no fixes needed (build_succeeded=true, no_fixes_needed=true). Guard conditions satisfied for PR_PLAN_CREATION.",
+        "validation_checks": {
+          "artifact_exists": true,
+          "artifact_path": "/home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase1/wave1/integration/idpbuilder",
+          "artifact_size": "65MB",
+          "artifact_type": "executable",
+          "build_status": "SUCCESS",
+          "build_duration": "24.245s",
+          "r323_compliance": "VERIFIED",
+          "artifact_tested": true,
+          "test_commands": [
+            "--help",
+            "version"
+          ],
+          "build_succeeded": true,
+          "no_fixes_needed": true,
+          "guard_conditions_met": true,
+          "allowed_transition": true
+        }
       }
     ],
     "last_transition_timestamp": "2025-10-30T03:15:11Z",
@@ -2019,5 +2048,17 @@
     "bugs_verified": 3,
     "review_decision": "APPROVED",
     "verification_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-VERIFICATION-REPORT--20251030-030624.md"
+  },
+  "final_artifact": {
+    "path": "/home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase1/wave1/integration/idpbuilder",
+    "size": "65MB",
+    "type": "executable",
+    "build_command": "make build",
+    "build_timestamp": "2025-10-30T03:42:00Z",
+    "verified": true,
+    "test_status": "passed",
+    "version": "v0.11.0-nightly.20251026-1-g1a00fe7",
+    "platform": "linux/arm64",
+    "build_report": "efforts/phase1/wave1/integration/.software-factory/phase1/wave1/integration/BUILD-VALIDATION-REPORT--20251030-034507.md"
   }
 }
