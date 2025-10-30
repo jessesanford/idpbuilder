@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "REVIEW_WAVE_ARCHITECTURE",
-    "previous_state": "REVIEW_WAVE_INTEGRATION",
+    "current_state": "BUILD_VALIDATION",
+    "previous_state": "REVIEW_WAVE_ARCHITECTURE",
     "loop_detection": {
       "last_two_states": [
         "WAITING_FOR_FIX_PLANS",
@@ -1449,7 +1449,16 @@
     ],
     "last_progress_timestamp": "2025-10-30T02:27:00Z",
     "last_updated": "2025-10-29T22:41:13Z",
-    "last_transition_at": "2025-10-30T01:29:09Z"
+    "last_transition_at": "2025-10-30T01:29:09Z",
+    "last_state_change": "2025-10-30T03:37:16Z",
+    "transition_history": [
+      {
+        "from": "REVIEW_WAVE_ARCHITECTURE",
+        "to": "BUILD_VALIDATION",
+        "timestamp": "2025-10-30T03:37:16Z",
+        "reason": "Architect decision: PROCEED - guard satisfied for BUILD_VALIDATION"
+      }
+    ]
   },
   "project_progression": {
     "current_project": {
