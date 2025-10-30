@@ -1,7 +1,7 @@
 {
-  "current_state": "REVIEW_WAVE_ARCHITECTURE",
-  "previous_state": "REVIEW_WAVE_INTEGRATION",
-  "transition_time": "2025-10-30T04:21:19Z",
+  "current_state": "BUILD_VALIDATION",
+  "previous_state": "REVIEW_WAVE_ARCHITECTURE",
+  "transition_time": "2025-10-30T04:54:51Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "REVIEW_WAVE_ARCHITECTURE",
-    "previous_state": "REVIEW_WAVE_INTEGRATION",
+    "current_state": "BUILD_VALIDATION",
+    "previous_state": "REVIEW_WAVE_ARCHITECTURE",
     "loop_detection": {
       "last_two_states": [
         "WAITING_FOR_FIX_PLANS",
@@ -1436,7 +1436,7 @@
         "from_state": "REVIEW_WAVE_INTEGRATION",
         "to_state": "REVIEW_WAVE_ARCHITECTURE",
         "timestamp": "2025-10-30T03:24:27Z",
-        "validated_by": "orchestrator",
+        "validated_by": "state-manager",
         "reason": "Wave 2 integration review complete - all 3 bugs verified fixed, bugs_found=0, proceeding to architecture review"
       },
       {
@@ -1486,7 +1486,7 @@
         }
       }
     ],
-    "last_transition_timestamp": "2025-10-30T03:15:11Z",
+    "last_transition_timestamp": "2025-10-30T04:54:51Z",
     "last_transition": "2025-10-29T21:18:14Z",
     "transition_time": "2025-10-30T03:24:27Z",
     "last_two_states": [
@@ -2025,6 +2025,17 @@
       "timestamp": "2025-10-30T00:10:43+00:00",
       "validated_by": "state-manager",
       "reason": "Fix plans created and distributed for BUG-002 and BUG-003, ready to spawn SW Engineers for upstream fixes per R321"
+    },
+    {
+      "from_state": "REVIEW_WAVE_ARCHITECTURE",
+      "to_state": "BUILD_VALIDATION",
+      "timestamp": "2025-10-30T04:54:51Z",
+      "validated_by": "state-manager",
+      "reason": "Architect approved wave architecture with PROCEED decision. Proceeding to build validation per R288 state file update protocol.",
+      "orchestrator_proposal": "BUILD_VALIDATION",
+      "proposal_accepted": true,
+      "phase": 1,
+      "wave": 2
     }
   ],
   "monitoring_data": {
