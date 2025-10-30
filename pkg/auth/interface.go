@@ -31,15 +31,3 @@ type Credentials struct {
 	Password string
 }
 
-// NewBasicAuthProvider creates a basic authentication provider.
-//
-// Parameters:
-//   - username: Registry username
-//   - password: Registry password (supports all special characters)
-//
-// Returns:
-//   - Provider: Authentication provider interface implementation
-func NewBasicAuthProvider(username, password string) Provider {
-	// Implementation will be provided in Wave 2 (pkg/auth/basic.go)
-	panic("not implemented - interface definition only")
-}

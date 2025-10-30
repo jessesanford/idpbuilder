@@ -29,14 +29,3 @@ type Config struct {
 	InsecureSkipVerify bool
 }
 
-// NewConfigProvider creates a TLS configuration provider.
-//
-// Parameters:
-//   - insecure: Whether to enable insecure mode (skip cert verification)
-//
-// Returns:
-//   - ConfigProvider: TLS configuration provider interface implementation
-func NewConfigProvider(insecure bool) ConfigProvider {
-	// Implementation will be provided in Wave 2 (pkg/tls/config.go)
-	panic("not implemented - interface definition only")
-}
