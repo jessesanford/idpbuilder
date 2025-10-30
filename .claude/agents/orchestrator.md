@@ -1147,8 +1147,9 @@ echo "✅ Completed all work for CURRENT_STATE"
 
 # 2. UPDATE STATE FILE FIRST (BEFORE STOPPING!)
 echo "🔴 R324: Updating current_state to prevent infinite loop..."
-jq '.current_state = "NEXT_STATE"' orchestrator-state-v3.json
-jq '.previous_state = "CURRENT_STATE"' orchestrator-state-v3.json
+# SF 3.0: Use .state_machine.current_state (NOT legacy .current_state!)
+jq '.state_machine.current_state = "NEXT_STATE" | .current_state = "NEXT_STATE"' orchestrator-state-v3.json
+jq '.state_machine.previous_state = "CURRENT_STATE" | .previous_state = "CURRENT_STATE"' orchestrator-state-v3.json
 jq ".transition_time = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" orchestrator-state-v3.json
 
 # 3. Verify the update worked

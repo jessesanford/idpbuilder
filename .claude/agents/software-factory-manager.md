@@ -267,7 +267,7 @@ audit_rule_usage() {
 # Verify state file follows state machine
 verify_state_compliance() {
     local state_file="$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json"
-    local current_state=$(jq -r '.current_state' "$state_file")
+    local current_state=$(jq -r '.state_machine.current_state' "$state_file")
 
     # Check if state exists in state machine
     jq -e ".states.\"$current_state\"" $CLAUDE_PROJECT_DIR/state-machines/software-factory-3.0-state-machine.json >/dev/null 2>&1 || {
