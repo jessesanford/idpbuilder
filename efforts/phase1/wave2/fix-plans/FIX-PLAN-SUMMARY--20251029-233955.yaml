@@ -1,0 +1,180 @@
+# Fix Plan Summary for Phase 1 Wave 2
+# Created by: Code Reviewer Agent (code-reviewer)
+# State: CREATE_FIX_PLAN
+# Timestamp: 2025-10-29T23:41:56+00:00
+
+fix_plans_created:
+  - effort_id: "1.2.2"
+    effort_name: "effort-2-registry-client"
+    plan_file: "FIX-PLAN-effort-2-registry-client--20251029-233955.md"
+    severity: "CRITICAL"
+    estimated_time: "45m"
+    risk_level: "LOW"
+    issues:
+      - type: "R320_VIOLATION"
+        description: "Stub implementations with panic() in production code"
+        locations:
+          - "pkg/auth/interface.go:44 - NewBasicAuthProvider"
+          - "pkg/tls/interface.go:41 - NewConfigProvider"
+        impact: "Runtime panics if called, violates R320 supreme law"
+        fix_approach: "Remove stub functions, keep interface definitions"
+
+  - effort_id: "1.2.3"
+    effort_name: "effort-3-auth"
+    plan_file: "FIX-PLAN-effort-3-auth--20251029-233955.md"
+    severity: "MINOR"
+    estimated_time: "15m"
+    risk_level: "VERY_LOW"
+    issues:
+      - type: "R383_VIOLATION"
+        description: "Metadata file in wrong location"
+        locations:
+          - "./IMPLEMENTATION-COMPLETE.marker (should be in .software-factory)"
+        impact: "Merge conflicts during integration, clutters working tree"
+        fix_approach: "Move marker to .software-factory with timestamp"
+    notes:
+      - "Code quality is excellent (94.1% test coverage)"
+      - "All tests passing"
+      - "No code changes required"
+      - "Only metadata organization issue"
+
+total_efforts_needing_fixes: 2
+total_estimated_time: "60m"
+timestamp: "2025-10-29T23:41:56+00:00"
+
+# Summary Statistics
+severity_breakdown:
+  critical: 1
+  major: 0
+  minor: 1
+
+risk_assessment:
+  high_risk: 0
+  medium_risk: 0
+  low_risk: 2
+
+fix_categories:
+  code_quality: 1       # effort-2 (remove stubs)
+  metadata_compliance: 1 # effort-3 (move marker)
+  architectural: 0
+  security: 0
+  performance: 0
+
+# Orchestrator Instructions
+orchestrator_actions:
+  - action: "spawn_sw_engineer"
+    effort: "effort-2-registry-client"
+    task: "fix_issues"
+    plan_file: "FIX-PLAN-effort-2-registry-client--20251029-233955.md"
+    priority: "HIGH"
+    blocking: true
+    reason: "R320 critical blocker - must fix before integration"
+
+  - action: "spawn_sw_engineer"
+    effort: "effort-3-auth"
+    task: "fix_issues"
+    plan_file: "FIX-PLAN-effort-3-auth--20251029-233955.md"
+    priority: "MEDIUM"
+    blocking: true
+    reason: "R383 compliance - prevents merge conflicts"
+
+# Expected Outcomes
+expected_outcomes:
+  effort_2_registry_client:
+    - "pkg/auth/interface.go contains ONLY interface definition"
+    - "pkg/tls/interface.go contains ONLY interface definition"
+    - "No panic statements in production code"
+    - "All 28 registry tests pass"
+    - "R355 production readiness scan passes"
+
+  effort_3_auth:
+    - "No metadata files in root directory"
+    - "Marker file in .software-factory with timestamp"
+    - "All tests still pass (94.1% coverage unchanged)"
+    - "R383 compliance verified"
+
+# Post-Fix Actions
+post_fix_actions:
+  - "Code reviewer re-review both efforts"
+  - "Verify all tests pass"
+  - "Run R355 scan on effort-2"
+  - "Verify R383 compliance on effort-3"
+  - "If all pass: approve for integration"
+  - "If any fail: iterate with SW engineers"
+
+# Integration Readiness
+integration_blockers:
+  - effort: "effort-2-registry-client"
+    blocker: "R320 stub implementations"
+    status: "BLOCKING"
+    must_fix: true
+
+  - effort: "effort-3-auth"
+    blocker: "R383 metadata placement"
+    status: "BLOCKING"
+    must_fix: true
+
+integration_ready_after_fixes: true
+estimated_integration_time: "After fixes: ~30m for validation and merge"
+
+# Notes for Orchestrator
+notes:
+  - "Both efforts have excellent code quality"
+  - "Fixes are low-risk and straightforward"
+  - "No architectural changes needed"
+  - "No test changes required"
+  - "After fixes, both efforts ready for Wave 2 integration"
+  - "Effort 1 (docker-client) already approved - can integrate first"
+  - "Effort 4 (tls) may have similar issues (stub patterns)"
+
+# Parallel Execution
+can_fix_in_parallel: true
+parallel_safe: true
+no_dependencies_between_fixes: true
+
+# Quality Metrics
+pre_fix_quality:
+  effort_2:
+    code_quality: "90%"
+    functionality: "95%"
+    test_coverage: "76.3%"
+    production_readiness: "0% (stubs present)"
+
+  effort_3:
+    code_quality: "100%"
+    functionality: "100%"
+    test_coverage: "94.1%"
+    production_readiness: "95% (metadata only)"
+
+expected_post_fix_quality:
+  effort_2:
+    code_quality: "95%"
+    functionality: "95%"
+    test_coverage: "76.3%"
+    production_readiness: "100%"
+
+  effort_3:
+    code_quality: "100%"
+    functionality: "100%"
+    test_coverage: "94.1%"
+    production_readiness: "100%"
+
+# State Machine Transitions
+current_state: "CREATE_FIX_PLAN"
+next_state: "SPAWN_SW_ENGINEERS_FOR_FIXES"
+expected_sw_engineer_states:
+  - "FIX_ISSUES"
+expected_code_reviewer_next_state:
+  - "PERFORM_CODE_REVIEW" # After fixes complete
+
+# Success Criteria for Fix Plans
+success_criteria:
+  - "All fix plans created"
+  - "Clear, actionable instructions provided"
+  - "All verification steps documented"
+  - "Estimated times realistic"
+  - "Risk levels assessed"
+  - "Dependencies identified"
+  - "Success criteria defined"
+
+success_status: "✅ ALL CRITERIA MET"

@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-29T21:35:00Z",
+  "last_updated": "2025-10-30T00:09:00Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -40,9 +40,79 @@
         "function_name": null,
         "context": "CREATE_NEXT_INFRASTRUCTURE state - Effort 1.2.4 creation"
       }
+    },
+    {
+      "bug_id": "BUG-002-R320-STUBS",
+      "severity": "CRITICAL",
+      "status": "FIX_PLANNED",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "1.2.2",
+      "title": "R320 violation - stub implementations in production code",
+      "description": "Stub functions with panic() found in pkg/auth/interface.go and pkg/tls/interface.go",
+      "affected_effort": "1.2.2",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-29T23:40:00Z",
+      "fix_plan": "efforts/phase1/wave2/fix-plans/FIX-PLAN-effort-2-registry-client--20251029-233955.md",
+      "fix_assigned_to": "sw-engineer",
+      "fix_estimated_time": "45m",
+      "fix_risk": "LOW",
+      "location": {
+        "file_path": "pkg/auth/interface.go",
+        "line_number": 44,
+        "function_name": "NewBasicAuthProvider",
+        "context": "Stub implementation with panic()"
+      },
+      "symptoms": [
+        "panic() calls in production code",
+        "Stub implementations instead of proper functions",
+        "R320 compliance failure"
+      ],
+      "impact": "Runtime panics if called, blocks integration",
+      "resolution_plan": [
+        "Remove stub implementations",
+        "Keep interface definitions only",
+        "Run R355 production readiness scan",
+        "Verify all 28 tests pass"
+      ]
+    },
+    {
+      "bug_id": "BUG-003-R383-METADATA",
+      "severity": "MINOR",
+      "status": "FIX_PLANNED",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "1.2.3",
+      "title": "R383 violation - metadata file in wrong location",
+      "description": "IMPLEMENTATION-COMPLETE.marker in root instead of .software-factory/",
+      "affected_effort": "1.2.3",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-29T23:41:00Z",
+      "fix_plan": "efforts/phase1/wave2/fix-plans/FIX-PLAN-effort-3-auth--20251029-233955.md",
+      "fix_assigned_to": "sw-engineer",
+      "fix_estimated_time": "15m",
+      "fix_risk": "VERY_LOW",
+      "location": {
+        "file_path": "./IMPLEMENTATION-COMPLETE.marker",
+        "line_number": null,
+        "function_name": null,
+        "context": "Metadata file in wrong directory"
+      },
+      "symptoms": [
+        "Metadata file in root directory",
+        "R383 compliance failure",
+        "Potential merge conflicts"
+      ],
+      "impact": "Merge conflicts during integration, working tree clutter",
+      "resolution_plan": [
+        "Move marker to .software-factory/",
+        "Add timestamp to filename",
+        "Verify R383 compliance",
+        "Ensure tests still pass"
+      ]
     }
   ],
-  "active_bug_count": 1,
+  "active_bug_count": 3,
   "resolved_bug_count": 0,
   "bug_categories": {
     "integration_failures": [
@@ -50,6 +120,9 @@
     ],
     "build_failures": [],
     "test_failures": [],
-    "review_findings": []
+    "review_findings": [
+      "BUG-002-R320-STUBS",
+      "BUG-003-R383-METADATA"
+    ]
   }
 }
