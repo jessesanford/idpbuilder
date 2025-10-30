@@ -291,12 +291,14 @@ func (c *registryClient) ValidateRegistry(ctx context.Context, registryURL strin
 //   - "myapp:v1.0" → ("myapp", "v1.0")
 //   - "myapp" → ("myapp", "")
 //   - "repo/myapp:latest" → ("repo/myapp", "latest")
+//   - "registry.io:5000/repo:v1.0" → ("registry.io:5000/repo", "v1.0")
 func parseImageName(imageName string) (repository, tag string) {
-	parts := strings.Split(imageName, ":")
-	if len(parts) == 2 {
-		return parts[0], parts[1]
+	// Use LastIndex to handle registry URLs with ports (e.g., registry.io:5000/repo:v1.0)
+	lastColonIdx := strings.LastIndex(imageName, ":")
+	if lastColonIdx == -1 {
+		return imageName, ""
 	}
-	return parts[0], ""
+	return imageName[:lastColonIdx], imageName[lastColonIdx+1:]
 }
 
 // createProgressHandler converts ProgressCallback to v1.Update channel for go-containerregistry.

@@ -418,6 +418,26 @@ func TestParseImageName_WithSlashAndTag(t *testing.T) {
 	assert.Equal(t, "latest", tag)
 }
 
+func TestParseImageName_WithRegistryPort(t *testing.T) {
+	// Test for Bug wave-1-2-integration-002: Multi-colon image names
+	// Act
+	repo, tag := parseImageName("registry.io:5000/myapp:v1.0")
+
+	// Assert
+	assert.Equal(t, "registry.io:5000/myapp", repo)
+	assert.Equal(t, "v1.0", tag)
+}
+
+func TestParseImageName_WithRegistryPortAndNamespace(t *testing.T) {
+	// Test for Bug wave-1-2-integration-002: Complex multi-colon names
+	// Act
+	repo, tag := parseImageName("registry.io:5000/namespace/myapp:latest")
+
+	// Assert
+	assert.Equal(t, "registry.io:5000/namespace/myapp", repo)
+	assert.Equal(t, "latest", tag)
+}
+
 func TestIsAuthError_401(t *testing.T) {
 	// Arrange
 	err := fmt.Errorf("HTTP 401 Unauthorized")
