@@ -124,8 +124,17 @@ func (c *registryClient) Push(ctx context.Context, image v1.Image, targetRef str
 	}
 
 	// Add progress callback if provided
+	var progressChan chan v1.Update
 	if progressCallback != nil {
-		options = append(options, remote.WithProgress(createProgressHandler(progressCallback)))
+		progressChan = createProgressHandler(progressCallback)
+		// Ensure channel is closed to prevent goroutine leak
+		// go-containerregistry may close it on success, so use defer with panic recovery
+		defer func() {
+			// Safely close channel - recover if already closed
+			defer func() { _ = recover() }()
+			close(progressChan)
+		}()
+		options = append(options, remote.WithProgress(progressChan))
 	}
 
 	// Push image
@@ -310,6 +319,11 @@ func parseImageName(imageName string) (repository, tag string) {
 //
 // The goroutine processes updates and calls the callback until the channel is closed.
 // Note: LayerDigest is set to empty string as v1.Update doesn't provide digest information.
+//
+// IMPORTANT: Callers MUST close the returned channel to prevent goroutine leaks.
+// The channel should be closed using defer immediately after calling this function:
+//   ch := createProgressHandler(callback)
+//   defer close(ch)
 func createProgressHandler(callback ProgressCallback) chan v1.Update {
 	updates := make(chan v1.Update, 100)
 	go func() {
