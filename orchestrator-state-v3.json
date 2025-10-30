@@ -1322,14 +1322,14 @@
         "proposal_rejected_reason": "Proposed state SPAWN_SW_ENGINEERS is not in allowed_transitions from MONITORING_EFFORT_REVIEWS. Allowed transitions: [SPAWN_CODE_REVIEWER_FIX_PLAN, WAVE_COMPLETE, ERROR_RECOVERY]. State machine requires Code Reviewer to create fix plans before spawning SW Engineers. This enforces proper review-fix workflow.",
         "transition_invalid": false,
         "state_manager_override": true,
-        "reason": "State Manager OVERRIDE: MONITORING_EFFORT_REVIEWS \u2192 SPAWN_CODE_REVIEWER_FIX_PLAN (REQUIRED). Orchestrator proposed SPAWN_SW_ENGINEERS but state machine mandates SPAWN_CODE_REVIEWER_FIX_PLAN for NEEDS_FIXES outcomes. 2/4 efforts require fixes (effort-2-registry-client, effort-3-auth). Code Reviewer must create fix plans before SW Engineers address issues."
+        "reason": "State Manager OVERRIDE: MONITORING_EFFORT_REVIEWS → SPAWN_CODE_REVIEWER_FIX_PLAN (REQUIRED). Orchestrator proposed SPAWN_SW_ENGINEERS but state machine mandates SPAWN_CODE_REVIEWER_FIX_PLAN for NEEDS_FIXES outcomes. 2/4 efforts require fixes (effort-2-registry-client, effort-3-auth). Code Reviewer must create fix plans before SW Engineers address issues."
       },
       {
         "from_state": "WAITING_FOR_FIX_PLANS",
         "to_state": "CREATE_WAVE_FIX_PLAN",
         "timestamp": "2025-10-29T23:50:44Z",
         "validated_by": "state-manager",
-        "reason": "State Manager APPROVAL: WAITING_FOR_FIX_PLANS \u2192 CREATE_WAVE_FIX_PLAN. Fix plans complete and validated (2 efforts). STATE MACHINE DEFECT CORRECTED: Added missing transition to state machine (was dead-end state). Orchestrator made unauthorized but correct transition due to state machine bug. Work quality excellent, process violation minor (R517).",
+        "reason": "State Manager APPROVAL: WAITING_FOR_FIX_PLANS → CREATE_WAVE_FIX_PLAN. Fix plans complete and validated (2 efforts). STATE MACHINE DEFECT CORRECTED: Added missing transition to state machine (was dead-end state). Orchestrator made unauthorized but correct transition due to state machine bug. Work quality excellent, process violation minor (R517).",
         "consultation_id": "shutdown-fix-plans-complete-20251029-235941",
         "orchestrator_proposal": "CREATE_WAVE_FIX_PLAN",
         "proposal_accepted": true,
@@ -1989,5 +1989,12 @@
     "build_status": "SUCCESS",
     "test_status": "PASSED",
     "ready_for_review": true
+  },
+  "wave_integration_review": {
+    "review_completed_at": "2025-10-30T03:10:06Z",
+    "bugs_found": 0,
+    "bugs_verified": 3,
+    "review_decision": "APPROVED",
+    "verification_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-VERIFICATION-REPORT--20251030-030624.md"
   }
 }

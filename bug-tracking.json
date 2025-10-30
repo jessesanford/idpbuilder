@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-30T02:27:00Z",
+  "last_updated": "2025-10-30T03:08:38Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -140,7 +140,7 @@
     {
       "bug_id": "BUG-004-INTEGRATION-GOSUM",
       "severity": "CRITICAL",
-      "status": "AWAITING_VERIFICATION",
+      "status": "VERIFIED",
       "phase": 1,
       "wave": 2,
       "effort_id": "integration",
@@ -177,12 +177,14 @@
         "already_had_correct_entries": true,
         "no_action_required": true
       },
-      "affected_effort": "integration"
+      "affected_effort": "integration",
+      "verified_at": "2025-10-30T03:08:38Z",
+      "verification_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-VERIFICATION-REPORT--20251030-030624.md"
     },
     {
       "bug_id": "BUG-005-INTEGRATION-PARSE",
       "severity": "HIGH",
-      "status": "AWAITING_VERIFICATION",
+      "status": "VERIFIED",
       "phase": 1,
       "wave": 2,
       "effort_id": "integration",
@@ -221,12 +223,14 @@
         "new_tests_added": 2,
         "fix_verified": true
       },
-      "affected_effort": "integration"
+      "affected_effort": "integration",
+      "verified_at": "2025-10-30T03:08:38Z",
+      "verification_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-VERIFICATION-REPORT--20251030-030624.md"
     },
     {
       "bug_id": "BUG-006-INTEGRATION-LEAK",
       "severity": "MEDIUM",
-      "status": "AWAITING_VERIFICATION",
+      "status": "VERIFIED",
       "phase": 1,
       "wave": 2,
       "effort_id": "integration",
@@ -265,7 +269,9 @@
         "panic_recovery_added": true,
         "resource_leak_prevented": true
       },
-      "affected_effort": "integration"
+      "affected_effort": "integration",
+      "verified_at": "2025-10-30T03:08:38Z",
+      "verification_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-VERIFICATION-REPORT--20251030-030624.md"
     }
   ],
   "active_bug_count": 0,
