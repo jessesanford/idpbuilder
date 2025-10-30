@@ -1659,6 +1659,7 @@
       "iteration_level": "wave",
       "iteration_type": "MONITORING",
       "allowed_transitions": [
+        "CREATE_WAVE_FIX_PLAN",
         "ERROR_RECOVERY"
       ],
       "requires": {
