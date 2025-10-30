@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-30T01:29:09Z",
+  "last_updated": "2025-10-30T02:11:20Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -41,7 +41,7 @@
         "context": "CREATE_NEXT_INFRASTRUCTURE state - Effort 1.2.4 creation"
       },
       "fixed_at": "2025-10-30T00:30:03Z",
-      "fixed_by": "orchestrator",
+      "fixed_by": null,
       "fix_commit": "N/A",
       "fix_verification": {
         "directory_exists": true,
@@ -50,7 +50,7 @@
       }
     },
     {
-      "bug_id": "BUG-002-R320-STUBS",
+      "bug_id": "BUG-002-STUBS-VIOLATION",
       "severity": "CRITICAL",
       "status": "FIXED",
       "phase": 1,
@@ -94,7 +94,7 @@
       }
     },
     {
-      "bug_id": "BUG-003-R383-METADATA",
+      "bug_id": "BUG-003-META-LOCATION",
       "severity": "LOW",
       "status": "FIXED",
       "phase": 1,
@@ -138,7 +138,7 @@
       }
     },
     {
-      "bug_id": "wave-1-2-integration-001",
+      "bug_id": "BUG-004-INTEGRATION-GOSUM",
       "severity": "CRITICAL",
       "status": "FIXED",
       "phase": 1,
@@ -176,10 +176,11 @@
         "tests_pass": true,
         "already_had_correct_entries": true,
         "no_action_required": true
-      }
+      },
+      "affected_effort": "integration"
     },
     {
-      "bug_id": "wave-1-2-integration-002",
+      "bug_id": "BUG-005-INTEGRATION-PARSE",
       "severity": "HIGH",
       "status": "FIXED",
       "phase": 1,
@@ -219,10 +220,11 @@
         "test_count": 31,
         "new_tests_added": 2,
         "fix_verified": true
-      }
+      },
+      "affected_effort": "integration"
     },
     {
-      "bug_id": "wave-1-2-integration-003",
+      "bug_id": "BUG-006-INTEGRATION-LEAK",
       "severity": "MEDIUM",
       "status": "FIXED",
       "phase": 1,
@@ -262,27 +264,28 @@
         "defer_close_added": true,
         "panic_recovery_added": true,
         "resource_leak_prevented": true
-      }
+      },
+      "affected_effort": "integration"
     }
   ],
   "active_bug_count": 0,
   "resolved_bug_count": 6,
   "bug_categories": {
     "integration_failures": [
-      "wave-1-2-integration-001",
-      "wave-1-2-integration-002",
-      "wave-1-2-integration-003"
+      "BUG-004-INTEGRATION-GOSUM",
+      "BUG-005-INTEGRATION-PARSE",
+      "BUG-006-INTEGRATION-LEAK"
     ],
     "build_failures": [
-      "wave-1-2-integration-001"
+      "BUG-004-INTEGRATION-GOSUM"
     ],
     "test_failures": [],
     "review_findings": [
-      "BUG-002-R320-STUBS",
-      "BUG-003-R383-METADATA",
-      "wave-1-2-integration-001",
-      "wave-1-2-integration-002",
-      "wave-1-2-integration-003"
+      "BUG-002-STUBS-VIOLATION",
+      "BUG-003-META-LOCATION",
+      "BUG-004-INTEGRATION-GOSUM",
+      "BUG-005-INTEGRATION-PARSE",
+      "BUG-006-INTEGRATION-LEAK"
     ]
   }
 }
