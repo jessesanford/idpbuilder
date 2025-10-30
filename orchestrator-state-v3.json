@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_WAVE_FIX_PLAN",
-    "previous_state": "REVIEW_WAVE_INTEGRATION",
+    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
+    "previous_state": "CREATE_WAVE_FIX_PLAN",
     "loop_detection": {
       "last_two_states": [
         "WAITING_FOR_FIX_PLANS",
@@ -1399,6 +1399,17 @@
           "wave": 2,
           "iteration": 3
         }
+      },
+      {
+        "from_state": "CREATE_WAVE_FIX_PLAN",
+        "to_state": "FIX_WAVE_UPSTREAM_BUGS",
+        "timestamp": "2025-10-30T01:41:43Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-20251030014143",
+        "orchestrator_proposal": "FIX_WAVE_UPSTREAM_BUGS",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "Fix plan created for 3 OPEN bugs (1 CRITICAL, 1 HIGH, 1 MEDIUM) - all categorized as UPSTREAM in effort 1.2.2"
       }
     ],
     "last_transition_timestamp": "2025-10-30T00:03:04+00:00",
@@ -1898,7 +1909,7 @@
     "r151_compliant": true
   },
   "transition_reason": "Multiple verification failures: Effort 1.2.2 incomplete (no implementation markers), 3/4 efforts missing work logs (R343 violations), Effort 1.2.4 has uncommitted files",
-  "last_updated": "2025-10-29T22:50:48Z",
+  "last_updated": "2025-10-30T01:41:43Z",
   "state_transitions": [
     {
       "from": "MONITORING_SWE_PROGRESS",
