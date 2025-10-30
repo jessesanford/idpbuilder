@@ -1,7 +1,7 @@
 {
-  "current_state": "BUILD_VALIDATION",
-  "previous_state": "REVIEW_WAVE_ARCHITECTURE",
-  "transition_time": "2025-10-30T04:54:51Z",
+  "current_state": "PR_PLAN_CREATION",
+  "previous_state": "BUILD_VALIDATION",
+  "transition_time": "2025-10-30T05:01:29Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,12 +27,12 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "BUILD_VALIDATION",
-    "previous_state": "REVIEW_WAVE_ARCHITECTURE",
+    "current_state": "PR_PLAN_CREATION",
+    "previous_state": "BUILD_VALIDATION",
     "loop_detection": {
       "last_two_states": [
-        "WAITING_FOR_FIX_PLANS",
-        "CREATE_WAVE_FIX_PLAN"
+        "REVIEW_WAVE_ARCHITECTURE",
+        "BUILD_VALIDATION"
       ],
       "ping_pong_count": 0,
       "same_state_count": 0,
@@ -1484,6 +1484,25 @@
           "tests_passing": 63,
           "integration_approved": true
         }
+      },
+      {
+        "from_state": "BUILD_VALIDATION",
+        "to_state": "PR_PLAN_CREATION",
+        "timestamp": "2025-10-30T05:01:29Z",
+        "validated_by": "state-manager",
+        "reason": "BUILD_VALIDATION complete - build succeeded, final artifact generated per R323, 0 bugs found, all tests passing. Ready for PR planning.",
+        "validation_checks": {
+          "current_state_valid": true,
+          "proposed_next_state_valid": true,
+          "transition_allowed_by_state_machine": true,
+          "guard_condition_satisfied": true,
+          "guard_condition": "build_succeeded == true and no_fixes_needed == true",
+          "build_succeeded": true,
+          "no_fixes_needed": true,
+          "bugs_found": 0,
+          "artifact_generated": true,
+          "r323_compliance": true
+        }
       }
     ],
     "last_transition_timestamp": "2025-10-30T04:54:51Z",
@@ -2078,15 +2097,13 @@
     "verification_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-VERIFICATION-REPORT--20251030-030624.md"
   },
   "final_artifact": {
-    "path": "/home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase1/wave1/integration/idpbuilder",
-    "size": "65MB",
+    "path": "/home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase1/wave2/integration/idpbuilder",
+    "size": "67.6MB",
     "type": "executable",
     "build_command": "make build",
-    "build_timestamp": "2025-10-30T03:42:00Z",
+    "build_timestamp": "2025-10-30T04:00:00Z",
     "verified": true,
     "test_status": "passed",
-    "version": "v0.11.0-nightly.20251026-1-g1a00fe7",
-    "platform": "linux/arm64",
-    "build_report": "efforts/phase1/wave1/integration/.software-factory/phase1/wave1/integration/BUILD-VALIDATION-REPORT--20251030-034507.md"
+    "build_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/INTEGRATION-REVIEW-REPORT--20251030-041824.md"
   }
 }
