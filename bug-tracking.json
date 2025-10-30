@@ -1,11 +1,11 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-30T00:09:00Z",
+  "last_updated": "2025-10-30T00:30:53Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
       "severity": "CRITICAL",
-      "status": "OPEN",
+      "status": "FIXED",
       "phase": 1,
       "wave": 2,
       "effort_id": "1.2.4",
@@ -39,6 +39,14 @@
         "line_number": null,
         "function_name": null,
         "context": "CREATE_NEXT_INFRASTRUCTURE state - Effort 1.2.4 creation"
+      },
+      "fixed_at": "2025-10-30T00:30:03Z",
+      "fixed_by": "orchestrator",
+      "fix_commit": "N/A",
+      "fix_verification": {
+        "directory_exists": true,
+        "infrastructure_created": true,
+        "state_file_updated": true
       }
     },
     {
@@ -87,7 +95,7 @@
     },
     {
       "bug_id": "BUG-003-R383-METADATA",
-      "severity": "MINOR",
+      "severity": "LOW",
       "status": "FIXED",
       "phase": 1,
       "wave": 2,
@@ -130,12 +138,10 @@
       }
     }
   ],
-  "active_bug_count": 1,
-  "resolved_bug_count": 2,
+  "active_bug_count": 0,
+  "resolved_bug_count": 3,
   "bug_categories": {
-    "integration_failures": [
-      "BUG-001-STUCK-LOOP-EFFORT-4"
-    ],
+    "integration_failures": [],
     "build_failures": [],
     "test_failures": [],
     "review_findings": [

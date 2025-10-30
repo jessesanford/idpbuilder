@@ -1,7 +1,7 @@
 {
-  "current_state": "FIX_WAVE_UPSTREAM_BUGS",
-  "previous_state": "CREATE_WAVE_FIX_PLAN",
-  "transition_time": "2025-10-30T00:10:43+00:00",
+  "current_state": "START_WAVE_ITERATION",
+  "previous_state": "FIX_WAVE_UPSTREAM_BUGS",
+  "transition_time": "2025-10-30T00:29:55Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
-    "previous_state": "CREATE_WAVE_FIX_PLAN",
+    "current_state": "START_WAVE_ITERATION",
+    "previous_state": "FIX_WAVE_UPSTREAM_BUGS",
     "loop_detection": {
       "last_two_states": [
         "WAITING_FOR_FIX_PLANS",
@@ -1335,6 +1335,16 @@
         "proposal_accepted": true,
         "state_machine_defect_found": true,
         "state_machine_corrected": true
+      },
+      {
+        "from_state": "FIX_WAVE_UPSTREAM_BUGS",
+        "to_state": "START_WAVE_ITERATION",
+        "timestamp": "2025-10-30T00:29:55Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-1761784195",
+        "orchestrator_proposal": "START_WAVE_ITERATION",
+        "proposal_accepted": true,
+        "transition_invalid": false
       }
     ],
     "last_transition_timestamp": "2025-10-30T00:03:04+00:00",
