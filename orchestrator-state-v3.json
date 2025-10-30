@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "REVIEW_WAVE_INTEGRATION",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "current_state": "REVIEW_WAVE_ARCHITECTURE",
+    "previous_state": "REVIEW_WAVE_INTEGRATION",
     "loop_detection": {
       "last_two_states": [
         "WAITING_FOR_FIX_PLANS",
@@ -1424,11 +1424,18 @@
         "timestamp": "2025-10-30T02:27:00Z",
         "validated_by": "state-manager",
         "reason": "Re-review required after fixing 3 integration bugs (BUG-004, BUG-005, BUG-006) - iteration 4 verification"
+      },
+      {
+        "from_state": "REVIEW_WAVE_INTEGRATION",
+        "to_state": "REVIEW_WAVE_ARCHITECTURE",
+        "timestamp": "2025-10-30T03:15:16Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2 integration review complete - all bugs fixed and verified (bugs_found=0, bugs_fixed=3, review_decision=APPROVED)"
       }
     ],
-    "last_transition_timestamp": "2025-10-30T00:03:04+00:00",
+    "last_transition_timestamp": "2025-10-30T03:15:11Z",
     "last_transition": "2025-10-29T21:18:14Z",
-    "transition_time": "2025-10-30T02:01:00Z",
+    "transition_time": "2025-10-30T03:15:11Z",
     "last_two_states": [
       "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
       "SPAWN_SW_ENGINEERS"
