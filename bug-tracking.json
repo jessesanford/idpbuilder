@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-30T00:30:53Z",
+  "last_updated": "2025-10-30T01:29:09Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -136,17 +136,127 @@
         "r383_compliant": true,
         "commits_pushed": true
       }
+    },
+    {
+      "bug_id": "wave-1-2-integration-001",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "integration",
+      "title": "Missing go.sum entries prevent builds/tests",
+      "description": "Missing go.sum entries for transitive dependencies of go-containerregistry v0.19.0 prevent builds/tests from running",
+      "category": "build",
+      "affected_branch": "idpbuilder-oci-push/phase1/wave2/integration",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-30T01:25:47Z",
+      "found_in_state": "REVIEW_WAVE_INTEGRATION",
+      "found_in_iteration": 3,
+      "location": {
+        "file_path": "go.sum",
+        "line_number": null,
+        "function_name": null,
+        "context": "Missing entries for github.com/containerd/stargz-snapshotter/estargz, github.com/klauspost/compress/zstd, github.com/docker/distribution/registry/client/auth/challenge"
+      },
+      "symptoms": [
+        "go build fails with 'missing go.sum entry' error",
+        "go test cannot run",
+        "All compilation blocked"
+      ],
+      "impact": "Complete build failure - no code can compile or be tested",
+      "resolution_plan": [
+        "Run 'go mod tidy' to update go.sum",
+        "Verify all tests pass after fix",
+        "Commit and push go.sum changes"
+      ]
+    },
+    {
+      "bug_id": "wave-1-2-integration-002",
+      "severity": "HIGH",
+      "status": "OPEN",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "integration",
+      "title": "parseImageName() multi-colon parsing bug",
+      "description": "parseImageName() incorrectly parses image names with multiple colons (registry:port/repo:tag) - uses strings.Split instead of strings.LastIndex",
+      "category": "runtime",
+      "affected_branch": "idpbuilder-oci-push/phase1/wave2/integration",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-30T01:25:47Z",
+      "found_in_state": "REVIEW_WAVE_INTEGRATION",
+      "found_in_iteration": 3,
+      "location": {
+        "file_path": "pkg/registry/client.go",
+        "line_number": 294,
+        "function_name": "parseImageName",
+        "context": "Lines 294-300: uses strings.Split(imageName, ':') which splits on ALL colons"
+      },
+      "symptoms": [
+        "Image names like 'registry.io:5000/repo:v1.0' parsed incorrectly",
+        "Registry port is lost from parsed result",
+        "Tag is lost when multiple colons present",
+        "Push operations fail for registries with explicit ports"
+      ],
+      "impact": "Runtime failure for common use cases (Gitea with port, private registries with ports)",
+      "resolution_plan": [
+        "Replace strings.Split with strings.LastIndex to find last colon",
+        "Add test cases for multi-colon image names",
+        "Verify all existing tests still pass"
+      ]
+    },
+    {
+      "bug_id": "wave-1-2-integration-003",
+      "severity": "MEDIUM",
+      "status": "OPEN",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "integration",
+      "title": "Goroutine leak in createProgressHandler()",
+      "description": "createProgressHandler() may leak goroutines if remote.Write() fails early without closing the progress channel",
+      "category": "resource_leak",
+      "affected_branch": "idpbuilder-oci-push/phase1/wave2/integration",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-30T01:25:47Z",
+      "found_in_state": "REVIEW_WAVE_INTEGRATION",
+      "found_in_iteration": 3,
+      "location": {
+        "file_path": "pkg/registry/client.go",
+        "line_number": 311,
+        "function_name": "createProgressHandler",
+        "context": "Lines 311-328: goroutine blocks on channel that may not be closed on error"
+      },
+      "symptoms": [
+        "Goroutine count grows over time with repeated failures",
+        "Memory leak under error conditions",
+        "No goroutine termination on auth/network failures"
+      ],
+      "impact": "Resource leak that degrades performance over time, not immediately fatal",
+      "resolution_plan": [
+        "Add context cancellation to progress handler",
+        "Ensure channel is closed in all error paths",
+        "Add goroutine leak test",
+        "Document channel closure requirements"
+      ]
     }
   ],
-  "active_bug_count": 0,
+  "active_bug_count": 3,
   "resolved_bug_count": 3,
   "bug_categories": {
-    "integration_failures": [],
-    "build_failures": [],
+    "integration_failures": [
+      "wave-1-2-integration-001",
+      "wave-1-2-integration-002",
+      "wave-1-2-integration-003"
+    ],
+    "build_failures": [
+      "wave-1-2-integration-001"
+    ],
     "test_failures": [],
     "review_findings": [
       "BUG-002-R320-STUBS",
-      "BUG-003-R383-METADATA"
+      "BUG-003-R383-METADATA",
+      "wave-1-2-integration-001",
+      "wave-1-2-integration-002",
+      "wave-1-2-integration-003"
     ]
   }
 }

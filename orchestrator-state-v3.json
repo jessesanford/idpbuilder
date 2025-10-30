@@ -1,7 +1,7 @@
 {
-  "current_state": "REVIEW_WAVE_INTEGRATION",
-  "previous_state": "INTEGRATE_WAVE_EFFORTS",
-  "transition_time": "2025-10-30T01:11:19Z",
+  "current_state": "CREATE_WAVE_FIX_PLAN",
+  "previous_state": "REVIEW_WAVE_INTEGRATION",
+  "transition_time": "2025-10-30T01:29:09Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "REVIEW_WAVE_INTEGRATION",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "current_state": "CREATE_WAVE_FIX_PLAN",
+    "previous_state": "REVIEW_WAVE_INTEGRATION",
     "loop_detection": {
       "last_two_states": [
         "WAITING_FOR_FIX_PLANS",
@@ -1366,6 +1366,39 @@
         "orchestrator_proposal": "REVIEW_WAVE_INTEGRATION",
         "proposal_accepted": true,
         "transition_invalid": false
+      },
+      {
+        "from_state": "REVIEW_WAVE_INTEGRATION",
+        "to_state": "CREATE_WAVE_FIX_PLAN",
+        "timestamp": "2025-10-30T01:29:09Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-20251030-012909",
+        "orchestrator_proposal": "CREATE_WAVE_FIX_PLAN",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "Code review completed with 3 bugs found (1 CRITICAL, 1 HIGH, 1 MEDIUM). Guard condition bugs_found > 0 satisfied. Bugs recorded in bug-tracking.json. Transition to CREATE_WAVE_FIX_PLAN required per state machine.",
+        "validation_checks": {
+          "current_state_valid": true,
+          "proposed_next_state_valid": true,
+          "transition_allowed_by_state_machine": true,
+          "guard_condition": "bugs_found > 0",
+          "guard_satisfied": true,
+          "bugs_found": 3,
+          "bugs_critical": 1,
+          "bugs_high": 1,
+          "bugs_medium": 1,
+          "bug_ids": [
+            "wave-1-2-integration-001",
+            "wave-1-2-integration-002",
+            "wave-1-2-integration-003"
+          ],
+          "bugs_recorded_in_tracking": true,
+          "integration_container_updated": true,
+          "review_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-REVIEW-REPORT--20251030-012705.md",
+          "phase": 1,
+          "wave": 2,
+          "iteration": 3
+        }
       }
     ],
     "last_transition_timestamp": "2025-10-30T00:03:04+00:00",
@@ -1377,7 +1410,7 @@
     ],
     "last_progress_timestamp": "2025-10-30T00:03:04+00:00",
     "last_updated": "2025-10-29T22:41:13Z",
-    "last_transition_at": "2025-10-30T01:17:16Z"
+    "last_transition_at": "2025-10-30T01:29:09Z"
   },
   "project_progression": {
     "current_project": {

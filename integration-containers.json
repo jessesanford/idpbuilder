@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-30T00:40:54Z",
+  "last_updated": "2025-10-30T01:29:09Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -23,13 +23,17 @@
       "integration_started_at": "2025-10-30T00:40:54Z",
       "last_iteration_at": "2025-10-30T00:30:09Z",
       "convergence_metrics": {
-        "bugs_remaining": 0,
+        "bugs_remaining": 3,
+        "bugs_found": 3,
         "test_failures": 0,
-        "build_failures": 0
+        "build_failures": 1
       },
       "efforts_to_integrate": [],
       "integration_plan_file": null,
-      "notes": "Iteration 3: All 4 efforts successfully integrated. Build passed, all tests passed. Ready for code review.",
+      "notes": "Iteration 3: Code review completed with 3 bugs found (1 CRITICAL, 1 HIGH, 1 MEDIUM). Transitioning to CREATE_WAVE_FIX_PLAN.",
+      "review_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-REVIEW-REPORT--20251030-012705.md",
+      "review_decision": "NEEDS_FIXES",
+      "review_timestamp": "2025-10-30T01:25:47Z",
       "error_details": {
         "error_type": "STUCK_LOOP",
         "loop_count": 9,
