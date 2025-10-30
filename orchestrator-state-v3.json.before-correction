@@ -1,7 +1,7 @@
 {
-  "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-  "previous_state": "PR_PLAN_CREATION",
-  "transition_time": "2025-10-30T19:01:40Z",
+  "current_state": "PR_PLAN_CREATION",
+  "previous_state": "BUILD_VALIDATION",
+  "transition_time": "2025-10-30T05:01:29Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "previous_state": "PR_PLAN_CREATION",
+    "current_state": "PR_PLAN_CREATION",
+    "previous_state": "BUILD_VALIDATION",
     "loop_detection": {
       "last_two_states": [
         "REVIEW_WAVE_ARCHITECTURE",
@@ -1503,16 +1503,9 @@
           "artifact_generated": true,
           "r323_compliance": true
         }
-      },
-      {
-        "from_state": "PR_PLAN_CREATION",
-        "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-        "timestamp": "2025-10-30T19:01:40Z",
-        "validated_by": "state-manager",
-        "reason": "Correcting illegal state transition - restoring proper integration hierarchy for Wave 2"
       }
     ],
-    "last_transition_timestamp": "2025-10-30T19:01:40Z",
+    "last_transition_timestamp": "2025-10-30T04:54:51Z",
     "last_transition": "2025-10-29T21:18:14Z",
     "transition_time": "2025-10-30T03:24:27Z",
     "last_two_states": [
@@ -1601,9 +1594,7 @@
       ]
     },
     "iteration_tracking": {
-      "last_progress_timestamp": "2025-10-30T02:07:37+00:00",
-      "active_container_level": "wave",
-      "current_container": "wave-phase1-wave2"
+      "last_progress_timestamp": "2025-10-30T02:07:37+00:00"
     }
   },
   "references": {
