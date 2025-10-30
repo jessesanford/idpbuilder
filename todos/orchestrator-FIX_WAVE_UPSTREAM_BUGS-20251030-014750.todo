@@ -1,0 +1,27 @@
+# Orchestrator TODO State - FIX_WAVE_UPSTREAM_BUGS
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: BEFORE_SPAWN_SW_ENGINEER (R287)
+
+## Completed Tasks
+- [x] Read and acknowledge all 8 mandatory state rules (R006, R287, R288, R510, R405, R321, R232, R313)
+- [x] Load 3 OPEN bugs from bug-tracking.json and analyze affected branches
+- [x] Group bugs by upstream branch (all 3 in effort-2-registry-client)
+- [x] Prepare spawn instructions for SW Engineer
+
+## In Progress
+- [ ] Spawn SW Engineer to fix bugs in effort-2-registry-client branch
+
+## Pending Tasks
+- [ ] Monitor SW Engineer progress until all fixes complete
+- [ ] Update bug status to FIXED in bug-tracking.json
+- [ ] Spawn State Manager for transition to START_WAVE_ITERATION
+- [ ] Save TODOs per R287 before transition
+- [ ] Output CONTINUE-SOFTWARE-FACTORY=TRUE flag per R405
+
+## Bug Summary
+- 3 OPEN bugs all in effort 1.2.2 (registry-client)
+- Priority: P0 (go.sum) → P1 (parseImageName) → P2 (goroutine leak)
+- Fix strategy: R321_BACKPORT (upstream fixes)
+- Estimated time: 2-3 hours total
+
+## Next State: START_WAVE_ITERATION (after fixes complete)
