@@ -1,6 +1,6 @@
 {
-  "current_state": "SETUP_PHASE_INFRASTRUCTURE",
-  "previous_state": "BUILD_VALIDATION",
+  "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+  "previous_state": "PR_PLAN_CREATION",
   "transition_time": "2025-10-30T19:01:40Z",
   "current_phase": 1,
   "current_wave": 2,
@@ -14,11 +14,7 @@
     "1.1.1",
     "1.1.2",
     "1.1.3",
-    "1.1.4",
-    "1.2.1",
-    "1.2.2",
-    "1.2.3",
-    "1.2.4"
+    "1.1.4"
   ],
   "efforts_in_progress": [],
   "efforts_pending": [],
@@ -1547,13 +1543,13 @@
       "name": "Foundation & Interfaces",
       "iteration": 1,
       "total_waves_in_phase": 2,
-      "waves_completed": 2
+      "waves_completed": 1
     },
     "current_wave": {
       "wave_number": 2,
       "name": "Core Package Implementations",
       "iteration": 4,
-      "status": "COMPLETED"
+      "status": "IN_PROGRESS"
     },
     "phases_completed": [],
     "waves_completed": [
@@ -1567,28 +1563,13 @@
           "1.1.4"
         ],
         "completed_at": "2025-10-29T05:17:25Z"
-      },
-      {
-        "wave_id": "1.2",
-        "wave_name": "Core Package Implementations",
-        "efforts_completed": [
-          "1.2.1",
-          "1.2.2",
-          "1.2.3",
-          "1.2.4"
-        ],
-        "completed_at": "2025-10-30T04:54:51Z"
       }
     ],
     "efforts_completed": [
       "1.1.1",
       "1.1.2",
       "1.1.3",
-      "1.1.4",
-      "1.2.1",
-      "1.2.2",
-      "1.2.3",
-      "1.2.4"
+      "1.1.4"
     ],
     "phase_1": {
       "phase_number": 1,
@@ -1615,7 +1596,7 @@
           "depends_on": [
             1
           ],
-          "status": "COMPLETED"
+          "status": "RESET"
         }
       ]
     },
@@ -2039,7 +2020,7 @@
     "r151_compliant": true
   },
   "transition_reason": "Multiple verification failures: Effort 1.2.2 incomplete (no implementation markers), 3/4 efforts missing work logs (R343 violations), Effort 1.2.4 has uncommitted files",
-  "last_updated": "2025-10-30T19:41:40Z",
+  "last_updated": "2025-10-30T01:41:43Z",
   "state_transitions": [
     {
       "from": "MONITORING_SWE_PROGRESS",
@@ -2055,7 +2036,7 @@
       ]
     }
   ],
-  "last_state_transition": "2025-10-30T19:41:40Z",
+  "last_state_transition": "2025-10-29T23:44:36Z",
   "state_history": [
     {
       "from_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
@@ -2083,30 +2064,6 @@
       "proposal_accepted": true,
       "phase": 1,
       "wave": 2
-    },
-    {
-      "from_state": "BUILD_VALIDATION",
-      "to_state": "SETUP_PHASE_INFRASTRUCTURE",
-      "timestamp": "2025-10-30T19:41:40Z",
-      "validated_by": "state-manager",
-      "reason": "State correction: Wave 2 actually complete (4 efforts integrated, binary built, reviewed, approved). Previous correction to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING was based on faulty analysis that ignored actual workspace directories. Restoring proper state flow.",
-      "correction": true,
-      "phase": 1,
-      "wave": 2,
-      "evidence": {
-        "wave2_efforts_completed": [
-          "1.2.1",
-          "1.2.2",
-          "1.2.3",
-          "1.2.4"
-        ],
-        "wave2_binary_exists": true,
-        "wave2_binary_size": "65MB",
-        "wave2_integration_reviewed": true,
-        "wave2_architect_approved": true,
-        "bugs_found": 0,
-        "bugs_fixed": 3
-      }
     }
   ],
   "monitoring_data": {

@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-30T19:42:22Z",
+  "last_updated": "2025-10-30T05:01:29Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -76,60 +76,6 @@
       "build_validation_complete": true,
       "artifact_generated": true,
       "ready_for_pr": true
-    },
-    {
-      "container_id": "wave-phase1-wave2",
-      "phase": 1,
-      "wave": 2,
-      "status": "CONVERGED",
-      "iteration": 5,
-      "max_iterations": 10,
-      "branch": "idpbuilder-oci-push/phase1/wave2/integration",
-      "workspace": "efforts/phase1/wave2/integration",
-      "base_branch": "idpbuilder-oci-push/phase1/wave1/integration",
-      "created_at": "2025-10-29T21:33:00Z",
-      "integration_started_at": "2025-10-30T00:40:00Z",
-      "last_iteration_at": "2025-10-30T19:42:22Z",
-      "convergence_metrics": {
-        "bugs_remaining": 0,
-        "bugs_found": 3,
-        "test_failures": 0,
-        "build_failures": 0,
-        "bugs_fixed": 3
-      },
-      "efforts_to_integrate": [
-        "1.2.1",
-        "1.2.2",
-        "1.2.3",
-        "1.2.4"
-      ],
-      "integration_plan_file": null,
-      "notes": "Wave 2 integration complete with all 4 efforts merged, bugs fixed, and architect approved",
-      "review_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/INTEGRATION-REVIEW-REPORT--20251030-041824.md",
-      "review_decision": "APPROVED",
-      "review_timestamp": "2025-10-30T04:16:15Z",
-      "architecture_review": {
-        "status": "APPROVED",
-        "decision": "PROCEED",
-        "report_file": "wave-reviews/phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md",
-        "reviewed_at": "2025-10-30T04:50:38Z",
-        "reviewer": "architect"
-      },
-      "integration_completed_at": "2025-10-30T04:16:15Z",
-      "build_validation": {
-        "status": "SUCCESS",
-        "artifact_path": "/home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase1/wave2/integration/idpbuilder",
-        "artifact_size": "65MB",
-        "build_duration": "~24s",
-        "build_timestamp": "2025-10-30T04:00:00Z",
-        "report_file": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/INTEGRATION-REVIEW-REPORT--20251030-041824.md",
-        "validated_at": "2025-10-30T04:54:51Z",
-        "validator": "code-reviewer",
-        "r323_compliance": "VERIFIED"
-      },
-      "build_validation_complete": true,
-      "artifact_generated": true,
-      "ready_for_pr": false
     }
   ],
   "integration_history": [],
