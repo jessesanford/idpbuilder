@@ -5,3 +5,5 @@ cover.out
 __debug*
 .vscode
 .idea
+coverage.out
+coverage.html

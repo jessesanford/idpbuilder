@@ -29,3 +29,4 @@ type Config struct {
 	InsecureSkipVerify bool
 }
 
+// NewConfigProvider is implemented in config.go (Wave 2)
