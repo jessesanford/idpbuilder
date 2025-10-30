@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-10-30T02:11:20Z",
+  "last_updated": "2025-10-30T02:27:00Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -140,7 +140,7 @@
     {
       "bug_id": "BUG-004-INTEGRATION-GOSUM",
       "severity": "CRITICAL",
-      "status": "FIXED",
+      "status": "AWAITING_VERIFICATION",
       "phase": 1,
       "wave": 2,
       "effort_id": "integration",
@@ -182,7 +182,7 @@
     {
       "bug_id": "BUG-005-INTEGRATION-PARSE",
       "severity": "HIGH",
-      "status": "FIXED",
+      "status": "AWAITING_VERIFICATION",
       "phase": 1,
       "wave": 2,
       "effort_id": "integration",
@@ -226,7 +226,7 @@
     {
       "bug_id": "BUG-006-INTEGRATION-LEAK",
       "severity": "MEDIUM",
-      "status": "FIXED",
+      "status": "AWAITING_VERIFICATION",
       "phase": 1,
       "wave": 2,
       "effort_id": "integration",
