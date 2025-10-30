@@ -44,7 +44,7 @@
     {
       "bug_id": "BUG-002-R320-STUBS",
       "severity": "CRITICAL",
-      "status": "FIX_PLANNED",
+      "status": "FIXED",
       "phase": 1,
       "wave": 2,
       "effort_id": "1.2.2",
@@ -74,12 +74,21 @@
         "Keep interface definitions only",
         "Run R355 production readiness scan",
         "Verify all 28 tests pass"
-      ]
+      ],
+      "fixed_at": "2025-10-30T00:19:12Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "1979b66",
+      "fix_verification": {
+        "tests_pass": true,
+        "test_count": 28,
+        "r355_scan": "PASS",
+        "commits_pushed": true
+      }
     },
     {
       "bug_id": "BUG-003-R383-METADATA",
       "severity": "MINOR",
-      "status": "FIX_PLANNED",
+      "status": "FIXED",
       "phase": 1,
       "wave": 2,
       "effort_id": "1.2.3",
@@ -109,11 +118,20 @@
         "Add timestamp to filename",
         "Verify R383 compliance",
         "Ensure tests still pass"
-      ]
+      ],
+      "fixed_at": "2025-10-30T00:18:32Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "1c317f2",
+      "fix_verification": {
+        "tests_pass": true,
+        "test_coverage": "94.1%",
+        "r383_compliant": true,
+        "commits_pushed": true
+      }
     }
   ],
-  "active_bug_count": 3,
-  "resolved_bug_count": 0,
+  "active_bug_count": 1,
+  "resolved_bug_count": 2,
   "bug_categories": {
     "integration_failures": [
       "BUG-001-STUCK-LOOP-EFFORT-4"

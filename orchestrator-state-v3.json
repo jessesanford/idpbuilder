@@ -1878,5 +1878,16 @@
       ],
       "fix_plan_summary": "efforts/phase1/wave2/fix-plans/FIX-PLAN-SUMMARY--20251029-233955.yaml"
     }
+  },
+  "wave_2_fix_progress": {
+    "bugs_fixed": 2,
+    "bugs_remaining": 0,
+    "upstream_branches_updated": [
+      "phase1-wave2-effort-2-registry-client",
+      "phase1-wave2-effort-3-auth"
+    ],
+    "fixes_complete": true,
+    "ready_for_reintegration": true,
+    "fix_completion_time": "2025-10-30T00:20:36Z"
   }
 }
