@@ -1,0 +1,17 @@
+Completed at: 2025-10-30 01:58:21 UTC
+Effort: effort-2-registry-client
+Branch: idpbuilder-oci-push/phase1/wave2/effort-2-registry-client
+Protocol: R321 Immediate Backport
+
+Bugs Fixed:
+- wave-1-2-integration-001 (P0): Already resolved
+- wave-1-2-integration-002 (P1): Fixed in commit 3bd1ee6
+- wave-1-2-integration-003 (P2): Fixed in commit 9f29b3c
+
+Commits:
+- 3bd1ee6: fix: use LastIndex for multi-colon image parsing
+- 9f29b3c: fix: prevent goroutine leak with context cancellation
+
+Test Status: PASS
+All registry tests: ✅ PASS (31 tests)
+Status: BUG FIXES COMPLETE
