@@ -27,8 +27,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "INTEGRATE_WAVE_EFFORTS",
-    "previous_state": "START_WAVE_ITERATION",
+    "current_state": "REVIEW_WAVE_INTEGRATION",
+    "previous_state": "INTEGRATE_WAVE_EFFORTS",
     "loop_detection": {
       "last_two_states": [
         "WAITING_FOR_FIX_PLANS",
@@ -1356,6 +1356,16 @@
         "proposal_accepted": true,
         "transition_invalid": false,
         "reason": "Iteration 3 started - ready to integrate wave 2 efforts after all upstream bugs fixed"
+      },
+      {
+        "from_state": "INTEGRATE_WAVE_EFFORTS",
+        "to_state": "REVIEW_WAVE_INTEGRATION",
+        "timestamp": "2025-10-30T01:17:16Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-20251030-004200",
+        "orchestrator_proposal": "REVIEW_WAVE_INTEGRATION",
+        "proposal_accepted": true,
+        "transition_invalid": false
       }
     ],
     "last_transition_timestamp": "2025-10-30T00:03:04+00:00",
@@ -1366,7 +1376,8 @@
       "SPAWN_SW_ENGINEERS"
     ],
     "last_progress_timestamp": "2025-10-30T00:03:04+00:00",
-    "last_updated": "2025-10-29T22:41:13Z"
+    "last_updated": "2025-10-29T22:41:13Z",
+    "last_transition_at": "2025-10-30T01:17:16Z"
   },
   "project_progression": {
     "current_project": {
