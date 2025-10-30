@@ -291,12 +291,13 @@ func (c *registryClient) ValidateRegistry(ctx context.Context, registryURL strin
 //   - "myapp:v1.0" → ("myapp", "v1.0")
 //   - "myapp" → ("myapp", "")
 //   - "repo/myapp:latest" → ("repo/myapp", "latest")
+//   - "registry:5000/app:v1" → ("registry:5000/app", "v1")
 func parseImageName(imageName string) (repository, tag string) {
-	parts := strings.Split(imageName, ":")
-	if len(parts) == 2 {
-		return parts[0], parts[1]
+	lastColon := strings.LastIndex(imageName, ":")
+	if lastColon == -1 {
+		return imageName, "" // No colon = no tag
 	}
-	return parts[0], ""
+	return imageName[:lastColon], imageName[lastColon+1:]
 }
 
 // createProgressHandler converts ProgressCallback to v1.Update channel for go-containerregistry.
@@ -308,6 +309,9 @@ func parseImageName(imageName string) (repository, tag string) {
 //
 // The goroutine processes updates and calls the callback until the channel is closed.
 // Note: LayerDigest is set to empty string as v1.Update doesn't provide digest information.
+//
+// IMPORTANT: The caller (remote.Write) is responsible for closing the channel.
+// The goroutine will exit when the channel is closed via the range loop.
 func createProgressHandler(callback ProgressCallback) chan v1.Update {
 	updates := make(chan v1.Update, 100)
 	go func() {

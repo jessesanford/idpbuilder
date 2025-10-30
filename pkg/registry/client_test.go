@@ -418,6 +418,24 @@ func TestParseImageName_WithSlashAndTag(t *testing.T) {
 	assert.Equal(t, "latest", tag)
 }
 
+func TestParseImageName_RegistryWithPort(t *testing.T) {
+	// Act
+	repo, tag := parseImageName("registry:5000/app:v1")
+
+	// Assert
+	assert.Equal(t, "registry:5000/app", repo)
+	assert.Equal(t, "v1", tag)
+}
+
+func TestParseImageName_HostWithPortAndNamespace(t *testing.T) {
+	// Act
+	repo, tag := parseImageName("host:443/ns/repo:tag")
+
+	// Assert
+	assert.Equal(t, "host:443/ns/repo", repo)
+	assert.Equal(t, "tag", tag)
+}
+
 func TestIsAuthError_401(t *testing.T) {
 	// Arrange
 	err := fmt.Errorf("HTTP 401 Unauthorized")
