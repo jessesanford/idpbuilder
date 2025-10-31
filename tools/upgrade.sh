@@ -244,6 +244,8 @@ create_backup() {
     # Create backup excluding large/temporary directories and previous backups
     rsync -av --exclude='efforts/' \
               --exclude='backups/' \
+              --exclude='.backup.*' \
+              --exclude='*.backup-*' \
               --exclude='*.git' \
               --exclude='node_modules' \
               --exclude='__pycache__' \
@@ -844,7 +846,34 @@ main_upgrade() {
                       "$TARGET_DIR/state-machines/software-factory-3.0-state-machine.json"
             fi
 
-            # SF 3.0 schema files
+            # SF 3.0 schemas directory
+            if [ -d "$TEMPLATE_DIR/schemas" ]; then
+                echo -e "  Syncing schemas directory..."
+                mkdir -p "$TARGET_DIR/schemas"
+
+                if [ "$TEMPLATE_DIR" != "$TARGET_DIR" ]; then
+                    # Copy all schema files from schemas/ directory
+                    for schema_file in "$TEMPLATE_DIR/schemas"/*.json; do
+                        if [ -f "$schema_file" ]; then
+                            basename=$(basename "$schema_file")
+                            dest_file="$TARGET_DIR/schemas/$basename"
+
+                            # Check if source and destination are the same file
+                            if [ "$schema_file" = "$dest_file" ]; then
+                                echo -e "    ${CYAN}Skipping:${NC} schemas/$basename (source and destination are the same)"
+                            else
+                                echo -e "    Updating: schemas/$basename"
+                                cp -f "$schema_file" "$dest_file"
+                            fi
+                        fi
+                    done
+                else
+                    echo -e "    ${CYAN}Skipping (source and destination are the same)${NC}"
+                fi
+            fi
+
+            # SF 3.0 schema files (legacy root location - for backward compatibility)
+            # Note: Schemas are now primarily in schemas/ directory above
             sf3_schemas=(
                 "orchestrator-state-v3.schema.json"
                 "bug-tracking.schema.json"
@@ -854,8 +883,15 @@ main_upgrade() {
 
             for schema_file in "${sf3_schemas[@]}"; do
                 if [ -f "$TEMPLATE_DIR/$schema_file" ]; then
-                    echo -e "  Updating: $schema_file"
-                    cp -f "$TEMPLATE_DIR/$schema_file" "$TARGET_DIR/$schema_file"
+                    dest_file="$TARGET_DIR/$schema_file"
+
+                    # Check if source and destination are the same file
+                    if [ "$TEMPLATE_DIR/$schema_file" = "$dest_file" ]; then
+                        echo -e "  ${CYAN}Skipping:${NC} $schema_file (source and destination are the same)"
+                    else
+                        echo -e "  Updating: $schema_file"
+                        cp -f "$TEMPLATE_DIR/$schema_file" "$dest_file"
+                    fi
                 fi
             done
 

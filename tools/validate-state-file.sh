@@ -75,14 +75,9 @@ case "$FILENAME" in
 
         HAS_PROJECT_PROGRESSION=$(jq -e '.project_progression' "$STATE_FILE" >/dev/null 2>&1 && echo "yes" || echo "no")
         HAS_FLAT_CURRENT_STATE=$(jq -e '.current_state' "$STATE_FILE" >/dev/null 2>&1 && echo "yes" || echo "no")
-        HAS_FLAT_CURRENT_PHASE=$(jq -e '.current_phase' "$STATE_FILE" >/dev/null 2>&1 && echo "yes" || echo "no")
-        HAS_FLAT_PHASES_PLANNED=$(jq -e '.phases_planned' "$STATE_FILE" >/dev/null 2>&1 && echo "yes" || echo "no")
         HAS_REFERENCES=$(jq -e '.references' "$STATE_FILE" >/dev/null 2>&1 && echo "yes" || echo "no")
 
-        # Check if ANY v2 flat field exists (indicates hybrid format)
-        HAS_ANY_V2_FLAT=$([ "$HAS_FLAT_CURRENT_STATE" = "yes" ] || [ "$HAS_FLAT_CURRENT_PHASE" = "yes" ] || [ "$HAS_FLAT_PHASES_PLANNED" = "yes" ] && echo "yes" || echo "no")
-
-        if [ "$HAS_PROJECT_PROGRESSION" = "yes" ] && [ "$HAS_ANY_V2_FLAT" = "no" ] && [ "$HAS_REFERENCES" = "yes" ]; then
+        if [ "$HAS_PROJECT_PROGRESSION" = "yes" ] && [ "$HAS_FLAT_CURRENT_STATE" = "no" ] && [ "$HAS_REFERENCES" = "yes" ]; then
             # Pure SF 3.0 format (nested only, no flat fields)
             SCHEMA_FILE="$SCHEMAS_DIR/orchestrator-state-v3.schema.json"
             FILE_TYPE="orchestrator-state-v3 (Pure SF 3.0)"

@@ -9,7 +9,7 @@
 #
 # RULES:
 #   - R336: Integration Container Requirements
-#   - R307: Integration Iteration Protocol
+#   - R531: Integration Iteration Protocol
 #   - R288: State File Update Requirements
 
 set -euo pipefail

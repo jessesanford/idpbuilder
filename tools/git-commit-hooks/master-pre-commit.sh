@@ -178,6 +178,18 @@ run_sf3_validation() {
         fi
     done
 
+    # R550: Plan Path Consistency Validation
+    if [ -f "$GIT_ROOT/tools/validate-R550-compliance.sh" ]; then
+        print_info "Running R550 plan path consistency validation..."
+        if bash "$GIT_ROOT/tools/validate-R550-compliance.sh"; then
+            print_success "R550 plan path consistency validation passed"
+        else
+            print_error "R550 plan path consistency validation failed"
+            print_warning "See: rule-library/R550-plan-path-consistency-and-discovery.md"
+            status=1
+        fi
+    fi
+
     return $status
 }
 
