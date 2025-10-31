@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ERROR_RECOVERY",
-    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "last_transition_timestamp": "2025-10-31T21:54:27Z",
+    "current_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+    "previous_state": "ERROR_RECOVERY",
+    "last_transition_timestamp": "2025-10-31T21:59:55Z",
     "state_history": [
       {
         "from_state": "INJECT_WAVE_METADATA",
@@ -311,12 +311,12 @@
         "to_state": "ERROR_RECOVERY",
         "timestamp": "2025-10-31T21:54:27Z",
         "validated_by": "state-manager",
-        "reason": "SEQUENCE VIOLATION CORRECTION: Previous transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING) was invalid. State machine requires CREATE_NEXT_INFRASTRUCTURE step before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Rolling back to ANALYZE_CODE_REVIEWER_PARALLELIZATION and entering ERROR_RECOVERY to restore proper state flow.",
+        "reason": "SEQUENCE VIOLATION CORRECTION: Previous transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING) was invalid. State machine requires CREATE_NEXT_INFRASTRUCTURE step before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Rolling back to ANALYZE_CODE_REVIEWER_PARALLELIZATION and entering ERROR_RECOVERY to restore proper state flow.",
         "phase": 2,
         "wave": 1,
         "orchestrator_proposal": "CREATE_NEXT_INFRASTRUCTURE",
         "proposal_rejected": true,
-        "proposal_rejection_reason": "Transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING \u2192 CREATE_NEXT_INFRASTRUCTURE not allowed. Must use ERROR_RECOVERY.",
+        "proposal_rejection_reason": "Transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → CREATE_NEXT_INFRASTRUCTURE not allowed. Must use ERROR_RECOVERY.",
         "correction": true,
         "invalid_transition_removed": {
           "from_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -336,6 +336,18 @@
           "mandatory_next_state_after_recovery": "CREATE_NEXT_INFRASTRUCTURE",
           "r288_compliance": true
         }
+      },
+      {
+        "from_state": "ERROR_RECOVERY",
+        "to_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "timestamp": "2025-10-31T21:59:55Z",
+        "validated_by": "state-manager",
+        "reason": "ERROR_RECOVERY complete: Sequence violation corrected. Returning to ANALYZE_CODE_REVIEWER_PARALLELIZATION to properly proceed through CREATE_NEXT_INFRASTRUCTURE before spawning Code Reviewers.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "proposal_accepted": true,
+        "recovery_completion": true
       }
     ],
     "loop_detection": {
@@ -354,7 +366,7 @@
     "transition_validated": true,
     "sub_state_machine": null,
     "error_recovery": {
-      "active": true,
+      "active": false,
       "initiated_at": "2025-10-31T21:54:27Z",
       "reason": "Sequence violation - skipped CREATE_NEXT_INFRASTRUCTURE step",
       "invalid_transition": {
