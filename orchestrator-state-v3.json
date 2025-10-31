@@ -16,8 +16,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SETUP_WAVE_INFRASTRUCTURE",
-    "previous_state": "ERROR_RECOVERY",
+    "current_state": "ERROR_RECOVERY",
+    "previous_state": "SETUP_WAVE_INFRASTRUCTURE",
     "loop_detection": {
       "last_two_states": [
         "REVIEW_WAVE_ARCHITECTURE",
@@ -1610,7 +1610,8 @@
         "timestamp": "2025-10-30T03:37:16Z",
         "reason": "Architect decision: PROCEED - guard satisfied for BUILD_VALIDATION"
       }
-    ]
+    ],
+    "last_transition_time": "2025-10-31T04:22:07Z"
   },
   "project_progression": {
     "current_project": {
@@ -2133,12 +2134,12 @@
     }
   ],
   "last_state_transition": {
-    "from": "ERROR_RECOVERY",
-    "to": "SETUP_WAVE_INFRASTRUCTURE",
-    "timestamp": "2025-10-31T04:15:18Z",
-    "reason": "State Manager decision: ERROR_RECOVERY → SPAWN_ARCHITECT_PHASE_PLANNING rejected (state machine violation). Required path: ERROR_RECOVERY → SETUP_WAVE_INFRASTRUCTURE for Phase 2 Wave 1 [R517]",
-    "decision_maker": "state-manager",
-    "consultation_type": "SHUTDOWN_CONSULTATION"
+    "from": "SETUP_WAVE_INFRASTRUCTURE",
+    "to": "ERROR_RECOVERY",
+    "timestamp": "2025-10-31T04:22:07Z",
+    "reason": "BLOCKING requirement failed: No Phase 2 Wave 1 efforts exist. Cannot verify efforts completed per SETUP_WAVE_INFRASTRUCTURE checklist item #1. Per R510 Supreme Law, BLOCKING items must complete before transition. Transitioning to ERROR_RECOVERY for analysis.",
+    "decision_maker": "orchestrator",
+    "consultation_type": "R510_BLOCKING_FAILURE"
   },
   "state_history": [
     {
@@ -2313,5 +2314,15 @@
     "current_phase": 2,
     "current_wave": 1
   },
-  "error_details": null
+  "error_details": {
+    "error_type": "BLOCKING_REQUIREMENT_FAILED",
+    "failed_state": "SETUP_WAVE_INFRASTRUCTURE",
+    "failed_checklist_item": 1,
+    "failed_requirement": "Verify all efforts in wave completed",
+    "root_cause": "No Phase 2 efforts planned in pre_planned_infrastructure",
+    "phase": 2,
+    "wave": 1,
+    "detected_at": "2025-10-31T04:22:07Z",
+    "resolution_needed": "Phase planning required before wave infrastructure setup"
+  }
 }
