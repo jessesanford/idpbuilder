@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🏭 SOFTWARE FACTORY 2.0 - EFFORT BACKUP UTILITY
+# 🏭 SOFTWARE FACTORY 3.0 - EFFORT BACKUP UTILITY
 # ═══════════════════════════════════════════════════════════════════════════
 # Purpose: Backup all effort directories with their current state before
 #          major operations or as a safety measure
@@ -45,7 +45,7 @@ log() {
 # Print header
 print_header() {
     echo "═══════════════════════════════════════════════════════════════════════════"
-    echo "🏭 SOFTWARE FACTORY 2.0 - EFFORT BACKUP UTILITY"
+    echo "🏭 SOFTWARE FACTORY 3.0 - EFFORT BACKUP UTILITY"
     echo "═══════════════════════════════════════════════════════════════════════════"
     echo "Timestamp: $(date '+%Y-%m-%d %H:%M:%S %Z')"
     echo "Backup Name: ${BACKUP_NAME}"
@@ -76,9 +76,9 @@ backup_efforts() {
     local total_efforts=$(find "$EFFORTS_ROOT" -type d -name ".git" 2>/dev/null | wc -l)
     log "${BLUE}" "Found ${total_efforts} git repositories to backup"
     
-    # Copy entire efforts directory
-    log "${BLUE}" "Copying efforts directory..."
-    cp -r "$EFFORTS_ROOT" "${BACKUP_DIR}/" 2>&1 | tee -a "$BACKUP_LOG"
+    # Copy entire efforts directory using rsync for reliability
+    log "${BLUE}" "Copying efforts directory with rsync..."
+    ionice -c 2 -n 7 nice -n 10 rsync -av "$EFFORTS_ROOT/" "${BACKUP_DIR}/${EFFORTS_ROOT}/" 2>&1 | tee -a "$BACKUP_LOG"
     
     # Create manifest
     log "${CYAN}" "\n📝 Creating backup manifest..."
@@ -172,7 +172,7 @@ fi
 
 # Restore efforts
 echo "Restoring efforts..."
-cp -r "$SCRIPT_DIR/efforts" "$TARGET_DIR/"
+rsync -av "$SCRIPT_DIR/efforts/" "$TARGET_DIR/efforts/"
 
 echo "✅ Restoration complete!"
 echo ""
@@ -193,8 +193,8 @@ compress_backup() {
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         local archive_name="${BACKUP_DIR}.tar.gz"
         log "${BLUE}" "Creating archive: ${archive_name}"
-        
-        tar -czf "$archive_name" "$BACKUP_DIR" 2>&1 | tee -a "$BACKUP_LOG"
+
+        ionice -c 2 -n 7 nice -n 10 tar -czf "$archive_name" "$BACKUP_DIR" 2>&1 | tee -a "$BACKUP_LOG"
         
         local archive_size=$(du -h "$archive_name" | cut -f1)
         log "${GREEN}" "✅ Archive created: ${archive_name} (${archive_size})"
@@ -208,7 +208,7 @@ compress_backup() {
             chmod -R u+w "$BACKUP_DIR" 2>/dev/null || true
 
             # Step 2: Try removal (suppress all error output)
-            rm -rf "$BACKUP_DIR" 2>/dev/null || true
+            ionice -c 2 -n 7 nice -n 10 rm -rf "$BACKUP_DIR" 2>/dev/null || true
 
             # Step 3: Check if removal succeeded
             if [ ! -d "$BACKUP_DIR" ]; then
@@ -220,7 +220,7 @@ compress_backup() {
                 find "$BACKUP_DIR" -type f -exec chmod 644 {} \; 2>/dev/null || true
 
                 # Try removal again
-                rm -rf "$BACKUP_DIR" 2>/dev/null || true
+                ionice -c 2 -n 7 nice -n 10 rm -rf "$BACKUP_DIR" 2>/dev/null || true
 
                 # Final check
                 if [ ! -d "$BACKUP_DIR" ]; then
@@ -275,7 +275,7 @@ main() {
 show_help() {
     cat << EOF
 ═══════════════════════════════════════════════════════════════════════════
-🏭 SOFTWARE FACTORY 2.0 - EFFORT BACKUP UTILITY
+🏭 SOFTWARE FACTORY 3.0 - EFFORT BACKUP UTILITY
 ═══════════════════════════════════════════════════════════════════════════
 
 USAGE:

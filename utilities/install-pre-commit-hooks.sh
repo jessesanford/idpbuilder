@@ -48,7 +48,7 @@ if [ -f "$PROJECT_DIR/orchestrator-state-v3.json" ] || [ -f "$PROJECT_DIR/bug-tr
     echo -e "${GREEN}✓${NC} Detected Software Factory 3.0"
 elif [ -f "$PROJECT_DIR/orchestrator-state-v3.json" ]; then
     SF_VERSION="2.0"
-    echo -e "${GREEN}✓${NC} Detected Software Factory 2.0"
+    echo -e "${GREEN}✓${NC} Detected Software Factory 2.0 (will upgrade to 3.0)"
 else
     echo -e "${YELLOW}⚠${NC} Cannot determine SF version"
 fi
@@ -107,11 +107,12 @@ if [ -d "$PROJECT_DIR/efforts" ]; then
     echo -e "\n${BLUE}Searching for effort repositories...${NC}"
 
     # Find all directories that look like effort repos (have .git directories)
-    while IFS= read -r -d '' effort_dir; do
+    while IFS= read -r -d '' git_dir; do
+        effort_dir="$(dirname "$git_dir")"
         if install_hook "$effort_dir"; then
             ((EFFORT_COUNT++))
         fi
-    done < <(find "$PROJECT_DIR/efforts" -type d -name ".git" -exec dirname {} \; -print0 2>/dev/null)
+    done < <(find "$PROJECT_DIR/efforts" -type d -name ".git" -print0 2>/dev/null)
 
     if [ $EFFORT_COUNT -eq 0 ]; then
         echo -e "${YELLOW}⚠${NC} No effort repositories found in efforts/"
@@ -164,11 +165,12 @@ if [ -f "$PROJECT_DIR/target-repo-config.yaml" ]; then
 
             # Also install hooks for any effort directories within the target repo
             if [ -d "$TARGET_REPO_PATH/efforts" ]; then
-                while IFS= read -r -d '' effort_dir; do
+                while IFS= read -r -d '' git_dir; do
+                    effort_dir="$(dirname "$git_dir")"
                     if install_hook "$effort_dir"; then
                         ((EFFORT_COUNT++))
                     fi
-                done < <(find "$TARGET_REPO_PATH/efforts" -type d -name ".git" -exec dirname {} \; -print0 2>/dev/null)
+                done < <(find "$TARGET_REPO_PATH/efforts" -type d -name ".git" -print0 2>/dev/null)
             fi
         fi
     else

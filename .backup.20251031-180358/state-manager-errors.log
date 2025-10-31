@@ -1,6 +1,0 @@
-$(date -Iseconds): CRITICAL - State Manager SHUTDOWN_CONSULTATION REJECTED
-  Orchestrator Proposed: SETUP_PHASE_INFRASTRUCTURE -> START_PHASE_ITERATION
-  Actual Current State: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
-  Validation Result: ILLEGAL_TRANSITION
-  Reason: State mismatch between orchestrator claim and actual state file
-  Decision: Transitioning to ERROR_RECOVERY

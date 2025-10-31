@@ -1,1 +1,0 @@
-init-software-factory.sh
