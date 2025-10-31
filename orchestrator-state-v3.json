@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "VALIDATE_INFRASTRUCTURE",
-    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
-    "last_transition_timestamp": "2025-10-31T22:30:00Z",
+    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "previous_state": "VALIDATE_INFRASTRUCTURE",
+    "last_transition_timestamp": "2025-10-31T22:43:37Z",
     "state_history": [
       {
         "from_state": "CREATE_NEXT_INFRASTRUCTURE",
