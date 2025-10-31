@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
-    "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-    "last_transition_timestamp": "2025-10-31T22:06:22Z",
+    "current_state": "VALIDATE_INFRASTRUCTURE",
+    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "last_transition_timestamp": "2025-10-31T22:15:00Z",
     "state_history": [
       {
         "from_state": "INJECT_WAVE_METADATA",
@@ -362,17 +362,44 @@
         "timestamp": "2025-10-31T22:06:22Z",
         "validated_by": "state-manager",
         "reason": "Parallelization analysis complete. Wave 2.1 uses SEQUENTIAL strategy (2 efforts: 2.1.1 foundational, 2.1.2 depends on 2.1.1). Ready to create effort infrastructure per R213 metadata."
+      },
+      {
+        "from_state": "CREATE_NEXT_INFRASTRUCTURE",
+        "to_state": "VALIDATE_INFRASTRUCTURE",
+        "timestamp": "2025-10-31T22:15:00Z",
+        "validated_by": "state-manager",
+        "reason": "Effort 1 infrastructure exists and validated. Per sequential parallelization strategy (spawn_sequence order 1), Effort 1 ready for effort planning. Transitioning to validation checkpoint before spawning Code Reviewers.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING not allowed. Must go through VALIDATE_INFRASTRUCTURE first.",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "orchestrator_proposed_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+          "orchestrator_proposal_valid": false,
+          "correct_next_state": "VALIDATE_INFRASTRUCTURE",
+          "infrastructure_created": true,
+          "infrastructure_validated": true,
+          "effort_1_exists": true,
+          "effort_2_pending": true,
+          "sequential_strategy": true,
+          "r288_compliance": true
+        }
       }
     ],
     "loop_detection": {
       "last_two_states": [
-        "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-        "CREATE_NEXT_INFRASTRUCTURE"
+        "CREATE_NEXT_INFRASTRUCTURE",
+        "VALIDATE_INFRASTRUCTURE"
       ],
       "ping_pong_count": 0,
       "same_state_count": 0,
       "error_recovery_entries": 1,
-      "last_progress_timestamp": "2025-10-31T21:54:27Z",
+      "last_progress_timestamp": "2025-10-31T22:15:00Z",
       "validate_infrastructure_loops": 0,
       "iteration_count": 0
     },
@@ -927,10 +954,5 @@
       "implementation_plan": ".software-factory/phase1/wave2/effort-4-tls/IMPLEMENTATION-PLAN--20251029-213316.md"
     }
   ],
-  "artifacts": {},
-  "current_state": "CREATE_NEXT_INFRASTRUCTURE",
-  "current_phase": 2,
-  "current_wave": 1,
-  "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-  "transition_time": "2025-10-31T22:06:22Z"
+  "artifacts": {}
 }
