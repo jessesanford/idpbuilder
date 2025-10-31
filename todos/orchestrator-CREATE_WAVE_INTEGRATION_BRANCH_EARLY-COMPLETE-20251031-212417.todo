@@ -1,0 +1,27 @@
+# Orchestrator TODOs - CREATE_WAVE_INTEGRATION_BRANCH_EARLY State COMPLETE
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Phase: 2, Wave: 1
+# R287 Compliance: TODO persistence before state transition
+
+## Completed Tasks
+- [x] Validate state file claims vs actual git state
+- [x] Determine base branch for Phase 2 Wave 1 integration (idpbuilder-oci-push/phase2/integration)
+- [x] Create wave integration branch idpbuilder-oci-push/phase2/wave1/integration
+- [x] Add wave tests from planning/phase2/wave1/WAVE-TEST-PLAN.md to branch
+- [x] Commit and push wave integration branch with tests (commit: 214a93c)
+
+## Current Task
+- [in_progress] Spawn State Manager for SHUTDOWN_CONSULTATION to transition to SPAWN_CODE_REVIEWER_WAVE_IMPL
+
+## R342 Compliance Summary
+✅ Wave integration branch created: idpbuilder-oci-push/phase2/wave1/integration
+✅ Base branch: idpbuilder-oci-push/phase2/integration (Phase 2 integration)
+✅ Test harness created: tests/phase2/wave1/WAVE-2.1-TEST-HARNESS.sh
+✅ Test README created: tests/phase2/wave1/README.md
+✅ Committed and pushed to remote (commit: 214a93c)
+✅ Tests available before implementation begins
+✅ 40 tests planned per WAVE-TEST-PLAN.md
+✅ Coverage targets: 90% line / 85% branch
+
+## Next State
+SPAWN_CODE_REVIEWER_WAVE_IMPL (via State Manager SHUTDOWN_CONSULTATION)
