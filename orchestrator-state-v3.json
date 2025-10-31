@@ -1,5 +1,4 @@
 {
-  "transition_time": "2025-10-31T06:26:13+00:00",
   "phases_planned": 3,
   "waves_per_phase": {
     "1": 2,
@@ -16,8 +15,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_PHASE_ARCHITECTURE",
-    "previous_state": "SPAWN_ARCHITECT_PHASE_PLANNING",
+    "current_state": "SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING",
+    "previous_state": "WAITING_FOR_PHASE_ARCHITECTURE",
     "loop_detection": {
       "last_two_states": [
         "REVIEW_WAVE_ARCHITECTURE",
@@ -1311,14 +1310,14 @@
         "proposal_rejected_reason": "Proposed state SPAWN_SW_ENGINEERS is not in allowed_transitions from MONITORING_EFFORT_REVIEWS. Allowed transitions: [SPAWN_CODE_REVIEWER_FIX_PLAN, WAVE_COMPLETE, ERROR_RECOVERY]. State machine requires Code Reviewer to create fix plans before spawning SW Engineers. This enforces proper review-fix workflow.",
         "transition_invalid": false,
         "state_manager_override": true,
-        "reason": "State Manager OVERRIDE: MONITORING_EFFORT_REVIEWS → SPAWN_CODE_REVIEWER_FIX_PLAN (REQUIRED). Orchestrator proposed SPAWN_SW_ENGINEERS but state machine mandates SPAWN_CODE_REVIEWER_FIX_PLAN for NEEDS_FIXES outcomes. 2/4 efforts require fixes (effort-2-registry-client, effort-3-auth). Code Reviewer must create fix plans before SW Engineers address issues."
+        "reason": "State Manager OVERRIDE: MONITORING_EFFORT_REVIEWS \u2192 SPAWN_CODE_REVIEWER_FIX_PLAN (REQUIRED). Orchestrator proposed SPAWN_SW_ENGINEERS but state machine mandates SPAWN_CODE_REVIEWER_FIX_PLAN for NEEDS_FIXES outcomes. 2/4 efforts require fixes (effort-2-registry-client, effort-3-auth). Code Reviewer must create fix plans before SW Engineers address issues."
       },
       {
         "from_state": "WAITING_FOR_FIX_PLANS",
         "to_state": "CREATE_WAVE_FIX_PLAN",
         "timestamp": "2025-10-29T23:50:44Z",
         "validated_by": "state-manager",
-        "reason": "State Manager APPROVAL: WAITING_FOR_FIX_PLANS → CREATE_WAVE_FIX_PLAN. Fix plans complete and validated (2 efforts). STATE MACHINE DEFECT CORRECTED: Added missing transition to state machine (was dead-end state). Orchestrator made unauthorized but correct transition due to state machine bug. Work quality excellent, process violation minor (R517).",
+        "reason": "State Manager APPROVAL: WAITING_FOR_FIX_PLANS \u2192 CREATE_WAVE_FIX_PLAN. Fix plans complete and validated (2 efforts). STATE MACHINE DEFECT CORRECTED: Added missing transition to state machine (was dead-end state). Orchestrator made unauthorized but correct transition due to state machine bug. Work quality excellent, process violation minor (R517).",
         "consultation_id": "shutdown-fix-plans-complete-20251029-235941",
         "orchestrator_proposal": "CREATE_WAVE_FIX_PLAN",
         "proposal_accepted": true,
@@ -1575,7 +1574,7 @@
         "proposal_accepted": false,
         "proposal_rejected_reason": "Phase 2 entered invalid state sequence - attempting to integrate waves when NO waves have been executed",
         "state_manager_override": true,
-        "reason": "State Manager OVERRIDE: Phase 2 entered invalid state sequence - SETUP_PHASE_INFRASTRUCTURE → START_PHASE_ITERATION → INTEGRATE_PHASE_WAVES attempted WITHOUT any wave execution. Phase 2 has 3 waves planned but ZERO waves executed, ZERO wave integration branches exist, and NO phase planning documents. Cannot integrate non-existent waves. Recovery required to either: (1) Execute Phase 2 planning + waves, or (2) Skip Phase 2 if not needed. [R288]",
+        "reason": "State Manager OVERRIDE: Phase 2 entered invalid state sequence - SETUP_PHASE_INFRASTRUCTURE \u2192 START_PHASE_ITERATION \u2192 INTEGRATE_PHASE_WAVES attempted WITHOUT any wave execution. Phase 2 has 3 waves planned but ZERO waves executed, ZERO wave integration branches exist, and NO phase planning documents. Cannot integrate non-existent waves. Recovery required to either: (1) Execute Phase 2 planning + waves, or (2) Skip Phase 2 if not needed. [R288]",
         "validation_checks": {
           "phase": 2,
           "waves_planned_for_phase": 3,
@@ -1587,8 +1586,8 @@
           "phase_test_plan_exists": false,
           "violation_type": "INVALID_STATE_SEQUENCE",
           "root_cause": "COMPLETE_PHASE transitioned to SETUP_PHASE_INFRASTRUCTURE for new phase instead of phase planning states",
-          "expected_flow": "COMPLETE_PHASE → phase planning → WAVE_START → wave execution → SETUP_PHASE_INFRASTRUCTURE → phase integration",
-          "actual_flow": "COMPLETE_PHASE → SETUP_PHASE_INFRASTRUCTURE → START_PHASE_ITERATION (INVALID)"
+          "expected_flow": "COMPLETE_PHASE \u2192 phase planning \u2192 WAVE_START \u2192 wave execution \u2192 SETUP_PHASE_INFRASTRUCTURE \u2192 phase integration",
+          "actual_flow": "COMPLETE_PHASE \u2192 SETUP_PHASE_INFRASTRUCTURE \u2192 START_PHASE_ITERATION (INVALID)"
         }
       },
       {
@@ -1619,6 +1618,16 @@
         "timestamp": "2025-10-31T06:26:13+00:00",
         "validated_by": "state-manager",
         "reason": "Architect spawned for Phase 2 architecture planning - corrected by State Manager"
+      },
+      {
+        "from_state": "WAITING_FOR_PHASE_ARCHITECTURE",
+        "to_state": "SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING",
+        "timestamp": "2025-10-31T06:31:30.998333+00:00",
+        "validated_by": "state-manager",
+        "reason": "Phase 2 architecture complete - proceeding to phase test planning per R341 TDD requirements (CORRECTED from orchestrator's invalid SPAWN_CODE_REVIEWER_PHASE_IMPL proposal)",
+        "corrected_by_state_manager": true,
+        "orchestrator_proposed": "SPAWN_CODE_REVIEWER_PHASE_IMPL",
+        "state_manager_corrected_to": "SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING"
       }
     ],
     "last_transition_timestamp": "2025-10-31T01:02:00Z",
@@ -2329,7 +2338,7 @@
   ],
   "total_phases": 1,
   "all_phases_complete": false,
-  "last_action": "State Manager transition: SPAWN_ARCHITECT_PHASE_PLANNING → WAITING_FOR_PHASE_ARCHITECTURE",
+  "last_action": "State Manager transition: SPAWN_ARCHITECT_PHASE_PLANNING \u2192 WAITING_FOR_PHASE_ARCHITECTURE",
   "updated_at": "2025-10-31T06:26:13+00:00",
   "version": "3.0",
   "project_context": {
@@ -2346,5 +2355,9 @@
     "wave": 1,
     "detected_at": "2025-10-31T04:22:07Z",
     "resolution_needed": "Phase planning required before wave infrastructure setup"
-  }
+  },
+  "current_phase": 2,
+  "current_state": "SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING",
+  "previous_state": "WAITING_FOR_PHASE_ARCHITECTURE",
+  "current_wave": 1
 }
