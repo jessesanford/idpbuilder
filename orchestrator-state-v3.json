@@ -16,8 +16,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ERROR_RECOVERY",
-    "previous_state": "SETUP_PHASE_INFRASTRUCTURE",
+    "current_state": "SETUP_WAVE_INFRASTRUCTURE",
+    "previous_state": "ERROR_RECOVERY",
     "loop_detection": {
       "last_two_states": [
         "REVIEW_WAVE_ARCHITECTURE",
@@ -2116,7 +2116,7 @@
     "r151_compliant": true
   },
   "transition_reason": "Phase integration review complete: 0 bugs found, guard condition satisfied (bugs_found == 0)",
-  "last_updated": "2025-10-31T02:14:27Z",
+  "last_updated": "2025-10-31T04:15:18Z",
   "state_transitions": [
     {
       "from": "MONITORING_SWE_PROGRESS",
@@ -2132,7 +2132,14 @@
       ]
     }
   ],
-  "last_state_transition": "2025-10-31T01:41:55Z",
+  "last_state_transition": {
+    "from": "ERROR_RECOVERY",
+    "to": "SETUP_WAVE_INFRASTRUCTURE",
+    "timestamp": "2025-10-31T04:15:18Z",
+    "reason": "State Manager decision: ERROR_RECOVERY → SPAWN_ARCHITECT_PHASE_PLANNING rejected (state machine violation). Required path: ERROR_RECOVERY → SETUP_WAVE_INFRASTRUCTURE for Phase 2 Wave 1 [R517]",
+    "decision_maker": "state-manager",
+    "consultation_type": "SHUTDOWN_CONSULTATION"
+  },
   "state_history": [
     {
       "from_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
@@ -2301,5 +2308,10 @@
   "all_phases_complete": false,
   "last_action": "Phase 1 marked as complete - all requirements met",
   "updated_at": "2025-10-31T01:58:50Z",
-  "version": "3.0"
+  "version": "3.0",
+  "project_context": {
+    "current_phase": 2,
+    "current_wave": 1
+  },
+  "error_details": null
 }
