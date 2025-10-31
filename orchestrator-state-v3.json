@@ -1562,6 +1562,13 @@
         "proposal_rejected_reason": "Proposed state COMPLETE_PHASE not in allowed_transitions. Must transition to WAITING_FOR_PHASE_ASSESSMENT to monitor architect and validate assessment report per R285.",
         "mandatory_sequence": null,
         "sequence_position": null
+      },
+      {
+        "from_state": "WAITING_FOR_PHASE_ASSESSMENT",
+        "to_state": "COMPLETE_PHASE",
+        "timestamp": "2025-10-31T01:41:55Z",
+        "validated_by": "state-manager",
+        "reason": "Phase 1 assessment complete - PROCEED_NEXT_PHASE decision"
       }
     ],
     "last_transition_timestamp": "2025-10-31T01:02:00Z",
@@ -2103,7 +2110,7 @@
       ]
     }
   ],
-  "last_state_transition": "2025-10-30T19:41:40Z",
+  "last_state_transition": "2025-10-31T01:41:55Z",
   "state_history": [
     {
       "from_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
