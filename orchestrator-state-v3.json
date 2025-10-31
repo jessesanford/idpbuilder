@@ -3,10 +3,31 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
-    "previous_state": "VALIDATE_INFRASTRUCTURE",
-    "last_transition_timestamp": "2025-10-31T22:25:00Z",
+    "current_state": "VALIDATE_INFRASTRUCTURE",
+    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "last_transition_timestamp": "2025-10-31T22:30:00Z",
     "state_history": [
+      {
+        "from_state": "CREATE_NEXT_INFRASTRUCTURE",
+        "to_state": "VALIDATE_INFRASTRUCTURE",
+        "timestamp": "2025-10-31T22:30:00Z",
+        "validated_by": "state-manager",
+        "reason": "Infrastructure validation fix complete - Effort 1 upstream tracking configured. Both efforts (2.1.1 and 2.1.2) now have complete git infrastructure with proper upstream tracking. Ready for validation checkpoint before spawning Code Reviewers.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "VALIDATE_INFRASTRUCTURE",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "effort_1_upstream": "origin/idpbuilder-oci-push/phase2/wave1/effort-1-push-command-core",
+          "effort_2_upstream": "origin/idpbuilder-oci-push/phase2/wave1/effort-2-progress-reporter",
+          "all_infrastructure_valid": true,
+          "r288_compliance": true
+        }
+      },
       {
         "from_state": "VALIDATE_INFRASTRUCTURE",
         "to_state": "CREATE_NEXT_INFRASTRUCTURE",
@@ -417,14 +438,14 @@
     ],
     "loop_detection": {
       "last_two_states": [
-        "VALIDATE_INFRASTRUCTURE",
-        "CREATE_NEXT_INFRASTRUCTURE"
+        "CREATE_NEXT_INFRASTRUCTURE",
+        "VALIDATE_INFRASTRUCTURE"
       ],
-      "ping_pong_count": 1,
+      "ping_pong_count": 2,
       "same_state_count": 0,
       "error_recovery_entries": 1,
-      "last_progress_timestamp": "2025-10-31T22:25:00Z",
-      "validate_infrastructure_loops": 1,
+      "last_progress_timestamp": "2025-10-31T22:30:00Z",
+      "validate_infrastructure_loops": 2,
       "iteration_count": 0
     },
     "status": null,
