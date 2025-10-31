@@ -1,0 +1,94 @@
+{
+  "validation_timestamp": "2025-10-31T21:54:27Z",
+  "validator": "state-manager",
+  "proposed_transition": {
+    "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "to_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "reason": "State correction - Infrastructure gap detected"
+  },
+  "validation_result": {
+    "transition_allowed": false,
+    "decision": "REJECT_PROPOSE_ERROR_RECOVERY",
+    "update_status": "VALIDATION_FAILED",
+    "required_next_state": "ERROR_RECOVERY",
+    "decision_rationale": "CRITICAL FINDING: The proposed transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → CREATE_NEXT_INFRASTRUCTURE is NOT ALLOWED by the state machine. Allowed transitions from SPAWN_CODE_REVIEWERS_EFFORT_PLANNING are: [WAITING_FOR_EFFORT_PLANS, ERROR_RECOVERY]. ROOT CAUSE: The PREVIOUS transition was invalid. From ANALYZE_CODE_REVIEWER_PARALLELIZATION, allowed transitions are: [CREATE_NEXT_INFRASTRUCTURE, ERROR_RECOVERY]. The orchestrator incorrectly transitioned to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING when it should have gone to CREATE_NEXT_INFRASTRUCTURE. This is a sequence violation - the orchestrator skipped the mandatory CREATE_NEXT_INFRASTRUCTURE step. SOLUTION: Use ERROR_RECOVERY to restore proper state flow.",
+    "sequence_violation_detected": true,
+    "previous_transition_invalid": true,
+    "invalid_transition": {
+      "from_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+      "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+      "timestamp": "2025-10-31T21:49:21Z",
+      "violation": "CREATE_NEXT_INFRASTRUCTURE was skipped - should have been ANALYZE_CODE_REVIEWER_PARALLELIZATION → CREATE_NEXT_INFRASTRUCTURE"
+    },
+    "evidence": {
+      "effort_directories_exist": false,
+      "expected_directories": [
+        "efforts/phase2/wave1/effort-1-push-command-core",
+        "efforts/phase2/wave1/effort-2-progress-reporter"
+      ],
+      "actual_directories": [
+        "efforts/phase2/wave1/integration-workspace"
+      ],
+      "wave_implementation_plan_has_r213_metadata": true,
+      "r213_efforts_count": 2,
+      "mandatory_sequence": "wave_execution",
+      "sequence_position_expected": "infrastructure_creation",
+      "sequence_position_actual": "effort_planning",
+      "state_machine_validation": {
+        "from_ANALYZE_CODE_REVIEWER_PARALLELIZATION_allowed": [
+          "CREATE_NEXT_INFRASTRUCTURE",
+          "ERROR_RECOVERY"
+        ],
+        "from_SPAWN_CODE_REVIEWERS_EFFORT_PLANNING_allowed": [
+          "WAITING_FOR_EFFORT_PLANS",
+          "ERROR_RECOVERY"
+        ],
+        "CREATE_NEXT_INFRASTRUCTURE_in_allowed": false
+      }
+    },
+    "files_updated": [],
+    "commit_hash": null,
+    "error_recovery_required": true,
+    "error_recovery_plan": {
+      "step_1": "Transition to ERROR_RECOVERY state",
+      "step_2": "Rollback state_history to remove invalid transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING)",
+      "step_3": "Set current_state back to ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+      "step_4": "Update state files atomically with correction",
+      "step_5": "Orchestrator must then transition ANALYZE_CODE_REVIEWER_PARALLELIZATION → CREATE_NEXT_INFRASTRUCTURE (valid transition)"
+    }
+  },
+  "state_machine_reference": {
+    "file": "state-machines/software-factory-3.0-state-machine.json",
+    "relevant_states": {
+      "ANALYZE_CODE_REVIEWER_PARALLELIZATION": {
+        "allowed_transitions": [
+          "CREATE_NEXT_INFRASTRUCTURE",
+          "ERROR_RECOVERY"
+        ],
+        "description": "Analyze if Code Reviewers can be spawned in parallel or must execute sequentially"
+      },
+      "CREATE_NEXT_INFRASTRUCTURE": {
+        "allowed_transitions": [
+          "VALIDATE_INFRASTRUCTURE",
+          "ERROR_RECOVERY"
+        ],
+        "description": "Create effort directories, branches, and metadata from wave plan"
+      },
+      "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING": {
+        "allowed_transitions": [
+          "WAITING_FOR_EFFORT_PLANS",
+          "ERROR_RECOVERY"
+        ],
+        "description": "Spawn Code Reviewers to create effort plans",
+        "requires": "Effort infrastructure must exist"
+      }
+    }
+  },
+  "recommendations": {
+    "immediate_action": "Transition to ERROR_RECOVERY state",
+    "correction_type": "State rollback + correction",
+    "orchestrator_instruction": "After ERROR_RECOVERY completes rollback, you must transition from ANALYZE_CODE_REVIEWER_PARALLELIZATION → CREATE_NEXT_INFRASTRUCTURE to create effort infrastructure before attempting to spawn Code Reviewers.",
+    "r288_compliance": "State correction will be marked in state_history with correction flag",
+    "grading_impact": "Minor - orchestrator correctly identified the problem and requested correction, demonstrating self-awareness"
+  }
+}

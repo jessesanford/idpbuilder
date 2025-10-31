@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-    "last_transition_timestamp": "2025-10-31T21:49:13Z",
+    "current_state": "ERROR_RECOVERY",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "last_transition_timestamp": "2025-10-31T21:54:27Z",
     "state_history": [
       {
         "from_state": "INJECT_WAVE_METADATA",
@@ -307,11 +307,35 @@
         }
       },
       {
-        "from_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-        "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-        "timestamp": "2025-10-31T21:49:21Z",
+        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "to_state": "ERROR_RECOVERY",
+        "timestamp": "2025-10-31T21:54:27Z",
         "validated_by": "state-manager",
-        "reason": "Parallelization analysis complete. Wave 2.1 has 2 efforts (2.1.1, 2.1.2) that must execute sequentially per R213 metadata. Effort 2.1.2 depends on 2.1.1 callback signature. Ready to spawn Code Reviewers for effort planning."
+        "reason": "SEQUENCE VIOLATION CORRECTION: Previous transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING) was invalid. State machine requires CREATE_NEXT_INFRASTRUCTURE step before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Rolling back to ANALYZE_CODE_REVIEWER_PARALLELIZATION and entering ERROR_RECOVERY to restore proper state flow.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "CREATE_NEXT_INFRASTRUCTURE",
+        "proposal_rejected": true,
+        "proposal_rejection_reason": "Transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING \u2192 CREATE_NEXT_INFRASTRUCTURE not allowed. Must use ERROR_RECOVERY.",
+        "correction": true,
+        "invalid_transition_removed": {
+          "from_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+          "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+          "timestamp": "2025-10-31T21:49:21Z",
+          "validated_by": "state-manager",
+          "reason": "Parallelization analysis complete. Wave 2.1 has 2 efforts (2.1.1, 2.1.2) that must execute sequentially per R213 metadata. Effort 2.1.2 depends on 2.1.1 callback signature. Ready to spawn Code Reviewers for effort planning."
+        },
+        "rollback_to_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "sequence_violation_detected": true,
+          "previous_transition_invalid": true,
+          "mandatory_next_state_after_recovery": "CREATE_NEXT_INFRASTRUCTURE",
+          "r288_compliance": true
+        }
       }
     ],
     "loop_detection": {
@@ -321,14 +345,34 @@
       ],
       "ping_pong_count": 0,
       "same_state_count": 0,
-      "error_recovery_entries": 0,
-      "last_progress_timestamp": "2025-10-29T23:32:28Z",
+      "error_recovery_entries": 1,
+      "last_progress_timestamp": "2025-10-31T21:54:27Z",
       "validate_infrastructure_loops": 0,
       "iteration_count": 0
     },
     "status": null,
     "transition_validated": true,
-    "sub_state_machine": null
+    "sub_state_machine": null,
+    "error_recovery": {
+      "active": true,
+      "initiated_at": "2025-10-31T21:54:27Z",
+      "reason": "Sequence violation - skipped CREATE_NEXT_INFRASTRUCTURE step",
+      "invalid_transition": {
+        "from_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "timestamp": "2025-10-31T21:49:21Z",
+        "validated_by": "state-manager",
+        "reason": "Parallelization analysis complete. Wave 2.1 has 2 efforts (2.1.1, 2.1.2) that must execute sequentially per R213 metadata. Effort 2.1.2 depends on 2.1.1 callback signature. Ready to spawn Code Reviewers for effort planning."
+      },
+      "target_state_after_recovery": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+      "required_next_state": "CREATE_NEXT_INFRASTRUCTURE",
+      "recovery_plan": [
+        "State rolled back to ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "Orchestrator must transition to CREATE_NEXT_INFRASTRUCTURE",
+        "Create effort infrastructure from R213 metadata",
+        "Then proceed to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
+      ]
+    }
   },
   "project_progression": {
     "current_project": {
