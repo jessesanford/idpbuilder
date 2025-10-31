@@ -121,13 +121,13 @@ if [ "$DEMO_STATUS" = "PASSED" ] && [ "$DEMOS_FAILED" = "0" ] && [ "$R331_STATUS
     # Determine next state based on integration type
     case "$INTEGRATE_WAVE_EFFORTS_TYPE" in
         wave)
-            PROPOSED_NEXT_STATE="WAVE_COMPLETE"
+            PROPOSED_NEXT_STATE="COMPLETE_WAVE"
             ;;
         phase)
-            PROPOSED_NEXT_STATE="COMPLETE_PHASE"
+            PROPOSED_NEXT_STATE="COMPLETE_WAVE"
             ;;
         project)
-            PROPOSED_NEXT_STATE="PROJECT_INTEGRATE_WAVE_EFFORTS_FINALIZATION"
+            PROPOSED_NEXT_STATE="COMPLETE_WAVE"
             ;;
         *)
             echo "🔴 Unknown integration type: $INTEGRATE_WAVE_EFFORTS_TYPE"

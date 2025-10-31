@@ -320,10 +320,10 @@ Based on bugs_found, determine the next state per guard conditions.
 **Implementation:**
 ```bash
 if [ "$BUGS_FOUND" -gt 0 ]; then
-    PROPOSED_NEXT_STATE="CREATE_PROJECT_FIX_PLAN"
+    PROPOSED_NEXT_STATE="SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING"
     echo "🔧 Bugs found, proceeding to fix planning"
 else
-    PROPOSED_NEXT_STATE="PROJECT_DONE"
+    PROPOSED_NEXT_STATE="REVIEW_PROJECT_ARCHITECTURE"
     echo "✅ No bugs found, project complete!"
 fi
 ```

@@ -323,7 +323,7 @@ exit 0
 echo "✅ State work complete"
 
 # 2. Set proposed next state
-PROPOSED_NEXT_STATE="NEXT_STATE"
+PROPOSED_NEXT_STATE="SPAWN_ARCHITECT_PHASE_ASSESSMENT"
 TRANSITION_REASON="State work complete"
 
 # 3. Spawn State Manager for state transition

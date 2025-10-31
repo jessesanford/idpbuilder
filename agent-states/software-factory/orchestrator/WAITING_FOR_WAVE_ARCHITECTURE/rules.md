@@ -50,7 +50,7 @@
 
 ### EXIT REQUIREMENTS
 
-- [ ] 7. Set proposed next state: `SPAWN_CODE_REVIEWER_WAVE_IMPL`
+- [ ] 7. Set proposed next state: `SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING`
 - [ ] 8. Spawn State Manager for SHUTDOWN_CONSULTATION
 - [ ] 9. Save TODOs per R287
 - [ ] 10. Set CONTINUE-SOFTWARE-FACTORY=TRUE
@@ -84,7 +84,7 @@ Monitor Architect creating wave architecture, validate it contains REAL CODE exa
 
 ## Exit Criteria
 
-**Success** → SPAWN_CODE_REVIEWER_WAVE_IMPL
+**Success** → SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING
 **Failure** → ERROR_RECOVERY (if fidelity wrong or timeout)
 
 ## Rules Enforced

@@ -11,7 +11,7 @@ This state file uses the **BOOKEND PATTERN** (R600):
 
 **NEVER CALL update_state() DIRECTLY - IT IS PROHIBITED!**
 - ❌ `update_state "NEXT_STATE" "reason"` = SYSTEM VIOLATION
-- ✅ `PROPOSED_NEXT_STATE="NEXT_STATE"` = CORRECT
+- ✅ `PROPOSED_NEXT_STATE="WAITING_FOR_MASTER_ARCHITECTURE"` = CORRECT
 - ✅ `TRANSITION_REASON="reason"` = CORRECT
 
 The State Manager (`run-software-factory.sh`) handles ALL state transitions.
@@ -177,7 +177,7 @@ ARCH_PLAN_PATH="$CLAUDE_PROJECT_DIR/$ARCH_PLAN_FILE"
 # Check for existing architecture at R550 standardized location
 if [ -f "$ARCH_PLAN_PATH" ]; then
     echo "⚠️ Project architecture plan already exists at: $ARCH_PLAN_PATH"
-    PROPOSED_NEXT_STATE="SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING"
+    PROPOSED_NEXT_STATE="WAITING_FOR_MASTER_ARCHITECTURE"
     TRANSITION_REASON="Project architecture plan already exists, skipping to test planning"
 else
     echo "✅ No project architecture plan found at: $ARCH_PLAN_PATH"
@@ -434,7 +434,7 @@ exit 0
 echo "✅ State work complete"
 
 # 2. Set proposed next state
-PROPOSED_NEXT_STATE="NEXT_STATE"
+PROPOSED_NEXT_STATE="WAITING_FOR_MASTER_ARCHITECTURE"
 TRANSITION_REASON="State work complete"
 
 # 3. Spawn State Manager for state transition

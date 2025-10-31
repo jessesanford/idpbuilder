@@ -455,7 +455,7 @@ exit 0
 echo "✅ State work complete"
 
 # 2. Set proposed next state
-PROPOSED_NEXT_STATE="NEXT_STATE"
+PROPOSED_NEXT_STATE="WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW"
 TRANSITION_REASON="State work complete"
 
 # 3. Spawn State Manager for state transition

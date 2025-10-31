@@ -175,7 +175,7 @@ transition_to_implementation_planning() {
     mv tmp.json orchestrator-state-v3.json
 
     # Set proposed next state (State Manager will update state_machine fields)
-    PROPOSED_NEXT_STATE="SPAWN_CODE_REVIEWER_PHASE_IMPL"
+    PROPOSED_NEXT_STATE="CREATE_PHASE_INTEGRATION_BRANCH_EARLY"
     TRANSITION_REASON="Phase tests ready - captured locations in state file (R340)"
     # State Manager consultation happens in Step 3 of completion checklist
 }
@@ -183,7 +183,7 @@ transition_to_implementation_planning() {
 
 ## Exit Conditions
 - All test deliverables created and validated
-- Transition to SPAWN_CODE_REVIEWER_PHASE_IMPL
+- Transition to CREATE_PHASE_INTEGRATION_BRANCH_EARLY
 - Tests documented and ready for implementation
 
 ## Success Criteria
@@ -342,7 +342,7 @@ exit 0
 echo "✅ State work complete"
 
 # 2. Set proposed next state
-PROPOSED_NEXT_STATE="NEXT_STATE"
+PROPOSED_NEXT_STATE="CREATE_PHASE_INTEGRATION_BRANCH_EARLY"
 TRANSITION_REASON="State work complete"
 
 # 3. Spawn State Manager for state transition

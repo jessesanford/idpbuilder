@@ -51,7 +51,7 @@
 
 ### EXIT REQUIREMENTS
 
-- [ ] 7. Set proposed next state: `CREATE_NEXT_INFRASTRUCTURE` (typically)
+- [ ] 7. Set proposed next state: `INJECT_WAVE_METADATA`
 - [ ] 8. Spawn State Manager for SHUTDOWN_CONSULTATION
 - [ ] 9. Save TODOs per R287
 - [ ] 10. Set CONTINUE-SOFTWARE-FACTORY=TRUE
@@ -95,7 +95,7 @@ Monitor Code Reviewer creating wave implementation plan, validate it contains EX
 
 ## Exit Criteria
 
-**Success** → CREATE_NEXT_INFRASTRUCTURE
+**Success** → INJECT_WAVE_METADATA
 **Failure** → ERROR_RECOVERY (if validation fails or timeout)
 
 ## Rules Enforced

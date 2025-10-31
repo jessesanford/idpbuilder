@@ -82,11 +82,11 @@ if [ "$PREVIOUS_STATE" = "CASCADE_REINTEGRATION" ]; then
 
     echo "📋 Post-CASCADE checklist mode enabled"
     echo "   Skipping redundant validation checks"
-    echo "   Transitioning to: COMPLETE_WAVE (CASCADE validation sufficient)"
+    echo "   Transitioning to: BUILD_VALIDATION (CASCADE validation sufficient)"
 
     # Update state file and transition
-    PROPOSED_NEXT_STATE="COMPLETE_WAVE"
-    TRANSITION_REASON="Post-CASCADE architecture review - validation already performed in cascade"
+    PROPOSED_NEXT_STATE="BUILD_VALIDATION"
+    TRANSITION_REASON="Post-CASCADE architecture review - proceeding to build validation"
 
     # Set continuation flag and exit
     echo "CONTINUE-SOFTWARE-FACTORY=TRUE REASON=STATE_COMPLETE"

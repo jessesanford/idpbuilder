@@ -144,7 +144,7 @@ yq -i '.project_integration.workspace = "'$PROJECT_INT_DIR'"' orchestrator-state
 
 ### 7. Prepare for Phase 1 Start
 ```bash
-PROPOSED_NEXT_STATE="INIT"
+PROPOSED_NEXT_STATE="SPAWN_ARCHITECT_PHASE_PLANNING"
 TRANSITION_REASON="Project integration branch created with tests per R342, ready for Phase 1"
 echo "📍 Will propose transition to: $PROPOSED_NEXT_STATE"
 # NOTE: Actual transition via State Manager in completion checklist
@@ -296,7 +296,7 @@ exit 0
 echo "✅ State work complete"
 
 # 2. Set proposed next state
-PROPOSED_NEXT_STATE="NEXT_STATE"
+PROPOSED_NEXT_STATE="SPAWN_ARCHITECT_PHASE_PLANNING"
 TRANSITION_REASON="State work complete"
 
 # 3. Spawn State Manager for state transition

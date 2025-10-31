@@ -86,7 +86,7 @@ THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION
   - Expected: Clear summary message for user review
 
 - [ ] 4. Display next steps guidance
-  - Show: Next state will be SPAWN_CODE_REVIEWER_PHASE_IMPL
+  - Show: Next state will be SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING
   - Show: Code Reviewer will create wave list (high-level only)
   - Show: Use `/continue-orchestrating` to proceed
   - Expected: Clear guidance message
@@ -96,13 +96,13 @@ THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION
 **NOTE**: These are STANDARD across ALL states - copy exactly
 
 - [ ] 5. Set proposed next state and transition reason
-  - Proposed Next State: `SPAWN_CODE_REVIEWER_PHASE_IMPL`
+  - Proposed Next State: `SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING`
   - Transition Reason: "Phase architecture complete and validated"
   - Validation: Variables set correctly
 
 - [ ] 6. Spawn State Manager for SHUTDOWN_CONSULTATION (SF 3.0)
   - Purpose: Validate transition and update all 4 state files atomically
-  - Parameters: --current-state WAITING_FOR_PHASE_ARCHITECTURE --proposed-next-state SPAWN_CODE_REVIEWER_PHASE_IMPL
+  - Parameters: --current-state WAITING_FOR_PHASE_ARCHITECTURE --proposed-next-state SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING
   - Work Results: Architecture validation results
   - Validation: State Manager returns REQUIRED_NEXT_STATE
   - **NOTE**: State Manager owns state file updates (R288)
@@ -190,7 +190,7 @@ When planning/PHASE-N-ARCHITECTURE.md exists:
 
 **Implementation:**
 - Show user what was validated
-- Explain next state (SPAWN_CODE_REVIEWER_PHASE_IMPL)
+- Explain next state (SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING)
 - Clarify fidelity will remain HIGH-LEVEL (wave list only, no detailed plans yet)
 
 **Validation:**
@@ -199,7 +199,7 @@ When planning/PHASE-N-ARCHITECTURE.md exists:
 
 ## Exit Criteria
 
-### Success Path → SPAWN_CODE_REVIEWER_PHASE_IMPL
+### Success Path → SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING
 
 - Phase architecture file exists: `planning/PHASE-N-ARCHITECTURE.md`
 - R340 quality gates passed (pseudocode fidelity confirmed)
@@ -239,7 +239,7 @@ When planning/PHASE-N-ARCHITECTURE.md exists:
 
 ## Transition Rules
 
-- **ALWAYS** → SPAWN_CODE_REVIEWER_PHASE_IMPL (after architecture validated)
+- **ALWAYS** → SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING (after architecture validated)
 - **NEVER** → WAVE_START (must create phase implementation plan first)
 - **NEVER** → SPAWN_ARCHITECT_WAVE_PLANNING (phase planning must complete first)
 - **ERROR** → ERROR_RECOVERY (if validation fails or Architect stalls)
@@ -272,7 +272,7 @@ When planning/PHASE-N-ARCHITECTURE.md exists:
 echo "✅ Phase architecture validated per R340"
 
 # 2. Set proposed next state
-PROPOSED_NEXT_STATE="SPAWN_CODE_REVIEWER_PHASE_IMPL"
+PROPOSED_NEXT_STATE="SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING"
 TRANSITION_REASON="Phase architecture complete and validated"
 
 # 3. Spawn State Manager for state transition (SF 3.0)
@@ -298,7 +298,7 @@ exit 0
 
 **TRUE (99.9%):**
 - ✅ Phase architecture validated successfully
-- ✅ Ready for SPAWN_CODE_REVIEWER_PHASE_IMPL
+- ✅ Ready for SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING
 - ✅ State work completed successfully
 - ✅ R322 checkpoint reached (NORMAL)
 
@@ -322,7 +322,7 @@ This state validates the FIRST artifact in SF 3.0's progressive planning:
 - NO real code, NO concrete designs
 
 **Next Steps**:
-1. SPAWN_CODE_REVIEWER_PHASE_IMPL: Create wave list (names + descriptions only)
+1. SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING: Create wave list (names + descriptions only)
 2. WAITING_FOR_PHASE_IMPLEMENTATION_PLAN: Validate wave list
 3. WAVE_START: Begin first wave (which will have its own planning)
 

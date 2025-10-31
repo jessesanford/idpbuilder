@@ -308,7 +308,7 @@ if [ -z "$WAVE_ARCH_PLAN" ] || [ -z "$WAVE_IMPL_PLAN" ]; then
     if [ -z "$WAVE_ARCH_PLAN" ]; then
         PROPOSED_NEXT_STATE="SPAWN_ARCHITECT_WAVE_PLANNING"
     elif [ -z "$WAVE_IMPL_PLAN" ]; then
-        PROPOSED_NEXT_STATE="SPAWN_CODE_REVIEWERS_WAVE_PLANNING"
+        PROPOSED_NEXT_STATE="START_WAVE_ITERATION"
     fi
 fi
 
@@ -323,9 +323,9 @@ if [ "$EFFORT_PLANS_EXIST" -eq 0 ]; then
     # Need to do effort planning first
     if [ "$PREVIOUS_STATE" = "CREATE_NEXT_INFRASTRUCTURE" ] || [ "$PREVIOUS_STATE" = "VALIDATE_INFRASTRUCTURE" ]; then
         # Was creating infrastructure, now need to plan efforts
-        PROPOSED_NEXT_STATE="ANALYZE_CODE_REVIEWER_PARALLELIZATION"
+        PROPOSED_NEXT_STATE="START_WAVE_ITERATION"
     else
-        PROPOSED_NEXT_STATE="SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
+        PROPOSED_NEXT_STATE="START_WAVE_ITERATION"
     fi
 fi
 
@@ -340,16 +340,16 @@ if [ "$EFFORTS_COMPLETED" -lt "$EFFORTS_TOTAL" ]; then
 
     # Determine where we are in wave_execution
     if [ "$PREVIOUS_STATE" = "VALIDATE_INFRASTRUCTURE" ]; then
-        PROPOSED_NEXT_STATE="ANALYZE_IMPLEMENTATION_PARALLELIZATION"
+        PROPOSED_NEXT_STATE="START_WAVE_ITERATION"
     elif [ "$PREVIOUS_STATE" = "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING" ]; then
-        PROPOSED_NEXT_STATE="WAITING_FOR_EFFORT_PLANS"
+        PROPOSED_NEXT_STATE="START_WAVE_ITERATION"
     elif [ "$PREVIOUS_STATE" = "START_WAVE_ITERATION" ]; then
         # ERROR #3 case - was in wrong state (integration container)
         # Should return to wave_execution sequence
-        PROPOSED_NEXT_STATE="ANALYZE_IMPLEMENTATION_PARALLELIZATION"
+        PROPOSED_NEXT_STATE="START_WAVE_ITERATION"
     else
         # Default to analyzing parallelization
-        PROPOSED_NEXT_STATE="ANALYZE_IMPLEMENTATION_PARALLELIZATION"
+        PROPOSED_NEXT_STATE="START_WAVE_ITERATION"
     fi
 fi
 
@@ -587,7 +587,7 @@ exit 0
 echo "✅ State work complete"
 
 # 2. Set proposed next state
-PROPOSED_NEXT_STATE="NEXT_STATE"
+PROPOSED_NEXT_STATE="PROJECT_DONE"
 TRANSITION_REASON="State work complete"
 
 # 3. Spawn State Manager for state transition

@@ -11,7 +11,7 @@ This state file uses the **BOOKEND PATTERN** (R600):
 
 **NEVER CALL update_state() DIRECTLY - IT IS PROHIBITED!**
 - ❌ `update_state "NEXT_STATE" "reason"` = SYSTEM VIOLATION
-- ✅ `PROPOSED_NEXT_STATE="NEXT_STATE"` = CORRECT
+- ✅ `PROPOSED_NEXT_STATE="WAITING_FOR_PHASE_ASSESSMENT"` = CORRECT
 - ✅ `TRANSITION_REASON="reason"` = CORRECT
 
 The State Manager (`run-software-factory.sh`) handles ALL state transitions.
@@ -647,7 +647,7 @@ exit 0
 echo "✅ State work complete"
 
 # 2. Set proposed next state
-PROPOSED_NEXT_STATE="NEXT_STATE"
+PROPOSED_NEXT_STATE="WAITING_FOR_PHASE_ASSESSMENT"
 TRANSITION_REASON="State work complete"
 
 # 3. Spawn State Manager for state transition
