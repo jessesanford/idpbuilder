@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-    "previous_state": "INJECT_WAVE_METADATA",
-    "last_transition_timestamp": "2025-10-31T21:42:15.000000Z",
+    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+    "last_transition_timestamp": "2025-10-31T21:49:13Z",
     "state_history": [
       {
         "from_state": "INJECT_WAVE_METADATA",
@@ -305,6 +305,13 @@
           "coverage_targets": "90%/85%",
           "r288_compliance": true
         }
+      },
+      {
+        "from_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "timestamp": "2025-10-31T21:49:21Z",
+        "validated_by": "state-manager",
+        "reason": "Parallelization analysis complete. Wave 2.1 has 2 efforts (2.1.1, 2.1.2) that must execute sequentially per R213 metadata. Effort 2.1.2 depends on 2.1.1 callback signature. Ready to spawn Code Reviewers for effort planning."
       }
     ],
     "loop_detection": {
@@ -344,7 +351,52 @@
       "status": "IN_PROGRESS",
       "total_efforts": 2,
       "estimated_total_lines": 750,
-      "parallelization_strategy": "sequential"
+      "parallelization_strategy": "sequential",
+      "code_reviewer_parallelization_plan": {
+        "analysis_timestamp": "2025-10-31T21:57:45Z",
+        "analyzed_by": "orchestrator",
+        "wave_plan_file": "planning/phase2/wave1/WAVE-IMPLEMENTATION-PLAN.md",
+        "strategy": "SEQUENTIAL",
+        "blocking_efforts": [
+          {
+            "effort_id": "2.1.1",
+            "effort_name": "Push Command Core & Pipeline Orchestration",
+            "can_parallelize": false,
+            "dependencies": [],
+            "reason": "Foundational effort - defines command structure and callback signature"
+          }
+        ],
+        "dependent_efforts": [
+          {
+            "effort_id": "2.1.2",
+            "effort_name": "Progress Reporter & Output Formatting",
+            "can_parallelize": false,
+            "dependencies": [
+              "2.1.1"
+            ],
+            "reason": "Depends on callback signature from 2.1.1"
+          }
+        ],
+        "parallel_groups": [],
+        "spawn_sequence": [
+          {
+            "order": 1,
+            "efforts": [
+              "2.1.1"
+            ],
+            "spawn_mode": "single",
+            "wait_for_completion": true
+          },
+          {
+            "order": 2,
+            "efforts": [
+              "2.1.2"
+            ],
+            "spawn_mode": "single",
+            "wait_for_completion": true
+          }
+        ]
+      }
     },
     "phases_completed": [],
     "waves_completed": [
