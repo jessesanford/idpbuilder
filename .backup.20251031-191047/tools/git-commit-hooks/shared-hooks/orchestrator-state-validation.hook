@@ -1,0 +1,320 @@
+#!/bin/bash
+
+# Software Factory 2.0 - Orchestrator State Validation Hook
+# This hook validates that orchestrator-state-v3.json contains only valid states
+# as defined in the state machine definition file
+
+set -e
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+# Get the git root directory
+GIT_ROOT="$(git rev-parse --show-toplevel)"
+cd "$GIT_ROOT"
+
+# Function to print colored messages
+print_error() {
+    echo -e "${RED}${BOLD}    ❌${NC} ${RED}$1${NC}" >&2
+}
+
+print_success() {
+    echo -e "${GREEN}${BOLD}    ✅${NC} ${GREEN}$1${NC}"
+}
+
+print_info() {
+    echo -e "${BLUE}${BOLD}    ℹ️${NC}  $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}${BOLD}    ⚠️${NC}  ${YELLOW}$1${NC}"
+}
+
+# Function to check if file is staged for commit
+is_file_staged() {
+    local file="$1"
+    git diff --cached --name-only | grep -q "^${file}$"
+}
+
+# Main validation logic
+main() {
+    local validation_failed=false
+
+    # Skip if SKIP_STATE_VALIDATION is set (for emergency use only)
+    if [ "${SKIP_STATE_VALIDATION:-}" = "true" ]; then
+        print_warning "SKIP_STATE_VALIDATION is set - bypassing state validation"
+        exit 0
+    fi
+
+    # Paths
+    local STATE_FILE="orchestrator-state-v3.json"
+    local STATE_MACHINE="state-machines/software-factory-state-machine.json"
+    local VALID_STATES_CACHE=".valid-states-cache.json"
+
+    # Check if orchestrator-state-v3.json is being committed
+    if ! is_file_staged "$STATE_FILE"; then
+        # State file not being committed, skip validation
+        exit 0
+    fi
+
+    print_info "Validating orchestrator state..."
+
+    # Check if state file exists
+    if [ ! -f "$STATE_FILE" ]; then
+        print_warning "orchestrator-state-v3.json not found - skipping validation"
+        exit 0
+    fi
+
+    # Check if state machine exists
+    if [ ! -f "$STATE_MACHINE" ]; then
+        print_error "State machine file not found at $STATE_MACHINE"
+        print_error "Cannot validate state without state machine definition"
+        exit 1
+    fi
+
+    # Setup Python with jsonschema if needed
+    VENV_DIR="$HOME/.software-factory-venv"
+    PYTHON_CMD="python3"
+
+    # Check if we need venv for jsonschema
+    if ! python3 -c "import json" 2>/dev/null; then
+        print_error "Python3 is required for state validation"
+        exit 1
+    fi
+
+    # For the actual validation later, we might need jsonschema
+    # But for extracting states we only need basic json module
+
+    # Extract valid states from state machine using Python
+    $PYTHON_CMD << 'EOF' > "$VALID_STATES_CACHE" 2>/dev/null
+import json
+import sys
+
+try:
+    with open('state-machines/software-factory-state-machine.json') as f:
+        data = json.load(f)
+
+    all_states = {}
+
+    # Extract states for each agent from transition_matrix
+    for agent in ['orchestrator', 'sw-engineer', 'code-reviewer', 'architect']:
+        if 'transition_matrix' in data and agent in data['transition_matrix']:
+            states = list(data['transition_matrix'][agent].keys())
+            all_states[agent] = sorted(states)
+
+    # Output valid states as JSON
+    print(json.dumps(all_states, indent=2))
+
+except Exception as e:
+    print(f"Error extracting states: {e}", file=sys.stderr)
+    sys.exit(1)
+EOF
+
+    if [ $? -ne 0 ]; then
+        print_error "Failed to extract valid states from state machine"
+        rm -f "$VALID_STATES_CACHE"
+        exit 1
+    fi
+
+    # Validate the current state in orchestrator-state-v3.json
+    local validation_output
+    validation_output=$($PYTHON_CMD << 'EOF' 2>&1
+import json
+import sys
+
+try:
+    # Load orchestrator state
+    with open('orchestrator-state-v3.json') as f:
+        state_data = json.load(f)
+
+    # Load valid states
+    with open('.valid-states-cache.json') as f:
+        valid_states = json.load(f)
+
+    current_state = state_data.get('current_state', '')
+    previous_state = state_data.get('previous_state', '')
+
+    # Check if current state is valid for orchestrator
+    orchestrator_states = valid_states.get('orchestrator', [])
+
+    invalid_states = []
+
+    # Check current state
+    if current_state and current_state not in orchestrator_states:
+        invalid_states.append(f"current_state: '{current_state}'")
+
+    # Check previous state (if not null/empty)
+    if previous_state and previous_state not in orchestrator_states:
+        # Previous state can be from other agents during transitions, so check all agents
+        all_agent_states = []
+        for agent_states in valid_states.values():
+            all_agent_states.extend(agent_states)
+
+        if previous_state not in all_agent_states:
+            invalid_states.append(f"previous_state: '{previous_state}'")
+
+    # SF 3.0: Check ALL state_history entries for validated_by field (Phase 4 enforcement)
+    if 'state_machine' in state_data and 'state_history' in state_data['state_machine']:
+        state_history = state_data['state_machine']['state_history']
+        if state_history and len(state_history) > 0:
+            # Check ALL entries in state_history, not just the last one
+            orchestrator_validated_count = 0
+            for idx, entry in enumerate(state_history):
+                validated_by = entry.get('validated_by', '')
+
+                if validated_by == 'orchestrator':
+                    orchestrator_validated_count += 1
+                    from_state = entry.get('from_state', 'UNKNOWN')
+                    to_state = entry.get('to_state', 'UNKNOWN')
+                    invalid_states.append(f"state_history[{idx}]: validated_by='orchestrator' for {from_state}→{to_state} (MUST be 'state-manager')")
+                elif validated_by and validated_by != 'state-manager':
+                    invalid_states.append(f"state_history[{idx}]: validated_by='{validated_by}' (expected 'state-manager')")
+
+            if orchestrator_validated_count > 0:
+                invalid_states.append(f"CRITICAL: Found {orchestrator_validated_count} transitions validated by orchestrator - State Manager was bypassed!")
+
+    if invalid_states:
+        print(f"INVALID:{','.join(invalid_states)}")
+        # Print valid states sorted and formatted nicely
+        print("\n🚨 VALID ORCHESTRATOR STATES:", file=sys.stderr)
+
+        # Group states by prefix for better readability
+        state_groups = {}
+        for state in orchestrator_states:
+            # Get first part before underscore
+            parts = state.split('_')
+            if len(parts) > 0:
+                prefix = parts[0]
+                if prefix not in state_groups:
+                    state_groups[prefix] = []
+                state_groups[prefix].append(state)
+
+        # Print grouped states
+        for prefix in sorted(state_groups.keys()):
+            states_in_group = sorted(state_groups[prefix])
+            print(f"\n  {prefix} states:", file=sys.stderr)
+            for state in states_in_group:
+                print(f"    - {state}", file=sys.stderr)
+    else:
+        print(f"VALID:current={current_state},previous={previous_state}")
+
+except json.JSONDecodeError as e:
+    print(f"ERROR:Invalid JSON in orchestrator-state-v3.json: {e}")
+    sys.exit(1)
+except Exception as e:
+    print(f"ERROR:{e}")
+    sys.exit(1)
+EOF
+)
+
+    local exit_code=$?
+
+    # Clean up cache file
+    rm -f "$VALID_STATES_CACHE"
+
+    # ENHANCEMENT 2: Check for update_state calls in orchestrator state rule files
+    print_info "Checking orchestrator state rules for direct update_state calls..."
+    for file in $(git diff --cached --name-only | grep "agent-states/software-factory/orchestrator/.*/rules.md"); do
+        if [ -f "$file" ]; then
+            # Look for update_state NOT followed by prohibition words
+            if grep -q "update_state" "$file" && ! grep -q "NEVER.*update_state\|prohibited.*update_state\|DO NOT.*update_state" "$file"; then
+                print_error "State rule file contains update_state call: $file"
+                print_error "State rules must use State Manager consultation, not direct updates"
+                echo ""
+                echo -e "${YELLOW}${BOLD}📚 TO FIX THIS ISSUE:${NC}"
+                echo -e "${YELLOW}1. Replace direct update_state calls with State Manager consultation pattern${NC}"
+                echo -e "${YELLOW}2. See agent-states/software-factory/orchestrator/*/rules.md for correct pattern${NC}"
+                echo -e "${YELLOW}3. Orchestrator NEVER directly updates state files in SF 3.0${NC}"
+                echo ""
+                exit 1
+            fi
+        fi
+    done
+
+    # ENHANCEMENT 3: Check for direct jq state manipulation in orchestrator state rules
+    print_info "Checking orchestrator state rules for direct jq state updates..."
+    for file in $(git diff --cached --name-only | grep "agent-states/software-factory/orchestrator/.*/rules.md"); do
+        if [ -f "$file" ]; then
+            # Look for jq commands that manipulate current_state in orchestrator-state files
+            if grep -q "jq.*current_state.*orchestrator-state" "$file"; then
+                print_error "State rule file contains direct jq state update: $file"
+                print_error "Must use State Manager consultation instead"
+                echo ""
+                echo -e "${YELLOW}${BOLD}📚 TO FIX THIS ISSUE:${NC}"
+                echo -e "${YELLOW}1. Remove jq commands that update .state_machine.current_state${NC}"
+                echo -e "${YELLOW}2. Use State Manager SHUTDOWN_CONSULTATION pattern instead${NC}"
+                echo -e "${YELLOW}3. State Manager owns all state file updates in SF 3.0${NC}"
+                echo ""
+                exit 1
+            fi
+        fi
+    done
+
+    # Get first line of output (the status)
+    local validation_result=$(echo "$validation_output" | head -n1)
+
+    # Parse validation result
+    if [[ $validation_result == VALID:* ]]; then
+        states="${validation_result#VALID:}"
+        print_success "Valid orchestrator states"
+        exit 0
+    elif [[ $validation_result == INVALID:* ]]; then
+        invalid="${validation_result#INVALID:}"
+        echo ""
+        echo -e "${RED}${BOLD}═══════════════════════════════════════════════════════════════${NC}"
+        print_error "ORCHESTRATOR STATE VALIDATION FAILED"
+        echo -e "${RED}${BOLD}═══════════════════════════════════════════════════════════════${NC}"
+        echo ""
+        print_error "Invalid state(s) detected: $invalid"
+
+        # Print the stderr output which contains valid states
+        echo "$validation_output" | tail -n +2 >&2
+
+        echo ""
+        echo -e "${YELLOW}${BOLD}📚 TO FIX THIS ISSUE:${NC}"
+        echo ""
+        echo -e "${YELLOW}1. Run comprehensive validation to see all issues:${NC}"
+        echo -e "${GREEN}   bash tools/enforce-state-validation.sh orchestrator-state-v3.json${NC}"
+        echo ""
+        echo -e "${YELLOW}2. Or try auto-fix for certain issues:${NC}"
+        echo -e "${GREEN}   bash tools/enforce-state-validation.sh --fix orchestrator-state-v3.json${NC}"
+        echo ""
+        echo -e "${YELLOW}3. See all valid states with helpful grouping:${NC}"
+        echo -e "${GREEN}   bash tools/list-valid-states.sh${NC}"
+        echo ""
+        echo -e "${YELLOW}4. Common issues:${NC}"
+        echo -e "   • current_state must be a valid ORCHESTRATOR state"
+        echo -e "   • previous_state must be a valid state (can be from any agent)"
+        echo -e "   • States are CASE-SENSITIVE (SPAWN_AGENTS not spawn_agents)"
+        echo -e "   • Check for typos: SPAWN_AGENTS not SPAWNING_AGENTS"
+        echo -e "   • Missing effort metadata (timestamps, line_count, etc.)"
+        echo ""
+        echo -e "${YELLOW}5. Fix the issues in orchestrator-state-v3.json${NC}"
+        echo ""
+        echo -e "${YELLOW}6. Re-run validation until it passes:${NC}"
+        echo -e "${GREEN}   bash tools/enforce-state-validation.sh orchestrator-state-v3.json${NC}"
+        echo ""
+        echo -e "${YELLOW}7. Then commit again${NC}"
+        echo ""
+        echo -e "${RED}${BOLD}⚠️  NEVER use --no-verify to bypass this check!${NC}"
+        echo -e "${RED}    Bypassing validation = -50% grade penalty${NC}"
+        echo ""
+        echo -e "${RED}${BOLD}🚫 Commit blocked until orchestrator-state-v3.json is valid.${NC}"
+        exit 1
+    elif [[ $validation_result == ERROR:* ]]; then
+        error="${validation_result#ERROR:}"
+        print_error "State validation failed: $error"
+        exit 1
+    else
+        print_error "Unexpected validation result: $validation_result"
+        exit 1
+    fi
+}
+
+# Run main function
+main "$@"

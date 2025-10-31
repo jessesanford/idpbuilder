@@ -1,0 +1,30 @@
+# Orchestrator TODOs - SPAWN_ARCHITECT_WAVE_PLANNING State
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: State transition completion per R287
+
+## Completed Tasks
+- [x] Spawn State Manager for STARTUP_CONSULTATION
+- [x] Spawn Architect agent for Wave 2.1 architecture planning
+- [x] Update state file to WAITING_FOR_WAVE_ARCHITECTURE
+- [x] Spawn State Manager for SHUTDOWN_CONSULTATION
+- [x] Save TODOs per R287
+- [x] Emit CONTINUE-SOFTWARE-FACTORY=TRUE flag
+
+## State Transition Summary
+- From: SPAWN_ARCHITECT_WAVE_PLANNING
+- To: WAITING_FOR_WAVE_ARCHITECTURE
+- Timestamp: 2025-10-31T18:28:38Z
+- Validated by: state-manager
+- Commit: 19b1d80
+
+## Architect Deliverable
+- Wave architecture created: wave-plans/WAVE-2.1-ARCHITECTURE.md
+- Fidelity level: CONCRETE (real code examples)
+- Efforts planned: 2 sequential efforts (~750 lines total)
+- Parallelization: Sequential execution
+
+## Next State Work
+WAITING_FOR_WAVE_ARCHITECTURE will:
+- Monitor Architect agent completion
+- Validate wave architecture quality (R340)
+- Transition to next planning state

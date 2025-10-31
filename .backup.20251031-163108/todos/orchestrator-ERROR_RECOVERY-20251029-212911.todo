@@ -1,0 +1,21 @@
+# Orchestrator ERROR_RECOVERY State - TODOs
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# State: ERROR_RECOVERY → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+# Reason: ERROR_RECOVERY complete - Effort 1.2.4 infrastructure created
+
+[✅] Analyze error context from orchestrator-state-v3.json
+[✅] Identify root cause of stuck loop (Effort 1.2.4 never created)
+[✅] Create infrastructure for missing Effort 1.2.4
+[✅] Update state file to mark Effort 1.2.4 as created and validated
+[✅] Validate all Wave 2 infrastructure is complete
+[✅] Determine correct next state after error recovery
+[✅] Update state file to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+[✅] Validate and commit state file per R288
+[✅] Save TODOs per R287 (in progress)
+[pending] Output R405 continuation flag
+
+## Recovery Summary:
+- Root cause: CREATE_NEXT_INFRASTRUCTURE failed to create Effort 1.2.4
+- Fix: Manually created full infrastructure (directory, branch, remote push, git config lock)
+- Validation: All 4 Wave 2 efforts now have complete infrastructure
+- Next state: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING

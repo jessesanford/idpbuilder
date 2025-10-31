@@ -41,8 +41,7 @@ Upon entering this state, IMMEDIATELY:
      git rm -rf rule-library/ 2>/dev/null || true
      git rm -rf templates/ 2>/dev/null || true
      git rm -rf utilities/ 2>/dev/null || true
-     git rm -rf phase-plans/ 2>/dev/null || true
-     git rm -rf wave-plans/ 2>/dev/null || true
+     git rm -rf .software-factory/planning/ 2>/dev/null || true
      git rm -rf protocols/ 2>/dev/null || true
      git rm -rf .claude/agents/ 2>/dev/null || true
      git rm -rf .claude/commands/ 2>/dev/null || true

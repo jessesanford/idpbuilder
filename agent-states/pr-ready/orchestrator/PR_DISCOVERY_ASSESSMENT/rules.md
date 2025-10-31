@@ -36,7 +36,7 @@ Upon entering this state, IMMEDIATELY:
      "PROJECT-IMPLEMENTATION-PLAN.md"
      "software-factory-3.0-state-machine.json"
      "RECOVERY-*.md" "CURRENT-TODO-STATE.md"
-     "phase-plans/" "wave-plans/" "protocols/"
+     ".software-factory/planning/" "protocols/"
      ".claude/agents/" ".claude/commands/"
    )
    ```

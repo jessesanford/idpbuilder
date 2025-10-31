@@ -1,0 +1,36 @@
+{
+  "model": "sonnet",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f \"$CLAUDE_PROJECT_DIR/utilities/transcript-based-pretooluse.sh\" ]; then bash \"$CLAUDE_PROJECT_DIR/utilities/transcript-based-pretooluse.sh\"; else bash \"$HOME/.claude/utilities/transcript-based-pretooluse.sh\"; fi"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "auto",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f \"$CLAUDE_PROJECT_DIR/utilities/transcript-based-precompact.sh\" ]; then bash \"$CLAUDE_PROJECT_DIR/utilities/transcript-based-precompact.sh\"; else bash \"$HOME/.claude/utilities/transcript-based-precompact.sh\"; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f \"$CLAUDE_PROJECT_DIR/utilities/transcript-based-precompact.sh\" ]; then bash \"$CLAUDE_PROJECT_DIR/utilities/transcript-based-precompact.sh\"; else bash \"$HOME/.claude/utilities/transcript-based-precompact.sh\"; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

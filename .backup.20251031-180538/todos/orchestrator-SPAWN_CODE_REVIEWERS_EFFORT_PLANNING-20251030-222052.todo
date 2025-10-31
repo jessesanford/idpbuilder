@@ -1,0 +1,20 @@
+# Orchestrator TODO State
+# Agent: orchestrator
+# State: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (ACTUAL - was incorrectly executing SETUP_PHASE_INFRASTRUCTURE)
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Reason: STATE_CORRECTION_AFTER_STATE_MANAGER_CONSULTATION
+
+## Critical Error Discovered:
+- Loaded state from wrong field (.current_state instead of .state_machine.current_state)
+- Executed SETUP_PHASE_INFRASTRUCTURE checklist when should have executed SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+- State Manager correctly identified the error during SHUTDOWN_CONSULTATION
+
+## Work Performed (needs evaluation):
+- [x] Created phase-1-integration branch from main
+- [x] Initialized integration-containers.json with phase-1 container
+
+## Correct Next Steps:
+- [ ] On restart, load state from .state_machine.current_state (AUTHORITATIVE)
+- [ ] Read SPAWN_CODE_REVIEWERS_EFFORT_PLANNING state rules
+- [ ] Execute SPAWN_CODE_REVIEWERS_EFFORT_PLANNING checklist
+- [ ] Evaluate if prematurely created artifacts (phase branch, containers) need cleanup

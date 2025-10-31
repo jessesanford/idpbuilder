@@ -1,0 +1,6 @@
+[2025-10-30 04:55:08] \033[0;34m: 📁 Backup created: /home/vscode/workspaces/idpbuilder-oci-push-planning/state-backups/orchestrator-state-20251030-045508.json
+[2025-10-30 04:55:08] \033[0;32m: ✅ JSON syntax valid
+[2025-10-30 04:55:08] \033[0;32m: ✅ All required fields present
+[2025-10-30 04:55:08] \033[0;32m: ✅ State 'BUILD_VALIDATION' is valid
+[2025-10-30 04:55:09] \033[0;31m: ❌ Schema validation failed
+[2025-10-30 04:55:09] \033[0;31m: ❌ VALIDATION FAILED - See errors above

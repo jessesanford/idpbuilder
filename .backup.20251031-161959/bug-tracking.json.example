@@ -1,0 +1,337 @@
+{
+  "bugs": [
+    {
+      "bug_id": "BUG-001-NULL-POINTER-WEBHOOK",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-08T13:25:00Z",
+      "severity": "HIGH",
+      "status": "IN_PROGRESS",
+      "title": "Null pointer dereference in webhook handler",
+      "description": "The webhook handler does not properly validate the payload before accessing nested fields. When a webhook payload is missing the 'metadata' field, the code attempts to access payload.metadata.id without a nil check, causing a runtime panic.",
+      "location": {
+        "file_path": "pkg/webhooks/handler.go",
+        "line_number": 145,
+        "function_name": "HandleWebhookEvent",
+        "code_snippet": "eventID := payload.metadata.id // PANIC: metadata can be nil"
+      },
+      "affected_effort": "phase2-wave3-webhook-system",
+      "affected_container": "wave_2_3",
+      "fix_branch": "phase2-wave3-webhook-system-fix-bug001",
+      "fixed_by": null,
+      "fixed_at": null,
+      "verified_by": null,
+      "verified_at": null,
+      "is_cross_container_bug": false,
+      "triggers_fix_cascade": false,
+      "cascade_id": null,
+      "related_bugs": [],
+      "fix_history": [
+        {
+          "attempt_number": 1,
+          "started_at": "2025-10-08T13:30:00Z",
+          "completed_at": null,
+          "attempt_status": "IN_PROGRESS",
+          "fixed_by": "sw-engineer",
+          "fix_branch": "phase2-wave3-webhook-system-fix-bug001",
+          "commit_hash": null,
+          "notes": "Adding nil checks for all webhook payload fields"
+        }
+      ],
+      "reintegration_status": {
+        "reintegrated": false,
+        "reintegration_iteration": null,
+        "reintegrated_at": null
+      },
+      "impact_analysis": {
+        "blocks_integration": true,
+        "affected_efforts": [
+          "phase2-wave3-webhook-system"
+        ],
+        "estimated_fix_time": "2 hours"
+      },
+      "metadata": {
+        "tags": [
+          "runtime-error",
+          "validation"
+        ],
+        "priority": 1,
+        "regression": false
+      }
+    },
+    {
+      "bug_id": "BUG-002-RACE-CONDITION-CACHE",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-08T13:28:00Z",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "title": "Race condition in cache invalidation logic",
+      "description": "The cache layer has concurrent map writes without proper synchronization. Multiple goroutines can simultaneously invalidate cache entries, leading to map corruption and potential data races. This occurs when rate limiting triggers cache invalidation while background cleanup is running.",
+      "location": {
+        "file_path": "pkg/cache/store.go",
+        "line_number": 89,
+        "function_name": "InvalidateKey",
+        "code_snippet": "delete(c.entries, key) // RACE: concurrent map writes"
+      },
+      "affected_effort": "phase2-wave3-caching-layer",
+      "affected_container": "wave_2_3",
+      "fix_branch": null,
+      "fixed_by": null,
+      "fixed_at": null,
+      "verified_by": null,
+      "verified_at": null,
+      "is_cross_container_bug": false,
+      "triggers_fix_cascade": false,
+      "cascade_id": null,
+      "related_bugs": [],
+      "fix_history": [],
+      "reintegration_status": {
+        "reintegrated": false,
+        "reintegration_iteration": null,
+        "reintegrated_at": null
+      },
+      "impact_analysis": {
+        "blocks_integration": true,
+        "affected_efforts": [
+          "phase2-wave3-caching-layer",
+          "phase2-wave3-rate-limiting"
+        ],
+        "estimated_fix_time": "4 hours"
+      },
+      "metadata": {
+        "tags": [
+          "concurrency",
+          "data-race",
+          "performance"
+        ],
+        "priority": 1,
+        "regression": false
+      }
+    },
+    {
+      "bug_id": "BUG-003-MEMORY-LEAK-RATE-LIMIT",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-08T11:15:00Z",
+      "severity": "MEDIUM",
+      "status": "FIXED",
+      "title": "Memory leak in rate limiter token bucket cleanup",
+      "description": "Rate limiter maintains a map of token buckets per client but never removes entries for inactive clients. Over time, this causes unbounded memory growth as the map accumulates entries for all clients that have ever made a request.",
+      "location": {
+        "file_path": "pkg/ratelimit/limiter.go",
+        "line_number": 67,
+        "function_name": "GetBucket",
+        "code_snippet": "l.buckets[clientID] = newBucket() // Never cleaned up"
+      },
+      "affected_effort": "phase2-wave3-rate-limiting",
+      "affected_container": "wave_2_3",
+      "fix_branch": "phase2-wave3-rate-limiting-fix-bug003",
+      "fixed_by": "sw-engineer",
+      "fixed_at": "2025-10-08T12:10:00Z",
+      "verified_by": "code-reviewer",
+      "verified_at": "2025-10-08T12:45:00Z",
+      "is_cross_container_bug": false,
+      "triggers_fix_cascade": false,
+      "cascade_id": null,
+      "related_bugs": [],
+      "fix_history": [
+        {
+          "attempt_number": 1,
+          "started_at": "2025-10-08T11:20:00Z",
+          "completed_at": "2025-10-08T12:10:00Z",
+          "attempt_status": "FIXED",
+          "fixed_by": "sw-engineer",
+          "fix_branch": "phase2-wave3-rate-limiting-fix-bug003",
+          "commit_hash": "a7f3e2d1c9b8a5f4e3d2c1b0a9f8e7d6c5b4a3f2",
+          "notes": "Added background cleanup goroutine with configurable TTL for inactive buckets"
+        }
+      ],
+      "reintegration_status": {
+        "reintegrated": true,
+        "reintegration_iteration": 2,
+        "reintegrated_at": "2025-10-08T13:00:00Z"
+      },
+      "impact_analysis": {
+        "blocks_integration": false,
+        "affected_efforts": [
+          "phase2-wave3-rate-limiting"
+        ],
+        "estimated_fix_time": "3 hours"
+      },
+      "metadata": {
+        "tags": [
+          "memory-leak",
+          "resource-management"
+        ],
+        "priority": 2,
+        "regression": false
+      }
+    },
+    {
+      "bug_id": "BUG-004-INCORRECT-STATUS-CODE",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-07T16:30:00Z",
+      "severity": "LOW",
+      "status": "VERIFIED",
+      "title": "Incorrect HTTP status code for rate limit exceeded",
+      "description": "Rate limiter returns HTTP 500 (Internal Server Error) when rate limit is exceeded, but should return HTTP 429 (Too Many Requests) per RFC 6585. This makes it difficult for clients to distinguish between rate limiting and actual server errors.",
+      "location": {
+        "file_path": "pkg/ratelimit/middleware.go",
+        "line_number": 52,
+        "function_name": "RateLimitMiddleware",
+        "code_snippet": "http.Error(w, \"Rate limit exceeded\", http.StatusInternalServerError)"
+      },
+      "affected_effort": "phase2-wave3-rate-limiting",
+      "affected_container": "wave_2_3",
+      "fix_branch": "phase2-wave3-rate-limiting-fix-bug004",
+      "fixed_by": "sw-engineer",
+      "fixed_at": "2025-10-07T17:15:00Z",
+      "verified_by": "code-reviewer",
+      "verified_at": "2025-10-07T17:30:00Z",
+      "is_cross_container_bug": false,
+      "triggers_fix_cascade": false,
+      "cascade_id": null,
+      "related_bugs": [],
+      "fix_history": [
+        {
+          "attempt_number": 1,
+          "started_at": "2025-10-07T16:40:00Z",
+          "completed_at": "2025-10-07T17:15:00Z",
+          "attempt_status": "FIXED",
+          "fixed_by": "sw-engineer",
+          "fix_branch": "phase2-wave3-rate-limiting-fix-bug004",
+          "commit_hash": "b8e4f3d2c1a0b9f8e7d6c5b4a3f2e1d0c9b8a7f6",
+          "notes": "Changed status code to 429 and added Retry-After header"
+        }
+      ],
+      "reintegration_status": {
+        "reintegrated": true,
+        "reintegration_iteration": 1,
+        "reintegrated_at": "2025-10-08T09:30:00Z"
+      },
+      "impact_analysis": {
+        "blocks_integration": false,
+        "affected_efforts": [
+          "phase2-wave3-rate-limiting"
+        ],
+        "estimated_fix_time": "30 minutes"
+      },
+      "metadata": {
+        "tags": [
+          "api-compliance",
+          "http-standards"
+        ],
+        "priority": 3,
+        "regression": false
+      }
+    },
+    {
+      "bug_id": "BUG-005-CACHE-KEY-COLLISION",
+      "discovered_by": "architect",
+      "discovered_at": "2025-10-08T10:45:00Z",
+      "severity": "HIGH",
+      "status": "VERIFIED",
+      "title": "Cache key collision between different resource types",
+      "description": "Cache key generation uses only resource ID without type prefix, causing collisions when different resource types (users, posts, comments) share the same numeric ID. This leads to incorrect data being served from cache.",
+      "location": {
+        "file_path": "pkg/cache/keys.go",
+        "line_number": 23,
+        "function_name": "GenerateKey",
+        "code_snippet": "return fmt.Sprintf(\"%d\", resourceID) // Missing type prefix"
+      },
+      "affected_effort": "phase2-wave3-caching-layer",
+      "affected_container": "wave_2_3",
+      "fix_branch": "phase2-wave3-caching-layer-fix-bug005",
+      "fixed_by": "sw-engineer",
+      "fixed_at": "2025-10-08T11:30:00Z",
+      "verified_by": "code-reviewer",
+      "verified_at": "2025-10-08T12:00:00Z",
+      "is_cross_container_bug": false,
+      "triggers_fix_cascade": false,
+      "cascade_id": null,
+      "related_bugs": [],
+      "fix_history": [
+        {
+          "attempt_number": 1,
+          "started_at": "2025-10-08T10:55:00Z",
+          "completed_at": "2025-10-08T11:30:00Z",
+          "attempt_status": "FIXED",
+          "fixed_by": "sw-engineer",
+          "fix_branch": "phase2-wave3-caching-layer-fix-bug005",
+          "commit_hash": "c9f5e4d3c2b1a0f9e8d7c6b5a4f3e2d1c0b9a8f7",
+          "notes": "Added resource type prefix to all cache keys and invalidated existing cache"
+        }
+      ],
+      "reintegration_status": {
+        "reintegrated": true,
+        "reintegration_iteration": 1,
+        "reintegrated_at": "2025-10-08T12:15:00Z"
+      },
+      "impact_analysis": {
+        "blocks_integration": false,
+        "affected_efforts": [
+          "phase2-wave3-caching-layer"
+        ],
+        "estimated_fix_time": "1 hour"
+      },
+      "metadata": {
+        "tags": [
+          "data-integrity",
+          "cache-correctness"
+        ],
+        "priority": 1,
+        "regression": false
+      }
+    }
+  ],
+  "metadata": {
+    "total_bugs": 5,
+    "open_bugs": 1,
+    "in_progress_bugs": 1,
+    "fixed_bugs": 1,
+    "verified_bugs": 2,
+    "critical_bugs": 1,
+    "high_bugs": 2,
+    "last_updated": "2025-10-08T13:30:00Z",
+    "last_updated_by": "state-manager"
+  },
+  "statistics": {
+    "discovery_rates": {
+      "bugs_per_iteration": [
+        {
+          "container_id": "wave_2_3",
+          "iteration": 1,
+          "bugs_found": 3
+        },
+        {
+          "container_id": "wave_2_3",
+          "iteration": 2,
+          "bugs_found": 2
+        }
+      ],
+      "bugs_per_effort": 1.67
+    },
+    "resolution_times": {
+      "average_fix_time_hours": 2.1,
+      "average_verification_time_hours": 0.4,
+      "total_time_to_resolution_hours": 2.5
+    },
+    "bug_density": {
+      "bugs_per_1000_lines": 2.3,
+      "bugs_by_severity_percentage": {
+        "critical": 20.0,
+        "high": 40.0,
+        "medium": 20.0,
+        "low": 20.0
+      }
+    },
+    "convergence_metrics": {
+      "is_converging": true,
+      "bug_reduction_rate": 40.0,
+      "iterations_to_convergence_estimate": 2
+    }
+  },
+  "cross_container_tracking": {
+    "cross_container_bugs": [],
+    "cascade_triggered_bugs": [],
+    "active_cascades": []
+  }
+}

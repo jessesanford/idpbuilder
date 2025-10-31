@@ -202,55 +202,33 @@ compress_backup() {
         read -p "Remove uncompressed backup? (y/N) " -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
-            # Fix permissions on write-protected files before removal
-            log "${YELLOW}" "⏳ Fixing permissions on write-protected files..."
+            log "${BLUE}" "   Removing: $BACKUP_DIR"
+
+            # Step 1: Fix permissions on write-protected files
             chmod -R u+w "$BACKUP_DIR" 2>/dev/null || true
 
-            # Now remove the directory
-            log "${BLUE}" "   Removing: $BACKUP_DIR"
-            if rm -rf "$BACKUP_DIR" 2>&1 | grep -v "^$" | head -5; then
-                # Verify deletion succeeded by checking if directory still exists
-                if [ ! -d "$BACKUP_DIR" ]; then
-                    log "${GREEN}" "✅ Uncompressed backup removed successfully"
-                else
-                    log "${RED}" "❌ Deletion reported success but directory still exists!"
-                    log "${YELLOW}" "   Attempting aggressive cleanup..."
+            # Step 2: Try removal (suppress all error output)
+            rm -rf "$BACKUP_DIR" 2>/dev/null || true
 
-                    # Try more aggressive permission fix
-                    find "$BACKUP_DIR" -type f -exec chmod u+w {} \; 2>/dev/null || true
-                    find "$BACKUP_DIR" -type d -exec chmod u+w {} \; 2>/dev/null || true
-
-                    # Try again
-                    if rm -rf "$BACKUP_DIR" 2>&1; then
-                        if [ ! -d "$BACKUP_DIR" ]; then
-                            log "${GREEN}" "✅ Uncompressed backup removed after aggressive cleanup"
-                        else
-                            log "${RED}" "❌ Could not remove backup directory: $BACKUP_DIR"
-                            log "${YELLOW}" "   Manual removal required: sudo rm -rf \"$BACKUP_DIR\""
-                        fi
-                    fi
-                fi
+            # Step 3: Check if removal succeeded
+            if [ ! -d "$BACKUP_DIR" ]; then
+                log "${GREEN}" "✅ Uncompressed backup removed successfully"
             else
-                # rm failed with errors
-                log "${RED}" "❌ Deletion failed with errors"
-                log "${YELLOW}" "   Some files could not be removed (permission denied)"
+                # Still exists - try more aggressive permission fix
+                log "${YELLOW}" "⏳ Fixing stubborn permissions..."
+                find "$BACKUP_DIR" -type d -exec chmod 755 {} \; 2>/dev/null || true
+                find "$BACKUP_DIR" -type f -exec chmod 644 {} \; 2>/dev/null || true
 
-                # Try aggressive permission fix
-                find "$BACKUP_DIR" -type f -exec chmod u+w {} \; 2>/dev/null || true
-                find "$BACKUP_DIR" -type d -exec chmod u+w {} \; 2>/dev/null || true
+                # Try removal again
+                rm -rf "$BACKUP_DIR" 2>/dev/null || true
 
-                # Attempt removal again
-                if rm -rf "$BACKUP_DIR" 2>&1; then
-                    if [ ! -d "$BACKUP_DIR" ]; then
-                        log "${GREEN}" "✅ Uncompressed backup removed after permission fix"
-                    else
-                        log "${RED}" "❌ Could not remove all backup files"
-                        log "${YELLOW}" "   You may need to manually remove: $BACKUP_DIR"
-                        log "${YELLOW}" "   Try: sudo rm -rf \"$BACKUP_DIR\""
-                    fi
+                # Final check
+                if [ ! -d "$BACKUP_DIR" ]; then
+                    log "${GREEN}" "✅ Uncompressed backup removed after permission fix"
                 else
-                    log "${RED}" "❌ Complete removal failure"
-                    log "${YELLOW}" "   Manual cleanup required: sudo rm -rf \"$BACKUP_DIR\""
+                    log "${YELLOW}" "⚠️  Could not automatically remove: $BACKUP_DIR"
+                    log "${YELLOW}" "   The compressed archive is safe. You can manually remove the directory with:"
+                    log "${YELLOW}" "   sudo rm -rf \"$BACKUP_DIR\""
                 fi
             fi
         fi

@@ -1,0 +1,297 @@
+{
+  "schema_version": "3.0",
+  "last_updated": "2025-10-31T02:05:59Z",
+  "bugs": [
+    {
+      "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
+      "severity": "CRITICAL",
+      "status": "FIXED",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "1.2.4",
+      "description": "CREATE_NEXT_INFRASTRUCTURE failed to create Effort 1.2.4 (TLS) infrastructure after 9 loop iterations. Physical directory does not exist.",
+      "symptoms": [
+        "VALIDATE_INFRASTRUCTURE loop exceeded 5 iterations (reached 9)",
+        "efforts/phase1/wave2/effort-4-tls directory does not exist",
+        "State file shows created=false for phase1_wave2_effort_4_tls",
+        "Efforts 1.2.1, 1.2.2, 1.2.3 created successfully"
+      ],
+      "root_cause": "Unknown - CREATE_NEXT_INFRASTRUCTURE systemic failure for Effort 1.2.4",
+      "impact": "Wave 2 implementation cannot proceed without TLS infrastructure",
+      "resolution_plan": [
+        "Investigate CREATE_NEXT_INFRASTRUCTURE logs for Effort 1.2.4 attempts",
+        "Manually create missing infrastructure",
+        "Update state file",
+        "Resume from appropriate state"
+      ],
+      "related_efforts": [
+        "1.2.1",
+        "1.2.2",
+        "1.2.3",
+        "1.2.4"
+      ],
+      "discovered_by": "orchestrator",
+      "discovered_at": "2025-10-29T21:35:00Z",
+      "title": "CREATE_NEXT_INFRASTRUCTURE systemic failure for Effort 1.2.4 (TLS)",
+      "affected_effort": "1.2.4",
+      "location": {
+        "file_path": "orchestrator-state-v3.json",
+        "line_number": null,
+        "function_name": null,
+        "context": "CREATE_NEXT_INFRASTRUCTURE state - Effort 1.2.4 creation"
+      },
+      "fixed_at": "2025-10-30T00:30:03Z",
+      "fixed_by": null,
+      "fix_commit": "N/A",
+      "fix_verification": {
+        "directory_exists": true,
+        "infrastructure_created": true,
+        "state_file_updated": true
+      }
+    },
+    {
+      "bug_id": "BUG-002-STUBS-VIOLATION",
+      "severity": "CRITICAL",
+      "status": "FIXED",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "1.2.2",
+      "title": "R320 violation - stub implementations in production code",
+      "description": "Stub functions with panic() found in pkg/auth/interface.go and pkg/tls/interface.go",
+      "affected_effort": "1.2.2",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-29T23:40:00Z",
+      "fix_plan": "efforts/phase1/wave2/fix-plans/FIX-PLAN-effort-2-registry-client--20251029-233955.md",
+      "fix_assigned_to": "sw-engineer",
+      "fix_estimated_time": "45m",
+      "fix_risk": "LOW",
+      "location": {
+        "file_path": "pkg/auth/interface.go",
+        "line_number": 44,
+        "function_name": "NewBasicAuthProvider",
+        "context": "Stub implementation with panic()"
+      },
+      "symptoms": [
+        "panic() calls in production code",
+        "Stub implementations instead of proper functions",
+        "R320 compliance failure"
+      ],
+      "impact": "Runtime panics if called, blocks integration",
+      "resolution_plan": [
+        "Remove stub implementations",
+        "Keep interface definitions only",
+        "Run R355 production readiness scan",
+        "Verify all 28 tests pass"
+      ],
+      "fixed_at": "2025-10-30T00:19:12Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "1979b66",
+      "fix_verification": {
+        "tests_pass": true,
+        "test_count": 28,
+        "r355_scan": "PASS",
+        "commits_pushed": true
+      }
+    },
+    {
+      "bug_id": "BUG-003-META-LOCATION",
+      "severity": "LOW",
+      "status": "FIXED",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "1.2.3",
+      "title": "R383 violation - metadata file in wrong location",
+      "description": "IMPLEMENTATION-COMPLETE.marker in root instead of .software-factory/",
+      "affected_effort": "1.2.3",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-29T23:41:00Z",
+      "fix_plan": "efforts/phase1/wave2/fix-plans/FIX-PLAN-effort-3-auth--20251029-233955.md",
+      "fix_assigned_to": "sw-engineer",
+      "fix_estimated_time": "15m",
+      "fix_risk": "VERY_LOW",
+      "location": {
+        "file_path": "./IMPLEMENTATION-COMPLETE.marker",
+        "line_number": null,
+        "function_name": null,
+        "context": "Metadata file in wrong directory"
+      },
+      "symptoms": [
+        "Metadata file in root directory",
+        "R383 compliance failure",
+        "Potential merge conflicts"
+      ],
+      "impact": "Merge conflicts during integration, working tree clutter",
+      "resolution_plan": [
+        "Move marker to .software-factory/",
+        "Add timestamp to filename",
+        "Verify R383 compliance",
+        "Ensure tests still pass"
+      ],
+      "fixed_at": "2025-10-30T00:18:32Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "1c317f2",
+      "fix_verification": {
+        "tests_pass": true,
+        "test_coverage": "94.1%",
+        "r383_compliant": true,
+        "commits_pushed": true
+      }
+    },
+    {
+      "bug_id": "BUG-004-INTEGRATION-GOSUM",
+      "severity": "CRITICAL",
+      "status": "VERIFIED",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "integration",
+      "title": "Missing go.sum entries prevent builds/tests",
+      "description": "Missing go.sum entries for transitive dependencies of go-containerregistry v0.19.0 prevent builds/tests from running",
+      "category": "build",
+      "affected_branch": "idpbuilder-oci-push/phase1/wave2/integration",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-30T01:25:47Z",
+      "found_in_state": "REVIEW_WAVE_INTEGRATION",
+      "found_in_iteration": 3,
+      "location": {
+        "file_path": "go.sum",
+        "line_number": null,
+        "function_name": null,
+        "context": "Missing entries for github.com/containerd/stargz-snapshotter/estargz, github.com/klauspost/compress/zstd, github.com/docker/distribution/registry/client/auth/challenge"
+      },
+      "symptoms": [
+        "go build fails with 'missing go.sum entry' error",
+        "go test cannot run",
+        "All compilation blocked"
+      ],
+      "impact": "Complete build failure - no code can compile or be tested",
+      "resolution_plan": [
+        "Run 'go mod tidy' to update go.sum",
+        "Verify all tests pass after fix",
+        "Commit and push go.sum changes"
+      ],
+      "fixed_at": "2025-10-30T01:47:50Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "already_resolved",
+      "fix_verification": {
+        "tests_pass": true,
+        "already_had_correct_entries": true,
+        "no_action_required": true
+      },
+      "affected_effort": "integration",
+      "verified_at": "2025-10-30T03:08:38Z",
+      "verification_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-VERIFICATION-REPORT--20251030-030624.md"
+    },
+    {
+      "bug_id": "BUG-005-INTEGRATION-PARSE",
+      "severity": "HIGH",
+      "status": "VERIFIED",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "integration",
+      "title": "parseImageName() multi-colon parsing bug",
+      "description": "parseImageName() incorrectly parses image names with multiple colons (registry:port/repo:tag) - uses strings.Split instead of strings.LastIndex",
+      "category": "runtime",
+      "affected_branch": "idpbuilder-oci-push/phase1/wave2/integration",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-30T01:25:47Z",
+      "found_in_state": "REVIEW_WAVE_INTEGRATION",
+      "found_in_iteration": 3,
+      "location": {
+        "file_path": "pkg/registry/client.go",
+        "line_number": 294,
+        "function_name": "parseImageName",
+        "context": "Lines 294-300: uses strings.Split(imageName, ':') which splits on ALL colons"
+      },
+      "symptoms": [
+        "Image names like 'registry.io:5000/repo:v1.0' parsed incorrectly",
+        "Registry port is lost from parsed result",
+        "Tag is lost when multiple colons present",
+        "Push operations fail for registries with explicit ports"
+      ],
+      "impact": "Runtime failure for common use cases (Gitea with port, private registries with ports)",
+      "resolution_plan": [
+        "Replace strings.Split with strings.LastIndex to find last colon",
+        "Add test cases for multi-colon image names",
+        "Verify all existing tests still pass"
+      ],
+      "fixed_at": "2025-10-30T01:47:50Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "3bd1ee6",
+      "fix_verification": {
+        "tests_pass": true,
+        "test_count": 31,
+        "new_tests_added": 2,
+        "fix_verified": true
+      },
+      "affected_effort": "integration",
+      "verified_at": "2025-10-30T03:08:38Z",
+      "verification_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-VERIFICATION-REPORT--20251030-030624.md"
+    },
+    {
+      "bug_id": "BUG-006-INTEGRATION-LEAK",
+      "severity": "MEDIUM",
+      "status": "VERIFIED",
+      "phase": 1,
+      "wave": 2,
+      "effort_id": "integration",
+      "title": "Goroutine leak in createProgressHandler()",
+      "description": "createProgressHandler() may leak goroutines if remote.Write() fails early without closing the progress channel",
+      "category": "resource_leak",
+      "affected_branch": "idpbuilder-oci-push/phase1/wave2/integration",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-10-30T01:25:47Z",
+      "found_in_state": "REVIEW_WAVE_INTEGRATION",
+      "found_in_iteration": 3,
+      "location": {
+        "file_path": "pkg/registry/client.go",
+        "line_number": 311,
+        "function_name": "createProgressHandler",
+        "context": "Lines 311-328: goroutine blocks on channel that may not be closed on error"
+      },
+      "symptoms": [
+        "Goroutine count grows over time with repeated failures",
+        "Memory leak under error conditions",
+        "No goroutine termination on auth/network failures"
+      ],
+      "impact": "Resource leak that degrades performance over time, not immediately fatal",
+      "resolution_plan": [
+        "Add context cancellation to progress handler",
+        "Ensure channel is closed in all error paths",
+        "Add goroutine leak test",
+        "Document channel closure requirements"
+      ],
+      "fixed_at": "2025-10-30T01:47:50Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "9f29b3c",
+      "fix_verification": {
+        "tests_pass": true,
+        "defer_close_added": true,
+        "panic_recovery_added": true,
+        "resource_leak_prevented": true
+      },
+      "affected_effort": "integration",
+      "verified_at": "2025-10-30T03:08:38Z",
+      "verification_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-VERIFICATION-REPORT--20251030-030624.md"
+    }
+  ],
+  "active_bug_count": 0,
+  "resolved_bug_count": 6,
+  "bug_categories": {
+    "integration_failures": [
+      "BUG-004-INTEGRATION-GOSUM",
+      "BUG-005-INTEGRATION-PARSE",
+      "BUG-006-INTEGRATION-LEAK"
+    ],
+    "build_failures": [
+      "BUG-004-INTEGRATION-GOSUM"
+    ],
+    "test_failures": [],
+    "review_findings": [
+      "BUG-002-STUBS-VIOLATION",
+      "BUG-003-META-LOCATION",
+      "BUG-004-INTEGRATION-GOSUM",
+      "BUG-005-INTEGRATION-PARSE",
+      "BUG-006-INTEGRATION-LEAK"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+# Orchestrator TODOs - ERROR_RECOVERY State
+# Saved: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
+# Trigger: R287 - Beginning ERROR_RECOVERY work
+
+## Current Context
+Previous state: MONITORING_SWE_PROGRESS
+Error reason: Multiple verification failures in Phase 1 Wave 2
+  - Effort 1.2.2 (registry-client): NOT IMPLEMENTED
+  - Efforts 1.2.1, 1.2.2, 1.2.3: Missing work logs (R343 violations)
+  - Effort 1.2.4: Minor cleanup needed (uncommitted coverage files)
+
+## Recovery Actions Needed
+1. Complete Effort 1.2.2 implementation (CRITICAL)
+2. Create work logs for Efforts 1.2.1 and 1.2.3 (HIGH priority, R343 compliance)
+3. Clean up uncommitted files in Effort 1.2.4 (LOW priority)
+
+## Completed TODOs
+- [x] Read all ERROR_RECOVERY state rules (R290)
+- [x] Acknowledge all required rules individually
+- [x] Understand error recovery context from monitoring report
+- [x] Create TODO list for recovery actions
+
+## Pending TODOs
+- [ ] Determine mandatory sequence position (wave_execution)
+- [ ] Spawn SW Engineer for Effort 1.2.2 implementation
+- [ ] Spawn SW Engineers for work log creation (1.2.1, 1.2.3)
+- [ ] Spawn SW Engineer for Effort 1.2.4 cleanup
+- [ ] Re-verify all efforts after fixes
+- [ ] Return to appropriate wave_execution state
+
+## Next State Determination
+After fixes complete, must return to wave_execution mandatory sequence.
+Since efforts are not all complete, should return to MONITORING_SWE_PROGRESS
+to re-verify, then proceed to SPAWN_CODE_REVIEWERS_EFFORT_REVIEW when all pass.
+1761776493 - ERROR_RECOVERY TODOs saved

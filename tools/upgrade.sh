@@ -31,6 +31,10 @@
 
 set -e
 
+# Run entire script with nice priority to reduce system load during upgrades
+# All child processes (rsync, cp, git, etc.) inherit this nice level automatically
+renice -n 10 $$ > /dev/null 2>&1 || true
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'

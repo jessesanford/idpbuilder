@@ -1,0 +1,329 @@
+# Target Repository Configuration Template
+# =============================================================================
+# This file specifies the actual project repository that Software Factory will work on
+# CRITICAL: This is NOT the Software Factory instance repository!
+#
+# PURPOSE:
+# - Defines the repository that agents will clone and modify
+# - Configures branch naming conventions
+# - Sets up workspace organization
+# - Enforces repository separation (SF instance vs target repo)
+#
+# USAGE:
+# 1. Copy this template to the root of your SF instance
+# 2. Rename to target-repo-config.yaml
+# 3. Fill in all required fields
+# 4. Validate with: ./utilities/validate-factory-compliance.sh
+# =============================================================================
+
+# =============================================================================
+# MANDATORY FIELDS FOR R104 COMPLIANCE
+# These fields MUST be set for proper operation
+# =============================================================================
+# REQUIRED: Absolute path where target repo will be cloned
+# This is typically under the efforts/ directory
+repository_path: "/absolute/path/to/software-factory/efforts/target-repo"
+
+# REQUIRED: Directory name for the cloned repository
+# This will be the actual folder name under repository_path
+repository_name: "target-repo-name"
+
+# REQUIRED: Base branch for integration (usually main or master)
+# All work will ultimately merge back to this branch
+default_branch: "main"
+
+# =============================================================================
+# TARGET REPOSITORY DETAILS
+# Configuration for the repository agents will work on
+# =============================================================================
+target_repository:
+  # REQUIRED: The upstream repository URL (HTTPS or SSH)
+  # Examples:
+  # - https://github.com/kubernetes/kubernetes.git
+  # - git@github.com:kubernetes/kubernetes.git
+  url: "https://github.com/OWNER/REPO.git"
+
+  # REQUIRED: The default base branch to work from
+  # This should match the repository's default branch
+  # Common values: "main", "master", "develop"
+  base_branch: "main"
+
+  # OPTIONAL: Fork URL if working on a fork
+  # If specified, agents will:
+  # - Push to the fork
+  # - Create PRs from fork to upstream
+  # Leave empty if working directly on the main repository
+  fork_url: ""
+
+  # REQUIRED: Authentication method
+  # Options:
+  # - "https" (uses git credentials/token)
+  # - "ssh" (uses SSH keys)
+  # - "token" (uses GitHub token from environment)
+  auth_method: "https"
+
+  # REQUIRED: Clone depth for sparse checkouts
+  # - 0 = Full history (slower but complete)
+  # - 100 = Last 100 commits (recommended for speed)
+  # - 1 = Shallow clone (fastest but limited)
+  clone_depth: 100
+
+# =============================================================================
+# BRANCH NAMING CONFIGURATION
+# Defines how branches are named throughout the project
+# =============================================================================
+branch_naming:
+  # OPTIONAL: Project prefix for all branches (lowercase kebab-case)
+  # This will be prepended to all branch names with a slash
+  # Examples:
+  # - "idpbuilder-oci" results in "idpbuilder-oci/phase1/wave1/effort1"
+  # - "k8s-controller" results in "k8s-controller/phase1/wave1/effort1"
+  # - "" (empty) results in "phase1/wave1/effort1"
+  #
+  # BEST PRACTICE: Use a short, descriptive prefix to avoid branch name collisions
+  project_prefix: ""
+
+  # REQUIRED: Format for effort branches
+  # Variables available:
+  # - {prefix}: The project_prefix with trailing slash (if set)
+  # - {phase}: Phase number (1, 2, 3, etc.)
+  # - {wave}: Wave number (1, 2, 3, etc.)
+  # - {effort_name}: Effort identifier
+  #
+  # Default format creates branches like:
+  # - project-prefix/phase1/wave1/effort-auth
+  # - project-prefix/phase2/wave3/effort-database
+  effort_format: "{prefix}phase{phase}/wave{wave}/{effort_name}"
+
+  # REQUIRED: Format for wave integration branches
+  # These branches collect all efforts from a wave
+  # Variables: {prefix}, {phase}, {wave}
+  #
+  # Default creates branches like:
+  # - project-prefix/phase1/wave1/integration
+  integration_format: "{prefix}phase{phase}/wave{wave}/integration"
+
+  # REQUIRED: Format for phase integration branches
+  # These branches collect all waves from a phase
+  # Variables: {prefix}, {phase}
+  #
+  # Default creates branches like:
+  # - project-prefix/phase1/integration
+  phase_integration_format: "{prefix}phase{phase}/integration"
+
+# =============================================================================
+# WORKSPACE CONFIGURATION
+# Defines how working directories are organized
+# =============================================================================
+workspace:
+  # REQUIRED: Root directory for effort workspaces
+  # This is relative to the SF instance root
+  # Standard value: "efforts"
+  efforts_root: "efforts"
+
+  # REQUIRED: Structure under efforts_root
+  # Variables:
+  # - {phase}: Phase number
+  # - {wave}: Wave number
+  # - {effort_name}: Effort identifier
+  #
+  # Default creates structure like:
+  # efforts/
+  #   phase1/
+  #     wave1/
+  #       effort-auth/
+  #       effort-database/
+  #     wave2/
+  #       effort-api/
+  effort_path: "phase{phase}/wave{wave}/{effort_name}"
+
+  # OPTIONAL: Sparse checkout patterns
+  # Use this to check out only specific parts of large repositories
+  # Empty list means full checkout
+  #
+  # Pattern examples:
+  # - "src/**" (all files under src/)
+  # - "!vendor/**" (exclude vendor/)
+  # - "*.go" (only Go files)
+  sparse_patterns: []
+  # Example for Kubernetes repository:
+  # sparse_patterns:
+  #   - "cmd/**"
+  #   - "pkg/**"
+  #   - "staging/**"
+  #   - "!vendor/**"
+  #   - "!test/**"
+
+# =============================================================================
+# REPOSITORY SEPARATION ENFORCEMENT
+# Critical for preventing agents from corrupting the SF instance
+# =============================================================================
+separation:
+  # REQUIRED: Prevent agents from modifying SF instance repository
+  # MUST be true for production use
+  # Only set to false for development/testing
+  protect_sf_instance: true
+
+  # REQUIRED: List of protected paths in SF instance
+  # Agents cannot modify these paths
+  # Add project-specific protected paths as needed
+  protected_paths:
+    - "rule-library/"      # Core rules (never modify)
+    - "utilities/"         # Utility scripts
+    - ".claude/"          # Agent configurations
+    - "agent-states/"     # State machine definitions
+    - "*.yaml"           # Configuration files
+    - "*.md"             # Documentation files
+    - "orchestrator-state.json"  # State file
+    - "setup.sh"         # Setup script
+    - "tools/"           # Tool scripts
+
+  # REQUIRED: Allowed operations in SF instance repo
+  # What agents CAN do in the SF instance
+  # Options: "read", "state", "todos", "logs"
+  allowed_in_sf_instance:
+    - "read"   # Reading configuration and rules
+    - "state"  # Updating state files in designated areas
+    - "todos"  # Managing TODO files
+    - "logs"   # Writing log files
+
+# =============================================================================
+# VALIDATION RULES
+# Enforces best practices and prevents common errors
+# =============================================================================
+validation:
+  # REQUIRED: Require all effort branches to track remote
+  # Ensures all work is pushed and not lost locally
+  require_remote_tracking: true
+
+  # REQUIRED: Require push verification after commits
+  # Verifies that commits are actually pushed to remote
+  require_push_verification: true
+
+  # REQUIRED: Maximum time between push attempts (minutes)
+  # Forces regular pushes to prevent work loss
+  # Recommended: 5-10 minutes
+  max_push_delay: 5
+
+  # REQUIRED: Require clean git status before switching efforts
+  # Prevents uncommitted work from being lost
+  require_clean_status: true
+
+  # OPTIONAL: Require specific commit message format
+  # Example: "feat(scope): description" or "fix: description"
+  commit_message_pattern: ""
+  # Example patterns:
+  # commit_message_pattern: "^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .+"
+
+  # OPTIONAL: Maximum file size allowed (MB)
+  # Prevents accidental commits of large files
+  max_file_size_mb: 10
+
+  # OPTIONAL: Blocked file patterns
+  # Files that should never be committed
+  blocked_patterns:
+    - "*.log"
+    - "*.tmp"
+    - ".env"
+    - "node_modules/"
+    - "__pycache__/"
+    - "*.pyc"
+
+# =============================================================================
+# TESTING CONFIGURATION
+# Enforces TDD and testing best practices
+# =============================================================================
+testing:
+  # REQUIRED: Test execution command for the target repository
+  # This command will be used to run tests
+  test_command: "make test"
+  # Language-specific examples:
+  # - Go: "go test ./..."
+  # - Python: "pytest"
+  # - JavaScript: "npm test"
+  # - Java: "mvn test"
+
+  # REQUIRED: Coverage report command
+  coverage_command: "make coverage"
+  # Language-specific examples:
+  # - Go: "go test -cover ./..."
+  # - Python: "pytest --cov"
+  # - JavaScript: "npm run coverage"
+
+  # REQUIRED: Minimum coverage percentage required
+  min_coverage: 70
+
+  # REQUIRED: Test before merge
+  # If true, tests must pass before creating PR
+  test_before_merge: true
+
+# =============================================================================
+# INTEGRATION SETTINGS
+# Configuration for integration with CI/CD and other tools
+# =============================================================================
+integration:
+  # OPTIONAL: CI/CD system in use
+  # Options: "github-actions", "jenkins", "gitlab-ci", "circleci", "none"
+  ci_system: "github-actions"
+
+  # OPTIONAL: Issue tracker
+  # Options: "github", "jira", "gitlab", "none"
+  issue_tracker: "github"
+
+  # OPTIONAL: Documentation site
+  # URL where project documentation is hosted
+  docs_url: ""
+
+  # OPTIONAL: Container registry for images
+  # Used if project produces container images
+  container_registry: ""
+
+# =============================================================================
+# MONITORING AND METRICS
+# Track progress and performance
+# =============================================================================
+monitoring:
+  # OPTIONAL: Enable metrics collection
+  collect_metrics: true
+
+  # OPTIONAL: Metrics to track
+  tracked_metrics:
+    - "lines_per_effort"     # Track effort sizes
+    - "time_per_phase"       # Track phase durations
+    - "test_coverage"        # Track test coverage trends
+    - "review_turnaround"    # Track review times
+    - "defect_rate"         # Track bugs found
+
+  # OPTIONAL: Report frequency (daily, weekly, phase, wave)
+  report_frequency: "wave"
+
+# =============================================================================
+# NOTES AND WARNINGS
+# =============================================================================
+# ⚠️ WARNINGS:
+# 1. NEVER set protect_sf_instance to false in production
+# 2. ALWAYS use absolute paths for repository_path
+# 3. ENSURE default_branch matches the actual repository default
+# 4. TEST authentication before running agents
+# 5. VALIDATE branch name formats don't exceed git limits (250 chars)
+#
+# 📝 BEST PRACTICES:
+# 1. Use descriptive project_prefix to avoid collisions
+# 2. Keep clone_depth at 100 for balance of speed and history
+# 3. Enable all validation rules for safety
+# 4. Set min_coverage to at least 70%
+# 5. Use sparse_patterns for large repositories
+# 6. Regular push (max_push_delay <= 10 minutes)
+# 7. Always require clean status before effort switches
+# 8. Block sensitive files (.env, secrets, keys)
+# 9. Track metrics to identify bottlenecks
+# 10. Document any custom patterns or formats used
+#
+# 🔧 TROUBLESHOOTING:
+# - Authentication fails: Check auth_method and credentials
+# - Clone fails: Verify URL and network access
+# - Branches too long: Shorten project_prefix
+# - Tests not found: Verify test_command
+# - Push fails: Check permissions and remote tracking
+#
+# End of template - Save as target-repo-config.yaml in SF instance root

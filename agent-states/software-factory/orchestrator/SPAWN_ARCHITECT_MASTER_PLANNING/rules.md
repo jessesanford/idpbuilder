@@ -162,49 +162,50 @@ exit 0
 This state spawns the Architect to create the master architecture that defines the entire project structure.
 
 ## Entry Criteria
-- No existing PROJECT-ARCHITECTURE.md or MASTER-ARCHITECTURE.md
+- No existing PROJECT-ARCHITECTURE-PLAN.md at standard R550 location
 - Starting a brand new project
 - Transitioned from INIT state
 
 ## State Responsibilities
 
-### 1. Verify No Existing Master Plan
+### 1. Verify No Existing Master Plan (R550 Compliant)
 ```bash
-# Get standardized location from state file
-MASTER_ARCH_FILE=$(jq -r '.planning_artifacts.master_architecture_file // "planning/PROJECT-ARCHITECTURE.md"' "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
-MASTER_ARCH_PATH="$CLAUDE_PROJECT_DIR/$MASTER_ARCH_FILE"
+# R550: Use standardized planning_files location (NOT legacy planning_artifacts)
+ARCH_PLAN_FILE=$(jq -r '.planning_files.project.architecture_plan // "planning/project/PROJECT-ARCHITECTURE-PLAN.md"' "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
+ARCH_PLAN_PATH="$CLAUDE_PROJECT_DIR/$ARCH_PLAN_FILE"
 
-# Check for existing architecture at standardized location
-if [ -f "$MASTER_ARCH_PATH" ]; then
-    echo "⚠️ Master architecture already exists at: $MASTER_ARCH_PATH"
+# Check for existing architecture at R550 standardized location
+if [ -f "$ARCH_PLAN_PATH" ]; then
+    echo "⚠️ Project architecture plan already exists at: $ARCH_PLAN_PATH"
     PROPOSED_NEXT_STATE="SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING"
-    TRANSITION_REASON="Master architecture already exists, skipping to test planning"
+    TRANSITION_REASON="Project architecture plan already exists, skipping to test planning"
 else
-    echo "✅ No master architecture found at: $MASTER_ARCH_PATH"
-    echo "✅ Proceeding with architect spawn"
+    echo "✅ No project architecture plan found at: $ARCH_PLAN_PATH"
+    echo "✅ Proceeding with architect spawn per R550"
 fi
 ```
 
-### 2. Initialize Planning Artifacts Metadata
+### 2. Initialize Planning Files Metadata (R550 Pattern)
 ```bash
-# Initialize planning_artifacts section if not present (ensure state file has the field)
-jq '.planning_artifacts = (.planning_artifacts // {}) |
-    .planning_artifacts.master_architecture_file = "planning/PROJECT-ARCHITECTURE.md" |
-    .planning_artifacts.master_architecture_status = "IN_PROGRESS"' \
+# R550: Initialize planning_files.project section (NEW standard)
+# NOTE: planning_artifacts is deprecated but maintained for backward compatibility
+jq '.planning_files = (.planning_files // {}) |
+    .planning_files.project = (.planning_files.project // {}) |
+    .planning_files.project.architecture_plan = "planning/project/PROJECT-ARCHITECTURE-PLAN.md"' \
    "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json" > "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.tmp" && \
    mv "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.tmp" "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json"
 
-echo "✅ Planning artifacts metadata initialized"
+echo "✅ R550: Planning files metadata initialized for project architecture"
 ```
 
-### 3. Spawn Architect Agent with Standardized Output Location
+### 3. Spawn Architect Agent with R550 Standardized Output Location
 ```bash
-# Spawn architect with EXPLICIT instructions about output location
+# R550: Spawn architect with EXPLICIT instructions about R550-compliant output location
 /spawn-agent architect \
     --state MASTER_PLANNING \
-    --task "Create master architecture for entire project" \
-    --output-location "$MASTER_ARCH_FILE" \
-    --instructions "Create PROJECT-ARCHITECTURE.md at planning/PROJECT-ARCHITECTURE.md (standardized location per orchestrator-state-v3.json planning_artifacts.master_architecture_file)"
+    --task "Create project architecture plan for entire project" \
+    --output-location "$ARCH_PLAN_FILE" \
+    --instructions "Create PROJECT-ARCHITECTURE-PLAN.md at planning/project/PROJECT-ARCHITECTURE-PLAN.md (R550 standardized location per orchestrator-state-v3.json planning_files.project.architecture_plan). This is the PROJECT-LEVEL architecture plan."
 ```
 
 ### 4. Record Spawn in State File

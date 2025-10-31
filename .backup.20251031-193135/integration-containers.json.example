@@ -1,0 +1,231 @@
+{
+  "active_integrations": [
+    {
+      "container_id": "wave_2_3",
+      "container_type": "WAVE",
+      "container_name": "Phase 2 Wave 3 - Advanced API Features",
+      "status": "REVIEWING",
+      "current_iteration": 2,
+      "max_iterations": 10,
+      "created_at": "2025-10-08T09:00:00Z",
+      "integration_branch": "phase2-wave3-integration",
+      "efforts_to_integrate": [
+        "phase2-wave3-rate-limiting",
+        "phase2-wave3-caching-layer",
+        "phase2-wave3-webhook-system"
+      ],
+      "efforts_integrated": [
+        "phase2-wave3-rate-limiting",
+        "phase2-wave3-caching-layer",
+        "phase2-wave3-webhook-system"
+      ],
+      "bugs_discovered": [
+        "BUG-001-NULL-POINTER-WEBHOOK",
+        "BUG-002-RACE-CONDITION-CACHE",
+        "BUG-003-MEMORY-LEAK-RATE-LIMIT",
+        "BUG-004-INCORRECT-STATUS-CODE",
+        "BUG-005-CACHE-KEY-COLLISION"
+      ],
+      "bugs_fixed": [
+        "BUG-003-MEMORY-LEAK-RATE-LIMIT",
+        "BUG-004-INCORRECT-STATUS-CODE",
+        "BUG-005-CACHE-KEY-COLLISION"
+      ],
+      "iteration_history": [
+        {
+          "iteration_number": 1,
+          "started_at": "2025-10-07T14:00:00Z",
+          "completed_at": "2025-10-08T09:00:00Z",
+          "bugs_found": 3,
+          "bugs_fixed": 3,
+          "integration_successful": true,
+          "review_completed": true,
+          "outcome": "ISSUES_FOUND",
+          "bugs_discovered_ids": [
+            "BUG-003-MEMORY-LEAK-RATE-LIMIT",
+            "BUG-004-INCORRECT-STATUS-CODE",
+            "BUG-005-CACHE-KEY-COLLISION"
+          ],
+          "bugs_fixed_ids": [
+            "BUG-003-MEMORY-LEAK-RATE-LIMIT",
+            "BUG-004-INCORRECT-STATUS-CODE",
+            "BUG-005-CACHE-KEY-COLLISION"
+          ],
+          "notes": "First integration revealed memory leak, status code issue, and cache key collision. All fixed and reintegrated successfully."
+        },
+        {
+          "iteration_number": 2,
+          "started_at": "2025-10-08T13:00:00Z",
+          "completed_at": null,
+          "bugs_found": 2,
+          "bugs_fixed": 0,
+          "integration_successful": true,
+          "review_completed": false,
+          "outcome": "IN_PROGRESS",
+          "bugs_discovered_ids": [
+            "BUG-001-NULL-POINTER-WEBHOOK",
+            "BUG-002-RACE-CONDITION-CACHE"
+          ],
+          "bugs_fixed_ids": [],
+          "notes": "Second iteration found null pointer issue in webhook handler and critical race condition in cache. Currently fixing both issues."
+        }
+      ],
+      "convergence_metrics": {
+        "total_bugs_discovered": 5,
+        "total_bugs_fixed": 3,
+        "bugs_remaining": 2,
+        "bug_discovery_rate": 2.5,
+        "bug_fix_rate": 1.5,
+        "estimated_iterations_remaining": 2,
+        "convergence_confidence": "MEDIUM",
+        "bugs_trend": [3, 2]
+      },
+      "last_review_timestamp": "2025-10-08T13:20:00Z",
+      "last_integration_timestamp": "2025-10-08T13:15:00Z",
+      "is_converging": true,
+      "escalation_required": false,
+      "escalation_reason": null,
+      "architect_review_completed": false,
+      "architect_review_timestamp": null,
+      "completion_criteria_met": false,
+      "metadata": {
+        "phase_number": 2,
+        "wave_number": 3,
+        "parent_container_id": "phase_2",
+        "child_containers": [],
+        "total_efforts_count": 3,
+        "total_integration_time_hours": 4.5
+      }
+    },
+    {
+      "container_id": "phase_2",
+      "container_type": "PHASE",
+      "container_name": "Phase 2 - API Layer and Business Logic",
+      "status": "INTEGRATING",
+      "current_iteration": 1,
+      "max_iterations": 10,
+      "created_at": "2025-10-05T10:00:00Z",
+      "integration_branch": "phase2-integration",
+      "efforts_to_integrate": [
+        "phase2-wave1-integration",
+        "phase2-wave2-integration",
+        "phase2-wave3-integration"
+      ],
+      "efforts_integrated": [
+        "phase2-wave1-integration",
+        "phase2-wave2-integration"
+      ],
+      "bugs_discovered": [],
+      "bugs_fixed": [],
+      "iteration_history": [
+        {
+          "iteration_number": 1,
+          "started_at": "2025-10-08T14:00:00Z",
+          "completed_at": null,
+          "bugs_found": 0,
+          "bugs_fixed": 0,
+          "integration_successful": false,
+          "review_completed": false,
+          "outcome": "IN_PROGRESS",
+          "bugs_discovered_ids": [],
+          "bugs_fixed_ids": [],
+          "notes": "Waiting for Wave 3 to complete before integrating all waves into Phase 2."
+        }
+      ],
+      "convergence_metrics": {
+        "total_bugs_discovered": 0,
+        "total_bugs_fixed": 0,
+        "bugs_remaining": 0,
+        "bug_discovery_rate": 0.0,
+        "bug_fix_rate": 0.0,
+        "estimated_iterations_remaining": 3,
+        "convergence_confidence": "HIGH",
+        "bugs_trend": []
+      },
+      "last_review_timestamp": null,
+      "last_integration_timestamp": "2025-10-08T14:00:00Z",
+      "is_converging": true,
+      "escalation_required": false,
+      "escalation_reason": null,
+      "architect_review_completed": false,
+      "architect_review_timestamp": null,
+      "completion_criteria_met": false,
+      "metadata": {
+        "phase_number": 2,
+        "wave_number": null,
+        "parent_container_id": "project",
+        "child_containers": [
+          "wave_2_1",
+          "wave_2_2",
+          "wave_2_3"
+        ],
+        "total_efforts_count": 3,
+        "total_integration_time_hours": 0.5
+      }
+    }
+  ],
+  "metadata": {
+    "total_containers": 2,
+    "active_containers": 2,
+    "converged_containers": 0,
+    "failed_containers": 0,
+    "total_iterations_across_all_containers": 3,
+    "average_iterations_to_convergence": null,
+    "last_updated": "2025-10-08T13:30:00Z",
+    "last_updated_by": "state-manager"
+  },
+  "convergence_statistics": {
+    "overall_convergence_rate": null,
+    "average_bugs_per_iteration": 2.5,
+    "average_fix_velocity": 1.5,
+    "containers_by_type": {
+      "wave_containers": {
+        "total": 3,
+        "active": 1,
+        "converged": 2,
+        "failed": 0
+      },
+      "phase_containers": {
+        "total": 2,
+        "active": 1,
+        "converged": 1,
+        "failed": 0
+      },
+      "project_containers": {
+        "total": 1,
+        "active": 0,
+        "converged": 0,
+        "failed": 0
+      }
+    }
+  },
+  "completed_integrations": [
+    {
+      "container_id": "wave_2_1",
+      "container_type": "WAVE",
+      "final_status": "CONVERGED",
+      "completed_at": "2025-10-06T16:00:00Z",
+      "total_iterations": 3,
+      "total_bugs_discovered": 4,
+      "total_bugs_fixed": 4
+    },
+    {
+      "container_id": "wave_2_2",
+      "container_type": "WAVE",
+      "final_status": "CONVERGED",
+      "completed_at": "2025-10-07T12:00:00Z",
+      "total_iterations": 2,
+      "total_bugs_discovered": 2,
+      "total_bugs_fixed": 2
+    },
+    {
+      "container_id": "phase_1",
+      "container_type": "PHASE",
+      "final_status": "CONVERGED",
+      "completed_at": "2025-10-05T18:00:00Z",
+      "total_iterations": 4,
+      "total_bugs_discovered": 8,
+      "total_bugs_fixed": 8
+    }
+  ]
+}

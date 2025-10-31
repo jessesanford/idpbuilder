@@ -1,0 +1,55 @@
+# Orchestrator TODOs - ERROR_RECOVERY State
+# Saved: $(date -u '+%Y-%m-%d %H:%M:%S') UTC
+# Trigger: R287 - Before state transition, R322 checkpoint
+
+## Completed Work in ERROR_RECOVERY
+
+### Analysis & Planning ✅
+- [x] Read all ERROR_RECOVERY state rules (R290 compliance)
+- [x] Acknowledged all 10 required rules individually
+- [x] Analyzed error context from MONITORING-SWE-PROGRESS-REPORT.md
+- [x] Determined mandatory sequence position (wave_execution/implementation)
+- [x] Created comprehensive ERROR-RECOVERY-PLAN.md document
+- [x] Identified 4 recovery actions with priorities
+- [x] Documented success criteria and state flow
+
+### Recovery Plan Created ✅
+**Document**: ERROR-RECOVERY-PLAN.md
+**Actions Identified**:
+1. Action 1 (CRITICAL): Complete Effort 1.2.2 implementation
+2. Action 2 (HIGH): Create work log for Effort 1.2.1
+3. Action 3 (HIGH): Create work log for Effort 1.2.3
+4. Action 4 (LOW): Clean up Effort 1.2.4 uncommitted files
+
+**Next State Determined**: SPAWN_SW_ENGINEERS
+**Reason**: Need to coordinate SW Engineers to execute recovery actions per R006
+
+## Pending Work (Next State: SPAWN_SW_ENGINEERS)
+
+The actual recovery execution requires spawning SW Engineers:
+- [ ] Spawn SW Engineer for Effort 1.2.2 implementation (CRITICAL priority)
+- [ ] Spawn SW Engineers for work log creation (parallel, R151)
+- [ ] Spawn SW Engineer for Effort 1.2.4 cleanup
+- [ ] Monitor recovery progress
+- [ ] Transition to MONITORING_SWE_PROGRESS for re-verification
+
+## State Transition Plan
+
+**Current**: ERROR_RECOVERY
+**Next**: SPAWN_SW_ENGINEERS  
+**Reason**: Recovery plan complete, ready to coordinate SW Engineers to execute fixes
+**After SPAWN**: MONITORING_EFFORT_FIXES (monitor SW Engineer progress on recovery actions)
+**Then**: MONITORING_SWE_PROGRESS (re-verify all efforts after fixes)
+**Finally**: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW (when all efforts verified complete)
+
+## Compliance Summary
+
+- ✅ R019: Error Recovery Protocol followed
+- ✅ R290: All state rules read and acknowledged
+- ✅ R287: TODOs saved before transition
+- ✅ R288: State file will be updated via State Manager
+- ✅ R322: Stopping at checkpoint before spawning agents
+- ✅ R405: Continuation flag TRUE (normal recovery workflow)
+
+**Recovery Plan Status**: READY FOR EXECUTION
+**Orchestrator Role**: COORDINATOR (R006 - will not write code, only coordinate)

@@ -1,0 +1,34 @@
+# SW Engineer TODOs - Trigger: R287 TodoWrite checkpoint
+# State: IMPLEMENTATION (with library version blocker)
+# Effort: effort-1-docker-client (1.2.1)
+# Timestamp: $(date -Iseconds)
+
+## Completed
+- [x] Pre-flight checks and environment setup
+- [x] Read Wave 1 Docker interface definition
+- [x] Created pkg/docker structure, initialized go.mod
+- [x] Added Docker dependencies (github.com/docker/docker v28.5.1+incompatible)
+- [x] Implemented pkg/docker/client.go (210 lines, 6277 bytes)
+- [x] Wrote comprehensive tests in client_test.go (350 lines, 9606 bytes)
+
+## In Progress
+- [ ] BLOCKED: Resolve Docker/go-containerregistry version compatibility
+  - Issue: go-containerregistry@v0.20.2 daemon package incompatible with docker@v28.5.1
+  - Error: ImageHistory method signature mismatch, undefined types.ImageLoadResponse
+  - Need: Find compatible library versions or alternative approach
+
+## Pending
+- [ ] Run tests and verify 85%+ coverage (blocked)
+- [ ] Measure size with line-counter.sh
+- [ ] Commit and push code
+
+## Blocker Details
+The go-containerregistry v0.20.2 daemon package expects an older Docker client API.
+Tried versions:
+- docker v28.2.2+incompatible + go-containerregistry v0.19.0 (failed)
+- docker v28.5.1+incompatible + go-containerregistry v0.20.2 (failed)
+
+Need to either:
+1. Find compatible version combination
+2. Use alternative OCI conversion approach  
+3. Update go-containerregistry or wait for fix

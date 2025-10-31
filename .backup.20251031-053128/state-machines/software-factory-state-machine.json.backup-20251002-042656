@@ -1,0 +1,3209 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "description": "Software Factory 2.0 - State Machine Definition",
+    "source": "SOFTWARE-FACTORY-STATE-MACHINE.md",
+    "last_updated": "2025-09-23",
+    "rules_referenced": [
+      "R206",
+      "R233",
+      "R313",
+      "R151",
+      "R234",
+      "R356",
+      "R322",
+      "R336",
+      "R321",
+      "R327",
+      "R348",
+      "R351",
+      "R352",
+      "R353",
+      "R350",
+      "R258",
+      "R285",
+      "R283",
+      "R238",
+      "R300",
+      "R239",
+      "R259",
+      "R266",
+      "R271",
+      "R272",
+      "R273",
+      "R274",
+      "R275",
+      "R277",
+      "R279",
+      "R280",
+      "R296",
+      "R304",
+      "R308",
+      "R210",
+      "R211",
+      "R213",
+      "R214",
+      "R218",
+      "R232",
+      "R222",
+      "R204",
+      "R269",
+      "R270",
+      "R212",
+      "R360",
+      "R341",
+      "R342",
+      "R401",
+      "R403",
+      "R504",
+      "R507",
+      "R508"
+    ],
+    "name": "software-factory-state-machine",
+    "created_at": "2025-09-23"
+  },
+  "fundamental_laws": {
+    "state_transition_stop": {
+      "rule": "FUNDAMENTAL LAW",
+      "description": "Each state does ONE atomic operation. After completing that operation, the agent MUST STOP. State transitions are NEVER automatic.",
+      "requirements": [
+        "Enter state",
+        "Perform ONE TYPE of operation",
+        "Update state file",
+        "STOP",
+        "Wait for continuation"
+      ]
+    },
+    "parallelization_allowed": {
+      "rule": "R151",
+      "description": "Multiple agents of the SAME TYPE in parallel are allowed",
+      "requirements": [
+        "Same agent type",
+        "Same phase",
+        "Same purpose",
+        "Timing delta <5s between spawns"
+      ]
+    },
+    "phase_mixing_forbidden": {
+      "description": "Spawning different agent types or mixing phases is FORBIDDEN",
+      "penalty": "AUTOMATIC -100% FAILURE",
+      "examples": [
+        "Spawning agent then immediately monitoring them",
+        "Getting review results then immediately spawning fixes",
+        "Spawning Code Reviewer then immediately spawning SW Engineer",
+        "Any flow through behavior across phase boundaries"
+      ]
+    }
+  },
+  "supreme_laws": [
+    {
+      "rule": "R233",
+      "title": "ALL STATES REQUIRE IMMEDIATE ACTION",
+      "description": "States are VERBS, not destinations! Every state name is a command to execute.",
+      "requirements": [
+        "Upon entering ANY state, MUST immediately perform that action",
+        "NO announcements about being in a state",
+        "NO waiting or pausing after state entry",
+        "ONLY terminal states may stop execution"
+      ]
+    },
+    {
+      "rule": "R313",
+      "title": "MANDATORY STOP AFTER SPAWNING AGENTS",
+      "description": "Context preservation law - prevents rule loss",
+      "spawn_states_requiring_stop": [
+        "SPAWN_AGENTS",
+        "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+        "SPAWN_ENGINEERS_FOR_FIXES",
+        "SPAWN_INTEGRATION_AGENT",
+        "SPAWN_ARCHITECT_*",
+        "SPAWN_CODE_REVIEWER_*"
+      ]
+    },
+    {
+      "rule": "R322",
+      "title": "MANDATORY CHECKPOINT BEFORE STATE TRANSITIONS",
+      "description": "User review law - ensures plan approval before execution",
+      "checkpoint_transitions": [
+        {
+          "from": "WAITING_FOR_MERGE_PLAN",
+          "to": "SPAWN_INTEGRATION_AGENT",
+          "reason": "Review merge plan before execution"
+        },
+        {
+          "from": "WAITING_FOR_PHASE_MERGE_PLAN",
+          "to": "SPAWN_INTEGRATION_AGENT_PHASE",
+          "reason": "Review phase plan"
+        },
+        {
+          "from": "WAITING_FOR_PROJECT_MERGE_PLAN",
+          "to": "SPAWN_INTEGRATION_AGENT_PROJECT",
+          "reason": "Review project plan"
+        },
+        {
+          "from": "WAITING_FOR_FIX_PLANS",
+          "to": "DISTRIBUTE_FIX_PLANS",
+          "reason": "Review fix strategy"
+        },
+        {
+          "from": "WAITING_FOR_BACKPORT_PLAN",
+          "to": "SPAWN_SW_ENGINEER_BACKPORT_FIXES",
+          "reason": "Review backports"
+        }
+      ]
+    },
+    {
+      "rule": "R336",
+      "title": "MANDATORY WAVE INTEGRATION BEFORE NEXT WAVE",
+      "description": "Trunk-based development law - each wave builds on integrated previous wave",
+      "requirements": [
+        "WAVE_COMPLETE → INTEGRATION is MANDATORY",
+        "Wave N integration branch becomes base for Wave N+1",
+        "NO wave may start without previous wave's integration branch",
+        "Architect reviews INTEGRATED wave, not individual efforts"
+      ]
+    },
+    {
+      "rule": "R321",
+      "title": "IMMEDIATE BACKPORT DURING INTEGRATION",
+      "description": "All fixes during integration must be immediately backported to source branches",
+      "requirements": [
+        "Integration branches are READ-ONLY for code",
+        "ANY fix triggers IMMEDIATE_BACKPORT_REQUIRED state",
+        "Source branches must be fixed BEFORE continuing",
+        "Deferred backporting is DEPRECATED"
+      ]
+    },
+    {
+      "rule": "R234",
+      "title": "MANDATORY STATE TRAVERSAL - NO SKIPPING",
+      "description": "Highest law - supersedes all other rules",
+      "mandatory_sequence": [
+        "CREATE_NEXT_INFRASTRUCTURE",
+        "VALIDATE_INFRASTRUCTURE",
+        "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "WAITING_FOR_EFFORT_PLANS",
+        "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+        "SPAWN_AGENTS"
+      ],
+      "forbidden_transitions": [
+        "CREATE_NEXT_INFRASTRUCTURE → SPAWN_AGENTS (without validation)",
+        "CREATE_NEXT_INFRASTRUCTURE → ANALYZE_IMPLEMENTATION_PARALLELIZATION (without validation)"
+      ]
+    }
+  ],
+  "optimization_rules": [
+    {
+      "rule": "R356",
+      "title": "SINGLE-EFFORT OPTIMIZATION EXCEPTION",
+      "description": "Performance optimization for single-effort waves",
+      "allowed_optimizations": [
+        {
+          "condition": "Single effort detected",
+          "from": "CREATE_NEXT_INFRASTRUCTURE",
+          "to": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+          "skip": "ANALYZE_CODE_REVIEWER_PARALLELIZATION"
+        },
+        {
+          "condition": "Single effort detected",
+          "from": "WAITING_FOR_EFFORT_PLANS",
+          "to": "SPAWN_AGENTS",
+          "skip": "ANALYZE_IMPLEMENTATION_PARALLELIZATION"
+        }
+      ],
+      "requirements": [
+        "MUST verify single effort",
+        "MUST document optimization",
+        "MUST save minimal plan with r356_applied flag",
+        "Early exit in analysis states if entered with 1 effort"
+      ]
+    }
+  ],
+  "agents": {
+    "orchestrator": {
+      "type": "coordinator",
+      "description": "Coordinates all work and manages the overall flow",
+      "states": {
+        "INIT": {
+          "type": "initial",
+          "description": "Initial state, loading configuration",
+          "entry_conditions": [
+            "Agent startup"
+          ],
+          "exit_conditions": [
+            "Configuration loaded"
+          ],
+          "required_actions": [
+            "Load config",
+            "Determine current phase",
+            "Check for existing plans"
+          ],
+          "valid_transitions": [
+            "WAVE_START",
+            "SPAWN_ARCHITECT_MASTER_PLANNING",
+            "SPAWN_ARCHITECT_PHASE_PLANNING"
+          ]
+        },
+        "SPAWN_ARCHITECT_MASTER_PLANNING": {
+          "type": "spawn",
+          "description": "Spawn Architect to create master architecture",
+          "entry_conditions": [
+            "No master plan exists"
+          ],
+          "exit_conditions": [
+            "Architect spawned"
+          ],
+          "required_actions": [
+            "Spawn architect agent",
+            "Record spawn",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_MASTER_ARCHITECTURE"
+          ]
+        },
+        "WAITING_FOR_MASTER_ARCHITECTURE": {
+          "type": "waiting",
+          "description": "Waiting for Architect to complete master architecture",
+          "entry_conditions": [
+            "Architect spawned for master planning"
+          ],
+          "exit_conditions": [
+            "Master architecture complete"
+          ],
+          "required_actions": [
+            "Monitor architect progress",
+            "Check for completion"
+          ],
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING": {
+          "type": "spawn",
+          "description": "Spawn Code Reviewer to create project-level tests (R341 TDD)",
+          "entry_conditions": [
+            "Master architecture complete"
+          ],
+          "exit_conditions": [
+            "Code reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn code reviewer",
+            "Pass architecture",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_PROJECT_TEST_PLAN"
+          ]
+        },
+        "WAITING_FOR_PROJECT_TEST_PLAN": {
+          "type": "waiting",
+          "description": "Waiting for Code Reviewer to complete project tests (R342 enforcement)",
+          "entry_conditions": [
+            "Code reviewer spawned for project tests"
+          ],
+          "exit_conditions": [
+            "Project test plan complete"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Verify tests created"
+          ],
+          "valid_transitions": [
+            "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY"
+          ]
+        },
+        "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY": {
+          "type": "action",
+          "description": "Create project-integration branch with tests (R342 mandatory)",
+          "entry_conditions": [
+            "Project tests complete"
+          ],
+          "exit_conditions": [
+            "Branch created with tests"
+          ],
+          "required_actions": [
+            "Create branch",
+            "Commit tests",
+            "Push to remote"
+          ],
+          "valid_transitions": [
+            "INIT"
+          ]
+        },
+        "PHASE_START": {
+          "type": "action",
+          "description": "Initialize new phase, validate phase metadata, check for existing phase plans",
+          "entry_conditions": [
+            "Previous phase complete OR starting Phase 1",
+            "orchestrator-state.json has phase metadata"
+          ],
+          "exit_conditions": [
+            "Phase metadata validated",
+            "Phase planning decision made"
+          ],
+          "required_actions": [
+            "Validate phase metadata",
+            "Check for existing phase plans",
+            "Decide whether to spawn architect"
+          ],
+          "valid_transitions": [
+            "SPAWN_ARCHITECT_PHASE_PLANNING",
+            "WAVE_START",
+            "ERROR_RECOVERY"
+          ]
+        },
+        "WAVE_START": {
+          "type": "action",
+          "description": "Beginning a new wave of efforts",
+          "entry_conditions": [
+            "Wave plans exist or need creation"
+          ],
+          "exit_conditions": [
+            "Wave initialized"
+          ],
+          "required_actions": [
+            "Load wave configuration",
+            "Initialize wave state"
+          ],
+          "valid_transitions": [
+            "SPAWN_ARCHITECT_WAVE_PLANNING",
+            "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+            "CREATE_NEXT_INFRASTRUCTURE"
+          ]
+        },
+        "CREATE_NEXT_INFRASTRUCTURE": {
+          "type": "action",
+          "description": "Executing pre-planned infrastructure mechanically (R504) just-in-time (R360)",
+          "entry_conditions": [
+            "Need infrastructure for effort or split"
+          ],
+          "exit_conditions": [
+            "Infrastructure created"
+          ],
+          "required_actions": [
+            "Create directory",
+            "Clone repository",
+            "Create branch",
+            "Copy plans",
+            "Push to remote"
+          ],
+          "valid_transitions": [
+            "VALIDATE_INFRASTRUCTURE"
+          ]
+        },
+        "VALIDATE_INFRASTRUCTURE": {
+          "type": "validation",
+          "description": "Validating infrastructure configuration against authoritative sources (R507/R508)",
+          "entry_conditions": [
+            "Infrastructure created",
+            "Need to verify configuration"
+          ],
+          "exit_conditions": [
+            "All validation checks passed",
+            "OR validation failed (transition to ERROR_RECOVERY)"
+          ],
+          "required_actions": [
+            "Check remote repositories match target-repo-config.yaml",
+            "Verify branch names match orchestrator-state.json",
+            "Validate directory paths are correct",
+            "Run validate-infrastructure.sh script"
+          ],
+          "enforcement": {
+            "rule": "R507",
+            "description": "MANDATORY validation before ANY implementation",
+            "penalty": "-50% for skipping, -100% for wrong repo (R508)"
+          },
+          "valid_transitions": [
+            "SPAWN_AGENTS",
+            "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+            "ERROR_RECOVERY"
+          ]
+        },
+        "ANALYZE_CODE_REVIEWER_PARALLELIZATION": {
+          "type": "analysis",
+          "description": "Analyzing wave plan to determine Code Reviewer spawn strategy (MANDATORY)",
+          "entry_conditions": [
+            "Wave plan exists"
+          ],
+          "exit_conditions": [
+            "Parallelization analysis complete"
+          ],
+          "required_actions": [
+            "Load wave plan",
+            "Analyze effort dependencies",
+            "Create parallelization plan",
+            "Save plan"
+          ],
+          "r356_optimization": {
+            "condition": "Single effort detected",
+            "action": "Skip to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
+          },
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
+          ]
+        },
+        "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING": {
+          "type": "spawn",
+          "description": "Spawning code reviewers to create effort plans",
+          "entry_conditions": [
+            "Parallelization plan exists or single effort"
+          ],
+          "exit_conditions": [
+            "Code reviewers spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewers per plan",
+            "Ensure <5s timing delta",
+            "Record spawns",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_EFFORT_PLANS"
+          ]
+        },
+        "WAITING_FOR_EFFORT_PLANS": {
+          "type": "waiting",
+          "description": "Waiting for code reviewers to complete effort plans",
+          "entry_conditions": [
+            "Code reviewers spawned"
+          ],
+          "exit_conditions": [
+            "All effort plans complete"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Check completions"
+          ],
+          "valid_transitions": [
+            "ANALYZE_IMPLEMENTATION_PARALLELIZATION"
+          ]
+        },
+        "ANALYZE_IMPLEMENTATION_PARALLELIZATION": {
+          "type": "analysis",
+          "description": "Analyzing effort plans to determine SW Engineer spawn strategy (MANDATORY)",
+          "entry_conditions": [
+            "Effort plans complete"
+          ],
+          "exit_conditions": [
+            "Parallelization analysis complete"
+          ],
+          "required_actions": [
+            "Load effort plans",
+            "Check dependencies",
+            "Create spawn plan",
+            "Save plan"
+          ],
+          "r356_optimization": {
+            "condition": "Single effort detected",
+            "action": "Skip to SPAWN_AGENTS"
+          },
+          "valid_transitions": [
+            "SPAWN_AGENTS"
+          ]
+        },
+        "SPAWN_AGENTS": {
+          "type": "spawn",
+          "description": "Spawning SW engineers for implementation",
+          "entry_conditions": [
+            "Spawn plan exists"
+          ],
+          "exit_conditions": [
+            "SW engineers spawned"
+          ],
+          "required_actions": [
+            "Spawn engineers per plan",
+            "Ensure <5s timing delta",
+            "Record spawns",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "MONITOR_IMPLEMENTATION"
+          ]
+        },
+        "SPAWN_ARCHITECT_PHASE_PLANNING": {
+          "type": "spawn",
+          "description": "Request architect to create phase architecture and implementation plans (R210)",
+          "entry_conditions": [
+            "Phase planning needed"
+          ],
+          "exit_conditions": [
+            "Architect spawned"
+          ],
+          "required_actions": [
+            "Spawn architect",
+            "Pass context",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_PHASE_PLANS"
+          ]
+        },
+        "SPAWN_ARCHITECT_WAVE_PLANNING": {
+          "type": "spawn",
+          "description": "Request architect to create wave architecture (R210)",
+          "entry_conditions": [
+            "Wave architecture needed"
+          ],
+          "exit_conditions": [
+            "Architect spawned"
+          ],
+          "required_actions": [
+            "Spawn architect",
+            "Pass wave context",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_ARCHITECTURE_PLAN"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING": {
+          "type": "spawn",
+          "description": "Spawn Code Reviewer to create phase-level tests from architecture (TDD)",
+          "entry_conditions": [
+            "Phase architecture complete"
+          ],
+          "exit_conditions": [
+            "Code reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Pass architecture",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_PHASE_TEST_PLAN"
+          ]
+        },
+        "WAITING_FOR_PHASE_TEST_PLAN": {
+          "type": "waiting",
+          "description": "Waiting for Code Reviewer to complete phase test plan and test harness",
+          "entry_conditions": [
+            "Code reviewer spawned for phase tests"
+          ],
+          "exit_conditions": [
+            "Phase tests complete"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Verify test creation"
+          ],
+          "valid_transitions": [
+            "CREATE_PHASE_INTEGRATION_BRANCH_EARLY"
+          ]
+        },
+        "CREATE_PHASE_INTEGRATION_BRANCH_EARLY": {
+          "type": "action",
+          "description": "Create phase-N/integration branch with tests (R342 mandatory)",
+          "entry_conditions": [
+            "Phase tests complete"
+          ],
+          "exit_conditions": [
+            "Branch created with tests"
+          ],
+          "required_actions": [
+            "Create branch",
+            "Commit tests",
+            "Push"
+          ],
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWER_PHASE_IMPL"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING": {
+          "type": "spawn",
+          "description": "Spawn Code Reviewer to create wave-level tests from architecture (TDD)",
+          "entry_conditions": [
+            "Wave architecture complete"
+          ],
+          "exit_conditions": [
+            "Code reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Pass architecture",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_WAVE_TEST_PLAN"
+          ]
+        },
+        "WAITING_FOR_WAVE_TEST_PLAN": {
+          "type": "waiting",
+          "description": "Waiting for Code Reviewer to complete wave test plan and test harness",
+          "entry_conditions": [
+            "Code reviewer spawned for wave tests"
+          ],
+          "exit_conditions": [
+            "Wave tests complete"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Verify test creation"
+          ],
+          "valid_transitions": [
+            "CREATE_WAVE_INTEGRATION_BRANCH_EARLY"
+          ]
+        },
+        "CREATE_WAVE_INTEGRATION_BRANCH_EARLY": {
+          "type": "action",
+          "description": "Create phase-N/wave-M/integration branch with tests (R342 mandatory)",
+          "entry_conditions": [
+            "Wave tests complete"
+          ],
+          "exit_conditions": [
+            "Branch created with tests"
+          ],
+          "required_actions": [
+            "Create branch",
+            "Commit tests",
+            "Push"
+          ],
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWER_WAVE_IMPL"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_PHASE_IMPL": {
+          "type": "spawn",
+          "description": "Request code reviewer to create phase implementation from architecture (R211)",
+          "entry_conditions": [
+            "Phase tests created"
+          ],
+          "exit_conditions": [
+            "Code reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Pass architecture",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_IMPLEMENTATION_PLAN"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_WAVE_IMPL": {
+          "type": "spawn",
+          "description": "Request code reviewer to create wave implementation from architecture (R211)",
+          "entry_conditions": [
+            "Wave tests created"
+          ],
+          "exit_conditions": [
+            "Code reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Pass architecture",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "INJECT_WAVE_METADATA"
+          ]
+        },
+        "WAITING_FOR_ARCHITECTURE_PLAN": {
+          "type": "waiting",
+          "description": "Waiting for architect to complete architecture plan",
+          "entry_conditions": [
+            "Architect spawned"
+          ],
+          "exit_conditions": [
+            "Architecture complete"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Load plan when ready"
+          ],
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING",
+            "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+            "SPAWN_CODE_REVIEWER_PHASE_IMPL"
+          ]
+        },
+        "WAITING_FOR_PHASE_PLANS": {
+          "type": "waiting",
+          "description": "Waiting for architect to complete phase architecture and implementation plans per R210",
+          "entry_conditions": [
+            "Architect spawned for phase planning"
+          ],
+          "exit_conditions": [
+            "PHASE-N-ARCHITECTURE-PLAN exists",
+            "PHASE-N-IMPLEMENTATION-PLAN exists",
+            "Both plans validated per R502"
+          ],
+          "required_actions": [
+            "Monitor for phase architecture plan",
+            "Monitor for phase implementation plan",
+            "Validate both plans exist",
+            "Update state file with plan locations"
+          ],
+          "valid_transitions": [
+            "WAVE_START",
+            "ERROR_RECOVERY"
+          ]
+        },
+        "WAITING_FOR_IMPLEMENTATION_PLAN": {
+          "type": "waiting",
+          "description": "Waiting for code reviewer to complete implementation plan",
+          "entry_conditions": [
+            "Code reviewer spawned for planning"
+          ],
+          "exit_conditions": [
+            "Implementation plan complete"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Load plan"
+          ],
+          "valid_transitions": [
+            "WAVE_START",
+            "CREATE_NEXT_INFRASTRUCTURE"
+          ]
+        },
+        "INJECT_WAVE_METADATA": {
+          "type": "action",
+          "description": "Injecting R213 wave metadata into plans",
+          "entry_conditions": [
+            "Wave implementation plan exists"
+          ],
+          "exit_conditions": [
+            "Metadata injected"
+          ],
+          "required_actions": [
+            "Add wave metadata",
+            "Update plan files"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_IMPLEMENTATION_PLAN"
+          ]
+        },
+        "MONITOR_IMPLEMENTATION": {
+          "type": "monitoring",
+          "description": "Actively monitoring SW Engineers implementing features",
+          "entry_conditions": [
+            "SW engineers working"
+          ],
+          "exit_conditions": [
+            "Implementation complete"
+          ],
+          "required_actions": [
+            "Check implementation status",
+            "Monitor progress",
+            "Detect completion"
+          ],
+          "r232_requirement": "MUST process all pending TodoWrite items before transition",
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWERS_FOR_REVIEW"
+          ]
+        },
+        "MONITOR_REVIEWS": {
+          "type": "monitoring",
+          "description": "Actively monitoring Code Reviewers performing reviews and handling split needs",
+          "entry_conditions": [
+            "Code reviewers working"
+          ],
+          "exit_conditions": [
+            "Reviews complete or action needed"
+          ],
+          "required_actions": [
+            "Check review status",
+            "Monitor progress",
+            "Detect outcomes"
+          ],
+          "valid_transitions": [
+            "CREATE_NEXT_INFRASTRUCTURE",
+            "SPAWN_ENGINEERS_FOR_FIXES",
+            "WAVE_COMPLETE"
+          ],
+          "r353_restriction": "CREATE_NEXT_INFRASTRUCTURE forbidden if cascade_mode=true"
+        },
+        "MONITOR_FIXES": {
+          "type": "monitoring",
+          "description": "Actively monitoring SW Engineers fixing review issues or build failures",
+          "entry_conditions": [
+            "SW engineers fixing"
+          ],
+          "exit_conditions": [
+            "Fixes complete"
+          ],
+          "required_actions": [
+            "Check fix status",
+            "Monitor progress",
+            "Detect completion"
+          ],
+          "r232_requirement": "MUST process all pending TodoWrite items",
+          "r021_requirement": "CANNOT stop in this state",
+          "valid_transitions": [
+            "CASCADE_REINTEGRATION",
+            "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+            "IMMEDIATE_BACKPORT_REQUIRED"
+          ]
+        },
+        "WAVE_COMPLETE": {
+          "type": "gate",
+          "description": "All efforts completed AND all reviews passed (BLOCKED if any fail)",
+          "entry_conditions": [
+            "ALL implementations COMPLETE",
+            "ALL reviews PASSED",
+            "ALL efforts ≤800 lines",
+            "NO efforts in FIX_ISSUES",
+            "NO efforts BLOCKED"
+          ],
+          "exit_conditions": [
+            "Wave marked complete"
+          ],
+          "required_actions": [
+            "Update state file",
+            "Record completions"
+          ],
+          "valid_transitions": [
+            "CASCADE_REINTEGRATION",
+            "INTEGRATION"
+          ]
+        },
+        "CASCADE_REINTEGRATION": {
+          "type": "trap_state",
+          "description": "TRAP state for enforcing cascade recreation of stale integrations (R327/R348)",
+          "purpose": "Coordinate multiple overlapping cascade chains and ensure ALL fixes reach project level",
+          "criticality": "SUPREME",
+          "entry_conditions": [
+            "From ERROR_RECOVERY after fixes",
+            "From MONITOR_FIXES when complete",
+            "From MONITORING_INTEGRATION when stale",
+            "From WAVE_COMPLETE when fixes applied",
+            "From PHASE_COMPLETE when cascades pending"
+          ],
+          "entry_actions": [
+            "Load R350 dependency graph",
+            "Calculate complete cascade chain",
+            "Create R351 execution plan",
+            "Begin cascade execution"
+          ],
+          "execution_loop": [
+            "SELECT_NEXT_OPERATION",
+            "VALIDATE_PREREQUISITES",
+            "EXECUTE_OPERATION",
+            "VERIFY_SUCCESS",
+            "UPDATE_CASCADE_STATUS",
+            "LOOP or EXIT"
+          ],
+          "cascade_mode_behavior": {
+            "sets": "cascade_mode=true",
+            "persistent_coordination": true,
+            "r352_overlapping_support": true,
+            "r353_cascade_focus": {
+              "forbidden": [
+                "Size checks",
+                "Split evaluations",
+                "CREATE_NEXT_INFRASTRUCTURE transitions",
+                "Quality assessments beyond build"
+              ],
+              "allowed": [
+                "Rebase validation",
+                "Conflict resolution"
+              ]
+            }
+          },
+          "valid_transitions": [
+            "INTEGRATION",
+            "PHASE_INTEGRATION",
+            "PROJECT_INTEGRATION",
+            "CASCADE_REINTEGRATION",
+            "INTEGRATION_CODE_REVIEW"
+          ],
+          "forbidden_transitions": [
+            "WAVE_COMPLETE",
+            "PHASE_COMPLETE",
+            "SUCCESS"
+          ],
+          "exit_conditions": [
+            "All cascade operations completed",
+            "No stale integrations remain",
+            "All dependencies satisfied",
+            "Freshness validation passed"
+          ]
+        },
+        "INTEGRATION": {
+          "type": "coordination",
+          "description": "Coordinating wave integration process (coordination only - infrastructure via SETUP_INTEGRATION_INFRASTRUCTURE)",
+          "entry_conditions": [
+            "Wave complete",
+            "No pending fixes"
+          ],
+          "exit_conditions": [
+            "Integration coordination started"
+          ],
+          "required_actions": [
+            "Initialize integration",
+            "Check prerequisites"
+          ],
+          "valid_transitions": [
+            "SETUP_INTEGRATION_INFRASTRUCTURE"
+          ]
+        },
+        "SETUP_INTEGRATION_INFRASTRUCTURE": {
+          "type": "action",
+          "description": "Creating wave integration workspace, branch, and remote tracking (R308 enforced)",
+          "entry_conditions": [
+            "Integration needed"
+          ],
+          "exit_conditions": [
+            "Infrastructure ready"
+          ],
+          "required_actions": [
+            "Create workspace",
+            "Create integration branch",
+            "Setup remote tracking"
+          ],
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWER_MERGE_PLAN"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_MERGE_PLAN": {
+          "type": "spawn",
+          "description": "Spawning Code Reviewer to create merge plan",
+          "entry_conditions": [
+            "Infrastructure ready"
+          ],
+          "exit_conditions": [
+            "Code reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Pass context",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_MERGE_PLAN"
+          ]
+        },
+        "WAITING_FOR_MERGE_PLAN": {
+          "type": "waiting",
+          "description": "Waiting for Code Reviewer merge plan completion",
+          "entry_conditions": [
+            "Code reviewer creating plan"
+          ],
+          "exit_conditions": [
+            "Merge plan complete"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Load plan"
+          ],
+          "r322_checkpoint": "User must review plan before proceeding",
+          "valid_transitions": [
+            "SPAWN_INTEGRATION_AGENT"
+          ]
+        },
+        "SPAWN_INTEGRATION_AGENT": {
+          "type": "spawn",
+          "description": "Spawning Integration Agent to execute merges",
+          "entry_conditions": [
+            "Merge plan approved"
+          ],
+          "exit_conditions": [
+            "Integration agent spawned"
+          ],
+          "required_actions": [
+            "Spawn agent",
+            "Pass plan",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "MONITORING_INTEGRATION"
+          ]
+        },
+        "MONITORING_INTEGRATION": {
+          "type": "monitoring",
+          "description": "Monitoring Integration Agent progress and checking for reports (R238)",
+          "entry_conditions": [
+            "Integration agent working"
+          ],
+          "exit_conditions": [
+            "Integration complete or failed"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Check for INTEGRATION_REPORT.md",
+            "Handle outcomes"
+          ],
+          "valid_transitions": [
+            "CASCADE_REINTEGRATION",
+            "INTEGRATION_CODE_REVIEW",
+            "IMMEDIATE_BACKPORT_REQUIRED"
+          ]
+        },
+        "INTEGRATION_CODE_REVIEW": {
+          "type": "spawn",
+          "description": "Spawning Code Reviewer to review integrated code quality",
+          "entry_conditions": [
+            "Integration successful"
+          ],
+          "exit_conditions": [
+            "Code reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Pass branch",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_INTEGRATION_CODE_REVIEW"
+          ]
+        },
+        "WAITING_FOR_INTEGRATION_CODE_REVIEW": {
+          "type": "waiting",
+          "description": "Waiting for integration code review completion",
+          "entry_conditions": [
+            "Code reviewer reviewing"
+          ],
+          "exit_conditions": [
+            "Review complete"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Get results"
+          ],
+          "valid_transitions": [
+            "CASCADE_REINTEGRATION",
+            "WAVE_REVIEW",
+            "SPAWN_CODE_REVIEWER_FIX_PLAN"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_FIX_PLAN": {
+          "type": "spawn",
+          "description": "Spawning Code Reviewer to create fix plans for failures",
+          "entry_conditions": [
+            "Issues identified"
+          ],
+          "exit_conditions": [
+            "Code reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Pass issues",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_FIX_PLANS"
+          ]
+        },
+        "WAITING_FOR_FIX_PLANS": {
+          "type": "waiting",
+          "description": "Waiting for Code Reviewer to complete fix plans",
+          "entry_conditions": [
+            "Code reviewer creating plans"
+          ],
+          "exit_conditions": [
+            "Fix plans complete or timeout"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Load plans"
+          ],
+          "valid_transitions": [
+            "DISTRIBUTE_FIX_PLANS",
+            "ERROR_RECOVERY"
+          ]
+        },
+        "DISTRIBUTE_FIX_PLANS": {
+          "type": "action",
+          "description": "Distributing fix plans to effort directories (R239)",
+          "entry_conditions": [
+            "Fix plans ready"
+          ],
+          "exit_conditions": [
+            "Plans distributed"
+          ],
+          "required_actions": [
+            "Copy plans to directories",
+            "Update tracking"
+          ],
+          "valid_transitions": [
+            "SPAWN_ENGINEERS_FOR_FIXES"
+          ]
+        },
+        "SPAWN_ENGINEERS_FOR_FIXES": {
+          "type": "spawn",
+          "description": "Spawning SW Engineers to implement integration fixes",
+          "entry_conditions": [
+            "Fix plans distributed"
+          ],
+          "exit_conditions": [
+            "Engineers spawned"
+          ],
+          "required_actions": [
+            "Spawn engineers",
+            "Pass plans",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "MONITORING_FIX_PROGRESS"
+          ]
+        },
+        "MONITORING_FIX_PROGRESS": {
+          "type": "monitoring",
+          "description": "Monitoring engineers implementing fixes",
+          "entry_conditions": [
+            "Engineers fixing"
+          ],
+          "exit_conditions": [
+            "Fixes complete or failed"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Track completions"
+          ],
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+            "ERROR_RECOVERY"
+          ]
+        },
+        "SPAWN_CODE_REVIEWERS_FOR_REVIEW": {
+          "type": "spawn",
+          "description": "Spawning Code Reviewers to review fixed code",
+          "entry_conditions": [
+            "Code ready for review"
+          ],
+          "exit_conditions": [
+            "Reviewers spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewers",
+            "Pass context",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "MONITOR_REVIEWS"
+          ]
+        },
+        "WAVE_REVIEW": {
+          "type": "gate",
+          "description": "Architect reviewing wave (R258: Must create wave review report)",
+          "entry_conditions": [
+            "Wave integrated"
+          ],
+          "exit_conditions": [
+            "Review complete"
+          ],
+          "required_actions": [
+            "Spawn architect",
+            "Wait for review",
+            "Process decision"
+          ],
+          "r258_requirement": "Must verify wave review report exists",
+          "valid_transitions": [
+            "CASCADE_REINTEGRATION",
+            "WAVE_START",
+            "PHASE_INTEGRATION"
+          ]
+        },
+        "SPAWN_ARCHITECT_PHASE_ASSESSMENT": {
+          "type": "spawn",
+          "description": "Request architect to assess complete phase (last wave only)",
+          "entry_conditions": [
+            "Last wave of phase complete"
+          ],
+          "exit_conditions": [
+            "Architect spawned"
+          ],
+          "required_actions": [
+            "Spawn architect",
+            "Pass phase context",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_PHASE_ASSESSMENT"
+          ]
+        },
+        "WAITING_FOR_PHASE_ASSESSMENT": {
+          "type": "waiting",
+          "description": "Waiting for architect phase assessment decision",
+          "entry_conditions": [
+            "Architect assessing"
+          ],
+          "exit_conditions": [
+            "Assessment complete"
+          ],
+          "required_actions": [
+            "Monitor progress",
+            "Get decision"
+          ],
+          "valid_transitions": [
+            "PHASE_COMPLETE",
+            "ERROR_RECOVERY"
+          ]
+        },
+        "PHASE_COMPLETE": {
+          "type": "gate",
+          "description": "Phase assessment passed, handling phase-level integration",
+          "entry_conditions": [
+            "Phase assessment passed"
+          ],
+          "exit_conditions": [
+            "Phase marked complete"
+          ],
+          "required_actions": [
+            "Create phase integration branch",
+            "Document achievements",
+            "Prepare completion report",
+            "Check for more phases"
+          ],
+          "valid_transitions": [
+            "CASCADE_REINTEGRATION",
+            "PROJECT_INTEGRATION",
+            "INIT"
+          ]
+        },
+        "PHASE_INTEGRATION": {
+          "type": "coordination",
+          "description": "Coordinating phase integration process (coordination only)",
+          "entry_conditions": [
+            "Last wave complete"
+          ],
+          "exit_conditions": [
+            "Phase integration started"
+          ],
+          "required_actions": [
+            "Initialize phase integration"
+          ],
+          "valid_transitions": [
+            "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE"
+          ]
+        },
+        "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE": {
+          "type": "action",
+          "description": "Creating phase integration workspace with R308 incremental base",
+          "entry_conditions": [
+            "Phase integration needed"
+          ],
+          "exit_conditions": [
+            "Infrastructure ready"
+          ],
+          "required_actions": [
+            "Create workspace",
+            "Setup branch"
+          ],
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN"
+          ]
+        },
+        "PROJECT_INTEGRATION": {
+          "type": "coordination",
+          "description": "Coordinating project integration process (coordination only)",
+          "entry_conditions": [
+            "Last phase complete"
+          ],
+          "exit_conditions": [
+            "Project integration started"
+          ],
+          "required_actions": [
+            "Initialize project integration"
+          ],
+          "valid_transitions": [
+            "SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE"
+          ]
+        },
+        "SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE": {
+          "type": "action",
+          "description": "Creating project integration workspace with R308 incremental base",
+          "entry_conditions": [
+            "Project integration needed"
+          ],
+          "exit_conditions": [
+            "Infrastructure ready"
+          ],
+          "required_actions": [
+            "Create workspace",
+            "Setup branch"
+          ],
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN": {
+          "type": "spawn",
+          "description": "Spawning Code Reviewer to create project merge plan",
+          "entry_conditions": [
+            "Project infrastructure ready"
+          ],
+          "exit_conditions": [
+            "Code reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_PROJECT_MERGE_PLAN"
+          ]
+        },
+        "WAITING_FOR_PROJECT_MERGE_PLAN": {
+          "type": "waiting",
+          "description": "Waiting for Code Reviewer project merge plan",
+          "entry_conditions": [
+            "Reviewer creating plan"
+          ],
+          "exit_conditions": [
+            "Plan complete"
+          ],
+          "r322_checkpoint": "User must review project plan",
+          "valid_transitions": [
+            "SPAWN_INTEGRATION_AGENT_PROJECT"
+          ]
+        },
+        "SPAWN_INTEGRATION_AGENT_PROJECT": {
+          "type": "spawn",
+          "description": "Spawning Integration Agent to merge all phases",
+          "entry_conditions": [
+            "Project plan approved"
+          ],
+          "exit_conditions": [
+            "Agent spawned"
+          ],
+          "required_actions": [
+            "Spawn agent",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "MONITORING_PROJECT_INTEGRATION"
+          ]
+        },
+        "MONITORING_PROJECT_INTEGRATION": {
+          "type": "monitoring",
+          "description": "Monitoring project-level integration progress",
+          "entry_conditions": [
+            "Agent integrating"
+          ],
+          "exit_conditions": [
+            "Integration complete or failed"
+          ],
+          "required_actions": [
+            "Monitor",
+            "Check reports"
+          ],
+          "valid_transitions": [
+            "PROJECT_INTEGRATION_CODE_REVIEW",
+            "ERROR_RECOVERY"
+          ]
+        },
+        "PROJECT_INTEGRATION_CODE_REVIEW": {
+          "type": "spawn",
+          "description": "Spawning Code Reviewer to review project integrated code quality",
+          "entry_conditions": [
+            "Project integration complete"
+          ],
+          "exit_conditions": [
+            "Reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW"
+          ]
+        },
+        "WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW": {
+          "type": "waiting",
+          "description": "Waiting for project integration code review completion",
+          "entry_conditions": [
+            "Reviewer working"
+          ],
+          "exit_conditions": [
+            "Review complete"
+          ],
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWER_PROJECT_VALIDATION",
+            "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING": {
+          "type": "spawn",
+          "description": "Spawning Code Reviewer to create fix plans for bugs (R266 follow-up)",
+          "entry_conditions": [
+            "Bugs found in project"
+          ],
+          "exit_conditions": [
+            "Reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_PROJECT_FIX_PLANS"
+          ]
+        },
+        "WAITING_FOR_PROJECT_FIX_PLANS": {
+          "type": "waiting",
+          "description": "Waiting for Code Reviewer to complete project fix plans",
+          "entry_conditions": [
+            "Reviewer creating plans"
+          ],
+          "exit_conditions": [
+            "Plans complete"
+          ],
+          "valid_transitions": [
+            "SPAWN_SW_ENGINEER_PROJECT_FIXES"
+          ]
+        },
+        "SPAWN_SW_ENGINEER_PROJECT_FIXES": {
+          "type": "spawn",
+          "description": "Spawning SW Engineers to fix project integration bugs",
+          "entry_conditions": [
+            "Fix plans ready"
+          ],
+          "exit_conditions": [
+            "Engineers spawned"
+          ],
+          "required_actions": [
+            "Spawn engineers",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "MONITORING_PROJECT_FIXES"
+          ]
+        },
+        "MONITORING_PROJECT_FIXES": {
+          "type": "monitoring",
+          "description": "Monitoring SW Engineers fixing project-level bugs",
+          "entry_conditions": [
+            "Engineers fixing"
+          ],
+          "exit_conditions": [
+            "Fixes complete or failed"
+          ],
+          "required_actions": [
+            "Monitor progress"
+          ],
+          "critical_transition": "Must re-run FULL integration with fixed sources",
+          "valid_transitions": [
+            "PROJECT_INTEGRATION",
+            "ERROR_RECOVERY"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_PROJECT_VALIDATION": {
+          "type": "spawn",
+          "description": "Spawning Code Reviewer for project validation",
+          "entry_conditions": [
+            "Project review passed"
+          ],
+          "exit_conditions": [
+            "Reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_PROJECT_VALIDATION"
+          ]
+        },
+        "WAITING_FOR_PROJECT_VALIDATION": {
+          "type": "waiting",
+          "description": "Waiting for project validation results",
+          "entry_conditions": [
+            "Reviewer validating"
+          ],
+          "exit_conditions": [
+            "Validation complete"
+          ],
+          "valid_transitions": [
+            "CREATE_INTEGRATION_TESTING",
+            "ERROR_RECOVERY"
+          ]
+        },
+        "CREATE_INTEGRATION_TESTING": {
+          "type": "action",
+          "description": "Creating integration-testing branch from project integration (R272)",
+          "entry_conditions": [
+            "Validation passed"
+          ],
+          "exit_conditions": [
+            "Branch created"
+          ],
+          "required_actions": [
+            "Create branch",
+            "Setup testing"
+          ],
+          "valid_transitions": [
+            "INTEGRATION_TESTING"
+          ]
+        },
+        "INTEGRATION_TESTING": {
+          "type": "action",
+          "description": "Final validation in integration-testing branch (R271)",
+          "entry_conditions": [
+            "Testing branch ready"
+          ],
+          "exit_conditions": [
+            "Testing complete"
+          ],
+          "required_actions": [
+            "Run tests",
+            "Validate"
+          ],
+          "valid_transitions": [
+            "PRODUCTION_READY_VALIDATION"
+          ]
+        },
+        "PRODUCTION_READY_VALIDATION": {
+          "type": "validation",
+          "description": "Validating software is production-ready (R273-R275)",
+          "entry_conditions": [
+            "Testing complete"
+          ],
+          "exit_conditions": [
+            "Validation complete"
+          ],
+          "required_actions": [
+            "Validate readiness"
+          ],
+          "valid_transitions": [
+            "BUILD_VALIDATION",
+            "ANALYZE_BUILD_FAILURES"
+          ]
+        },
+        "BUILD_VALIDATION": {
+          "type": "validation",
+          "description": "Final build and deployment verification (R277)",
+          "entry_conditions": [
+            "Production validation passed"
+          ],
+          "exit_conditions": [
+            "Build validated"
+          ],
+          "required_actions": [
+            "Run build",
+            "Verify deployment"
+          ],
+          "valid_transitions": [
+            "PR_PLAN_CREATION",
+            "ANALYZE_BUILD_FAILURES",
+            "SPAWN_CODE_REVIEWER_BACKPORT_PLAN"
+          ]
+        },
+        "ANALYZE_BUILD_FAILURES": {
+          "type": "analysis",
+          "description": "Orchestrator analyzing build errors and categorizing failures",
+          "entry_conditions": [
+            "Build failures detected"
+          ],
+          "exit_conditions": [
+            "Analysis complete"
+          ],
+          "required_actions": [
+            "Analyze errors",
+            "Categorize issues"
+          ],
+          "valid_transitions": [
+            "COORDINATE_BUILD_FIXES"
+          ]
+        },
+        "COORDINATE_BUILD_FIXES": {
+          "type": "coordination",
+          "description": "Orchestrator distributing fix work to SW Engineers with proper tracking",
+          "entry_conditions": [
+            "Failures analyzed"
+          ],
+          "exit_conditions": [
+            "Fixes coordinated"
+          ],
+          "required_actions": [
+            "Distribute work",
+            "Track fixes"
+          ],
+          "valid_transitions": [
+            "BUILD_VALIDATION"
+          ]
+        },
+        "IMMEDIATE_BACKPORT_REQUIRED": {
+          "type": "action",
+          "description": "R321 enforcement: fixing source branches immediately when integration issues found",
+          "entry_conditions": [
+            "Integration issues found"
+          ],
+          "exit_conditions": [
+            "Backport initiated"
+          ],
+          "required_actions": [
+            "Identify source branches",
+            "Plan backports"
+          ],
+          "valid_transitions": [
+            "SPAWN_CODE_REVIEWER_BACKPORT_PLAN",
+            "SPAWN_ENGINEERS_FOR_FIXES"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_BACKPORT_PLAN": {
+          "type": "spawn",
+          "description": "Spawn Code Reviewer to create backport plan",
+          "entry_conditions": [
+            "Backport needed"
+          ],
+          "exit_conditions": [
+            "Reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_BACKPORT_PLAN"
+          ]
+        },
+        "WAITING_FOR_BACKPORT_PLAN": {
+          "type": "waiting",
+          "description": "Waiting for Code Reviewer to complete backport plan",
+          "entry_conditions": [
+            "Reviewer planning"
+          ],
+          "exit_conditions": [
+            "Plan complete"
+          ],
+          "r322_checkpoint": "User must review backport plan",
+          "valid_transitions": [
+            "SPAWN_SW_ENGINEER_BACKPORT_FIXES"
+          ]
+        },
+        "SPAWN_SW_ENGINEER_BACKPORT_FIXES": {
+          "type": "spawn",
+          "description": "Spawn SW Engineers to implement backport fixes",
+          "entry_conditions": [
+            "Backport plan ready"
+          ],
+          "exit_conditions": [
+            "Engineers spawned"
+          ],
+          "required_actions": [
+            "Spawn engineers",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "MONITORING_BACKPORT_PROGRESS"
+          ]
+        },
+        "MONITORING_BACKPORT_PROGRESS": {
+          "type": "monitoring",
+          "description": "Monitor SW Engineers implementing backports",
+          "entry_conditions": [
+            "Engineers backporting"
+          ],
+          "exit_conditions": [
+            "Backports complete or failed"
+          ],
+          "required_actions": [
+            "Monitor progress"
+          ],
+          "valid_transitions": [
+            "PR_PLAN_CREATION",
+            "ERROR_RECOVERY"
+          ]
+        },
+        "PR_PLAN_CREATION": {
+          "type": "action",
+          "description": "Generating MASTER-PR-PLAN.md for human PRs (R279)",
+          "entry_conditions": [
+            "All validation complete"
+          ],
+          "exit_conditions": [
+            "PR plan created"
+          ],
+          "required_actions": [
+            "Generate plan",
+            "Document PRs"
+          ],
+          "valid_transitions": [
+            "WAVE_START",
+            "PHASE_COMPLETE",
+            "PHASE_START",
+            "SUCCESS"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN": {
+          "type": "spawn",
+          "description": "Spawning Code Reviewer for phase merge plan",
+          "entry_conditions": [
+            "Phase infrastructure ready"
+          ],
+          "exit_conditions": [
+            "Reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_PHASE_MERGE_PLAN"
+          ]
+        },
+        "WAITING_FOR_PHASE_MERGE_PLAN": {
+          "type": "waiting",
+          "description": "Waiting for Code Reviewer phase merge plan",
+          "entry_conditions": [
+            "Reviewer planning"
+          ],
+          "exit_conditions": [
+            "Plan complete"
+          ],
+          "r322_checkpoint": "User must review phase plan",
+          "valid_transitions": [
+            "SPAWN_INTEGRATION_AGENT_PHASE"
+          ]
+        },
+        "SPAWN_INTEGRATION_AGENT_PHASE": {
+          "type": "spawn",
+          "description": "Spawning Integration Agent for phase merges",
+          "entry_conditions": [
+            "Phase plan approved"
+          ],
+          "exit_conditions": [
+            "Agent spawned"
+          ],
+          "required_actions": [
+            "Spawn agent",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "MONITORING_PHASE_INTEGRATION"
+          ]
+        },
+        "MONITORING_PHASE_INTEGRATION": {
+          "type": "monitoring",
+          "description": "Monitoring Integration Agent phase progress and checking reports (R238)",
+          "entry_conditions": [
+            "Agent integrating phase"
+          ],
+          "exit_conditions": [
+            "Phase integration complete or failed"
+          ],
+          "required_actions": [
+            "Monitor",
+            "Check reports"
+          ],
+          "valid_transitions": [
+            "PHASE_INTEGRATION_CODE_REVIEW",
+            "IMMEDIATE_BACKPORT_REQUIRED"
+          ]
+        },
+        "PHASE_INTEGRATION_CODE_REVIEW": {
+          "type": "spawn",
+          "description": "Spawning Code Reviewer to review phase integrated code quality",
+          "entry_conditions": [
+            "Phase integration complete"
+          ],
+          "exit_conditions": [
+            "Reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW"
+          ]
+        },
+        "WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW": {
+          "type": "waiting",
+          "description": "Waiting for phase integration code review completion",
+          "entry_conditions": [
+            "Reviewer reviewing phase"
+          ],
+          "exit_conditions": [
+            "Review complete"
+          ],
+          "valid_transitions": [
+            "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+            "SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN"
+          ]
+        },
+        "SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN": {
+          "type": "spawn",
+          "description": "Spawning Code Reviewer for phase-level fix plans",
+          "entry_conditions": [
+            "Phase issues found"
+          ],
+          "exit_conditions": [
+            "Reviewer spawned"
+          ],
+          "required_actions": [
+            "Spawn reviewer",
+            "Stop per R313"
+          ],
+          "valid_transitions": [
+            "WAITING_FOR_PHASE_FIX_PLANS"
+          ]
+        },
+        "WAITING_FOR_PHASE_FIX_PLANS": {
+          "type": "waiting",
+          "description": "Waiting for phase-level fix plans",
+          "entry_conditions": [
+            "Reviewer planning fixes"
+          ],
+          "exit_conditions": [
+            "Plans complete"
+          ],
+          "valid_transitions": [
+            "ERROR_RECOVERY"
+          ]
+        },
+        "ERROR_RECOVERY": {
+          "type": "recovery",
+          "description": "Handling errors and issues",
+          "entry_conditions": [
+            "Error or issue detected"
+          ],
+          "exit_conditions": [
+            "Recovery complete or failed"
+          ],
+          "required_actions": [
+            "Analyze error",
+            "Plan recovery",
+            "Execute recovery"
+          ],
+          "valid_transitions": [
+            "CASCADE_REINTEGRATION",
+            "PHASE_INTEGRATION",
+            "SPAWN_AGENTS",
+            "INTEGRATION",
+            "HARD_STOP"
+          ]
+        },
+        "SUCCESS": {
+          "type": "terminal",
+          "description": "Successful completion (terminal - only after phase approved)",
+          "entry_conditions": [
+            "PR plan created",
+            "All validation passed"
+          ],
+          "exit_conditions": [
+            "None - terminal state"
+          ],
+          "required_actions": [
+            "Record success",
+            "Cleanup"
+          ],
+          "valid_transitions": []
+        },
+        "HARD_STOP": {
+          "type": "terminal",
+          "description": "Critical failure (terminal)",
+          "entry_conditions": [
+            "Unrecoverable error"
+          ],
+          "exit_conditions": [
+            "None - terminal state"
+          ],
+          "required_actions": [
+            "Record failure",
+            "Cleanup"
+          ],
+          "valid_transitions": []
+        }
+      }
+    },
+    "sw-engineer": {
+      "type": "implementer",
+      "description": "SW Engineers implement code according to plans",
+      "states": {
+        "INIT": {
+          "type": "initial",
+          "description": "Initial state, reading plan and existing tests (R401)",
+          "entry_conditions": [
+            "Agent startup"
+          ],
+          "exit_conditions": [
+            "Plan loaded"
+          ],
+          "required_actions": [
+            "Load plan",
+            "Read existing tests"
+          ],
+          "valid_transitions": [
+            "TEST_VERIFICATION"
+          ]
+        },
+        "TEST_VERIFICATION": {
+          "type": "validation",
+          "description": "Verifying tests exist and fail (TDD red phase)",
+          "entry_conditions": [
+            "Plan loaded"
+          ],
+          "exit_conditions": [
+            "Tests verified"
+          ],
+          "required_actions": [
+            "Run tests",
+            "Verify they fail"
+          ],
+          "valid_transitions": [
+            "IMPLEMENTATION"
+          ]
+        },
+        "IMPLEMENTATION": {
+          "type": "action",
+          "description": "Writing code to make tests pass (TDD green phase)",
+          "entry_conditions": [
+            "Tests failing as expected"
+          ],
+          "exit_conditions": [
+            "Code written"
+          ],
+          "required_actions": [
+            "Write code",
+            "Run tests"
+          ],
+          "valid_transitions": [
+            "MEASURE_SIZE",
+            "REQUEST_REVIEW"
+          ]
+        },
+        "MEASURE_SIZE": {
+          "type": "validation",
+          "description": "Checking line count",
+          "entry_conditions": [
+            "Implementation complete"
+          ],
+          "exit_conditions": [
+            "Size measured"
+          ],
+          "required_actions": [
+            "Run line-counter.sh",
+            "Check limit"
+          ],
+          "valid_transitions": [
+            "COMPLETED",
+            "SPLIT_IMPLEMENTATION"
+          ]
+        },
+        "FIX_ISSUES": {
+          "type": "action",
+          "description": "Addressing review feedback",
+          "entry_conditions": [
+            "Review failed"
+          ],
+          "exit_conditions": [
+            "Fixes complete"
+          ],
+          "required_actions": [
+            "Read feedback",
+            "Apply fixes"
+          ],
+          "valid_transitions": [
+            "TEST_VERIFICATION"
+          ]
+        },
+        "SPLIT_IMPLEMENTATION": {
+          "type": "action",
+          "description": "Working on splits (with test preservation per R403)",
+          "entry_conditions": [
+            "Size limit exceeded"
+          ],
+          "exit_conditions": [
+            "Split implemented"
+          ],
+          "required_actions": [
+            "Implement split",
+            "Preserve tests"
+          ],
+          "valid_transitions": [
+            "MEASURE_SIZE"
+          ]
+        },
+        "REQUEST_REVIEW": {
+          "type": "action",
+          "description": "Request Code Reviewer to re-review after fixes",
+          "entry_conditions": [
+            "Fixes applied"
+          ],
+          "exit_conditions": [
+            "Review requested"
+          ],
+          "required_actions": [
+            "Request review",
+            "Update status"
+          ],
+          "valid_transitions": [
+            "COMPLETED"
+          ]
+        },
+        "COMPLETED": {
+          "type": "terminal",
+          "description": "Work complete with all tests passing (terminal)",
+          "entry_conditions": [
+            "Under limit",
+            "Tests pass"
+          ],
+          "exit_conditions": [
+            "None - terminal state"
+          ],
+          "required_actions": [
+            "Report completion"
+          ],
+          "valid_transitions": []
+        },
+        "BLOCKED": {
+          "type": "terminal",
+          "description": "Blocked by issue (terminal)",
+          "entry_conditions": [
+            "Blocking issue found"
+          ],
+          "exit_conditions": [
+            "None - terminal state"
+          ],
+          "required_actions": [
+            "Report blockage"
+          ],
+          "valid_transitions": []
+        }
+      }
+    },
+    "code-reviewer": {
+      "type": "reviewer",
+      "description": "Code Reviewers create plans and review implementations",
+      "states": {
+        "INIT": {
+          "type": "initial",
+          "description": "Initial state",
+          "entry_conditions": [
+            "Agent startup"
+          ],
+          "exit_conditions": [
+            "Task determined"
+          ],
+          "required_actions": [
+            "Determine task type"
+          ],
+          "valid_transitions": [
+            "PROJECT_TEST_PLANNING",
+            "PHASE_TEST_PLANNING",
+            "WAVE_TEST_PLANNING",
+            "PHASE_IMPLEMENTATION_PLANNING",
+            "WAVE_IMPLEMENTATION_PLANNING",
+            "WAVE_MERGE_PLANNING",
+            "PHASE_MERGE_PLANNING",
+            "EFFORT_PLAN_CREATION"
+          ]
+        },
+        "PROJECT_TEST_PLANNING": {
+          "type": "action",
+          "description": "Creating project-level tests from master architecture (TDD - before Phase 1)",
+          "entry_conditions": [
+            "Master architecture provided"
+          ],
+          "exit_conditions": [
+            "Project tests created"
+          ],
+          "required_actions": [
+            "Create test plan",
+            "Write test harness"
+          ],
+          "valid_transitions": [
+            "COMPLETED"
+          ]
+        },
+        "PHASE_TEST_PLANNING": {
+          "type": "action",
+          "description": "Creating phase-level tests from architecture (TDD - before implementation)",
+          "entry_conditions": [
+            "Phase architecture provided"
+          ],
+          "exit_conditions": [
+            "Phase tests created"
+          ],
+          "required_actions": [
+            "Create test plan",
+            "Write test harness"
+          ],
+          "valid_transitions": [
+            "COMPLETED"
+          ]
+        },
+        "WAVE_TEST_PLANNING": {
+          "type": "action",
+          "description": "Creating wave-level tests from architecture (TDD - before implementation)",
+          "entry_conditions": [
+            "Wave architecture provided"
+          ],
+          "exit_conditions": [
+            "Wave tests created"
+          ],
+          "required_actions": [
+            "Create test plan",
+            "Write test harness"
+          ],
+          "valid_transitions": [
+            "COMPLETED"
+          ]
+        },
+        "PHASE_IMPLEMENTATION_PLANNING": {
+          "type": "action",
+          "description": "Creating phase implementation from architecture (R211)",
+          "entry_conditions": [
+            "Phase architecture provided"
+          ],
+          "exit_conditions": [
+            "Implementation plan created"
+          ],
+          "required_actions": [
+            "Translate architecture to implementation"
+          ],
+          "valid_transitions": [
+            "COMPLETED"
+          ]
+        },
+        "WAVE_IMPLEMENTATION_PLANNING": {
+          "type": "action",
+          "description": "Creating wave implementation from architecture (R211)",
+          "entry_conditions": [
+            "Wave architecture provided"
+          ],
+          "exit_conditions": [
+            "Implementation plan created"
+          ],
+          "required_actions": [
+            "Translate architecture to implementation"
+          ],
+          "valid_transitions": [
+            "WAVE_DIRECTORY_ACKNOWLEDGMENT"
+          ]
+        },
+        "WAVE_DIRECTORY_ACKNOWLEDGMENT": {
+          "type": "action",
+          "description": "Acknowledging wave directory from metadata (R214)",
+          "entry_conditions": [
+            "Wave plan created"
+          ],
+          "exit_conditions": [
+            "Directory acknowledged"
+          ],
+          "required_actions": [
+            "Read metadata",
+            "Acknowledge directory"
+          ],
+          "valid_transitions": [
+            "EFFORT_PLAN_CREATION"
+          ]
+        },
+        "EFFORT_PLAN_CREATION": {
+          "type": "action",
+          "description": "Creating effort implementation plan",
+          "entry_conditions": [
+            "Directory acknowledged or direct request"
+          ],
+          "exit_conditions": [
+            "Effort plan created"
+          ],
+          "required_actions": [
+            "Create detailed implementation plan"
+          ],
+          "valid_transitions": [
+            "COMPLETED"
+          ]
+        },
+        "WAVE_MERGE_PLANNING": {
+          "type": "action",
+          "description": "Creating wave merge plan (R269, R270)",
+          "entry_conditions": [
+            "Wave integration needed"
+          ],
+          "exit_conditions": [
+            "Merge plan created"
+          ],
+          "required_actions": [
+            "Analyze branches",
+            "Create merge sequence"
+          ],
+          "valid_transitions": [
+            "COMPLETED"
+          ]
+        },
+        "PHASE_MERGE_PLANNING": {
+          "type": "action",
+          "description": "Creating phase merge plan (R269, R270)",
+          "entry_conditions": [
+            "Phase integration needed"
+          ],
+          "exit_conditions": [
+            "Merge plan created"
+          ],
+          "required_actions": [
+            "Analyze wave branches",
+            "Create merge sequence"
+          ],
+          "valid_transitions": [
+            "COMPLETED"
+          ]
+        },
+        "MEASURE_IMPLEMENTATION_SIZE": {
+          "type": "validation",
+          "description": "Code Reviewer measuring implementation size with line-counter.sh",
+          "entry_conditions": [
+            "Implementation to review"
+          ],
+          "exit_conditions": [
+            "Size measured"
+          ],
+          "required_actions": [
+            "Run line-counter.sh",
+            "Check limit"
+          ],
+          "valid_transitions": [
+            "PERFORM_CODE_REVIEW",
+            "CREATE_SPLIT_INVENTORY"
+          ]
+        },
+        "PERFORM_CODE_REVIEW": {
+          "type": "action",
+          "description": "Code Reviewer performing comprehensive review after size compliance verified",
+          "entry_conditions": [
+            "Size ≤800 lines"
+          ],
+          "exit_conditions": [
+            "Review complete"
+          ],
+          "required_actions": [
+            "Review code quality",
+            "Check tests",
+            "Verify functionality"
+          ],
+          "valid_transitions": [
+            "COMPLETED",
+            "CREATE_FIX_PLAN"
+          ]
+        },
+        "CREATE_SPLIT_INVENTORY": {
+          "type": "action",
+          "description": "Code Reviewer creating split plans for oversized implementation",
+          "entry_conditions": [
+            "Size >800 lines"
+          ],
+          "exit_conditions": [
+            "Split inventory created"
+          ],
+          "required_actions": [
+            "Create SPLIT-INVENTORY.md",
+            "Plan splits"
+          ],
+          "valid_transitions": [
+            "COMPLETED"
+          ]
+        },
+        "CREATE_SPLIT_PLAN": {
+          "type": "action",
+          "description": "Planning splits for oversized effort",
+          "entry_conditions": [
+            "Size limit exceeded"
+          ],
+          "exit_conditions": [
+            "Split plans created"
+          ],
+          "required_actions": [
+            "Create split plans",
+            "Document strategy"
+          ],
+          "valid_transitions": [
+            "SPLIT_REVIEW"
+          ]
+        },
+        "SPLIT_REVIEW": {
+          "type": "action",
+          "description": "Reviewing split implementation",
+          "entry_conditions": [
+            "Split implemented"
+          ],
+          "exit_conditions": [
+            "Review complete"
+          ],
+          "required_actions": [
+            "Review split code"
+          ],
+          "valid_transitions": [
+            "VALIDATION"
+          ]
+        },
+        "VALIDATION": {
+          "type": "validation",
+          "description": "Final validation",
+          "entry_conditions": [
+            "Review passed"
+          ],
+          "exit_conditions": [
+            "Validation complete"
+          ],
+          "required_actions": [
+            "Final checks"
+          ],
+          "valid_transitions": [
+            "COMPLETED"
+          ]
+        },
+        "CREATE_FIX_PLAN": {
+          "type": "action",
+          "description": "Creating fix plan for review failures",
+          "entry_conditions": [
+            "Review failed"
+          ],
+          "exit_conditions": [
+            "Fix plan created"
+          ],
+          "required_actions": [
+            "Document issues",
+            "Create fix plan"
+          ],
+          "valid_transitions": [
+            "COMPLETED"
+          ]
+        },
+        "COMPLETED": {
+          "type": "terminal",
+          "description": "Review complete (terminal)",
+          "entry_conditions": [
+            "Task complete"
+          ],
+          "exit_conditions": [
+            "None - terminal state"
+          ],
+          "required_actions": [
+            "Report completion"
+          ],
+          "valid_transitions": []
+        }
+      }
+    },
+    "architect": {
+      "type": "assessor",
+      "description": "Architects review waves and phases for compliance",
+      "states": {
+        "INIT": {
+          "type": "initial",
+          "description": "Initial state",
+          "entry_conditions": [
+            "Agent startup"
+          ],
+          "exit_conditions": [
+            "Task determined"
+          ],
+          "required_actions": [
+            "Determine task type"
+          ],
+          "valid_transitions": [
+            "PHASE_ARCHITECTURE_PLANNING",
+            "WAVE_ARCHITECTURE_PLANNING",
+            "WAVE_REVIEW",
+            "PHASE_ASSESSMENT",
+            "INTEGRATION_REVIEW"
+          ]
+        },
+        "PHASE_ARCHITECTURE_PLANNING": {
+          "type": "action",
+          "description": "Creating phase architecture plan (R210)",
+          "entry_conditions": [
+            "Phase 1 start OR after PHASE_ASSESSMENT pass"
+          ],
+          "exit_conditions": [
+            "Architecture created"
+          ],
+          "required_actions": [
+            "Create phase architecture"
+          ],
+          "valid_transitions": [
+            "PHASE_DIRECTORY_ACKNOWLEDGMENT"
+          ]
+        },
+        "WAVE_ARCHITECTURE_PLANNING": {
+          "type": "action",
+          "description": "Creating wave architecture plan (R210)",
+          "entry_conditions": [
+            "Wave planning needed"
+          ],
+          "exit_conditions": [
+            "Architecture created"
+          ],
+          "required_actions": [
+            "Create wave architecture"
+          ],
+          "valid_transitions": [
+            "DECISION"
+          ]
+        },
+        "PHASE_DIRECTORY_ACKNOWLEDGMENT": {
+          "type": "action",
+          "description": "Acknowledging phase directory structure (R212)",
+          "entry_conditions": [
+            "Phase architecture created"
+          ],
+          "exit_conditions": [
+            "Directory acknowledged"
+          ],
+          "required_actions": [
+            "Acknowledge structure"
+          ],
+          "valid_transitions": [
+            "DECISION"
+          ]
+        },
+        "WAVE_REVIEW": {
+          "type": "action",
+          "description": "Reviewing completed wave",
+          "entry_conditions": [
+            "Wave complete"
+          ],
+          "exit_conditions": [
+            "Review complete"
+          ],
+          "required_actions": [
+            "Review wave",
+            "Create report per R258"
+          ],
+          "valid_transitions": [
+            "DECISION",
+            "WAVE_ARCHITECTURE_PLANNING"
+          ]
+        },
+        "PHASE_ASSESSMENT": {
+          "type": "action",
+          "description": "Assessing phase readiness",
+          "entry_conditions": [
+            "Phase complete"
+          ],
+          "exit_conditions": [
+            "Assessment complete"
+          ],
+          "required_actions": [
+            "Assess phase",
+            "Make decision"
+          ],
+          "valid_transitions": [
+            "DECISION",
+            "PHASE_ARCHITECTURE_PLANNING"
+          ]
+        },
+        "INTEGRATION_REVIEW": {
+          "type": "action",
+          "description": "Reviewing integration branches",
+          "entry_conditions": [
+            "Integration complete"
+          ],
+          "exit_conditions": [
+            "Review started"
+          ],
+          "required_actions": [
+            "Review integration"
+          ],
+          "valid_transitions": [
+            "ARCHITECTURE_AUDIT"
+          ]
+        },
+        "ARCHITECTURE_AUDIT": {
+          "type": "action",
+          "description": "Deep architecture review",
+          "entry_conditions": [
+            "Review in progress"
+          ],
+          "exit_conditions": [
+            "Audit complete"
+          ],
+          "required_actions": [
+            "Audit architecture"
+          ],
+          "valid_transitions": [
+            "ARCHITECTURE_VALIDATION"
+          ]
+        },
+        "ARCHITECTURE_VALIDATION": {
+          "type": "validation",
+          "description": "Validating architecture consistency",
+          "entry_conditions": [
+            "Audit complete"
+          ],
+          "exit_conditions": [
+            "Validation complete"
+          ],
+          "required_actions": [
+            "Validate consistency"
+          ],
+          "valid_transitions": [
+            "DECISION"
+          ]
+        },
+        "DECISION": {
+          "type": "terminal",
+          "description": "Making go/no-go decision (terminal)",
+          "entry_conditions": [
+            "Review/assessment complete"
+          ],
+          "exit_conditions": [
+            "None - terminal state"
+          ],
+          "required_actions": [
+            "Make decision",
+            "Document reasoning"
+          ],
+          "valid_transitions": []
+        }
+      }
+    }
+  },
+  "transition_matrix": {
+    "orchestrator": {
+      "INIT": [
+        "WAVE_START",
+        "SPAWN_ARCHITECT_MASTER_PLANNING",
+        "SPAWN_ARCHITECT_PHASE_PLANNING"
+      ],
+      "SPAWN_ARCHITECT_MASTER_PLANNING": [
+        "WAITING_FOR_MASTER_ARCHITECTURE"
+      ],
+      "WAITING_FOR_MASTER_ARCHITECTURE": [
+        "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING"
+      ],
+      "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING": [
+        "WAITING_FOR_PROJECT_TEST_PLAN"
+      ],
+      "WAITING_FOR_PROJECT_TEST_PLAN": [
+        "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY"
+      ],
+      "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY": [
+        "INIT"
+      ],
+      "WAVE_START": [
+        "SPAWN_ARCHITECT_WAVE_PLANNING",
+        "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "CREATE_NEXT_INFRASTRUCTURE"
+      ],
+      "CREATE_NEXT_INFRASTRUCTURE": [
+        "VALIDATE_INFRASTRUCTURE"
+      ],
+      "VALIDATE_INFRASTRUCTURE": [
+        "SPAWN_AGENTS",
+        "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "ERROR_RECOVERY"
+      ],
+      "ANALYZE_CODE_REVIEWER_PARALLELIZATION": [
+        "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
+      ],
+      "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING": [
+        "WAITING_FOR_EFFORT_PLANS"
+      ],
+      "WAITING_FOR_EFFORT_PLANS": [
+        "ANALYZE_IMPLEMENTATION_PARALLELIZATION"
+      ],
+      "ANALYZE_IMPLEMENTATION_PARALLELIZATION": [
+        "SPAWN_AGENTS"
+      ],
+      "SPAWN_AGENTS": [
+        "MONITOR_IMPLEMENTATION"
+      ],
+      "MONITOR_IMPLEMENTATION": [
+        "SPAWN_CODE_REVIEWERS_FOR_REVIEW"
+      ],
+      "MONITOR_REVIEWS": [
+        "CREATE_NEXT_INFRASTRUCTURE",
+        "SPAWN_ENGINEERS_FOR_FIXES",
+        "WAVE_COMPLETE"
+      ],
+      "MONITOR_FIXES": [
+        "CASCADE_REINTEGRATION",
+        "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+        "IMMEDIATE_BACKPORT_REQUIRED"
+      ],
+      "WAVE_COMPLETE": [
+        "CASCADE_REINTEGRATION",
+        "INTEGRATION"
+      ],
+      "CASCADE_REINTEGRATION": [
+        "INTEGRATION",
+        "PHASE_INTEGRATION",
+        "PROJECT_INTEGRATION",
+        "CASCADE_REINTEGRATION",
+        "INTEGRATION_CODE_REVIEW"
+      ],
+      "INTEGRATION": [
+        "SETUP_INTEGRATION_INFRASTRUCTURE"
+      ],
+      "SETUP_INTEGRATION_INFRASTRUCTURE": [
+        "SPAWN_CODE_REVIEWER_MERGE_PLAN"
+      ],
+      "SPAWN_CODE_REVIEWER_MERGE_PLAN": [
+        "WAITING_FOR_MERGE_PLAN"
+      ],
+      "WAITING_FOR_MERGE_PLAN": [
+        "SPAWN_INTEGRATION_AGENT"
+      ],
+      "SPAWN_INTEGRATION_AGENT": [
+        "MONITORING_INTEGRATION"
+      ],
+      "MONITORING_INTEGRATION": [
+        "CASCADE_REINTEGRATION",
+        "INTEGRATION_CODE_REVIEW",
+        "IMMEDIATE_BACKPORT_REQUIRED"
+      ],
+      "INTEGRATION_CODE_REVIEW": [
+        "WAITING_FOR_INTEGRATION_CODE_REVIEW"
+      ],
+      "WAITING_FOR_INTEGRATION_CODE_REVIEW": [
+        "CASCADE_REINTEGRATION",
+        "WAVE_REVIEW",
+        "SPAWN_CODE_REVIEWER_FIX_PLAN"
+      ],
+      "SPAWN_CODE_REVIEWER_FIX_PLAN": [
+        "WAITING_FOR_FIX_PLANS"
+      ],
+      "WAITING_FOR_FIX_PLANS": [
+        "DISTRIBUTE_FIX_PLANS",
+        "ERROR_RECOVERY"
+      ],
+      "DISTRIBUTE_FIX_PLANS": [
+        "SPAWN_ENGINEERS_FOR_FIXES"
+      ],
+      "SPAWN_ENGINEERS_FOR_FIXES": [
+        "MONITORING_FIX_PROGRESS"
+      ],
+      "MONITORING_FIX_PROGRESS": [
+        "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+        "ERROR_RECOVERY"
+      ],
+      "SPAWN_CODE_REVIEWERS_FOR_REVIEW": [
+        "MONITOR_REVIEWS"
+      ],
+      "WAVE_REVIEW": [
+        "CASCADE_REINTEGRATION",
+        "WAVE_START",
+        "PHASE_INTEGRATION"
+      ],
+      "SPAWN_ARCHITECT_PHASE_ASSESSMENT": [
+        "WAITING_FOR_PHASE_ASSESSMENT"
+      ],
+      "WAITING_FOR_PHASE_ASSESSMENT": [
+        "PHASE_COMPLETE",
+        "ERROR_RECOVERY"
+      ],
+      "PHASE_COMPLETE": [
+        "CASCADE_REINTEGRATION",
+        "PROJECT_INTEGRATION",
+        "PHASE_START"
+      ],
+      "PHASE_INTEGRATION": [
+        "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE"
+      ],
+      "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE": [
+        "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN"
+      ],
+      "PROJECT_INTEGRATION": [
+        "SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE"
+      ],
+      "SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE": [
+        "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN"
+      ],
+      "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN": [
+        "WAITING_FOR_PROJECT_MERGE_PLAN"
+      ],
+      "WAITING_FOR_PROJECT_MERGE_PLAN": [
+        "SPAWN_INTEGRATION_AGENT_PROJECT"
+      ],
+      "SPAWN_INTEGRATION_AGENT_PROJECT": [
+        "MONITORING_PROJECT_INTEGRATION"
+      ],
+      "MONITORING_PROJECT_INTEGRATION": [
+        "PROJECT_INTEGRATION_CODE_REVIEW",
+        "ERROR_RECOVERY"
+      ],
+      "PROJECT_INTEGRATION_CODE_REVIEW": [
+        "WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW"
+      ],
+      "WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW": [
+        "SPAWN_CODE_REVIEWER_PROJECT_VALIDATION",
+        "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING"
+      ],
+      "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING": [
+        "WAITING_FOR_PROJECT_FIX_PLANS"
+      ],
+      "WAITING_FOR_PROJECT_FIX_PLANS": [
+        "SPAWN_SW_ENGINEER_PROJECT_FIXES"
+      ],
+      "SPAWN_SW_ENGINEER_PROJECT_FIXES": [
+        "MONITORING_PROJECT_FIXES"
+      ],
+      "MONITORING_PROJECT_FIXES": [
+        "PROJECT_INTEGRATION",
+        "ERROR_RECOVERY"
+      ],
+      "SPAWN_CODE_REVIEWER_PROJECT_VALIDATION": [
+        "WAITING_FOR_PROJECT_VALIDATION"
+      ],
+      "WAITING_FOR_PROJECT_VALIDATION": [
+        "CREATE_INTEGRATION_TESTING",
+        "ERROR_RECOVERY"
+      ],
+      "CREATE_INTEGRATION_TESTING": [
+        "INTEGRATION_TESTING"
+      ],
+      "INTEGRATION_TESTING": [
+        "PRODUCTION_READY_VALIDATION"
+      ],
+      "PRODUCTION_READY_VALIDATION": [
+        "BUILD_VALIDATION",
+        "ANALYZE_BUILD_FAILURES"
+      ],
+      "BUILD_VALIDATION": [
+        "PR_PLAN_CREATION",
+        "ANALYZE_BUILD_FAILURES",
+        "SPAWN_CODE_REVIEWER_BACKPORT_PLAN"
+      ],
+      "ANALYZE_BUILD_FAILURES": [
+        "COORDINATE_BUILD_FIXES"
+      ],
+      "COORDINATE_BUILD_FIXES": [
+        "BUILD_VALIDATION"
+      ],
+      "IMMEDIATE_BACKPORT_REQUIRED": [
+        "SPAWN_CODE_REVIEWER_BACKPORT_PLAN",
+        "SPAWN_ENGINEERS_FOR_FIXES"
+      ],
+      "SPAWN_CODE_REVIEWER_BACKPORT_PLAN": [
+        "WAITING_FOR_BACKPORT_PLAN"
+      ],
+      "WAITING_FOR_BACKPORT_PLAN": [
+        "SPAWN_SW_ENGINEER_BACKPORT_FIXES"
+      ],
+      "SPAWN_SW_ENGINEER_BACKPORT_FIXES": [
+        "MONITORING_BACKPORT_PROGRESS"
+      ],
+      "MONITORING_BACKPORT_PROGRESS": [
+        "PR_PLAN_CREATION",
+        "ERROR_RECOVERY"
+      ],
+      "PR_PLAN_CREATION": [
+        "WAVE_START",
+        "PHASE_COMPLETE",
+        "PHASE_START",
+        "SUCCESS"
+      ],
+      "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN": [
+        "WAITING_FOR_PHASE_MERGE_PLAN"
+      ],
+      "WAITING_FOR_PHASE_MERGE_PLAN": [
+        "SPAWN_INTEGRATION_AGENT_PHASE"
+      ],
+      "SPAWN_INTEGRATION_AGENT_PHASE": [
+        "MONITORING_PHASE_INTEGRATION"
+      ],
+      "MONITORING_PHASE_INTEGRATION": [
+        "PHASE_INTEGRATION_CODE_REVIEW",
+        "IMMEDIATE_BACKPORT_REQUIRED"
+      ],
+      "PHASE_INTEGRATION_CODE_REVIEW": [
+        "WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW"
+      ],
+      "WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW": [
+        "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+        "SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN"
+      ],
+      "SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN": [
+        "WAITING_FOR_PHASE_FIX_PLANS"
+      ],
+      "WAITING_FOR_PHASE_FIX_PLANS": [
+        "ERROR_RECOVERY"
+      ],
+      "ERROR_RECOVERY": [
+        "CASCADE_REINTEGRATION",
+        "PHASE_INTEGRATION",
+        "SPAWN_AGENTS",
+        "INTEGRATION",
+        "HARD_STOP"
+      ],
+      "SUCCESS": [],
+      "HARD_STOP": [],
+      "SPAWN_ARCHITECT_PHASE_PLANNING": [
+        "WAITING_FOR_PHASE_PLANS"
+      ],
+      "PHASE_START": [
+        "SPAWN_ARCHITECT_PHASE_PLANNING",
+        "WAVE_START",
+        "ERROR_RECOVERY"
+      ],
+      "WAITING_FOR_PHASE_PLANS": [
+        "WAVE_START",
+        "ERROR_RECOVERY"
+      ],
+      "SPAWN_ARCHITECT_WAVE_PLANNING": [
+        "WAITING_FOR_ARCHITECTURE_PLAN"
+      ],
+      "WAITING_FOR_ARCHITECTURE_PLAN": [
+        "SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING",
+        "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING"
+      ],
+      "SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING": [
+        "WAITING_FOR_PHASE_TEST_PLAN"
+      ],
+      "WAITING_FOR_PHASE_TEST_PLAN": [
+        "CREATE_PHASE_INTEGRATION_BRANCH_EARLY"
+      ],
+      "CREATE_PHASE_INTEGRATION_BRANCH_EARLY": [
+        "SPAWN_CODE_REVIEWER_PHASE_IMPL"
+      ],
+      "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING": [
+        "WAITING_FOR_WAVE_TEST_PLAN"
+      ],
+      "WAITING_FOR_WAVE_TEST_PLAN": [
+        "CREATE_WAVE_INTEGRATION_BRANCH_EARLY"
+      ],
+      "CREATE_WAVE_INTEGRATION_BRANCH_EARLY": [
+        "SPAWN_CODE_REVIEWER_WAVE_IMPL"
+      ],
+      "SPAWN_CODE_REVIEWER_PHASE_IMPL": [
+        "WAITING_FOR_IMPLEMENTATION_PLAN"
+      ],
+      "SPAWN_CODE_REVIEWER_WAVE_IMPL": [
+        "INJECT_WAVE_METADATA"
+      ],
+      "INJECT_WAVE_METADATA": [
+        "WAITING_FOR_IMPLEMENTATION_PLAN"
+      ],
+      "WAITING_FOR_IMPLEMENTATION_PLAN": [
+        "WAVE_START",
+        "CREATE_NEXT_INFRASTRUCTURE"
+      ]
+    },
+    "sw-engineer": {
+      "INIT": [
+        "TEST_VERIFICATION"
+      ],
+      "TEST_VERIFICATION": [
+        "IMPLEMENTATION"
+      ],
+      "IMPLEMENTATION": [
+        "MEASURE_SIZE",
+        "REQUEST_REVIEW"
+      ],
+      "MEASURE_SIZE": [
+        "COMPLETED",
+        "SPLIT_IMPLEMENTATION"
+      ],
+      "FIX_ISSUES": [
+        "TEST_VERIFICATION"
+      ],
+      "SPLIT_IMPLEMENTATION": [
+        "MEASURE_SIZE"
+      ],
+      "REQUEST_REVIEW": [
+        "COMPLETED"
+      ],
+      "COMPLETED": [],
+      "BLOCKED": []
+    },
+    "code-reviewer": {
+      "INIT": [
+        "PROJECT_TEST_PLANNING",
+        "PHASE_TEST_PLANNING",
+        "WAVE_TEST_PLANNING",
+        "PHASE_IMPLEMENTATION_PLANNING",
+        "WAVE_IMPLEMENTATION_PLANNING",
+        "WAVE_MERGE_PLANNING",
+        "PHASE_MERGE_PLANNING",
+        "EFFORT_PLAN_CREATION"
+      ],
+      "PROJECT_TEST_PLANNING": [
+        "COMPLETED"
+      ],
+      "PHASE_TEST_PLANNING": [
+        "COMPLETED"
+      ],
+      "WAVE_TEST_PLANNING": [
+        "COMPLETED"
+      ],
+      "PHASE_IMPLEMENTATION_PLANNING": [
+        "COMPLETED"
+      ],
+      "WAVE_IMPLEMENTATION_PLANNING": [
+        "WAVE_DIRECTORY_ACKNOWLEDGMENT"
+      ],
+      "WAVE_DIRECTORY_ACKNOWLEDGMENT": [
+        "EFFORT_PLAN_CREATION"
+      ],
+      "EFFORT_PLAN_CREATION": [
+        "COMPLETED"
+      ],
+      "WAVE_MERGE_PLANNING": [
+        "COMPLETED"
+      ],
+      "PHASE_MERGE_PLANNING": [
+        "COMPLETED"
+      ],
+      "MEASURE_IMPLEMENTATION_SIZE": [
+        "PERFORM_CODE_REVIEW",
+        "CREATE_SPLIT_INVENTORY"
+      ],
+      "PERFORM_CODE_REVIEW": [
+        "COMPLETED",
+        "CREATE_FIX_PLAN"
+      ],
+      "CREATE_SPLIT_INVENTORY": [
+        "COMPLETED"
+      ],
+      "CREATE_SPLIT_PLAN": [
+        "SPLIT_REVIEW"
+      ],
+      "SPLIT_REVIEW": [
+        "VALIDATION"
+      ],
+      "VALIDATION": [
+        "COMPLETED"
+      ],
+      "CREATE_FIX_PLAN": [
+        "COMPLETED"
+      ],
+      "COMPLETED": []
+    },
+    "architect": {
+      "INIT": [
+        "PHASE_ARCHITECTURE_PLANNING",
+        "WAVE_ARCHITECTURE_PLANNING",
+        "WAVE_REVIEW",
+        "PHASE_ASSESSMENT",
+        "INTEGRATION_REVIEW"
+      ],
+      "PHASE_ARCHITECTURE_PLANNING": [
+        "PHASE_DIRECTORY_ACKNOWLEDGMENT"
+      ],
+      "WAVE_ARCHITECTURE_PLANNING": [
+        "DECISION"
+      ],
+      "PHASE_DIRECTORY_ACKNOWLEDGMENT": [
+        "DECISION"
+      ],
+      "WAVE_REVIEW": [
+        "DECISION",
+        "WAVE_ARCHITECTURE_PLANNING"
+      ],
+      "PHASE_ASSESSMENT": [
+        "DECISION",
+        "PHASE_ARCHITECTURE_PLANNING"
+      ],
+      "INTEGRATION_REVIEW": [
+        "ARCHITECTURE_AUDIT"
+      ],
+      "ARCHITECTURE_AUDIT": [
+        "ARCHITECTURE_VALIDATION"
+      ],
+      "ARCHITECTURE_VALIDATION": [
+        "DECISION"
+      ],
+      "DECISION": []
+    }
+  },
+  "state_file_locations": {
+    "software-factory": {
+      "orchestrator": [
+        "agent-states/software-factory/orchestrator/INIT/rules.md",
+        "agent-states/software-factory/orchestrator/WAVE_START/rules.md",
+        "agent-states/software-factory/orchestrator/SPAWN_AGENTS/rules.md"
+      ],
+      "sw-engineer": [
+        "agent-states/software-factory/sw-engineer/IMPLEMENTATION/rules.md",
+        "agent-states/software-factory/sw-engineer/MEASURE_SIZE/rules.md"
+      ],
+      "code-reviewer": [
+        "agent-states/software-factory/code-reviewer/EFFORT_PLAN_CREATION/rules.md",
+        "agent-states/software-factory/code-reviewer/CODE_REVIEW/rules.md"
+      ],
+      "architect": [
+        "agent-states/software-factory/architect/WAVE_REVIEW/rules.md",
+        "agent-states/software-factory/architect/PHASE_ASSESSMENT/rules.md"
+      ]
+    },
+    "pr-ready": {
+      "orchestrator": [
+        "agent-states/pr-ready/orchestrator/PR_READY_INIT/rules.md"
+      ],
+      "integration": [
+        "agent-states/pr-ready/integration/PR_BRANCH_INVENTORY/rules.md"
+      ]
+    },
+    "initialization": {
+      "orchestrator": [
+        "agent-states/initialization/orchestrator/INIT_START/rules.md"
+      ],
+      "architect": [
+        "agent-states/initialization/architect/INIT_LOAD_EXAMPLES/rules.md"
+      ]
+    },
+    "integration": [
+      "agent-states/integration/INTEGRATION_INIT/rules.md",
+      "agent-states/integration/INTEGRATION_BRANCH_SETUP/rules.md",
+      "agent-states/integration/INTEGRATION_BUILD_VALIDATION/rules.md",
+      "agent-states/integration/INTEGRATION_EXIT_FOR_FIX/rules.md",
+      "agent-states/integration/INTEGRATION_SUCCESS/rules.md"
+    ]
+  },
+  "sub_state_machines": {
+    "INTEGRATION": {
+      "description": "Specialized sub-state machine for complex integration workflows",
+      "definition_file": "SOFTWARE-FACTORY-INTEGRATION-STATE-MACHINE.md",
+      "state_file_pattern": "integration-[type]-[identifier]-state.json",
+      "entry_triggers": [
+        "WAVE_COMPLETE → INTEGRATION",
+        "PHASE_COMPLETE → PHASE_INTEGRATION",
+        "PROJECT_INTEGRATION"
+      ],
+      "integration_types": [
+        "WAVE",
+        "PHASE",
+        "PROJECT"
+      ],
+      "exit_conditions": [
+        {
+          "condition": "SUCCESS",
+          "description": "All branches merged, all validations passed"
+        },
+        {
+          "condition": "FIX_REQUIRED",
+          "description": "Issues found, needs FIX_CASCADE"
+        },
+        {
+          "condition": "ABORT",
+          "description": "Max attempts exceeded or unrecoverable error"
+        }
+      ],
+      "features": [
+        "Cycle support for multiple integration attempts",
+        "Stale branch management",
+        "Progressive validation",
+        "Fix tracking",
+        "Convergence tracking"
+      ]
+    }
+  },
+  "validation_examples": {
+    "valid_transitions": [
+      {
+        "from": "WAVE_COMPLETE",
+        "to": "INTEGRATION",
+        "description": "Valid wave integration"
+      },
+      {
+        "from": "MONITOR_REVIEWS",
+        "to": "WAVE_COMPLETE",
+        "description": "Valid when all reviews pass"
+      },
+      {
+        "from": "ERROR_RECOVERY",
+        "to": "SPAWN_AGENTS",
+        "description": "Valid retry"
+      }
+    ],
+    "invalid_transitions": [
+      {
+        "from": "WAVE_COMPLETE",
+        "to": "WAITING_FOR_COFFEE",
+        "reason": "State doesn't exist"
+      },
+      {
+        "from": "IMPLEMENTATION",
+        "to": "WAVE_REVIEW",
+        "reason": "Wrong agent type"
+      },
+      {
+        "from": "INIT",
+        "to": "WAVE_COMPLETE",
+        "reason": "Cannot skip to completion"
+      }
+    ]
+  },
+  "states": [
+    "ANALYZE_BUILD_FAILURES",
+    "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+    "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+    "BUILD_VALIDATION",
+    "CASCADE_REINTEGRATION",
+    "COORDINATE_BUILD_FIXES",
+    "CREATE_INTEGRATION_TESTING",
+    "CREATE_NEXT_INFRASTRUCTURE",
+    "CREATE_PHASE_INTEGRATION_BRANCH_EARLY",
+    "CREATE_PROJECT_INTEGRATION_BRANCH_EARLY",
+    "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+    "DISTRIBUTE_FIX_PLANS",
+    "ERROR_RECOVERY",
+    "HARD_STOP",
+    "IMMEDIATE_BACKPORT_REQUIRED",
+    "INIT",
+    "INJECT_WAVE_METADATA",
+    "INTEGRATION",
+    "INTEGRATION_CODE_REVIEW",
+    "INTEGRATION_TESTING",
+    "MONITORING_BACKPORT_PROGRESS",
+    "MONITORING_FIX_PROGRESS",
+    "MONITORING_INTEGRATION",
+    "MONITORING_PHASE_INTEGRATION",
+    "MONITORING_PROJECT_FIXES",
+    "MONITORING_PROJECT_INTEGRATION",
+    "MONITOR_FIXES",
+    "MONITOR_IMPLEMENTATION",
+    "MONITOR_REVIEWS",
+    "PHASE_COMPLETE",
+    "PHASE_START",
+    "PHASE_INTEGRATION",
+    "PHASE_INTEGRATION_CODE_REVIEW",
+    "PRODUCTION_READY_VALIDATION",
+    "PROJECT_INTEGRATION",
+    "PROJECT_INTEGRATION_CODE_REVIEW",
+    "PR_PLAN_CREATION",
+    "CREATE_NEXT_INFRASTRUCTURE",
+    "SETUP_INTEGRATION_INFRASTRUCTURE",
+    "SETUP_PHASE_INTEGRATION_INFRASTRUCTURE",
+    "SETUP_PROJECT_INTEGRATION_INFRASTRUCTURE",
+    "SPAWN_AGENTS",
+    "SPAWN_ARCHITECT_MASTER_PLANNING",
+    "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+    "SPAWN_ARCHITECT_PHASE_PLANNING",
+    "SPAWN_ARCHITECT_WAVE_PLANNING",
+    "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "SPAWN_CODE_REVIEWERS_FOR_REVIEW",
+    "SPAWN_CODE_REVIEWER_BACKPORT_PLAN",
+    "SPAWN_CODE_REVIEWER_FIX_PLAN",
+    "SPAWN_CODE_REVIEWER_MERGE_PLAN",
+    "SPAWN_CODE_REVIEWER_PHASE_FIX_PLAN",
+    "SPAWN_CODE_REVIEWER_PHASE_IMPL",
+    "SPAWN_CODE_REVIEWER_PHASE_MERGE_PLAN",
+    "SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING",
+    "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
+    "SPAWN_CODE_REVIEWER_PROJECT_MERGE_PLAN",
+    "SPAWN_CODE_REVIEWER_PROJECT_TEST_PLANNING",
+    "SPAWN_CODE_REVIEWER_PROJECT_VALIDATION",
+    "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+    "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+    "SPAWN_ENGINEERS_FOR_FIXES",
+    "SPAWN_INTEGRATION_AGENT",
+    "SPAWN_INTEGRATION_AGENT_PHASE",
+    "SPAWN_INTEGRATION_AGENT_PROJECT",
+    "SPAWN_SW_ENGINEER_BACKPORT_FIXES",
+    "SPAWN_SW_ENGINEER_PROJECT_FIXES",
+    "SUCCESS",
+    "WAITING_FOR_ARCHITECTURE_PLAN",
+    "WAITING_FOR_BACKPORT_PLAN",
+    "WAITING_FOR_EFFORT_PLANS",
+    "WAITING_FOR_FIX_PLANS",
+    "WAITING_FOR_IMPLEMENTATION_PLAN",
+    "WAITING_FOR_INTEGRATION_CODE_REVIEW",
+    "WAITING_FOR_MASTER_ARCHITECTURE",
+    "WAITING_FOR_MERGE_PLAN",
+    "WAITING_FOR_PHASE_ASSESSMENT",
+    "WAITING_FOR_PHASE_FIX_PLANS",
+    "WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW",
+    "WAITING_FOR_PHASE_MERGE_PLAN",
+    "WAITING_FOR_PHASE_PLANS",
+    "WAITING_FOR_PHASE_TEST_PLAN",
+    "WAITING_FOR_PROJECT_FIX_PLANS",
+    "WAITING_FOR_PROJECT_INTEGRATION_CODE_REVIEW",
+    "WAITING_FOR_PROJECT_MERGE_PLAN",
+    "WAITING_FOR_PROJECT_TEST_PLAN",
+    "WAITING_FOR_PROJECT_VALIDATION",
+    "WAITING_FOR_WAVE_TEST_PLAN",
+    "WAVE_COMPLETE",
+    "WAVE_REVIEW",
+    "WAVE_START"
+  ]
+}

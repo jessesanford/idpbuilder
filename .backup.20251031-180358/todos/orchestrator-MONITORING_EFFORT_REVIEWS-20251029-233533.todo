@@ -1,0 +1,29 @@
+# Orchestrator TODOs - MONITORING_EFFORT_REVIEWS State
+# Saved: $(date '+%Y-%m-%d %H:%M:%S UTC')
+# Reason: State completion (R287 trigger)
+
+## Completed TODOs (✅):
+- [x] Check code reviewer progress for all 4 wave2 efforts
+- [x] Verify review reports exist and are complete
+- [x] Check for uncommitted work in effort directories
+- [x] Aggregate review results and determine next action
+- [x] Create monitoring completion report
+- [x] Spawn State Manager for state transition (R517)
+- [x] Save TODOs before state transition (R287)
+
+## Review Results Summary:
+- effort-1-docker-client: ACCEPTED ✅
+- effort-2-registry-client: NEEDS_FIXES ❌ (code issues + R383 violation)
+- effort-3-auth: NEEDS_FIXES ⚠️ (1 minor fix)
+- effort-4-tls: ACCEPTED ✅ (cleanup needed)
+
+## State Transition:
+- From: MONITORING_EFFORT_REVIEWS
+- To: SPAWN_CODE_REVIEWER_FIX_PLAN (State Manager decision - overrode orchestrator proposal of SPAWN_SW_ENGINEERS)
+- Reason: State machine requires fix planning step before implementation
+- State Manager Authority: FINAL AND BINDING per R517
+
+## Next State Work (SPAWN_CODE_REVIEWER_FIX_PLAN):
+- Spawn Code Reviewer agents for fix planning
+- Create fix plans for effort-2 and effort-3
+- Fix plans will guide SW Engineers in next phase

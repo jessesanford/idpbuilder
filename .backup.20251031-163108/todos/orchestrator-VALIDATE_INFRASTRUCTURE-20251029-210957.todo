@@ -1,0 +1,34 @@
+# Orchestrator TODO State
+# Agent: orchestrator
+# State: VALIDATE_INFRASTRUCTURE
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: VALIDATE_INFRASTRUCTURE_COMPLETE (R287)
+
+## Completed Tasks
+- [x] Perform entry condition validation per state rules
+- [x] Run infrastructure validation script (R507/R508)
+- [x] Determine next state based on validation results
+- [x] Update orchestrator-state-v3.json with next state (R288)
+- [x] Validate state file with validation tool (R324)
+- [x] Commit and push state file (R288)
+- [x] Save TODOs to file (R287)
+
+## Pending Tasks
+- [ ] Output CONTINUE-SOFTWARE-FACTORY flag (R405)
+
+## State Transition Summary
+- From: VALIDATE_INFRASTRUCTURE
+- To: CREATE_NEXT_INFRASTRUCTURE
+- Reason: 2 of 4 Wave 2 efforts created (1.2.1, 1.2.2), 2 remaining (1.2.3, 1.2.4)
+- Wave 2 efforts NOT in pre_planned_infrastructure (created on-the-fly)
+- Existing workspaces validated successfully (correct repo, locked config)
+- Need to continue infrastructure creation loop
+
+## Next Actions (for CREATE_NEXT_INFRASTRUCTURE state)
+1. Read WAVE-2-IMPLEMENTATION.md to extract Effort 1.2.3 details
+2. Create workspace for effort-3-auth
+3. Create branch idpbuilder-oci-push/phase1/wave2/effort-3-auth
+4. Push to remote and configure upstream tracking
+5. Lock git config per R312
+6. Transition to VALIDATE_INFRASTRUCTURE
+7. Repeat for Effort 1.2.4

@@ -1,0 +1,6 @@
+textual>=0.58
+textual-tty
+bittty
+pexpect>=4.9
+pyte>=0.8.1
+

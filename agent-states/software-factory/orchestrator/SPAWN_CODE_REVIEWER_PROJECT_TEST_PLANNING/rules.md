@@ -172,23 +172,23 @@ This state spawns a Code Reviewer to create project-level tests from the master 
 
 ## State Responsibilities
 
-### 1. Verify Architecture Exists at Standardized Location
+### 1. Verify Architecture Exists at R550 Standardized Location
 ```bash
-# Get standardized location from state file
-MASTER_ARCH_FILE=$(jq -r '.planning_artifacts.master_architecture_file // "planning/PROJECT-ARCHITECTURE.md"' "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
-MASTER_ARCH_PATH="$CLAUDE_PROJECT_DIR/$MASTER_ARCH_FILE"
+# R550: Get standardized location from planning_files (NOT legacy planning_artifacts)
+ARCH_PLAN_FILE=$(jq -r '.planning_files.project.architecture_plan // "planning/project/PROJECT-ARCHITECTURE-PLAN.md"' "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
+ARCH_PLAN_PATH="$CLAUDE_PROJECT_DIR/$ARCH_PLAN_FILE"
 
-# Ensure we have architecture to work from at standardized location
-if [ ! -f "$MASTER_ARCH_PATH" ]; then
-    echo "❌ Cannot create tests without master architecture!"
-    echo "   Expected location: $MASTER_ARCH_PATH"
-    echo "   (from orchestrator-state-v3.json planning_artifacts.master_architecture_file)"
+# Ensure we have architecture to work from at R550 standardized location
+if [ ! -f "$ARCH_PLAN_PATH" ]; then
+    echo "❌ Cannot create tests without project architecture plan!"
+    echo "   Expected R550 location: $ARCH_PLAN_PATH"
+    echo "   (from orchestrator-state-v3.json planning_files.project.architecture_plan)"
     PROPOSED_NEXT_STATE="ERROR_RECOVERY"
-    TRANSITION_REASON="Master architecture not found at standardized location"
+    TRANSITION_REASON="Project architecture plan not found at R550 standardized location"
     exit 341
 fi
 
-echo "✅ Master architecture found at: $MASTER_ARCH_PATH"
+echo "✅ Project architecture plan found at R550 location: $ARCH_PLAN_PATH"
 ```
 
 ### 2. Spawn Code Reviewer for Test Planning

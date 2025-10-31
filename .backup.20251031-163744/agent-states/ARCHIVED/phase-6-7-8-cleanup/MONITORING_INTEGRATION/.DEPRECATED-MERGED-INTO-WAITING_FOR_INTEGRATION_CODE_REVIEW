@@ -1,0 +1,27 @@
+# DEPRECATED - Rules Merged Into WAITING_FOR_INTEGRATION_CODE_REVIEW
+
+**Date**: 2025-10-22
+**Merged By**: Software Factory Manager (Item #673)
+**Target State**: WAITING_FOR_INTEGRATION_CODE_REVIEW
+
+## Merge Summary
+
+All unique R233/R358 monitoring logic from this MONITORING_INTEGRATION state has been merged into WAITING_FOR_INTEGRATION_CODE_REVIEW/rules.md:
+
+### Content Merged:
+1. ✅ R233 rule reference (Immediate Action On State Entry)
+2. ✅ R358 rule reference (Integration Completion Detection)
+3. ✅ Active monitoring loop implementation
+4. ✅ 30-second completion detection logic
+5. ✅ Continuous monitoring requirements
+
+### Result:
+WAITING_FOR_INTEGRATION_CODE_REVIEW now includes:
+- "Active Monitoring Requirements" section
+- R233/R358 enforcement guidance
+- Complete monitoring loop implementation
+- Urgency guidance for immediate action
+
+This directory is marked for removal in Phase 4 (cleanup phase).
+
+**See**: docs/SF-3.0-COMPREHENSIVE-EXECUTION-CHECKLIST.md Item #673

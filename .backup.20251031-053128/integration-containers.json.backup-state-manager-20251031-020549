@@ -1,0 +1,243 @@
+{
+  "schema_version": "3.0",
+  "last_updated": "2025-10-31T01:59:11Z",
+  "project_integration": {
+    "status": "NOT_STARTED",
+    "branch": null,
+    "workspace": null,
+    "phases_integrated": []
+  },
+  "phase_integrations": [
+    {
+      "container_id": "phase-phase1",
+      "phase": 1,
+      "status": "COMPLETE",
+      "iteration": 1,
+      "max_iterations": 10,
+      "branch": "idpbuilder-oci-push/phase1/integration",
+      "workspace": "efforts/phase1/integration",
+      "base_branch": "idpbuilder-oci-push/phase1/wave1/integration",
+      "created_at": "2025-10-31T01:00:29Z",
+      "integration_started_at": "2025-10-31T01:00:29Z",
+      "last_iteration_at": "2025-10-31T01:00:29Z",
+      "convergence_metrics": {
+        "bugs_remaining": 0,
+        "bugs_found": 0,
+        "test_failures": 0,
+        "build_failures": 0,
+        "bugs_fixed": 0
+      },
+      "waves_integrated": [
+        1,
+        2
+      ],
+      "integration_completed_at": "2025-10-31T01:00:29Z",
+      "build_validation": {
+        "status": "SUCCESS",
+        "artifact_path": "/home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase1/integration/idpbuilder",
+        "artifact_size": "65MB",
+        "build_duration": "clean merge, build validated by integration agent",
+        "build_timestamp": "2025-10-31T01:00:29Z",
+        "report_file": ".software-factory/phase1/integration/INTEGRATE_PHASE_WAVES-REPORT--20251031-005450.md",
+        "validated_at": "2025-10-31T01:00:29Z",
+        "validator": "integration-agent",
+        "r323_compliance": "VERIFIED"
+      },
+      "build_validation_complete": true,
+      "artifact_generated": true,
+      "ready_for_pr": true,
+      "notes": "Phase 1 integration complete: Wave 1 and Wave 2 merged cleanly (zero conflicts), all tests passing",
+      "architecture_review": {
+        "status": "APPROVED",
+        "decision": "PROCEED",
+        "report_file": "phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md",
+        "reviewed_at": "2025-10-31T01:33:30Z",
+        "reviewer": "architect",
+        "issues_found": 0,
+        "compliance_status": "ALL_COMPLIANT"
+      },
+      "iteration_history": [
+        {
+          "iteration": 1,
+          "started_at": "2025-10-31T01:00:29Z",
+          "completed_at": "2025-10-31T01:16:35Z",
+          "review_report": "efforts/phase1/integration/.software-factory/phase1/integration/PHASE_INTEGRATION_REVIEW--20251031-011635.md",
+          "bugs_found": 0,
+          "bugs_fixed": 0,
+          "status": "APPROVED",
+          "reviewer": "code-reviewer",
+          "notes": "Phase 1 integration clean: Wave 1 + Wave 2 merged with 0 bugs, all tests passing, architecture review next",
+          "architecture_review": {
+            "status": "APPROVED",
+            "decision": "PROCEED",
+            "report_file": "phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md",
+            "reviewed_at": "2025-10-31T01:33:30Z",
+            "reviewer": "architect"
+          }
+        }
+      ],
+      "phase_completed_at": "2025-10-31T01:41:55Z",
+      "phase_assessment": {
+        "status": "APPROVED",
+        "decision": "PROCEED_NEXT_PHASE",
+        "report_file": "phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md",
+        "assessed_at": "2025-10-31T01:33:30Z",
+        "assessor": "architect",
+        "compliance_verified": [
+          "R307",
+          "R308",
+          "R297",
+          "R359",
+          "R383"
+        ]
+      },
+      "final_status": "COMPLETE_AND_APPROVED",
+      "phase_completion_recorded_at": "2025-10-31T01:59:11Z",
+      "ready_for_project_integration": true,
+      "orchestrator_marked_complete": true
+    }
+  ],
+  "wave_integrations": [
+    {
+      "container_id": "wave-phase1-wave1",
+      "phase": 1,
+      "wave": 1,
+      "status": "CONVERGED",
+      "iteration": 4,
+      "max_iterations": 10,
+      "branch": "idpbuilder-oci-push/phase1/wave1/integration",
+      "workspace": "efforts/phase1/wave1/integration",
+      "base_branch": "idpbuilder-oci-push/phase1/wave1/integration",
+      "created_at": "2025-10-29T05:26:04Z",
+      "integration_started_at": "2025-10-30T00:40:54Z",
+      "last_iteration_at": "2025-10-30T05:01:29Z",
+      "convergence_metrics": {
+        "bugs_remaining": 0,
+        "bugs_found": 0,
+        "test_failures": 0,
+        "build_failures": 1,
+        "bugs_fixed": 3
+      },
+      "efforts_to_integrate": [
+        "1.1.1",
+        "1.1.2",
+        "1.1.3",
+        "1.1.4"
+      ],
+      "integration_plan_file": null,
+      "notes": "Wave 1 integration complete with build validation passed",
+      "review_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-REVIEW-REPORT--20251030-012705.md",
+      "review_decision": "APPROVED",
+      "review_timestamp": "2025-10-30T01:25:47Z",
+      "architecture_review": {
+        "status": "APPROVED",
+        "decision": "PROCEED",
+        "report_file": "efforts/phase1/wave1/integration/.software-factory/phase1/wave1/integration/ARCHITECTURE-ASSESSMENT--20251030-033333.md",
+        "reviewed_at": "2025-10-30T03:37:22Z",
+        "reviewer": "architect"
+      },
+      "error_details": {
+        "error_type": "STUCK_LOOP",
+        "loop_count": 9,
+        "max_iterations": 5,
+        "failed_effort_id": "1.2.4",
+        "failed_effort_name": "TLS Configuration Implementation",
+        "successful_efforts": [
+          "1.2.1",
+          "1.2.2",
+          "1.2.3"
+        ],
+        "directory_exists": false,
+        "bug_id": "BUG-001-STUCK-LOOP-EFFORT-4"
+      },
+      "integration_completed_at": "2025-10-30T01:10:38Z",
+      "build_validation": {
+        "status": "SUCCESS",
+        "artifact_path": "/home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase1/wave1/integration/idpbuilder",
+        "artifact_size": "65MB",
+        "build_duration": "24.245s",
+        "build_timestamp": "2025-10-30T03:42:00Z",
+        "report_file": "efforts/phase1/wave1/integration/.software-factory/phase1/wave1/integration/BUILD-VALIDATION-REPORT--20251030-034507.md",
+        "validated_at": "2025-10-30T03:53:20Z",
+        "validator": "code-reviewer",
+        "r323_compliance": "VERIFIED"
+      },
+      "build_validation_complete": true,
+      "artifact_generated": true,
+      "ready_for_pr": true
+    },
+    {
+      "container_id": "wave-phase1-wave2",
+      "phase": 1,
+      "wave": 2,
+      "status": "CONVERGED",
+      "iteration": 5,
+      "max_iterations": 10,
+      "branch": "idpbuilder-oci-push/phase1/wave2/integration",
+      "workspace": "efforts/phase1/wave2/integration",
+      "base_branch": "idpbuilder-oci-push/phase1/wave1/integration",
+      "created_at": "2025-10-29T21:33:00Z",
+      "integration_started_at": "2025-10-30T00:40:00Z",
+      "last_iteration_at": "2025-10-30T19:42:22Z",
+      "convergence_metrics": {
+        "bugs_remaining": 0,
+        "bugs_found": 3,
+        "test_failures": 0,
+        "build_failures": 0,
+        "bugs_fixed": 3
+      },
+      "efforts_to_integrate": [
+        "1.2.1",
+        "1.2.2",
+        "1.2.3",
+        "1.2.4"
+      ],
+      "integration_plan_file": null,
+      "notes": "Wave 2 integration complete with all 4 efforts merged, bugs fixed, and architect approved",
+      "review_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/INTEGRATION-REVIEW-REPORT--20251030-041824.md",
+      "review_decision": "APPROVED",
+      "review_timestamp": "2025-10-30T04:16:15Z",
+      "architecture_review": {
+        "status": "APPROVED",
+        "decision": "PROCEED",
+        "report_file": "wave-reviews/phase1/wave2/PHASE-1-WAVE-2-REVIEW-REPORT.md",
+        "reviewed_at": "2025-10-30T04:50:38Z",
+        "reviewer": "architect"
+      },
+      "integration_completed_at": "2025-10-30T04:16:15Z",
+      "build_validation": {
+        "status": "SUCCESS",
+        "artifact_path": "/home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase1/wave2/integration/idpbuilder",
+        "artifact_size": "65MB",
+        "build_duration": "~24s",
+        "build_timestamp": "2025-10-30T04:00:00Z",
+        "report_file": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/INTEGRATION-REVIEW-REPORT--20251030-041824.md",
+        "validated_at": "2025-10-30T04:54:51Z",
+        "validator": "code-reviewer",
+        "r323_compliance": "VERIFIED"
+      },
+      "build_validation_complete": true,
+      "artifact_generated": true,
+      "ready_for_pr": false
+    }
+  ],
+  "integration_history": [],
+  "active_integrations": [],
+  "containers": {
+    "phase-1": {
+      "type": "phase",
+      "phase": 1,
+      "iteration": 1,
+      "max_iterations": 10,
+      "branch": "phase-1-integration",
+      "created_at": "2025-10-30T22:18:47Z",
+      "status": "in_progress",
+      "convergence": {
+        "bugs_found": null,
+        "bugs_fixed": null,
+        "tests_passing": null
+      },
+      "iteration_started_at": "2025-10-30T22:26:52Z"
+    }
+  }
+}

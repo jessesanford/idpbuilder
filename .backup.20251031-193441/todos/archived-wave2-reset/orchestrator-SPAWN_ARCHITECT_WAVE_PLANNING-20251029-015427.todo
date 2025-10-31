@@ -1,0 +1,23 @@
+# Orchestrator TODOs - SPAWN_ARCHITECT_WAVE_PLANNING State
+# Saved: 2025-10-29T01:51:00Z
+# Trigger: State transition completion (R287)
+
+## Completed Tasks
+- [x] Spawn Architect for Phase 1 Wave 1 architecture (CONCRETE fidelity)
+- [x] Update orchestrator state file per R324/R288
+- [x] Consult State Manager for shutdown validation (R517)
+- [x] State files atomically updated and committed
+
+## Current Task
+- [~] Save TODOs per R287 and commit (IN PROGRESS)
+
+## Pending Tasks
+- [ ] Emit R405 continuation flag (TRUE for normal spawning)
+
+## State Transition Summary
+- From: SPAWN_ARCHITECT_WAVE_PLANNING
+- To: WAITING_FOR_WAVE_ARCHITECTURE
+- Architect Work: Wave 1 Architecture created (47KB, CONCRETE fidelity)
+- Validation: R340 quality gates passed
+- Next Action: Validate wave architecture, then spawn Code Reviewer for wave test planning
+

@@ -563,54 +563,6 @@
         }
       }
     },
-    "planning_artifacts": {
-      "type": [
-        "object",
-        "null"
-      ],
-      "description": "Tracks locations of planning artifacts for instant discovery without filesystem searching",
-      "properties": {
-        "master_architecture_file": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Path to master architecture document relative to project root - STANDARDIZED LOCATION",
-          "pattern": "^planning/PROJECT-ARCHITECTURE\\.md$",
-          "default": "planning/PROJECT-ARCHITECTURE.md"
-        },
-        "master_architecture_status": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "NOT_CREATED",
-            "IN_PROGRESS",
-            "COMPLETE",
-            null
-          ],
-          "description": "Status of master architecture creation",
-          "default": "NOT_CREATED"
-        },
-        "master_architecture_created_at": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time",
-          "description": "ISO 8601 timestamp when master architecture was completed"
-        },
-        "master_architecture_created_by": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "Agent that created the master architecture",
-          "default": "architect"
-        }
-      }
-    },
     "planning_files": {
       "type": [
         "object",
@@ -684,6 +636,13 @@
                       "type": "object",
                       "description": "Planning files for a specific wave",
                       "properties": {
+                        "architecture_plan": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Path to wave architecture plan per R550 (e.g., planning/phase1/wave1/WAVE-ARCHITECTURE-PLAN.md). Created by architect during WAVE_ARCHITECTURE_PLANNING state."
+                        },
                         "implementation_plan": {
                           "type": [
                             "string",
@@ -787,76 +746,6 @@
             "description": "Workspace path for this agent"
           }
         }
-      }
-    },
-    "phases": {
-      "type": [
-        "array",
-        "null"
-      ],
-      "description": "SF 3.0 canonical phase tracking - replaces legacy phaseN_* accessor patterns. Contains standardized phase metadata for direct access via jq '.phases[] | select(.phase_number == N)'",
-      "items": {
-        "type": "object",
-        "required": [
-          "phase_number",
-          "phase_name",
-          "implementation_plan_path",
-          "architecture_plan_path",
-          "status"
-        ],
-        "properties": {
-          "phase_number": {
-            "type": "integer",
-            "description": "Numeric phase identifier (1, 2, 3, etc.)",
-            "minimum": 1
-          },
-          "phase_name": {
-            "type": "string",
-            "description": "Human-readable phase name",
-            "examples": [
-              "Foundation & Interfaces",
-              "Core Push Functionality",
-              "Testing & Integration"
-            ]
-          },
-          "implementation_plan_path": {
-            "type": "string",
-            "description": "Path to phase implementation plan following R550 naming conventions (planning/phaseN/PHASE-IMPLEMENTATION-PLAN.md)",
-            "pattern": "^planning/phase[0-9]+/PHASE-IMPLEMENTATION-PLAN\\.md$",
-            "examples": [
-              "planning/phase1/PHASE-IMPLEMENTATION-PLAN.md",
-              "planning/phase2/PHASE-IMPLEMENTATION-PLAN.md"
-            ]
-          },
-          "architecture_plan_path": {
-            "type": "string",
-            "description": "Path to phase architecture plan following R550 naming conventions (planning/phaseN/PHASE-ARCHITECTURE-PLAN.md)",
-            "pattern": "^planning/phase[0-9]+/PHASE-ARCHITECTURE-PLAN\\.md$",
-            "examples": [
-              "planning/phase1/PHASE-ARCHITECTURE-PLAN.md",
-              "planning/phase2/PHASE-ARCHITECTURE-PLAN.md"
-            ]
-          },
-          "status": {
-            "type": "string",
-            "description": "Phase completion status",
-            "enum": [
-              "PLANNED",
-              "IN_PROGRESS",
-              "COMPLETE",
-              "BLOCKED"
-            ]
-          },
-          "test_plan_path": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "description": "Optional path to phase test plan",
-            "pattern": "^planning/phase[0-9]+/PHASE-TEST-PLAN\\.md$"
-          }
-        },
-        "additionalProperties": false
       }
     },
     "artifacts": {

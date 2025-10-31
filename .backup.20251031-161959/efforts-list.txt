@@ -1,0 +1,16 @@
+Efforts present (full backup available in efforts-backup-20251031-161959/):
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase2/integration
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/project/integration-workspace/target-repo
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/integration
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/wave2.backup-before-reset/integration
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/wave1/integration
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/wave1/effort-3-auth-tls-interfaces
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/wave1/effort-1-docker-interface
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/wave1/effort-2-registry-interface
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/wave1/effort-4-command-structure
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/wave2/integration
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/wave2/effort-4-tls
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/wave2/effort-3-auth
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/wave2/effort-1-docker-client
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/wave2/effort-2-registry-client
+  - /home/vscode/workspaces/idpbuilder-oci-push-planning//efforts/phase1/phase-integration

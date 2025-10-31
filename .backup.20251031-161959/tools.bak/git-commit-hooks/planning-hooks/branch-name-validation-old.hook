@@ -1,0 +1,139 @@
+#!/bin/bash
+
+# Pre-commit hook for Software Factory 2.0 - Planning Repository Branch Validation
+# This hook validates branch names in planning repositories
+# Planning repos have more flexible naming but include special allowed branches
+
+set -euo pipefail
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+# Get the git root directory
+GIT_ROOT="$(git rev-parse --show-toplevel)"
+cd "$GIT_ROOT"
+
+# Function to print colored messages
+print_error() {
+    echo -e "${RED}${BOLD}❌ ERROR:${NC} ${RED}$1${NC}" >&2
+}
+
+print_success() {
+    echo -e "${GREEN}${BOLD}✅ SUCCESS:${NC} ${GREEN}$1${NC}"
+}
+
+print_info() {
+    echo -e "${BLUE}${BOLD}ℹ️  INFO:${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}${BOLD}⚠️  WARNING:${NC} ${YELLOW}$1${NC}"
+}
+
+# Function to validate branch name for planning repository
+validate_planning_branch() {
+    local branch="$1"
+
+    # List of allowed branch patterns for planning repositories
+    local allowed_branches=(
+        "main"
+        "master"
+        "develop"
+        "staging"
+        "production"
+        "software-factory-2.0"  # Special branch for Software Factory planning work
+    )
+
+    # Check exact matches first
+    for allowed in "${allowed_branches[@]}"; do
+        if [ "$branch" = "$allowed" ]; then
+            return 0
+        fi
+    done
+
+    # Check pattern-based branches
+    local allowed_patterns=(
+        "^feature/.*$"
+        "^bugfix/.*$"
+        "^hotfix/.*$"
+        "^release/.*$"
+        "^experiment/.*$"
+        "^test/.*$"
+        "^planning/.*$"
+        "^effort/.*$"        # Allow effort-prefixed branches for planning
+        "^phase[0-9]+/.*$"   # Allow phase-prefixed branches for planning
+        "^wave[0-9]+/.*$"    # Allow wave-prefixed branches for planning
+    )
+
+    # Check against all allowed patterns
+    for pattern in "${allowed_patterns[@]}"; do
+        if [[ "$branch" =~ $pattern ]]; then
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+# Main validation logic
+main() {
+    # Skip validation if SKIP_BRANCH_VALIDATION is set
+    if [ "${SKIP_BRANCH_VALIDATION:-}" = "true" ]; then
+        exit 0
+    fi
+
+    # Get current branch
+    local current_branch="$(git branch --show-current)"
+
+    # Skip if we're in a detached HEAD state
+    if [ -z "$current_branch" ]; then
+        exit 0
+    fi
+
+    # Special case: always allow software-factory-2.0 branch in planning repos
+    if [ "$current_branch" = "software-factory-2.0" ]; then
+        print_info "Branch 'software-factory-2.0' is allowed in planning repositories"
+        exit 0
+    fi
+
+    # Validate the branch name
+    if ! validate_planning_branch "$current_branch"; then
+        echo ""
+        print_error "BRANCH NAME VALIDATION FAILED!"
+        echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
+        echo -e "${RED}Current branch: ${BOLD}${current_branch}${NC}"
+        echo ""
+        print_error "This branch name is not allowed in the planning repository."
+        print_info "Valid branch names for planning repositories:"
+        echo "  • main, master, develop, staging, production"
+        echo "  • software-factory-2.0 (special planning branch)"
+        echo "  • feature/* (feature development)"
+        echo "  • bugfix/* (bug fixes)"
+        echo "  • hotfix/* (emergency fixes)"
+        echo "  • release/* (release preparation)"
+        echo "  • planning/* (planning work)"
+        echo "  • experiment/* (experimental work)"
+        echo "  • test/* (testing branches)"
+        echo "  • effort/* (effort planning)"
+        echo "  • phase*/* (phase planning)"
+        echo "  • wave*/* (wave planning)"
+        echo ""
+        echo -e "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
+
+        # Exit with error
+        exit 1
+    fi
+
+    # Branch name is valid
+    exit 0
+}
+
+# Run main function
+main "$@"

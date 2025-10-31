@@ -1,0 +1,97 @@
+{
+  "version_tracking": {
+    "established_date": "2025-01-22T10:00:00Z",
+    "last_updated": "2025-01-22T10:00:00Z",
+    "enforcement_rules": ["R381", "R382"],
+    "project_language": "go|node|python|rust|java",
+    "locked_versions": {
+      "go": {
+        "language_version": "1.21",
+        "dependencies": {
+          "github.com/spf13/cobra": {
+            "version": "v1.7.0",
+            "locked_by": "phase1-wave1-effort1",
+            "locked_date": "2025-01-20T10:00:00Z",
+            "purpose": "CLI framework",
+            "update_status": "LOCKED",
+            "update_requires": "R382_cascade"
+          },
+          "github.com/google/go-containerregistry": {
+            "version": "v0.16.1",
+            "locked_by": "phase1-wave1-effort2",
+            "locked_date": "2025-01-20T12:00:00Z",
+            "purpose": "Container registry operations",
+            "update_status": "LOCKED",
+            "update_requires": "R382_cascade"
+          }
+        }
+      },
+      "node": {
+        "language_version": "20.x",
+        "dependencies": {
+          "express": {
+            "version": "4.18.2",
+            "locked_by": "phase1-wave2-effort1",
+            "locked_date": "2025-01-21T09:00:00Z",
+            "purpose": "Web framework",
+            "update_status": "LOCKED",
+            "update_requires": "R382_cascade"
+          }
+        }
+      },
+      "python": {
+        "language_version": "3.11",
+        "dependencies": {
+          "fastapi": {
+            "version": "0.104.1",
+            "locked_by": "phase2-wave1-effort1",
+            "locked_date": "2025-01-22T08:00:00Z",
+            "purpose": "API framework",
+            "update_status": "LOCKED",
+            "update_requires": "R382_cascade"
+          }
+        }
+      }
+    },
+    "version_cascade_history": [
+      {
+        "cascade_id": "CASCADE-001",
+        "trigger_date": "2025-01-22T10:00:00Z",
+        "trigger_reason": "CVE-2025-12345 critical vulnerability",
+        "package": "example/vulnerable-lib",
+        "old_version": "v1.0.0",
+        "new_version": "v1.0.1",
+        "affected_branches": 5,
+        "status": "COMPLETED",
+        "completion_date": "2025-01-22T14:00:00Z",
+        "compatibility_matrix": ".software-factory/CASCADE-001-matrix.md"
+      }
+    ],
+    "pending_cascades": [],
+    "version_violations": {
+      "total_violations": 0,
+      "violations": []
+    },
+    "enforcement_settings": {
+      "allow_updates": false,
+      "require_exact_versions": true,
+      "prohibit_version_ranges": true,
+      "cascade_approval_required": true,
+      "cascade_approvers": ["user", "architect"],
+      "auto_reject_updates": true,
+      "grading_penalties": {
+        "unauthorized_update": -100,
+        "version_range_use": -50,
+        "missing_version_check": -20
+      }
+    },
+    "metadata": {
+      "template_version": "1.0.0",
+      "template_source": "templates/version-tracking-template.json",
+      "rules_reference": [
+        "rule-library/R381-library-version-consistency-protocol.md",
+        "rule-library/R382-version-update-fix-cascade-requirement.md"
+      ]
+    }
+  }
+}

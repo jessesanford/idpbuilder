@@ -128,9 +128,10 @@ exit 0
 - [ ] 1. Spawn Code Reviewer agent for wave implementation planning
   - Agent: code-reviewer
   - Purpose: Create wave implementation plan with EXACT fidelity + R213 metadata
-  - Output: `wave-plans/WAVE-N-IMPLEMENTATION.md`
+  - Output: `planning/phase{N}/wave{M}/WAVE-IMPLEMENTATION-PLAN.md` (per R550)
   - Template: `templates/WAVE-IMPLEMENTATION-TEMPLATE.md`
   - Fidelity: EXACT (detailed effort definitions, file lists, R213 metadata)
+  - State Tracking: Update `orchestrator-state-v3.json` field `planning_files.phases.phase{N}.waves.wave{M}.implementation_plan`
   - **BLOCKING**: Must have detailed efforts with R213 metadata
 
 ### STANDARD EXECUTION TASKS

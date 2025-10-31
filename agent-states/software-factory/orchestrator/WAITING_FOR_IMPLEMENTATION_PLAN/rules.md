@@ -17,13 +17,15 @@
 ### BLOCKING REQUIREMENTS
 
 - [ ] 1. Wait for Code Reviewer to complete wave implementation plan
-  - Expected: `wave-plans/WAVE-N-IMPLEMENTATION.md`
+  - Expected: `planning/phase{N}/wave{M}/WAVE-IMPLEMENTATION-PLAN.md` (per R550)
+  - Lookup: `jq -r '.planning_files.phases.phase{N}.waves.wave{M}.implementation_plan' orchestrator-state-v3.json`
   - Polling: Every 30 seconds (R233)
   - Timeout: 30 minutes
   - **NOTE**: This state ALWAYS executes - no conditional skipping
 
 - [ ] 2. Validate wave implementation file exists
-  - File: `wave-plans/WAVE-{N}-IMPLEMENTATION.md`
+  - File: Use path from `planning_files` field in state file
+  - Fallback: `planning/phase{N}/wave{M}/WAVE-IMPLEMENTATION-PLAN.md`
   - Minimum size: >2000 bytes (detailed plan)
 
 - [ ] 3. Validate wave implementation quality (R502 + R213)

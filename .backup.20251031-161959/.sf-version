@@ -1,0 +1,7 @@
+version: 3.0
+upgraded_at: 20251031-145021
+upgraded_from: /home/vscode/software-factory-template
+template_commit: c7db1ed29022d7a741b5cb77e1b4710aaebf4721
+template_branch: prd-driven-init
+template_remote: https://github.com/jessesanford/software-factory-template.git
+upgrade_date: 2025-10-31T14:50:21Z

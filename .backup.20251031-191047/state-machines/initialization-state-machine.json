@@ -1,0 +1,300 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "name": "initialization-state-machine",
+    "description": "Software Factory 2.0 - Project Initialization State Machine",
+    "purpose": "Transform an initial idea/description into a fully configured SF2.0 project",
+    "entry_command": "/init-software-factory",
+    "time_target": "< 30 minutes",
+    "created_at": "2025-09-23",
+    "source_file": "SOFTWARE-FACTORY-INITIALIZATION-STATE-MACHINE.md"
+  },
+  "agents": {
+    "orchestrator": {
+      "states": [
+        "INIT_START",
+        "INIT_REPO_DECISION",
+        "INIT_HANDOFF",
+        "INIT_ERROR_RECOVERY"
+      ]
+    },
+    "architect": {
+      "states": [
+        "INIT_LOAD_EXAMPLES",
+        "INIT_REQUIREMENTS_GATHERING",
+        "INIT_SYNTHESIZE_PLAN",
+        "INIT_VALIDATION"
+      ]
+    },
+    "sw-engineer": {
+      "states": [
+        "INIT_SETUP_UPSTREAM_FORK",
+        "INIT_CREATE_NEW_REPO",
+        "INIT_LIBRARY_PROJECT",
+        "INIT_CUSTOMIZE_AGENTS"
+      ]
+    },
+    "code-reviewer": {
+      "states": [
+        "INIT_GENERATE_CONFIGS"
+      ]
+    }
+  },
+  "transition_matrix": {
+    "orchestrator": {
+      "INIT_START": ["INIT_LOAD_EXAMPLES"],
+      "INIT_REPO_DECISION": [
+        "INIT_SETUP_UPSTREAM_FORK",
+        "INIT_CREATE_NEW_REPO",
+        "INIT_LIBRARY_PROJECT"
+      ],
+      "INIT_ERROR_RECOVERY": [
+        "INIT_REQUIREMENTS_GATHERING",
+        "INIT_REPO_DECISION",
+        "INIT_VALIDATION"
+      ],
+      "INIT_HANDOFF": []
+    },
+    "architect": {
+      "INIT_LOAD_EXAMPLES": ["INIT_REQUIREMENTS_GATHERING"],
+      "INIT_REQUIREMENTS_GATHERING": ["INIT_REPO_DECISION"],
+      "INIT_SYNTHESIZE_PLAN": ["INIT_CUSTOMIZE_AGENTS"],
+      "INIT_VALIDATION": ["INIT_HANDOFF", "INIT_ERROR_RECOVERY"]
+    },
+    "sw-engineer": {
+      "INIT_SETUP_UPSTREAM_FORK": ["INIT_GENERATE_CONFIGS"],
+      "INIT_CREATE_NEW_REPO": ["INIT_GENERATE_CONFIGS"],
+      "INIT_LIBRARY_PROJECT": ["INIT_GENERATE_CONFIGS"],
+      "INIT_CUSTOMIZE_AGENTS": ["INIT_VALIDATION"]
+    },
+    "code-reviewer": {
+      "INIT_GENERATE_CONFIGS": ["INIT_SYNTHESIZE_PLAN"]
+    }
+  },
+  "states": {
+    "INIT_START": {
+      "agent": "orchestrator",
+      "phase": 1,
+      "purpose": "Capture initial project information",
+      "actions": [
+        "Validate project name/prefix",
+        "Record initial idea/description",
+        "Create basic directory structure",
+        "Initialize state file"
+      ],
+      "inputs_required": [
+        "project_name",
+        "project_prefix",
+        "initial_description"
+      ],
+      "mandatory_stop": false
+    },
+    "INIT_LOAD_EXAMPLES": {
+      "agent": "architect",
+      "phase": 2,
+      "purpose": "Load templates and examples to understand requirements structure",
+      "actions": [
+        "Read example IMPLEMENTATION-PLAN.md files",
+        "Read setup-config.yaml examples",
+        "Read target-repo-config.yaml examples",
+        "Understand required fields and structure",
+        "Prepare question framework"
+      ],
+      "files_to_read": [
+        "/home/vscode/software-factory-template/templates/IMPLEMENTATION-PLAN-EXAMPLE.md",
+        "/home/vscode/software-factory-template/setup-config-example.yaml",
+        "/home/vscode/software-factory-template/target-repo-config.yaml"
+      ],
+      "mandatory_stop": false
+    },
+    "INIT_REQUIREMENTS_GATHERING": {
+      "agent": "architect",
+      "phase": 3,
+      "purpose": "Gather all project requirements through structured questions",
+      "actions": [
+        "Ask about target codebase",
+        "Determine git repository configuration",
+        "Identify technology stack and frameworks",
+        "Understand architecture patterns",
+        "Collect deployment requirements",
+        "Document quality constraints"
+      ],
+      "question_categories": {
+        "target_codebase": ["existing_or_new", "fork_url", "new_repo_name"],
+        "technology_stack": ["language", "frameworks", "build_system", "test_framework"],
+        "architecture": ["pattern", "design_patterns", "compatibility"],
+        "deployment": ["environment", "containers", "ci_cd"],
+        "quality": ["performance", "security", "compliance"]
+      },
+      "mandatory_stop": true
+    },
+    "INIT_REPO_DECISION": {
+      "agent": "orchestrator",
+      "phase": 4,
+      "purpose": "Determine repository setup path based on requirements",
+      "actions": [
+        "Analyze requirements for repository type",
+        "Choose path: UPSTREAM_FORK, NEW_REPOSITORY, or LIBRARY_ONLY"
+      ],
+      "decision_logic": "IF has_existing_codebase AND has_fork_url THEN INIT_SETUP_UPSTREAM_FORK",
+      "mandatory_stop": true
+    },
+    "INIT_SETUP_UPSTREAM_FORK": {
+      "agent": "sw-engineer",
+      "phase": "5A",
+      "purpose": "Configure forked repository structure",
+      "actions": [
+        "Clone upstream to efforts/PROJECT_PREFIX/target-repo/",
+        "Set up remote tracking",
+        "Create development branches",
+        "Initialize .gitignore if needed"
+      ],
+      "target_directory": "$CLAUDE_PROJECT_DIR/efforts/$PROJECT_PREFIX/target-repo/",
+      "mandatory_stop": false
+    },
+    "INIT_CREATE_NEW_REPO": {
+      "agent": "sw-engineer",
+      "phase": "5B",
+      "purpose": "Initialize new repository",
+      "actions": [
+        "Create directory at efforts/PROJECT_PREFIX/project/",
+        "Initialize git repository",
+        "Create initial .gitignore",
+        "Make initial commit",
+        "Set up branch structure"
+      ],
+      "target_directory": "$CLAUDE_PROJECT_DIR/efforts/$PROJECT_PREFIX/project/",
+      "mandatory_stop": false
+    },
+    "INIT_LIBRARY_PROJECT": {
+      "agent": "sw-engineer",
+      "phase": "5C",
+      "purpose": "Set up documentation/library project",
+      "actions": [
+        "Create project directory structure",
+        "Initialize as library project (no target repo)",
+        "Set up documentation directories"
+      ],
+      "mandatory_stop": false
+    },
+    "INIT_GENERATE_CONFIGS": {
+      "agent": "code-reviewer",
+      "phase": 6,
+      "purpose": "Generate all configuration files",
+      "actions": [
+        "Create setup-config.yaml",
+        "Create target-repo-config.yaml",
+        "Create initial .claude/CLAUDE.md"
+      ],
+      "generated_files": [
+        "setup-config.yaml",
+        "target-repo-config.yaml",
+        ".claude/CLAUDE.md"
+      ],
+      "mandatory_stop": false
+    },
+    "INIT_SYNTHESIZE_PLAN": {
+      "agent": "architect",
+      "phase": 7,
+      "purpose": "Create comprehensive IMPLEMENTATION-PLAN.md",
+      "actions": [
+        "Read all gathered requirements",
+        "Structure into phases",
+        "Define waves within each phase",
+        "Set success criteria",
+        "Document risk mitigation"
+      ],
+      "output_file": "IMPLEMENTATION-PLAN.md",
+      "mandatory_stop": false
+    },
+    "INIT_CUSTOMIZE_AGENTS": {
+      "agent": "sw-engineer",
+      "phase": 8,
+      "purpose": "Add minimal language/tech expertise to agent files",
+      "actions": [
+        "Edit .claude/agents/sw-engineer.md",
+        "Edit .claude/agents/code-reviewer.md"
+      ],
+      "constraints": {
+        "max_lines": 10,
+        "preserve_existing": true,
+        "only_add_expertise": true
+      },
+      "mandatory_stop": false
+    },
+    "INIT_VALIDATION": {
+      "agent": "architect",
+      "phase": 9,
+      "purpose": "Comprehensive validation of initialization",
+      "actions": [
+        "Verify all required files exist",
+        "Validate content completeness",
+        "Test readiness"
+      ],
+      "validation_checklist": [
+        "IMPLEMENTATION-PLAN.md exists",
+        "setup-config.yaml exists",
+        "target-repo-config.yaml exists",
+        ".claude/CLAUDE.md exists",
+        "Agent customizations complete",
+        "All config fields populated",
+        "Plan has all phases defined",
+        "Git repositories accessible",
+        "Directory structure correct"
+      ],
+      "mandatory_stop": true
+    },
+    "INIT_HANDOFF": {
+      "agent": "orchestrator",
+      "phase": 10,
+      "purpose": "Transition to normal SF2.0 operation",
+      "actions": [
+        "Create production orchestrator-state-v3.json",
+        "Generate summary report",
+        "Display completion instructions"
+      ],
+      "terminal_state": true,
+      "next_command": "/continue-orchestrating",
+      "mandatory_stop": false
+    },
+    "INIT_ERROR_RECOVERY": {
+      "agent": "orchestrator",
+      "phase": "ERROR",
+      "purpose": "Handle initialization failures",
+      "actions": [
+        "Identify specific failure",
+        "Determine recovery path",
+        "Log issues and recovery attempts"
+      ],
+      "recovery_transitions": [
+        "INIT_REQUIREMENTS_GATHERING",
+        "INIT_REPO_DECISION",
+        "INIT_VALIDATION"
+      ],
+      "mandatory_stop": false
+    }
+  },
+  "mandatory_stop_points": [
+    "INIT_REQUIREMENTS_GATHERING",
+    "INIT_REPO_DECISION",
+    "INIT_VALIDATION"
+  ],
+  "success_metrics": {
+    "time": "< 30 minutes",
+    "completeness": "100% of required files",
+    "validity": "Passes all validation checks",
+    "usability": "Can immediately run /continue-orchestrating",
+    "quality": "Generated plan sufficient for Phase 1 start"
+  },
+  "r405_automation_flag": {
+    "rule": "R405",
+    "description": "MANDATORY automation continuation flag",
+    "penalty": "-100% grade for violation",
+    "requirement": "Every state completion MUST end with CONTINUE-SOFTWARE-FACTORY=TRUE or FALSE",
+    "format": {
+      "success": "CONTINUE-SOFTWARE-FACTORY=TRUE",
+      "failure": "CONTINUE-SOFTWARE-FACTORY=FALSE"
+    },
+    "enforcement": "Must be the ABSOLUTE LAST text output before state transition"
+  }
+}

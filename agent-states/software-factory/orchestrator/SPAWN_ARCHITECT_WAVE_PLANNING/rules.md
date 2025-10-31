@@ -136,10 +136,11 @@ exit 0
 - [ ] 1. Spawn Architect agent for wave architecture planning
   - Agent: architect
   - Purpose: Create wave architecture with CONCRETE fidelity (REAL CODE examples)
-  - Output File: `wave-plans/WAVE-N-ARCHITECTURE.md`
+  - Output File: `planning/phase{N}/wave{M}/WAVE-{N}.{M}-ARCHITECTURE.md` (per R550)
   - Template: `templates/WAVE-ARCHITECTURE-TEMPLATE.md`
   - Fidelity Level: CONCRETE (real code from previous waves, actual interfaces)
   - Parameters: --wave [wave-number] --template wave-architecture
+  - State Tracking: Update `orchestrator-state-v3.json` field `planning_files.phases.phase{N}.waves.wave{M}.architecture_plan`
   - **BLOCKING**: Cannot proceed without wave architecture with real code
 
 ### STANDARD EXECUTION TASKS

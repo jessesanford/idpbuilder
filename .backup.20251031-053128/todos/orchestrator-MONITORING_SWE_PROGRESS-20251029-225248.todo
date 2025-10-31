@@ -1,0 +1,26 @@
+# Orchestrator TODOs - MONITORING_SWE_PROGRESS State
+# Saved: 2025-10-29 22:50:48 UTC
+# Reason: State completion (R287 trigger)
+
+## Completed TODOs (✅):
+- [x] Check for active SW engineer sessions in state file
+- [x] Scan effort directories for implementation markers
+- [x] Verify each effort's implementation status and artifacts
+- [x] Create monitoring completion report
+- [x] Determine next state transition
+- [x] Spawn State Manager for state transition (R288)
+- [x] Save TODOs before state transition (R287)
+
+## State Transition:
+- From: MONITORING_SWE_PROGRESS
+- To: ERROR_RECOVERY (State Manager decision)
+- Reason: 4/4 implementations have verification issues
+
+## Issues Found:
+- 3 efforts missing R343 work logs
+- 1 effort has uncommitted/unpushed work
+
+## Next State Work (ERROR_RECOVERY):
+- Fix effort-4-tls uncommitted/unpushed work
+- Resolve R343 violations for efforts 1-3
+- Prevent recurrence of R343 violations

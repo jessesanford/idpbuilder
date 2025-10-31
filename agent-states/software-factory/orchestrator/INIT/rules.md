@@ -125,22 +125,23 @@ if [ -f "$STATE_FILE" ]; then
     PRD_PRE_EXISTS=$(jq -r '.project_progression.current_project.prd_pre_exists' "$STATE_FILE")
     PRD_VALIDATED=$(jq -r '.project_progression.current_project.prd_validated' "$STATE_FILE")
 
-    # Extract architecture status fields (PRIORITY 2)
-    MASTER_ARCH=$(jq -r '.planning_artifacts.master_architecture_file' "$STATE_FILE")
+    # Extract architecture status fields (PRIORITY 2) - R550 compliant
+    # Check both new (planning_files) and legacy (planning_artifacts) locations
+    PROJECT_ARCH=$(jq -r '.planning_files.project.architecture_plan // .planning_artifacts.master_architecture_file // "null"' "$STATE_FILE")
 
     # Extract phase planning status fields (PRIORITY 3)
     PHASE_ARCH=$(jq -r '.project_progression.current_phase.architecture_file' "$STATE_FILE")
 
     echo "📊 PRD Status: exists=$PRD_EXISTS, pre_exists=$PRD_PRE_EXISTS, validated=$PRD_VALIDATED"
-    echo "📊 Architecture Status: master=$MASTER_ARCH, phase=$PHASE_ARCH"
+    echo "📊 Architecture Status: project=$PROJECT_ARCH, phase=$PHASE_ARCH (R550 compliant)"
 
     # Determine next state following mandatory_sequences.project_initialization
     if [ "$PRD_EXISTS" == "false" ] && [ "$PRD_PRE_EXISTS" == "false" ]; then
         PROPOSED_NEXT_STATE="SPAWN_PRODUCT_MANAGER_PRD_CREATION"
         echo "🔴 PRIORITY 1: No PRD exists - must create PRD first"
-    elif [ "$MASTER_ARCH" == "null" ] || [ ! -f "$MASTER_ARCH" ]; then
+    elif [ "$PROJECT_ARCH" == "null" ] || [ ! -f "$PROJECT_ARCH" ]; then
         PROPOSED_NEXT_STATE="SPAWN_ARCHITECT_MASTER_PLANNING"
-        echo "🔴 PRIORITY 2: PRD exists, need master architecture"
+        echo "🔴 PRIORITY 2: PRD exists, need project architecture (R550)"
     elif [ "$PHASE_ARCH" == "null" ] || [ ! -f "$PHASE_ARCH" ]; then
         PROPOSED_NEXT_STATE="SPAWN_ARCHITECT_PHASE_PLANNING"
         echo "🔴 PRIORITY 3: Master arch exists, need phase planning"

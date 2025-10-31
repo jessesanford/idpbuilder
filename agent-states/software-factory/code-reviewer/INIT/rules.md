@@ -155,7 +155,7 @@ else
     echo "WHAT I EXPECTED:"
     echo "- Clear TARGET_DIRECTORY or WORKING_DIR specification"
     echo "- Directory path: /efforts/phase{X}/wave{Y}/{effort-name}"
-    echo "- Or phase plan directory: /phase-plans/"
+    echo "- Or planning directory: planning/ (R550 standard location)"
     echo ""
     echo "WHAT I FOUND:"
     echo "- Current directory: $(pwd)"
@@ -253,11 +253,11 @@ echo "✅ Directory isolation established"
 
 # Verify we can access necessary files
 if [ "$TASK_TYPE" = "EFFORT_PLANNING" ]; then
-    # Check for wave plan with proper timestamp patterns (updated path structure)
+    # Check for wave plan (R550 standardized locations)
     WAVE_PLAN_LOCATIONS=(
-        "../../phase-plans/phase*/wave*/WAVE-*-*-PLAN--*.md"
-        "../../../phase-plans/phase*/wave*/WAVE-*-*-PLAN--*.md"
-        "../../../../phase-plans/phase*/wave*/WAVE-*-*-PLAN--*.md"
+        "../../planning/phase*/wave*/WAVE-IMPLEMENTATION-PLAN.md"
+        "../../../planning/phase*/wave*/WAVE-IMPLEMENTATION-PLAN.md"
+        "../../../../planning/phase*/wave*/WAVE-IMPLEMENTATION-PLAN.md"
     )
     
     WAVE_PLAN_FOUND=false

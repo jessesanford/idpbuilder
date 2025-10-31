@@ -100,12 +100,12 @@ When designing phase architecture, you MUST ensure EVERY effort is designed for 
 **MANDATORY: Phase architecture plans MUST be created in the correct location:**
 
 ```bash
-# ALWAYS create in SF instance directory's phase-plans folder
+# ALWAYS create in SF instance directory's planning folder (R550)
 cd "$SF_INSTANCE_DIR"
-mkdir -p phase-plans
+mkdir -p "planning/phase${PHASE}"
 
-# Document naming convention is STRICT
-DOC_NAME="phase-plans/PHASE-${PHASE}-ARCHITECTURE-PLAN.md"
+# Document naming convention is STRICT (R550 standardized)
+DOC_NAME="planning/phase${PHASE}/PHASE-ARCHITECTURE-PLAN.md"
 
 # Create and commit to main branch
 git checkout main
@@ -153,7 +153,7 @@ phase_atomic_design:
 **Audit Steps** (complete before writing architecture plan):
 
 1. **Review Existing Architecture (if not Phase 1)**
-   - [ ] Read previous phase architecture plans (phase-plans/PHASE-*-ARCHITECTURE-PLAN.md)
+   - [ ] Read previous phase architecture plans (planning/phase*/PHASE-ARCHITECTURE-PLAN.md per R550)
    - [ ] Identify architectural patterns currently in use
    - [ ] Document successful patterns to preserve
    - [ ] Identify problematic patterns to avoid
@@ -190,7 +190,7 @@ phase_atomic_design:
 
 ### Audit Output
 
-**Create**: `phase-plans/PHASE-${PHASE}-ARCHITECTURE-AUDIT.md`
+**Create**: `planning/phase${PHASE}/PHASE-ARCHITECTURE-AUDIT.md` (R550 compliant location)
 
 **Contents**:
 ```markdown

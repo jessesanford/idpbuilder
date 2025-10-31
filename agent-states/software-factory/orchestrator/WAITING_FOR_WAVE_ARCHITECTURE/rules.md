@@ -21,12 +21,14 @@
 ### BLOCKING REQUIREMENTS
 
 - [ ] 1. Wait for Architect to complete wave architecture
-  - Expected: `wave-plans/WAVE-N-ARCHITECTURE.md`
+  - Expected: `planning/phase{N}/wave{M}/WAVE-{N}.{M}-ARCHITECTURE.md` (per R550)
+  - Lookup: `jq -r '.planning_files.phases.phase{N}.waves.wave{M}.architecture_plan' orchestrator-state-v3.json`
   - Polling: Every 30 seconds (R233)
   - Timeout: 30 minutes
 
 - [ ] 2. Validate wave architecture file exists
-  - File: `wave-plans/WAVE-{N}-ARCHITECTURE.md`
+  - File: Use path from `planning_files` field in state file
+  - Fallback: `planning/phase{N}/wave{M}/WAVE-{N}.{M}-ARCHITECTURE.md`
   - Minimum size: >1000 bytes
 
 - [ ] 3. Validate wave architecture quality (R340 - CONCRETE fidelity)

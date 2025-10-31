@@ -104,18 +104,18 @@ FUNCTIONALITY="retry logic"
 
 #### Step 2: Search Plan Files
 ```bash
-# Search all plan files for this functionality
-grep -rn "retry.*logic\|Retry.*Implementation" phase-plans/ wave-plans/ IMPLEMENTATION-PLAN.md
+# Search all plan files for this functionality (R550 compliant locations)
+grep -rn "retry.*logic\|Retry.*Implementation" planning/ IMPLEMENTATION-PLAN.md
 
 # Example output:
-# phase3-wave2-plan.md:156: E3.2.1 - Retry Logic Implementation
-# phase3-wave2-plan.md:157: Complete retry mechanism in pkg/feature/handler.go
+# planning/phase3/wave2/WAVE-IMPLEMENTATION-PLAN.md:156: E3.2.1 - Retry Logic Implementation
+# planning/phase3/wave2/WAVE-IMPLEMENTATION-PLAN.md:157: Complete retry mechanism in pkg/feature/handler.go
 ```
 
 #### Step 3: Verify Plan Details
 ```bash
-# Read the specific plan section
-sed -n '156,170p' phase-plans/phase3-wave2-plan.md
+# Read the specific plan section (R550 path)
+sed -n '156,170p' planning/phase3/wave2/WAVE-IMPLEMENTATION-PLAN.md
 
 # Output must show:
 # - Exact file with TODO
@@ -154,11 +154,11 @@ fi
 
 **Search Command**:
 ```bash
-grep -rn "retry.*logic\|Retry.*Implementation" phase-plans/ wave-plans/
+grep -rn "retry.*logic\|Retry.*Implementation" planning/
 ```
 
 **Results**:
-- Plan File: `phase-plans/phase3-wave2-plan.md`
+- Plan File: `planning/phase3/wave2/WAVE-IMPLEMENTATION-PLAN.md` (R550 location)
 - Line Numbers: `156-178`
 - Effort ID: `E3.2.1`
 
@@ -201,8 +201,8 @@ cat > bugs/filed/${BUG_ID}.md << 'EOF'
 
 **Search Results**:
 ```bash
-grep -rn "retry.*logic" phase-plans/ wave-plans/
-# No relevant results
+grep -rn "retry.*logic" planning/
+# No relevant results (R550 compliant search)
 ```
 
 **Current Phase**: Phase 2, Wave 3

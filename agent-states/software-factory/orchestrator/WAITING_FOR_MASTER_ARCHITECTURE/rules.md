@@ -39,19 +39,19 @@ Monitor for architect completion of master architecture plan per R210. Active mo
 
 ## Monitoring Protocol
 
-### 1. Poll for Master Architecture Plan
+### 1. Poll for Master Architecture Plan (R550 Compliant)
 ```bash
 echo "Waiting for Master Architecture from architect..."
 
-# Get expected file location from state file metadata (STANDARDIZED LOCATION)
-MASTER_ARCH_FILE=$(jq -r '.planning_artifacts.master_architecture_file // "planning/PROJECT-ARCHITECTURE.md"' "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
-MASTER_ARCH_PATH="$CLAUDE_PROJECT_DIR/$MASTER_ARCH_FILE"
+# R550: Get expected file location from planning_files (NOT legacy planning_artifacts)
+ARCH_PLAN_FILE=$(jq -r '.planning_files.project.architecture_plan // "planning/project/PROJECT-ARCHITECTURE-PLAN.md"' "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
+ARCH_PLAN_PATH="$CLAUDE_PROJECT_DIR/$ARCH_PLAN_FILE"
 
-echo "Expected location: $MASTER_ARCH_PATH"
-echo "  (from orchestrator-state-v3.json planning_artifacts.master_architecture_file)"
+echo "Expected R550 location: $ARCH_PLAN_PATH"
+echo "  (from orchestrator-state-v3.json planning_files.project.architecture_plan)"
 
-# Ensure planning directory exists
-mkdir -p "$(dirname "$MASTER_ARCH_PATH")"
+# Ensure planning directory exists (R550 standard structure)
+mkdir -p "$(dirname "$ARCH_PLAN_PATH")"
 
 # Poll every 30 seconds for up to 30 minutes
 MAX_WAIT=1800  # 30 minutes
@@ -59,17 +59,17 @@ POLL_INTERVAL=30
 ELAPSED=0
 
 while [ $ELAPSED -lt $MAX_WAIT ]; do
-    echo "Checking for master architecture at standardized location... (${ELAPSED}s / ${MAX_WAIT}s)"
+    echo "Checking for project architecture plan at R550 location... (${ELAPSED}s / ${MAX_WAIT}s)"
 
-    # Check if file exists at the standardized location
-    if [ -f "$MASTER_ARCH_PATH" ]; then
-        echo "Master architecture plan detected!"
-        echo "  Location: $MASTER_ARCH_PATH"
-        MASTER_ARCH_PLAN="$MASTER_ARCH_PATH"
+    # Check if file exists at the R550 standardized location
+    if [ -f "$ARCH_PLAN_PATH" ]; then
+        echo "✅ Project architecture plan detected!"
+        echo "  Location: $ARCH_PLAN_PATH"
+        ARCH_PLAN="$ARCH_PLAN_PATH"
         break
     fi
 
-    echo "Still waiting for master architecture at: $MASTER_ARCH_PATH"
+    echo "Still waiting for architecture plan at: $ARCH_PLAN_PATH"
 
     sleep $POLL_INTERVAL
     ELAPSED=$((ELAPSED + POLL_INTERVAL))
@@ -77,10 +77,10 @@ done
 
 # Check if we timed out
 if [ $ELAPSED -ge $MAX_WAIT ]; then
-    echo "ERROR: Timeout waiting for master architecture after ${MAX_WAIT} seconds"
-    echo "  Expected location: $MASTER_ARCH_PATH"
+    echo "❌ ERROR: Timeout waiting for project architecture plan after ${MAX_WAIT} seconds"
+    echo "  Expected R550 location: $ARCH_PLAN_PATH"
     NEXT_STATE="ERROR_RECOVERY"
-    TRANSITION_REASON="Timeout waiting for master architecture"
+    TRANSITION_REASON="Timeout waiting for project architecture plan"
     exit 1
 fi
 ```
@@ -125,45 +125,44 @@ validate_master_architecture_plan() {
 }
 
 # Run validation
-if ! validate_master_architecture_plan "$MASTER_ARCH_PLAN"; then
-    echo "ERROR: Master architecture plan validation failed"
+if ! validate_master_architecture_plan "$ARCH_PLAN"; then
+    echo "❌ ERROR: Project architecture plan validation failed"
     NEXT_STATE="ERROR_RECOVERY"
-    TRANSITION_REASON="Invalid master architecture plan"
+    TRANSITION_REASON="Invalid project architecture plan"
     exit 1
 fi
 ```
 
-### 3. Update State File Planning Artifacts
+### 3. Update State File Planning Files (R550 Pattern)
 ```bash
-echo "Updating orchestrator-state-v3.json with master architecture completion status..."
+echo "Updating orchestrator-state-v3.json with project architecture plan completion status..."
 
-# Update planning_artifacts metadata (NEW SF 3.0 PATTERN - standardized location)
-jq --arg plan "$MASTER_ARCH_FILE" \
-   '.planning_artifacts.master_architecture_file = $plan |
-    .planning_artifacts.master_architecture_status = "COMPLETE" |
-    .planning_artifacts.master_architecture_created_at = (now | todate) |
-    .planning_artifacts.master_architecture_created_by = "architect"' \
+# R550: Update planning_files.project.architecture_plan (NEW standard)
+# NOTE: planning_artifacts is deprecated but can still be updated for backward compatibility if needed
+jq --arg plan "$ARCH_PLAN_FILE" \
+   '.planning_files.project.architecture_plan = $plan' \
    "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json" > "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.tmp" && \
    mv "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.tmp" "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json"
 
-echo "Master architecture completion recorded in state file"
-echo "  Location tracked: $MASTER_ARCH_FILE"
+echo "✅ R550: Project architecture plan tracked in state file"
+echo "  Location: $ARCH_PLAN_FILE"
+echo "  Field: planning_files.project.architecture_plan"
 ```
 
 ### 4. Extract Phase Information
 ```bash
-echo "Extracting phase information from master architecture plan..."
+echo "Extracting phase information from project architecture plan..."
 
-# Parse phases from master plan
-PHASE_COUNT=$(grep -c "^##.*Phase [0-9]" "$MASTER_ARCH_PLAN" || echo "0")
+# Parse phases from project architecture plan
+PHASE_COUNT=$(grep -c "^##.*Phase [0-9]" "$ARCH_PLAN" || echo "0")
 
 if [ "$PHASE_COUNT" -eq 0 ]; then
-    echo "WARNING: No phases explicitly defined in master plan"
+    echo "⚠️ WARNING: No phases explicitly defined in architecture plan"
     echo "Defaulting to single phase"
     PHASE_COUNT=1
 fi
 
-echo "Master architecture defines ${PHASE_COUNT} phases"
+echo "✅ Project architecture plan defines ${PHASE_COUNT} phases"
 
 # Update metadata with phase count
 jq --arg count "$PHASE_COUNT" \
@@ -173,9 +172,8 @@ jq --arg count "$PHASE_COUNT" \
 ```
 
 ## Exit Conditions
-- Master architecture plan exists and is validated per R340
-- orchestrator-state-v3.json updated with plan location
-- Master architecture marked as "complete" in state file
+- Project architecture plan exists and is validated per R340 and R550
+- orchestrator-state-v3.json updated with plan location in planning_files.project.architecture_plan
 - Phase count extracted and stored
 
 ## State Transitions
