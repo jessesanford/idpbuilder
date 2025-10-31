@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-    "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
-    "last_transition_timestamp": "2025-10-31T18:28:38Z",
+    "current_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+    "previous_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+    "last_transition_timestamp": "2025-10-31T20:02:12Z",
     "state_history": [
       {
         "from_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
@@ -125,6 +125,27 @@
           "in_allowed_transitions": true,
           "r340_compliance": true,
           "r313_compliance": "Architect spawned and orchestrator stopped"
+        }
+      },
+      {
+        "from_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "to_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+        "timestamp": "2025-10-31T20:02:12Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.1 architecture plan complete and validated (R340 compliance). Ready to spawn Code Reviewer for wave test planning per R341 TDD requirements.",
+        "phase": 2,
+        "wave": 1,
+        "validation_checks": {
+          "transition_allowed": true,
+          "state_exists": true,
+          "in_allowed_transitions": true,
+          "r340_compliance": true,
+          "r341_compliance": true,
+          "r342_compliance": true,
+          "mandatory_sequence": "wave_execution",
+          "architecture_file": "planning/phase2/wave1/WAVE-2.1-ARCHITECTURE.md",
+          "architecture_size_kb": 31,
+          "concrete_fidelity": true
         }
       }
     ],
@@ -531,48 +552,5 @@
       "implementation_plan": ".software-factory/phase1/wave2/effort-4-tls/IMPLEMENTATION-PLAN--20251029-213316.md"
     }
   ],
-  "phases": [
-    {
-      "phase_number": 1,
-      "phase_name": "Foundation & Interfaces",
-      "implementation_plan_path": "planning/phase1/PHASE-IMPLEMENTATION-PLAN.md",
-      "architecture_plan_path": "planning/phase1/PHASE-ARCHITECTURE-PLAN.md",
-      "status": "COMPLETE"
-    },
-    {
-      "phase_number": 2,
-      "phase_name": "Core Push Functionality",
-      "implementation_plan_path": "planning/phase2/PHASE-IMPLEMENTATION-PLAN.md",
-      "architecture_plan_path": "planning/phase2/PHASE-ARCHITECTURE-PLAN.md",
-      "status": "IN_PROGRESS"
-    }
-  ],
-  "artifacts": {},
-  "current_phase": 2,
-  "current_wave": 1,
-  "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-  "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
-  "transition_time": "2025-10-31T18:28:38Z",
-  "phases_planned": 3,
-  "waves_per_phase": [
-    2,
-    3,
-    2
-  ],
-  "efforts_pending": [],
-  "project_info": {
-    "name": "idpbuilder-oci-push-command",
-    "description": "IDPBuilder OCI image-push command implementation"
-  },
-  "efforts_completed": [
-    "1.1.1",
-    "1.1.2",
-    "1.1.3",
-    "1.1.4",
-    "1.2.1",
-    "1.2.2",
-    "1.2.3",
-    "1.2.4"
-  ],
-  "efforts_in_progress": []
+  "artifacts": {}
 }
