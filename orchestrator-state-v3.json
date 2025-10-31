@@ -3,10 +3,34 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "VALIDATE_INFRASTRUCTURE",
-    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
-    "last_transition_timestamp": "2025-10-31T22:15:00Z",
+    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "previous_state": "VALIDATE_INFRASTRUCTURE",
+    "last_transition_timestamp": "2025-10-31T22:25:00Z",
     "state_history": [
+      {
+        "from_state": "VALIDATE_INFRASTRUCTURE",
+        "to_state": "CREATE_NEXT_INFRASTRUCTURE",
+        "timestamp": "2025-10-31T22:25:00Z",
+        "validated_by": "state-manager",
+        "reason": "Entry condition not met - 1 effort pending creation (phase2_wave1_effort_2_progress_reporter). Loop 1/5.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "CREATE_NEXT_INFRASTRUCTURE",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "loop_back_to_create": true,
+          "loop_counter_incremented": true,
+          "loop_iteration": 1,
+          "max_loops": 5,
+          "efforts_pending_creation": 1,
+          "pending_effort_id": "phase2_wave1_effort_2_progress_reporter",
+          "r288_compliance": true
+        }
+      },
       {
         "from_state": "INJECT_WAVE_METADATA",
         "to_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -393,14 +417,14 @@
     ],
     "loop_detection": {
       "last_two_states": [
-        "CREATE_NEXT_INFRASTRUCTURE",
-        "VALIDATE_INFRASTRUCTURE"
+        "VALIDATE_INFRASTRUCTURE",
+        "CREATE_NEXT_INFRASTRUCTURE"
       ],
-      "ping_pong_count": 0,
+      "ping_pong_count": 1,
       "same_state_count": 0,
       "error_recovery_entries": 1,
-      "last_progress_timestamp": "2025-10-31T22:15:00Z",
-      "validate_infrastructure_loops": 0,
+      "last_progress_timestamp": "2025-10-31T22:25:00Z",
+      "validate_infrastructure_loops": 1,
       "iteration_count": 0
     },
     "status": null,
