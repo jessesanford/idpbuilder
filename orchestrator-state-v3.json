@@ -933,9 +933,10 @@
         "dependencies": [
           "2.1.1"
         ],
-        "created": false,
-        "validated": false,
-        "validation_failure_reason": null
+        "created": true,
+        "validated": true,
+        "validation_failure_reason": null,
+        "created_at": "2025-10-31T22:28:43Z"
       }
     },
     "project_prefix": "idpbuilder-oci-push"
