@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
-    "previous_state": "WAVE_START",
-    "last_transition_timestamp": "2025-10-31T17:13:21Z",
+    "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+    "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+    "last_transition_timestamp": "2025-10-31T18:28:38Z",
     "state_history": [
       {
         "from_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
@@ -108,6 +108,24 @@
         "wave": 1,
         "validation_result": "APPROVED",
         "validated_by": "state-manager"
+      },
+      {
+        "from_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+        "to_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "timestamp": "2025-10-31T18:28:38Z",
+        "validated_by": "state-manager",
+        "reason": "Architect spawned and wave architecture planning completed. WAVE-2.1-ARCHITECTURE.md created with CONCRETE fidelity. 2 sequential efforts defined (~750 lines). Ready to await architecture completion per R340 requirements.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "state_exists": true,
+          "in_allowed_transitions": true,
+          "r340_compliance": true,
+          "r313_compliance": "Architect spawned and orchestrator stopped"
+        }
       }
     ],
     "loop_detection": {
@@ -579,5 +597,32 @@
       "status": "IN_PROGRESS"
     }
   ],
-  "artifacts": {}
+  "artifacts": {},
+  "current_phase": 2,
+  "current_wave": 1,
+  "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+  "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+  "transition_time": "2025-10-31T18:28:38Z",
+  "phases_planned": 3,
+  "waves_per_phase": [
+    2,
+    3,
+    2
+  ],
+  "efforts_pending": [],
+  "project_info": {
+    "name": "idpbuilder-oci-push-command",
+    "description": "IDPBuilder OCI image-push command implementation"
+  },
+  "efforts_completed": [
+    "1.1.1",
+    "1.1.2",
+    "1.1.3",
+    "1.1.4",
+    "1.2.1",
+    "1.2.2",
+    "1.2.3",
+    "1.2.4"
+  ],
+  "efforts_in_progress": []
 }
