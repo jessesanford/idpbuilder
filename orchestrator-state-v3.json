@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "previous_state": "VALIDATE_INFRASTRUCTURE",
-    "last_transition_timestamp": "2025-10-31T22:43:37Z",
+    "current_state": "WAITING_FOR_EFFORT_PLANS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "last_transition_timestamp": "2025-10-31T22:56:56Z",
     "state_history": [
       {
         "from_state": "CREATE_NEXT_INFRASTRUCTURE",
@@ -432,6 +432,33 @@
           "effort_1_exists": true,
           "effort_2_pending": true,
           "sequential_strategy": true,
+          "r288_compliance": true
+        }
+      },
+      {
+        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "to_state": "WAITING_FOR_EFFORT_PLANS",
+        "timestamp": "2025-10-31T22:56:56Z",
+        "validated_by": "state-manager",
+        "reason": "Code Reviewer spawned for effort 2.1.1 - implementation plan created. Sequential strategy requires waiting for plan completion before spawning effort 2.1.2 reviewer.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "WAITING_FOR_EFFORT_PLANS",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "sequential_strategy": true,
+          "code_reviewers_spawned": 1,
+          "efforts_planned": [
+            "2.1.1"
+          ],
+          "efforts_pending": [
+            "2.1.2"
+          ],
+          "plan_file": "efforts/phase2/wave1/effort-1-push-command-core/.software-factory/phase2/wave1/effort-1-push-command-core/IMPLEMENTATION-PLAN--20251031-225155.md",
           "r288_compliance": true
         }
       }
