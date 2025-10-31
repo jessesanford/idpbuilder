@@ -16,8 +16,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ERROR_RECOVERY",
-    "previous_state": "SETUP_WAVE_INFRASTRUCTURE",
+    "current_state": "SPAWN_ARCHITECT_PHASE_PLANNING",
+    "previous_state": "ERROR_RECOVERY",
     "loop_detection": {
       "last_two_states": [
         "REVIEW_WAVE_ARCHITECTURE",
@@ -1590,6 +1590,28 @@
           "expected_flow": "COMPLETE_PHASE → phase planning → WAVE_START → wave execution → SETUP_PHASE_INFRASTRUCTURE → phase integration",
           "actual_flow": "COMPLETE_PHASE → SETUP_PHASE_INFRASTRUCTURE → START_PHASE_ITERATION (INVALID)"
         }
+      },
+      {
+        "from_state": "ERROR_RECOVERY",
+        "to_state": "SPAWN_ARCHITECT_PHASE_PLANNING",
+        "timestamp": "2025-10-31T06:10:23Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-phase2-planning-recovery",
+        "orchestrator_proposal": "SPAWN_ARCHITECT_PHASE_PLANNING",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "R550 recovery: Phase 2 planning missing, guard condition satisfied (more_phases=true, next_phase_planning_missing=true). State Manager approved SPAWN_ARCHITECT_PHASE_PLANNING per R517 authority.",
+        "validation_checks": {
+          "r550_guard_evaluation": "PASSED",
+          "more_phases_in_project": true,
+          "next_phase_planning_missing": true,
+          "phase_2_planning_directory_exists": true,
+          "phase_2_planning_files_exist": false,
+          "phase_2_pre_planned_infrastructure_exists": false,
+          "allowed_transition_from_error_recovery": true,
+          "state_manager_authority": "R517",
+          "decision": "APPROVED"
+        }
       }
     ],
     "last_transition_timestamp": "2025-10-31T01:02:00Z",
@@ -2117,7 +2139,7 @@
     "r151_compliant": true
   },
   "transition_reason": "Phase integration review complete: 0 bugs found, guard condition satisfied (bugs_found == 0)",
-  "last_updated": "2025-10-31T04:15:18Z",
+  "last_updated": "2025-10-31T06:10:23Z",
   "state_transitions": [
     {
       "from": "MONITORING_SWE_PROGRESS",
@@ -2133,14 +2155,7 @@
       ]
     }
   ],
-  "last_state_transition": {
-    "from": "SETUP_WAVE_INFRASTRUCTURE",
-    "to": "ERROR_RECOVERY",
-    "timestamp": "2025-10-31T04:22:07Z",
-    "reason": "BLOCKING requirement failed: No Phase 2 Wave 1 efforts exist. Cannot verify efforts completed per SETUP_WAVE_INFRASTRUCTURE checklist item #1. Per R510 Supreme Law, BLOCKING items must complete before transition. Transitioning to ERROR_RECOVERY for analysis.",
-    "decision_maker": "orchestrator",
-    "consultation_type": "R510_BLOCKING_FAILURE"
-  },
+  "last_state_transition": "2025-10-31T06:10:23Z",
   "state_history": [
     {
       "from_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
