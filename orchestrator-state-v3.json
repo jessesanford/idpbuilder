@@ -354,7 +354,7 @@
     "wave_2_implementation_plan_size_bytes": 41000,
     "wave_2_implementation_plan_effort_count": 4,
     "wave_2_implementation_plan_parallelization": "parallel_4_efforts",
-    "phase_2_implementation_file": "planning/phase2/PHASE-2-IMPLEMENTATION.md",
+    "phase_2_implementation_file": "planning/phase2/PHASE-IMPLEMENTATION-PLAN.md",
     "phase_2_implementation_status": "COMPLETE",
     "phase_2_implementation_completion_timestamp": "2025-10-31T07:20:41Z",
     "phase_2_wave_count": 3,
@@ -561,6 +561,22 @@
       "effort_dir": "efforts/phase1/wave2/effort-4-tls",
       "spawned_at": "2025-10-29T22:12:59Z",
       "implementation_plan": ".software-factory/phase1/wave2/effort-4-tls/IMPLEMENTATION-PLAN--20251029-213316.md"
+    }
+  ],
+  "phases": [
+    {
+      "phase_number": 1,
+      "phase_name": "Foundation & Interfaces",
+      "implementation_plan_path": "planning/phase1/PHASE-IMPLEMENTATION-PLAN.md",
+      "architecture_plan_path": "planning/phase1/PHASE-ARCHITECTURE-PLAN.md",
+      "status": "COMPLETE"
+    },
+    {
+      "phase_number": 2,
+      "phase_name": "Core Push Functionality",
+      "implementation_plan_path": "planning/phase2/PHASE-IMPLEMENTATION-PLAN.md",
+      "architecture_plan_path": "planning/phase2/PHASE-ARCHITECTURE-PLAN.md",
+      "status": "IN_PROGRESS"
     }
   ],
   "artifacts": {}

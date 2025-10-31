@@ -140,9 +140,8 @@ echo "════════════════════════�
 # STEP 1: Read current phase from state file
 CURRENT_PHASE=$(jq -r '.current_phase' orchestrator-state-v3.json 2>/dev/null || echo "1")
 
-# STEP 2: Read phase-specific implementation plan path from state
-# NOTE: During SF 2.0 → 3.0 migration, check both locations
-IMPL_PLAN=$(jq -r ".phase${CURRENT_PHASE}_implementation_plan // .phases[] | select(.phase_number == $CURRENT_PHASE) | .implementation_plan_path // empty" orchestrator-state-v3.json 2>/dev/null)
+# STEP 2: Read phase-specific implementation plan path from state (SF 3.0 pattern only)
+IMPL_PLAN=$(jq -r ".phases[] | select(.phase_number == $CURRENT_PHASE) | .implementation_plan_path // empty" orchestrator-state-v3.json 2>/dev/null)
 
 # STEP 3: Validate state file metadata
 if [ -n "$IMPL_PLAN" ] && [ "$IMPL_PLAN" != "null" ]; then
@@ -378,8 +377,8 @@ case "$CURRENT_STATE" in
     "WAVE_START")
         echo "Starting new wave"
 
-        # Read implementation plan path from state file
-        IMPL_PLAN=$(jq -r ".phase${CURRENT_PHASE}_implementation_plan // .phases[] | select(.phase_number == $CURRENT_PHASE) | .implementation_plan_path" orchestrator-state-v3.json)
+        # Read implementation plan path from state file (SF 3.0 pattern only)
+        IMPL_PLAN=$(jq -r ".phases[] | select(.phase_number == $CURRENT_PHASE) | .implementation_plan_path" orchestrator-state-v3.json)
 
         echo "📋 Using implementation plan: $IMPL_PLAN"
         ACTION: Read plan from $IMPL_PLAN

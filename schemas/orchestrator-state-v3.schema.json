@@ -789,6 +789,76 @@
         }
       }
     },
+    "phases": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "SF 3.0 canonical phase tracking - replaces legacy phaseN_* accessor patterns. Contains standardized phase metadata for direct access via jq '.phases[] | select(.phase_number == N)'",
+      "items": {
+        "type": "object",
+        "required": [
+          "phase_number",
+          "phase_name",
+          "implementation_plan_path",
+          "architecture_plan_path",
+          "status"
+        ],
+        "properties": {
+          "phase_number": {
+            "type": "integer",
+            "description": "Numeric phase identifier (1, 2, 3, etc.)",
+            "minimum": 1
+          },
+          "phase_name": {
+            "type": "string",
+            "description": "Human-readable phase name",
+            "examples": [
+              "Foundation & Interfaces",
+              "Core Push Functionality",
+              "Testing & Integration"
+            ]
+          },
+          "implementation_plan_path": {
+            "type": "string",
+            "description": "Path to phase implementation plan following R550 naming conventions (planning/phaseN/PHASE-IMPLEMENTATION-PLAN.md)",
+            "pattern": "^planning/phase[0-9]+/PHASE-IMPLEMENTATION-PLAN\\.md$",
+            "examples": [
+              "planning/phase1/PHASE-IMPLEMENTATION-PLAN.md",
+              "planning/phase2/PHASE-IMPLEMENTATION-PLAN.md"
+            ]
+          },
+          "architecture_plan_path": {
+            "type": "string",
+            "description": "Path to phase architecture plan following R550 naming conventions (planning/phaseN/PHASE-ARCHITECTURE-PLAN.md)",
+            "pattern": "^planning/phase[0-9]+/PHASE-ARCHITECTURE-PLAN\\.md$",
+            "examples": [
+              "planning/phase1/PHASE-ARCHITECTURE-PLAN.md",
+              "planning/phase2/PHASE-ARCHITECTURE-PLAN.md"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Phase completion status",
+            "enum": [
+              "PLANNED",
+              "IN_PROGRESS",
+              "COMPLETE",
+              "BLOCKED"
+            ]
+          },
+          "test_plan_path": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional path to phase test plan",
+            "pattern": "^planning/phase[0-9]+/PHASE-TEST-PLAN\\.md$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
     "artifacts": {
       "type": [
         "object",
