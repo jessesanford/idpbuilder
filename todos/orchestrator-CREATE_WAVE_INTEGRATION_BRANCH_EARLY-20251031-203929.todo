@@ -1,0 +1,26 @@
+# Orchestrator TODOs - CREATE_WAVE_INTEGRATION_BRANCH_EARLY State
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Phase: 2, Wave: 1
+# R287 Compliance: TODO persistence before state transition
+
+## Completed Tasks
+- [x] Reading current state and acknowledging critical rules
+- [x] Determine base branch for Phase 2 Wave 1 integration branch  
+- [x] Create wave integration workspace directory
+- [x] Clone target repository into workspace
+- [x] Create phase-2-wave-1-integration branch from base
+- [x] Extract and store wave tests in integration branch
+- [x] Commit and push wave tests to remote
+- [x] Update orchestrator-state-v3.json with branch info
+- [x] Save TODOs per R287
+
+## Next Task
+- [ ] Transition to SPAWN_CODE_REVIEWER_WAVE_IMPL via State Manager
+
+## R342 Compliance Summary
+✅ Wave integration branch created: idpbuilder-oci-push/phase2/wave1/integration
+✅ Base branch: idpbuilder-oci-push/phase2/integration (Phase 2 integration)
+✅ 40 wave tests stored in tests/phase2/wave1/
+✅ Test harness created: WAVE-2.1-TEST-HARNESS.sh
+✅ Tests committed and pushed to remote
+✅ Tests available before implementation begins

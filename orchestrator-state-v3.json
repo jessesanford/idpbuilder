@@ -224,7 +224,7 @@
       "wave_number": 1,
       "name": "Command Implementation & Core Integration",
       "iteration": 1,
-      "status": "PLANNING"
+      "status": "IN_PROGRESS"
     },
     "phases_completed": [],
     "waves_completed": [
@@ -385,7 +385,12 @@
             "architecture_plan": "planning/phase2/wave1/WAVE-2.1-ARCHITECTURE.md",
             "implementation_plan": null,
             "test_plan": "planning/phase2/wave1/WAVE-TEST-PLAN.md",
-            "efforts": {}
+            "efforts": {},
+            "integration_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+            "integration_branch_created": "2025-10-31T20:39:16.591113Z",
+            "integration_base_branch": "idpbuilder-oci-push/phase2/integration",
+            "test_count": 40,
+            "test_commit": "99433f5"
           }
         }
       }
