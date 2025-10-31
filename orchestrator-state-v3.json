@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-    "previous_state": "WAITING_FOR_WAVE_TEST_PLAN",
-    "last_transition_timestamp": "2025-10-31T20:35:00.000000Z",
+    "current_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+    "previous_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+    "last_transition_timestamp": "2025-10-31T20:45:00.000000Z",
     "state_history": [
       {
         "from_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
@@ -188,6 +188,34 @@
           "coverage_targets": "90%/85%",
           "tdd_phase": "red"
         }
+      },
+      {
+        "from_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+        "to_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "timestamp": "2025-10-31T20:45:00.000000Z",
+        "validated_by": "state-manager",
+        "orchestrator_proposed": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "proposal_accepted": true,
+        "reason": "Wave 2.1 integration branch created with test harness (40 tests, 90%/85% coverage targets). R342 early integration complete. Ready for wave implementation planning.",
+        "phase": 2,
+        "wave": 1,
+        "validation_checks": {
+          "transition_allowed": true,
+          "state_exists": true,
+          "in_allowed_transitions": true,
+          "r342_compliance": true,
+          "integration_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+          "integration_base_branch": "idpbuilder-oci-push/phase2/integration",
+          "test_harness_created": true,
+          "test_harness_files": [
+            "tests/phase2/wave1/README.md",
+            "tests/phase2/wave1/WAVE-2.1-TEST-HARNESS.sh"
+          ],
+          "test_commit": "332a95b",
+          "test_count": 40,
+          "coverage_targets": "90%/85%",
+          "r288_compliance": true
+        }
       }
     ],
     "loop_detection": {
@@ -347,7 +375,7 @@
     "project_name": "idpbuilder-oci-push-command",
     "project_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
     "created_at": "2025-10-30T01:11:19Z",
-    "last_updated": "2025-10-31T20:35:00.000000Z",
+    "last_updated": "2025-10-31T20:45:00.000000Z",
     "version": "3.0.0"
   },
   "planning_files": {
@@ -390,7 +418,12 @@
             "integration_branch_created": "2025-10-31T20:39:16.591113Z",
             "integration_base_branch": "idpbuilder-oci-push/phase2/integration",
             "test_count": 40,
-            "test_commit": "99433f5"
+            "test_commit": "332a95b",
+            "test_harness_created": true,
+            "test_harness_files": [
+              "tests/phase2/wave1/README.md",
+              "tests/phase2/wave1/WAVE-2.1-TEST-HARNESS.sh"
+            ]
           }
         }
       }
