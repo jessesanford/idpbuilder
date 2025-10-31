@@ -842,6 +842,49 @@
         "integration_branch": "idpbuilder-oci-push/phase1/wave2/integration",
         "created": true,
         "validated": true
+      },
+      "phase2_wave1_effort_1_push_command_core": {
+        "effort_id": "2.1.1",
+        "effort_name": "Push Command Core & Pipeline Orchestration",
+        "phase": "phase2",
+        "wave": "wave1",
+        "index": 1,
+        "branch_name": "idpbuilder-oci-push/phase2/wave1/effort-1-push-command-core",
+        "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+        "remote_branch": "origin/idpbuilder-oci-push/phase2/wave1/effort-1-push-command-core",
+        "target_remote": "origin",
+        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
+        "planning_remote": "planning",
+        "integration_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+        "full_path": "efforts/phase2/wave1/effort-1-push-command-core",
+        "estimated_lines": 450,
+        "dependencies": [],
+        "created": true,
+        "validated": true,
+        "validation_failure_reason": null,
+        "created_at": "2025-10-31T22:12:35Z"
+      },
+      "phase2_wave1_effort_2_progress_reporter": {
+        "effort_id": "2.1.2",
+        "effort_name": "Progress Reporter & Output Formatting",
+        "phase": "phase2",
+        "wave": "wave1",
+        "index": 2,
+        "branch_name": "idpbuilder-oci-push/phase2/wave1/effort-2-progress-reporter",
+        "base_branch": "idpbuilder-oci-push/phase2/wave1/effort-1-push-command-core",
+        "remote_branch": "origin/idpbuilder-oci-push/phase2/wave1/effort-2-progress-reporter",
+        "target_remote": "origin",
+        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
+        "planning_remote": "planning",
+        "integration_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+        "full_path": "efforts/phase2/wave1/effort-2-progress-reporter",
+        "estimated_lines": 300,
+        "dependencies": [
+          "2.1.1"
+        ],
+        "created": false,
+        "validated": false,
+        "validation_failure_reason": null
       }
     },
     "project_prefix": "idpbuilder-oci-push"
@@ -884,5 +927,10 @@
       "implementation_plan": ".software-factory/phase1/wave2/effort-4-tls/IMPLEMENTATION-PLAN--20251029-213316.md"
     }
   ],
-  "artifacts": {}
+  "artifacts": {},
+  "current_state": "CREATE_NEXT_INFRASTRUCTURE",
+  "current_phase": 2,
+  "current_wave": 1,
+  "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+  "transition_time": "2025-10-31T22:06:22Z"
 }
