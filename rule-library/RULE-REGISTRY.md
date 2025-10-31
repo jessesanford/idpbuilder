@@ -62,6 +62,7 @@
 47. **R512.0.0** - Trunk-Based Development Integration Model (SUPREME LAW - INTEGRATE EFFORT BRANCHES NOT INTEGRATE_WAVE_EFFORTS BRANCHES - -100% FOR VIOLATIONS!)
 48. **R513.0.0** - Orchestrator Layer Tracking Protocol (SUPREME LAW - EXPLICIT LAYER METADATA PREVENTS CONFUSION - -100% FOR LAYER CONFUSION!)
 49. **R517.0.0** - Universal State Manager Consultation Law (SUPREME LAW - ALL STATE TRANSITIONS MUST CONSULT STATE MANAGER - NO DIRECT TRANSITIONS - -100% FOR BYPASS!)
+50. **R540.0.0** - State File Schema Compliance (SUPREME LAW - ALL STATE FILES MUST VALIDATE AGAINST JSON SCHEMA - -100% FOR VIOLATIONS!)
 
 ## Rule Categories
 
@@ -1157,3 +1158,81 @@
   - Missing loop detection: -50% (allows infinite loops)
   - Disabled loop detection: -100% (CRITICAL FAILURE)
   - Infinite loop wasting API costs: -100% (CATASTROPHIC)
+
+## R531 - Integration Iteration Protocol
+- **File**: rule-library/R531-integration-iteration-protocol.md
+- **Criticality**: 🔴🔴🔴 SUPREME LAW
+- **Summary**: ALL integration operations (wave/phase/project) MUST track iteration counts and enforce convergence limits
+- **Enforcement**: Exit code 531, -100% for missing iteration tracking, -75% for exceeding max iterations without escalation
+- **Scope**: All integration states, START_*_ITERATION states, orchestrator
+- **Key Requirements**:
+  - Track iteration counters in orchestrator-state-v3.json
+  - Default max iterations: 10 per integration level
+  - Increment counter at START_WAVE_ITERATION, START_PHASE_ITERATION, START_PROJECT_ITERATION states
+  - Check max iterations before each integration attempt
+  - Escalate to ERROR_RECOVERY when max exceeded
+  - Use tools/iteration-manager.sh for all iteration operations
+  - Record last_progress_timestamp for convergence tracking
+- **Grading Penalties**:
+  - Missing iteration tracking fields: -50%
+  - Not incrementing iteration counter: -40%
+  - Not checking max iterations: -75%
+  - Exceeding max without ERROR_RECOVERY: -100% (AUTOMATIC FAILURE)
+  - Corrupting iteration counters: -60%
+
+## R533 - Artifact Location Reporting Protocol
+- **File**: rule-library/R533-artifact-location-reporting-protocol.md
+- **Criticality**: 🚨🚨🚨 BLOCKING - Violation = -20% per untracked artifact
+- **Summary**: ALL artifacts created by ANY agent MUST be recorded in orchestrator-state-v3.json with complete metadata BEFORE agent completes its current state
+- **Enforcement**: -20% per untracked artifact, SYSTEM FAILURE if orchestrator cannot find artifacts
+- **Scope**: Code-Reviewer (fix plans, code reviews, split plans), Architect (architecture reviews), Orchestrator (integration reports)
+- **Key Requirements**:
+  - Record artifact in .artifacts.[artifact_type] section of orchestrator-state-v3.json
+  - Required metadata: file_path, created_at, created_by, artifact_type, scope, status
+  - Optional metadata: related_bugs, metadata object
+  - Orchestrator reads from state file (NO filesystem searches per R340)
+  - All artifact-creating states MUST include R533 checklist item
+- **Artifact Types Covered**:
+  - fix_plans (Code-Reviewer → CREATE_FIX_PLAN)
+  - code_reviews (Code-Reviewer → PERFORM_CODE_REVIEW)
+  - split_plans (Code-Reviewer → CREATE_SPLIT_PLAN)
+  - integration_reports (Orchestrator → Integration states)
+  - architecture_reviews (Architect → Architecture review states)
+- **Integration**: Implements R340 requirement for artifact metadata tracking, extends R288 for state file updates
+- **Grading Penalties**:
+  - Missing metadata: -20% per artifact
+  - Incorrect metadata: -10% per artifact
+  - Orchestrator cannot find artifacts: -100% (SYSTEM FAILURE)
+
+## R540 - State File Schema Compliance
+- **File**: rule-library/R540-state-file-schema-compliance.md
+- **Criticality**: 🚨🚨🚨 BLOCKING - Violation = -100% + System corruption
+- **Summary**: ALL state file modifications MUST comply with JSON schema definitions. Missing required fields (e.g., total_waves_in_phase) or incorrect data types (e.g., waves_completed as array instead of integer) cause state machine guard evaluation failures and system corruption.
+- **Enforcement**: Pre-commit hooks with schema validation, State Manager startup validation, automated testing
+- **Scope**: State Manager (all state updates), Orchestrator (state proposals), all agents that update state files
+- **Key Requirements**:
+  - Validate all state files against schemas/orchestrator-state-v3.schema.json before commit
+  - All REQUIRED fields must be present (check schema "required" arrays)
+  - Use correct data types: waves_completed=integer (NOT array), total_waves_in_phase=integer
+  - Respect minimum/maximum constraints (e.g., total_waves_in_phase >= 1)
+  - Use validation tool: bash tools/validate-state-schema.sh [file]
+  - Never commit invalid state data (bypassing validation = system corruption)
+  - Schema migrations require proper migration scripts with validation
+- **Critical Fields (current_phase)**:
+  - total_waves_in_phase: integer, required, minimum 1 (CRITICAL for guard evaluation)
+  - waves_completed: integer, required, minimum 0 (count, NOT array of IDs)
+- **Why This Matters**:
+  - State machine guards evaluate: waves_completed == total_waves_in_phase
+  - Missing/wrong type = guard evaluation IMPOSSIBLE
+  - System forced to ERROR_RECOVERY
+  - Manual intervention required to fix
+- **Common Violations**:
+  - waves_completed as array ["wave_1_1", "wave_1_2"] instead of integer 2
+  - Missing total_waves_in_phase field entirely
+  - String values instead of integers
+  - Negative values where minimum is 0
+- **Related Rules**: R517 (State Manager), R288 (State Updates), R506 (Pre-commit), R407 (Validation)
+- **Grading Penalties**:
+  - Schema violation committed: -100%
+  - Guard evaluation failure: System stuck in ERROR_RECOVERY
+  - State corruption: Manual recovery required

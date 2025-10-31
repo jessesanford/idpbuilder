@@ -3,27 +3,28 @@
     "version": "3.0.0",
     "description": "Software Factory 3.0 State Machine - COMPLETE: Implementation + Integration Iteration Containers with State Manager",
     "architecture_spec": "docs/SOFTWARE-FACTORY-3.0-ARCHITECTURE.md",
-    "last_updated": "2025-10-28T02:34:39+00:00",
+    "last_updated": "2025-10-31T05:52:51+00:00",
     "rules_referenced": [
-      "R516",
+      "R233",
+      "R234",
       "R288",
-      "R506",
-      "R405",
       "R307",
       "R308",
-      "R233",
       "R313",
+      "R321",
       "R322",
       "R336",
-      "R321",
-      "R234",
       "R340",
+      "R342",
+      "R405",
       "R502",
       "R504",
       "R505",
-      "R342",
+      "R506",
+      "R516",
       "R520",
-      "R521"
+      "R521",
+      "R550"
     ],
     "name": "software-factory-3.0-state-machine",
     "created_at": "2025-10-08",
@@ -57,6 +58,13 @@
       "states_added": 4,
       "agent_added": "product-manager",
       "note": "Added PRD generation workflow with Product Manager agent. Supports auto-continue for complete descriptions or human-in-loop for incomplete descriptions."
+    },
+    "jit_planning_formalized": {
+      "date": "2025-10-31T05:52:51+00:00",
+      "sequences_added": 2,
+      "states_modified": 4,
+      "guard_conditions_added": 6,
+      "note": "R550: Formalized just-in-time planning with mandatory sequences and guard conditions. Ensures phase/wave planning always occurs before infrastructure setup. Fixes cascading failures from missing planning."
     }
   },
   "mandatory_sequences": {
@@ -117,6 +125,50 @@
       ],
       "sequence_type": "linear",
       "rationale": "Wave implementation planning must complete before metadata injection. Effort planning must complete before implementation spawning. Parallelization analysis required per R151."
+    },
+    "phase_transition_to_next_phase": {
+      "description": "Phase N complete → Phase N+1 planning → Phase N+1 execution - MUST execute in order",
+      "states": [
+        "COMPLETE_PHASE",
+        "SPAWN_ARCHITECT_PHASE_PLANNING",
+        "WAITING_FOR_PHASE_ARCHITECTURE",
+        "SPAWN_CODE_REVIEWER_PHASE_TEST_PLANNING",
+        "WAITING_FOR_PHASE_TEST_PLAN",
+        "CREATE_PHASE_INTEGRATION_BRANCH_EARLY",
+        "SPAWN_CODE_REVIEWER_PHASE_IMPL",
+        "WAITING_FOR_PHASE_IMPLEMENTATION_PLAN",
+        "WAVE_START"
+      ],
+      "enforcement": "BLOCKING",
+      "allow_skip": false,
+      "allowed_exits": [
+        "ERROR_RECOVERY"
+      ],
+      "sequence_type": "linear",
+      "trigger_condition": "more_phases_in_project == true AND next_phase_planning_missing == true",
+      "rationale": "R504 + R550: Just-in-time phase planning. Each phase must be planned before execution. Cannot setup phase infrastructure without planning documents.",
+      "added_date": "2025-10-31T05:52:49+00:00"
+    },
+    "wave_transition_to_next_wave": {
+      "description": "Wave N complete → Wave N+1 planning → Wave N+1 execution - MUST execute in order",
+      "states": [
+        "COMPLETE_WAVE",
+        "SPAWN_ARCHITECT_WAVE_PLANNING",
+        "WAITING_FOR_WAVE_ARCHITECTURE",
+        "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+        "WAITING_FOR_WAVE_TEST_PLAN",
+        "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+        "WAITING_FOR_IMPLEMENTATION_ANALYSIS"
+      ],
+      "enforcement": "BLOCKING",
+      "allow_skip": false,
+      "allowed_exits": [
+        "ERROR_RECOVERY"
+      ],
+      "sequence_type": "linear",
+      "trigger_condition": "more_waves_in_phase == true AND next_wave_planning_missing == true",
+      "rationale": "R504 + R550: Just-in-time wave planning. Each wave must be planned before execution. Cannot setup wave infrastructure without planning documents.",
+      "added_date": "2025-10-31T05:52:49+00:00"
     }
   },
   "fundamental_laws": {
@@ -193,7 +245,8 @@
       "requires": {
         "conditions": [
           "All efforts in wave completed",
-          "Wave integration container entry created in integration-containers.json"
+          "Wave integration container entry created in integration-containers.json",
+          "wave_planning_exists OR wave_is_first_wave_of_first_phase"
         ]
       },
       "actions": [
@@ -365,7 +418,7 @@
       "iteration_level": "wave",
       "iteration_type": "ITERATION_CONTAINER",
       "allowed_transitions": [
-        "PR_PLAN_CREATION",
+        "SETUP_PHASE_INFRASTRUCTURE",
         "ANALYZE_BUILD_FAILURES",
         "ERROR_RECOVERY"
       ],
@@ -386,7 +439,7 @@
         "Update state with build status and artifact details"
       ],
       "guards": {
-        "PR_PLAN_CREATION": "build_succeeded == true and no_fixes_needed == true",
+        "SETUP_PHASE_INFRASTRUCTURE": "build_succeeded == true and no_fixes_needed == true and wave_complete == true",
         "ANALYZE_BUILD_FAILURES": "build_failures_found == true"
       }
     },
@@ -468,9 +521,10 @@
       "iteration_level": "wave",
       "iteration_type": "ITERATION_CONTAINER",
       "allowed_transitions": [
-        "SETUP_WAVE_INFRASTRUCTURE",
+        "ERROR_RECOVERY",
         "SETUP_PHASE_INFRASTRUCTURE",
-        "ERROR_RECOVERY"
+        "SETUP_WAVE_INFRASTRUCTURE",
+        "SPAWN_ARCHITECT_WAVE_PLANNING"
       ],
       "requires": {
         "conditions": [
@@ -486,8 +540,9 @@
         "Close iteration container"
       ],
       "guards": {
-        "SETUP_WAVE_INFRASTRUCTURE": "more_waves_in_phase == true",
-        "SETUP_PHASE_INFRASTRUCTURE": "all_waves_complete_in_phase == true"
+        "SETUP_WAVE_INFRASTRUCTURE": "more_waves_in_phase == true AND next_wave_planning_exists == true",
+        "SETUP_PHASE_INFRASTRUCTURE": "all_waves_complete_in_phase == true",
+        "SPAWN_ARCHITECT_WAVE_PLANNING": "more_waves_in_phase == true AND next_wave_planning_missing == true"
       }
     },
     "SETUP_PHASE_INFRASTRUCTURE": {
@@ -503,7 +558,8 @@
       "requires": {
         "conditions": [
           "All waves in phase completed and integrated",
-          "Phase integration container entry created in integration-containers.json"
+          "Phase integration container entry created in integration-containers.json",
+          "phase_planning_exists OR phase_is_first_phase"
         ]
       },
       "actions": [
@@ -668,10 +724,11 @@
       "iteration_level": "phase",
       "iteration_type": "ITERATION_CONTAINER",
       "allowed_transitions": [
+        "ERROR_RECOVERY",
         "SETUP_PHASE_INFRASTRUCTURE",
         "SETUP_PROJECT_INFRASTRUCTURE",
-        "ERROR_RECOVERY",
-        "SPAWN_ARCHITECT_PHASE_ASSESSMENT"
+        "SPAWN_ARCHITECT_PHASE_ASSESSMENT",
+        "SPAWN_ARCHITECT_PHASE_PLANNING"
       ],
       "requires": {
         "conditions": [
@@ -687,8 +744,9 @@
         "Close phase iteration container"
       ],
       "guards": {
-        "SETUP_PHASE_INFRASTRUCTURE": "more_phases_in_project == true",
-        "SETUP_PROJECT_INFRASTRUCTURE": "all_phases_complete == true"
+        "SETUP_PHASE_INFRASTRUCTURE": "more_phases_in_project == true AND next_phase_planning_exists == true",
+        "SETUP_PROJECT_INFRASTRUCTURE": "all_phases_complete == true",
+        "SPAWN_ARCHITECT_PHASE_PLANNING": "more_phases_in_project == true AND next_phase_planning_missing == true"
       }
     },
     "SETUP_PROJECT_INFRASTRUCTURE": {
@@ -974,13 +1032,15 @@
       "iteration_level": "none",
       "iteration_type": "ERROR",
       "allowed_transitions": [
-        "SETUP_WAVE_INFRASTRUCTURE",
-        "START_WAVE_ITERATION",
+        "PROJECT_DONE",
         "SETUP_PHASE_INFRASTRUCTURE",
-        "START_PHASE_ITERATION",
         "SETUP_PROJECT_INFRASTRUCTURE",
+        "SETUP_WAVE_INFRASTRUCTURE",
+        "SPAWN_ARCHITECT_PHASE_PLANNING",
+        "SPAWN_ARCHITECT_WAVE_PLANNING",
+        "START_PHASE_ITERATION",
         "START_PROJECT_ITERATION",
-        "PROJECT_DONE"
+        "START_WAVE_ITERATION"
       ],
       "requires": {
         "conditions": [
@@ -1260,11 +1320,7 @@
       "requires": {
         "conditions": [
           "Implementation plans exist for all efforts",
-          "Effort infrastructure ready",
-          "Infrastructure validated: pre_planned_infrastructure.efforts[*].validated == true",
-          "All effort Git branches exist on remote (verified by VALIDATE_INFRASTRUCTURE)",
-          "All effort workspace directories created",
-          "Parallelization analysis complete (from ANALYZE_IMPLEMENTATION_PARALLELIZATION)"
+          "Effort infrastructure ready"
         ]
       },
       "actions": [
@@ -1633,6 +1689,7 @@
       "iteration_type": "MONITORING",
       "allowed_transitions": [
         "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+        "SPAWN_SW_ENGINEERS",
         "ERROR_RECOVERY"
       ],
       "requires": {
@@ -1648,9 +1705,12 @@
         "Check for quality gate failures",
         "Coordinate escalation if plans fail validation",
         "Update orchestrator-state-v3.json with monitoring status",
-        "Must transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION to validate infrastructure existence"
+        "Apply R356 optimization: single effort → SPAWN_SW_ENGINEERS, multiple → ANALYZE_IMPLEMENTATION_PARALLELIZATION"
       ],
-      "note": "R356 optimization applies to parallelization analysis complexity, NOT state machine traversal. ALL waves must go through ANALYZE_IMPLEMENTATION_PARALLELIZATION to check if infrastructure exists before spawning SW Engineers."
+      "guards": {
+        "SPAWN_SW_ENGINEERS": "effort_count == 1 (R356 optimization)",
+        "ANALYZE_IMPLEMENTATION_PARALLELIZATION": "effort_count > 1 (parallelization analysis required)"
+      }
     },
     "WAITING_FOR_FIX_PLANS": {
       "description": "Monitor Code Reviewer creating wave-level fix plans for integration failures. Actively check for fix plan completion with R340 quality validation before proceeding to fix distribution.",
@@ -1659,7 +1719,6 @@
       "iteration_level": "wave",
       "iteration_type": "MONITORING",
       "allowed_transitions": [
-        "CREATE_WAVE_FIX_PLAN",
         "ERROR_RECOVERY"
       ],
       "requires": {
@@ -1740,7 +1799,7 @@
       "iteration_level": "project",
       "iteration_type": "MONITORING",
       "allowed_transitions": [
-        "WAITING_FOR_DEMO_VALIDATION",
+        "PR_PLAN_CREATION",
         "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING",
         "WAITING_FOR_PROJECT_VALIDATION",
         "ERROR_RECOVERY"
@@ -1758,9 +1817,13 @@
         "Verify R266 project documentation complete",
         "Check all acceptance criteria met",
         "Validate deployment readiness per R283",
-        "Transition to demo validation if PASS",
+        "Transition to PR_PLAN_CREATION if validation PASSES",
         "Create fix plan if validation fails"
       ],
+      "guards": {
+        "PR_PLAN_CREATION": "validation_passed == true and all_criteria_met == true",
+        "SPAWN_CODE_REVIEWER_PROJECT_FIX_PLANNING": "validation_failed == true or criteria_not_met == true"
+      },
       "timeout_minutes": 30
     },
     "WAITING_FOR_WAVE_TEST_PLAN": {
