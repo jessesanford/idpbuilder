@@ -663,6 +663,143 @@
         }
       }
     },
+    "artifacts": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Tracks locations of all artifacts created during factory execution for instant discovery without filesystem searching (R340)",
+      "properties": {
+        "fix_plans": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Fix plans created by Code-Reviewer during CREATE_FIX_PLAN state",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "file_path",
+              "created_at",
+              "created_by",
+              "artifact_type",
+              "scope",
+              "status"
+            ],
+            "properties": {
+              "file_path": {
+                "type": "string",
+                "description": "Absolute or relative path to artifact file from project root"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO 8601 timestamp when artifact was created"
+              },
+              "created_by": {
+                "type": "string",
+                "description": "Agent that created this artifact",
+                "enum": [
+                  "code-reviewer",
+                  "architect",
+                  "orchestrator"
+                ]
+              },
+              "artifact_type": {
+                "type": "string",
+                "description": "Type of artifact",
+                "enum": [
+                  "fix_plan",
+                  "code_review",
+                  "split_plan",
+                  "integration_report",
+                  "architecture_review"
+                ]
+              },
+              "scope": {
+                "type": "string",
+                "description": "Scope of artifact (effort/wave/phase/project)",
+                "enum": [
+                  "effort",
+                  "wave",
+                  "phase",
+                  "project"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "description": "Current status of artifact",
+                "enum": [
+                  "CREATED",
+                  "READY",
+                  "IN_USE",
+                  "COMPLETED",
+                  "ARCHIVED"
+                ]
+              },
+              "related_bugs": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "description": "Bug IDs this artifact addresses",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "metadata": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Additional artifact-specific metadata",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "code_reviews": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Code review reports created by Code-Reviewer during PERFORM_CODE_REVIEW state",
+          "additionalProperties": {
+            "$ref": "#/properties/artifacts/properties/fix_plans/additionalProperties"
+          }
+        },
+        "split_plans": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Split plans created by Code-Reviewer during CREATE_SPLIT_PLAN state",
+          "additionalProperties": {
+            "$ref": "#/properties/artifacts/properties/fix_plans/additionalProperties"
+          }
+        },
+        "integration_reports": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Integration reports created by Orchestrator during integration states",
+          "additionalProperties": {
+            "$ref": "#/properties/artifacts/properties/fix_plans/additionalProperties"
+          }
+        },
+        "architecture_reviews": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Architecture reviews created by Architect during architecture review states",
+          "additionalProperties": {
+            "$ref": "#/properties/artifacts/properties/fix_plans/additionalProperties"
+          }
+        }
+      }
+    },
     "pre_planned_infrastructure": {
       "type": [
         "object",
@@ -975,5 +1112,6 @@
         }
       }
     }
-  }
+  },
+  "additionalProperties": true
 }

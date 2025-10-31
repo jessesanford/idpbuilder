@@ -1,11 +1,26 @@
 {
-  "transition_time": "2025-10-31T02:20:48Z",
+  "current_state": "START_PHASE_ITERATION",
+  "previous_state": "SETUP_PHASE_INFRASTRUCTURE",
+  "transition_time": "2025-10-31T02:14:27Z",
+  "current_phase": 2,
+  "current_wave": 1,
   "phases_planned": 3,
   "waves_per_phase": {
     "1": 2,
     "2": 3,
     "3": 2
   },
+  "efforts_completed": [
+    "1.1.1",
+    "1.1.2",
+    "1.1.3",
+    "1.1.4",
+    "1.2.1",
+    "1.2.2",
+    "1.2.3",
+    "1.2.4"
+  ],
+  "efforts_in_progress": [],
   "efforts_pending": [],
   "project_info": {
     "name": "idpbuilder-oci-push-command",
@@ -16,8 +31,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ERROR_RECOVERY",
-    "previous_state": "SETUP_PHASE_INFRASTRUCTURE",
+    "current_state": "SETUP_PHASE_INFRASTRUCTURE",
+    "previous_state": "COMPLETE_PHASE",
     "loop_detection": {
       "last_two_states": [
         "REVIEW_WAVE_ARCHITECTURE",
@@ -1564,32 +1579,6 @@
         "orchestrator_proposal": "SETUP_PROJECT_INFRASTRUCTURE",
         "proposal_accepted": false,
         "proposal_rejected_reason": "Incorrect guard evaluation: all_phases_complete = false (only 1 of 3 phases complete). Architect explicitly approved Phase 2 continuation. Must transition to SETUP_PHASE_INFRASTRUCTURE per guard condition."
-      },
-      {
-        "from_state": "START_PHASE_ITERATION",
-        "to_state": "ERROR_RECOVERY",
-        "timestamp": "2025-10-31T02:20:48Z",
-        "validated_by": "state-manager",
-        "consultation_id": "shutdown-consultation-phase2-invalid-sequence",
-        "orchestrator_proposal": "INTEGRATE_PHASE_WAVES",
-        "proposal_accepted": false,
-        "proposal_rejected_reason": "Phase 2 entered invalid state sequence - attempting to integrate waves when NO waves have been executed",
-        "state_manager_override": true,
-        "reason": "State Manager OVERRIDE: Phase 2 entered invalid state sequence - SETUP_PHASE_INFRASTRUCTURE → START_PHASE_ITERATION → INTEGRATE_PHASE_WAVES attempted WITHOUT any wave execution. Phase 2 has 3 waves planned but ZERO waves executed, ZERO wave integration branches exist, and NO phase planning documents. Cannot integrate non-existent waves. Recovery required to either: (1) Execute Phase 2 planning + waves, or (2) Skip Phase 2 if not needed. [R288]",
-        "validation_checks": {
-          "phase": 2,
-          "waves_planned_for_phase": 3,
-          "waves_executed": 0,
-          "wave_integration_branches_exist": false,
-          "phase_planning_documents_exist": false,
-          "phase_architecture_plan_exists": false,
-          "phase_implementation_plan_exists": false,
-          "phase_test_plan_exists": false,
-          "violation_type": "INVALID_STATE_SEQUENCE",
-          "root_cause": "COMPLETE_PHASE transitioned to SETUP_PHASE_INFRASTRUCTURE for new phase instead of phase planning states",
-          "expected_flow": "COMPLETE_PHASE → phase planning → WAVE_START → wave execution → SETUP_PHASE_INFRASTRUCTURE → phase integration",
-          "actual_flow": "COMPLETE_PHASE → SETUP_PHASE_INFRASTRUCTURE → START_PHASE_ITERATION (INVALID)"
-        }
       }
     ],
     "last_transition_timestamp": "2025-10-31T01:02:00Z",
@@ -1699,8 +1688,7 @@
       "last_progress_timestamp": "2025-10-30T22:31:57+00:00",
       "active_container_level": "wave",
       "current_container": "wave-phase1-wave2"
-    },
-    "efforts_in_progress": []
+    }
   },
   "references": {
     "prd_file": "prd/idpbuilder-oci-push-command-prd.md",
@@ -2300,6 +2288,5 @@
   "total_phases": 1,
   "all_phases_complete": false,
   "last_action": "Phase 1 marked as complete - all requirements met",
-  "updated_at": "2025-10-31T01:58:50Z",
-  "version": "3.0"
+  "updated_at": "2025-10-31T01:58:50Z"
 }

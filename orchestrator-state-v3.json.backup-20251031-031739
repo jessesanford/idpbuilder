@@ -1,11 +1,26 @@
 {
+  "current_state": "ERROR_RECOVERY",
+  "previous_state": "START_PHASE_ITERATION",
   "transition_time": "2025-10-31T02:20:48Z",
+  "current_phase": 2,
+  "current_wave": 1,
   "phases_planned": 3,
   "waves_per_phase": {
     "1": 2,
     "2": 3,
     "3": 2
   },
+  "efforts_completed": [
+    "1.1.1",
+    "1.1.2",
+    "1.1.3",
+    "1.1.4",
+    "1.2.1",
+    "1.2.2",
+    "1.2.3",
+    "1.2.4"
+  ],
+  "efforts_in_progress": [],
   "efforts_pending": [],
   "project_info": {
     "name": "idpbuilder-oci-push-command",
@@ -1699,8 +1714,7 @@
       "last_progress_timestamp": "2025-10-30T22:31:57+00:00",
       "active_container_level": "wave",
       "current_container": "wave-phase1-wave2"
-    },
-    "efforts_in_progress": []
+    }
   },
   "references": {
     "prd_file": "prd/idpbuilder-oci-push-command-prd.md",
@@ -2300,6 +2314,5 @@
   "total_phases": 1,
   "all_phases_complete": false,
   "last_action": "Phase 1 marked as complete - all requirements met",
-  "updated_at": "2025-10-31T01:58:50Z",
-  "version": "3.0"
+  "updated_at": "2025-10-31T01:58:50Z"
 }
