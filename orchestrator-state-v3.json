@@ -1,7 +1,7 @@
 {
-  "current_state": "INTEGRATE_PHASE_WAVES",
-  "previous_state": "SETUP_PHASE_INFRASTRUCTURE",
-  "transition_time": "2025-10-30T22:26:52Z",
+  "current_state": "REVIEW_PHASE_ARCHITECTURE",
+  "previous_state": "REVIEW_PHASE_INTEGRATION",
+  "transition_time": "2025-10-31T01:19:59Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -31,8 +31,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "REVIEW_PHASE_INTEGRATION",
-    "previous_state": "INTEGRATE_PHASE_WAVES",
+    "current_state": "REVIEW_PHASE_ARCHITECTURE",
+    "previous_state": "REVIEW_PHASE_INTEGRATION",
     "loop_detection": {
       "last_two_states": [
         "REVIEW_WAVE_ARCHITECTURE",
@@ -1543,6 +1543,13 @@
         "timestamp": "2025-10-31T01:02:00Z",
         "validated_by": "state-manager",
         "reason": "Phase integration complete (CONVERGED), transitioning to code review"
+      },
+      {
+        "from_state": "REVIEW_PHASE_INTEGRATION",
+        "to_state": "REVIEW_PHASE_ARCHITECTURE",
+        "timestamp": "2025-10-31T01:19:59Z",
+        "validated_by": "state-manager",
+        "reason": "Phase integration review complete: 0 bugs found (APPROVED), proceeding to architecture validation per guard condition"
       }
     ],
     "last_transition_timestamp": "2025-10-31T01:02:00Z",
@@ -2067,8 +2074,8 @@
     "delta_seconds": 0,
     "r151_compliant": true
   },
-  "transition_reason": "Multiple verification failures: Effort 1.2.2 incomplete (no implementation markers), 3/4 efforts missing work logs (R343 violations), Effort 1.2.4 has uncommitted files",
-  "last_updated": "2025-10-30T19:41:40Z",
+  "transition_reason": "Phase integration review complete: 0 bugs found, guard condition satisfied (bugs_found == 0)",
+  "last_updated": "2025-10-31T01:19:59Z",
   "state_transitions": [
     {
       "from": "MONITORING_SWE_PROGRESS",
