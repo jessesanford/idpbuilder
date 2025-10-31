@@ -3,10 +3,40 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
-    "previous_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
-    "last_transition_timestamp": "2025-10-31T20:55:00.000000Z",
+    "current_state": "INJECT_WAVE_METADATA",
+    "previous_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
+    "last_transition_timestamp": "2025-10-31T21:39:38.311831Z",
     "state_history": [
+      {
+        "from_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
+        "to_state": "INJECT_WAVE_METADATA",
+        "timestamp": "2025-10-31T21:39:38.312365Z",
+        "validated_by": "state-manager",
+        "reason": "Implementation plan validated with R502 quality gates. R213 metadata present (2 efforts, 750 lines). Ready to inject metadata into effort directories.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "INJECT_WAVE_METADATA",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "wave_started": true,
+          "wave_implementation_plan_exists": true,
+          "implementation_plan_file": "planning/phase2/wave1/WAVE-IMPLEMENTATION-PLAN.md",
+          "implementation_plan_size_bytes": 38729,
+          "r213_metadata_present": true,
+          "r213_metadata_count": 2,
+          "efforts_extracted": 2,
+          "total_estimated_lines": 750,
+          "parallelization_strategy": "sequential",
+          "all_efforts_under_limit": true,
+          "r502_quality_gates_passed": true,
+          "fidelity_level": "EXACT",
+          "r288_compliance": true
+        }
+      },
       {
         "from_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
         "to_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
@@ -280,7 +310,10 @@
       "wave_number": 1,
       "name": "Command Implementation & Core Integration",
       "iteration": 1,
-      "status": "IN_PROGRESS"
+      "status": "IN_PROGRESS",
+      "total_efforts": 2,
+      "estimated_total_lines": 750,
+      "parallelization_strategy": "sequential"
     },
     "phases_completed": [],
     "waves_completed": [
@@ -403,7 +436,7 @@
     "project_name": "idpbuilder-oci-push-command",
     "project_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
     "created_at": "2025-10-30T01:11:19Z",
-    "last_updated": "2025-10-31T20:55:00.000000Z",
+    "last_updated": "2025-10-31T21:39:38.311831Z",
     "version": "3.0.0"
   },
   "planning_files": {
@@ -441,7 +474,46 @@
             "architecture_plan": "planning/phase2/wave1/WAVE-2.1-ARCHITECTURE.md",
             "implementation_plan": "planning/phase2/wave1/WAVE-IMPLEMENTATION-PLAN.md",
             "test_plan": "planning/phase2/wave1/WAVE-TEST-PLAN.md",
-            "efforts": {},
+            "efforts": {
+              "effort-1": {
+                "effort_id": "2.1.1",
+                "effort_name": "Push Command Core & Pipeline Orchestration",
+                "estimated_lines": 450,
+                "dependencies": [],
+                "files_touched": [
+                  "pkg/cmd/push/push.go",
+                  "pkg/cmd/push/types.go",
+                  "pkg/cmd/push/push_test.go",
+                  "pkg/cmd/root.go"
+                ],
+                "branch_name": "idpbuilder-oci-push/phase2/wave1/effort-1-push-command-core",
+                "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+                "theme": "CLI command implementation with Phase 1 integration",
+                "scope": "Command structure, flag definitions, pipeline orchestration, basic error handling",
+                "complexity": "medium",
+                "can_parallelize": false
+              },
+              "effort-2": {
+                "effort_id": "2.1.2",
+                "effort_name": "Progress Reporter & Output Formatting",
+                "estimated_lines": 300,
+                "dependencies": [
+                  "2.1.1"
+                ],
+                "files_touched": [
+                  "pkg/progress/reporter.go",
+                  "pkg/progress/interface.go",
+                  "pkg/progress/reporter_test.go",
+                  "pkg/cmd/push/push.go"
+                ],
+                "branch_name": "idpbuilder-oci-push/phase2/wave1/effort-2-progress-reporter",
+                "base_branch": "idpbuilder-oci-push/phase2/wave1/effort-1-push-command-core",
+                "theme": "Enhanced progress tracking and console output formatting",
+                "scope": "Layer-by-layer progress, thread-safe updates, summary statistics, verbose/normal modes",
+                "complexity": "medium",
+                "can_parallelize": false
+              }
+            },
             "integration_branch": "idpbuilder-oci-push/phase2/wave1/integration",
             "integration_branch_created": "2025-10-31T20:39:16.591113Z",
             "integration_base_branch": "idpbuilder-oci-push/phase2/integration",
