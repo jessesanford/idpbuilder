@@ -1,7 +1,7 @@
 {
-  "current_state": "COMPLETE_PHASE",
-  "previous_state": "WAITING_FOR_PHASE_ASSESSMENT",
-  "transition_time": "2025-10-31T01:41:55Z",
+  "current_state": "SETUP_PHASE_INFRASTRUCTURE",
+  "previous_state": "COMPLETE_PHASE",
+  "transition_time": "2025-10-31T02:05:56Z",
   "current_phase": 1,
   "current_wave": 2,
   "phases_planned": 3,
@@ -31,8 +31,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "COMPLETE_PHASE",
-    "previous_state": "WAITING_FOR_PHASE_ASSESSMENT",
+    "current_state": "SETUP_PHASE_INFRASTRUCTURE",
+    "previous_state": "COMPLETE_PHASE",
     "loop_detection": {
       "last_two_states": [
         "REVIEW_WAVE_ARCHITECTURE",
@@ -1569,6 +1569,16 @@
         "timestamp": "2025-10-31T01:41:55Z",
         "validated_by": "state-manager",
         "reason": "Phase 1 assessment complete - PROCEED_NEXT_PHASE decision"
+      },
+      {
+        "from_state": "COMPLETE_PHASE",
+        "to_state": "SETUP_PHASE_INFRASTRUCTURE",
+        "timestamp": "2025-10-31T02:05:56Z",
+        "validated_by": "state-manager",
+        "reason": "Phase 1 complete, architect approved for Phase 2. Guard condition: more_phases_in_project = true (phases_completed=[1], phases_planned=3)",
+        "orchestrator_proposal": "SETUP_PROJECT_INFRASTRUCTURE",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "Incorrect guard evaluation: all_phases_complete = false (only 1 of 3 phases complete). Architect explicitly approved Phase 2 continuation. Must transition to SETUP_PHASE_INFRASTRUCTURE per guard condition."
       }
     ],
     "last_transition_timestamp": "2025-10-31T01:02:00Z",
@@ -2267,7 +2277,7 @@
     1
   ],
   "total_phases": 1,
-  "all_phases_complete": true,
+  "all_phases_complete": false,
   "last_action": "Phase 1 marked as complete - all requirements met",
   "updated_at": "2025-10-31T01:58:50Z"
 }
