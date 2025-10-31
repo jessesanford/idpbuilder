@@ -345,8 +345,8 @@ echo "Starting active monitoring for merge plan tracking (R340)"
 grep "spawned_agents" orchestrator-state-v3.json
 
 # R340 compliant monitoring loop
-PHASE=$(jq -r '.current_phase' orchestrator-state-v3.json)
-WAVE=$(jq -r '.current_wave' orchestrator-state-v3.json)
+PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+WAVE=$(jq -r '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 WAVE_ID="phase${PHASE}_wave${WAVE}"
 
 for i in {1..60}; do

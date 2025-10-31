@@ -251,8 +251,8 @@ The orchestrator spawns an Integration Agent to execute the merge plan created b
 ### 1. Verify Merge Plan Exists
 ```bash
 # Check that Code Reviewer completed the merge plan
-PHASE=$(jq '.current_phase' orchestrator-state-v3.json)
-WAVE=$(jq '.current_wave' orchestrator-state-v3.json)
+PHASE=$(jq '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+WAVE=$(jq '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 INTEGRATE_WAVE_EFFORTS_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
 
 cd "$INTEGRATE_WAVE_EFFORTS_DIR"
@@ -330,9 +330,15 @@ else
     echo "✅ Config already writable (integration workspace)"
 fi
 
-# Quick validation of merge plan
-MERGE_PLAN=$(ls -t .software-factory/phase${PHASE}/wave${WAVE}/integration/WAVE-MERGE-PLAN--*.md 2>/dev/null | head -1)
-MERGE_COUNT=$([ -n "$MERGE_PLAN" ] && grep -c "git merge origin/" "$MERGE_PLAN" 2>/dev/null || echo "0")
+# Quick validation of merge plan (R550)
+# Note: Merge plans may not be in planning_files structure yet - check both locations
+MERGE_PLAN=$(jq -r ".planning_files.current_wave.merge_plan" orchestrator-state-v3.json 2>/dev/null)
+if [ -z "$MERGE_PLAN" ] || [ "$MERGE_PLAN" = "null" ]; then
+    # Fallback to legacy location for backward compatibility
+    MERGE_PLAN=".software-factory/phase${PHASE}/wave${WAVE}/integration/WAVE-MERGE-PLAN.md"
+fi
+# Don't error if merge plan doesn't exist yet - it may be generated later
+MERGE_COUNT=$([ -f "$MERGE_PLAN" ] && grep -c "git merge origin/" "$MERGE_PLAN" 2>/dev/null || echo "0")
 echo "📊 Merge plan contains $MERGE_COUNT merge operations"
 
 if [[ $MERGE_COUNT -eq 0 ]]; then

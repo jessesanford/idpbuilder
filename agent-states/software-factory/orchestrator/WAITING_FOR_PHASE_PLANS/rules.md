@@ -57,7 +57,7 @@ Actively monitor for architect completion of phase-level architecture and implem
 ### 1. Poll for Phase Plans
 ```bash
 # Get current phase
-PHASE=$(jq -r '.project_progression.current_phase' orchestrator-state-v3.json)
+PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
 echo "Waiting for Phase ${PHASE} plans from architect..."
 
 # Define expected file locations
@@ -71,11 +71,19 @@ ELAPSED=0
 while [ $ELAPSED -lt $MAX_WAIT ]; do
     echo "Checking for phase plans... (${ELAPSED}s / ${MAX_WAIT}s)"
 
-    # Check for architecture plan
-    ARCH_PLAN=$(ls -t "${PLANNING_DIR}/PHASE-${PHASE}-ARCHITECTURE-PLAN--"*.md 2>/dev/null | head -1)
+    # Check for architecture plan (R550)
+    ARCH_PLAN=$(jq -r ".planning_files.current_phase.architecture_plan" orchestrator-state-v3.json 2>/dev/null)
+    if [ -z "$ARCH_PLAN" ] || [ "$ARCH_PLAN" = "null" ]; then
+        ARCH_PLAN="${PLANNING_DIR}/PHASE-ARCHITECTURE-PLAN.md"
+    fi
+    [ ! -f "$ARCH_PLAN" ] && ARCH_PLAN=""
 
-    # Check for implementation plan
-    IMPL_PLAN=$(ls -t "${PLANNING_DIR}/PHASE-${PHASE}-PLAN--"*.md 2>/dev/null | head -1)
+    # Check for implementation plan (R550)
+    IMPL_PLAN=$(jq -r ".planning_files.current_phase.implementation_plan" orchestrator-state-v3.json 2>/dev/null)
+    if [ -z "$IMPL_PLAN" ] || [ "$IMPL_PLAN" = "null" ]; then
+        IMPL_PLAN="${PLANNING_DIR}/PHASE-IMPLEMENTATION-PLAN.md"
+    fi
+    [ ! -f "$IMPL_PLAN" ] && IMPL_PLAN=""
 
     # If both plans exist, validate and proceed
     if [ -n "$ARCH_PLAN" ] && [ -n "$IMPL_PLAN" ]; then
@@ -409,7 +417,7 @@ echo ""
 echo "Preparing transition to WAVE_START to begin Wave 1 of Phase ${PHASE}"
 
 # Update current wave to 1 (in preparation for transition)
-jq '.project_progression.current_wave = 1' orchestrator-state-v3.json > orchestrator-state.tmp && \
+jq '.project_progression.current_wave.wave_number = 1' orchestrator-state-v3.json > orchestrator-state.tmp && \
     mv orchestrator-state.tmp orchestrator-state-v3.json
 
 # Prepare transition proposal

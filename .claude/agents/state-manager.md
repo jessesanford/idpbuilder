@@ -322,6 +322,74 @@ else
 fi
 ```
 
+**Step 3b: Validate Integration Hierarchy (CRITICAL FOR PR_PLAN_CREATION)**
+```bash
+# SUPREME LAW: Enforce integration hierarchy before PR planning
+# Software Factory requires: Efforts → Waves → Phases → Project → PR_PLAN_CREATION
+
+# Check if trying to skip to PR_PLAN_CREATION inappropriately
+if [ "$DECISION" = "PR_PLAN_CREATION" ] || [ "$PROPOSED_NEXT_STATE" = "PR_PLAN_CREATION" ]; then
+    echo "⚠️ CRITICAL: Validating integration hierarchy for PR_PLAN_CREATION..."
+
+    # Read current integration level
+    CURRENT_PHASE=$(jq -r '.current_phase' orchestrator-state-v3.json)
+    CURRENT_WAVE=$(jq -r '.current_wave' orchestrator-state-v3.json)
+    PHASES_COMPLETED=$(jq -r '.phases_completed[]' orchestrator-state-v3.json 2>/dev/null | wc -l)
+    TOTAL_PHASES=$(jq -r '.phases | length' orchestrator-state-v3.json 2>/dev/null)
+
+    # Check integration containers for convergence status
+    WAVE_CONVERGED=$(jq -r ".wave_containers[\"phase_${CURRENT_PHASE}_wave_${CURRENT_WAVE}\"].converged" integration-containers.json 2>/dev/null)
+    PHASE_CONVERGED=$(jq -r ".phase_containers[\"phase_${CURRENT_PHASE}\"].converged" integration-containers.json 2>/dev/null)
+    PROJECT_CONVERGED=$(jq -r ".project_container.converged" integration-containers.json 2>/dev/null)
+
+    # Determine if at project level
+    ITERATION_LEVEL=$(jq -r ".states[\"$CURRENT_STATE\"].iteration_level" "$STATE_MACHINE")
+
+    if [ "$ITERATION_LEVEL" != "project" ]; then
+        echo "❌ REJECTION: PR_PLAN_CREATION attempted from $ITERATION_LEVEL level!"
+        echo "   Current level: $ITERATION_LEVEL (Phase: $CURRENT_PHASE, Wave: $CURRENT_WAVE)"
+        echo "   Integration hierarchy violation detected!"
+        echo ""
+        echo "   REQUIRED SEQUENCE:"
+        echo "   1. Complete all efforts in wave"
+        echo "   2. Integrate efforts into wave (INTEGRATE_WAVE_EFFORTS)"
+        echo "   3. Complete all waves in phase"
+        echo "   4. Integrate waves into phase (INTEGRATE_PHASE_WAVES)"
+        echo "   5. Complete all phases in project"
+        echo "   6. Integrate phases into project (INTEGRATE_PROJECT_PHASES)"
+        echo "   7. Only then can PR_PLAN_CREATION occur"
+        echo ""
+
+        # Override decision based on current level
+        if [ "$ITERATION_LEVEL" = "wave" ]; then
+            # At wave level, need to go to phase integration
+            if [ "$CURRENT_STATE" = "BUILD_VALIDATION" ]; then
+                DECISION="SETUP_PHASE_INFRASTRUCTURE"
+                echo "   OVERRIDE: Moving to SETUP_PHASE_INFRASTRUCTURE for phase integration"
+            else
+                echo "   ERROR: Unexpected state for wave-level PR attempt"
+                DECISION="ERROR_RECOVERY"
+            fi
+        elif [ "$ITERATION_LEVEL" = "phase" ]; then
+            # At phase level, need to go to project integration
+            DECISION="SETUP_PROJECT_INFRASTRUCTURE"
+            echo "   OVERRIDE: Moving to SETUP_PROJECT_INFRASTRUCTURE for project integration"
+        fi
+
+        PROPOSAL_ACCEPTED=false
+        PROPOSAL_REJECTED=true
+        PROPOSAL_REJECTED_REASON="Integration hierarchy violation: PR_PLAN_CREATION requires project-level integration. Currently at $ITERATION_LEVEL level."
+    else
+        # At project level - verify all integrations complete
+        if [ "$PROJECT_CONVERGED" != "true" ]; then
+            echo "⚠️ WARNING: Project container not yet converged"
+            echo "   May need more integration iterations before PR planning"
+        fi
+        echo "✅ At project level - PR_PLAN_CREATION allowed if all validations pass"
+    fi
+fi
+```
+
 **Step 4: Make Authoritative Decision**
 ```bash
 # Determine REQUIRED next state (not recommended)

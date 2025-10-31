@@ -33,8 +33,8 @@ echo "🔍 VALIDATING ENTRY CONDITIONS FOR VALIDATE_INFRASTRUCTURE..."
 
 # Entry Check 1: All efforts claim creation complete
 echo "📋 Checking all efforts are marked as created..."
-CURRENT_PHASE=$(jq -r '.project_progression.current_phase' orchestrator-state-v3.json)
-CURRENT_WAVE=$(jq -r '.project_progression.current_wave' orchestrator-state-v3.json)
+CURRENT_PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+CURRENT_WAVE=$(jq -r '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 
 UNCREATED_EFFORTS=$(jq -r '[.pre_planned_infrastructure.efforts | to_entries[] | select(.value.phase == "phase'$CURRENT_PHASE'" and .value.wave == "wave'$CURRENT_WAVE'" and .value.created == false)] | length' orchestrator-state-v3.json)
 

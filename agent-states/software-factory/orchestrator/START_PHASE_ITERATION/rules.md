@@ -45,8 +45,8 @@
    - Criticality: SUPREME LAW
    - Summary: Wave integration creates iteration containers that must converge before next wave
 
-7. **🔴🔴🔴 R307** - Integration Iteration Protocol
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R307-integration-iteration-protocol.md`
+7. **🔴🔴🔴 R531** - Integration Iteration Protocol
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R531-integration-iteration-protocol.md`
    - Criticality: SUPREME LAW
    - Summary: Iteration counter management and re-integration procedures
 
@@ -78,7 +78,7 @@
 
 ---
 
-### ✅ Step 1: Increment Phase Iteration Counter (R307/R336)
+### ✅ Step 1: Increment Phase Iteration Counter (R531/R336)
 ```bash
 # Increment phase iteration counter using iteration-manager tool
 NEW_ITERATION=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" increment_iteration PHASE)

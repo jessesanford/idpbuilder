@@ -277,13 +277,28 @@ echo "🔍 DETERMINING MANDATORY SEQUENCE POSITION..."
 
 # Read current state from orchestrator-state-v3.json
 PREVIOUS_STATE=$(jq -r '.state_machine.state_history[0].from_state' orchestrator-state-v3.json)
-CURRENT_PHASE=$(jq -r '.project_progression.current_phase' orchestrator-state-v3.json)
-CURRENT_WAVE=$(jq -r '.project_progression.current_wave' orchestrator-state-v3.json)
+CURRENT_PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+CURRENT_WAVE=$(jq -r '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 
 # Determine which mandatory sequence we're in based on what work is complete
 # Check 1: Are wave architecture and implementation plans done?
-WAVE_ARCH_PLAN=$(ls -t phase-plans/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/WAVE-*-ARCHITECTURE-PLAN--*.md 2>/dev/null | head -1)
-WAVE_IMPL_PLAN=$(ls -t phase-plans/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/WAVE-*-PLAN--*.md 2>/dev/null | head -1)
+# Read wave architecture plan from orchestrator state (R550)
+WAVE_ARCH_PLAN=$(jq -r ".planning_files.current_wave.architecture_plan" orchestrator-state-v3.json 2>/dev/null)
+if [ -z "$WAVE_ARCH_PLAN" ] || [ "$WAVE_ARCH_PLAN" = "null" ]; then
+    WAVE_ARCH_PLAN="planning/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/WAVE-ARCHITECTURE-PLAN.md"
+fi
+if [ ! -f "$WAVE_ARCH_PLAN" ]; then
+    WAVE_ARCH_PLAN=""  # Clear if file doesn't exist
+fi
+
+# Read wave implementation plan from orchestrator state (R550)
+WAVE_IMPL_PLAN=$(jq -r ".planning_files.current_wave.implementation_plan" orchestrator-state-v3.json 2>/dev/null)
+if [ -z "$WAVE_IMPL_PLAN" ] || [ "$WAVE_IMPL_PLAN" = "null" ]; then
+    WAVE_IMPL_PLAN="planning/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/WAVE-IMPLEMENTATION-PLAN.md"
+fi
+if [ ! -f "$WAVE_IMPL_PLAN" ]; then
+    WAVE_IMPL_PLAN=""  # Clear if file doesn't exist
+fi
 
 if [ -z "$WAVE_ARCH_PLAN" ] || [ -z "$WAVE_IMPL_PLAN" ]; then
     SEQUENCE_TYPE="wave_planning"

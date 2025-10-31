@@ -306,7 +306,7 @@ Key differences:
 ```bash
 # CORRECT (R340 compliant): Check state file for tracked plan
 echo "Starting phase merge plan monitoring at $(date)"
-PHASE=$(jq -r '.current_phase' orchestrator-state-v3.json)
+PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
 PHASE_ID="phase${PHASE}"
 CHECKS=0
 MAX_CHECKS=60  # 30 minutes
@@ -353,7 +353,7 @@ echo "Entered at: $(date)"
 echo "===================="
 
 # Check context
-PHASE=$(jq -r '.current_phase' orchestrator-state-v3.json)
+PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
 echo "Current phase: $PHASE"
 echo "Waves completed: $(jq -r '.waves_completed | length' orchestrator-state-v3.json)"
 

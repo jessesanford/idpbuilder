@@ -169,7 +169,7 @@ exit 0
 - [ ] 1. Spawn Code Reviewer agent for phase implementation planning
   - Agent: code-reviewer
   - Purpose: Create phase implementation plan with WAVE LIST ONLY (NO detailed plans)
-  - Output File: `phase-plans/PHASE-N-IMPLEMENTATION.md`
+  - Output File: `planning/PHASE-N-IMPLEMENTATION.md`
   - Template: `templates/PHASE-IMPLEMENTATION-TEMPLATE.md`
   - Fidelity Level: HIGH-LEVEL (wave names + descriptions ONLY, NO effort definitions)
   - Parameters: --phase [phase-number] --template phase-implementation
@@ -238,9 +238,9 @@ This state spawns the Code Reviewer agent to create a phase-level implementation
 - **Condition**: Phase architecture exists and meets quality gates
 - **Required**:
   - orchestrator-state-v3.json exists with current phase number
-  - phase-plans/PHASE-N-ARCHITECTURE.md exists and validated
+  - planning/PHASE-N-ARCHITECTURE.md exists and validated
   - templates/PHASE-IMPLEMENTATION-TEMPLATE.md exists
-  - Current phase has no existing phase-plans/PHASE-N-IMPLEMENTATION.md
+  - Current phase has no existing planning/PHASE-N-IMPLEMENTATION.md
 
 ## State Actions
 
@@ -248,7 +248,7 @@ This state spawns the Code Reviewer agent to create a phase-level implementation
 
 **Implementation:**
 - Read current phase number from orchestrator-state-v3.json
-- Verify phase implementation file does not exist: `phase-plans/PHASE-{N}-IMPLEMENTATION.md`
+- Verify phase implementation file does not exist: `planning/PHASE-{N}-IMPLEMENTATION.md`
 - Spawn Code Reviewer agent with parameters:
   - `--phase [phase-number]`
   - `--template phase-implementation`
@@ -317,7 +317,7 @@ Connect systems and comprehensive testing. Requires Waves 1-2 complete.
   - Recovery: Create template or restore from repository
 
 - **Phase Architecture Not Found** → ERROR_RECOVERY
-  - Condition: phase-plans/PHASE-N-ARCHITECTURE.md missing
+  - Condition: planning/PHASE-N-ARCHITECTURE.md missing
   - Action: Log missing architecture file
   - Recovery: Cannot proceed without phase architecture
 

@@ -302,8 +302,8 @@ The orchestrator spawns a Code Reviewer agent to create a merge plan for wave in
 ### 1. Verify Integration Infrastructure
 ```bash
 # Confirm integration workspace is ready
-PHASE=$(jq '.current_phase' orchestrator-state-v3.json)
-WAVE=$(jq '.current_wave' orchestrator-state-v3.json)
+PHASE=$(jq '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+WAVE=$(jq '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 INTEGRATE_WAVE_EFFORTS_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
 
 if [ ! -d "$INTEGRATE_WAVE_EFFORTS_DIR" ]; then

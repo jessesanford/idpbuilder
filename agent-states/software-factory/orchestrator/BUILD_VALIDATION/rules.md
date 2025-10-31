@@ -116,13 +116,38 @@ READ THIS RULE FILE: `$CLAUDE_PROJECT_DIR/rule-library/R323-mandatory-final-arti
 - NO project can complete without built binary/package
 
 ### ✅ Step 2: Set Proposed Next State and Transition Reason
+
+**⚠️ CRITICAL: BUILD_VALIDATION at Wave Level MUST Transition to Phase Integration! ⚠️**
+
+The state machine REQUIRES the following integration hierarchy:
+1. **Efforts** integrate into **Waves** (INTEGRATE_WAVE_EFFORTS)
+2. **Waves** integrate into **Phases** (INTEGRATE_PHASE_WAVES)
+3. **Phases** integrate into **Project** (INTEGRATE_PROJECT_PHASES)
+4. Only at **Project** level can PR_PLAN_CREATION occur
+
 ```bash
-# Based on state work results, determine proposed next state
-PROPOSED_NEXT_STATE="[DETERMINE_FROM_STATE_LOGIC]"
-TRANSITION_REASON="BUILD_VALIDATION complete - [accomplishment description]"
+# CRITICAL: Determine integration level and next state
+CURRENT_PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+CURRENT_WAVE=$(jq -r '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
+
+# BUILD_VALIDATION at wave level MUST go to phase infrastructure setup
+if [[ "$CURRENT_WAVE" != "null" ]]; then
+    echo "⚠️ Currently at Wave $CURRENT_WAVE of Phase $CURRENT_PHASE"
+    echo "✅ Wave build validation complete - must proceed to PHASE integration"
+    PROPOSED_NEXT_STATE="SETUP_PHASE_INFRASTRUCTURE"
+    TRANSITION_REASON="Wave $CURRENT_WAVE build validation complete - proceeding to phase integration per integration hierarchy"
+else
+    echo "❌ ERROR: Cannot determine current integration level"
+    echo "Check orchestrator-state-v3.json for current_phase and current_wave"
+    exit 1
+fi
+
 echo "Proposed next state: $PROPOSED_NEXT_STATE"
 echo "Transition reason: $TRANSITION_REASON"
 ```
+
+**❌ NEVER transition directly to PR_PLAN_CREATION from wave-level BUILD_VALIDATION!**
+**✅ ALWAYS follow the integration hierarchy: Wave → Phase → Project**
 
 ---
 

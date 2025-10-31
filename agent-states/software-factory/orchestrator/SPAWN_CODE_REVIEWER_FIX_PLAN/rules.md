@@ -275,8 +275,8 @@ In SPAWN_CODE_REVIEWER_FIX_PLAN, you spawn a Code Reviewer agent to analyze inte
 
 ### 1. Prepare Fix Plan Request
 ```bash
-PHASE=$(jq '.current_phase' orchestrator-state-v3.json)
-WAVE=$(jq '.current_wave' orchestrator-state-v3.json)
+PHASE=$(jq '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+WAVE=$(jq '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 FIX_REQUEST_FILE=$(jq ".integration_feedback.wave${WAVE}.fix_request_file" orchestrator-state-v3.json)
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 

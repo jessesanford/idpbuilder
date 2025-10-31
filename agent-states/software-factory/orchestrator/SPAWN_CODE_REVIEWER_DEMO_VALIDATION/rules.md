@@ -125,8 +125,8 @@ Check that demos directory exists and demo scripts are present:
 ```bash
 # Determine integration level and demo path
 INTEGRATE_WAVE_EFFORTS_TYPE=$(jq -r '.current_integration_type' orchestrator-state-v3.json)
-CURRENT_PHASE=$(jq -r '.current_phase' orchestrator-state-v3.json)
-CURRENT_WAVE=$(jq -r '.current_wave' orchestrator-state-v3.json)
+CURRENT_PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+CURRENT_WAVE=$(jq -r '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 
 # Set demo paths based on level
 if [ "$INTEGRATE_WAVE_EFFORTS_TYPE" = "wave" ]; then
@@ -266,7 +266,7 @@ This state enforces R291 GATE 4 (Demo Verification). It CANNOT be skipped.
 This state is part of the R291 enforcement chain:
 
 ```
-WAITING_FOR_REVIEW_WAVE_INTEGRATION (approved)
+WAITING_FOR_INTEGRATION_CODE_REVIEW (approved)
   ↓ (REQUIRED)
 SPAWN_CODE_REVIEWER_DEMO_VALIDATION  ← YOU ARE HERE
   ↓ (REQUIRED)

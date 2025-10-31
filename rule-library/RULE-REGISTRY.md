@@ -63,6 +63,7 @@
 48. **R513.0.0** - Orchestrator Layer Tracking Protocol (SUPREME LAW - EXPLICIT LAYER METADATA PREVENTS CONFUSION - -100% FOR LAYER CONFUSION!)
 49. **R517.0.0** - Universal State Manager Consultation Law (SUPREME LAW - ALL STATE TRANSITIONS MUST CONSULT STATE MANAGER - NO DIRECT TRANSITIONS - -100% FOR BYPASS!)
 50. **R540.0.0** - State File Schema Compliance (SUPREME LAW - ALL STATE FILES MUST VALIDATE AGAINST JSON SCHEMA - -100% FOR VIOLATIONS!)
+51. **R550.0.0** - Plan Path Consistency and Discovery (SUPREME LAW - ALL PLANNING FILES TRACKED IN STATE - NO FILESYSTEM SEARCHING - -100% FOR UNFINDABLE PLANS!)
 
 ## Rule Categories
 
@@ -1236,3 +1237,34 @@
   - Schema violation committed: -100%
   - Guard evaluation failure: System stuck in ERROR_RECOVERY
   - State corruption: Manual recovery required
+
+## R550 - Plan Path Consistency and Discovery
+- **File**: rule-library/R550-plan-path-consistency-and-discovery.md
+- **Criticality**: 🔴🔴🔴 SUPREME LAW - ABSOLUTE REQUIREMENT
+- **Summary**: ALL planning documents MUST follow standardized naming conventions and be tracked in orchestrator-state-v3.json for reliable discovery
+- **Enforcement**: Exit code 550, pre-commit hooks, -20% to -100% penalties
+- **Scope**: All planning file operations (creation, reading, tracking)
+- **Key Requirements**:
+  - ALWAYS use `planning/` directory (NEVER `phase-plans/`)
+  - Use canonical filenames (NO timestamps, explicit types like IMPLEMENTATION-PLAN)
+  - Track ALL plan paths in orchestrator-state-v3.json .planning_files
+  - Read plan paths from state file FIRST, fallback to standard paths
+  - NEVER use filesystem searching (ls -t, find, glob)
+  - Validate plan existence and accessibility
+- **Standard Paths**:
+  - Project: `planning/project/{PROJECT-ARCHITECTURE-PLAN,PROJECT-IMPLEMENTATION-PLAN,PROJECT-TEST-PLAN}.md`
+  - Phase: `planning/phase{N}/{PHASE-ARCHITECTURE-PLAN,PHASE-TEST-PLAN}.md`
+  - Wave: `planning/phase{N}/wave{W}/{WAVE-IMPLEMENTATION-PLAN,WAVE-TEST-PLAN}.md`
+  - Effort: `planning/phase{N}/wave{W}/effort-{id}-{name}.md`
+- **Naming Rules**:
+  - Phase numbers: NO hyphen (`phase1` not `phase-1`)
+  - Plan types: EXPLICIT (`IMPLEMENTATION-PLAN` not generic `PLAN`)
+  - Separators: Single hyphen only (not `--`)
+  - NO timestamps in planning/ filenames
+- **Integration**: Extends R340 (metadata tracking) to planning files, works with R502 (plan validation gates), R288 (state updates)
+- **Grading Penalties**:
+  - Filesystem searching: -30% per occurrence
+  - Wrong directory (phase-plans/): -40% per occurrence
+  - Path not tracked: -20% per plan
+  - Wrong naming: -25% per file
+  - Plan not found: -100% IMMEDIATE FAILURE

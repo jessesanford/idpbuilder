@@ -1,4 +1,4 @@
-# ORCHESTRATOR STATE: CREATE_INTEGRATE_PHASE_WAVES_BRANCH_EARLY
+# ORCHESTRATOR STATE: CREATE_PHASE_INTEGRATION_BRANCH_EARLY
 
 ## STATE PURPOSE
 Create phase integration branch IMMEDIATELY after test planning (R342 enforcement). Early integration branch stores tests and serves as quality gate.

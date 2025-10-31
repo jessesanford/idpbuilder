@@ -40,15 +40,20 @@
 
 ### State-Specific Rules:
 
-6. **🔴🔴🔴 R307** - Integration Iteration Protocol
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R307-integration-iteration-protocol.md`
-   - Criticality: SUPREME LAW
-   - Summary: Sequential merge patterns and conflict resolution procedures
+6. **🚨🚨🚨 R329** - Orchestrator NEVER Performs Git Merges (BLOCKING)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R329-orchestrator-never-performs-merges.md`
+   - Criticality: BLOCKING - Immediate termination, 0% grade
+   - Summary: ALL merge operations MUST be delegated to Integration Agent (extends R006)
 
-7. **🔴🔴🔴 R308** - Incremental Branching Strategy
+7. **🔴🔴🔴 R531** - Integration Iteration Protocol
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R531-integration-iteration-protocol.md`
+   - Criticality: SUPREME LAW
+   - Summary: Iteration counter management and convergence tracking
+
+8. **🔴🔴🔴 R308** - Incremental Branching Strategy
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R308-incremental-branching-strategy.md`
    - Criticality: SUPREME LAW
-   - Summary: Merge effort branches sequentially following progressive integration
+   - Summary: Merge phase branches sequentially following progressive integration
 
 ---
 
@@ -73,92 +78,87 @@
   - Validation: `git status --porcelain` returns empty
   - **BLOCKING**: Dirty state would corrupt integration
 
-- [ ] 3. Merge effort branches sequentially into integration branch
-  - Order: Sequential (effort-1, effort-2, effort-3, ...)
-  - Method: `git merge --no-ff origin/[effort-branch]`
-  - Conflict handling: Auto-resolve if possible, record conflicts
-  - Validation: Each merge commits successfully
-  - **BLOCKING**: Integration requires all phases merged
+- [ ] 3. Verify integration infrastructure is ready
+  - Check: Project integration branch exists and is clean
+  - Check: All phase branches are pushed to remote and accessible
+  - Check: Integration workspace directory exists
+  - Validation: Infrastructure ready for integration agent
+  - **BLOCKING**: Cannot spawn agent without proper infrastructure
 
-- [ ] 4. Resolve merge conflicts if any
-  - Detection: Check for conflict markers
-  - Action: Apply conflict resolution strategy
-  - Validation: All conflicts resolved, no markers remain
-  - **BLOCKING**: Unresolved conflicts break build
+- [ ] 4. Prepare integration instructions for agent
+  - Document: List of phase branches to merge (in sequential order per R308)
+  - Document: Merge strategy (--no-ff for non-linear history)
+  - Document: Conflict resolution guidelines
+  - Document: Testing requirements per R265
+  - Output: Integration instructions file for agent
+  - **BLOCKING**: Agent needs clear instructions
 
-- [ ] 5. Execute comprehensive integration testing checkpoint (EXPLICIT - R265)
-  - **Build Verification**:
-    * Command: Project-specific build command (e.g., `make build`, `go build ./...`, `npm run build`)
-    * Capture: Build output and timing
-    * Document: Build success/failure with error details
-  - **Test Suite Execution**:
-    * Command: Run ALL available tests (not just smoke tests)
-    * Examples: `make test`, `go test ./...`, `npm test`, `pytest`
-    * Capture: Test output, pass/fail counts, coverage %
-    * Document: Failed tests with file:line locations
-  - **Static Analysis** (if available):
-    * Linting: `golangci-lint`, `eslint`, `pylint`, etc.
-    * Type checking: `mypy`, `tsc --noEmit`, etc.
-    * Document: Critical issues found
-  - **Test Coverage Analysis** (if available):
-    * Generate coverage report: `go test -cover`, `npm run coverage`, `pytest --cov`
-    * Document: Coverage percentage and uncovered critical paths
-  - **Integration Testing Report**:
-    * Create: `INTEGRATE_WAVE_EFFORTS-TEST-RESULTS-project.md`
-    * Include: Build status, test counts, coverage %, failures list
-    * Format: Per R265 integration testing documentation requirements
-  - **Validation**: Build succeeds AND all tests pass (or failures documented)
-  - **BLOCKING**: Cannot proceed to review with broken build or undocumented test failures
-  - **Note**: This is an EXPLICIT testing checkpoint, not implicit - preserves SF 2.0 INTEGRATE_WAVE_EFFORTS_TESTING state functionality
+- [ ] 5. Spawn integration agent to perform integration work (R329 - ORCHESTRATOR NEVER MERGES)
+  - **CRITICAL**: Per R006 and R329, orchestrator MUST NEVER perform git merges
+  - Agent: integration-agent
+  - State: EXECUTE_PROJECT_INTEGRATION
+  - Workspace: Project integration workspace
+  - Instructions: Pass integration instructions file
+  - Task: Sequential merge of all phase branches, conflict resolution, build validation, comprehensive testing
+  - **BLOCKING**: Integration requires agent execution (orchestrator cannot do merges)
+
+- [ ] 6. Monitor integration agent completion
+  - Check: Integration agent reports completion
+  - Review: Integration report with merge details
+  - Review: Build validation results
+  - Review: Test execution results (per R265 requirements)
+  - Review: Conflict resolution summary (if any)
+  - Validation: All phases merged successfully, builds pass, tests pass
+  - **BLOCKING**: Cannot proceed without successful integration
 
 ### STANDARD EXECUTION TASKS (Required)
 
-- [ ] 6. Record integration outcome in integration-containers.json
+- [ ] 7. Record integration outcome in integration-containers.json
   - Field: iteration_history[N].integration_status
   - Values: "PROJECT_DONE" or "FAILED"
   - Include: Merge details, conflicts resolved, build status
 
-- [ ] 7. Update orchestrator-state-v3.json with integration progress
+- [ ] 8. Update orchestrator-state-v3.json with integration progress
   - Record: Integration complete timestamp
   - Record: Branches merged count
   - Record: Ready for code review
 
-- [ ] 8. Push integrated project branch to remote
+- [ ] 9. Push integrated project branch to remote
   - Remote: origin
   - Branch: project-${phase_id}-${project_id}-integration
   - Validation: Remote branch updated with all merges
 
 ### EXIT REQUIREMENTS (Must complete before transition)
 
-- [ ] 9. Update state file to REVIEW_PROJECT_INTEGRATION per R288
+- [ ] 10. Update state file to REVIEW_PROJECT_INTEGRATION per R288
   - Spawn: State Manager agent for SHUTDOWN_CONSULTATION
   - Provide: Work report with integration outcome
   - Proposed next state: `REVIEW_PROJECT_INTEGRATION`
   - State Manager validates transition and updates all 4 files atomically
   - Validation: State Manager returns validation_result with CONTINUE flag
 
-- [ ] 10. Save TODOs per R287 (within 30s of last TodoWrite)
-  - Trigger: "INTEGRATE_PROJECT_EFFORTS_COMPLETE"
-  - Format: `todos/orchestrator-INTEGRATE_PROJECT_EFFORTS-[YYYYMMDD-HHMMSS].todo`
+- [ ] 11. Save TODOs per R287 (within 30s of last TodoWrite)
+  - Trigger: "INTEGRATE_PROJECT_PHASES_COMPLETE"
+  - Format: `todos/orchestrator-INTEGRATE_PROJECT_PHASES-[YYYYMMDD-HHMMSS].todo`
   - Validation: TODO file exists and contains current state
 
-- [ ] 11. Commit all changes with descriptive message
+- [ ] 12. Commit all changes with descriptive message
   - Include: Integration outcome summary
   - Include: Phases merged list
-  - Include: Rule compliance references (R288, R287, R510, R307, R308)
+  - Include: Rule compliance references (R288, R287, R510, R531, R308, R329)
   - Format: Multi-line commit message with context
 
-- [ ] 12. Push changes to remote
+- [ ] 13. Push changes to remote
   - Remote: `origin`
   - Branch: Project integration branch
   - Validation: `git status` shows "up to date with origin"
 
-- [ ] 13. Set CONTINUE-SOFTWARE-FACTORY flag per R405
+- [ ] 14. Set CONTINUE-SOFTWARE-FACTORY flag per R405
   - Value: `TRUE` (integration complete, proceed to review)
   - Context: Project phases integrated, ready for code review
   - **NOTE**: This is NOT an R322 checkpoint - factory continues automatically
 
-- [ ] 14. Stop execution (exit 0)
+- [ ] 15. Stop execution (exit 0)
   - Command: `exit 0`
   - Timing: After ALL above items complete
   - Next: /continue-software-factory will proceed to REVIEW_PROJECT_INTEGRATION
@@ -289,15 +289,15 @@ exit 0
 ## 🚨 CHECKLIST ENFORCEMENT 🚨
 
 **Skipping ANY step in this checklist = FAILURE:**
-- Missing Step 2: No next state = stuck forever
-- Missing Step 3: No state update = state machine broken (R288 violation, -100%)
-- Missing Step 4: Invalid state = corruption (R324 violation)
-- Missing Step 5: No commit = state lost on compaction (R288 violation, -100%)
-- Missing Step 6: No TODO save = work lost (R287 violation, -20% to -100%)
-- Missing Step 7: No continuation flag = automation stops (R405 violation, -100%)
-- Missing Step 8: No exit = R322 violation (-100%)
+- Missing Steps 3-6: Orchestrator performs merges directly = R006/R329 violation (IMMEDIATE FAILURE, 0% grade)
+- Missing Step 10: No state update = state machine broken (R288 violation, -100%)
+- Missing Step 11: No TODO save = work lost (R287 violation, -20% to -100%)
+- Missing Step 12-13: No commit/push = state lost on compaction (R288 violation, -100%)
+- Missing Step 14: No continuation flag = automation stops (R405 violation, -100%)
+- Missing Step 15: No exit = R322 violation (-100%)
 
-**ALL 8 STEPS ARE MANDATORY - NO EXCEPTIONS**
+**ALL STEPS ARE MANDATORY - NO EXCEPTIONS**
+**R329 CRITICAL: Orchestrator must NEVER perform git merges - always spawn integration agent**
 
 ## ✅ EXIT CHECKLIST (R405 - Continuation Flag Protocol) 🔴🔴🔴
 

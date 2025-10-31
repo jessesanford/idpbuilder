@@ -123,13 +123,21 @@ After completing state work and committing state file:
 3. Do NOT start new work
 4. Exit and wait for user
 
+### 🚨🚨🚨 RULE R533 - Artifact Location Reporting Protocol (BLOCKING)
+**Source:** $CLAUDE_PROJECT_DIR/rule-library/R533-artifact-location-reporting-protocol.md
+**Criticality:** 🚨🚨🚨 BLOCKING - Violation = -20% per untracked artifact
+
+- **MUST** read artifact locations from orchestrator-state-v3.json
+- **ALWAYS** use artifacts.fix_plans section (R533 schema)
+- **ALL** artifacts must be tracked with complete metadata
+- **VERIFICATION** required before proceeding
+
 ### 🚨🚨🚨 RULE R340 - Planning File Metadata Tracking (BLOCKING)
 **Source:** $CLAUDE_PROJECT_DIR/rule-library/R340-planning-file-metadata-tracking.md
 **Criticality:** 🚨🚨🚨 BLOCKING - Violation = -20% per untracked file
 
-- **MUST** read fix plan locations from orchestrator-state-v3.json
 - **NEVER** search directories for planning files
-- **ALWAYS** use effort_repo_files.fix_plans section
+- **ALWAYS** read from state file metadata (now .artifacts per R533)
 - **ALL** fix plans must be tracked with metadata
 
 ## 🔴🔴🔴 SUPREME DIRECTIVE: MONITOR FIX PLAN CREATION 🔴🔴🔴
@@ -145,13 +153,13 @@ In WAITING_FOR_FIX_PLANS, you monitor the Code Reviewer's progress in creating f
 ### 1. Check for Fix Plans (R340 Compliant)
 ```bash
 # Per R340: Monitor fix plans through state file metadata
-PHASE=$(jq -r '.current_phase' orchestrator-state-v3.json)
-WAVE=$(jq -r '.current_wave' orchestrator-state-v3.json)
+PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+WAVE=$(jq -r '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 
 echo "📊 Checking for fix plans in state file (R340 compliant)"
 
-# R340: Check if fix plans are tracked in state
-FIX_PLAN_COUNT=$(jq '.effort_repo_files.fix_plans | length' orchestrator-state-v3.json)
+# R533/R340: Check if fix plans are tracked in state
+FIX_PLAN_COUNT=$(jq '.artifacts.fix_plans | length // 0' orchestrator-state-v3.json)
 
 if [ "$FIX_PLAN_COUNT" -gt 0 ]; then
     echo "✅ Found $FIX_PLAN_COUNT fix plans tracked in state"
@@ -160,17 +168,17 @@ if [ "$FIX_PLAN_COUNT" -gt 0 ]; then
     ALL_PLANS_EXIST=true
     MISSING_PLANS=()
     
-    # Iterate through tracked fix plans
-    jq -r '.effort_repo_files.fix_plans | to_entries[] | @json' orchestrator-state-v3.json | while IFS= read -r entry; do
-        EFFORT_NAME=$(echo "$entry" | jq -r '.key')
+    # Iterate through tracked fix plans (R533 schema)
+    jq -r '.artifacts.fix_plans | to_entries[] | @json' orchestrator-state-v3.json | while IFS= read -r entry; do
+        ARTIFACT_ID=$(echo "$entry" | jq -r '.key')
         PLAN_PATH=$(echo "$entry" | jq -r '.value.file_path')
         
         if [ -f "$PLAN_PATH" ]; then
-            echo "✅ Fix plan exists: $EFFORT_NAME at $PLAN_PATH"
+            echo "✅ Fix plan exists: $ARTIFACT_ID at $PLAN_PATH"
         else
             echo "❌ CRITICAL: Tracked plan missing: $PLAN_PATH"
             ALL_PLANS_EXIST=false
-            MISSING_PLANS+=("$EFFORT_NAME")
+            MISSING_PLANS+=("$ARTIFACT_ID")
         fi
     done
     
@@ -180,7 +188,8 @@ if [ "$FIX_PLAN_COUNT" -gt 0 ]; then
     if [ -n "$EFFORTS_WITH_FAILURES" ]; then
         echo "Checking if all failed efforts have fix plans..."
         while IFS= read -r effort; do
-            FIX_PLAN_PATH=$(jq -r ".effort_repo_files.fix_plans[\"${effort}-fix-001\"].file_path // null" orchestrator-state-v3.json)
+            # R533: Check artifacts.fix_plans for this effort
+            FIX_PLAN_PATH=$(jq -r ".artifacts.fix_plans[\"${effort}-fix-001\"].file_path // null" orchestrator-state-v3.json)
             if [ "$FIX_PLAN_PATH" = "null" ]; then
                 echo "⚠️ No fix plan tracked for effort: $effort"
                 ALL_PLANS_EXIST=false
@@ -246,15 +255,15 @@ while [ $CHECKS -lt $MAX_CHECKS ]; do
     CHECKS=$((CHECKS + 1))
     echo "Check #$CHECKS at $(date +%H:%M:%S)"
     
-    # R340: Check state file for tracked fix plans
-    FIX_PLAN_COUNT=$(jq '.effort_repo_files.fix_plans | length' orchestrator-state-v3.json)
+    # R533/R340: Check state file for tracked fix plans
+    FIX_PLAN_COUNT=$(jq '.artifacts.fix_plans | length // 0' orchestrator-state-v3.json)
     
     if [ "$FIX_PLAN_COUNT" -gt 0 ]; then
         echo "✓ $FIX_PLAN_COUNT fix plans tracked in state"
         
-        # Verify all exist
+        # Verify all exist (R533 schema)
         ALL_EXIST=true
-        jq -r '.effort_repo_files.fix_plans[].file_path' orchestrator-state-v3.json | while read -r path; do
+        jq -r '.artifacts.fix_plans[].file_path' orchestrator-state-v3.json | while read -r path; do
             [ ! -f "$path" ] && ALL_EXIST=false && echo "Missing: $path"
         done
         
@@ -327,12 +336,12 @@ fi
 4. Track timeout conditions
 5. Transition when all plans tracked and verified
 
-### Correct Pattern (R340 Compliant):
+### Correct Pattern (R533/R340 Compliant):
 ```bash
-# CORRECT: Read from state file
-FIX_PLANS=$(jq -r '.effort_repo_files.fix_plans' orchestrator-state-v3.json)
-for effort in $(jq -r '.effort_repo_files.fix_plans | keys[]' orchestrator-state-v3.json); do
-    PLAN_PATH=$(jq -r ".effort_repo_files.fix_plans[\"$effort\"].file_path" orchestrator-state-v3.json)
+# CORRECT: Read from state file (R533 schema)
+FIX_PLANS=$(jq -r '.artifacts.fix_plans' orchestrator-state-v3.json)
+for artifact_id in $(jq -r '.artifacts.fix_plans | keys[]' orchestrator-state-v3.json); do
+    PLAN_PATH=$(jq -r ".artifacts.fix_plans[\"$artifact_id\"].file_path" orchestrator-state-v3.json)
     echo "Checking tracked plan: $PLAN_PATH"
 done
 

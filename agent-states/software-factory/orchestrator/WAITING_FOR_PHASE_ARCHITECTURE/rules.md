@@ -64,9 +64,9 @@ THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION
 ### BLOCKING REQUIREMENTS (Cannot proceed without)
 
 - [ ] 1. Verify phase architecture plan file exists
-  - File Path: `phase-plans/PHASE-N-ARCHITECTURE.md`
+  - File Path: `planning/PHASE-N-ARCHITECTURE.md`
   - Check: File exists and is not empty
-  - Validation: `test -f phase-plans/PHASE-N-ARCHITECTURE.md && [ -s phase-plans/PHASE-N-ARCHITECTURE.md ]`
+  - Validation: `test -f planning/PHASE-N-ARCHITECTURE.md && [ -s planning/PHASE-N-ARCHITECTURE.md ]`
   - **BLOCKING**: Cannot proceed without completed phase architecture
 
 - [ ] 2. Validate phase architecture quality per R340
@@ -74,7 +74,7 @@ THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION
   - Check: File contains library/framework choices
   - Check: File contains adaptation notes (if not first phase)
   - Check: File does NOT contain real function signatures or implementations
-  - Validation: `grep -q "pseudocode\|pattern\|library\|framework" phase-plans/PHASE-N-ARCHITECTURE.md`
+  - Validation: `grep -q "pseudocode\|pattern\|library\|framework" planning/PHASE-N-ARCHITECTURE.md`
   - **BLOCKING**: Quality gates must pass before using plan
 
 ### STANDARD EXECUTION TASKS (Required)
@@ -141,7 +141,7 @@ This state monitors the Architect agent during phase architecture planning and v
 - **Required**:
   - Architect agent spawned successfully in previous state
   - orchestrator-state-v3.json contains architect_id metadata
-  - phase-plans/ directory exists
+  - planning/ directory exists
 
 ## State Actions
 
@@ -149,7 +149,7 @@ This state monitors the Architect agent during phase architecture planning and v
 
 **Implementation:**
 - Check Architect progress every 5 messages (R233)
-- Monitor for phase-plans/PHASE-N-ARCHITECTURE.md file creation
+- Monitor for planning/PHASE-N-ARCHITECTURE.md file creation
 - Check if Architect is stuck or needs guidance
 - Provide status updates to user
 
@@ -161,7 +161,7 @@ This state monitors the Architect agent during phase architecture planning and v
 ### 2. Phase Architecture Quality Validation (R340)
 
 **Implementation:**
-When phase-plans/PHASE-N-ARCHITECTURE.md exists:
+When planning/PHASE-N-ARCHITECTURE.md exists:
 - **Check 1**: File contains pseudocode patterns (NOT real code)
   - Look for: High-level design descriptions
   - Look for: Pattern names (Factory, Observer, etc.)
@@ -201,7 +201,7 @@ When phase-plans/PHASE-N-ARCHITECTURE.md exists:
 
 ### Success Path → SPAWN_CODE_REVIEWER_PHASE_IMPL
 
-- Phase architecture file exists: `phase-plans/PHASE-N-ARCHITECTURE.md`
+- Phase architecture file exists: `planning/PHASE-N-ARCHITECTURE.md`
 - R340 quality gates passed (pseudocode fidelity confirmed)
 - TODOs saved per R287
 - State transition performed by State Manager (SF 3.0)

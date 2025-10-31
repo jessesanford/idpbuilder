@@ -169,7 +169,7 @@ exit 0
 - [ ] 1. Spawn Architect agent for phase architecture planning
   - Agent: architect
   - Purpose: Create phase architecture plan with PSEUDOCODE fidelity
-  - Output File: `phase-plans/PHASE-N-ARCHITECTURE.md`
+  - Output File: `planning/PHASE-N-ARCHITECTURE.md`
   - Template: `templates/PHASE-ARCHITECTURE-TEMPLATE.md`
   - Fidelity Level: PSEUDOCODE (high-level patterns, library choices, NO real code)
   - Parameters: --phase [phase-number] --template phase-architecture
@@ -240,7 +240,7 @@ This state spawns the Architect agent to create a phase-level architecture plan.
   - orchestrator-state-v3.json exists with current phase number
   - PROJECT-IMPLEMENTATION-PLAN.md exists
   - templates/PHASE-ARCHITECTURE-TEMPLATE.md exists
-  - Current phase has no existing phase-plans/PHASE-N-ARCHITECTURE.md
+  - Current phase has no existing planning/PHASE-N-ARCHITECTURE.md
 
 ## State Actions
 
@@ -248,7 +248,7 @@ This state spawns the Architect agent to create a phase-level architecture plan.
 
 **Implementation:**
 - Read current phase number from orchestrator-state-v3.json
-- Verify phase architecture file does not exist: `phase-plans/PHASE-{N}-ARCHITECTURE.md`
+- Verify phase architecture file does not exist: `planning/PHASE-{N}-ARCHITECTURE.md`
 - Spawn Architect agent with parameters:
   - `--phase [phase-number]`
   - `--template phase-architecture`

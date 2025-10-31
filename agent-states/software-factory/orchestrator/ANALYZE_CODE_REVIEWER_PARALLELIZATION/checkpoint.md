@@ -13,7 +13,7 @@ checkpoint:
 ## Required Inputs
 ```yaml
 inputs:
-  wave_plan_location: "phase-plans/PHASE-{PHASE}-WAVE-{WAVE}-IMPLEMENTATION-PLAN.md"
+  wave_plan_location: "planning/PHASE-{PHASE}-WAVE-{WAVE}-IMPLEMENTATION-PLAN.md"
   current_efforts: []  # List of efforts in wave
   infrastructure_ready: true  # From CREATE_NEXT_INFRASTRUCTURE
 ```

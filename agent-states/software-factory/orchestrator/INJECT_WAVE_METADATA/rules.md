@@ -287,30 +287,86 @@ validate_metadata_injection() {
 
     echo "Validating against project_prefix: $PROJECT_PREFIX"
 
-    # Check each effort has metadata
-    for effort in efforts/phase${PHASE}/wave${WAVE}/*/; do
-        IMPL_PLAN=$(ls -t "${effort}.software-factory/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}/IMPLEMENTATION-PLAN--"*.md 2>/dev/null | head -1)
+    # Check each effort has metadata (R550)
+    # Get effort IDs from orchestrator state
+    EFFORT_IDS=$(jq -r ".planning_files.efforts | keys[]" orchestrator-state-v3.json 2>/dev/null)
 
-        # Validate parallelization metadata exists
-        if ! grep -q "can_parallelize:" "$IMPL_PLAN"; then
-            echo "❌ FATAL: Missing parallelization metadata in ${effort}"
-            exit 213
-        fi
+    if [ -z "$EFFORT_IDS" ]; then
+        echo "⚠️ WARNING: No efforts found in orchestrator state planning_files"
+        # Fallback: iterate over effort directories
+        for effort in efforts/phase${PHASE}/wave${WAVE}/*/; do
+            [ ! -d "$effort" ] && continue
+            EFFORT_NAME=$(basename "$effort")
+            EFFORT_ID="${PHASE}.${WAVE}.${EFFORT_NAME##*-}"
 
-        # CRITICAL: Validate branch name includes project_prefix UUID
-        BRANCH_NAME=$(grep -E "^\s*branch:" "$IMPL_PLAN" | head -1 | cut -d: -f2- | xargs)
-        if [ -n "$BRANCH_NAME" ]; then
-            if ! echo "$BRANCH_NAME" | grep -q "$PROJECT_PREFIX"; then
-                echo "❌ FATAL: Effort branch missing UUID suffix!"
-                echo "  Effort: ${effort}"
-                echo "  Branch: $BRANCH_NAME"
-                echo "  Expected to contain: $PROJECT_PREFIX"
-                echo "  This will cause isolation validation failures!"
+            # Try to find implementation plan via state lookup first
+            IMPL_PLAN=$(jq -r ".planning_files.efforts[\"${EFFORT_ID}\"].implementation_plan" orchestrator-state-v3.json 2>/dev/null)
+            if [ -z "$IMPL_PLAN" ] || [ "$IMPL_PLAN" = "null" ]; then
+                # Canonical fallback
+                IMPL_PLAN="planning/phase${PHASE}/wave${WAVE}/efforts/effort-${EFFORT_ID}-${EFFORT_NAME}.md"
+            fi
+
+            if [ ! -f "$IMPL_PLAN" ]; then
+                echo "❌ R550: Effort implementation plan not found at $IMPL_PLAN"
+                exit 550
+            fi
+
+            # Validate parallelization metadata exists
+            if ! grep -q "can_parallelize:" "$IMPL_PLAN"; then
+                echo "❌ FATAL: Missing parallelization metadata in ${effort}"
                 exit 213
             fi
-            echo "✅ Branch has UUID suffix: $BRANCH_NAME"
-        fi
-    done
+
+            # CRITICAL: Validate branch name includes project_prefix UUID
+            BRANCH_NAME=$(grep -E "^\s*branch:" "$IMPL_PLAN" | head -1 | cut -d: -f2- | xargs)
+            if [ -n "$BRANCH_NAME" ]; then
+                if ! echo "$BRANCH_NAME" | grep -q "$PROJECT_PREFIX"; then
+                    echo "❌ FATAL: Effort branch missing UUID suffix!"
+                    echo "  Effort: ${effort}"
+                    echo "  Branch: $BRANCH_NAME"
+                    echo "  Expected to contain: $PROJECT_PREFIX"
+                    echo "  This will cause isolation validation failures!"
+                    exit 213
+                fi
+                echo "✅ Branch has UUID suffix: $BRANCH_NAME"
+            fi
+        done
+    else
+        # Use orchestrator state effort tracking
+        for EFFORT_ID in $EFFORT_IDS; do
+            IMPL_PLAN=$(jq -r ".planning_files.efforts[\"${EFFORT_ID}\"].implementation_plan" orchestrator-state-v3.json 2>/dev/null)
+
+            if [ -z "$IMPL_PLAN" ] || [ "$IMPL_PLAN" = "null" ]; then
+                echo "❌ R550: Effort ${EFFORT_ID} has no implementation_plan in state"
+                exit 550
+            fi
+
+            if [ ! -f "$IMPL_PLAN" ]; then
+                echo "❌ R550: Effort implementation plan not found at $IMPL_PLAN"
+                exit 550
+            fi
+
+            # Validate parallelization metadata exists
+            if ! grep -q "can_parallelize:" "$IMPL_PLAN"; then
+                echo "❌ FATAL: Missing parallelization metadata in effort ${EFFORT_ID}"
+                exit 213
+            fi
+
+            # CRITICAL: Validate branch name includes project_prefix UUID
+            BRANCH_NAME=$(grep -E "^\s*branch:" "$IMPL_PLAN" | head -1 | cut -d: -f2- | xargs)
+            if [ -n "$BRANCH_NAME" ]; then
+                if ! echo "$BRANCH_NAME" | grep -q "$PROJECT_PREFIX"; then
+                    echo "❌ FATAL: Effort branch missing UUID suffix!"
+                    echo "  Effort: ${EFFORT_ID}"
+                    echo "  Branch: $BRANCH_NAME"
+                    echo "  Expected to contain: $PROJECT_PREFIX"
+                    echo "  This will cause isolation validation failures!"
+                    exit 213
+                fi
+                echo "✅ Branch has UUID suffix: $BRANCH_NAME"
+            fi
+        done
+    fi
 
     echo "✅ All efforts have R213 metadata with proper UUID suffixes"
 }

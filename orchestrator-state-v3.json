@@ -1303,14 +1303,14 @@
         "proposal_rejected_reason": "Proposed state SPAWN_SW_ENGINEERS is not in allowed_transitions from MONITORING_EFFORT_REVIEWS. Allowed transitions: [SPAWN_CODE_REVIEWER_FIX_PLAN, WAVE_COMPLETE, ERROR_RECOVERY]. State machine requires Code Reviewer to create fix plans before spawning SW Engineers. This enforces proper review-fix workflow.",
         "transition_invalid": false,
         "state_manager_override": true,
-        "reason": "State Manager OVERRIDE: MONITORING_EFFORT_REVIEWS \u2192 SPAWN_CODE_REVIEWER_FIX_PLAN (REQUIRED). Orchestrator proposed SPAWN_SW_ENGINEERS but state machine mandates SPAWN_CODE_REVIEWER_FIX_PLAN for NEEDS_FIXES outcomes. 2/4 efforts require fixes (effort-2-registry-client, effort-3-auth). Code Reviewer must create fix plans before SW Engineers address issues."
+        "reason": "State Manager OVERRIDE: MONITORING_EFFORT_REVIEWS → SPAWN_CODE_REVIEWER_FIX_PLAN (REQUIRED). Orchestrator proposed SPAWN_SW_ENGINEERS but state machine mandates SPAWN_CODE_REVIEWER_FIX_PLAN for NEEDS_FIXES outcomes. 2/4 efforts require fixes (effort-2-registry-client, effort-3-auth). Code Reviewer must create fix plans before SW Engineers address issues."
       },
       {
         "from_state": "WAITING_FOR_FIX_PLANS",
         "to_state": "CREATE_WAVE_FIX_PLAN",
         "timestamp": "2025-10-29T23:50:44Z",
         "validated_by": "state-manager",
-        "reason": "State Manager APPROVAL: WAITING_FOR_FIX_PLANS \u2192 CREATE_WAVE_FIX_PLAN. Fix plans complete and validated (2 efforts). STATE MACHINE DEFECT CORRECTED: Added missing transition to state machine (was dead-end state). Orchestrator made unauthorized but correct transition due to state machine bug. Work quality excellent, process violation minor (R517).",
+        "reason": "State Manager APPROVAL: WAITING_FOR_FIX_PLANS → CREATE_WAVE_FIX_PLAN. Fix plans complete and validated (2 efforts). STATE MACHINE DEFECT CORRECTED: Added missing transition to state machine (was dead-end state). Orchestrator made unauthorized but correct transition due to state machine bug. Work quality excellent, process violation minor (R517).",
         "consultation_id": "shutdown-fix-plans-complete-20251029-235941",
         "orchestrator_proposal": "CREATE_WAVE_FIX_PLAN",
         "proposal_accepted": true,
@@ -1567,7 +1567,7 @@
         "proposal_accepted": false,
         "proposal_rejected_reason": "Phase 2 entered invalid state sequence - attempting to integrate waves when NO waves have been executed",
         "state_manager_override": true,
-        "reason": "State Manager OVERRIDE: Phase 2 entered invalid state sequence - SETUP_PHASE_INFRASTRUCTURE \u2192 START_PHASE_ITERATION \u2192 INTEGRATE_PHASE_WAVES attempted WITHOUT any wave execution. Phase 2 has 3 waves planned but ZERO waves executed, ZERO wave integration branches exist, and NO phase planning documents. Cannot integrate non-existent waves. Recovery required to either: (1) Execute Phase 2 planning + waves, or (2) Skip Phase 2 if not needed. [R288]",
+        "reason": "State Manager OVERRIDE: Phase 2 entered invalid state sequence - SETUP_PHASE_INFRASTRUCTURE → START_PHASE_ITERATION → INTEGRATE_PHASE_WAVES attempted WITHOUT any wave execution. Phase 2 has 3 waves planned but ZERO waves executed, ZERO wave integration branches exist, and NO phase planning documents. Cannot integrate non-existent waves. Recovery required to either: (1) Execute Phase 2 planning + waves, or (2) Skip Phase 2 if not needed. [R288]",
         "validation_checks": {
           "phase": 2,
           "waves_planned_for_phase": 3,
@@ -1579,8 +1579,8 @@
           "phase_test_plan_exists": false,
           "violation_type": "INVALID_STATE_SEQUENCE",
           "root_cause": "COMPLETE_PHASE transitioned to SETUP_PHASE_INFRASTRUCTURE for new phase instead of phase planning states",
-          "expected_flow": "COMPLETE_PHASE \u2192 phase planning \u2192 WAVE_START \u2192 wave execution \u2192 SETUP_PHASE_INFRASTRUCTURE \u2192 phase integration",
-          "actual_flow": "COMPLETE_PHASE \u2192 SETUP_PHASE_INFRASTRUCTURE \u2192 START_PHASE_ITERATION (INVALID)"
+          "expected_flow": "COMPLETE_PHASE → phase planning → WAVE_START → wave execution → SETUP_PHASE_INFRASTRUCTURE → phase integration",
+          "actual_flow": "COMPLETE_PHASE → SETUP_PHASE_INFRASTRUCTURE → START_PHASE_ITERATION (INVALID)"
         }
       },
       {
@@ -2536,5 +2536,24 @@
       ]
     }
   ],
-  "phase2_implementation_plan": "planning/phase2/PHASE-2-IMPLEMENTATION.md"
+  "phase2_implementation_plan": "planning/phase2/PHASE-2-IMPLEMENTATION.md",
+  "planning_files": {
+    "project": {
+      "architecture_plan": "planning/project/PROJECT-ARCHITECTURE-PLAN.md",
+      "test_plan": "planning/project/PROJECT-TEST-PLAN.md"
+    },
+    "current_phase": {
+      "architecture_plan": "planning/phase2/PHASE-ARCHITECTURE-PLAN.md",
+      "implementation_plan": "planning/phase2/PHASE-IMPLEMENTATION-PLAN.md",
+      "test_plan": "planning/phase2/PHASE-TEST-PLAN.md"
+    },
+    "current_wave": {},
+    "efforts": {},
+    "phases": {
+      "phase1": {
+        "architecture_plan": "planning/phase1/PHASE-ARCHITECTURE-PLAN.md",
+        "implementation_plan": "planning/phase1/PHASE-IMPLEMENTATION-PLAN.md"
+      }
+    }
+  }
 }

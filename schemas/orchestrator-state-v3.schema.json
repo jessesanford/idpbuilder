@@ -609,6 +609,130 @@
         }
       }
     },
+    "planning_files": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Tracking of all planning document locations per R550 - enables instant discovery without filesystem searching",
+      "properties": {
+        "project": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Project-level planning files",
+          "properties": {
+            "implementation_plan": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Path to project implementation plan (e.g., planning/project/PROJECT-IMPLEMENTATION-PLAN.md)"
+            },
+            "architecture_plan": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Path to project architecture plan (e.g., planning/project/PROJECT-ARCHITECTURE-PLAN.md)"
+            },
+            "test_plan": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Path to project test plan (e.g., planning/project/PROJECT-TEST-PLAN.md)"
+            }
+          }
+        },
+        "phases": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Phase-level planning files keyed by phase identifier (e.g., phase1, phase2)",
+          "patternProperties": {
+            "^phase[0-9]+$": {
+              "type": "object",
+              "description": "Planning files for a specific phase",
+              "properties": {
+                "architecture_plan": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Path to phase architecture plan (e.g., planning/phase1/PHASE-ARCHITECTURE-PLAN.md)"
+                },
+                "test_plan": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Path to phase test plan (e.g., planning/phase1/PHASE-TEST-PLAN.md)"
+                },
+                "waves": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "description": "Wave-level planning files keyed by wave identifier (e.g., wave1, wave2)",
+                  "patternProperties": {
+                    "^wave[0-9]+$": {
+                      "type": "object",
+                      "description": "Planning files for a specific wave",
+                      "properties": {
+                        "implementation_plan": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Path to wave implementation plan (e.g., planning/phase1/wave1/WAVE-IMPLEMENTATION-PLAN.md)"
+                        },
+                        "test_plan": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Path to wave test plan (e.g., planning/phase1/wave1/WAVE-TEST-PLAN.md)"
+                        },
+                        "efforts": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "description": "Effort-level planning files keyed by effort identifier",
+                          "additionalProperties": {
+                            "type": "object",
+                            "description": "Planning files for a specific effort",
+                            "properties": {
+                              "implementation_plan": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "Path to effort implementation plan (e.g., planning/phase1/wave1/effort-1.1.1-gitea-client.md)"
+                              },
+                              "split_plan": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "Path to effort split plan if effort was split (e.g., planning/phase1/wave1/effort-1.1.1-gitea-client-SPLIT-PLAN.md)"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "active_agents": {
       "type": [
         "array",
@@ -1113,5 +1237,5 @@
       }
     }
   },
-  "additionalProperties": true
+  "additionalProperties": false
 }

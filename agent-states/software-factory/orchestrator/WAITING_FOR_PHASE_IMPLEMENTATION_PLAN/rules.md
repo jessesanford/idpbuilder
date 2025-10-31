@@ -60,13 +60,13 @@ THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION
 
 - [ ] 1. Wait for Code Reviewer to complete phase implementation plan
   - Agent: code-reviewer (spawned in SPAWN_CODE_REVIEWER_PHASE_IMPL)
-  - Expected Output: `phase-plans/PHASE-N-IMPLEMENTATION.md`
+  - Expected Output: `planning/PHASE-N-IMPLEMENTATION.md`
   - Polling Interval: Every 30 seconds per R233
   - Timeout: 30 minutes (escalate to ERROR_RECOVERY)
   - **BLOCKING**: Cannot proceed without completed wave list
 
 - [ ] 2. Validate phase implementation plan exists
-  - File: `phase-plans/PHASE-{N}-IMPLEMENTATION.md`
+  - File: `planning/PHASE-{N}-IMPLEMENTATION.md`
   - Check: File exists and is not empty
   - Minimum Size: >500 bytes (basic validation)
   - **BLOCKING**: File must exist before quality validation
@@ -141,7 +141,7 @@ This state actively monitors the Code Reviewer agent creating the phase implemen
 - **Condition**: Code Reviewer agent working on phase implementation plan
 - **Required**:
   - orchestrator-state-v3.json contains reviewer_id
-  - phase-plans/PHASE-N-ARCHITECTURE.md exists (validated previously)
+  - planning/PHASE-N-ARCHITECTURE.md exists (validated previously)
   - Code Reviewer agent spawned successfully
 
 ## State Actions
@@ -149,7 +149,7 @@ This state actively monitors the Code Reviewer agent creating the phase implemen
 ### 1. Active Monitoring (R233)
 
 **Implementation:**
-- Poll for phase-plans/PHASE-{N}-IMPLEMENTATION.md existence every 30 seconds
+- Poll for planning/PHASE-{N}-IMPLEMENTATION.md existence every 30 seconds
 - Check agent status if available
 - Timeout after 30 minutes → ERROR_RECOVERY
 - Log monitoring activity
@@ -161,7 +161,7 @@ This state actively monitors the Code Reviewer agent creating the phase implemen
 ### 2. Quality Validation (R502)
 
 **Implementation:**
-- Read phase-plans/PHASE-{N}-IMPLEMENTATION.md
+- Read planning/PHASE-{N}-IMPLEMENTATION.md
 - Count wave definitions (expect 3-8 typically)
 - Verify each wave has name + description
 - Scan for forbidden content:

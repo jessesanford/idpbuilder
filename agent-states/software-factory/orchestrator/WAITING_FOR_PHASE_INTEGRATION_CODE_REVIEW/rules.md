@@ -1,4 +1,4 @@
-# WAITING_FOR_PHASE_REVIEW_WAVE_INTEGRATION State Rules
+# WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW State Rules
 
 
 ## 🔴🔴🔴 MANDATORY STATE RULE READING AND ACKNOWLEDGMENT 🔴🔴🔴
@@ -7,7 +7,7 @@
 
 **AFTER READING, YOU MUST ACKNOWLEDGE ALL THE STATE RULES AND STATE THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION.**
 
-## 📋 PRIMARY DIRECTIVES FOR WAITING_FOR_PHASE_REVIEW_WAVE_INTEGRATION STATE
+## 📋 PRIMARY DIRECTIVES FOR WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW STATE
 
 ### Core Mandatory Rules (ALL orchestrator states must have these):
 
@@ -142,7 +142,7 @@ When report exists:
 ### 3. Update State File
 ```json
 {
-  "current_state": "WAITING_FOR_PHASE_REVIEW_WAVE_INTEGRATION",
+  "current_state": "WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW",
   "phase_integration_review": {
     "status": "complete",
     "result": "PASS|FAIL",
@@ -166,7 +166,7 @@ When report exists:
 - Cross-wave conflicts detected
 - Need comprehensive fix plan
 
-### Waiting Path → WAITING_FOR_PHASE_REVIEW_WAVE_INTEGRATION
+### Waiting Path → WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW
 - Review still in progress
 - Exit and wait for next check
 
@@ -188,12 +188,12 @@ Parse PHASE_REVIEW_WAVE_INTEGRATION_REPORT.md for:
 ## Transition Rules
 - **If PASS** → SPAWN_ARCHITECT_PHASE_ASSESSMENT
 - **If FAIL** → CREATE_PHASE_FIX_PLAN
-- **If pending** → WAITING_FOR_PHASE_REVIEW_WAVE_INTEGRATION (self)
+- **If pending** → WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW (self)
 
 
 ## 🔴🔴🔴 STATE COMPLETION CHECKLIST 🔴🔴🔴
 
-**Execute these steps IN ORDER to properly complete WAITING_FOR_PHASE_REVIEW_WAVE_INTEGRATION:**
+**Execute these steps IN ORDER to properly complete WAITING_FOR_PHASE_INTEGRATION_CODE_REVIEW:**
 
 ### ✅ Step 1: Complete State-Specific Work
 **Refer to "Primary Actions" and "Mandatory Validations" sections above for state-specific tasks.**

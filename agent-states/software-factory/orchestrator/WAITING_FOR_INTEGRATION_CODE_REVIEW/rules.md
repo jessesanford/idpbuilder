@@ -1,4 +1,4 @@
-# WAITING_FOR_REVIEW_WAVE_INTEGRATION State Rules
+# WAITING_FOR_INTEGRATION_CODE_REVIEW State Rules
 
 
 ## 🔴🔴🔴 MANDATORY STATE RULE READING AND ACKNOWLEDGMENT 🔴🔴🔴
@@ -7,7 +7,7 @@
 
 **AFTER READING, YOU MUST ACKNOWLEDGE ALL THE STATE RULES AND STATE THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION.**
 
-## 📋 PRIMARY DIRECTIVES FOR WAITING_FOR_REVIEW_WAVE_INTEGRATION STATE
+## 📋 PRIMARY DIRECTIVES FOR WAITING_FOR_INTEGRATION_CODE_REVIEW STATE
 
 ### Core Mandatory Rules (ALL orchestrator states must have these):
 
@@ -41,7 +41,7 @@
 6. **🔴🔴🔴 R358** - Integration Completion Detection and Automatic Transition
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R358-integration-completion-detection.md`
    - Criticality: SUPREME LAW - Must detect completion and transition within 30 seconds
-   - Summary: CANNOT remain in WAITING_FOR_REVIEW_WAVE_INTEGRATION after integration completes
+   - Summary: CANNOT remain in WAITING_FOR_INTEGRATION_CODE_REVIEW after integration completes
 
 7. **🔴🔴🔴 R304** - Mandatory Line Counting Tool
    - File: `$CLAUDE_PROJECT_DIR/rule-library/R304-mandatory-line-counter-enforcement.md`
@@ -64,7 +64,7 @@ Monitor Code Reviewer progress on integration code review and process results wh
 
 ```bash
 # START THE R358 MONITORING LOOP IMMEDIATELY upon entering this state
-echo "📊 Entering WAITING_FOR_REVIEW_WAVE_INTEGRATION - starting R358 monitoring loop"
+echo "📊 Entering WAITING_FOR_INTEGRATION_CODE_REVIEW - starting R358 monitoring loop"
 
 # Start the completion detection function
 monitor_integration_review_completion &
@@ -134,7 +134,7 @@ When report exists:
 ### 3. Update State File
 ```json
 {
-  "current_state": "WAITING_FOR_REVIEW_WAVE_INTEGRATION",
+  "current_state": "WAITING_FOR_INTEGRATION_CODE_REVIEW",
   "integration_review": {
     "status": "complete",
     "result": "PASS|FAIL",
@@ -156,7 +156,7 @@ When report exists:
 - Fixes required before proceeding
 - Need plan to address issues
 
-### Waiting Path → WAITING_FOR_REVIEW_WAVE_INTEGRATION
+### Waiting Path → WAITING_FOR_INTEGRATION_CODE_REVIEW
 - Review still in progress
 - Exit and wait for next check
 
@@ -200,7 +200,7 @@ echo "✅ State file validated"
 # Commit and push state file immediately
 git add orchestrator-state-v3.json
 
-if ! git commit -m "state: WAITING_FOR_REVIEW_WAVE_INTEGRATION → $NEXT_STATE - WAITING_FOR_REVIEW_WAVE_INTEGRATION complete [R288]"; then
+if ! git commit -m "state: WAITING_FOR_INTEGRATION_CODE_REVIEW → $NEXT_STATE - WAITING_FOR_INTEGRATION_CODE_REVIEW complete [R288]"; then
     echo "❌ CRITICAL: Git commit failed - likely schema validation error"
     echo "State: WAITING_FOR_INTEGRATION_CODE_REVIEW"
     echo "Attempted transition from: WAITING_FOR_INTEGRATION_CODE_REVIEW"
@@ -226,13 +226,13 @@ echo "✅ State file committed and pushed"
 ### ✅ Step 6: Save TODOs (R287 - SUPREME LAW)
 ```bash
 # Save TODO state before transition (R287 trigger)
-save_todos "WAITING_FOR_REVIEW_WAVE_INTEGRATION_COMPLETE"
+save_todos "WAITING_FOR_INTEGRATION_CODE_REVIEW_COMPLETE"
 
 # Commit TODOs within 60 seconds (R287)
 cd "$CLAUDE_PROJECT_DIR"
 git add todos/*.todo
 
-if ! git commit -m "todo: orchestrator - WAITING_FOR_REVIEW_WAVE_INTEGRATION complete [R287]"; then
+if ! git commit -m "todo: orchestrator - WAITING_FOR_INTEGRATION_CODE_REVIEW complete [R287]"; then
     echo "❌ ERROR: Failed to commit TODO files"
     echo "This is non-fatal but TODOs may be lost in compaction"
     echo "Proceeding with state execution..."

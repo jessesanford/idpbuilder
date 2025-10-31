@@ -159,45 +159,73 @@ This could be:
 echo "🔍 VALIDATING REQUIRED PLANS EXIST (R502)..."
 
 # Extract current phase and wave from state
-CURRENT_PHASE=$(jq -r '.current_phase' orchestrator-state-v3.json)
-CURRENT_WAVE=$(jq -r '.current_wave' orchestrator-state-v3.json)
+CURRENT_PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+CURRENT_WAVE=$(jq -r '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 
-# Validate phase plans exist (using new standardized format)
-PHASE_ARCH_PLAN=$(ls -t "$CLAUDE_PROJECT_DIR/phase-plans/phase${CURRENT_PHASE}/PHASE-${CURRENT_PHASE}-ARCHITECTURE-PLAN--"*.md 2>/dev/null | head -1)
-PHASE_IMPL_PLAN=$(ls -t "$CLAUDE_PROJECT_DIR/phase-plans/phase${CURRENT_PHASE}/PHASE-${CURRENT_PHASE}-PLAN--"*.md 2>/dev/null | head -1)
+# Validate phase plans exist using R550 canonical paths
+# Method 1: Check orchestrator state tracking first (R550)
+PHASE_ARCH_PLAN=$(jq -r ".planning_files.phases.phase${CURRENT_PHASE}.architecture_plan // empty" orchestrator-state-v3.json)
+PHASE_TEST_PLAN=$(jq -r ".planning_files.phases.phase${CURRENT_PHASE}.test_plan // empty" orchestrator-state-v3.json)
 
-if [ -z "$PHASE_ARCH_PLAN" ] || [ ! -f "$PHASE_ARCH_PLAN" ] || [ -z "$PHASE_IMPL_PLAN" ] || [ ! -f "$PHASE_IMPL_PLAN" ]; then
-    echo "🚨🚨🚨 CRITICAL: Phase ${CURRENT_PHASE} plans missing!"
-    [ -z "$PHASE_ARCH_PLAN" ] || [ ! -f "$PHASE_ARCH_PLAN" ] && echo "❌ Missing: PHASE-${CURRENT_PHASE}-ARCHITECTURE-PLAN--*.md"
-    [ -z "$PHASE_IMPL_PLAN" ] || [ ! -f "$PHASE_IMPL_PLAN" ] && echo "❌ Missing: PHASE-${CURRENT_PHASE}-PLAN--*.md"
-    echo "Cannot create infrastructure without phase plans!"
-    PROPOSED_NEXT_STATE="ERROR_RECOVERY"
-    TRANSITION_REASON="Missing phase ${CURRENT_PHASE} planning documents"
-    ERROR_OCCURRED="true"
-    exit 1
+# Method 2: Fallback to standard R550 paths if not tracked
+if [ -z "$PHASE_ARCH_PLAN" ]; then
+    PHASE_ARCH_PLAN="$CLAUDE_PROJECT_DIR/planning/phase${CURRENT_PHASE}/PHASE-ARCHITECTURE-PLAN.md"
+fi
+if [ -z "$PHASE_TEST_PLAN" ]; then
+    PHASE_TEST_PLAN="$CLAUDE_PROJECT_DIR/planning/phase${CURRENT_PHASE}/PHASE-TEST-PLAN.md"
 fi
 
-# Validate wave plans exist (using new standardized format)
-WAVE_ARCH_PLAN=$(ls -t "$CLAUDE_PROJECT_DIR/phase-plans/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/WAVE-${CURRENT_PHASE}-${CURRENT_WAVE}-ARCHITECTURE-PLAN--"*.md 2>/dev/null | head -1)
-WAVE_IMPL_PLAN=$(ls -t "$CLAUDE_PROJECT_DIR/phase-plans/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/WAVE-${CURRENT_PHASE}-${CURRENT_WAVE}-PLAN--"*.md 2>/dev/null | head -1)
-
-if [ -z "$WAVE_ARCH_PLAN" ] || [ ! -f "$WAVE_ARCH_PLAN" ] || [ -z "$WAVE_IMPL_PLAN" ] || [ ! -f "$WAVE_IMPL_PLAN" ]; then
-    echo "🚨🚨🚨 CRITICAL: Wave ${CURRENT_PHASE}-${CURRENT_WAVE} plans missing!"
-    [ -z "$WAVE_ARCH_PLAN" ] || [ ! -f "$WAVE_ARCH_PLAN" ] && echo "❌ Missing: WAVE-${CURRENT_PHASE}-${CURRENT_WAVE}-ARCHITECTURE-PLAN--*.md"
-    [ -z "$WAVE_IMPL_PLAN" ] || [ ! -f "$WAVE_IMPL_PLAN" ] && echo "❌ Missing: WAVE-${CURRENT_PHASE}-${CURRENT_WAVE}-PLAN--*.md"
-    echo "Cannot create infrastructure without wave plans!"
+# Validate phase plans exist
+if [ ! -f "$PHASE_ARCH_PLAN" ]; then
+    echo "🚨🚨🚨 CRITICAL: Phase ${CURRENT_PHASE} architecture plan missing!"
+    echo "❌ Expected at: $PHASE_ARCH_PLAN"
+    echo "Cannot create infrastructure without phase architecture plan!"
     PROPOSED_NEXT_STATE="ERROR_RECOVERY"
-    TRANSITION_REASON="Missing wave ${CURRENT_PHASE}-${CURRENT_WAVE} planning documents"
+    TRANSITION_REASON="Missing phase ${CURRENT_PHASE} architecture plan (R550 violation)"
     ERROR_OCCURRED="true"
-    exit 1
+    exit 550
+fi
+
+# Validate wave plans exist using R550 canonical paths
+# Method 1: Check orchestrator state tracking first (R550)
+WAVE_IMPL_PLAN=$(jq -r ".planning_files.phases.phase${CURRENT_PHASE}.waves.wave${CURRENT_WAVE}.implementation_plan // empty" orchestrator-state-v3.json)
+WAVE_TEST_PLAN=$(jq -r ".planning_files.phases.phase${CURRENT_PHASE}.waves.wave${CURRENT_WAVE}.test_plan // empty" orchestrator-state-v3.json)
+
+# Method 2: Fallback to standard R550 paths if not tracked
+if [ -z "$WAVE_IMPL_PLAN" ]; then
+    WAVE_IMPL_PLAN="$CLAUDE_PROJECT_DIR/planning/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/WAVE-IMPLEMENTATION-PLAN.md"
+fi
+if [ -z "$WAVE_TEST_PLAN" ]; then
+    WAVE_TEST_PLAN="$CLAUDE_PROJECT_DIR/planning/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/WAVE-TEST-PLAN.md"
+fi
+
+# Validate wave plans exist
+if [ ! -f "$WAVE_IMPL_PLAN" ]; then
+    echo "🚨🚨🚨 CRITICAL: Wave ${CURRENT_WAVE} implementation plan missing!"
+    echo "❌ Expected at: $WAVE_IMPL_PLAN"
+    echo "Cannot create infrastructure without wave implementation plan!"
+    PROPOSED_NEXT_STATE="ERROR_RECOVERY"
+    TRANSITION_REASON="Missing wave ${CURRENT_WAVE} implementation plan (R550 violation)"
+    ERROR_OCCURRED="true"
+    exit 550
 fi
 
 echo "✅ All required plans validated - proceeding with infrastructure creation"
+echo "  Phase Architecture: $PHASE_ARCH_PLAN"
+echo "  Wave Implementation: $WAVE_IMPL_PLAN"
 
-# Update planning_repo_files tracking in state file (R340)
-echo "📊 Updating planning_repo_files tracking..."
-yq eval ".planning_files.planning_repo_files.phase_plans[\"phase${CURRENT_PHASE}\"].architecture.exists = true" -i orchestrator-state-v3.json
-yq eval ".planning_files.planning_repo_files.phase_plans[\"phase${CURRENT_PHASE}\"].architecture.last_validated = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state-v3.json
+# Document plan paths in orchestrator state if not already tracked (R550)
+echo "📊 Documenting planning file paths (R550)..."
+if [ -z "$(jq -r ".planning_files.phases.phase${CURRENT_PHASE}.architecture_plan // empty" orchestrator-state-v3.json)" ]; then
+    jq ".planning_files.phases.phase${CURRENT_PHASE}.architecture_plan = \"planning/phase${CURRENT_PHASE}/PHASE-ARCHITECTURE-PLAN.md\"" \
+       orchestrator-state-v3.json > orchestrator-state-v3.json.tmp
+    mv orchestrator-state-v3.json.tmp orchestrator-state-v3.json
+fi
+if [ -z "$(jq -r ".planning_files.phases.phase${CURRENT_PHASE}.waves.wave${CURRENT_WAVE}.implementation_plan // empty" orchestrator-state-v3.json)" ]; then
+    jq ".planning_files.phases.phase${CURRENT_PHASE}.waves.wave${CURRENT_WAVE}.implementation_plan = \"planning/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/WAVE-IMPLEMENTATION-PLAN.md\"" \
+       orchestrator-state-v3.json > orchestrator-state-v3.json.tmp
+    mv orchestrator-state-v3.json.tmp orchestrator-state-v3.json
+fi
 yq eval ".planning_files.planning_repo_files.phase_plans[\"phase${CURRENT_PHASE}\"].implementation.exists = true" -i orchestrator-state-v3.json
 yq eval ".planning_files.planning_repo_files.phase_plans[\"phase${CURRENT_PHASE}\"].implementation.last_validated = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" -i orchestrator-state-v3.json
 
@@ -235,8 +263,8 @@ echo "✅ Pre-planned infrastructure validated"
 echo "🔧 DETERMINING NEXT INFRASTRUCTURE TO CREATE..."
 
 # Get current phase and wave
-CURRENT_PHASE=$(yq '.current_phase' orchestrator-state-v3.json)
-CURRENT_WAVE=$(yq '.current_wave' orchestrator-state-v3.json)
+CURRENT_PHASE=$(yq '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+CURRENT_WAVE=$(yq '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 
 # Find next uncreated effort from pre_planned_infrastructure
 next_effort_id=$(yq '.pre_planned_infrastructure.efforts | to_entries[] |

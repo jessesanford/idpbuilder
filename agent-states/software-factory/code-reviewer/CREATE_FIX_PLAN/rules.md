@@ -54,12 +54,17 @@
 
 ### State-Specific Rules:
 
-9. **⚠️⚠️⚠️ R383** - METADATA FILE STANDARDS (WARNING)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R383-metadata-file-standards.md`
-   - Criticality: WARNING
-   - Summary: Fix plans must follow proper metadata format and naming
+9. **🚨🚨🚨 R533** - ARTIFACT LOCATION REPORTING PROTOCOL (BLOCKING)
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R533-artifact-location-reporting-protocol.md`
+   - Criticality: BLOCKING
+   - Summary: ALL artifacts MUST be tracked in orchestrator-state-v3.json with complete metadata
 
-10. **⚠️⚠️⚠️ R343** - STRUCTURED OUTPUT REQUIREMENTS (WARNING)
+10. **⚠️⚠️⚠️ R383** - METADATA FILE STANDARDS (WARNING)
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R383-metadata-file-standards.md`
+    - Criticality: WARNING
+    - Summary: Fix plans must follow proper metadata format and naming
+
+11. **⚠️⚠️⚠️ R343** - STRUCTURED OUTPUT REQUIREMENTS (WARNING)
     - File: `$CLAUDE_PROJECT_DIR/rule-library/R343-structured-output-requirements.md`
     - Criticality: WARNING
     - Summary: All outputs must be properly structured and parseable
@@ -92,6 +97,12 @@
   - Content: Root cause analysis, fix instructions, execution order, validation steps
   - Validation: Fix plan file exists and is complete
   - **BLOCKING**: Fix plan is the deliverable for this state
+
+- [ ] 3.5. Record fix plan location in orchestrator-state-v3.json per R533
+  - Action: Update `.artifacts.fix_plans` with complete metadata
+  - Required Fields: file_path, created_at, created_by, artifact_type, scope, status, related_bugs
+  - Validation: `jq '.artifacts.fix_plans.[artifact_id]' orchestrator-state-v3.json` returns metadata
+  - **BLOCKING**: Orchestrator cannot discover fix plan without this (R340/R533 compliance)
 
 ### STANDARD EXECUTION TASKS (Required)
 

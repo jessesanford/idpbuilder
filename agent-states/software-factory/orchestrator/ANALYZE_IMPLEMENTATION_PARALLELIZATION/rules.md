@@ -217,102 +217,11 @@ You MUST analyze the individual effort implementation plans to determine paralle
 ## Mandatory Analysis Protocol
 
 ```bash
-# STEP 0: VERIFY INFRASTRUCTURE EXISTS OR NEEDS CREATION (BLOCKING)
+# STEP 0: R356 SINGLE-EFFORT OPTIMIZATION CHECK
 echo "═══════════════════════════════════════════════════════════════"
 echo "🔴🔴🔴 ANALYZE_IMPLEMENTATION_PARALLELIZATION STATE 🔴🔴🔴"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
-echo "🔍 STEP 0: INFRASTRUCTURE EXISTENCE VALIDATION (BLOCKING)"
-echo "═══════════════════════════════════════════════════════════════"
-echo ""
-
-# Get current phase and wave
-CURRENT_PHASE=$(yq '.current_phase' orchestrator-state-v3.json)
-CURRENT_WAVE=$(yq '.current_wave' orchestrator-state-v3.json)
-
-echo "📊 Analyzing infrastructure for Phase $CURRENT_PHASE Wave $CURRENT_WAVE"
-
-# Check if pre_planned_infrastructure has entries for this wave
-WAVE_EFFORTS=$(yq ".pre_planned_infrastructure.efforts | to_entries[] |
-  select(.value.phase == \"phase${CURRENT_PHASE}\" and
-         .value.wave == \"wave${CURRENT_WAVE}\") |
-  .key" orchestrator-state-v3.json 2>/dev/null | wc -l)
-
-echo "Found $WAVE_EFFORTS infrastructure entries in pre_planned_infrastructure"
-
-# Count efforts needing infrastructure for this wave
-PLANNED_EFFORTS=$(yq ".efforts_pending[]" orchestrator-state-v3.json 2>/dev/null | wc -l)
-echo "Found $PLANNED_EFFORTS efforts pending for this wave"
-
-if [ "$WAVE_EFFORTS" -eq 0 ]; then
-    echo "❌ CRITICAL: No infrastructure found for Phase $CURRENT_PHASE Wave $CURRENT_WAVE"
-    echo "Infrastructure must be created before spawning SW Engineers"
-    echo ""
-    echo "🔧 ACTION REQUIRED: Create infrastructure for $PLANNED_EFFORTS efforts"
-    echo ""
-    INFRASTRUCTURE_STATUS="NEEDS_CREATION"
-    PROPOSED_NEXT_STATE="CREATE_NEXT_INFRASTRUCTURE"
-    TRANSITION_REASON="Wave $CURRENT_WAVE infrastructure needs creation"
-
-elif [ "$WAVE_EFFORTS" -lt "$PLANNED_EFFORTS" ]; then
-    echo "⚠️ WARNING: Partial infrastructure found"
-    echo "   Infrastructure entries: $WAVE_EFFORTS"
-    echo "   Pending efforts: $PLANNED_EFFORTS"
-    echo "   Missing: $((PLANNED_EFFORTS - WAVE_EFFORTS)) efforts"
-    echo ""
-    echo "🔧 ACTION REQUIRED: Complete infrastructure creation"
-    INFRASTRUCTURE_STATUS="INCOMPLETE"
-    PROPOSED_NEXT_STATE="CREATE_NEXT_INFRASTRUCTURE"
-    TRANSITION_REASON="Wave $CURRENT_WAVE infrastructure incomplete"
-
-else
-    echo "✅ Infrastructure entries found: $WAVE_EFFORTS"
-
-    # Now check validation status
-    UNVALIDATED_COUNT=$(yq ".pre_planned_infrastructure.efforts | to_entries[] |
-      select(.value.phase == \"phase${CURRENT_PHASE}\" and
-             .value.wave == \"wave${CURRENT_WAVE}\" and
-             .value.validated == false) |
-      .key" orchestrator-state-v3.json 2>/dev/null | wc -l)
-
-    if [ "$UNVALIDATED_COUNT" -gt 0 ]; then
-        echo "❌ Infrastructure exists but NOT validated"
-        echo "   Unvalidated efforts: $UNVALIDATED_COUNT"
-        echo ""
-        echo "🔧 ACTION REQUIRED: Validate infrastructure"
-        INFRASTRUCTURE_STATUS="NEEDS_VALIDATION"
-        PROPOSED_NEXT_STATE="VALIDATE_INFRASTRUCTURE"
-        TRANSITION_REASON="Wave $CURRENT_WAVE infrastructure validation required"
-    else
-        echo "✅ Infrastructure validated and ready"
-        INFRASTRUCTURE_STATUS="VALIDATED"
-        # Continue to parallelization analysis
-        echo "Proceeding to parallelization analysis..."
-    fi
-fi
-
-echo ""
-echo "📊 INFRASTRUCTURE STATUS: $INFRASTRUCTURE_STATUS"
-if [ "$INFRASTRUCTURE_STATUS" != "VALIDATED" ]; then
-    echo "🎯 PROPOSED NEXT STATE: $PROPOSED_NEXT_STATE"
-    echo "📝 REASON: $TRANSITION_REASON"
-    echo ""
-    echo "⚠️ CANNOT PROCEED TO PARALLELIZATION ANALYSIS - INFRASTRUCTURE NOT READY"
-    echo "⚠️ MUST TRANSITION TO $PROPOSED_NEXT_STATE FIRST"
-    echo "══════════════════════════════════════════════════════════════="
-    echo ""
-
-    # Exit early - infrastructure needs creation/validation
-    # Spawn State Manager for transition
-    # (Implementation continues in state completion section)
-    exit 0
-fi
-
-echo "✅ Infrastructure existence check complete - ready for parallelization analysis"
-echo "═══════════════════════════════════════════════════════════════"
-echo ""
-
-# STEP 1: R356 SINGLE-EFFORT OPTIMIZATION CHECK
 echo "🎯 R356: Checking effort count for optimization..."
 
 EFFORT_COUNT=$(echo "✅ State file updated to: $NEXT_STATE"

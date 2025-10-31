@@ -43,12 +43,12 @@ Monitor for architect completion of wave-level architecture and implementation p
 ### 1. Poll for Wave Plans
 ```bash
 # Get current phase and wave
-PHASE=$(jq -r '.project_progression.current_phase' orchestrator-state-v3.json)
-WAVE=$(jq -r '.project_progression.current_wave' orchestrator-state-v3.json)
+PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+WAVE=$(jq -r '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 echo "Waiting for Wave ${PHASE}.${WAVE} plans from architect..."
 
 # Define expected file locations per R303
-WAVE_PLANNING_DIR="$CLAUDE_PROJECT_DIR/phase-plans/phase${PHASE}/wave${WAVE}"
+WAVE_PLANNING_DIR="$CLAUDE_PROJECT_DIR/planning/phase${PHASE}/wave${WAVE}"
 mkdir -p "$WAVE_PLANNING_DIR"
 
 # Poll every 30 seconds for up to 30 minutes
@@ -59,11 +59,19 @@ ELAPSED=0
 while [ $ELAPSED -lt $MAX_WAIT ]; do
     echo "Checking for wave plans... (${ELAPSED}s / ${MAX_WAIT}s)"
 
-    # Check for wave architecture plan
-    WAVE_ARCH_PLAN=$(ls -t "${WAVE_PLANNING_DIR}/WAVE-${PHASE}-${WAVE}-ARCHITECTURE--"*.md 2>/dev/null | head -1)
+    # Check for wave architecture plan (R550)
+    WAVE_ARCH_PLAN=$(jq -r ".planning_files.current_wave.architecture_plan" orchestrator-state-v3.json 2>/dev/null)
+    if [ -z "$WAVE_ARCH_PLAN" ] || [ "$WAVE_ARCH_PLAN" = "null" ]; then
+        WAVE_ARCH_PLAN="${WAVE_PLANNING_DIR}/WAVE-ARCHITECTURE-PLAN.md"
+    fi
+    [ ! -f "$WAVE_ARCH_PLAN" ] && WAVE_ARCH_PLAN=""
 
-    # Check for wave implementation plan
-    WAVE_IMPL_PLAN=$(ls -t "${WAVE_PLANNING_DIR}/WAVE-${PHASE}-${WAVE}-PLAN--"*.md 2>/dev/null | head -1)
+    # Check for wave implementation plan (R550)
+    WAVE_IMPL_PLAN=$(jq -r ".planning_files.current_wave.implementation_plan" orchestrator-state-v3.json 2>/dev/null)
+    if [ -z "$WAVE_IMPL_PLAN" ] || [ "$WAVE_IMPL_PLAN" = "null" ]; then
+        WAVE_IMPL_PLAN="${WAVE_PLANNING_DIR}/WAVE-IMPLEMENTATION-PLAN.md"
+    fi
+    [ ! -f "$WAVE_IMPL_PLAN" ] && WAVE_IMPL_PLAN=""
 
     # If both plans exist, validate and proceed
     if [ -n "$WAVE_ARCH_PLAN" ] && [ -n "$WAVE_IMPL_PLAN" ]; then
