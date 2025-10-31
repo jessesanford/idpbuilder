@@ -31,8 +31,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "REVIEW_PHASE_ARCHITECTURE",
-    "previous_state": "REVIEW_PHASE_INTEGRATION",
+    "current_state": "WAITING_FOR_PHASE_ASSESSMENT",
+    "previous_state": "REVIEW_PHASE_ARCHITECTURE",
     "loop_detection": {
       "last_two_states": [
         "REVIEW_WAVE_ARCHITECTURE",
@@ -1550,6 +1550,18 @@
         "timestamp": "2025-10-31T01:19:59Z",
         "validated_by": "state-manager",
         "reason": "Phase integration review complete: 0 bugs found (APPROVED), proceeding to architecture validation per guard condition"
+      },
+      {
+        "from_state": "REVIEW_PHASE_ARCHITECTURE",
+        "to_state": "WAITING_FOR_PHASE_ASSESSMENT",
+        "timestamp": "2025-10-31T01:36:03Z",
+        "validated_by": "state-manager",
+        "reason": "Architect spawned for Phase 1 assessment - must monitor completion per R233 before declaring complete",
+        "orchestrator_proposal": "COMPLETE_PHASE",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "Proposed state COMPLETE_PHASE not in allowed_transitions. Must transition to WAITING_FOR_PHASE_ASSESSMENT to monitor architect and validate assessment report per R285.",
+        "mandatory_sequence": null,
+        "sequence_position": null
       }
     ],
     "last_transition_timestamp": "2025-10-31T01:02:00Z",
@@ -2075,7 +2087,7 @@
     "r151_compliant": true
   },
   "transition_reason": "Phase integration review complete: 0 bugs found, guard condition satisfied (bugs_found == 0)",
-  "last_updated": "2025-10-31T01:19:59Z",
+  "last_updated": "2025-10-31T01:36:03Z",
   "state_transitions": [
     {
       "from": "MONITORING_SWE_PROGRESS",
@@ -2207,5 +2219,16 @@
     "artifact_generated": true,
     "ready_for_code_review": true,
     "integration_report": ".software-factory/phase1/integration/INTEGRATE_PHASE_WAVES-REPORT--20251031-005450.md"
-  }
+  },
+  "phase_assessments": [
+    {
+      "phase": 1,
+      "status": "IN_PROGRESS",
+      "spawned_at": "2025-10-31T01:36:03Z",
+      "spawned_in_state": "REVIEW_PHASE_ARCHITECTURE",
+      "report_file": "phase-assessments/phase1/PHASE-1-ASSESSMENT-REPORT.md",
+      "decision": null,
+      "reviewed_at": null
+    }
+  ]
 }
