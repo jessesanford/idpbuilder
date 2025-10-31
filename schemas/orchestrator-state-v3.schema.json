@@ -363,6 +363,7 @@
                 "null"
               ],
               "enum": [
+                "PLANNING",
                 "IN_PROGRESS",
                 "COMPLETED",
                 "ERROR",
@@ -422,6 +423,7 @@
                 "null"
               ],
               "enum": [
+                "PLANNING",
                 "IN_PROGRESS",
                 "COMPLETED",
                 "ERROR",

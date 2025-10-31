@@ -133,26 +133,41 @@ fi
 echo "═══════════════════════════════════════════════════════════"
 ```
 
-### 5. Master Implementation Plan Check
+### 5. Master Implementation Plan Check (State-Aware)
 ```bash
-# CRITICAL: Check if master plan exists
-if [ ! -f "./IMPLEMENTATION-PLAN.md" ]; then
-    echo "⚠️ No Master Implementation Plan found!"
-    
-    # Check for architect prompt
-    if [ -f "./ARCHITECT-PROMPT-IDPBUILDER-OCI.md" ]; then
-        echo "📋 Found architect prompt - will spawn architect to create plan"
-        echo "Decision: NEED_ARCHITECT_FOR_PLAN"
+# 🔴🔴🔴 CRITICAL: Check STATE FILE first, THEN fall back to filesystem 🔴🔴🔴
+
+# STEP 1: Read current phase from state file
+CURRENT_PHASE=$(jq -r '.current_phase' orchestrator-state-v3.json 2>/dev/null || echo "1")
+
+# STEP 2: Read phase-specific implementation plan path from state
+# NOTE: During SF 2.0 → 3.0 migration, check both locations
+IMPL_PLAN=$(jq -r ".phase${CURRENT_PHASE}_implementation_plan // .phases[] | select(.phase_number == $CURRENT_PHASE) | .implementation_plan_path // empty" orchestrator-state-v3.json 2>/dev/null)
+
+# STEP 3: Validate state file metadata
+if [ -n "$IMPL_PLAN" ] && [ "$IMPL_PLAN" != "null" ]; then
+    if [ -f "$IMPL_PLAN" ]; then
+        echo "✅ Found implementation plan from state file: $IMPL_PLAN"
+        echo "Decision: PROCEED_WITH_ORCHESTRATION"
     else
-        echo "❌ No implementation plan or architect prompt found"
-        echo "Please create IMPLEMENTATION-PLAN.md or provide architect requirements"
-        echo "Checking for other planning files..."
-        ls -la *.md 2>/dev/null | head -10 || echo "No .md files found"
-        echo "Decision: MISSING_REQUIREMENTS"
+        echo "❌ State file points to non-existent file: $IMPL_PLAN"
+        echo "This indicates state file corruption or stale metadata"
+        echo "Decision: STATE_FILE_CORRUPTION"
+        exit 1
     fi
 else
-    echo "✓ Master Implementation Plan found"
-    echo "Decision: PROCEED_WITH_ORCHESTRATION"
+    # STEP 4: Fall back to legacy discovery (SF 2.0 compatibility)
+    echo "⚠️ No implementation plan in state file for phase $CURRENT_PHASE"
+
+    if [ -f "./IMPLEMENTATION-PLAN.md" ]; then
+        echo "✅ Found legacy master plan: ./IMPLEMENTATION-PLAN.md"
+        echo "Decision: PROCEED_WITH_ORCHESTRATION"
+    else
+        echo "❌ No implementation plan found in state file or filesystem"
+        echo "Please ensure orchestrator-state-v3.json contains implementation_plan_path"
+        echo "Decision: MISSING_REQUIREMENTS"
+        exit 1
+    fi
 fi
 ```
 
@@ -362,6 +377,12 @@ case "$CURRENT_STATE" in
         
     "WAVE_START")
         echo "Starting new wave"
+
+        # Read implementation plan path from state file
+        IMPL_PLAN=$(jq -r ".phase${CURRENT_PHASE}_implementation_plan // .phases[] | select(.phase_number == $CURRENT_PHASE) | .implementation_plan_path" orchestrator-state-v3.json)
+
+        echo "📋 Using implementation plan: $IMPL_PLAN"
+        ACTION: Read plan from $IMPL_PLAN
         ACTION: Set up wave infrastructure if needed
         ACTION: Prepare for effort planning
         NEXT_STATE: "CREATE_NEXT_INFRASTRUCTURE"

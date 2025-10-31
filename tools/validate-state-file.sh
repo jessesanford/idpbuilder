@@ -68,24 +68,11 @@ FILE_TYPE=""
 
 case "$FILENAME" in
     orchestrator-state-v3.json*)
-        # Auto-detect SF 3.0 pure vs SF 2.0/hybrid format
-        # Pure SF 3.0: has project_progression AND state_machine AND references, NO flat fields
-        # Hybrid: has BOTH nested and flat fields
-        # SF 2.0: only flat fields
-
-        HAS_PROJECT_PROGRESSION=$(jq -e '.project_progression' "$STATE_FILE" >/dev/null 2>&1 && echo "yes" || echo "no")
-        HAS_FLAT_CURRENT_STATE=$(jq -e '.current_state' "$STATE_FILE" >/dev/null 2>&1 && echo "yes" || echo "no")
-        HAS_REFERENCES=$(jq -e '.references' "$STATE_FILE" >/dev/null 2>&1 && echo "yes" || echo "no")
-
-        if [ "$HAS_PROJECT_PROGRESSION" = "yes" ] && [ "$HAS_FLAT_CURRENT_STATE" = "no" ] && [ "$HAS_REFERENCES" = "yes" ]; then
-            # Pure SF 3.0 format (nested only, no flat fields)
-            SCHEMA_FILE="$SCHEMAS_DIR/orchestrator-state-v3.schema.json"
-            FILE_TYPE="orchestrator-state-v3 (Pure SF 3.0)"
-        else
-            # SF 2.0/Hybrid format (has flat fields or missing references)
-            SCHEMA_FILE="$SCHEMAS_DIR/orchestrator-state-v2-hybrid.schema.json"
-            FILE_TYPE="orchestrator-state-v3 (SF 2.0/Hybrid)"
-        fi
+        # SF 3.0 ONLY - No more hybrid/v2 support
+        # All orchestrator-state-v3.json files MUST be pure SF 3.0 format
+        # Required structure: project_progression, state_machine, references
+        SCHEMA_FILE="$SCHEMAS_DIR/orchestrator-state-v3.schema.json"
+        FILE_TYPE="orchestrator-state-v3 (SF 3.0)"
         ;;
     bug-tracking.json*)
         SCHEMA_FILE="$SCHEMAS_DIR/bug-tracking.schema.json"
