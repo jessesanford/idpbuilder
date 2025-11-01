@@ -3,10 +3,34 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_WAVE_TEST_PLAN",
-    "previous_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
-    "last_transition_timestamp": "2025-11-01T14:18:08+00:00",
+    "current_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+    "previous_state": "WAITING_FOR_WAVE_TEST_PLAN",
+    "last_transition_timestamp": "2025-11-01T14:30:00+00:00",
     "state_history": [
+      {
+        "from_state": "WAITING_FOR_WAVE_TEST_PLAN",
+        "to_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+        "timestamp": "2025-11-01T14:30:00+00:00",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.2 test plan complete and validated (29,498 bytes, 867 lines, 50 tests, 90%/85% coverage targets). R341 TDD compliance verified (tests before implementation). R342 integration readiness verified (progressive realism). Ready to create wave integration branch with test harness per R342 early integration protocol.",
+        "phase": 2,
+        "wave": 2,
+        "orchestrator_proposal": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "test_plan_validated": true,
+          "test_plan_file": "planning/phase2/wave2/WAVE-TEST-PLAN.md",
+          "test_plan_size_bytes": 29498,
+          "test_plan_lines": 867,
+          "test_count": 50,
+          "coverage_targets": "90% statement, 85% branch",
+          "r341_tdd_compliance": true,
+          "r342_integration_readiness": true,
+          "tdd_phase": "red",
+          "r288_compliance": true
+        }
+      },
       {
         "from_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
         "to_state": "WAITING_FOR_WAVE_TEST_PLAN",
