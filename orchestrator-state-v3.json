@@ -3,22 +3,24 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
-    "previous_state": "VALIDATE_INFRASTRUCTURE",
-    "last_transition_timestamp": "2025-11-01T21:00:19Z",
+    "current_state": "VALIDATE_INFRASTRUCTURE",
+    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "last_transition_timestamp": "2025-11-01T23:03:21Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-01T21:00:19Z",
-      "consultation_id": "recovery-1762030819",
-      "consultation_type": "RECOVERY_TRANSITION",
+      "timestamp": "2025-11-01T23:03:21Z",
+      "consultation_id": "shutdown-1762038201.936197",
+      "consultation_type": "SHUTDOWN_CONSULTATION",
       "requesting_agent": "orchestrator",
-      "previous_state": "ERROR_RECOVERY",
+      "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
+      "proposed_state": "SPAWN_SW_ENGINEERS",
       "new_state": "VALIDATE_INFRASTRUCTURE",
-      "validation_status": "APPROVED",
-      "transition_valid": true,
-      "reason": "R509 violation recovery - deleted broken 2.2.2 infrastructure, need validation loop-back to recreate with R603 dependency checking. Effort 2.2.1 preserved (APPROVED). R603 exists and is referenced. Non-standard transition justified for recovery.",
+      "proposal_accepted": false,
+      "validation_status": "CORRECTED",
+      "transition_valid": false,
+      "reason": "Orchestrator proposed CREATE_NEXT_INFRASTRUCTURE → SPAWN_SW_ENGINEERS, but this transition is NOT in allowed_transitions. State machine only allows CREATE_NEXT_INFRASTRUCTURE → [VALIDATE_INFRASTRUCTURE, ERROR_RECOVERY]. Correcting to VALIDATE_INFRASTRUCTURE which will verify all infrastructure complete and then transition to proper spawning state.",
       "r288_enforcement": "ACTIVE",
       "approver": "state-manager",
-      "recovery_justification": "ERROR_RECOVERY → VALIDATE_INFRASTRUCTURE not in allowed_transitions, but required for R603-based recreation. VALIDATE_INFRASTRUCTURE will detect missing 2.2.2 and loop back to CREATE_NEXT_INFRASTRUCTURE with dependency checking."
+      "correction_explanation": "Infrastructure creation complete for Phase 2 Wave 2 (2.2.1 and 2.2.2 both created=true, validated=true). Must follow state machine protocol: CREATE_NEXT_INFRASTRUCTURE → VALIDATE_INFRASTRUCTURE → (appropriate next state based on validation). Similar correction precedent: state_history shows WAVE_COMPLETE → INTEGRATE_WAVE_EFFORTS corrected to WAVE_COMPLETE → SETUP_WAVE_INFRASTRUCTURE."
     },
     "state_history": [
       {
@@ -1829,6 +1831,39 @@
           "expected_flow": "VALIDATE_INFRASTRUCTURE → CREATE_NEXT_INFRASTRUCTURE (R603)",
           "r288_compliance": true
         }
+      },
+      {
+        "from_state": "CREATE_NEXT_INFRASTRUCTURE",
+        "to_state": "VALIDATE_INFRASTRUCTURE",
+        "timestamp": "2025-11-01T23:03:21+0000",
+        "validated_by": "state-manager",
+        "reason": "Infrastructure creation complete for Phase 2 Wave 2 - both efforts (2.2.1, 2.2.2) created and validated. Orchestrator proposed direct transition to SPAWN_SW_ENGINEERS, but state machine requires VALIDATE_INFRASTRUCTURE first to confirm completion. CORRECTED to proper state machine flow.",
+        "phase": 2,
+        "wave": 2,
+        "orchestrator_proposal": "SPAWN_SW_ENGINEERS",
+        "proposal_accepted": false,
+        "correct_next_state": "VALIDATE_INFRASTRUCTURE",
+        "validation_checks": {
+          "transition_allowed": false,
+          "orchestrator_proposed_transition": "CREATE_NEXT_INFRASTRUCTURE → SPAWN_SW_ENGINEERS",
+          "transition_in_allowed_list": false,
+          "allowed_transitions_from_create_next_infrastructure": [
+            "VALIDATE_INFRASTRUCTURE",
+            "ERROR_RECOVERY"
+          ],
+          "correct_transition": "CREATE_NEXT_INFRASTRUCTURE → VALIDATE_INFRASTRUCTURE",
+          "effort_2_2_1_created": true,
+          "effort_2_2_1_validated": true,
+          "effort_2_2_2_created": true,
+          "effort_2_2_2_validated": true,
+          "both_efforts_infrastructure_complete": true,
+          "effort_2_2_1_status": "APPROVED",
+          "effort_2_2_2_status": "pending_implementation",
+          "ready_for_validation_loop": true,
+          "r288_compliance": true,
+          "sequence_validation": "PASS - corrected to proper state machine flow"
+        },
+        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE → SPAWN_SW_ENGINEERS not in allowed_transitions. State machine requires CREATE_NEXT_INFRASTRUCTURE → VALIDATE_INFRASTRUCTURE to verify completion before spawning."
       }
     ],
     "loop_detection": {
@@ -2563,8 +2598,8 @@
         "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
         "planning_remote": "planning",
         "integration_branch": "idpbuilder-oci-push/phase2/wave2/integration",
-        "created": false,
-        "validated": false,
+        "created": true,
+        "validated": true,
         "depends_on": [
           "phase2_wave2_effort_1_registry_override"
         ],
