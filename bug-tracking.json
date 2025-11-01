@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-01T14:44:06+0000",
+  "last_updated": "2025-11-01T17:25:55+0000",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -295,6 +295,6 @@
     ]
   },
   "metadata": {
-    "notes": "State transition: SPAWN_CODE_REVIEWER_WAVE_IMPL \u2192 WAITING_FOR_IMPLEMENTATION_PLAN - Wave 2.2 implementation plan created"
+    "notes": "State transition: CREATE_NEXT_INFRASTRUCTURE → VALIDATE_INFRASTRUCTURE - Effort 2.2.1 infrastructure created and validated"
   }
 }

@@ -3,7 +3,7 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "current_state": "VALIDATE_INFRASTRUCTURE",
     "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
     "last_transition_timestamp": "2025-11-01T17:03:10Z",
     "last_state_manager_consultation": {
@@ -1493,7 +1493,10 @@
         "Create effort infrastructure from R213 metadata",
         "Then proceed to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
       ]
-    }
+    },
+    "last_transition": "CREATE_NEXT_INFRASTRUCTURE -> VALIDATE_INFRASTRUCTURE",
+    "transition_timestamp": "2025-11-01T17:25:54+0000",
+    "transition_reason": "Infrastructure created successfully for effort phase2_wave2_effort_1_registry_override (Effort 2.2.1). All validations passed. Ready for infrastructure validation checkpoint per R322."
   },
   "project_progression": {
     "current_project": {
@@ -2062,6 +2065,44 @@
         "validated": true,
         "validation_failure_reason": null,
         "created_at": "2025-10-31T22:28:43Z"
+      },
+      "phase2_wave2_effort_1_registry_override": {
+        "effort_id": "2.2.1",
+        "effort_name": "registry-override-viper",
+        "phase": "phase2",
+        "wave": "wave2",
+        "index": 1,
+        "full_path": "efforts/phase2/wave2/effort-1-registry-override-viper",
+        "branch_name": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+        "remote_branch": "origin/idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+        "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+        "target_remote": "target",
+        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
+        "planning_remote": "planning",
+        "integration_branch": "idpbuilder-oci-push/phase2/wave2/integration",
+        "created": true,
+        "validated": true,
+        "validation_failure_reason": null
+      },
+      "phase2_wave2_effort_2_env_support": {
+        "effort_id": "2.2.2",
+        "effort_name": "env-variable-support",
+        "phase": "phase2",
+        "wave": "wave2",
+        "index": 2,
+        "full_path": "efforts/phase2/wave2/effort-2-env-variable-support",
+        "branch_name": "idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support",
+        "remote_branch": "origin/idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support",
+        "base_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+        "target_remote": "target",
+        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
+        "planning_remote": "planning",
+        "integration_branch": "idpbuilder-oci-push/phase2/wave2/integration",
+        "created": false,
+        "validated": false,
+        "depends_on": [
+          "phase2_wave2_effort_1_registry_override"
+        ]
       }
     },
     "project_prefix": "idpbuilder-oci-push"
