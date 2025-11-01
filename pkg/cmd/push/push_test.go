@@ -221,41 +221,7 @@ func TestRunPush_CustomRegistry(t *testing.T) {
 	t.Skip("Requires mock injection support - to be implemented")
 }
 
-// T-2.1.1-23: Test truncateDigest helper
-func TestTruncateDigest(t *testing.T) {
-	tests := []struct {
-		name     string
-		digest   string
-		length   int
-		expected string
-	}{
-		{
-			name:     "digest longer than length",
-			digest:   "sha256:abcdef1234567890",
-			length:   12,
-			expected: "sha256:abcde",
-		},
-		{
-			name:     "digest equal to length",
-			digest:   "sha256:abcde",
-			length:   12,
-			expected: "sha256:abcde",
-		},
-		{
-			name:     "digest shorter than length",
-			digest:   "sha256",
-			length:   12,
-			expected: "sha256",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result := push.TruncateDigestForTesting(tt.digest, tt.length)
-			assert.Equal(t, tt.expected, result)
-		})
-	}
-}
+// T-2.1.1-23: Digest truncation is now handled by progress.Reporter (see pkg/progress/reporter_test.go T-2.1.2-15)
 
 // T-2.1.1-24: Test Cobra integration
 func TestNewPushCommand_CobraIntegration(t *testing.T) {

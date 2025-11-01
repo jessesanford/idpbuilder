@@ -10,6 +10,7 @@ import (
 	"github.com/cnoe-io/idpbuilder/pkg/registry"
 	"github.com/cnoe-io/idpbuilder/pkg/auth"
 	"github.com/cnoe-io/idpbuilder/pkg/tls"
+	"github.com/cnoe-io/idpbuilder/pkg/progress"
 )
 
 // NewPushCommand creates the push command that integrates all Phase 1 packages
@@ -106,43 +107,23 @@ func runPush(ctx context.Context, opts *PushOptions) error {
 		return fmt.Errorf("invalid registry or image name: %w", err)
 	}
 
-	// STAGE 7: Create progress callback (basic implementation for Wave 1)
-	progressCallback := func(update registry.ProgressUpdate) {
-		if opts.Verbose {
-			fmt.Fprintf(os.Stdout, "Layer %s: %d/%d bytes (%s)\n",
-				truncateDigest(update.LayerDigest, 12),
-				update.BytesPushed,
-				update.LayerSize,
-				update.Status)
-		}
-	}
+	// STAGE 7: Create progress reporter (replaces basic callback)
+	reporter := progress.NewReporter(opts.Verbose)
 
-	// STAGE 8: Execute push
-	if opts.Verbose {
-		fmt.Fprintf(os.Stdout, "Pushing to %s...\n", targetRef)
-	}
-	if err := registryClient.Push(ctx, image, targetRef, progressCallback); err != nil {
+	// STAGE 8: Execute push with reporter
+	fmt.Fprintf(os.Stdout, "Pushing to %s...\n", targetRef)
+	if err := registryClient.Push(ctx, image, targetRef, reporter.GetCallback()); err != nil {
 		return fmt.Errorf("push failed: %w", err)
 	}
+
+	// Display final summary
+	reporter.DisplaySummary()
 
 	fmt.Fprintf(os.Stdout, "✓ Successfully pushed %s to %s\n", opts.ImageName, opts.Registry)
 	return nil
 }
 
-// truncateDigest truncates digest to specified length for display
-func truncateDigest(digest string, length int) string {
-	if len(digest) <= length {
-		return digest
-	}
-	return digest[:length]
-}
-
 // RunPushForTesting exposes runPush for testing purposes
 func RunPushForTesting(ctx context.Context, opts *PushOptions) error {
 	return runPush(ctx, opts)
-}
-
-// TruncateDigestForTesting exposes truncateDigest for testing purposes
-func TruncateDigestForTesting(digest string, length int) string {
-	return truncateDigest(digest, length)
 }
