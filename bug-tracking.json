@@ -296,5 +296,11 @@
   },
   "metadata": {
     "notes": "State transition: SPAWN_SW_ENGINEERS → ERROR_RECOVERY - R509 infrastructure violation: Effort 2.2.2 wrong base branch"
+  },
+  "last_state_transition": {
+    "from": "VALIDATE_INFRASTRUCTURE",
+    "to": "CREATE_NEXT_INFRASTRUCTURE",
+    "timestamp": "2025-11-01T21:02:31Z",
+    "reason": "Infrastructure incomplete: 11/12 efforts created, looping back (iteration 1/5)"
   }
 }

@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "VALIDATE_INFRASTRUCTURE",
-    "previous_state": "ERROR_RECOVERY",
+    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "previous_state": "VALIDATE_INFRASTRUCTURE",
     "last_transition_timestamp": "2025-11-01T21:00:19Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-01T21:00:19Z",
@@ -2189,6 +2189,12 @@
         "test_plan_copied_at": "2025-11-01T14:31:13Z",
         "tdd_phase": "RED"
       }
+    },
+    "infrastructure_state": {
+      "validate_infrastructure_loops": 1,
+      "last_validation_timestamp": "2025-11-01T21:03:07Z",
+      "validation_status": "INCOMPLETE",
+      "reason": "Effort phase2_wave2_effort_2_env_support not created yet (11/12 complete)"
     }
   },
   "references": {
