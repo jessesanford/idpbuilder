@@ -3,10 +3,58 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "previous_state": "MONITORING_EFFORT_REVIEWS",
-    "last_transition_timestamp": "2025-11-01T02:18:07Z",
+    "current_state": "WAITING_FOR_EFFORT_PLANS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "last_transition_timestamp": "2025-11-01T02:28:45Z",
     "state_history": [
+      {
+        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "to_state": "WAITING_FOR_EFFORT_PLANS",
+        "timestamp": "2025-11-01T02:28:45Z",
+        "validated_by": "state-manager",
+        "reason": "Code Reviewer spawned for effort 2.1.2 - implementation plan created. Sequential strategy requires waiting for plan completion before spawning SW Engineer for implementation.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "WAITING_FOR_EFFORT_PLANS",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "sequential_strategy": true,
+          "code_reviewers_spawned": 1,
+          "efforts_planned": [
+            "2.1.2"
+          ],
+          "plan_file": "efforts/phase2/wave1/effort-2-progress-reporter/.software-factory/phase2/wave1/effort-2-progress-reporter/IMPLEMENTATION-PLAN--20251101-022417.md",
+          "r288_compliance": true
+        }
+      },
+      {
+        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "to_state": "WAITING_FOR_EFFORT_PLANS",
+        "timestamp": "2025-11-01T02:27:59Z",
+        "validated_by": "state-manager",
+        "reason": "Code Reviewer spawned for effort 2.1.2 - implementation plan created. Sequential strategy requires waiting for plan completion before spawning SW Engineer for implementation.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "WAITING_FOR_EFFORT_PLANS",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "sequential_strategy": true,
+          "code_reviewers_spawned": 1,
+          "efforts_planned": [
+            "2.1.2"
+          ],
+          "plan_file": "efforts/phase2/wave1/effort-2-progress-reporter/.software-factory/phase2/wave1/effort-2-progress-reporter/IMPLEMENTATION-PLAN--20251101-022417.md",
+          "r288_compliance": true
+        }
+      },
       {
         "from_state": "MONITORING_EFFORT_REVIEWS",
         "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
@@ -443,12 +491,12 @@
         "to_state": "ERROR_RECOVERY",
         "timestamp": "2025-10-31T21:54:27Z",
         "validated_by": "state-manager",
-        "reason": "SEQUENCE VIOLATION CORRECTION: Previous transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING) was invalid. State machine requires CREATE_NEXT_INFRASTRUCTURE step before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Rolling back to ANALYZE_CODE_REVIEWER_PARALLELIZATION and entering ERROR_RECOVERY to restore proper state flow.",
+        "reason": "SEQUENCE VIOLATION CORRECTION: Previous transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING) was invalid. State machine requires CREATE_NEXT_INFRASTRUCTURE step before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Rolling back to ANALYZE_CODE_REVIEWER_PARALLELIZATION and entering ERROR_RECOVERY to restore proper state flow.",
         "phase": 2,
         "wave": 1,
         "orchestrator_proposal": "CREATE_NEXT_INFRASTRUCTURE",
         "proposal_rejected": true,
-        "proposal_rejection_reason": "Transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING \u2192 CREATE_NEXT_INFRASTRUCTURE not allowed. Must use ERROR_RECOVERY.",
+        "proposal_rejection_reason": "Transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → CREATE_NEXT_INFRASTRUCTURE not allowed. Must use ERROR_RECOVERY.",
         "correction": true,
         "invalid_transition_removed": {
           "from_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -505,7 +553,7 @@
         "wave": 1,
         "orchestrator_proposal": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
         "proposal_accepted": false,
-        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING not allowed. Must go through VALIDATE_INFRASTRUCTURE first.",
+        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING not allowed. Must go through VALIDATE_INFRASTRUCTURE first.",
         "validation_checks": {
           "transition_allowed": true,
           "from_state_exists": true,
