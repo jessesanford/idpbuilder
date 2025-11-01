@@ -3,14 +3,14 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "last_transition_timestamp": "2025-11-01T19:25:17Z",
+    "current_state": "WAITING_FOR_EFFORT_PLANS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "last_transition_timestamp": "2025-11-01T19:44:02Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-01T19:25:17Z",
-      "consultation_id": "shutdown-1762025117.494944",
-      "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-      "to_state": "MONITORING_EFFORT_REVIEWS",
+      "timestamp": "2025-11-01T19:44:02Z",
+      "consultation_id": "shutdown-1762026242.459819",
+      "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+      "to_state": "WAITING_FOR_EFFORT_PLANS",
       "type": "shutdown",
       "transition_allowed": true,
       "validation_status": "APPROVED"
@@ -1694,6 +1694,38 @@
           "issues_found_2.2.1": 0,
           "lines_2.2.1": 247
         }
+      },
+      {
+        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "to_state": "WAITING_FOR_EFFORT_PLANS",
+        "timestamp": "2025-11-01T19:44:02+0000",
+        "validated_by": "state-manager",
+        "reason": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING complete. Code Reviewer spawned to create effort-specific implementation plan for effort 2.2.2. Plan successfully created and validated. Ready to wait for Code Reviewer to complete any remaining effort planning work per sequential protocol.",
+        "phase": 2,
+        "wave": 2,
+        "orchestrator_proposal": "WAITING_FOR_EFFORT_PLANS",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "code_reviewer_spawned": true,
+          "implementation_plan_created": true,
+          "implementation_plan_file": ".software-factory/phase2/wave2/effort-2-env-variable-support/IMPLEMENTATION-PLAN--20251101-193813.md",
+          "implementation_plan_lines": 923,
+          "effort_id": "2.2.2",
+          "effort_name": "env-variable-support",
+          "r213_metadata_compliance": "VERIFIED",
+          "r303_subdirectory_placement": "VERIFIED",
+          "r383_timestamp_requirements": "VERIFIED",
+          "r340_quality_gates": "PASSED",
+          "sequential_protocol": "VERIFIED",
+          "r288_compliance": true,
+          "r322_consultation": true,
+          "state_machine_compliance": "VERIFIED"
+        }
       }
     ],
     "loop_detection": {
@@ -2010,9 +2042,10 @@
     "project_name": "idpbuilder-oci-push-command",
     "project_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
     "created_at": "2025-10-30T01:11:19Z",
-    "last_updated": "2025-11-01T18:59:07Z",
+    "last_updated": "2025-11-01T19:44:02Z",
     "version": "3.0.0",
-    "notes": "State transition: SPAWN_SW_ENGINEERS → MONITORING_SWE_PROGRESS - SW Engineer spawned for Effort 2.2.1, implementation complete, ready to monitor"
+    "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → WAITING_FOR_EFFORT_PLANS - Effort 2.2.2 implementation plan created (923 lines), waiting for Code Reviewer completion",
+    "last_state_transition": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → WAITING_FOR_EFFORT_PLANS (effort 2.2.2 planning created)"
   },
   "planning_files": {
     "project": {
