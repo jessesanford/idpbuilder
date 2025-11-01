@@ -3,14 +3,14 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-    "last_transition_timestamp": "2025-11-01T18:14:05Z",
+    "current_state": "WAITING_FOR_EFFORT_PLANS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "last_transition_timestamp": "2025-11-01T18:23:59Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-01T17:30:27Z",
-      "consultation_id": "shutdown-1762018227",
-      "from_state": "VALIDATE_INFRASTRUCTURE",
-      "to_state": "CREATE_NEXT_INFRASTRUCTURE",
+      "timestamp": "2025-11-01T18:23:59Z",
+      "consultation_id": "shutdown-1762021439",
+      "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+      "to_state": "WAITING_FOR_EFFORT_PLANS",
       "type": "shutdown",
       "transition_allowed": true,
       "validation_status": "APPROVED"
@@ -1532,6 +1532,31 @@
         "timestamp": "2025-11-01T18:10:12Z",
         "validated_by": "state-manager",
         "reason": "Effort 2.2.1 plan complete, proceeding to implementation parallelization analysis"
+      },
+      {
+        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "to_state": "WAITING_FOR_EFFORT_PLANS",
+        "timestamp": "2025-11-01T18:23:59Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-1762021439",
+        "orchestrator_proposal": "WAITING_FOR_EFFORT_PLANS",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "Code Reviewer spawned for effort 2.2.1 implementation planning. Sequential strategy (R313) requires effort 2.2.1 plan completion before spawning effort 2.2.2. State Manager validation: transition allowed, plan creation in progress.",
+        "phase": 2,
+        "wave": 2,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "code_reviewer_spawned": true,
+          "effort_2_2_1_planning": true,
+          "sequential_strategy": true,
+          "r313_compliance": true,
+          "r288_compliance": true,
+          "state_machine_compliance": "VERIFIED"
+        }
       }
     ],
     "loop_detection": {
