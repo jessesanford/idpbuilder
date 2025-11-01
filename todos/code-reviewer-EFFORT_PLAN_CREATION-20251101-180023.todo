@@ -1,0 +1,26 @@
+# Code Reviewer TODOs - State: EFFORT_PLAN_CREATION
+# Effort: effort-1-registry-override-viper
+# Timestamp: 2025-11-01T17:59:00Z
+# Trigger: R287 state completion save
+
+## Completed Tasks
+✅ Read Wave Implementation Plan for context
+✅ Read Wave Architecture Plan for technical details
+✅ Perform R374 pre-planning research (existing code analysis)
+✅ Create comprehensive implementation plan
+✅ Validate plan completeness (R330, R311, R355, R383)
+✅ Save plan using R383-compliant path with timestamp
+✅ Commit and push plan to repository
+✅ Report plan location to orchestrator
+
+## Plan Details
+- Plan File: .software-factory/phase2/wave2/effort-1-registry-override-viper/IMPLEMENTATION-PLAN--20251101-175300.md
+- Size Estimate: 400 lines (within 800 limit)
+- Effort: 2.2.1 - Registry Override & Viper Integration
+- Phase: 2, Wave: 2
+- Branch: idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper
+
+## State Transition
+- Current State: EFFORT_PLAN_CREATION
+- Work Complete: ✅ All planning tasks finished
+- Ready for: State Manager SHUTDOWN_CONSULTATION per R517
