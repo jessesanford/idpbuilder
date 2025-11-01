@@ -3,16 +3,25 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
     "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-    "last_transition_timestamp": "2025-11-01T15:00:07Z",
+    "last_transition_timestamp": "2025-11-01T16:47:38Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-01T14:48:45+0000",
-      "type": "SHUTDOWN_CONSULTATION",
-      "from_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
-      "to_state": "INJECT_WAVE_METADATA",
-      "reason": "R322 shutdown consultation - wave implementation plan validated and complete. All exit criteria met: plan exists (39KB, 1133 lines), R213 metadata complete (2 efforts, 750 lines total), R340 quality gates passed, validation results recorded. Transition to INJECT_WAVE_METADATA approved.",
-      "rule": "R322"
+      "timestamp": "2025-11-01T16:47:38Z",
+      "type": "STATE_RESET",
+      "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+      "to_state": "CREATE_NEXT_INFRASTRUCTURE",
+      "reason": "State reset to fix R234 SUPREME LAW violation - orchestrator skipped CREATE_NEXT_INFRASTRUCTURE and VALIDATE_INFRASTRUCTURE states. Returning to nominal path to create Wave 2.2 infrastructure.",
+      "validated_by": "state-manager",
+      "rule": "R234",
+      "violation_detected": "State machine progression ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING skipped 2 mandatory states",
+      "required_sequence": [
+        "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "CREATE_NEXT_INFRASTRUCTURE",
+        "VALIDATE_INFRASTRUCTURE",
+        "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
+      ],
+      "performed_by": "software-factory-manager"
     },
     "state_history": [
       {
@@ -1370,6 +1379,48 @@
         "proposal_accepted": true,
         "transition_invalid": false,
         "transition_reason": "R213 metadata injection verified complete - 2 efforts ready for Code Reviewer planning phase"
+      },
+      {
+        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "to_state": "CREATE_NEXT_INFRASTRUCTURE",
+        "timestamp": "2025-11-01T16:47:49Z",
+        "validated_by": "state-manager",
+        "reason": "STATE RESET per R234 SUPREME LAW - Fixed state machine violation where orchestrator skipped CREATE_NEXT_INFRASTRUCTURE and VALIDATE_INFRASTRUCTURE states",
+        "phase": 2,
+        "wave": 2,
+        "reset_action": true,
+        "violation_details": {
+          "rule_violated": "R234",
+          "violation_type": "SKIPPED_MANDATORY_STATES",
+          "states_skipped": [
+            "CREATE_NEXT_INFRASTRUCTURE",
+            "VALIDATE_INFRASTRUCTURE"
+          ],
+          "invalid_transition": "ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+          "correct_sequence": [
+            "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+            "CREATE_NEXT_INFRASTRUCTURE",
+            "VALIDATE_INFRASTRUCTURE",
+            "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
+          ]
+        },
+        "reset_details": {
+          "reset_from": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+          "reset_to": "CREATE_NEXT_INFRASTRUCTURE",
+          "reset_reason": "Return to nominal path to create Wave 2.2 infrastructure",
+          "reset_by": "software-factory-manager",
+          "user_requested": true
+        },
+        "preserved_context": {
+          "phase": "Phase 2 - Core Push Functionality",
+          "wave": "Wave 2.2 - Advanced Configuration Features",
+          "planning_files_present": true,
+          "wave_architecture": "planning/phase2/wave2/WAVE-2.2-ARCHITECTURE.md",
+          "wave_implementation": "planning/phase2/wave2/WAVE-IMPLEMENTATION-PLAN.md",
+          "wave_tests": "planning/phase2/wave2/WAVE-TEST-PLAN.md",
+          "efforts_defined": 2,
+          "integration_branch_created": true
+        }
       }
     ],
     "loop_detection": {
