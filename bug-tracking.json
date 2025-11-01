@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-01T02:54:42Z",
+  "last_updated": "2025-11-01T02:59:44Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -293,5 +293,8 @@
       "BUG-005-INTEGRATION-PARSE",
       "BUG-006-INTEGRATION-LEAK"
     ]
+  },
+  "metadata": {
+    "notes": "State transition: MONITORING_SWE_PROGRESS → SPAWN_CODE_REVIEWERS_EFFORT_REVIEW (Effort 2.1.2 implementation complete, ready for code review)"
   }
 }
