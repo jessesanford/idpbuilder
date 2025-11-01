@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-01T03:16:54Z",
+  "last_updated": "2025-11-01T03:21:12Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -295,6 +295,6 @@
     ]
   },
   "metadata": {
-    "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW → MONITORING_EFFORT_REVIEWS (effort 2.1.2 review complete: APPROVED, 581 lines)"
+    "notes": "State transition: MONITORING_EFFORT_REVIEWS → WAVE_COMPLETE (all Wave 2.1 efforts APPROVED: 424+581=1005 lines)"
   }
 }
