@@ -3,39 +3,10 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_SW_ENGINEERS",
-    "previous_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-    "last_transition_timestamp": "2025-11-01T02:36:44Z",
+    "current_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+    "previous_state": "WAITING_FOR_EFFORT_PLANS",
+    "last_transition_timestamp": "2025-11-01T02:32:41Z",
     "state_history": [
-      {
-        "from_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-        "to_state": "SPAWN_SW_ENGINEERS",
-        "timestamp": "2025-11-01T02:36:44Z",
-        "validated_by": "state-manager",
-        "reason": "Implementation parallelization analysis complete for effort 2.1.2. Sequential strategy: spawn single SW Engineer. Effort 2.1.1 complete and approved (424 lines). Ready to implement effort 2.1.2.",
-        "phase": 2,
-        "wave": 1,
-        "orchestrator_proposal": "SPAWN_SW_ENGINEERS",
-        "proposal_accepted": true,
-        "validation_checks": {
-          "transition_allowed": true,
-          "from_state_exists": true,
-          "to_state_exists": true,
-          "in_allowed_transitions": true,
-          "parallelization_analysis_complete": true,
-          "swe_parallelization_plan_updated": true,
-          "strategy": "SEQUENTIAL_SINGLE",
-          "efforts_to_spawn": [
-            "2.1.2"
-          ],
-          "effort_2_1_1_complete": true,
-          "effort_2_1_1_status": "APPROVED",
-          "effort_2_1_2_plan_ready": true,
-          "r234_compliance": true,
-          "r288_compliance": true,
-          "wave_execution_sequence_valid": true
-        }
-      },
       {
         "from_state": "WAITING_FOR_EFFORT_PLANS",
         "to_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
@@ -823,23 +794,25 @@
         ]
       },
       "swe_parallelization_plan": {
-        "analysis_timestamp": "2025-11-01T02:40:00Z",
+        "analysis_timestamp": "2025-10-31T23:08:27Z",
         "analyzed_by": "orchestrator",
         "strategy": "SEQUENTIAL_SINGLE",
-        "reason": "Effort 2.1.2 depends on completed 2.1.1",
+        "reason": "Effort 2.1.1 is foundational, effort 2.1.2 depends on callback signature from 2.1.1",
         "efforts_to_spawn": [
-          "2.1.2"
+          "2.1.1"
         ],
         "spawn_mode": "single",
         "parallel_spawn": false,
-        "efforts_remaining": [],
+        "efforts_remaining": [
+          "2.1.2"
+        ],
         "spawn_sequence": [
           {
             "order": 1,
-            "effort": "2.1.2",
+            "effort": "2.1.1",
             "spawn_mode": "single",
             "wait_for_completion": true,
-            "reason": "Final effort - depends on 2.1.1 callback signature"
+            "reason": "Foundational effort - defines callback signature for 2.1.2"
           }
         ]
       }
@@ -965,7 +938,7 @@
     "project_name": "idpbuilder-oci-push-command",
     "project_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
     "created_at": "2025-10-30T01:11:19Z",
-    "last_updated": "2025-11-01T02:36:44Z",
+    "last_updated": "2025-11-01T02:18:07Z",
     "version": "3.0.0"
   },
   "planning_files": {
