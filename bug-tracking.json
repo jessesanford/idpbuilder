@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-01T13:51:33+00:00",
+  "last_updated": "2025-11-01T13:55:36+0000",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -295,6 +295,6 @@
     ]
   },
   "metadata": {
-    "notes": "State transition: BUILD_VALIDATION → WAVE_START - Wave 2.1 complete (build validated, architect approved). Proceeding to Wave 2.2 planning. State machine gap addressed per R288 authority."
+    "notes": "State transition: WAVE_START → SPAWN_ARCHITECT_WAVE_PLANNING - Wave 2.2 started, requiring architecture planning per R340"
   }
 }
