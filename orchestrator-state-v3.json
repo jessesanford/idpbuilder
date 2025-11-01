@@ -3,7 +3,7 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "current_state": "VALIDATE_INFRASTRUCTURE",
     "previous_state": "VALIDATE_INFRASTRUCTURE",
     "last_transition_timestamp": "2025-11-01T17:30:27Z",
     "last_state_manager_consultation": {
@@ -1458,6 +1458,39 @@
         "transition_invalid": false,
         "loop_iteration": 3,
         "loop_type": "validate_infrastructure_controlled_loop"
+      },
+      {
+        "from_state": "CREATE_NEXT_INFRASTRUCTURE",
+        "to_state": "VALIDATE_INFRASTRUCTURE",
+        "timestamp": "2025-11-01T17:38:25Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-1762018705",
+        "orchestrator_proposal": "VALIDATE_INFRASTRUCTURE",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "validation_details": {
+          "phase": 2,
+          "wave": 2,
+          "infrastructure_complete": true,
+          "efforts_ready": [
+            {
+              "effort_id": "2.2.1",
+              "branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+              "created": true,
+              "validated": true
+            },
+            {
+              "effort_id": "2.2.2",
+              "branch": "idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support",
+              "created": true,
+              "validated": true
+            }
+          ],
+          "cascade_compliant": true,
+          "r501_r509_r510_validated": true
+        },
+        "loop_iteration": 4,
+        "loop_type": "validate_infrastructure_controlled_loop"
       }
     ],
     "loop_detection": {
@@ -2099,11 +2132,12 @@
         "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
         "planning_remote": "planning",
         "integration_branch": "idpbuilder-oci-push/phase2/wave2/integration",
-        "created": false,
-        "validated": false,
+        "created": true,
+        "validated": true,
         "depends_on": [
           "phase2_wave2_effort_1_registry_override"
-        ]
+        ],
+        "validation_failure_reason": null
       }
     },
     "project_prefix": "idpbuilder-oci-push"
