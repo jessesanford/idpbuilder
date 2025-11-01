@@ -3,10 +3,51 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
-    "previous_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-    "last_transition_timestamp": "2025-11-01T14:10:10+00:00",
+    "current_state": "WAITING_FOR_WAVE_TEST_PLAN",
+    "previous_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+    "last_transition_timestamp": "2025-11-01T14:18:08+00:00",
     "state_history": [
+      {
+        "from_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+        "to_state": "WAITING_FOR_WAVE_TEST_PLAN",
+        "timestamp": "2025-11-01T14:18:08+00:00",
+        "validated_by": "state-manager",
+        "reason": "Code Reviewer spawned and completed Wave 2.2 test plan creation. Test plan file planning/phase2/wave2/WAVE-TEST-PLAN.md created (29,498 bytes, 867 lines, 50 tests total, 90%/85% coverage targets). R341 TDD compliance verified: tests before implementation (RED phase complete). Progressive realism: tests use real Wave 2.1 implementations. Ready to await test plan completion per R341/R342 requirements.",
+        "phase": 2,
+        "wave": 2,
+        "orchestrator_proposal": "WAITING_FOR_WAVE_TEST_PLAN",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "test_plan_file_exists": true,
+          "test_plan_file": "planning/phase2/wave2/WAVE-TEST-PLAN.md",
+          "test_plan_file_size_bytes": 29498,
+          "test_plan_file_lines": 867,
+          "test_count": 50,
+          "minimum_test_count": 30,
+          "test_count_sufficient": true,
+          "coverage_targets": "90% statement, 85% branch",
+          "r341_tdd_compliance": true,
+          "r341_validation": {
+            "tests_before_implementation": true,
+            "progressive_realism": true,
+            "real_wave_21_imports": true,
+            "no_pseudocode": true,
+            "tdd_red_phase": "COMPLETE"
+          },
+          "r342_integration_readiness": true,
+          "r342_validation": {
+            "test_harness_planned": true,
+            "integration_branch_next": true,
+            "coverage_targets_defined": true
+          },
+          "r288_compliance": true,
+          "state_machine_compliance": "VERIFIED"
+        }
+      },
       {
         "from_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
         "to_state": "WAITING_FOR_WAVE_ARCHITECTURE",
@@ -1455,7 +1496,7 @@
     "project_name": "idpbuilder-oci-push-command",
     "project_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
     "created_at": "2025-10-30T01:11:19Z",
-    "last_updated": "2025-11-01T14:04:32+0000",
+    "last_updated": "2025-11-01T14:18:08+00:00",
     "version": "3.0.0"
   },
   "planning_files": {
@@ -1543,6 +1584,21 @@
               "tests/phase2/wave1/README.md",
               "tests/phase2/wave1/WAVE-2.1-TEST-HARNESS.sh"
             ]
+          },
+          "wave2": {
+            "architecture_plan": "planning/phase2/wave2/WAVE-2.2-ARCHITECTURE.md",
+            "implementation_plan": null,
+            "test_plan": "planning/phase2/wave2/WAVE-TEST-PLAN.md",
+            "efforts": {},
+            "test_count": 50,
+            "coverage_targets": {
+              "statement": "90%",
+              "branch": "85%"
+            },
+            "test_plan_created_at": "2025-11-01T14:14:00+00:00",
+            "test_plan_size_bytes": 29498,
+            "test_plan_lines": 867,
+            "tdd_phase": "red"
           }
         }
       }
