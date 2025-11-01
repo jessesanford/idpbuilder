@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_NEXT_INFRASTRUCTURE",
-    "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-    "last_transition_timestamp": "2025-11-01T16:47:38Z",
+    "current_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
+    "last_transition_timestamp": "2025-11-01T16:54:09Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-01T16:47:38Z",
       "type": "STATE_RESET",
@@ -1421,6 +1421,16 @@
           "efforts_defined": 2,
           "integration_branch_created": true
         }
+      },
+      {
+        "from_state": "CREATE_NEXT_INFRASTRUCTURE",
+        "to_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "timestamp": "2025-11-01T16:54:09Z",
+        "validated_by": "state-manager",
+        "reason": "SECOND STATE RESET: Returning to ANALYZE_CODE_REVIEWER_PARALLELIZATION to test R517 enforcement fixes. This is the state where the original R234 violation occurred (transition to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING instead of CREATE_NEXT_INFRASTRUCTURE). With corrected state rules and mandatory State Manager consultation now enforced, we will verify the transition proceeds correctly to CREATE_NEXT_INFRASTRUCTURE.",
+        "reset_action": true,
+        "reset_number": 2,
+        "test_purpose": "Verify R517 enforcement and corrected state sequence documentation"
       }
     ],
     "loop_detection": {
