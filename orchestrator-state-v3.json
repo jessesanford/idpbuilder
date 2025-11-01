@@ -3,10 +3,35 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_SW_ENGINEERS",
-    "previous_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-    "last_transition_timestamp": "2025-11-01T02:36:44Z",
+    "current_state": "MONITORING_SWE_PROGRESS",
+    "previous_state": "SPAWN_SW_ENGINEERS",
+    "last_transition_timestamp": "2025-11-01T02:54:36Z",
     "state_history": [
+      {
+        "from_state": "SPAWN_SW_ENGINEERS",
+        "to_state": "MONITORING_SWE_PROGRESS",
+        "timestamp": "2025-11-01T02:54:28Z",
+        "validated_by": "state-manager",
+        "reason": "SW Engineer spawned for effort 2.1.2 (Progress Reporter & Output Formatting). Implementation reported as complete (170 lines). Sequential strategy requires monitoring progress per R313.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "MONITORING_SWE_PROGRESS",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "sw_engineer_spawned": true,
+          "effort_2_1_2_active": true,
+          "effort_2_1_1_complete_and_approved": true,
+          "sequential_strategy": true,
+          "effort_dependency_satisfied": true,
+          "implementation_plan": ".software-factory/phase2/wave1/effort-2-progress-reporter/IMPLEMENTATION-PLAN--20251101-022417.md",
+          "r313_compliance": true,
+          "r288_compliance": true
+        }
+      },
       {
         "from_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
         "to_state": "SPAWN_SW_ENGINEERS",
