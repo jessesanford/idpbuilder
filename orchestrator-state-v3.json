@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "MONITORING_SWE_PROGRESS",
-    "previous_state": "SPAWN_SW_ENGINEERS",
-    "last_transition_timestamp": "2025-11-01T18:59:07Z",
+    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+    "previous_state": "MONITORING_SWE_PROGRESS",
+    "last_transition_timestamp": "2025-11-01T19:16:04Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-01T18:59:07Z",
       "consultation_id": "shutdown-1762023556.709185",
@@ -1632,6 +1632,13 @@
           "r322_consultation": true,
           "state_machine_compliance": "VERIFIED"
         }
+      },
+      {
+        "from_state": "MONITORING_SWE_PROGRESS",
+        "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+        "timestamp": "2025-11-01T19:16:04Z",
+        "validated_by": "state-manager",
+        "reason": "Effort 2.2.1 implementation complete (swe-2.2.1-registry-override), ready for code review per sequential workflow plan"
       }
     ],
     "loop_detection": {
