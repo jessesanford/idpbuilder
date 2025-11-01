@@ -3,7 +3,7 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "current_state": "WAITING_FOR_EFFORT_PLANS",
     "previous_state": "VALIDATE_INFRASTRUCTURE",
     "last_transition_timestamp": "2025-11-01T17:30:27Z",
     "last_state_manager_consultation": {
@@ -1509,6 +1509,22 @@
           "parallelization_analysis_exists": true,
           "loop_counter_reset": true
         }
+      },
+      {
+        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "to_state": "WAITING_FOR_EFFORT_PLANS",
+        "timestamp": "2025-11-01T18:03:41Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-1762020221",
+        "transition_reason": "Code Reviewer spawned for effort 2.2.1 per sequential plan, validating plan before spawning effort 2.2.2",
+        "sequential_spawning": true,
+        "r234_compliant": true,
+        "validation_details": {
+          "effort_spawned": "2.2.1",
+          "effort_pending": "2.2.2",
+          "spawning_strategy": "sequential",
+          "r290_verified": true
+        }
       }
     ],
     "loop_detection": {
@@ -1545,7 +1561,7 @@
         "Then proceed to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
       ]
     },
-    "last_transition": "VALIDATE_INFRASTRUCTURE → CREATE_NEXT_INFRASTRUCTURE",
+    "last_transition": "2025-11-01T18:03:41Z",
     "transition_timestamp": "2025-11-01T17:30:27Z",
     "transition_reason": "Entry condition check revealed 1 uncreated effort (2.2.2). Returning to CREATE_NEXT_INFRASTRUCTURE for iterative just-in-time setup (loop 3/5 per R504 protocol)."
   },
