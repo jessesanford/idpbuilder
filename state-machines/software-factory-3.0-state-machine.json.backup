@@ -1383,8 +1383,7 @@
       "allowed_transitions": [
         "SPAWN_CODE_REVIEWER_FIX_PLAN",
         "WAVE_COMPLETE",
-        "ERROR_RECOVERY",
-        "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
+        "ERROR_RECOVERY"
       ],
       "requires": {
         "conditions": [
@@ -1400,8 +1399,7 @@
       ],
       "guards": {
         "CREATE_EFFORT_FIX_PLAN": "bugs_found > 0",
-        "WAVE_COMPLETE": "all_reviews_clean && efforts_remaining == 0",
-        "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING": "reviews_complete && efforts_remaining > 0 && sequential_strategy"
+        "WAVE_COMPLETE": "bugs_found == 0 and all_reviews_clean"
       }
     },
     "MONITORING_EFFORT_FIXES": {
