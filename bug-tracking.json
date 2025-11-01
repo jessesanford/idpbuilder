@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-01T18:39:06Z",
+  "last_updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -295,6 +295,6 @@
     ]
   },
   "metadata": {
-    "notes": "State transition: WAITING_FOR_EFFORT_PLANS → ANALYZE_IMPLEMENTATION_PARALLELIZATION - Effort 2.2.1 plan complete, analyzing parallelization strategy"
+    "notes": "State transition: ANALYZE_IMPLEMENTATION_PARALLELIZATION → SPAWN_SW_ENGINEERS - Parallelization analysis complete, ready to spawn SWE for Effort 2.2.1"
   }
 }
