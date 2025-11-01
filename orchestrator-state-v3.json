@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-    "previous_state": "WAITING_FOR_WAVE_TEST_PLAN",
-    "last_transition_timestamp": "2025-11-01T14:30:00+00:00",
+    "current_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+    "previous_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+    "last_transition_timestamp": "2025-11-01T14:31:13Z",
     "state_history": [
       {
         "from_state": "WAITING_FOR_WAVE_TEST_PLAN",
@@ -1261,6 +1261,33 @@
           "r288_compliance": true,
           "state_machine_compliance": "VERIFIED"
         }
+      },
+      {
+        "from_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+        "to_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "timestamp": "2025-11-01T14:31:13Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.2 integration branch created with TDD test plan (867 lines, 50 tests, 90%/85% coverage targets). R342 early integration complete. Ready for wave implementation planning.",
+        "phase": 2,
+        "wave": 2,
+        "orchestrator_proposal": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "r342_compliance": true,
+          "integration_branch": "idpbuilder-oci-push/phase2/wave2/integration",
+          "integration_base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+          "test_plan_copied": true,
+          "test_plan_file": "planning/phase2/wave2/WAVE-TEST-PLAN.md",
+          "test_plan_lines": 867,
+          "test_count": 50,
+          "coverage_targets": "90%/85%",
+          "tdd_phase": "RED",
+          "r288_compliance": true
+        }
       }
     ],
     "loop_detection": {
@@ -1508,7 +1535,14 @@
           ],
           "status": "PLANNED"
         }
-      ]
+      ],
+      "wave_2": {
+        "status": "TEST_PLAN_COPIED",
+        "integration_branch": "idpbuilder-oci-push/phase2/wave2/integration",
+        "integration_base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+        "test_plan_copied_at": "2025-11-01T14:31:13Z",
+        "tdd_phase": "RED"
+      }
     }
   },
   "references": {
