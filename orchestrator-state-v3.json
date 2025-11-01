@@ -3,10 +3,39 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
-    "previous_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-    "last_transition_timestamp": "2025-11-01T14:31:13Z",
+    "current_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
+    "previous_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+    "last_transition_timestamp": "2025-11-01T14:44:06+0000",
     "state_history": [
+      {
+        "from_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "to_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
+        "timestamp": "2025-11-01T14:44:06+0000",
+        "validated_by": "state-manager",
+        "reason": "Code Reviewer spawned and implementation plan created (39K, 1,133 lines). Plan includes R213 metadata for 2 sequential efforts (750 total lines, within 800 limit). All R502 quality gates met. Ready to await implementation plan completion per SF 3.0 protocol.",
+        "phase": 2,
+        "wave": 2,
+        "orchestrator_proposal": "WAITING_FOR_IMPLEMENTATION_PLAN",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "code_reviewer_spawned": true,
+          "implementation_plan_exists": true,
+          "implementation_plan_file": "planning/phase2/wave2/WAVE-IMPLEMENTATION-PLAN.md",
+          "implementation_plan_size": "39K",
+          "implementation_plan_lines": 1133,
+          "r213_metadata_present": true,
+          "effort_count": 2,
+          "total_estimated_lines": 750,
+          "within_800_line_limit": true,
+          "r502_quality_gates": "VERIFIED",
+          "r288_compliance": true,
+          "state_machine_compliance": "VERIFIED"
+        }
+      },
       {
         "from_state": "WAITING_FOR_WAVE_TEST_PLAN",
         "to_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
@@ -166,13 +195,13 @@
         "correct_next_state": "SETUP_WAVE_INFRASTRUCTURE",
         "validation_checks": {
           "transition_allowed": false,
-          "orchestrator_proposed_transition": "WAVE_COMPLETE → INTEGRATE_WAVE_EFFORTS",
+          "orchestrator_proposed_transition": "WAVE_COMPLETE \u2192 INTEGRATE_WAVE_EFFORTS",
           "transition_in_allowed_list": false,
           "allowed_transitions_from_wave_complete": [
             "SETUP_WAVE_INFRASTRUCTURE",
             "ERROR_RECOVERY"
           ],
-          "correct_transition": "WAVE_COMPLETE → SETUP_WAVE_INFRASTRUCTURE",
+          "correct_transition": "WAVE_COMPLETE \u2192 SETUP_WAVE_INFRASTRUCTURE",
           "both_efforts_complete": true,
           "both_efforts_approved": true,
           "effort_2_1_1_status": "APPROVED",
@@ -185,7 +214,7 @@
           "r288_compliance": true,
           "sequence_validation": "PASS - corrected to proper state machine flow"
         },
-        "proposal_rejected_reason": "Transition WAVE_COMPLETE → INTEGRATE_WAVE_EFFORTS not in allowed_transitions. State machine requires WAVE_COMPLETE → SETUP_WAVE_INFRASTRUCTURE → START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS sequence."
+        "proposal_rejected_reason": "Transition WAVE_COMPLETE \u2192 INTEGRATE_WAVE_EFFORTS not in allowed_transitions. State machine requires WAVE_COMPLETE \u2192 SETUP_WAVE_INFRASTRUCTURE \u2192 START_WAVE_ITERATION \u2192 INTEGRATE_WAVE_EFFORTS sequence."
       },
       {
         "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
@@ -780,12 +809,12 @@
         "to_state": "ERROR_RECOVERY",
         "timestamp": "2025-10-31T21:54:27Z",
         "validated_by": "state-manager",
-        "reason": "SEQUENCE VIOLATION CORRECTION: Previous transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING) was invalid. State machine requires CREATE_NEXT_INFRASTRUCTURE step before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Rolling back to ANALYZE_CODE_REVIEWER_PARALLELIZATION and entering ERROR_RECOVERY to restore proper state flow.",
+        "reason": "SEQUENCE VIOLATION CORRECTION: Previous transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING) was invalid. State machine requires CREATE_NEXT_INFRASTRUCTURE step before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Rolling back to ANALYZE_CODE_REVIEWER_PARALLELIZATION and entering ERROR_RECOVERY to restore proper state flow.",
         "phase": 2,
         "wave": 1,
         "orchestrator_proposal": "CREATE_NEXT_INFRASTRUCTURE",
         "proposal_rejected": true,
-        "proposal_rejection_reason": "Transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → CREATE_NEXT_INFRASTRUCTURE not allowed. Must use ERROR_RECOVERY.",
+        "proposal_rejection_reason": "Transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING \u2192 CREATE_NEXT_INFRASTRUCTURE not allowed. Must use ERROR_RECOVERY.",
         "correction": true,
         "invalid_transition_removed": {
           "from_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -842,7 +871,7 @@
         "wave": 1,
         "orchestrator_proposal": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
         "proposal_accepted": false,
-        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING not allowed. Must go through VALIDATE_INFRASTRUCTURE first.",
+        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING not allowed. Must go through VALIDATE_INFRASTRUCTURE first.",
         "validation_checks": {
           "transition_allowed": true,
           "from_state_exists": true,
@@ -1159,13 +1188,13 @@
         "orchestrator_proposal": "WAVE_COMPLETE",
         "proposal_accepted": false,
         "correct_next_state": "REVIEW_WAVE_ARCHITECTURE",
-        "proposal_rejected_reason": "Transition REVIEW_WAVE_INTEGRATION → WAVE_COMPLETE not in allowed_transitions. State machine requires REVIEW_WAVE_INTEGRATION → REVIEW_WAVE_ARCHITECTURE (bugs_found == 0) → BUILD_VALIDATION sequence.",
+        "proposal_rejected_reason": "Transition REVIEW_WAVE_INTEGRATION \u2192 WAVE_COMPLETE not in allowed_transitions. State machine requires REVIEW_WAVE_INTEGRATION \u2192 REVIEW_WAVE_ARCHITECTURE (bugs_found == 0) \u2192 BUILD_VALIDATION sequence.",
         "validation_checks": {
           "transition_allowed": true,
           "from_state_exists": true,
           "to_state_exists": true,
           "in_allowed_transitions": true,
-          "orchestrator_proposed_transition": "REVIEW_WAVE_INTEGRATION → WAVE_COMPLETE",
+          "orchestrator_proposed_transition": "REVIEW_WAVE_INTEGRATION \u2192 WAVE_COMPLETE",
           "transition_in_allowed_list": false,
           "allowed_transitions_from_review_wave_integration": [
             "CREATE_WAVE_FIX_PLAN",
@@ -1176,7 +1205,7 @@
             "SPAWN_CODE_REVIEWER_MERGE_PLAN",
             "SPAWN_INTEGRATION_AGENT"
           ],
-          "correct_transition": "REVIEW_WAVE_INTEGRATION → REVIEW_WAVE_ARCHITECTURE",
+          "correct_transition": "REVIEW_WAVE_INTEGRATION \u2192 REVIEW_WAVE_ARCHITECTURE",
           "bugs_found": 0,
           "architecture_review": "APPROVED",
           "build_status": "SUCCESS",
@@ -1193,7 +1222,7 @@
         "to_state": "WAVE_START",
         "timestamp": "2025-11-01T13:51:29+00:00",
         "validated_by": "state-manager",
-        "reason": "Wave 2.1 build validation complete (binary built, tests pass, architect approved). Phase 2 has 3 waves total - must proceed to Wave 2.2. State machine gap addressed: BUILD_VALIDATION → WAVE_START transition added for multi-wave phases.",
+        "reason": "Wave 2.1 build validation complete (binary built, tests pass, architect approved). Phase 2 has 3 waves total - must proceed to Wave 2.2. State machine gap addressed: BUILD_VALIDATION \u2192 WAVE_START transition added for multi-wave phases.",
         "phase": 2,
         "wave": 2,
         "orchestrator_proposal": "WAVE_START",
