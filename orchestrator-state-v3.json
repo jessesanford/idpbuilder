@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-    "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
-    "last_transition_timestamp": "2025-11-01T14:04:32+0000",
+    "current_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+    "previous_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+    "last_transition_timestamp": "2025-11-01T14:10:10+00:00",
     "state_history": [
       {
         "from_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
@@ -1154,6 +1154,47 @@
           "r288_compliance": true,
           "r336_integration_hierarchy_followed": true,
           "gap_reason": "BUILD_VALIDATION missing transition for mid-phase wave completion case"
+        }
+      },
+      {
+        "from_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "to_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+        "timestamp": "2025-11-01T14:10:10+00:00",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.2 architecture complete and validated (44,079 bytes, 1,393 lines, CONCRETE fidelity). R340 compliance verified: 6 struct definitions, 32 function signatures, 6 packages, adaptation notes present. Ready to spawn Code Reviewer for wave test planning per R341 TDD requirements (tests before implementation).",
+        "phase": 2,
+        "wave": 2,
+        "orchestrator_proposal": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "architecture_file_exists": true,
+          "architecture_file": "planning/phase2/wave2/WAVE-2.2-ARCHITECTURE.md",
+          "architecture_file_size": "44K",
+          "architecture_file_lines": 1393,
+          "fidelity_level": "CONCRETE",
+          "r340_compliance": true,
+          "r340_validation": {
+            "struct_definitions": 6,
+            "function_signatures": 32,
+            "package_declarations": 6,
+            "import_blocks": 6,
+            "constant_blocks": 5,
+            "adaptation_notes": true,
+            "real_code_examples": true,
+            "no_pseudocode": true
+          },
+          "r341_tdd_compliance_next": true,
+          "r342_integration_branch_next": true,
+          "mandatory_sequence": "wave_execution",
+          "sequence_position": "architecture_complete",
+          "next_required_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+          "progressive_planning_protocol": "VERIFIED",
+          "r288_compliance": true,
+          "state_machine_compliance": "VERIFIED"
         }
       }
     ],
