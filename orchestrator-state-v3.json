@@ -3,24 +3,24 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "VALIDATE_INFRASTRUCTURE",
-    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
-    "last_transition_timestamp": "2025-11-01T23:03:21Z",
+    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "previous_state": "VALIDATE_INFRASTRUCTURE",
+    "last_transition_timestamp": "2025-11-01T23:27:10Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-01T23:03:21Z",
-      "consultation_id": "shutdown-1762038201.936197",
+      "timestamp": "2025-11-01T23:27:10Z",
+      "consultation_id": "shutdown-1762039666.527780",
       "consultation_type": "SHUTDOWN_CONSULTATION",
       "requesting_agent": "orchestrator",
-      "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
-      "proposed_state": "SPAWN_SW_ENGINEERS",
-      "new_state": "VALIDATE_INFRASTRUCTURE",
+      "previous_state": "VALIDATE_INFRASTRUCTURE",
+      "proposed_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+      "new_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
       "proposal_accepted": false,
       "validation_status": "CORRECTED",
       "transition_valid": false,
-      "reason": "Orchestrator proposed CREATE_NEXT_INFRASTRUCTURE → SPAWN_SW_ENGINEERS, but this transition is NOT in allowed_transitions. State machine only allows CREATE_NEXT_INFRASTRUCTURE → [VALIDATE_INFRASTRUCTURE, ERROR_RECOVERY]. Correcting to VALIDATE_INFRASTRUCTURE which will verify all infrastructure complete and then transition to proper spawning state.",
+      "reason": "Orchestrator proposed VALIDATE_INFRASTRUCTURE → ANALYZE_CODE_REVIEWER_PARALLELIZATION, but ANALYZE_CODE_REVIEWER_PARALLELIZATION was already completed earlier in wave_execution sequence (position 10). Current position is VALIDATE_INFRASTRUCTURE (position 12). Per R234 mandatory sequence, next state must be SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (position 13). Cannot go backward in mandatory sequence.",
       "r288_enforcement": "ACTIVE",
       "approver": "state-manager",
-      "correction_explanation": "Infrastructure creation complete for Phase 2 Wave 2 (2.2.1 and 2.2.2 both created=true, validated=true). Must follow state machine protocol: CREATE_NEXT_INFRASTRUCTURE → VALIDATE_INFRASTRUCTURE → (appropriate next state based on validation). Similar correction precedent: state_history shows WAVE_COMPLETE → INTEGRATE_WAVE_EFFORTS corrected to WAVE_COMPLETE → SETUP_WAVE_INFRASTRUCTURE."
+      "correction_explanation": "R234 wave_execution sequence: [10]ANALYZE_CODE_REVIEWER_PARALLELIZATION → [11]CREATE_NEXT_INFRASTRUCTURE → [12]VALIDATE_INFRASTRUCTURE → [13]SPAWN_CODE_REVIEWERS_EFFORT_PLANNING ← (required next). Both Phase 2 Wave 2 efforts validated (2.2.1: created=true validated=true, 2.2.2: created=true validated=true). Allowed transitions from VALIDATE_INFRASTRUCTURE: [SPAWN_CODE_REVIEWERS_EFFORT_PLANNING, CREATE_NEXT_INFRASTRUCTURE, ERROR_RECOVERY]. Must proceed forward, not backward."
     },
     "state_history": [
       {
@@ -1864,6 +1864,40 @@
           "sequence_validation": "PASS - corrected to proper state machine flow"
         },
         "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE → SPAWN_SW_ENGINEERS not in allowed_transitions. State machine requires CREATE_NEXT_INFRASTRUCTURE → VALIDATE_INFRASTRUCTURE to verify completion before spawning."
+      },
+      {
+        "from_state": "VALIDATE_INFRASTRUCTURE",
+        "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "timestamp": "2025-11-01T23:27:10Z",
+        "validated_by": "state-manager",
+        "reason": "Infrastructure validation complete for Phase 2 Wave 2. Both efforts (2.2.1 Registry Override, 2.2.2 Environment Support) created and validated. Per R234 mandatory wave_execution sequence, next state is SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (position 13 of 16). Orchestrator proposed backward jump to ANALYZE_CODE_REVIEWER_PARALLELIZATION which violates R234 - CORRECTED to proper forward flow.",
+        "phase": 2,
+        "wave": 2,
+        "orchestrator_proposal": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "ANALYZE_CODE_REVIEWER_PARALLELIZATION already completed at sequence position 10. Cannot go backward in mandatory sequence. Must proceed to position 13: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING.",
+        "mandatory_sequence": "wave_execution",
+        "sequence_position": "13/16",
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": false,
+          "orchestrator_proposed_transition": "VALIDATE_INFRASTRUCTURE → ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+          "transition_in_allowed_list": false,
+          "allowed_transitions_from_validate_infrastructure": [
+            "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+            "CREATE_NEXT_INFRASTRUCTURE",
+            "ERROR_RECOVERY"
+          ],
+          "correct_transition": "VALIDATE_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+          "effort_2_2_1_created": true,
+          "effort_2_2_1_validated": true,
+          "effort_2_2_2_created": true,
+          "effort_2_2_2_validated": true,
+          "both_efforts_ready_for_planning": true,
+          "r234_compliance": "PASS - corrected to forward progression",
+          "r288_compliance": true,
+          "sequence_validation": "CORRECTED - enforcing mandatory forward flow"
+        }
       }
     ],
     "loop_detection": {
