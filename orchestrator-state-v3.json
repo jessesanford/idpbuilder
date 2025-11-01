@@ -3,10 +3,44 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAVE_COMPLETE",
-    "previous_state": "MONITORING_EFFORT_REVIEWS",
-    "last_transition_timestamp": "2025-11-01T03:22:05Z",
+    "current_state": "INTEGRATE_WAVE_EFFORTS",
+    "previous_state": "START_WAVE_ITERATION",
+    "last_transition_timestamp": "2025-11-01T13:22:44Z",
     "state_history": [
+      {
+        "from_state": "WAVE_COMPLETE",
+        "to_state": "SETUP_WAVE_INFRASTRUCTURE",
+        "timestamp": "2025-11-01T03:26:36Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.1 complete - both efforts APPROVED (1005 lines total). Ready to setup wave integration infrastructure before merging efforts. CORRECTED: Orchestrator proposed INTEGRATE_WAVE_EFFORTS but this transition is not allowed. Must first setup iteration container infrastructure.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
+        "proposal_accepted": false,
+        "correct_next_state": "SETUP_WAVE_INFRASTRUCTURE",
+        "validation_checks": {
+          "transition_allowed": false,
+          "orchestrator_proposed_transition": "WAVE_COMPLETE → INTEGRATE_WAVE_EFFORTS",
+          "transition_in_allowed_list": false,
+          "allowed_transitions_from_wave_complete": [
+            "SETUP_WAVE_INFRASTRUCTURE",
+            "ERROR_RECOVERY"
+          ],
+          "correct_transition": "WAVE_COMPLETE → SETUP_WAVE_INFRASTRUCTURE",
+          "both_efforts_complete": true,
+          "both_efforts_approved": true,
+          "effort_2_1_1_status": "APPROVED",
+          "effort_2_1_1_lines": 424,
+          "effort_2_1_2_status": "APPROVED",
+          "effort_2_1_2_lines": 581,
+          "total_lines": 1005,
+          "within_combined_limit": true,
+          "ready_for_integration_infrastructure_setup": true,
+          "r288_compliance": true,
+          "sequence_validation": "PASS - corrected to proper state machine flow"
+        },
+        "proposal_rejected_reason": "Transition WAVE_COMPLETE → INTEGRATE_WAVE_EFFORTS not in allowed_transitions. State machine requires WAVE_COMPLETE → SETUP_WAVE_INFRASTRUCTURE → START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS sequence."
+      },
       {
         "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
         "to_state": "MONITORING_EFFORT_REVIEWS",
@@ -842,6 +876,92 @@
           "r290_verification": "PASS",
           "r288_compliance": true
         }
+      },
+      {
+        "from_state": "SETUP_WAVE_INFRASTRUCTURE",
+        "to_state": "START_WAVE_ITERATION",
+        "timestamp": "2025-11-01T13:18:37Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.1 infrastructure setup complete (integration branch exists, iteration container initialized with status=CONVERGED). Ready to start wave iteration per R336 requirements.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "START_WAVE_ITERATION",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "infrastructure_exists": true,
+          "integration_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+          "iteration_container_id": "wave-phase2-wave1",
+          "iteration_initialized": true,
+          "iteration_count": 1,
+          "max_iterations": 10,
+          "container_status": "CONVERGED",
+          "r336_compliance": true,
+          "r288_compliance": true
+        }
+      },
+      {
+        "from_state": "START_WAVE_ITERATION",
+        "to_state": "INTEGRATE_WAVE_EFFORTS",
+        "timestamp": "2025-11-01T13:21:52Z",
+        "validated_by": "state-manager",
+        "reason": "Wave iteration 2 started - ready to integrate wave efforts. Iteration counter incremented (2/10 within limit). Per R336/R531 iteration protocol.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "iteration_incremented": true,
+          "current_iteration": 2,
+          "max_iterations": 10,
+          "within_iteration_limit": true,
+          "r336_compliance": true,
+          "r531_compliance": true,
+          "r288_compliance": true
+        }
+      },
+      {
+        "from_state": "START_WAVE_ITERATION",
+        "to_state": "INTEGRATE_WAVE_EFFORTS",
+        "timestamp": "2025-11-01T13:22:16Z",
+        "validated_by": "state-manager",
+        "reason": "Wave iteration 2 started - ready to integrate wave efforts. Iteration counter incremented (2/10 within limit). Per R336/R531 iteration protocol.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "iteration_incremented": true,
+          "current_iteration": 2,
+          "max_iterations": 10,
+          "within_iteration_limit": true,
+          "r336_compliance": true,
+          "r531_compliance": true,
+          "r288_compliance": true
+        }
+      },
+      {
+        "from_state": "START_WAVE_ITERATION",
+        "to_state": "INTEGRATE_WAVE_EFFORTS",
+        "timestamp": "2025-11-01T13:22:44Z",
+        "validated_by": "state-manager",
+        "reason": "Wave iteration 2 started - ready to integrate wave efforts. Iteration counter incremented (2/10 within limit). Per R336/R531 iteration protocol.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "iteration_incremented": true,
+          "current_iteration": 2,
+          "max_iterations": 10,
+          "within_iteration_limit": true,
+          "r336_compliance": true,
+          "r531_compliance": true,
+          "r288_compliance": true
+        }
       }
     ],
     "loop_detection": {
@@ -897,7 +1017,7 @@
     "current_wave": {
       "wave_number": 1,
       "name": "Command Implementation & Core Integration",
-      "iteration": 1,
+      "iteration": 2,
       "status": "IN_PROGRESS",
       "total_efforts": 2,
       "estimated_total_lines": 750,
@@ -1034,7 +1154,7 @@
       ]
     },
     "iteration_tracking": {
-      "last_progress_timestamp": "2025-10-30T22:31:57+00:00",
+      "last_progress_timestamp": "2025-11-01T13:21:05+00:00",
       "active_container_level": "wave",
       "current_container": "wave-phase1-wave2"
     },
