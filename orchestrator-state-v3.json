@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-    "previous_state": "INJECT_WAVE_METADATA",
-    "last_transition_timestamp": "2025-11-01T14:55:24Z",
+    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+    "last_transition_timestamp": "2025-11-01T15:00:07Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-01T14:48:45+0000",
       "type": "SHUTDOWN_CONSULTATION",
@@ -1431,28 +1431,30 @@
       "estimated_total_lines": 750,
       "parallelization_strategy": "sequential",
       "code_reviewer_parallelization_plan": {
-        "analysis_timestamp": "2025-10-31T21:57:45Z",
+        "analysis_timestamp": "2025-11-01T15:00:00Z",
         "analyzed_by": "orchestrator",
-        "wave_plan_file": "planning/phase2/wave1/WAVE-IMPLEMENTATION-PLAN.md",
+        "wave_plan_file": "planning/phase2/wave2/WAVE-IMPLEMENTATION-PLAN.md",
         "strategy": "SEQUENTIAL",
         "blocking_efforts": [
           {
-            "effort_id": "2.1.1",
-            "effort_name": "Push Command Core & Pipeline Orchestration",
+            "effort_id": "2.2.1",
+            "effort_name": "Registry Override & Viper Integration",
             "can_parallelize": false,
-            "dependencies": [],
-            "reason": "Foundational effort - defines command structure and callback signature"
+            "dependencies": [
+              "integration:phase2-wave2.1"
+            ],
+            "reason": "Foundational effort - implements configuration system required by 2.2.2"
           }
         ],
         "dependent_efforts": [
           {
-            "effort_id": "2.1.2",
-            "effort_name": "Progress Reporter & Output Formatting",
+            "effort_id": "2.2.2",
+            "effort_name": "Environment Variable Support & Integration Testing",
             "can_parallelize": false,
             "dependencies": [
-              "2.1.1"
+              "effort:2.2.1"
             ],
-            "reason": "Depends on callback signature from 2.1.1"
+            "reason": "Integration tests depend on configuration system from 2.2.1"
           }
         ],
         "parallel_groups": [],
@@ -1460,7 +1462,7 @@
           {
             "order": 1,
             "efforts": [
-              "2.1.1"
+              "2.2.1"
             ],
             "spawn_mode": "single",
             "wait_for_completion": true
@@ -1468,7 +1470,7 @@
           {
             "order": 2,
             "efforts": [
-              "2.1.2"
+              "2.2.2"
             ],
             "spawn_mode": "single",
             "wait_for_completion": true
@@ -1661,7 +1663,7 @@
     "project_name": "idpbuilder-oci-push-command",
     "project_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
     "created_at": "2025-10-30T01:11:19Z",
-    "last_updated": "2025-11-01T14:18:08+00:00",
+    "last_updated": "2025-11-01T15:00:07Z",
     "version": "3.0.0"
   },
   "planning_files": {
