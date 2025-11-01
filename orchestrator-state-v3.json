@@ -3,10 +3,41 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "previous_state": "MONITORING_SWE_PROGRESS",
-    "last_transition_timestamp": "2025-11-01T01:12:00Z",
+    "current_state": "MONITORING_EFFORT_REVIEWS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+    "last_transition_timestamp": "2025-11-01T01:17:19Z",
     "state_history": [
+      {
+        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+        "to_state": "MONITORING_EFFORT_REVIEWS",
+        "timestamp": "2025-11-01T01:17:19Z",
+        "validated_by": "state-manager",
+        "reason": "Code Reviewer spawned for effort 2.1.1 (Push Command Core). Review completed: APPROVED (424 lines, production ready, 0 critical/major issues). Must monitor review completion and evaluate results per sequential strategy requirements.",
+        "phase": 2,
+        "wave": 1,
+        "orchestrator_proposal": "MONITORING_EFFORT_REVIEWS",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "code_reviewer_spawned": true,
+          "effort_2_1_1_review_complete": true,
+          "review_status": "APPROVED",
+          "review_lines": 424,
+          "within_soft_limit": true,
+          "within_hard_limit": true,
+          "critical_issues": 0,
+          "major_issues": 0,
+          "review_report_created": true,
+          "review_report": ".software-factory/phase2/wave1/effort-1-push-command-core/CODE-REVIEW-REPORT--20251101-011423.md",
+          "sequential_strategy": true,
+          "effort_2_1_2_pending": true,
+          "r290_verification": "PASS",
+          "r288_compliance": true
+        }
+      },
       {
         "from_state": "MONITORING_SWE_PROGRESS",
         "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
@@ -807,7 +838,7 @@
     "project_name": "idpbuilder-oci-push-command",
     "project_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
     "created_at": "2025-10-30T01:11:19Z",
-    "last_updated": "2025-11-01T01:12:00Z",
+    "last_updated": "2025-11-01T01:17:19Z",
     "version": "3.0.0"
   },
   "planning_files": {
