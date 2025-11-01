@@ -1,0 +1,28 @@
+# Orchestrator TODO State - MONITORING_EFFORT_REVIEWS
+# Saved: 2025-11-01T01:26:00Z
+# Reason: R287 trigger - State machine gap identified, stopping for user guidance
+
+[✅] Verify review completion for effort 2.1.1 (Push Command Core)
+[✅] Check sequential strategy requirements for starting effort 2.1.2  
+[✅] Determine next state: BLOCKED - State machine gap identified by State Manager
+[✅] Consult State Manager for SHUTDOWN_CONSULTATION (R517/R288)
+[✅] Save TODOs before stopping (R287)
+[PENDING] Output CONTINUE-SOFTWARE-FACTORY=FALSE flag (R405)
+
+## State Manager Findings:
+
+**Issue**: State machine gap in MONITORING_EFFORT_REVIEWS
+**Problem**: Allowed transitions don't support sequential strategy continuation
+**Situation**: 
+- Effort 2.1.1: Review APPROVED (production ready, 424 lines, 0 issues)
+- Effort 2.1.2: Needs implementation plan before implementation
+- Sequential strategy: Must complete one effort before starting next
+**Gap**: MONITORING_EFFORT_REVIEWS → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING not allowed
+
+**State Manager Decision**: CONTINUE-SOFTWARE-FACTORY=FALSE (requires human intervention)
+
+**Options**:
+1. Use ERROR_RECOVERY to exit and transition to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+2. Update state machine to add SPAWN_CODE_REVIEWERS_EFFORT_PLANNING to allowed_transitions
+3. Other approach per user guidance
+
