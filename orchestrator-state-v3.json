@@ -3,17 +3,19 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-    "previous_state": "WAITING_FOR_EFFORT_PLANS",
-    "last_transition_timestamp": "2025-11-01T19:50:05Z",
+    "current_state": "SPAWN_SW_ENGINEERS",
+    "previous_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+    "last_transition_timestamp": "2025-11-01T19:56:25Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-01T19:50:05Z",
-      "consultation_id": "shutdown-1762026605.90355",
-      "from_state": "WAITING_FOR_EFFORT_PLANS",
-      "to_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-      "type": "shutdown",
-      "transition_allowed": true,
-      "validation_status": "APPROVED"
+      "timestamp": "2025-11-01T19:56:25Z",
+      "consultation_id": "shutdown-1762027068.695433",
+      "consultation_type": "SHUTDOWN_CONSULTATION",
+      "requesting_agent": "orchestrator",
+      "previous_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+      "new_state": "SPAWN_SW_ENGINEERS",
+      "validation_status": "APPROVED",
+      "transition_valid": true,
+      "r288_enforcement": "ACTIVE"
     },
     "state_history": [
       {
@@ -238,13 +240,13 @@
         "correct_next_state": "SETUP_WAVE_INFRASTRUCTURE",
         "validation_checks": {
           "transition_allowed": false,
-          "orchestrator_proposed_transition": "WAVE_COMPLETE → INTEGRATE_WAVE_EFFORTS",
+          "orchestrator_proposed_transition": "WAVE_COMPLETE \u2192 INTEGRATE_WAVE_EFFORTS",
           "transition_in_allowed_list": false,
           "allowed_transitions_from_wave_complete": [
             "SETUP_WAVE_INFRASTRUCTURE",
             "ERROR_RECOVERY"
           ],
-          "correct_transition": "WAVE_COMPLETE → SETUP_WAVE_INFRASTRUCTURE",
+          "correct_transition": "WAVE_COMPLETE \u2192 SETUP_WAVE_INFRASTRUCTURE",
           "both_efforts_complete": true,
           "both_efforts_approved": true,
           "effort_2_1_1_status": "APPROVED",
@@ -257,7 +259,7 @@
           "r288_compliance": true,
           "sequence_validation": "PASS - corrected to proper state machine flow"
         },
-        "proposal_rejected_reason": "Transition WAVE_COMPLETE → INTEGRATE_WAVE_EFFORTS not in allowed_transitions. State machine requires WAVE_COMPLETE → SETUP_WAVE_INFRASTRUCTURE → START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS sequence."
+        "proposal_rejected_reason": "Transition WAVE_COMPLETE \u2192 INTEGRATE_WAVE_EFFORTS not in allowed_transitions. State machine requires WAVE_COMPLETE \u2192 SETUP_WAVE_INFRASTRUCTURE \u2192 START_WAVE_ITERATION \u2192 INTEGRATE_WAVE_EFFORTS sequence."
       },
       {
         "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
@@ -852,12 +854,12 @@
         "to_state": "ERROR_RECOVERY",
         "timestamp": "2025-10-31T21:54:27Z",
         "validated_by": "state-manager",
-        "reason": "SEQUENCE VIOLATION CORRECTION: Previous transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING) was invalid. State machine requires CREATE_NEXT_INFRASTRUCTURE step before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Rolling back to ANALYZE_CODE_REVIEWER_PARALLELIZATION and entering ERROR_RECOVERY to restore proper state flow.",
+        "reason": "SEQUENCE VIOLATION CORRECTION: Previous transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING) was invalid. State machine requires CREATE_NEXT_INFRASTRUCTURE step before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Rolling back to ANALYZE_CODE_REVIEWER_PARALLELIZATION and entering ERROR_RECOVERY to restore proper state flow.",
         "phase": 2,
         "wave": 1,
         "orchestrator_proposal": "CREATE_NEXT_INFRASTRUCTURE",
         "proposal_rejected": true,
-        "proposal_rejection_reason": "Transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → CREATE_NEXT_INFRASTRUCTURE not allowed. Must use ERROR_RECOVERY.",
+        "proposal_rejection_reason": "Transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING \u2192 CREATE_NEXT_INFRASTRUCTURE not allowed. Must use ERROR_RECOVERY.",
         "correction": true,
         "invalid_transition_removed": {
           "from_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -914,7 +916,7 @@
         "wave": 1,
         "orchestrator_proposal": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
         "proposal_accepted": false,
-        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING not allowed. Must go through VALIDATE_INFRASTRUCTURE first.",
+        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING not allowed. Must go through VALIDATE_INFRASTRUCTURE first.",
         "validation_checks": {
           "transition_allowed": true,
           "from_state_exists": true,
@@ -1231,13 +1233,13 @@
         "orchestrator_proposal": "WAVE_COMPLETE",
         "proposal_accepted": false,
         "correct_next_state": "REVIEW_WAVE_ARCHITECTURE",
-        "proposal_rejected_reason": "Transition REVIEW_WAVE_INTEGRATION → WAVE_COMPLETE not in allowed_transitions. State machine requires REVIEW_WAVE_INTEGRATION → REVIEW_WAVE_ARCHITECTURE (bugs_found == 0) → BUILD_VALIDATION sequence.",
+        "proposal_rejected_reason": "Transition REVIEW_WAVE_INTEGRATION \u2192 WAVE_COMPLETE not in allowed_transitions. State machine requires REVIEW_WAVE_INTEGRATION \u2192 REVIEW_WAVE_ARCHITECTURE (bugs_found == 0) \u2192 BUILD_VALIDATION sequence.",
         "validation_checks": {
           "transition_allowed": true,
           "from_state_exists": true,
           "to_state_exists": true,
           "in_allowed_transitions": true,
-          "orchestrator_proposed_transition": "REVIEW_WAVE_INTEGRATION → WAVE_COMPLETE",
+          "orchestrator_proposed_transition": "REVIEW_WAVE_INTEGRATION \u2192 WAVE_COMPLETE",
           "transition_in_allowed_list": false,
           "allowed_transitions_from_review_wave_integration": [
             "CREATE_WAVE_FIX_PLAN",
@@ -1248,7 +1250,7 @@
             "SPAWN_CODE_REVIEWER_MERGE_PLAN",
             "SPAWN_INTEGRATION_AGENT"
           ],
-          "correct_transition": "REVIEW_WAVE_INTEGRATION → REVIEW_WAVE_ARCHITECTURE",
+          "correct_transition": "REVIEW_WAVE_INTEGRATION \u2192 REVIEW_WAVE_ARCHITECTURE",
           "bugs_found": 0,
           "architecture_review": "APPROVED",
           "build_status": "SUCCESS",
@@ -1265,7 +1267,7 @@
         "to_state": "WAVE_START",
         "timestamp": "2025-11-01T13:51:29+00:00",
         "validated_by": "state-manager",
-        "reason": "Wave 2.1 build validation complete (binary built, tests pass, architect approved). Phase 2 has 3 waves total - must proceed to Wave 2.2. State machine gap addressed: BUILD_VALIDATION → WAVE_START transition added for multi-wave phases.",
+        "reason": "Wave 2.1 build validation complete (binary built, tests pass, architect approved). Phase 2 has 3 waves total - must proceed to Wave 2.2. State machine gap addressed: BUILD_VALIDATION \u2192 WAVE_START transition added for multi-wave phases.",
         "phase": 2,
         "wave": 2,
         "orchestrator_proposal": "WAVE_START",
@@ -1388,7 +1390,7 @@
             "CREATE_NEXT_INFRASTRUCTURE",
             "VALIDATE_INFRASTRUCTURE"
           ],
-          "invalid_transition": "ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+          "invalid_transition": "ANALYZE_CODE_REVIEWER_PARALLELIZATION \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
           "correct_sequence": [
             "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
             "CREATE_NEXT_INFRASTRUCTURE",
@@ -1500,7 +1502,7 @@
         "consultation_id": "shutdown-1762018961",
         "orchestrator_proposal": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
         "proposal_accepted": false,
-        "proposal_rejected_reason": "Transition VALIDATE_INFRASTRUCTURE → ANALYZE_CODE_REVIEWER_PARALLELIZATION not in allowed_transitions. State machine requires VALIDATE_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Parallelization analysis already complete in state.",
+        "proposal_rejected_reason": "Transition VALIDATE_INFRASTRUCTURE \u2192 ANALYZE_CODE_REVIEWER_PARALLELIZATION not in allowed_transitions. State machine requires VALIDATE_INFRASTRUCTURE \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Parallelization analysis already complete in state.",
         "transition_invalid": false,
         "state_manager_override": true,
         "override_reason": "Orchestrator proposed invalid transition; corrected to proper next state per state machine",
@@ -1732,7 +1734,7 @@
         "to_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
         "timestamp": "2025-11-01T19:50:05Z",
         "validated_by": "state-manager",
-        "reason": "Effort implementation plans complete for Phase 2 Wave 2 (Effort 2.2.1: 400 lines, Effort 2.2.2: 350 lines). Both plans validated with R340 quality gates. R234 mandatory sequence position 4→5 verified. Must analyze implementation parallelization per R151 before spawning SW Engineers.",
+        "reason": "Effort implementation plans complete for Phase 2 Wave 2 (Effort 2.2.1: 400 lines, Effort 2.2.2: 350 lines). Both plans validated with R340 quality gates. R234 mandatory sequence position 4\u21925 verified. Must analyze implementation parallelization per R151 before spawning SW Engineers.",
         "phase": 2,
         "wave": 2,
         "orchestrator_proposal": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
@@ -1756,6 +1758,15 @@
           "r151_compliance_required": true,
           "state_machine_compliance": "VERIFIED"
         }
+      },
+      {
+        "from_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+        "to_state": "SPAWN_SW_ENGINEERS",
+        "timestamp": "2025-11-01T19:56:25Z",
+        "reason": "SW Engineer parallelization analysis complete - ready to spawn single SW Engineer for effort 2.2.2",
+        "state_manager_approved": true,
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-1762027068.695433"
       }
     ],
     "loop_detection": {
@@ -1793,10 +1804,10 @@
       ]
     },
     "last_transition": "2025-11-01T19:33:24Z",
-    "transition_timestamp": "2025-11-01T17:30:27Z",
-    "transition_reason": "Entry condition check revealed 1 uncreated effort (2.2.2). Returning to CREATE_NEXT_INFRASTRUCTURE for iterative just-in-time setup (loop 3/5 per R504 protocol).",
+    "transition_timestamp": "2025-11-01T19:56:25Z",
+    "transition_reason": "SW Engineer parallelization analysis complete - ready to spawn single SW Engineer for effort 2.2.2",
     "transition_time": "2025-11-01T18:39:37Z",
-    "last_updated": "2025-11-01T18:39:37Z"
+    "last_updated": "2025-11-01T19:56:25Z"
   },
   "project_progression": {
     "current_project": {
@@ -1931,6 +1942,33 @@
             ]
           }
         ]
+      },
+      "sw_engineer_parallelization_analysis": {
+        "analysis_timestamp": "2025-11-01T19:50:00Z",
+        "analyzed_by": "orchestrator",
+        "phase": 2,
+        "wave": 2,
+        "strategy": "SINGLE",
+        "total_efforts_to_implement": 1,
+        "efforts_already_complete": 1,
+        "spawn_sequence": [
+          {
+            "order": 1,
+            "effort_id": "2.2.2",
+            "effort_name": "env-variable-support",
+            "effort_dir": "efforts/phase2/wave2/effort-2-env-variable-support",
+            "branch": "idpbuilder-oci-push/phase2/wave2/effort-2.2.2-env-var-integration",
+            "base_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+            "can_parallelize": false,
+            "spawn_mode": "single",
+            "implementation_plan": "efforts/phase2/wave2/effort-2-env-variable-support/.software-factory/phase2/wave2/effort-2-env-variable-support/IMPLEMENTATION-PLAN--20251101-193813.md",
+            "estimated_lines": 350,
+            "dependencies_satisfied": true
+          }
+        ],
+        "parallel_groups": [],
+        "r151_compliance": "N/A - single effort",
+        "ready_to_spawn": true
       }
     },
     "phases_completed": [],
@@ -2039,7 +2077,34 @@
           "depends_on": [
             1
           ],
-          "status": "PLANNED"
+          "status": "PLANNED",
+          "sw_engineer_parallelization_analysis": {
+            "analysis_timestamp": "2025-11-01T19:50:00Z",
+            "analyzed_by": "orchestrator",
+            "phase": 2,
+            "wave": 2,
+            "strategy": "SINGLE",
+            "total_efforts_to_implement": 1,
+            "efforts_already_complete": 1,
+            "spawn_sequence": [
+              {
+                "order": 1,
+                "effort_id": "2.2.2",
+                "effort_name": "env-variable-support",
+                "effort_dir": "efforts/phase2/wave2/effort-2-env-variable-support",
+                "branch": "idpbuilder-oci-push/phase2/wave2/effort-2.2.2-env-var-integration",
+                "base_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+                "can_parallelize": false,
+                "spawn_mode": "single",
+                "implementation_plan": "efforts/phase2/wave2/effort-2-env-variable-support/.software-factory/phase2/wave2/effort-2-env-variable-support/IMPLEMENTATION-PLAN--20251101-193813.md",
+                "estimated_lines": 350,
+                "dependencies_satisfied": true
+              }
+            ],
+            "parallel_groups": [],
+            "r151_compliance": "N/A - single effort",
+            "ready_to_spawn": true
+          }
         },
         {
           "wave_number": 3,
@@ -2074,8 +2139,8 @@
     "created_at": "2025-10-30T01:11:19Z",
     "last_updated": "2025-11-01T19:44:02Z",
     "version": "3.0.0",
-    "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → WAITING_FOR_EFFORT_PLANS - Effort 2.2.2 implementation plan created (923 lines), waiting for Code Reviewer completion",
-    "last_state_transition": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → WAITING_FOR_EFFORT_PLANS (effort 2.2.2 planning created)"
+    "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING \u2192 WAITING_FOR_EFFORT_PLANS - Effort 2.2.2 implementation plan created (923 lines), waiting for Code Reviewer completion",
+    "last_state_transition": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING \u2192 WAITING_FOR_EFFORT_PLANS (effort 2.2.2 planning created)"
   },
   "planning_files": {
     "project": {
