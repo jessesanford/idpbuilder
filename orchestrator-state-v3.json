@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-    "previous_state": "WAITING_FOR_EFFORT_PLANS",
-    "last_transition_timestamp": "2025-11-01T18:09:57Z",
+    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "previous_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+    "last_transition_timestamp": "2025-11-01T18:14:05Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-01T17:30:27Z",
       "consultation_id": "shutdown-1762018227",
