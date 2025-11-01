@@ -2529,8 +2529,8 @@
         "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
         "planning_remote": "planning",
         "integration_branch": "idpbuilder-oci-push/phase2/wave2/integration",
-        "created": true,
-        "validated": true,
+        "created": false,
+        "validated": false,
         "depends_on": [
           "phase2_wave2_effort_1_registry_override"
         ],
