@@ -3,10 +3,37 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
-    "previous_state": "WAVE_START",
-    "last_transition_timestamp": "2025-11-01T13:55:58+0000",
+    "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+    "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+    "last_transition_timestamp": "2025-11-01T14:04:32+0000",
     "state_history": [
+      {
+        "from_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+        "to_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "timestamp": "2025-11-01T14:04:32+0000",
+        "validated_by": "state-manager",
+        "reason": "Architect spawned and wave architecture planning completed. WAVE-2.2-ARCHITECTURE.md created (44K, 1,393 lines, CONCRETE fidelity). 2 sequential efforts defined. Ready to await architecture completion per R340 requirements.",
+        "phase": 2,
+        "wave": 2,
+        "orchestrator_proposal": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "proposal_accepted": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "architect_spawned": true,
+          "architecture_file_exists": true,
+          "architecture_file": "planning/phase2/wave2/WAVE-2.2-ARCHITECTURE.md",
+          "architecture_file_size": "44K",
+          "architecture_file_lines": 1393,
+          "fidelity_level": "CONCRETE",
+          "r340_compliance": true,
+          "r313_compliance": true,
+          "r288_compliance": true,
+          "state_machine_compliance": "VERIFIED"
+        }
+      },
       {
         "from_state": "WAVE_START",
         "to_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
@@ -1387,7 +1414,7 @@
     "project_name": "idpbuilder-oci-push-command",
     "project_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
     "created_at": "2025-10-30T01:11:19Z",
-    "last_updated": "2025-11-01T13:41:15+00:00",
+    "last_updated": "2025-11-01T14:04:32+0000",
     "version": "3.0.0"
   },
   "planning_files": {
