@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/cnoe-io/idpbuilder/pkg/docker"
 	"github.com/cnoe-io/idpbuilder/pkg/registry"
 	"github.com/cnoe-io/idpbuilder/pkg/auth"
@@ -14,9 +15,8 @@ import (
 )
 
 // NewPushCommand creates the push command that integrates all Phase 1 packages
-func NewPushCommand() *cobra.Command {
-	opts := &PushOptions{}
-
+// with environment variable support via Viper
+func NewPushCommand(v *viper.Viper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "push IMAGE",
 		Short: "Push a Docker image to an OCI registry",
@@ -25,40 +25,71 @@ func NewPushCommand() *cobra.Command {
 The command retrieves the image from the local Docker daemon and pushes it to
 the specified registry using credentials provided via flags or environment variables.
 
+Configuration precedence: Flags > Environment Variables > Defaults
+
+Environment Variables:
+  IDPBUILDER_REGISTRY   Override registry URL (default: gitea.cnoe.localtest.me:8443)
+  IDPBUILDER_USERNAME   Registry username (required if not provided via flag)
+  IDPBUILDER_PASSWORD   Registry password (required if not provided via flag)
+  IDPBUILDER_INSECURE   Skip TLS verification (true/false, 1/0, yes/no)
+  IDPBUILDER_VERBOSE    Enable verbose output (true/false, 1/0, yes/no)
+
 Examples:
-  # Push to default Gitea registry
+  # Push using flags only (Wave 2.1 compatibility)
   idpbuilder push alpine:latest --username admin --password password
 
-  # Push to custom registry
-  idpbuilder push myapp:v1.0 --registry docker.io --username user --password pass
+  # Push using environment variables
+  export IDPBUILDER_USERNAME=admin
+  export IDPBUILDER_PASSWORD=password
+  idpbuilder push alpine:latest
 
-  # Push with verbose progress
-  idpbuilder push alpine:latest --verbose --username admin --password password
+  # Mix flags and environment variables (flags take precedence)
+  export IDPBUILDER_REGISTRY=docker.io
+  idpbuilder push alpine:latest --username admin --password password
+
+  # Push to custom registry with verbose output
+  idpbuilder push myapp:v1.0 --registry docker.io --username user --password pass --verbose
 
   # Push with insecure TLS (development only)
   idpbuilder push alpine:latest --insecure --username admin --password password`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			opts.ImageName = args[0]
+			// Load configuration from flags, environment, and defaults
+			config, err := LoadConfig(cmd, args, v)
+			if err != nil {
+				return fmt.Errorf("configuration error: %w", err)
+			}
+
+			// Validate configuration
+			if err := config.Validate(); err != nil {
+				return fmt.Errorf("validation error: %w", err)
+			}
+
+			// Display configuration sources in verbose mode
+			if config.Verbose.Value == "true" {
+				config.DisplaySources()
+				fmt.Println()
+			}
+
+			// Convert to PushOptions for Wave 2.1 compatibility
+			opts := config.ToPushOptions()
+
+			// Call runPush unchanged
 			return runPush(cmd.Context(), opts)
 		},
 	}
 
-	// Define flags
-	cmd.Flags().StringVar(&opts.Registry, "registry", "gitea.cnoe.localtest.me:8443",
-		"Registry URL (default: Gitea registry)")
-	cmd.Flags().StringVar(&opts.Username, "username", "",
-		"Registry username (required)")
-	cmd.Flags().StringVar(&opts.Password, "password", "",
-		"Registry password (required)")
-	cmd.Flags().BoolVarP(&opts.Insecure, "insecure", "k", false,
-		"Skip TLS certificate verification (insecure)")
-	cmd.Flags().BoolVar(&opts.Verbose, "verbose", false,
-		"Enable verbose progress output")
-
-	// Mark required flags
-	cmd.MarkFlagRequired("username")
-	cmd.MarkFlagRequired("password")
+	// Define flags with environment variable hints
+	cmd.Flags().String("registry", DefaultRegistry,
+		fmt.Sprintf("Registry URL (env: %s)", EnvRegistry))
+	cmd.Flags().String("username", "",
+		fmt.Sprintf("Registry username (env: %s, required)", EnvUsername))
+	cmd.Flags().String("password", "",
+		fmt.Sprintf("Registry password (env: %s, required)", EnvPassword))
+	cmd.Flags().BoolP("insecure", "k", false,
+		fmt.Sprintf("Skip TLS certificate verification (env: %s)", EnvInsecure))
+	cmd.Flags().Bool("verbose", false,
+		fmt.Sprintf("Enable verbose progress output (env: %s)", EnvVerbose))
 
 	return cmd
 }
