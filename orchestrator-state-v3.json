@@ -3,7 +3,7 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "VALIDATE_INFRASTRUCTURE",
+    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
     "previous_state": "VALIDATE_INFRASTRUCTURE",
     "last_transition_timestamp": "2025-11-01T17:30:27Z",
     "last_state_manager_consultation": {
@@ -1491,19 +1491,36 @@
         },
         "loop_iteration": 4,
         "loop_type": "validate_infrastructure_controlled_loop"
+      },
+      {
+        "from_state": "VALIDATE_INFRASTRUCTURE",
+        "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+        "timestamp": "2025-11-01T17:43:56Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-1762018961",
+        "orchestrator_proposal": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "Transition VALIDATE_INFRASTRUCTURE → ANALYZE_CODE_REVIEWER_PARALLELIZATION not in allowed_transitions. State machine requires VALIDATE_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Parallelization analysis already complete in state.",
+        "transition_invalid": false,
+        "state_manager_override": true,
+        "override_reason": "Orchestrator proposed invalid transition; corrected to proper next state per state machine",
+        "validation_details": {
+          "infrastructure_validated": true,
+          "parallelization_analysis_exists": true,
+          "loop_counter_reset": true
+        }
       }
     ],
     "loop_detection": {
       "last_two_states": [
-        "CREATE_NEXT_INFRASTRUCTURE",
-        "VALIDATE_INFRASTRUCTURE"
+        "VALIDATE_INFRASTRUCTURE",
+        "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
       ],
-      "ping_pong_count": 2,
+      "ping_pong_count": 0,
       "same_state_count": 0,
-      "error_recovery_entries": 1,
-      "last_progress_timestamp": "2025-10-31T22:30:00Z",
-      "validate_infrastructure_loops": 3,
-      "iteration_count": 0
+      "error_recovery_entries": 0,
+      "last_progress_timestamp": "2025-11-01T17:45:33Z",
+      "validate_infrastructure_loops": 0
     },
     "status": null,
     "transition_validated": true,
