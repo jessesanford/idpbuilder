@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-02T18:33:55Z",
+  "last_updated": "2025-11-02T18:41:29Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -669,7 +669,7 @@
       "bug_id": "BUG-019-CODE-DELETION",
       "severity": "CRITICAL",
       "category": "R359_SUPREME_LAW_VIOLATION",
-      "status": "OPEN",
+      "status": "IN_PROGRESS",
       "phase": 2,
       "wave": 2,
       "effort_id": "integration",
@@ -720,64 +720,19 @@
       },
       "violation_commit": "37b5e68",
       "violation_commit_message": "fix: remove out-of-scope stub files to fix size violation",
-      "affected_effort": "integration"
-    },
-    {
-      "bug_id": "BUG-019-CODE-DELETION",
-      "severity": "CRITICAL",
-      "category": "R359_SUPREME_LAW_VIOLATION",
-      "status": "OPEN",
-      "phase": 2,
-      "wave": 2,
-      "effort_id": "integration",
-      "title": "R359 Supreme Law Violation - Deletion of 731 lines of approved Wave 2.1 code",
-      "description": "Commit 37b5e68 deleted 731 lines of APPROVED code from Wave 2.1 in 7 files (pkg/auth/provider.go, pkg/docker/client.go, pkg/progress/interface.go, pkg/progress/reporter.go, pkg/progress/reporter_test.go, pkg/registry/client.go, pkg/tls/config.go) to fix size limits. These files were implemented in Effort 2.1.2, code reviewed and APPROVED (commit 520c5c3), and integrated into Wave 2.1 (commit 978f94c). R359 Supreme Law prohibits deletion of approved code for ANY reason.",
-      "affected_branch": "idpbuilder-oci-push/phase2/wave2/integration",
-      "discovered_by": "code-reviewer",
-      "discovered_at": "2025-11-02T18:18:52Z",
-      "found_in_state": "REVIEW_WAVE_INTEGRATION",
-      "found_in_iteration": 6,
-      "blocking": true,
-      "priority": "P0",
-      "location": {
-        "file_path": "multiple",
-        "line_number": null,
-        "function_name": null,
-        "context": "Commit 37b5e68 - deleted 7 files totaling 731 lines"
-      },
-      "symptoms": [
-        "731 lines of approved Wave 2.1 code deleted",
-        "7 files removed: auth/provider, docker/client, progress/interface, progress/reporter, progress/reporter_test, registry/client, tls/config",
-        "Deleted code was previously APPROVED in code review (commit 520c5c3)",
-        "Deleted code was already integrated into Wave 2.1 (commit 978f94c)",
-        "Deletion done to meet size limits (improper approach per R359)"
+      "affected_effort": "integration",
+      "fix_strategy": "DELETE_CORRUPTED_WORKSPACE_AND_REINTEGRATE",
+      "fix_strategy_notes": [
+        "Integration workspace at efforts/phase2/wave2/integration-workspace is corrupted",
+        "Commit 37b5e68 deleted 731 lines of approved Wave 2.1 code",
+        "Must delete entire integration workspace and re-integrate from clean Wave 2.1 base",
+        "Re-integration will occur in START_WAVE_ITERATION (iteration 7)",
+        "Will properly build Wave 2.2 ON TOP OF Wave 2.1 without deletions"
       ],
-      "impact": "Wave 2.1 integrated functionality is now BROKEN. Any code depending on progress reporter, auth provider, or TLS config will FAIL. Violates cascade branching principles (Wave 2.2 should BUILD on Wave 2.1, not delete from it). Grading penalty: -100% (IMMEDIATE FAILURE).",
-      "resolution_plan": [
-        "REVERT commit 37b5e68 to restore all deleted Wave 2.1 files",
-        "DO NOT delete approved code - Ever. For any reason.",
-        "If Wave 2.2 efforts exceed size limits, SPLIT them into smaller efforts (proper approach)",
-        "Re-integrate Wave 2.2 building ON TOP OF Wave 2.1, not removing from it"
-      ],
-      "deleted_files": [
-        "pkg/auth/provider.go (46 lines) - Effort 2.1.1",
-        "pkg/docker/client.go (36 lines) - Effort 2.1.1",
-        "pkg/progress/interface.go (16 lines) - Effort 2.1.2",
-        "pkg/progress/reporter.go (154 lines) - Effort 2.1.2",
-        "pkg/progress/reporter_test.go (311 lines) - Effort 2.1.2",
-        "pkg/registry/client.go (58 lines) - Effort 2.1.1",
-        "pkg/tls/config.go (38 lines) - Effort 2.1.1"
-      ],
-      "approval_evidence": {
-        "code_review_commit": "520c5c3",
-        "code_review_status": "APPROVED",
-        "integration_commit": "978f94c",
-        "integration_status": "COMPLETED",
-        "wave_integrated": "2.1"
-      },
-      "violation_commit": "37b5e68",
-      "violation_commit_message": "fix: remove out-of-scope stub files to fix size violation",
-      "affected_effort": "integration"
+      "fix_strategy_determined_at": "2025-11-02T18:41:29Z",
+      "fix_strategy_determined_by": "orchestrator",
+      "will_fix_in_iteration": 7,
+      "in_progress_since": "2025-11-02T18:41:29Z"
     }
   ],
   "active_bug_count": 13,
@@ -819,10 +774,10 @@
     "updated_by": "state-manager"
   },
   "last_state_transition": {
-    "from": "REVIEW_WAVE_INTEGRATION",
-    "to": "CREATE_WAVE_FIX_PLAN",
-    "timestamp": "2025-11-02T17:07:00Z",
-    "reason": "REVIEW_WAVE_INTEGRATION complete: 6 bugs found (BUG-007 through BUG-018), guard condition bugs_found > 0 satisfied"
+    "from": "FIX_WAVE_UPSTREAM_BUGS",
+    "to": "START_WAVE_ITERATION",
+    "timestamp": "2025-11-02T18:41:29Z",
+    "reason": "Fix strategy determined for BUG-019 integration corruption"
   },
   "state_machine_sync": {
     "current_state": "FIX_WAVE_UPSTREAM_BUGS",
@@ -830,7 +785,7 @@
     "last_transition": "2025-11-02T18:33:55Z",
     "last_sync": "2025-11-02T18:33:55Z"
   },
-  "current_state": "FIX_WAVE_UPSTREAM_BUGS",
+  "current_state": "START_WAVE_ITERATION",
   "phase": 2,
   "wave": 2,
   "last_updated_by": "state-manager"

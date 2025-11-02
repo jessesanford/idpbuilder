@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-02T18:33:55Z",
+  "last_updated": "2025-11-02T18:41:29Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -312,7 +312,7 @@
       "container_id": "wave-phase2-wave2",
       "phase": 2,
       "wave": 2,
-      "status": "needs_fixes",
+      "status": "pending_reintegration",
       "iteration": 6,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase2/wave2/integration",
@@ -424,7 +424,18 @@
             "MINOR": 0
           }
         }
-      ]
+      ],
+      "iteration_number": 7,
+      "integration_workspace_status": "CORRUPTED_REQUIRES_DELETION",
+      "workspace_path": "efforts/phase2/wave2/integration-workspace",
+      "corruption_details": {
+        "corrupted_by_commit": "37b5e68",
+        "deleted_lines": 731,
+        "deleted_from_wave": "2.1",
+        "violation": "R359_SUPREME_LAW_VIOLATION"
+      },
+      "requires_workspace_deletion": true,
+      "will_reintegrate_in_iteration": 7
     }
   ],
   "integration_history": [],
@@ -454,12 +465,11 @@
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
-    "previous_state": "CREATE_WAVE_FIX_PLAN",
-    "last_transition": "2025-11-02T18:33:55Z",
-    "last_sync": "2025-11-02T18:33:55Z"
+    "orchestrator_state": "START_WAVE_ITERATION",
+    "last_sync": "2025-11-02T18:41:29Z",
+    "in_sync": true
   },
-  "current_state": "FIX_WAVE_UPSTREAM_BUGS",
+  "current_state": "START_WAVE_ITERATION",
   "phase": 2,
   "wave": 2,
   "last_updated_by": "state-manager"
