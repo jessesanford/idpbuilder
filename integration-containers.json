@@ -378,14 +378,14 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "",
-    "notes": "State transition: START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS (iteration 3)",
-    "state_transition": "INTEGRATE_WAVE_EFFORTS",
+    "last_updated": "2025-11-02T07:19:25Z",
+    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → ERROR_RECOVERY (iteration 3, missing workspace)",
+    "state_transition": "ERROR_RECOVERY",
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "current_state": "INTEGRATE_WAVE_EFFORTS",
-    "previous_state": "START_WAVE_ITERATION",
-    "last_transition": ""
+    "current_state": "ERROR_RECOVERY",
+    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "last_transition": "2025-11-02T07:19:25Z"
   }
 }

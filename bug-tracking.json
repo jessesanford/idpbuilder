@@ -553,9 +553,9 @@
     ]
   },
   "metadata": {
-    "notes": "State transition: START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS",
-    "last_updated": "",
-    "state_transition": "INTEGRATE_WAVE_EFFORTS",
+    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → ERROR_RECOVERY (missing integration workspace)",
+    "last_updated": "2025-11-02T07:19:25Z",
+    "state_transition": "ERROR_RECOVERY",
     "updated_by": "state-manager"
   },
   "last_state_transition": {
@@ -565,8 +565,8 @@
     "reason": "Wave iteration 3 started"
   },
   "state_machine_sync": {
-    "current_state": "INTEGRATE_WAVE_EFFORTS",
-    "previous_state": "START_WAVE_ITERATION",
-    "last_transition": "2025-11-02T07:09:30Z"
+    "current_state": "ERROR_RECOVERY",
+    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "last_transition": "2025-11-02T07:19:25Z"
   }
 }

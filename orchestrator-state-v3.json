@@ -3,13 +3,13 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "INTEGRATE_WAVE_EFFORTS",
-    "previous_state": "START_WAVE_ITERATION",
-    "last_transition_timestamp": "2025-11-02T07:00:32Z",
+    "current_state": "ERROR_RECOVERY",
+    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "last_transition_timestamp": "2025-11-02T07:19:25Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-02T06:52:43Z",
+      "timestamp": "2025-11-02T07:19:25Z",
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "from_state": "WAITING_FOR_FIX_PLANS",
+      "from_state": "INTEGRATE_WAVE_EFFORTS",
       "to_state": "ERROR_RECOVERY",
       "validated": true
     },
@@ -2206,6 +2206,27 @@
           "r288_compliance": true,
           "r517_consultation": true,
           "state_machine_compliance": "VERIFIED"
+        }
+      },
+      {
+        "from_state": "INTEGRATE_WAVE_EFFORTS",
+        "to_state": "ERROR_RECOVERY",
+        "timestamp": "2025-11-02T07:19:34Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-1762067974",
+        "orchestrator_proposal": "ERROR_RECOVERY",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "BLOCKING: Integration workspace directory missing (efforts/phase2/wave2/integration-workspace/). Cannot spawn Integration Agent per checklist requirement #3. Transition to ERROR_RECOVERY required.",
+        "phase": 2,
+        "wave": 2,
+        "iteration": 3,
+        "blocking_issue": {
+          "type": "MISSING_INFRASTRUCTURE",
+          "description": "Integration workspace directory does not exist",
+          "expected_path": "efforts/phase2/wave2/integration-workspace/",
+          "checklist_requirement": "#3: integration_workspace directory exists",
+          "impact": "Cannot spawn Integration Agent"
         }
       }
     ],
