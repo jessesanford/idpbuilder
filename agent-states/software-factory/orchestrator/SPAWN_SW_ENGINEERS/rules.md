@@ -221,7 +221,127 @@ for effort in wave_efforts:
 - Emit timestamp after last spawn
 - Verify delta <5s
 
-### 3. Spawn SW Engineers
+### 3. Pull Latest from Base Branch (R614 - SUPREME LAW)
+
+**CRITICAL**: Before spawning ANY agent, MUST pull latest from base branch to ensure fresh code.
+
+**ENHANCED R614 VERIFICATION** includes:
+- Repository verification (matches target_repo_url)
+- Base branch verification (exists in pre_planned_infrastructure)
+- **SOURCE EFFORT PUSH VERIFICATION** (if base is another effort)
+- Fresh pull from origin
+- Local matches remote verification
+
+```bash
+# For EACH effort directory, pull latest from base branch
+for effort_dir in wave_effort_directories:
+    echo "🔄 R614: Pulling latest for $effort_dir"
+
+    # CD to effort directory (R208)
+    cd "$effort_dir" || {
+        echo "🚨 FATAL: Cannot CD to $effort_dir"
+        exit 208
+    }
+
+    # Get effort metadata from pre_planned_infrastructure
+    EFFORT_ID=$(basename "$effort_dir")
+    EFFORT_META=$(jq -r ".pre_planned_infrastructure.efforts[] |
+                   select(.effort_dir | contains(\"$EFFORT_ID\"))" \
+                   orchestrator-state-v3.json)
+
+    BASE_BRANCH=$(echo "$EFFORT_META" | jq -r '.base_branch')
+    EXPECTED_REPO=$(echo "$EFFORT_META" | jq -r '.target_repo_url // .repository_url')
+
+    if [ -z "$BASE_BRANCH" ] || [ "$BASE_BRANCH" = "null" ]; then
+        echo "🚨 FATAL: No base_branch found for $EFFORT_ID"
+        exit 614
+    fi
+
+    echo "   Effort ID: $EFFORT_ID"
+    echo "   Base branch: $BASE_BRANCH"
+
+    # R614 STEP 1: Verify correct repository
+    CURRENT_REMOTE=$(git remote get-url origin 2>/dev/null || echo "")
+
+    if [[ "$CURRENT_REMOTE" != "$EXPECTED_REPO" ]]; then
+        echo "🚨 R614 VIOLATION: Remote origin mismatch!"
+        echo "   Expected: $EXPECTED_REPO"
+        echo "   Current: $CURRENT_REMOTE"
+        exit 614
+    fi
+
+    echo "   ✅ Repository verified: $EXPECTED_REPO"
+
+    # R614 STEP 2: Verify source effort pushed (CRITICAL for sequential dependencies)
+    if [[ "$BASE_BRANCH" == *"/effort-"* ]]; then
+        echo "   🔍 Base is another effort (sequential dependency)"
+
+        # Use helper script to verify source has pushed
+        SOURCE_EFFORT_ID=$(echo "$BASE_BRANCH" | grep -oP 'effort-[^/]+$' | sed 's/effort-//' | cut -d'-' -f1)
+
+        echo "   Verifying source effort $SOURCE_EFFORT_ID has pushed..."
+
+        # Run verification script
+        if ! bash "$CLAUDE_PROJECT_DIR/tools/verify-source-effort-pushed.sh" "$SOURCE_EFFORT_ID" \
+             "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json"; then
+            echo "🚨 R614 CRITICAL VIOLATION: Source effort has unpushed/uncommitted changes!"
+            echo "   Cannot spawn until source effort complies with R220 (push all changes)"
+            exit 614
+        fi
+
+        echo "   ✅ Source effort verified: all changes pushed"
+    else
+        echo "   📝 Base is NOT another effort (integration/main branch)"
+    fi
+
+    # R614 STEP 3: Fetch latest from origin
+    git fetch origin "$BASE_BRANCH" || {
+        echo "⚠️ WARNING: Cannot fetch $BASE_BRANCH"
+        # Retry logic here if needed
+        exit 614
+    }
+
+    # R614 STEP 4: Pull latest from base branch (CRITICAL FOR CASCADE INTEGRITY!)
+    git pull origin "$BASE_BRANCH" || {
+        echo "🚨 FATAL: Cannot pull from $BASE_BRANCH"
+        echo "This breaks cascade integrity!"
+        exit 614
+    }
+
+    # R614 STEP 5: Verify fresh base
+    REMOTE_HEAD=$(git rev-parse origin/$BASE_BRANCH)
+    MERGE_BASE=$(git merge-base HEAD origin/$BASE_BRANCH)
+
+    if [[ "$MERGE_BASE" == "$REMOTE_HEAD" ]]; then
+        echo "   ✅ On latest commit from $BASE_BRANCH"
+        echo "      Commit: $(git rev-parse --short $REMOTE_HEAD)"
+    else
+        echo "   ⚠️ WARNING: May not have all latest commits"
+        echo "      Remote: $(git rev-parse --short $REMOTE_HEAD)"
+        echo "      Base:   $(git rev-parse --short $MERGE_BASE)"
+    fi
+
+    echo "   ✅✅✅ R614 verification complete for $EFFORT_ID"
+    echo ""
+
+    # Return to orchestrator directory
+    cd - > /dev/null
+done
+
+echo "✅ R614: All effort directories on fresh base branches"
+```
+
+**R614 ensures**:
+- Sequential efforts have latest bug fixes from previous efforts
+- No duplicate bug discovery
+- No downstream rebases needed
+- CASCADE pattern maintained
+
+**Skip pull ONLY IF**:
+- First effort in wave (base_branch = integration branch that doesn't exist yet)
+- In that case, verify integration branch doesn't exist before skipping
+
+### 4. Spawn SW Engineers
 
 ```bash
 # Parallel spawn pattern (if multiple efforts)
@@ -252,7 +372,7 @@ claude-code --agent sw-engineer \
     --output json > wave-spawn-result.json
 ```
 
-### 4. Record Spawns
+### 5. Record Spawns
 
 Update orchestrator-state-v3.json:
 ```json
@@ -270,7 +390,7 @@ Update orchestrator-state-v3.json:
 }
 ```
 
-### 5. STOP per R313
+### 6. STOP per R313
 
 **CRITICAL**: After spawning agents, orchestrator MUST:
 - Update orchestrator-state-v3.json with current_state: "SPAWN_SW_ENGINEERS"

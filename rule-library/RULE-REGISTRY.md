@@ -64,6 +64,7 @@
 49. **R517.0.0** - Universal State Manager Consultation Law (SUPREME LAW - ALL STATE TRANSITIONS MUST CONSULT STATE MANAGER - NO DIRECT TRANSITIONS - -100% FOR BYPASS!)
 50. **R540.0.0** - State File Schema Compliance (SUPREME LAW - ALL STATE FILES MUST VALIDATE AGAINST JSON SCHEMA - -100% FOR VIOLATIONS!)
 51. **R550.0.0** - Plan Path Consistency and Discovery (SUPREME LAW - ALL PLANNING FILES TRACKED IN STATE - NO FILESYSTEM SEARCHING - -100% FOR UNFINDABLE PLANS!)
+52. **R614.0.0** - Fresh Base Pull Before Agent Spawn (SUPREME LAW - MUST PULL LATEST FROM BASE BRANCH BEFORE SPAWNING - MAINTAINS CASCADE INTEGRITY - -100% FOR STALE WORK!)
 
 ## Rule Categories
 
@@ -1421,3 +1422,47 @@
   - Exceeds 500KB without cleanup: -25%
   - No monitoring: -20%
   - Excessive growth rate: -15%
+
+## R614 - Fresh Base Pull Before Agent Spawn Protocol
+- **File**: rule-library/R614-fresh-base-pull-before-agent-spawn.md
+- **Criticality**: 🔴🔴🔴 SUPREME LAW - CASCADE INTEGRITY
+- **Summary**: Before spawning ANY agent to work on an effort, orchestrator MUST pull latest changes from the effort's base branch to ensure agent works on fresh code, maintaining cascade integrity. Includes comprehensive pre-pull verification: repository verification, base branch verification, and CRITICAL source effort push verification for sequential dependencies.
+- **Enforcement**: Exit code 614, ERROR_RECOVERY on pull failure, -50% to -100% for violations
+- **Scope**: SPAWN_SW_ENGINEERS (MANDATORY), SPAWN_CODE_REVIEWERS_EFFORT_REVIEW (RECOMMENDED), all spawn states
+- **Key Requirements**:
+  - **STEP 0**: Verify correct effort directory and load metadata from state
+  - **STEP 1**: Verify remote origin matches target_repo_url from state
+  - **STEP 2**: Verify base_branch exists in pre_planned_infrastructure
+  - **STEP 3**: **CRITICAL - Source Effort Push Verification**: If base is another effort (sequential dependency), verify source has pushed all changes and has no uncommitted changes
+  - **STEP 4**: Fetch latest from origin/base_branch
+  - **STEP 5**: Pull latest from origin/base_branch
+  - **STEP 6**: Verify local matches remote (fresh base)
+  - Complete sequence: CD → Verify Repo → Verify Source Pushed → Pull → Verify Fresh → Spawn
+  - Helper script: tools/verify-source-effort-pushed.sh (automatic verification)
+  - Handle edge cases: first effort in wave, network failures, conflicts
+  - Validation: tools/validate-fresh-base.sh script
+- **Problem Solved**:
+  - Prevents working on stale base branches
+  - Eliminates need for downstream rebases
+  - Ensures bug fixes propagate to sequential efforts
+  - Maintains CASCADE pattern throughout project lifecycle
+- **Integration**:
+  - Extends R208 (CD Before Spawn) with mandatory pull step
+  - Works with R603 (Sequential Timing) - ensures pull from completed dependencies
+  - Works with R514 (Infrastructure Creation) - updates initial clone
+  - Enforces R501 (Progressive Cascade) by ensuring fresh commits
+- **Example Use Case**:
+  - Effort 2.2.1 completed, bugs fixed in branch
+  - Effort 2.2.2 depends on 2.2.1 (base_branch: effort-2.2.1)
+  - R614: Pull latest from effort-2.2.1 before spawning 2.2.2 agent
+  - Result: 2.2.2 works on code WITH bug fixes, no rebase needed
+- **Grading Penalties**:
+  - Missing pull before spawn: -50% (stale work, defeats cascade)
+  - Pull failure ignored: -75% (allows work on incorrect base)
+  - Uncommitted changes before pull: -100% (R220 violation)
+  - Merge conflict in cascade: -100% (CASCADE CORRUPTION)
+  - Wrong repository: -100% (CATASTROPHIC - infrastructure corruption)
+  - Source effort unpushed commits: -100% (CATASTROPHIC - stale cascade)
+  - Source effort uncommitted changes: -100% (CATASTROPHIC - R220 violation upstream)
+  - Missing source push verification: -75% (CRITICAL - cascade integrity risk)
+- **Related Rules**: R208 (CD Before Spawn), R603 (Sequential Timing), R501 (Progressive Cascade), R514 (Infrastructure Creation), R509 (Base Branch Validation)
