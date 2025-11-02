@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "START_WAVE_ITERATION",
-    "previous_state": "ERROR_RECOVERY",
+    "current_state": "INTEGRATE_WAVE_EFFORTS",
+    "previous_state": "START_WAVE_ITERATION",
     "last_transition_timestamp": "2025-11-02T07:27:44Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-02T07:27:44Z",
@@ -2257,6 +2257,32 @@
           "r517_consultation": true,
           "state_machine_compliance": "VERIFIED"
         }
+      },
+      {
+        "from_state": "START_WAVE_ITERATION",
+        "to_state": "INTEGRATE_WAVE_EFFORTS",
+        "timestamp": "2025-11-02T07:33:48+0000",
+        "validated_by": "state-manager",
+        "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
+        "proposal_accepted": true,
+        "reason": "Wave iteration 4 started successfully. All efforts complete and ready for integration.",
+        "phase": 2,
+        "wave": 2,
+        "iteration": 4,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "iteration_incremented": true,
+          "current_iteration": 4,
+          "max_iterations": 10,
+          "max_iterations_not_exceeded": true,
+          "r288_compliance": true,
+          "r517_consultation": true,
+          "state_machine_compliance": "VERIFIED"
+        }
       }
     ],
     "loop_detection": {
@@ -2359,7 +2385,8 @@
       "iteration": 1,
       "error_recovery_complete": true
     },
-    "last_transition_at": "2025-11-02T07:09:30Z"
+    "last_transition_at": "2025-11-02T07:09:30Z",
+    "updated_at": "2025-11-02T07:33:48+0000"
   },
   "project_progression": {
     "current_project": {
@@ -2378,7 +2405,7 @@
     "current_wave": {
       "wave_number": 2,
       "name": "Advanced Configuration Features",
-      "iteration": 3,
+      "iteration": 4,
       "status": "IN_PROGRESS",
       "total_efforts": 2,
       "estimated_total_lines": 750,
@@ -2600,7 +2627,7 @@
       ]
     },
     "iteration_tracking": {
-      "last_progress_timestamp": "2025-11-02T07:08:14+00:00",
+      "last_progress_timestamp": "2025-11-02T07:30:58+00:00",
       "active_container_level": "wave",
       "current_container": "wave-phase1-wave2"
     },
