@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-02T17:07:05Z",
+  "last_updated": "2025-11-02T17:10:00Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -392,18 +392,18 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-02T17:07:05Z",
-    "notes": "State transition: REVIEW_WAVE_INTEGRATION → CREATE_WAVE_FIX_PLAN (6 bugs found, guard condition satisfied)",
-    "state_transition": "CREATE_WAVE_FIX_PLAN",
+    "last_updated": "2025-11-02T17:10:00Z",
+    "notes": "State transition: CREATE_WAVE_FIX_PLAN → FIX_WAVE_UPSTREAM_BUGS (6 bugs ready for fixing)",
+    "state_transition": "FIX_WAVE_UPSTREAM_BUGS",
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "current_state": "CREATE_WAVE_FIX_PLAN",
-    "previous_state": "REVIEW_WAVE_INTEGRATION",
-    "last_transition": "2025-11-02T17:07:05Z",
-    "last_sync": "2025-11-02T17:07:05Z"
+    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
+    "previous_state": "CREATE_WAVE_FIX_PLAN",
+    "last_transition": "2025-11-02T17:10:00Z",
+    "last_sync": "2025-11-02T17:10:00Z"
   },
-  "current_state": "CREATE_WAVE_FIX_PLAN",
+  "current_state": "FIX_WAVE_UPSTREAM_BUGS",
   "phase": 2,
   "wave": 2,
   "last_updated_by": "state-manager"

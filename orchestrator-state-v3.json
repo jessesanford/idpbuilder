@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_WAVE_FIX_PLAN",
-    "previous_state": "REVIEW_WAVE_INTEGRATION",
+    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
+    "previous_state": "CREATE_WAVE_FIX_PLAN",
     "last_transition_timestamp": "2025-11-02T17:06:52Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-02T17:06:52Z",
@@ -2445,6 +2445,30 @@
           "guard_condition_satisfied": true,
           "bugs_count": 6
         }
+      },
+      {
+        "from_state": "CREATE_WAVE_FIX_PLAN",
+        "to_state": "FIX_WAVE_UPSTREAM_BUGS",
+        "timestamp": "2025-11-02T17:10:00Z",
+        "validated_by": "state-manager",
+        "reason": "CREATE_WAVE_FIX_PLAN complete: Comprehensive fix plan created with 3 priority fixes for 6 unique bugs affecting effort 2.2.1. All bugs identified as UPSTREAM fixes. User approval received at R322 checkpoint. Transition to FIX_WAVE_UPSTREAM_BUGS to execute fixes per R536.",
+        "phase": 2,
+        "wave": 2,
+        "iteration": 4,
+        "bugs_to_fix": 6,
+        "priority_fixes": 3,
+        "fix_plan_file": "efforts/phase2/wave2/integration-workspace/FIX_PLAN_2.2.1.md",
+        "guard_condition": "fix_plan_created && user_approved",
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "proposed_transition": "CREATE_WAVE_FIX_PLAN → FIX_WAVE_UPSTREAM_BUGS",
+          "transition_in_allowed_list": true,
+          "fix_plan_exists": true,
+          "bugs_count": 6
+        }
       }
     ],
     "loop_detection": {
@@ -2503,7 +2527,7 @@
       ],
       "state_manager_ruling": "REJECTION - transition to SPAWN_SW_ENGINEERS denied due to invalid analysis basis"
     },
-    "last_transition": "2025-11-02T16:03:30Z",
+    "last_transition": "2025-11-02T17:10:00Z",
     "transition_timestamp": "2025-11-01T19:56:25Z",
     "transition_reason": "Integration completed with FAILED status - upstream bug in effort-1 requires backport fix",
     "transition_time": "2025-11-02T07:49:45Z",
@@ -2889,15 +2913,16 @@
     "project_name": "idpbuilder-oci-push-command",
     "project_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
     "created_at": "2025-10-30T01:11:19Z",
-    "last_updated": "2025-11-02T16:03:30Z",
+    "last_updated": "2025-11-02T17:10:00Z",
     "version": "3.0.0",
-    "notes": "State: MONITORING_EFFORT_REVIEWS - Effort 2.2.1 review completed with 2 critical bugs (build failure + size violation), effort 2.2.2 pending review after 2.2.1 fixes",
+    "notes": "State transition: CREATE_WAVE_FIX_PLAN → FIX_WAVE_UPSTREAM_BUGS (fix plan created, 6 bugs identified for fixing)",
     "last_state_transition": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → WAITING_FOR_EFFORT_PLANS (effort 2.2.2 planning created)",
     "last_state_change": "2025-11-02T05:25:34Z",
     "current_state": "MONITORING_EFFORT_REVIEWS",
     "phase": 2,
     "wave": 2,
-    "last_updated_by": "state-manager"
+    "last_updated_by": "state-manager",
+    "updated_by": "state-manager"
   },
   "planning_files": {
     "project": {
