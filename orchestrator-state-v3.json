@@ -3,21 +3,59 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "INTEGRATE_WAVE_EFFORTS",
-    "previous_state": "START_WAVE_ITERATION",
-    "last_transition_timestamp": "2025-11-02T17:34:45Z",
+    "current_state": "REVIEW_WAVE_INTEGRATION",
+    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "last_transition_timestamp": "2025-11-02T18:08:24Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-02T17:06:52Z",
+      "timestamp": "2025-11-02T18:08:24Z",
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "from_state": "REVIEW_WAVE_INTEGRATION",
-      "to_state": "CREATE_WAVE_FIX_PLAN",
+      "from_state": "INTEGRATE_WAVE_EFFORTS",
+      "to_state": "REVIEW_WAVE_INTEGRATION",
       "validated": true,
       "validation_result": "APPROVED",
       "validated_by": "state-manager",
-      "guard_condition_check": "bugs_found > 0 (6 OPEN bugs in bug-tracking.json)",
-      "transition_allowed": true
+      "guard_condition_check": "integration_complete AND build_passes (verified)",
+      "transition_allowed": true,
+      "exit_criteria_met": {
+        "integration_completed": true,
+        "efforts_merged": 2,
+        "conflicts_resolved": 0,
+        "build_passing": true,
+        "tests_passing": true,
+        "build_artifact": "66M binary",
+        "test_coverage": "89.6%",
+        "test_count": 85
+      },
+      "entry_criteria_met": {
+        "integration_complete": true,
+        "build_passes": true
+      }
     },
     "state_history": [
+      {
+        "from_state": "INTEGRATE_WAVE_EFFORTS",
+        "to_state": "REVIEW_WAVE_INTEGRATION",
+        "timestamp": "2025-11-02T18:08:24Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.2 Iteration 6: Integration succeeded with clean merges (2 efforts: 2.2.1 + 2.2.2, 0 conflicts). Build passing (66M binary), tests passing (89.6% coverage, 85 tests). Ready for code review to identify any bugs/issues in the integrated code.",
+        "phase": 2,
+        "wave": 2,
+        "iteration": 6,
+        "orchestrator_proposal": "REVIEW_WAVE_INTEGRATION",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "exit_criteria_met": true,
+          "entry_criteria_met": true,
+          "r288_compliance": true,
+          "r322_consultation": true,
+          "state_machine_compliance": "VERIFIED"
+        }
+      },
       {
         "from_state": "INTEGRATE_WAVE_EFFORTS",
         "to_state": "REVIEW_WAVE_INTEGRATION",
