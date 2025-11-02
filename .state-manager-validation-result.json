@@ -1,0 +1,118 @@
+{
+  "consultation_type": "SHUTDOWN_CONSULTATION",
+  "timestamp": "2025-11-02T23:43:16Z",
+  "orchestrator_proposal": {
+    "from_state": "INTEGRATE_WAVE_EFFORTS",
+    "to_state": "REVIEW_WAVE_INTEGRATION",
+    "phase": 2,
+    "wave": 2,
+    "iteration": 7
+  },
+  "validation_result": "APPROVED",
+  "transition_allowed": true,
+  "required_next_state": "REVIEW_WAVE_INTEGRATION",
+  "validation_checks": {
+    "state_machine_check": {
+      "from_state_exists": true,
+      "to_state_exists": true,
+      "transition_in_allowed_list": true,
+      "allowed_transitions_from_integrate_wave_efforts": [
+        "REVIEW_WAVE_INTEGRATION",
+        "IMMEDIATE_BACKPORT_REQUIRED",
+        "CASCADE_REINTEGRATION",
+        "ERROR_RECOVERY"
+      ],
+      "proposed_transition_valid": true
+    },
+    "exit_criteria_validation": {
+      "checklist_item_1_verified_efforts": true,
+      "checklist_item_2_clean_branch": true,
+      "checklist_item_3_infrastructure_ready": true,
+      "checklist_item_4_instructions_prepared": true,
+      "checklist_item_5_integration_agent_spawned": true,
+      "checklist_item_6_integration_complete": true,
+      "all_blocking_items_complete": true,
+      "integration_report_exists": true,
+      "integration_report_path": "efforts/phase2/wave2/integration-workspace/.software-factory/phase2/wave2/integration/INTEGRATE_WAVE_EFFORTS-REPORT--20251102-234122.md"
+    },
+    "integration_results_validation": {
+      "efforts_merged": 2,
+      "effort_branches": [
+        "effort-1-registry-override-viper (commit: 37b5e68)",
+        "effort-2-env-variable-support (commit: e08ef95)"
+      ],
+      "merge_conflicts": 0,
+      "build_status": "PASSING",
+      "test_status": "PASSING",
+      "test_coverage": "89.6%",
+      "wave_2_2_tests_passing": 27,
+      "integration_status": "SUCCESS",
+      "r329_compliance": true,
+      "r300_compliance": true,
+      "r308_compliance": true
+    },
+    "entry_criteria_for_review_wave_integration": {
+      "integration_complete": true,
+      "build_passes": true,
+      "integration_report_available": true,
+      "all_criteria_met": true
+    },
+    "r288_compliance": {
+      "will_update_all_4_files": true,
+      "files_to_update": [
+        "orchestrator-state-v3.json",
+        "bug-tracking.json",
+        "integration-containers.json",
+        "fix-cascade-state.json"
+      ]
+    },
+    "iteration_container_status": {
+      "iteration_number": 7,
+      "max_iterations": 10,
+      "within_limits": true,
+      "integration_successful": true,
+      "bugs_remaining": 0,
+      "ready_for_review": true
+    }
+  },
+  "state_updates_to_apply": {
+    "orchestrator_state_v3": {
+      "current_state": "REVIEW_WAVE_INTEGRATION",
+      "previous_state": "INTEGRATE_WAVE_EFFORTS",
+      "phase": 2,
+      "wave": 2,
+      "iteration": 7,
+      "last_integration_report": "efforts/phase2/wave2/integration-workspace/.software-factory/phase2/wave2/integration/INTEGRATE_WAVE_EFFORTS-REPORT--20251102-234122.md"
+    },
+    "bug_tracking": {
+      "bugs_remaining": 0,
+      "current_state": "REVIEW_WAVE_INTEGRATION",
+      "note": "BUG-019 fixed in iteration 7 through re-integration from clean base"
+    },
+    "integration_containers": {
+      "wave_phase2_wave2_iteration": 7,
+      "wave_phase2_wave2_status": "awaiting_review",
+      "integration_report": "efforts/phase2/wave2/integration-workspace/.software-factory/phase2/wave2/integration/INTEGRATE_WAVE_EFFORTS-REPORT--20251102-234122.md",
+      "build_status": "SUCCESS",
+      "test_status": "PASSING",
+      "coverage": "89.6%"
+    },
+    "fix_cascade_state": {
+      "no_updates_needed": true,
+      "reason": "No active cascades"
+    }
+  },
+  "validation_summary": {
+    "transition_valid": true,
+    "all_exit_criteria_met": true,
+    "all_entry_criteria_met": true,
+    "blocking_issues": 0,
+    "ready_to_transition": true
+  },
+  "orchestrator_directive": {
+    "action": "TRANSITION_APPROVED",
+    "next_state": "REVIEW_WAVE_INTEGRATION",
+    "reason": "Integration iteration 7 succeeded with clean merges (2 efforts, 0 conflicts), passing build (66M binary), passing tests (89.6% coverage, 27+ Wave 2.2 tests). Re-integration from clean Wave 2.1 base successfully resolved BUG-019 R359 violation. Ready for code review to validate integrated code quality.",
+    "note": "All supreme laws followed (R329, R300, R308, R361, R381, R506). Integration agent performed all merges per R329. State Manager will now update all 4 state files atomically per R288."
+  }
+}
