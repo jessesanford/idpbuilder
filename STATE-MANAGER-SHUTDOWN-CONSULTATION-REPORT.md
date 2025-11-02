@@ -1,279 +1,165 @@
-# STATE MANAGER SHUTDOWN CONSULTATION REPORT
+# State Manager Shutdown Consultation Report
 
-**Timestamp**: 2025-11-02T03:13:23Z
-**Consultation Type**: SHUTDOWN_CONSULTATION
-**Agent**: orchestrator
-**Session**: Phase 2 Wave 2 Implementation
-
----
-
-## TRANSITION VALIDATION
-
-### Proposed Transition
-- **From State**: SPAWN_SW_ENGINEERS
-- **To State**: MONITORING_SWE_PROGRESS
-- **Validation**: ✓ APPROVED
-
-### State Machine Compliance
-```
-SPAWN_SW_ENGINEERS allowed transitions:
-  ✓ MONITORING_SWE_PROGRESS (selected)
-  ✓ ERROR_RECOVERY
-```
-
-**Source**: `/home/vscode/workspaces/idpbuilder-oci-push-planning/state-machines/software-factory-3.0-state-machine.json` (lines 1310-1333)
+**Date**: 2025-11-02T05:24:43Z
+**State Manager Agent**: state-manager
+**Orchestrator State**: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW → MONITORING_EFFORT_REVIEWS
 
 ---
 
-## STATE FILE UPDATES PERFORMED
+## Transition Request Summary
 
-### 1. orchestrator-state-v3.json
-
-#### State Machine Updates
-```json
-{
-  "current_state": "MONITORING_SWE_PROGRESS",
-  "previous_state": "SPAWN_SW_ENGINEERS",
-  "last_transition": "2025-11-02T03:13:23Z"
-}
-```
-
-#### State History Entry Added
-```json
-{
-  "from_state": "SPAWN_SW_ENGINEERS",
-  "to_state": "MONITORING_SWE_PROGRESS",
-  "timestamp": "2025-11-02T03:13:23Z",
-  "validated_by": "state-manager",
-  "reason": "SW Engineer spawned and completed implementation for effort 2.2.2"
-}
-```
-
-#### Active Agents Entry Added
-```json
-{
-  "agent_type": "sw-engineer",
-  "agent_id": "swe-2.2.2-env-variable-support",
-  "state": "COMPLETED",
-  "effort": "2.2.2",
-  "effort_name": "env-variable-support",
-  "effort_dir": "efforts/phase2/wave2/effort-2-env-variable-support",
-  "branch": "idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support",
-  "spawned_at": "2025-11-02T03:00:00Z",
-  "completed_at": "2025-11-02T03:05:47Z",
-  "implementation_plan": "planning/phase2/wave2/WAVE-IMPLEMENTATION-PLAN.md",
-  "implementation_report": "efforts/phase2/wave2/effort-2-env-variable-support/.software-factory/phase2/wave2/effort-2-env-variable-support/IMPLEMENTATION-COMPLETE--20251102-030547.md",
-  "lines_implemented": 684,
-  "within_limit": true,
-  "tests_passing": null,
-  "commits_pushed": true
-}
-```
-
-#### Planning Files Updates
-```json
-{
-  "planning_files.phases.phase2.waves.wave2.efforts.effort-2-env-variable-support": {
-    "status": "implementation_complete",
-    "implementation_plan": "planning/phase2/wave2/WAVE-IMPLEMENTATION-PLAN.md",
-    "implementation_complete": "efforts/phase2/wave2/effort-2-env-variable-support/.software-factory/phase2/wave2/effort-2-env-variable-support/IMPLEMENTATION-COMPLETE--20251102-030547.md",
-    "implementation_started_at": "2025-11-02T03:00:00Z",
-    "implementation_completed_at": "2025-11-02T03:05:47Z",
-    "implementation_lines": 684
-  }
-}
-```
-
-### 2. bug-tracking.json
-```json
-{
-  "last_updated": "2025-11-02T03:13:23Z",
-  "state_machine_sync": {
-    "current_state": "MONITORING_SWE_PROGRESS",
-    "previous_state": "SPAWN_SW_ENGINEERS",
-    "last_transition": "2025-11-02T03:13:23Z"
-  }
-}
-```
-
-### 3. integration-containers.json
-```json
-{
-  "last_updated": "2025-11-02T03:13:23Z",
-  "state_machine_sync": {
-    "current_state": "MONITORING_SWE_PROGRESS",
-    "previous_state": "SPAWN_SW_ENGINEERS",
-    "last_transition": "2025-11-02T03:13:23Z"
-  }
-}
-```
+**Proposed Transition**: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW → MONITORING_EFFORT_REVIEWS
+**Reason**: Code Reviewer spawned for effort 2.2.1, review completed with critical findings (build failure + size violation)
+**Orchestrator Proposal**: MONITORING_EFFORT_REVIEWS
+**State Manager Decision**: ✅ APPROVED
 
 ---
 
-## SCHEMA VALIDATION
+## Validation Results
 
-### Initial Validation Issue
-- **Error**: `state_history` entry used `from` instead of `from_state`
-- **Fix Applied**: Corrected field names to match schema
-- **Required Fields**: `from_state`, `to_state`, `timestamp`, `validated_by`
+### 1. State Machine Compliance
+**Status**: ✅ VALID TRANSITION
 
-### Final Validation Results
-```
-✓ orchestrator-state-v3.json: PASSED
-✓ bug-tracking.json: PASSED
-✓ integration-containers.json: PASSED
-✓ R550 plan path consistency: PASSED
-✓ All pre-commit validations: PASSED
-```
+**Verification**:
+- Source state: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW
+- Target state: MONITORING_EFFORT_REVIEWS
+- Allowed transitions from SPAWN_CODE_REVIEWERS_EFFORT_REVIEW:
+  - MONITORING_EFFORT_REVIEWS ✅
+  - ERROR_RECOVERY
 
----
+**Conclusion**: Transition is legal per state machine definition.
 
-## GIT OPERATIONS
+### 2. Work Completion Verification
 
-### Commit
-```
-Commit: 1719968
-Message: state: SPAWN_SW_ENGINEERS → MONITORING_SWE_PROGRESS [R288]
-Tag: [R288] (State file atomicity)
-Files: orchestrator-state-v3.json, bug-tracking.json, integration-containers.json
-```
+**Code Review Status**:
+- Effort: 2.2.1 (Registry Override & Viper Integration)
+- Branch: idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper
+- Review Completed: 2025-11-02T05:20:38Z
+- Report: `.software-factory/phase2/wave2/effort-1-registry-override-viper/CODE-REVIEW-REPORT--20251102-052038.md`
+- Decision: ❌ NEEDS_SPLIT + CRITICAL BUILD FIX
 
-### Push
-```
-✓ Successfully pushed to main branch
-Remote: https://github.com/jessesanford/idpbuilder-oci-push-planning.git
-Range: c3b942b..1719968
-```
+**Critical Findings**:
+1. **BUG-007-BUILD-VIPER-ARG** (CRITICAL)
+   - Build failure: root.go missing viper parameter
+   - Impact: Code cannot compile
 
----
+2. **BUG-008-SIZE-VIOLATION** (CRITICAL)
+   - 831 lines exceeds 800-line hard limit
+   - Includes 389 lines of out-of-scope Phase 1 stubs
+   - Theme purity: 51.1% (requires >95%)
 
-## WORK COMPLETED SUMMARY
+**Sequential Plan Status**:
+- Effort 2.2.1: Review COMPLETED ✅ (with critical findings)
+- Effort 2.2.2: Pending (blocked until 2.2.1 fixes complete)
 
-### SW Engineer: swe-2.2.2-env-variable-support
-- **Effort**: 2.2.2 (env-variable-support)
-- **Branch**: idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support
-- **Duration**: 5 minutes 47 seconds (03:00:00Z → 03:05:47Z)
-- **Implementation**: 684 lines of integration tests
-- **Status**: COMPLETED, all changes committed and pushed
-- **Within Limit**: ✓ YES (684 < 800)
+### 3. State File Updates
 
-### Deliverables
-1. Integration test suite created
-2. IMPLEMENTATION-COMPLETE report generated
-3. All changes committed to effort branch
-4. Ready for code review
+All state files updated atomically:
 
----
+**orchestrator-state-v3.json**:
+- state_machine.current_state: MONITORING_EFFORT_REVIEWS
+- state_machine.previous_state: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW
+- state_machine.state_history: Added transition record
+- metadata.current_state: MONITORING_EFFORT_REVIEWS
+- ✅ Schema validation: PASSED
 
-## NEXT STATE REQUIREMENTS
+**bug-tracking.json**:
+- Added BUG-007-BUILD-VIPER-ARG (CRITICAL, OPEN)
+- Added BUG-008-SIZE-VIOLATION (CRITICAL, OPEN)
+- active_bug_count: 2
+- resolved_bug_count: 6
+- state_machine_sync: MONITORING_EFFORT_REVIEWS
+- ✅ Schema validation: PASSED
 
-### MONITORING_SWE_PROGRESS State
-**Source**: `state-machines/software-factory-3.0-state-machine.json` (lines 1334-1357)
+**integration-containers.json**:
+- state_machine_sync: MONITORING_EFFORT_REVIEWS
+- metadata.notes: Updated transition context
+- ✅ Schema validation: PASSED
 
-#### Description
-Monitor SW Engineers implementing features in effort branches
+### 4. Commit Verification
 
-#### Required Conditions
-- SW Engineers spawned and active
-- Implementation in progress or completed
-- Need to track completion status
+**Commit**: 4ea39a7
+**Message**: state: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW → MONITORING_EFFORT_REVIEWS [R288]
+**Tag**: [R288] (State Manager atomic transition)
+**Pre-commit Validation**: ✅ ALL PASSED
+- orchestrator-state-v3.json validation: ✅
+- bug-tracking.json validation: ✅
+- integration-containers.json validation: ✅
+- R550 plan path consistency: ✅
 
-#### Required Actions
-1. Monitor SW Engineer progress (R233 active monitoring)
-2. Check for implementation completion
-3. Verify all changes committed and pushed
-4. Validate line counts within limits
-5. Check for blocking issues
-6. Update orchestrator-state-v3.json with progress
-7. Transition to SPAWN_CODE_REVIEWERS_EFFORT_REVIEW when ready
-
-#### Allowed Transitions
-- **SPAWN_CODE_REVIEWERS_EFFORT_REVIEW** (when implementation complete)
-- **ERROR_RECOVERY** (if errors occur)
+**Pushed**: ✅ To remote main branch
 
 ---
 
-## ORCHESTRATOR NEXT STEPS
+## Next State Requirements
 
-### Immediate Actions (MONITORING_SWE_PROGRESS)
-1. Acknowledge transition to MONITORING_SWE_PROGRESS
-2. Load state-specific rules from:
-   `/home/vscode/workspaces/idpbuilder-oci-push-planning/agent-states/software-factory/orchestrator/MONITORING_SWE_PROGRESS/rules.md`
-3. Review SW Engineer completion status (already COMPLETED)
-4. Verify implementation report exists and is complete
-5. Validate line counts (684 lines confirmed)
+**Current State**: MONITORING_EFFORT_REVIEWS
 
-### Expected Flow
-Since the SW Engineer already completed:
-1. **MONITORING_SWE_PROGRESS**: Quick verification that work is done
-2. **SPAWN_CODE_REVIEWERS_EFFORT_REVIEW**: Spawn code reviewer for effort 2.2.2
-3. Code review process
-4. Integration (if all efforts in wave complete)
+**Orchestrator Responsibilities**:
+1. **Assess Bug Severity**
+   - Review BUG-007 (build failure) - BLOCKING
+   - Review BUG-008 (size violation) - BLOCKING
+   - Determine fix approach per Code Review recommendations
 
-### Critical Rules to Follow
-- **R233**: Active monitoring of agent progress
-- **R340**: Quality validation before transitions
-- **R405**: Automation continuation flag at end of state
-- **R506**: NEVER use --no-verify on commits
+2. **Sequential Plan Management**
+   - Effort 2.2.1 must be fixed before 2.2.2 review
+   - Cannot proceed to 2.2.2 implementation while 2.2.1 has critical bugs
+
+3. **Bug Triage Decision Path**:
+   - If bugs fixable quickly → Spawn SW Engineer for fixes
+   - If bugs require split → Create split plan first
+   - If bugs require architecture change → Escalate to architect
+
+4. **Code Review Recommendations**:
+   - **PREFERRED**: Remove 389 lines of out-of-scope Phase 1 stubs → ~406 lines (under limit)
+   - **ALTERNATIVE**: Create split plan (Split-001: 389 lines stubs, Split-002: 406 lines core)
+
+**Next Valid Transitions from MONITORING_EFFORT_REVIEWS**:
+- SPAWN_SW_ENGINEERS (to fix bugs)
+- WAITING_FOR_FIX_PLANS (if split/planning needed)
+- ERROR_RECOVERY (if critical blocking issue)
 
 ---
 
-## COMPLIANCE VERIFICATION
+## State Manager Notes
 
-### R288 - State File Atomicity ✓
-- All 3 state files updated in single transaction
-- Consistent timestamp across all files
-- State machine sync fields updated
-- Committed and pushed atomically
-
-### R517 - State Execution Checklist ✓
-- State-specific rules will be loaded by orchestrator
-- Transition validated against state machine
-- All required state updates performed
-- Documentation created (this report)
-
-### R506 - Pre-Commit Validation ✓
-- All pre-commit hooks executed
-- No --no-verify flags used
+### R517 Compliance
+✅ All required shutdown consultation steps completed:
+- State transition validated against state machine
+- Work completion verified
+- State files updated atomically
 - Schema validation passed
-- R550 consistency checks passed
+- Commit tagged with [R288]
+- Changes pushed to remote
+
+### Critical Context Preserved
+The sequential nature of Phase 2 Wave 2 means:
+1. Effort 2.2.1 MUST be fixed before 2.2.2 can be reviewed
+2. Both critical bugs (build + size) MUST be resolved
+3. Code Review report provides clear fix recommendations
+4. Orchestrator should follow "remove out-of-scope code" approach first
+
+### R506 Compliance
+✅ NO pre-commit bypass attempted
+✅ All validations passed cleanly
+✅ System integrity maintained
 
 ---
 
-## REQUIRED ORCHESTRATOR RESPONSE
+## Transition Summary
 
-**NEXT_STATE**: `MONITORING_SWE_PROGRESS`
+**From**: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW
+**To**: MONITORING_EFFORT_REVIEWS
+**Timestamp**: 2025-11-02T05:24:43Z
+**Validated By**: state-manager
+**Orchestrator Proposal**: MONITORING_EFFORT_REVIEWS
+**Proposal Accepted**: ✅ YES
+**Result**: ✅ SUCCESS
 
-The orchestrator MUST:
-1. Acknowledge this state transition
-2. Load MONITORING_SWE_PROGRESS state rules
-3. Verify SW Engineer completion
-4. Prepare to spawn code reviewer
-
-**AUTOMATION CONTINUATION FLAG REQUIRED AT END OF MONITORING_SWE_PROGRESS**:
-```
-CONTINUE-SOFTWARE-FACTORY=TRUE   # If monitoring complete and ready for review
-CONTINUE-SOFTWARE-FACTORY=FALSE  # If errors or blocks detected
-```
+**REQUIRED NEXT STATE**: MONITORING_EFFORT_REVIEWS
 
 ---
 
-## STATE MANAGER CERTIFICATION
-
-✓ Transition validated against state machine
-✓ All state files updated atomically
-✓ Schema validation passed
-✓ Pre-commit hooks executed successfully
-✓ Changes committed with [R288] tag
-✓ Changes pushed to remote repository
-✓ Consultation report generated
-
-**State Manager**: SHUTDOWN_CONSULTATION complete
-**Status**: SUCCESS
-**Next State Confirmed**: MONITORING_SWE_PROGRESS
-
----
-
-*Generated by State Manager Agent*
-*Consultation Type: SHUTDOWN_CONSULTATION*
-*Timestamp: 2025-11-02T03:13:23Z*
+**State Manager Agent**
+Shutdown Consultation Complete
+2025-11-02T05:24:43Z
