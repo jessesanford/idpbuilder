@@ -3,33 +3,32 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "REVIEW_WAVE_INTEGRATION",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_transition_timestamp": "2025-11-02T23:43:16Z",
+    "current_state": "REVIEW_WAVE_ARCHITECTURE",
+    "previous_state": "REVIEW_WAVE_INTEGRATION",
+    "last_transition_timestamp": "2025-11-02T23:58:52Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-02T23:43:16Z",
+      "timestamp": "2025-11-02T23:58:52Z",
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "from_state": "INTEGRATE_WAVE_EFFORTS",
-      "to_state": "REVIEW_WAVE_INTEGRATION",
+      "from_state": "REVIEW_WAVE_INTEGRATION",
+      "to_state": "REVIEW_WAVE_ARCHITECTURE",
       "validated": true,
       "validation_result": "APPROVED",
       "validated_by": "state-manager",
       "transition_allowed": true,
-      "exit_criteria_met": {
-        "all_blocking_items_complete": true,
-        "integration_agent_spawned": true,
-        "integration_complete": true,
-        "efforts_merged": 2,
-        "merge_conflicts": 0,
-        "build_passing": true,
-        "tests_passing": true,
-        "integration_report_created": true
+      "guard_condition": "bugs_found == 0",
+      "guard_satisfied": true,
+      "work_completed": {
+        "code_review_complete": true,
+        "bugs_found": 0,
+        "build_status": "SUCCESS",
+        "test_status": "PASS",
+        "test_count": 27,
+        "coverage": "89.6%",
+        "integration_quality": "EXCELLENT",
+        "r359_compliance": "VERIFIED"
       },
-      "entry_criteria_met": {
-        "integration_complete": true,
-        "build_passes": true,
-        "integration_report_available": true
-      }
+      "exit_criteria_met": true,
+      "entry_criteria_met": true
     },
     "state_history": [
       {
@@ -2753,6 +2752,34 @@
             "test_coverage": "89.6%",
             "integration_report": "efforts/phase2/wave2/integration-workspace/.software-factory/phase2/wave2/integration/INTEGRATE_WAVE_EFFORTS-REPORT--20251102-234122.md"
           }
+        }
+      },
+      {
+        "from_state": "REVIEW_WAVE_INTEGRATION",
+        "to_state": "REVIEW_WAVE_ARCHITECTURE",
+        "timestamp": "2025-11-02T23:58:52Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.2 Iteration 7: Code review complete with 0 bugs found, build and tests passing. Proceeding to architecture review per guard condition (bugs_found == 0).",
+        "phase": 2,
+        "wave": 2,
+        "iteration": 7,
+        "orchestrator_proposal": "REVIEW_WAVE_ARCHITECTURE",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "guard_condition_satisfied": true,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "guard_condition_met": true,
+          "bugs_found": 0,
+          "build_status": "SUCCESS",
+          "test_status": "PASS",
+          "r359_compliance": "VERIFIED",
+          "r288_compliance": true,
+          "r517_compliance": true,
+          "state_machine_compliance": "VERIFIED"
         }
       }
     ],
