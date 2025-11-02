@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "last_updated": "2025-11-02T14:31:50Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -536,26 +536,6 @@
       "found_in_iteration": 4,
       "blocking": true,
       "priority": "P0",
-      "discovered_by": "code-reviewer",
-      "discovered_at": "2025-11-02T07:58:12Z"
-    },
-    {
-      "bug_id": "BUG-014-SIZE-VIOLATION",
-      "severity": "CRITICAL",
-      "category": "SIZE_VIOLATION",
-      "status": "OPEN",
-      "title": "Hard Size Limit Violation - 848 Lines",
-      "description": "Integration branch exceeds the hard 800-line limit for implementation code (848 lines, +48 over limit, 6.0% violation), violating R304 mandatory line counting enforcement.",
-      "location": {
-        "file_path": "integration-branch",
-        "line_number": null,
-        "function_name": null
-      },
-      "affected_effort": "integration",
-      "affected_wave": "2.2",
-      "found_in_iteration": 4,
-      "blocking": true,
-      "priority": "P1",
       "discovered_by": "code-reviewer",
       "discovered_at": "2025-11-02T07:58:12Z"
     },
