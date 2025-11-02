@@ -853,3 +853,63 @@ exit 0  # If R322 checkpoint
 - **Review findings = Spawn fixes OR integrate = NORMAL!**
 
 **See: $CLAUDE_PROJECT_DIR/rule-library/R405-automation-continuation-flag.md**
+
+---
+
+## 🔴 R340 MANDATORY: Update planning_files After Reviews
+
+**CRITICAL**: When Code Reviewers complete, you MUST update `planning_files` with review results!
+
+### When Review Completes (CODE-REVIEW-REPORT detected)
+```bash
+# Extract review decision from CODE-REVIEW-REPORT
+REVIEW_FILE=$(find efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME} -name "CODE-REVIEW-REPORT*.md" | head -1)
+DECISION=$(grep -m1 "Decision.*:" "$REVIEW_FILE" | sed 's/.*Decision.*: *//' | awk '{print $1}')
+APPROVED=$([[ "$DECISION" =~ "APPROVED" ]] && echo "true" || echo "false")
+NEW_STATUS=$([[ "$APPROVED" == "true" ]] && echo "approved" || echo "needs_fixes")
+
+# Update state file with review results
+jq ".planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].reviewed = true |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].approved = ${APPROVED} |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].code_review_report = \"${REVIEW_FILE}\" |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].review_completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].review_decision = \"${DECISION}\" |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].status = \"${NEW_STATUS}\"" \
+    orchestrator-state-v3.json > tmp.json && mv tmp.json orchestrator-state-v3.json
+```
+
+### Pre-Exit Checklist
+- [ ] All reviewed efforts have `reviewed: true` in planning_files
+- [ ] All CODE-REVIEW-REPORT files tracked with paths
+- [ ] review_decision extracted and recorded
+- [ ] approved status set correctly (true/false)
+- [ ] status updated to "approved" or "needs_fixes"
+- [ ] No orphaned CODE-REVIEW-REPORT files (all tracked)
+
+**Failure to update = R340 VIOLATION = -20% per effort**
+
+### Example Complete Effort Entry After Review
+```json
+{
+  "effort-1-example": {
+    "effort_id": "2.2.1",
+    "effort_name": "Example Effort",
+    "status": "approved",
+    "reviewed": true,
+    "approved": true,
+    "implementation_plan": "path/to/IMPLEMENTATION-PLAN--timestamp.md",
+    "implementation_complete": "path/to/IMPLEMENTATION-COMPLETE--timestamp.md",
+    "code_review_report": "path/to/CODE-REVIEW-REPORT--timestamp.md",
+    "implementation_lines": 247,
+    "plan_created_at": "2025-11-01T17:53:00Z",
+    "implementation_started_at": "2025-11-01T18:47:00Z",
+    "implementation_completed_at": "2025-11-01T18:51:00Z",
+    "review_completed_at": "2025-11-01T19:22:58Z",
+    "review_decision": "APPROVED",
+    "branch_name": "idpbuilder-oci-push/phase2/wave2/effort-1-example",
+    "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+    "commit_hash": "8791bbb"
+  }
+}
+```
+

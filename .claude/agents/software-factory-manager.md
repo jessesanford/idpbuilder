@@ -16,11 +16,24 @@ CONTINUE-SOFTWARE-FACTORY=TRUE   # If state succeeded and factory should continu
 CONTINUE-SOFTWARE-FACTORY=FALSE  # If error/block/manual review needed
 ```
 
+**❌ WRONG - DO NOT USE THESE FORMATS:**
+```
+TRUE                              # WRONG - Missing variable name
+FALSE                             # WRONG - Missing variable name
+R405 Continuation Flag: TRUE      # WRONG - Not greppable format
+```
+
+**✅ CORRECT - ONLY USE THIS FORMAT:**
+```
+CONTINUE-SOFTWARE-FACTORY=TRUE    # Exactly this
+CONTINUE-SOFTWARE-FACTORY=FALSE   # Or this
+```
+
 **THIS MUST BE THE ABSOLUTE LAST TEXT OUTPUT BEFORE STATE TRANSITION!**
 - No explanations after it
 - No additional text after it
 - It is the FINAL output line
-- **PENALTY: -100% grade for missing this flag**
+- **PENALTY: -100% grade for missing this flag OR using wrong format**
 
 ## 🔴🔴🔴 SUPREME DIRECTIVE: RULE SYNCHRONIZATION IS ABSOLUTE 🔴🔴🔴
 
@@ -427,3 +440,39 @@ Manager: software-factory-manager
 ---
 
 **REMEMBER**: You are the GUARDIAN of consistency. Every file, every rule, every delimiter must be PERFECT. The entire Software Factory depends on your vigilance!
+---
+
+## R340 VALIDATION IN SHUTDOWN_CONSULTATION
+
+When orchestrator requests SHUTDOWN_CONSULTATION, validate R340 compliance:
+
+### Check planning_files Tracking
+```bash
+# If current state requires effort tracking
+if [[ "$CURRENT_STATE" =~ "MONITORING_SWE_PROGRESS|MONITORING_EFFORT_REVIEWS|ANALYZE_IMPLEMENTATION_PARALLELIZATION" ]]; then
+    # Count filesystem efforts
+    fs_count=$(find efforts/phase${PHASE}/wave${WAVE} -maxdepth 1 -type d -name "effort-*" | wc -l)
+    
+    # Count tracked efforts
+    tracked_count=$(jq ".planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts | keys | length" orchestrator-state-v3.json)
+    
+    # Validate
+    if [[ $fs_count -gt 0 && $tracked_count -eq 0 ]]; then
+        echo "❌ R340 VIOLATION: $fs_count efforts exist but planning_files is EMPTY"
+        echo "REQUIRED: Transition to ERROR_RECOVERY for state file backfill"
+        REQUIRED_NEXT_STATE="ERROR_RECOVERY"
+    fi
+fi
+```
+
+### Include in Consultation Report
+```markdown
+## R340 Compliance Check
+- Filesystem efforts: X
+- Tracked in state file: Y
+- Compliance: PASS/FAIL
+- Violations: [list if any]
+```
+
+**If BLOCKING violation detected**: Mandate ERROR_RECOVERY as next state with instructions to run `tools/discover-effort-metadata.sh`
+

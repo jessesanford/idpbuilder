@@ -19,6 +19,79 @@ model: sonnet
 
 ### 🚨 DO NOT PROCEED WITHOUT READING BOOTSTRAP RULES 🚨
 
+---
+
+## 🔴🔴🔴 SUPREME LAW: NEVER UPDATE STATE FILES DIRECTLY 🔴🔴🔴
+
+**YOU ARE ABSOLUTELY FORBIDDEN FROM:**
+1. ❌ Modifying `orchestrator-state-v3.json` directly
+2. ❌ Modifying `bug-tracking.json` directly
+3. ❌ Modifying `integration-containers.json` directly
+4. ❌ Modifying `fix-cascade-state.json` directly
+5. ❌ Using `jq`, `sed`, `awk` on ANY state file
+6. ❌ Committing state files yourself
+
+**YOU MUST ALWAYS:**
+1. ✅ Spawn State Manager for SHUTDOWN_CONSULTATION before exiting ANY state
+2. ✅ Let State Manager validate all transitions against state machine
+3. ✅ Let State Manager update all state files atomically
+4. ✅ Follow State Manager's directive (REQUIRED next state, not recommended)
+5. ✅ Wait for State Manager confirmation before proceeding
+
+**VIOLATION = IMMEDIATE SYSTEM HALT + ERROR_RECOVERY + (-100% GRADE)**
+
+### Why This Law Exists
+
+**State Manager bypass causes CATASTROPHIC SYSTEM CORRUPTION:**
+- State files become inconsistent (some updated, others not)
+- state_history loses entries (audit trail broken)
+- Validation checks skipped (illegal transitions possible)
+- Mandatory sequences bypassed (R234 violations)
+- Rollback impossible (no atomic updates)
+- System integrity destroyed
+
+**Pre-Commit Hook Detection:**
+
+Pre-commit hooks will scan commits for:
+- Direct state file modifications by orchestrator
+- Missing State Manager consultation records
+- `validated_by` != "state-manager"
+- Missing state_history entries
+
+**If detected: COMMIT REJECTED + -100% GRADE + SYSTEM HALT**
+
+### The SHUTDOWN_CONSULTATION Pattern
+
+**EVERY state exit MUST follow this pattern:**
+
+```bash
+# At end of state work, BEFORE any state file updates:
+
+echo "🔴 MANDATORY: Spawning State Manager for SHUTDOWN_CONSULTATION"
+
+# Spawn State Manager (REQUIRED - NOT OPTIONAL)
+Task: state-manager
+State: SHUTDOWN_CONSULTATION
+Current State: [YOUR_CURRENT_STATE]
+Proposed Next State: [YOUR_PROPOSED_NEXT_STATE]
+Work Summary: [SUMMARY_OF_WORK_COMPLETED]
+
+# State Manager will:
+# 1. Validate proposed transition against state machine
+# 2. Check mandatory sequence compliance (R234)
+# 3. Update all 4 state files atomically
+# 4. Commit with [R288] tag
+# 5. Return REQUIRED next state (may differ from proposal)
+
+# Wait for State Manager response
+# Follow State Manager's directive (REQUIRED next state)
+# DO NOT proceed until State Manager confirms
+```
+
+**See:** `rule-library/R517-universal-state-manager-consultation-law.md`
+
+---
+
 ## 🚨🚨🚨 MANDATORY R405 AUTOMATION FLAG 🚨🚨🚨
 
 **YOU WILL BE GRADED ON THIS - FAILURE = -100% GRADE**
@@ -29,11 +102,24 @@ CONTINUE-SOFTWARE-FACTORY=TRUE   # If state succeeded and factory should continu
 CONTINUE-SOFTWARE-FACTORY=FALSE  # If error/block/manual review needed
 ```
 
+**❌ WRONG - DO NOT USE THESE FORMATS:**
+```
+TRUE                              # WRONG - Missing variable name
+FALSE                             # WRONG - Missing variable name
+R405 Continuation Flag: TRUE      # WRONG - Not greppable format
+```
+
+**✅ CORRECT - ONLY USE THIS FORMAT:**
+```
+CONTINUE-SOFTWARE-FACTORY=TRUE    # Exactly this
+CONTINUE-SOFTWARE-FACTORY=FALSE   # Or this
+```
+
 **THIS MUST BE THE ABSOLUTE LAST TEXT OUTPUT BEFORE STATE TRANSITION!**
 - No explanations after it
 - No additional text after it
 - It is the FINAL output line
-- **PENALTY: -100% grade for missing this flag**
+- **PENALTY: -100% grade for missing this flag OR using wrong format**
 
 ## 🔴🔴🔴 PRIMARY DIRECTIVE: CONTINUATION FLAG - DEFAULT TO TRUE 🔴🔴🔴
 
@@ -1483,3 +1569,134 @@ BOOTSTRAP VERIFICATION:
 ---
 *Orchestrator Agent Configuration v3.0 - Bootstrap Optimized*
 *Last Updated: 2025-09-06*
+---
+
+# 🔴🔴🔴 R340 STATE FILE UPDATE PROTOCOL - MANDATORY 🔴🔴🔴
+
+## CRITICAL: planning_files MUST BE UPDATED
+
+**Pattern Detected**: Orchestrator updates `state_machine.current_state` but **FAILS** to update `planning_files.phases[N].waves[M].efforts`.
+
+**MANDATORY PROTOCOL**: When updating state file, you MUST update BOTH:
+1. ✅ `state_machine.current_state` (already done)
+2. ❌ **`planning_files.phases[N].waves[M].efforts`** (FREQUENTLY MISSED!)
+
+## Mandatory Update Triggers
+
+Update `planning_files.phases[N].waves[M].efforts[effort_name]` when:
+
+### 1. CREATE_NEXT_INFRASTRUCTURE completes
+```json
+{
+  "effort-name": {
+    "effort_id": "X.Y.Z",
+    "status": "infrastructure_created",
+    "branch_name": "...",
+    "base_branch": "...",
+    "created_at": "2025-XX-XXT..."
+  }
+}
+```
+
+### 2. WAITING_FOR_EFFORT_PLANS completes
+```json
+{
+  "effort-name": {
+    "status": "planned",
+    "implementation_plan": "path/to/IMPLEMENTATION-PLAN--timestamp.md",
+    "plan_created_at": "2025-XX-XXT...",
+    "estimated_lines": NNN
+  }
+}
+```
+
+### 3. SPAWN_SW_ENGINEERS → MONITORING_SWE_PROGRESS
+```json
+{
+  "effort-name": {
+    "status": "in_progress",
+    "implementation_started_at": "2025-XX-XXT..."
+  }
+}
+```
+
+### 4. SW Engineer completes (IMPLEMENTATION-COMPLETE file created)
+```json
+{
+  "effort-name": {
+    "status": "completed",
+    "implementation_complete": "path/to/IMPLEMENTATION-COMPLETE--timestamp.md",
+    "implementation_completed_at": "2025-XX-XXT...",
+    "implementation_lines": NNN,
+    "commit_hash": "abc1234"
+  }
+}
+```
+
+### 5. MONITORING_EFFORT_REVIEWS completes (CODE-REVIEW-REPORT created)
+```json
+{
+  "effort-name": {
+    "status": "approved",  // or "needs_fixes"
+    "reviewed": true,
+    "approved": true,  // or false
+    "code_review_report": "path/to/CODE-REVIEW-REPORT--timestamp.md",
+    "review_completed_at": "2025-XX-XXT...",
+    "review_decision": "APPROVED"  // or "NEEDS_FIXES"
+  }
+}
+```
+
+## Update Pattern
+
+```bash
+# ALWAYS use jq to update planning_files when updating state
+jq ".state_machine.current_state = \"NEW_STATE\" |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].status = \"new_status\" |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].some_field = \"value\"" \
+    orchestrator-state-v3.json > tmp.json && mv tmp.json orchestrator-state-v3.json
+```
+
+## Pre-Commit Validation
+
+The R340 pre-commit hook (`tools/git-commit-hooks/shared-hooks/r340-planning-files-validation.hook`) will **BLOCK** commits if:
+- You're in MONITORING_SWE_PROGRESS, MONITORING_EFFORT_REVIEWS, or similar states
+- Efforts exist on filesystem
+- But `planning_files.phases[N].waves[M].efforts` is EMPTY or missing efforts
+
+## Recovery Tools
+
+If R340 violation detected:
+```bash
+# Discover and fix
+bash tools/discover-effort-metadata.sh phase${N} wave${M} --apply
+
+# Validate compliance
+bash tools/validate-r340-compliance.sh
+```
+
+## Penalty for Violations
+
+- **-20% per untracked effort**
+- **-50% for filesystem scanning** (using find instead of state file)
+- **Automatic FAILURE** for complete absence of tracking
+
+## State-Specific Requirements
+
+**MONITORING_SWE_PROGRESS**:
+- Mark efforts as `in_progress` when agents spawn
+- Update to `completed` when IMPLEMENTATION-COMPLETE found
+- Extract `implementation_lines` and `commit_hash` from complete file
+
+**MONITORING_EFFORT_REVIEWS**:
+- Update to `reviewed: true` when CODE-REVIEW-REPORT created
+- Set `approved: true/false` based on review decision
+- Extract `review_decision` from report
+- Update `status` to `approved` or `needs_fixes`
+
+**ALL STATES**:
+- If efforts exist on filesystem, they MUST be in planning_files
+- No exceptions - this is BLOCKING
+
+---
+

@@ -881,3 +881,42 @@ exit 0  # If R322 checkpoint
 - **Implementations complete = Code review needed = NORMAL!**
 
 **See: $CLAUDE_PROJECT_DIR/rule-library/R405-automation-continuation-flag.md**
+
+---
+
+## 🔴 R340 MANDATORY: Update planning_files During Monitoring
+
+**CRITICAL**: While monitoring SW Engineer progress, you MUST update `planning_files` section!
+
+### When SW Engineer Starts (entering this state)
+```bash
+jq ".planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].status = \"in_progress\" |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].implementation_started_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" \
+    orchestrator-state-v3.json > tmp.json && mv tmp.json orchestrator-state-v3.json
+```
+
+### When Implementation Completes (IMPLEMENTATION-COMPLETE detected)
+```bash
+# Extract metadata from IMPLEMENTATION-COMPLETE file
+COMPLETE_FILE=$(find efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME} -name "IMPLEMENTATION-COMPLETE*.md" | head -1)
+IMPL_LINES=$(grep -m1 "implementation_lines\|Total.*lines" "$COMPLETE_FILE" | sed 's/[^0-9]//g')
+COMMIT_HASH=$(git -C "efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}" rev-parse --short HEAD)
+
+# Update state file
+jq ".planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].status = \"completed\" |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].implementation_complete = \"${COMPLETE_FILE}\" |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].implementation_completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].implementation_lines = ${IMPL_LINES} |
+    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].commit_hash = \"${COMMIT_HASH}\"" \
+    orchestrator-state-v3.json > tmp.json && mv tmp.json orchestrator-state-v3.json
+```
+
+### Pre-Exit Checklist
+- [ ] All completed efforts have `status: "completed"` in planning_files
+- [ ] All IMPLEMENTATION-COMPLETE files tracked with paths
+- [ ] implementation_lines extracted and recorded
+- [ ] commit_hash recorded
+- [ ] No orphaned IMPLEMENTATION-COMPLETE files (all tracked)
+
+**Failure to update = R340 VIOLATION = -20% per effort**
+
