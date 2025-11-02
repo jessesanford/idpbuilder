@@ -1,0 +1,25 @@
+# TODO State at $(date '+%Y-%m-%d %H:%M:%S')
+# Agent: orchestrator
+# State: INTEGRATE_WAVE_EFFORTS (transitioning to ERROR_RECOVERY)
+# Phase: 2, Wave: 2
+
+## Completed (6)
+- Identified ERROR condition: INTEGRATE_WAVE_EFFORTS state without integration workspace
+- Analysis complete: Integration branch exists but workspace directory missing - BLOCKING per checklist #3
+- Prepare State Manager consultation summary
+- Spawn State Manager for SHUTDOWN_CONSULTATION - APPROVED transition to ERROR_RECOVERY
+- Save TODOs per R287 before finalization
+- Output R405 continuation flag as final action
+
+## Error Summary
+BLOCKING ISSUE: Integration workspace directory missing at efforts/phase2/wave2/integration-workspace/
+- Integration branch EXISTS: idpbuilder-oci-push/phase2/wave2/integration
+- Effort branches ready: 2.2.1 (APPROVED, 247 lines), 2.2.2 (Implemented)
+- State Manager approved transition: INTEGRATE_WAVE_EFFORTS → ERROR_RECOVERY
+- Required action: Investigate and create missing infrastructure
+- Continuation: TRUE (recoverable error with clear resolution path)
+
+## Next Steps (in ERROR_RECOVERY)
+- Investigate why integration workspace was not created
+- Create missing integration workspace infrastructure
+- Return to INTEGRATE_WAVE_EFFORTS or START_WAVE_ITERATION to retry integration
