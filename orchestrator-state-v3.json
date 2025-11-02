@@ -2567,7 +2567,7 @@
     "current_wave": {
       "wave_number": 2,
       "name": "Advanced Configuration Features",
-      "iteration": 7,
+      "iteration": 1,
       "status": "IN_PROGRESS",
       "total_efforts": 2,
       "estimated_total_lines": 750,
@@ -2711,7 +2711,11 @@
         "r151_compliance": "N/A - single effort",
         "ready_to_spawn": true
       },
-      "iteration_number": 4
+      "iteration_number": 4,
+      "bugs": {
+        "progress_stalls": 0,
+        "history": []
+      }
     },
     "phases_completed": [],
     "waves_completed": [
