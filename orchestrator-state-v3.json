@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "INTEGRATE_WAVE_EFFORTS",
-    "previous_state": "START_WAVE_ITERATION",
+    "current_state": "REVIEW_WAVE_INTEGRATION",
+    "previous_state": "INTEGRATE_WAVE_EFFORTS",
     "last_transition_timestamp": "2025-11-02T07:27:44Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-02T07:27:44Z",
@@ -2283,6 +2283,15 @@
           "r517_consultation": true,
           "state_machine_compliance": "VERIFIED"
         }
+      },
+      {
+        "from_state": "INTEGRATE_WAVE_EFFORTS",
+        "to_state": "REVIEW_WAVE_INTEGRATION",
+        "timestamp": "2025-11-02T07:52:18Z",
+        "entered_at": "2025-11-02T07:52:18Z",
+        "transition_reason": "Integration completed with FAILED status - upstream bug found in effort-1-registry-override-viper",
+        "validated_by": "state-manager",
+        "consultation_type": "SHUTDOWN_CONSULTATION"
       }
     ],
     "loop_detection": {
@@ -2296,7 +2305,7 @@
       "last_progress_timestamp": "2025-11-01T17:45:33Z",
       "validate_infrastructure_loops": 0
     },
-    "status": null,
+    "status": "ACTIVE",
     "transition_validated": true,
     "sub_state_machine": null,
     "error_recovery": {
@@ -2341,11 +2350,11 @@
       ],
       "state_manager_ruling": "REJECTION - transition to SPAWN_SW_ENGINEERS denied due to invalid analysis basis"
     },
-    "last_transition": "2025-11-02T06:33:20Z",
+    "last_transition": "INTEGRATE_WAVE_EFFORTS → REVIEW_WAVE_INTEGRATION",
     "transition_timestamp": "2025-11-01T19:56:25Z",
-    "transition_reason": "R509 violation corrected, ready to rebuild effort 2.2.2 infrastructure with correct base branch",
-    "transition_time": "2025-11-02T02:40:22Z",
-    "last_updated": "2025-11-01T19:56:25Z",
+    "transition_reason": "Integration completed with FAILED status - upstream bug in effort-1 requires backport fix",
+    "transition_time": "2025-11-02T07:49:45Z",
+    "last_updated": "2025-11-02T07:49:45Z",
     "validated_by": "state-manager",
     "last_state_change": "2025-11-02T05:25:28Z",
     "error_context": {
@@ -2385,7 +2394,7 @@
       "iteration": 1,
       "error_recovery_complete": true
     },
-    "last_transition_at": "2025-11-02T07:09:30Z",
+    "last_transition_at": "2025-11-02T07:49:45Z",
     "updated_at": "2025-11-02T07:33:48+0000"
   },
   "project_progression": {

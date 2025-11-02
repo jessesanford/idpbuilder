@@ -518,9 +518,47 @@
         "required_minimum": 95.0,
         "shortfall": 43.9
       }
+    },
+    {
+      "bug_id": "BUG-013-INTEGRATION-VIPER-ARG",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "phase": 2,
+      "wave": 2,
+      "effort_id": "2.2.1",
+      "title": "Integration build failure - NewPushCommand missing viper parameter",
+      "description": "pkg/cmd/root.go:29 calls push.NewPushCommand() without required *viper.Viper parameter, causing compilation error during wave integration",
+      "category": "build",
+      "affected_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+      "discovered_by": "orchestrator",
+      "discovered_at": "2025-11-02T07:45:14Z",
+      "found_in_state": "INTEGRATE_WAVE_EFFORTS",
+      "found_in_iteration": 4,
+      "location": {
+        "file_path": "pkg/cmd/root.go",
+        "line_number": 29,
+        "function_name": "init",
+        "context": "rootCmd.AddCommand(push.NewPushCommand()) - missing viper parameter"
+      },
+      "symptoms": [
+        "go build fails with not enough arguments in call to push.NewPushCommand",
+        "Integration build cannot compile",
+        "Tests cannot run (blocked by build failure)"
+      ],
+      "impact": "Complete integration failure - wave cannot proceed without fix",
+      "resolution_plan": [
+        "Create viper instance in root command initialization",
+        "Pass viper instance to NewPushCommand(v)",
+        "Backport fix to effort-1 source branch per R321",
+        "Re-integrate after fix is applied and reviewed"
+      ],
+      "affected_effort": "2.2.1",
+      "source_effort": "effort-1-registry-override-viper",
+      "requires_backport": true,
+      "r300_cascade_trigger": true
     }
   ],
-  "active_bug_count": 6,
+  "active_bug_count": 7,
   "resolved_bug_count": 6,
   "bug_categories": {
     "integration_failures": [
@@ -531,7 +569,8 @@
     "build_failures": [
       "BUG-004-INTEGRATION-GOSUM",
       "BUG-007-BUILD-VIPER-ARG",
-      "BUG-009-BUILD-FAILURE"
+      "BUG-009-BUILD-FAILURE",
+      "BUG-013-INTEGRATION-VIPER-ARG"
     ],
     "test_failures": [],
     "review_findings": [
@@ -553,20 +592,20 @@
     ]
   },
   "metadata": {
-    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → ERROR_RECOVERY (missing integration workspace)",
-    "last_updated": "2025-11-02T07:33:55+0000",
-    "state_transition": "ERROR_RECOVERY",
+    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → REVIEW_WAVE_INTEGRATION (integration failed with upstream bug)",
+    "last_updated": "2025-11-02T07:50:02Z",
+    "state_transition": "REVIEW_WAVE_INTEGRATION",
     "updated_by": "state-manager"
   },
   "last_state_transition": {
-    "from": "START_WAVE_ITERATION",
-    "to": "INTEGRATE_WAVE_EFFORTS",
-    "timestamp": "",
-    "reason": "Wave iteration 3 started"
+    "from": "INTEGRATE_WAVE_EFFORTS",
+    "to": "REVIEW_WAVE_INTEGRATION",
+    "timestamp": "2025-11-02T07:50:02Z",
+    "reason": "Integration failed with upstream bug - requires code review"
   },
   "state_machine_sync": {
-    "current_state": "ERROR_RECOVERY",
+    "current_state": "REVIEW_WAVE_INTEGRATION",
     "previous_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_transition": "2025-11-02T07:19:25Z"
+    "last_transition": "2025-11-02T07:50:02Z"
   }
 }

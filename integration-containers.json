@@ -312,45 +312,66 @@
       "container_id": "wave-phase2-wave2",
       "phase": 2,
       "wave": 2,
-      "status": "IN_PROGRESS",
+      "status": "FAILED",
       "iteration": 4,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase2/wave2/integration",
       "workspace": "efforts/phase2/wave2/integration-workspace",
       "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
       "created_at": "2025-11-01T14:35:00Z",
-      "integration_started_at": null,
-      "last_iteration_at": "2025-11-02T07:09:30Z",
+      "integration_started_at": "2025-11-02T07:44:00Z",
+      "last_iteration_at": "2025-11-02T07:50:22Z",
       "convergence_metrics": {
-        "bugs_remaining": 0,
-        "bugs_found": 0,
+        "bugs_remaining": 1,
+        "bugs_found": 1,
         "test_failures": 0,
-        "build_failures": 0,
+        "build_failures": 1,
         "bugs_fixed": 0
       },
-      "efforts_to_integrate": [],
-      "effort_branches": [],
-      "integration_plan_file": null,
-      "notes": "Wave 2.2 integration branch created with TDD test plan (867 lines, 50 tests) - RED phase",
-      "test_plan_file": "planning/phase2/wave2/WAVE-TEST-PLAN.md",
-      "test_count": 50,
-      "coverage_targets": {
-        "statement": "90%",
-        "branch": "85%"
+      "efforts_to_integrate": [
+        "2.2.1",
+        "2.2.2"
+      ],
+      "effort_branches": [
+        "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+        "idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support"
+      ],
+      "integration_plan_file": "efforts/phase2/wave2/integration-workspace/.software-factory/phase2/wave2/WAVE-INTEGRATION-INSTRUCTIONS.md",
+      "notes": "Wave 2.2 integration FAILED: Both efforts merged cleanly (0 conflicts), but build fails due to upstream bug in effort-1 (missing viper parameter)",
+      "integration_report_file": "efforts/phase2/wave2/integration-workspace/.software-factory/phase2/wave2/integration/INTEGRATION-REPORT--20251102-074514.md",
+      "integration_completed_at": "2025-11-02T07:50:22Z",
+      "build_validation": {
+        "status": "FAILED",
+        "build_command": "make build",
+        "build_error": "pkg/cmd/root.go:29:21: not enough arguments in call to push.NewPushCommand",
+        "build_timestamp": "2025-11-02T07:50:22Z",
+        "validated_at": "2025-11-02T07:50:22Z",
+        "validator": "integration-agent",
+        "r323_compliance": "FAILED"
       },
-      "tdd_phase": "RED",
-      "integration_report_file": null,
-      "integration_completed_at": null,
-      "build_validation": null,
-      "test_execution": null,
+      "test_execution": {
+        "status": "BLOCKED",
+        "tests_run": 0,
+        "tests_passing": 0,
+        "blocked_reason": "Build failure prevents test execution"
+      },
       "conflicts_resolved": 0,
       "conflict_details": [],
-      "build_validation_complete": false,
+      "build_validation_complete": true,
       "artifact_generated": false,
       "ready_for_pr": false,
       "ready_for_architecture_review": false,
       "awaiting_architect_review": false,
-      "review_state": "NOT_STARTED",
+      "review_state": "NEEDS_CODE_REVIEW",
+      "upstream_bugs_found": [
+        {
+          "bug_id": "BUG-013-INTEGRATION-VIPER-ARG",
+          "severity": "CRITICAL",
+          "source_effort": "effort-1-registry-override-viper",
+          "requires_backport": true,
+          "r300_cascade": true
+        }
+      ],
       "architecture_review": null,
       "review_complete": false,
       "ready_for_completion": false,
@@ -378,14 +399,14 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-02T07:33:55+0000",
-    "notes": "State transition: ERROR_RECOVERY → START_WAVE_ITERATION (wave 2.2 iteration 4 - infrastructure repaired)",
-    "state_transition": "START_WAVE_ITERATION",
+    "last_updated": "2025-11-02T07:50:22Z",
+    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → REVIEW_WAVE_INTEGRATION (integration failed, needs code review)",
+    "state_transition": "REVIEW_WAVE_INTEGRATION",
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "current_state": "START_WAVE_ITERATION",
-    "previous_state": "ERROR_RECOVERY",
-    "last_transition": "2025-11-02T07:27:51Z"
+    "current_state": "REVIEW_WAVE_INTEGRATION",
+    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "last_transition": "2025-11-02T07:50:22Z"
   }
 }
