@@ -2945,86 +2945,128 @@
     },
     "project_prefix": "idpbuilder-oci-push"
   },
-  "active_agents": [
+  "active_agents": [],
+  "artifacts": {},
+  "agents_history": [
     {
-      "agent_type": "sw-engineer",
       "agent_id": "swe-1.2.1-docker-client",
-      "state": "COMPLETE",
-      "effort": "1.2.1-docker-client",
-      "effort_dir": "efforts/phase1/wave2/effort-1-docker-client",
-      "spawned_at": "2025-10-29T22:12:59Z",
-      "implementation_plan": ".software-factory/phase1/wave2/effort-1-docker-client/IMPLEMENTATION-PLAN--20251029-214603.md"
+      "agent_type": "sw-engineer",
+      "final_state": "COMPLETE",
+      "completed_at": "2025-11-02T05:00:35Z",
+      "work_summary": {
+        "effort_id": null,
+        "effort_name": null,
+        "branch": null,
+        "outcome": null,
+        "splits": 0
+      },
+      "metrics": {
+        "lines_added": 0,
+        "lines_removed": 0,
+        "files_modified": 0,
+        "commits": 0,
+        "duration_hours": 0
+      }
     },
     {
-      "agent_type": "sw-engineer",
       "agent_id": "swe-1.2.2-registry-client",
-      "state": "COMPLETE",
-      "effort": "1.2.2-registry-client",
-      "effort_dir": "efforts/phase1/wave2/effort-2-registry-client",
-      "spawned_at": "2025-10-29T22:12:59Z",
-      "implementation_plan": ".software-factory/phase1/wave2/effort-2-registry-client/IMPLEMENTATION-PLAN--20251029-213344.md"
+      "agent_type": "sw-engineer",
+      "final_state": "COMPLETE",
+      "completed_at": "2025-11-02T05:00:39Z",
+      "work_summary": {
+        "effort_id": null,
+        "effort_name": null,
+        "branch": null,
+        "outcome": null,
+        "splits": 0
+      },
+      "metrics": {
+        "lines_added": 0,
+        "lines_removed": 0,
+        "files_modified": 0,
+        "commits": 0,
+        "duration_hours": 0
+      }
     },
     {
-      "agent_type": "sw-engineer",
       "agent_id": "swe-1.2.3-auth",
-      "state": "COMPLETE",
-      "effort": "1.2.3-auth",
-      "effort_dir": "efforts/phase1/wave2/effort-3-auth",
-      "spawned_at": "2025-10-29T22:12:59Z",
-      "implementation_plan": ".software-factory/phase1/wave2/effort-3-auth/IMPLEMENTATION-PLAN--20251029-213326.md"
+      "agent_type": "sw-engineer",
+      "final_state": "COMPLETE",
+      "completed_at": "2025-11-02T05:00:51Z",
+      "work_summary": {
+        "effort_id": null,
+        "effort_name": null,
+        "branch": null,
+        "outcome": null,
+        "splits": 0
+      },
+      "metrics": {
+        "lines_added": 0,
+        "lines_removed": 0,
+        "files_modified": 0,
+        "commits": 0,
+        "duration_hours": 0
+      }
     },
     {
-      "agent_type": "sw-engineer",
       "agent_id": "swe-1.2.4-tls",
-      "state": "COMPLETE",
-      "effort": "1.2.4-tls",
-      "effort_dir": "efforts/phase1/wave2/effort-4-tls",
-      "spawned_at": "2025-10-29T22:12:59Z",
-      "implementation_plan": ".software-factory/phase1/wave2/effort-4-tls/IMPLEMENTATION-PLAN--20251029-213316.md"
+      "agent_type": "sw-engineer",
+      "final_state": "COMPLETE",
+      "completed_at": "2025-11-02T05:00:51Z",
+      "work_summary": {
+        "effort_id": null,
+        "effort_name": null,
+        "branch": null,
+        "outcome": null,
+        "splits": 0
+      },
+      "metrics": {
+        "lines_added": 0,
+        "lines_removed": 0,
+        "files_modified": 0,
+        "commits": 0,
+        "duration_hours": 0
+      }
     },
     {
-      "agent_type": "sw-engineer",
       "agent_id": "swe-2.2.1-registry-override",
-      "state": "COMPLETE",
-      "effort": "2.2.1",
-      "effort_name": "registry-override-viper",
-      "effort_dir": "efforts/phase2/wave2/effort-1-registry-override-viper",
-      "branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
-      "spawned_at": "2025-11-01T18:59:07Z",
-      "completed_at": "2025-11-01T18:51:00Z",
-      "implementation_plan": "planning/phase2/wave2/WAVE-IMPLEMENTATION-PLAN.md",
-      "implementation_report": "efforts/phase2/wave2/effort-1-registry-override-viper/.software-factory/phase2/wave2/effort-1-registry-override-viper/IMPLEMENTATION-COMPLETE--20251101-185100.md",
-      "lines_implemented": 551,
-      "within_limit": true,
-      "tests_passing": true,
-      "commits_pushed": true,
-      "parallelizable": false,
-      "depends_on": [
-        "integration:phase2-wave1"
-      ],
-      "blocks": [
-        "2.2.2"
-      ],
-      "phase": 2,
-      "wave": 2
+      "agent_type": "sw-engineer",
+      "final_state": "COMPLETE",
+      "completed_at": "2025-11-02T05:00:51Z",
+      "work_summary": {
+        "effort_id": null,
+        "effort_name": "registry-override-viper",
+        "branch": null,
+        "outcome": null,
+        "splits": 0
+      },
+      "metrics": {
+        "lines_added": 0,
+        "lines_removed": 0,
+        "files_modified": 0,
+        "commits": 0,
+        "duration_hours": -0.13527777777777777
+      }
     },
     {
-      "agent_type": "sw-engineer",
       "agent_id": "swe-2.2.2-env-variable-support",
-      "state": "COMPLETED",
-      "effort": "2.2.2",
-      "effort_name": "env-variable-support",
-      "effort_dir": "efforts/phase2/wave2/effort-2-env-variable-support",
-      "branch": "idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support",
-      "spawned_at": "2025-11-02T03:00:00Z",
-      "completed_at": "2025-11-02T03:05:47Z",
-      "implementation_plan": "planning/phase2/wave2/WAVE-IMPLEMENTATION-PLAN.md",
-      "implementation_report": "efforts/phase2/wave2/effort-2-env-variable-support/.software-factory/phase2/wave2/effort-2-env-variable-support/IMPLEMENTATION-COMPLETE--20251102-030547.md",
-      "lines_implemented": 684,
-      "within_limit": true,
-      "tests_passing": null,
-      "commits_pushed": true
+      "agent_type": "sw-engineer",
+      "final_state": "COMPLETED",
+      "completed_at": "2025-11-02T05:00:51Z",
+      "work_summary": {
+        "effort_id": null,
+        "effort_name": "env-variable-support",
+        "branch": null,
+        "outcome": null,
+        "splits": 0
+      },
+      "metrics": {
+        "lines_added": 0,
+        "lines_removed": 0,
+        "files_modified": 0,
+        "commits": 0,
+        "duration_hours": 0.09638888888888889
+      }
     }
-  ],
-  "artifacts": {}
+  ]
 }

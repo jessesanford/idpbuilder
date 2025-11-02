@@ -748,6 +748,136 @@
         }
       }
     },
+    "agents_history": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "R612: Archived agent metadata for completed agents moved from active_agents. Maintains minimal footprint (~500 bytes per agent) while preserving essential lifecycle information.",
+      "items": {
+        "type": "object",
+        "required": [
+          "agent_id",
+          "agent_type",
+          "final_state"
+        ],
+        "properties": {
+          "agent_id": {
+            "type": "string",
+            "description": "Unique identifier for the archived agent"
+          },
+          "agent_type": {
+            "type": "string",
+            "description": "Type of agent",
+            "enum": [
+              "orchestrator",
+              "state-manager",
+              "sw-engineer",
+              "code-reviewer",
+              "architect"
+            ]
+          },
+          "final_state": {
+            "type": "string",
+            "description": "Final state of the agent when archived (typically COMPLETED/COMPLETE)"
+          },
+          "completed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "ISO 8601 timestamp when agent completed"
+          },
+          "archived_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "ISO 8601 timestamp when agent was archived"
+          },
+          "work_summary": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Minimal summary of work performed",
+            "properties": {
+              "effort_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "effort_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "branch": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "outcome": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "splits": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          },
+          "metrics": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "Basic metrics for historical analysis",
+            "properties": {
+              "lines_added": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "lines_removed": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "files_modified": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "commits": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "duration_hours": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
     "artifacts": {
       "type": [
         "object",
@@ -924,93 +1054,90 @@
           "additionalProperties": {
             "type": "object",
             "required": [
-              "full_path",
+              "effort_id",
+              "effort_name",
+              "phase",
+              "wave",
+              "index",
               "branch_name",
-              "remote_branch",
               "base_branch",
+              "remote_branch",
+              "target_remote",
               "target_repo_url",
+              "planning_remote",
+              "integration_branch",
+              "full_path",
+              "estimated_lines",
+              "dependencies",
               "created",
               "validated"
             ],
             "properties": {
-              "full_path": {
+              "effort_id": {
                 "type": "string",
-                "description": "Absolute path to effort working directory (R313 compliant)"
+                "description": "Unique effort identifier (e.g., 1.1.1 for phase1/wave1/effort1)"
+              },
+              "effort_name": {
+                "type": "string",
+                "description": "Human-readable effort name"
+              },
+              "phase": {
+                "type": "string",
+                "description": "Phase identifier (e.g., phase1)"
+              },
+              "wave": {
+                "type": "string",
+                "description": "Wave identifier (e.g., wave1)"
+              },
+              "index": {
+                "type": "integer",
+                "description": "Numeric index of effort within wave (1, 2, 3, etc.)",
+                "minimum": 1
               },
               "branch_name": {
                 "type": "string",
                 "description": "Fully-qualified branch name for this effort (R327 compliant)"
               },
+              "base_branch": {
+                "type": "string",
+                "description": "Branch this effort is based on (main, integration branch, or previous effort in cascade)"
+              },
               "remote_branch": {
                 "type": "string",
                 "description": "Remote-qualified branch name (e.g., origin/project-prefix/phase1/wave1/effort-name)"
               },
-              "base_branch": {
-                "type": "string",
-                "description": "Branch this effort is based on (main or previous effort in cascade)"
-              },
-              "cascade_reason": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Explanation of why this base_branch was chosen (R308/R501 compliance)"
-              },
               "target_remote": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Name of remote pointing to target repository",
-                "default": "target"
+                "type": "string",
+                "description": "Name of remote pointing to target repository (e.g., origin, target)"
               },
               "target_repo_url": {
                 "type": "string",
                 "format": "uri",
-                "description": "Target repository URL for this effort (must match parent)"
+                "description": "Target repository URL for this effort (must match parent pre_planned_infrastructure.target_repo_url)"
               },
               "planning_remote": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Name of remote pointing to planning repository",
-                "default": "planning"
-              },
-              "split_pattern": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Branch naming pattern for splits of this effort (e.g., effort-name--split-NNN)"
+                "type": "string",
+                "description": "Name of remote pointing to planning repository"
               },
               "integration_branch": {
-                "type": [
-                  "string",
-                  "null"
-                ],
+                "type": "string",
                 "description": "Wave integration branch this effort will be merged into"
               },
-              "phase": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Phase identifier (e.g., phase1)"
+              "full_path": {
+                "type": "string",
+                "description": "Absolute or relative path to effort working directory (R313 compliant)"
               },
-              "wave": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Wave identifier (e.g., wave1)"
+              "estimated_lines": {
+                "type": "integer",
+                "description": "Estimated lines of code for this effort from planning phase",
+                "minimum": 0
               },
-              "effort_name": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "Short effort name without phase/wave prefix"
+              "dependencies": {
+                "type": "array",
+                "description": "List of effort IDs this effort depends on (empty array if no dependencies)",
+                "items": {
+                  "type": "string"
+                }
               },
               "created": {
                 "type": "boolean",
@@ -1021,6 +1148,29 @@
                 "type": "boolean",
                 "description": "Whether this effort infrastructure has been validated per R509",
                 "default": false
+              },
+              "validation_failure_reason": {
+                "type": ["string", "null"],
+                "description": "Reason for validation failure if validated=false, null otherwise (optional - only present if validation fails)"
+              },
+              "created_at": {
+                "type": ["string", "null"],
+                "format": "date-time",
+                "description": "ISO 8601 timestamp when effort infrastructure was created (optional - only present after creation)"
+              },
+              "cascade_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Explanation of why this base_branch was chosen (R308/R501 compliance)"
+              },
+              "split_pattern": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Branch naming pattern for splits of this effort (e.g., effort-name--split-NNN)"
               },
               "splits": {
                 "type": [
