@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "START_WAVE_ITERATION",
-    "previous_state": "FIX_WAVE_UPSTREAM_BUGS",
+    "current_state": "INTEGRATE_WAVE_EFFORTS",
+    "previous_state": "START_WAVE_ITERATION",
     "last_transition_timestamp": "2025-11-02T17:34:45Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-02T17:06:52Z",
@@ -2502,6 +2502,16 @@
           "r288_compliance": true,
           "state_machine_compliance": "VERIFIED"
         }
+      },
+      {
+        "from_state": "START_WAVE_ITERATION",
+        "to_state": "INTEGRATE_WAVE_EFFORTS",
+        "timestamp": "2025-11-02T17:47:18Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-1762105638",
+        "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
+        "proposal_accepted": true,
+        "transition_invalid": false
       }
     ],
     "loop_detection": {
@@ -2564,7 +2574,7 @@
     "transition_timestamp": "2025-11-01T19:56:25Z",
     "transition_reason": "Integration completed with FAILED status - upstream bug in effort-1 requires backport fix",
     "transition_time": "2025-11-02T07:49:45Z",
-    "last_updated": "2025-11-02T07:49:45Z",
+    "last_updated": "2025-11-02T17:47:18Z",
     "validated_by": "state-manager",
     "last_state_change": "2025-11-02T05:25:28Z",
     "error_context": {
@@ -2624,7 +2634,7 @@
     "current_wave": {
       "wave_number": 2,
       "name": "Advanced Configuration Features",
-      "iteration": 5,
+      "iteration": 6,
       "status": "IN_PROGRESS",
       "total_efforts": 2,
       "estimated_total_lines": 750,
@@ -2772,7 +2782,8 @@
       "bugs": {
         "progress_stalls": 0,
         "history": []
-      }
+      },
+      "backport_attempts_this_iteration": 0
     },
     "phases_completed": [],
     "waves_completed": [
@@ -2850,7 +2861,7 @@
       ]
     },
     "iteration_tracking": {
-      "last_progress_timestamp": "2025-11-02T16:11:24+00:00",
+      "last_progress_timestamp": "2025-11-02T17:40:13+00:00",
       "active_container_level": "wave",
       "current_container": "wave-phase1-wave2"
     },
