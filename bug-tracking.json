@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-02T14:31:50Z",
+  "last_updated": "2025-11-02T15:57:06Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -665,8 +665,9 @@
     "reason": "Wave 2.2 integration review found 6 bugs"
   },
   "state_machine_sync": {
-    "current_state": "CREATE_WAVE_FIX_PLAN",
+    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
     "previous_state": "REVIEW_WAVE_INTEGRATION",
-    "last_transition": "2025-11-02T08:06:41Z"
+    "last_transition": "2025-11-02T08:06:41Z",
+    "last_sync": "2025-11-02T15:57:06Z"
   }
 }

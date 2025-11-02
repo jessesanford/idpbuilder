@@ -164,5 +164,10 @@
     "last_updated": "2025-11-02T08:06:41Z",
     "last_updated_by": "state-manager",
     "schema_version": "3.0.0"
+  },
+  "last_updated": "2025-11-02T15:57:06Z",
+  "state_machine_sync": {
+    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
+    "last_sync": "2025-11-02T15:57:06Z"
   }
 }

@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "last_updated": "2025-11-02T15:57:06Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -398,8 +398,9 @@
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "current_state": "CREATE_WAVE_FIX_PLAN",
+    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
     "previous_state": "REVIEW_WAVE_INTEGRATION",
-    "last_transition": "2025-11-02T08:06:41Z"
+    "last_transition": "2025-11-02T08:06:41Z",
+    "last_sync": "2025-11-02T15:57:06Z"
   }
 }
