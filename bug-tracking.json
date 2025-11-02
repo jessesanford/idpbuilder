@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-02T02:06:36Z",
+  "last_updated": "2025-11-02T03:13:39Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -302,5 +302,10 @@
     "to": "ERROR_RECOVERY",
     "timestamp": "2025-11-02T02:06:36Z",
     "reason": "R517 shutdown consultation rejected - critical discrepancy between claimed work (P1W1, 4 efforts) and actual state (P2W2, 2 efforts)"
+  },
+  "state_machine_sync": {
+    "current_state": "MONITORING_SWE_PROGRESS",
+    "previous_state": "SPAWN_SW_ENGINEERS",
+    "last_transition": "2025-11-02T03:13:39Z"
   }
 }

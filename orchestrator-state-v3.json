@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_SW_ENGINEERS",
-    "previous_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+    "current_state": "MONITORING_SWE_PROGRESS",
+    "previous_state": "SPAWN_SW_ENGINEERS",
     "last_transition_timestamp": "2025-11-02T02:25:20Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-02T02:25:20Z",
@@ -2039,6 +2039,12 @@
           "r322_consultation": true,
           "state_machine_compliance": "VERIFIED"
         }
+      },
+      {
+        "from": "SPAWN_SW_ENGINEERS",
+        "to": "MONITORING_SWE_PROGRESS",
+        "timestamp": "2025-11-02T03:13:23Z",
+        "reason": "SW Engineer spawned and completed implementation for effort 2.2.2"
       }
     ],
     "loop_detection": {
@@ -2097,7 +2103,7 @@
       ],
       "state_manager_ruling": "REJECTION - transition to SPAWN_SW_ENGINEERS denied due to invalid analysis basis"
     },
-    "last_transition": "2025-11-02T02:06:29Z",
+    "last_transition": "2025-11-02T03:13:23Z",
     "transition_timestamp": "2025-11-01T19:56:25Z",
     "transition_reason": "R509 violation corrected, ready to rebuild effort 2.2.2 infrastructure with correct base branch",
     "transition_time": "2025-11-02T02:40:22Z",
@@ -2657,21 +2663,12 @@
                 "scope": "PushConfig implementation, LoadConfig, viper integration, Wave 2.1 compatibility"
               },
               "effort-2-env-variable-support": {
-                "effort_id": "2.2.2",
-                "effort_name": "Environment Variable Support & Integration Testing",
-                "status": "infrastructure_created",
-                "reviewed": false,
-                "approved": false,
-                "implementation_plan": null,
-                "infrastructure_created_at": "2025-11-01T21:07:00Z",
-                "branch_name": "idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support",
-                "base_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
-                "dependencies": [
-                  "2.2.1"
-                ],
-                "can_parallelize": false,
-                "r603_compliant": true,
-                "notes": "Infrastructure recreated per R603 after R509 violation detected and fixed"
+                "status": "implementation_complete",
+                "implementation_plan": "planning/phase2/wave2/WAVE-IMPLEMENTATION-PLAN.md",
+                "implementation_complete": "efforts/phase2/wave2/effort-2-env-variable-support/.software-factory/phase2/wave2/effort-2-env-variable-support/IMPLEMENTATION-COMPLETE--20251102-030547.md",
+                "implementation_started_at": "2025-11-02T03:00:00Z",
+                "implementation_completed_at": "2025-11-02T03:05:47Z",
+                "implementation_lines": 684
               }
             },
             "test_count": 50,
@@ -3009,6 +3006,23 @@
       ],
       "phase": 2,
       "wave": 2
+    },
+    {
+      "agent_type": "sw-engineer",
+      "agent_id": "swe-2.2.2-env-variable-support",
+      "state": "COMPLETED",
+      "effort": "2.2.2",
+      "effort_name": "env-variable-support",
+      "effort_dir": "efforts/phase2/wave2/effort-2-env-variable-support",
+      "branch": "idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support",
+      "spawned_at": "2025-11-02T03:00:00Z",
+      "completed_at": "2025-11-02T03:05:47Z",
+      "implementation_plan": "planning/phase2/wave2/WAVE-IMPLEMENTATION-PLAN.md",
+      "implementation_report": "efforts/phase2/wave2/effort-2-env-variable-support/.software-factory/phase2/wave2/effort-2-env-variable-support/IMPLEMENTATION-COMPLETE--20251102-030547.md",
+      "lines_implemented": 684,
+      "within_limit": true,
+      "tests_passing": null,
+      "commits_pushed": true
     }
   ],
   "artifacts": {}
