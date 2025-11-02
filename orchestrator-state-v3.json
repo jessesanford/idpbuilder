@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "MONITORING_EFFORT_REVIEWS",
-    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+    "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+    "previous_state": "MONITORING_EFFORT_REVIEWS",
     "last_transition_timestamp": "2025-11-02T05:12:08Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-02T05:12:07Z",
@@ -2088,6 +2088,17 @@
         "reason": "Code Reviewer completed review of effort 2.2.1 with critical findings (build failure + size violation)",
         "orchestrator_proposal": "MONITORING_EFFORT_REVIEWS",
         "proposal_accepted": true
+      },
+      {
+        "from_state": "MONITORING_EFFORT_REVIEWS",
+        "to_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+        "timestamp": "2025-11-02T06:33:20Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-1762065200",
+        "orchestrator_proposal": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "Critical bugs found in effort 2.2.1 review, requiring fix planning"
       }
     ],
     "loop_detection": {
@@ -2146,7 +2157,7 @@
       ],
       "state_manager_ruling": "REJECTION - transition to SPAWN_SW_ENGINEERS denied due to invalid analysis basis"
     },
-    "last_transition": "2025-11-02T03:13:23Z",
+    "last_transition": "2025-11-02T06:33:20Z",
     "transition_timestamp": "2025-11-01T19:56:25Z",
     "transition_reason": "R509 violation corrected, ready to rebuild effort 2.2.2 infrastructure with correct base branch",
     "transition_time": "2025-11-02T02:40:22Z",
@@ -2993,127 +3004,5 @@
     "project_prefix": "idpbuilder-oci-push"
   },
   "active_agents": [],
-  "artifacts": {},
-  "agents_history": [
-    {
-      "agent_id": "swe-1.2.1-docker-client",
-      "agent_type": "sw-engineer",
-      "final_state": "COMPLETE",
-      "completed_at": "2025-11-02T05:00:35Z",
-      "work_summary": {
-        "effort_id": null,
-        "effort_name": null,
-        "branch": null,
-        "outcome": null,
-        "splits": 0
-      },
-      "metrics": {
-        "lines_added": 0,
-        "lines_removed": 0,
-        "files_modified": 0,
-        "commits": 0,
-        "duration_hours": 0
-      }
-    },
-    {
-      "agent_id": "swe-1.2.2-registry-client",
-      "agent_type": "sw-engineer",
-      "final_state": "COMPLETE",
-      "completed_at": "2025-11-02T05:00:39Z",
-      "work_summary": {
-        "effort_id": null,
-        "effort_name": null,
-        "branch": null,
-        "outcome": null,
-        "splits": 0
-      },
-      "metrics": {
-        "lines_added": 0,
-        "lines_removed": 0,
-        "files_modified": 0,
-        "commits": 0,
-        "duration_hours": 0
-      }
-    },
-    {
-      "agent_id": "swe-1.2.3-auth",
-      "agent_type": "sw-engineer",
-      "final_state": "COMPLETE",
-      "completed_at": "2025-11-02T05:00:51Z",
-      "work_summary": {
-        "effort_id": null,
-        "effort_name": null,
-        "branch": null,
-        "outcome": null,
-        "splits": 0
-      },
-      "metrics": {
-        "lines_added": 0,
-        "lines_removed": 0,
-        "files_modified": 0,
-        "commits": 0,
-        "duration_hours": 0
-      }
-    },
-    {
-      "agent_id": "swe-1.2.4-tls",
-      "agent_type": "sw-engineer",
-      "final_state": "COMPLETE",
-      "completed_at": "2025-11-02T05:00:51Z",
-      "work_summary": {
-        "effort_id": null,
-        "effort_name": null,
-        "branch": null,
-        "outcome": null,
-        "splits": 0
-      },
-      "metrics": {
-        "lines_added": 0,
-        "lines_removed": 0,
-        "files_modified": 0,
-        "commits": 0,
-        "duration_hours": 0
-      }
-    },
-    {
-      "agent_id": "swe-2.2.1-registry-override",
-      "agent_type": "sw-engineer",
-      "final_state": "COMPLETE",
-      "completed_at": "2025-11-02T05:00:51Z",
-      "work_summary": {
-        "effort_id": null,
-        "effort_name": "registry-override-viper",
-        "branch": null,
-        "outcome": null,
-        "splits": 0
-      },
-      "metrics": {
-        "lines_added": 0,
-        "lines_removed": 0,
-        "files_modified": 0,
-        "commits": 0,
-        "duration_hours": -0.13527777777777777
-      }
-    },
-    {
-      "agent_id": "swe-2.2.2-env-variable-support",
-      "agent_type": "sw-engineer",
-      "final_state": "COMPLETED",
-      "completed_at": "2025-11-02T05:00:51Z",
-      "work_summary": {
-        "effort_id": null,
-        "effort_name": "env-variable-support",
-        "branch": null,
-        "outcome": null,
-        "splits": 0
-      },
-      "metrics": {
-        "lines_added": 0,
-        "lines_removed": 0,
-        "files_modified": 0,
-        "commits": 0,
-        "duration_hours": 0.09638888888888889
-      }
-    }
-  ]
+  "artifacts": {}
 }

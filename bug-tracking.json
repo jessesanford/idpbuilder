@@ -354,9 +354,173 @@
         "core_implementation_lines": 406,
         "theme_purity": "51.1%"
       }
+    },
+    {
+      "bug_id": "BUG-009-BUILD-FAILURE",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "phase": 2,
+      "wave": 2,
+      "effort_id": "2.2.1",
+      "title": "Build failure - missing viper parameter in root.go line 29",
+      "description": "pkg/cmd/root.go line 29 calls push.NewPushCommand() without required *viper.Viper parameter, causing compilation error",
+      "category": "build",
+      "affected_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T05:20:38Z",
+      "found_in_state": "MONITORING_EFFORT_REVIEWS",
+      "location": {
+        "file_path": "pkg/cmd/root.go",
+        "line_number": 29,
+        "function_name": "init",
+        "context": "rootCmd.AddCommand(push.NewPushCommand()) - missing viper parameter"
+      },
+      "symptoms": [
+        "go build fails with not enough arguments error",
+        "Code cannot compile",
+        "Tests cannot run"
+      ],
+      "impact": "Complete build failure - no code can compile or be tested",
+      "resolution_plan": [
+        "Create viper instance in root command",
+        "Pass viper instance to NewPushCommand(v)",
+        "Verify build passes"
+      ],
+      "affected_effort": "2.2.1"
+    },
+    {
+      "bug_id": "BUG-010-SIZE-VIOLATION",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "phase": 2,
+      "wave": 2,
+      "effort_id": "2.2.1",
+      "title": "Hard size limit violation - 831 lines exceeds 800 limit",
+      "description": "Implementation contains 831 lines, exceeding the 800-line hard limit by 31 lines (3.9% overage)",
+      "category": "size_violation",
+      "affected_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T05:20:38Z",
+      "found_in_state": "MONITORING_EFFORT_REVIEWS",
+      "location": {
+        "file_path": "N/A",
+        "line_number": null,
+        "function_name": null,
+        "context": "Total implementation: 831 lines (includes 389 lines of out-of-scope Phase 1 stubs)"
+      },
+      "symptoms": [
+        "Line counter shows 831 lines",
+        "Hard limit: 800 lines",
+        "Overage: +31 lines",
+        "Includes 389 lines of Phase 1/Wave 2.1 stub code"
+      ],
+      "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
+      "resolution_plan": [
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
+        "Option B: Create split plan into 2 efforts",
+        "Re-measure after fix",
+        "Verify under 800 line limit"
+      ],
+      "affected_effort": "2.2.1",
+      "scope_violation_details": {
+        "total_out_of_scope_lines": 389,
+        "out_of_scope_files": [
+          "pkg/auth/provider.go (46 lines)",
+          "pkg/docker/client.go (36 lines)",
+          "pkg/progress/interface.go (16 lines)",
+          "pkg/progress/reporter.go (154 lines)",
+          "pkg/registry/client.go (58 lines)",
+          "pkg/tls/config.go (38 lines)",
+          "pkg/cmd/push/types.go (41 lines)"
+        ],
+        "core_implementation_lines": 406,
+        "theme_purity": "51.1%"
+      }
+    },
+    {
+      "bug_id": "BUG-011-SCOPE-VIOLATION",
+      "severity": "HIGH",
+      "status": "OPEN",
+      "phase": 2,
+      "wave": 2,
+      "effort_id": "2.2.1",
+      "title": "Scope violation - 389 lines of out-of-scope Phase 1 stub code",
+      "description": "Implementation includes 389 lines of Phase 1/Wave 2.1 stub files that are out of scope for this effort",
+      "category": "scope_violation",
+      "affected_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T05:20:38Z",
+      "found_in_state": "MONITORING_EFFORT_REVIEWS",
+      "location": {
+        "file_path": "multiple",
+        "line_number": null,
+        "function_name": null,
+        "context": "7 Phase 1 stub files totaling 389 lines"
+      },
+      "symptoms": [
+        "Phase 1 stub implementations in Phase 2 effort",
+        "Theme purity only 51.1% (< 95% required)",
+        "Out-of-scope code inflating effort size"
+      ],
+      "impact": "Violates effort scope boundaries, reduces theme purity, contributes to size violation",
+      "resolution_plan": [
+        "Remove all 7 out-of-scope stub files",
+        "Verify theme purity increases to >= 95%",
+        "Re-measure size after removal"
+      ],
+      "affected_effort": "2.2.1",
+      "out_of_scope_files": [
+        "pkg/auth/provider.go (46 lines)",
+        "pkg/docker/client.go (36 lines)",
+        "pkg/progress/interface.go (16 lines)",
+        "pkg/progress/reporter.go (154 lines)",
+        "pkg/registry/client.go (58 lines)",
+        "pkg/tls/config.go (38 lines)",
+        "pkg/cmd/push/types.go (41 lines)"
+      ]
+    },
+    {
+      "bug_id": "BUG-012-THEME-IMPURITY",
+      "severity": "HIGH",
+      "status": "OPEN",
+      "phase": 2,
+      "wave": 2,
+      "effort_id": "2.2.1",
+      "title": "Theme purity violation - 51.1% purity (< 95% required)",
+      "description": "Effort theme purity is only 51.1% (406/795 relevant lines), well below the 95% threshold required by R347",
+      "category": "theme_purity",
+      "affected_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T05:20:38Z",
+      "found_in_state": "MONITORING_EFFORT_REVIEWS",
+      "location": {
+        "file_path": "N/A",
+        "line_number": null,
+        "function_name": null,
+        "context": "Theme purity: 406 core lines / 795 total = 51.1%"
+      },
+      "symptoms": [
+        "Theme purity 51.1% < 95% required",
+        "389 lines of out-of-scope code diluting theme",
+        "Effort not focused on single coherent theme"
+      ],
+      "impact": "Violates R347 theme purity requirements, effort not maintainable as single coherent unit",
+      "resolution_plan": [
+        "Remove 389 lines of out-of-scope stub files",
+        "Recalculate theme purity (should be ~95%+)",
+        "Verify effort has single coherent theme"
+      ],
+      "affected_effort": "2.2.1",
+      "theme_purity_calculation": {
+        "core_lines": 406,
+        "total_relevant_lines": 795,
+        "purity_percentage": 51.1,
+        "required_minimum": 95.0,
+        "shortfall": 43.9
+      }
     }
   ],
-  "active_bug_count": 2,
+  "active_bug_count": 6,
   "resolved_bug_count": 6,
   "bug_categories": {
     "integration_failures": [
@@ -366,7 +530,8 @@
     ],
     "build_failures": [
       "BUG-004-INTEGRATION-GOSUM",
-      "BUG-007-BUILD-VIPER-ARG"
+      "BUG-007-BUILD-VIPER-ARG",
+      "BUG-009-BUILD-FAILURE"
     ],
     "test_failures": [],
     "review_findings": [
@@ -376,24 +541,29 @@
       "BUG-005-INTEGRATION-PARSE",
       "BUG-006-INTEGRATION-LEAK",
       "BUG-007-BUILD-VIPER-ARG",
-      "BUG-008-SIZE-VIOLATION"
+      "BUG-008-SIZE-VIOLATION",
+      "BUG-009-BUILD-FAILURE",
+      "BUG-010-SIZE-VIOLATION",
+      "BUG-011-SCOPE-VIOLATION",
+      "BUG-012-THEME-IMPURITY"
     ],
     "size_violations": [
-      "BUG-008-SIZE-VIOLATION"
+      "BUG-008-SIZE-VIOLATION",
+      "BUG-010-SIZE-VIOLATION"
     ]
   },
   "metadata": {
-    "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW → MONITORING_EFFORT_REVIEWS (2 critical bugs found in effort 2.2.1)"
+    "notes": "State transition: MONITORING_EFFORT_REVIEWS → SPAWN_CODE_REVIEWER_FIX_PLAN (4 critical/major bugs found in effort 2.2.1)"
   },
   "last_state_transition": {
-    "from": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "to": "MONITORING_EFFORT_REVIEWS",
-    "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-    "reason": "Effort 2.2.1 review completed with critical findings: build failure + size violation"
+    "from": "MONITORING_EFFORT_REVIEWS",
+    "to": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+    "timestamp": "2025-11-02T06:33:06Z",
+    "reason": "Effort 2.2.1 has critical bugs requiring fix planning"
   },
   "state_machine_sync": {
-    "current_state": "MONITORING_EFFORT_REVIEWS",
-    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "last_transition": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+    "previous_state": "MONITORING_EFFORT_REVIEWS",
+    "last_transition": "2025-11-02T06:33:06Z"
   }
 }
