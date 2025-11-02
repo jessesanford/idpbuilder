@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "REVIEW_WAVE_INTEGRATION",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_transition_timestamp": "2025-11-02T07:27:44Z",
+    "current_state": "CREATE_WAVE_FIX_PLAN",
+    "previous_state": "REVIEW_WAVE_INTEGRATION",
+    "last_transition_timestamp": "2025-11-02T08:06:41Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-02T07:27:44Z",
       "consultation_type": "SHUTDOWN_CONSULTATION",
@@ -2292,6 +2292,34 @@
         "transition_reason": "Integration completed with FAILED status - upstream bug found in effort-1-registry-override-viper",
         "validated_by": "state-manager",
         "consultation_type": "SHUTDOWN_CONSULTATION"
+      },
+      {
+        "from_state": "REVIEW_WAVE_INTEGRATION",
+        "to_state": "CREATE_WAVE_FIX_PLAN",
+        "timestamp": "2025-11-02T08:06:41Z",
+        "validated_by": "state-manager",
+        "reason": "Integration review found 6 bugs (3 CRITICAL blockers): BUG-WAVE-2-2-001 (build failure - P0), BUG-WAVE-2-2-002 (size violation 848 lines - P1), BUG-WAVE-2-2-003 (R383 metadata violation - P1), BUG-WAVE-2-2-004 (test failure - P2), BUG-WAVE-2-2-005 (cascading build failures - P2), BUG-WAVE-2-2-006 (skipped test coverage - P3). Guard condition bugs_found (6) > 0 satisfied. Fix planning required before proceeding.",
+        "phase": 2,
+        "wave": 2,
+        "iteration": 4,
+        "orchestrator_proposal": "CREATE_WAVE_FIX_PLAN",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "guard_condition_met": "bugs_found (6) > 0",
+          "bugs_found": 6,
+          "bugs_blocking": 3,
+          "integration_health": "CRITICAL",
+          "review_complete": true,
+          "bugs_recorded": true,
+          "r288_compliance": true,
+          "r322_consultation": true,
+          "state_machine_compliance": "VERIFIED"
+        }
       }
     ],
     "loop_detection": {

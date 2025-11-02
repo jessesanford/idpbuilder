@@ -520,45 +520,127 @@
       }
     },
     {
-      "bug_id": "BUG-013-INTEGRATION-VIPER-ARG",
+      "bug_id": "BUG-013-BUILD-VIPER-MISSING",
       "severity": "CRITICAL",
+      "category": "BUILD_ERROR",
       "status": "OPEN",
-      "phase": 2,
-      "wave": 2,
-      "effort_id": "2.2.1",
-      "title": "Integration build failure - NewPushCommand missing viper parameter",
-      "description": "pkg/cmd/root.go:29 calls push.NewPushCommand() without required *viper.Viper parameter, causing compilation error during wave integration",
-      "category": "build",
-      "affected_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
-      "discovered_by": "orchestrator",
-      "discovered_at": "2025-11-02T07:45:14Z",
-      "found_in_state": "INTEGRATE_WAVE_EFFORTS",
-      "found_in_iteration": 4,
+      "title": "Build Failure - Missing Viper Parameter",
+      "description": "Code does not compile due to missing parameter in function call. The push.NewPushCommand() function requires a *viper.Viper parameter, but the call site in root.go does not provide it.",
       "location": {
         "file_path": "pkg/cmd/root.go",
         "line_number": 29,
-        "function_name": "init",
-        "context": "rootCmd.AddCommand(push.NewPushCommand()) - missing viper parameter"
+        "function_name": "init"
       },
-      "symptoms": [
-        "go build fails with not enough arguments in call to push.NewPushCommand",
-        "Integration build cannot compile",
-        "Tests cannot run (blocked by build failure)"
-      ],
-      "impact": "Complete integration failure - wave cannot proceed without fix",
-      "resolution_plan": [
-        "Create viper instance in root command initialization",
-        "Pass viper instance to NewPushCommand(v)",
-        "Backport fix to effort-1 source branch per R321",
-        "Re-integrate after fix is applied and reviewed"
-      ],
       "affected_effort": "2.2.1",
-      "source_effort": "effort-1-registry-override-viper",
-      "requires_backport": true,
-      "r300_cascade_trigger": true
+      "affected_wave": "2.2",
+      "found_in_iteration": 4,
+      "blocking": true,
+      "priority": "P0",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T07:58:12Z"
+    },
+    {
+      "bug_id": "BUG-014-SIZE-VIOLATION",
+      "severity": "CRITICAL",
+      "category": "SIZE_VIOLATION",
+      "status": "OPEN",
+      "title": "Hard Size Limit Violation - 848 Lines",
+      "description": "Integration branch exceeds the hard 800-line limit for implementation code (848 lines, +48 over limit, 6.0% violation), violating R304 mandatory line counting enforcement.",
+      "location": {
+        "file_path": "integration-branch",
+        "line_number": null,
+        "function_name": null
+      },
+      "affected_effort": "integration",
+      "affected_wave": "2.2",
+      "found_in_iteration": 4,
+      "blocking": true,
+      "priority": "P1",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T07:58:12Z"
+    },
+    {
+      "bug_id": "BUG-015-METADATA-PLACEMENT",
+      "severity": "CRITICAL",
+      "category": "RULE_VIOLATION",
+      "status": "OPEN",
+      "title": "R383 Metadata File Placement Violation",
+      "description": "Metadata file FIX_PLAN_2.2.1.md exists in repository root directory, violating R383 Supreme Law requirement that ALL metadata MUST be in .software-factory/ with timestamps. Penalty: -100%.",
+      "location": {
+        "file_path": "FIX_PLAN_2.2.1.md",
+        "line_number": null,
+        "function_name": null
+      },
+      "affected_effort": "2.2.1",
+      "affected_wave": "2.2",
+      "found_in_iteration": 4,
+      "blocking": true,
+      "priority": "P1",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T07:58:12Z"
+    },
+    {
+      "bug_id": "BUG-016-TEST-ETCD-MISSING",
+      "severity": "HIGH",
+      "category": "TEST_FAILURE",
+      "status": "OPEN",
+      "title": "Test Failure - Build Dependency Missing",
+      "description": "Test suite pkg/controllers/custompackage fails due to missing test dependency (etcd binary). This is NOT an integration bug - it's a pre-existing upstream test infrastructure issue.",
+      "location": {
+        "file_path": "pkg/controllers/custompackage/controller_test.go",
+        "line_number": 52,
+        "function_name": "TestReconcileCustomPkg"
+      },
+      "affected_effort": "upstream",
+      "affected_wave": "2.2",
+      "found_in_iteration": 4,
+      "blocking": false,
+      "priority": "P2",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T07:58:12Z"
+    },
+    {
+      "bug_id": "BUG-017-BUILD-CASCADE",
+      "severity": "HIGH",
+      "category": "BUILD_ERROR",
+      "status": "OPEN",
+      "title": "Build Dependency Error Cascades",
+      "description": "Package github.com/cnoe-io/idpbuilder/pkg/cmd and github.com/cnoe-io/idpbuilder fail to build due to the primary build error (BUG-WAVE-2-2-001). This is a cascading failure, not an independent bug.",
+      "location": {
+        "file_path": "pkg/cmd",
+        "line_number": null,
+        "function_name": null
+      },
+      "affected_effort": "2.2.1",
+      "affected_wave": "2.2",
+      "found_in_iteration": 4,
+      "blocking": false,
+      "priority": "P2",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T07:58:12Z"
+    },
+    {
+      "bug_id": "BUG-018-TEST-SKIPPED",
+      "severity": "MEDIUM",
+      "category": "CODE_QUALITY",
+      "status": "OPEN",
+      "title": "Test Coverage - Skipped Test Implementation",
+      "description": "Test file pkg/cmd/push/push_test.go contains 14 test cases that are skipped with message 'Requires mock injection support - to be implemented'. While this reduces effective test coverage, the tests are properly documented as TODO items.",
+      "location": {
+        "file_path": "pkg/cmd/push/push_test.go",
+        "line_number": null,
+        "function_name": null
+      },
+      "affected_effort": "2.2.1",
+      "affected_wave": "2.2",
+      "found_in_iteration": 4,
+      "blocking": false,
+      "priority": "P3",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T07:58:12Z"
     }
   ],
-  "active_bug_count": 7,
+  "active_bug_count": 12,
   "resolved_bug_count": 6,
   "bug_categories": {
     "integration_failures": [
@@ -569,8 +651,7 @@
     "build_failures": [
       "BUG-004-INTEGRATION-GOSUM",
       "BUG-007-BUILD-VIPER-ARG",
-      "BUG-009-BUILD-FAILURE",
-      "BUG-013-INTEGRATION-VIPER-ARG"
+      "BUG-009-BUILD-FAILURE"
     ],
     "test_failures": [],
     "review_findings": [
@@ -592,20 +673,20 @@
     ]
   },
   "metadata": {
-    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → REVIEW_WAVE_INTEGRATION (integration failed with upstream bug)",
-    "last_updated": "2025-11-02T07:50:02Z",
-    "state_transition": "REVIEW_WAVE_INTEGRATION",
+    "notes": "State transition: REVIEW_WAVE_INTEGRATION → CREATE_WAVE_FIX_PLAN - 6 bugs from wave 2.2 integration review",
+    "last_updated": "2025-11-02T08:06:41Z",
+    "state_transition": "CREATE_WAVE_FIX_PLAN",
     "updated_by": "state-manager"
   },
   "last_state_transition": {
-    "from": "INTEGRATE_WAVE_EFFORTS",
-    "to": "REVIEW_WAVE_INTEGRATION",
-    "timestamp": "2025-11-02T07:50:02Z",
-    "reason": "Integration failed with upstream bug - requires code review"
+    "from": "REVIEW_WAVE_INTEGRATION",
+    "to": "CREATE_WAVE_FIX_PLAN",
+    "timestamp": "2025-11-02T08:06:41Z",
+    "reason": "Wave 2.2 integration review found 6 bugs"
   },
   "state_machine_sync": {
-    "current_state": "REVIEW_WAVE_INTEGRATION",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_transition": "2025-11-02T07:50:02Z"
+    "current_state": "CREATE_WAVE_FIX_PLAN",
+    "previous_state": "REVIEW_WAVE_INTEGRATION",
+    "last_transition": "2025-11-02T08:06:41Z"
   }
 }

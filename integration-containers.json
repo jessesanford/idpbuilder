@@ -312,70 +312,63 @@
       "container_id": "wave-phase2-wave2",
       "phase": 2,
       "wave": 2,
-      "status": "FAILED",
+      "status": "review_failed",
       "iteration": 4,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase2/wave2/integration",
       "workspace": "efforts/phase2/wave2/integration-workspace",
       "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
       "created_at": "2025-11-01T14:35:00Z",
-      "integration_started_at": "2025-11-02T07:44:00Z",
-      "last_iteration_at": "2025-11-02T07:50:22Z",
+      "integration_started_at": null,
+      "last_iteration_at": "2025-11-02T07:09:30Z",
       "convergence_metrics": {
-        "bugs_remaining": 1,
-        "bugs_found": 1,
+        "bugs_remaining": 6,
+        "bugs_found": 6,
         "test_failures": 0,
-        "build_failures": 1,
+        "build_failures": 0,
         "bugs_fixed": 0
       },
-      "efforts_to_integrate": [
-        "2.2.1",
-        "2.2.2"
-      ],
-      "effort_branches": [
-        "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
-        "idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support"
-      ],
-      "integration_plan_file": "efforts/phase2/wave2/integration-workspace/.software-factory/phase2/wave2/WAVE-INTEGRATION-INSTRUCTIONS.md",
-      "notes": "Wave 2.2 integration FAILED: Both efforts merged cleanly (0 conflicts), but build fails due to upstream bug in effort-1 (missing viper parameter)",
-      "integration_report_file": "efforts/phase2/wave2/integration-workspace/.software-factory/phase2/wave2/integration/INTEGRATION-REPORT--20251102-074514.md",
-      "integration_completed_at": "2025-11-02T07:50:22Z",
-      "build_validation": {
-        "status": "FAILED",
-        "build_command": "make build",
-        "build_error": "pkg/cmd/root.go:29:21: not enough arguments in call to push.NewPushCommand",
-        "build_timestamp": "2025-11-02T07:50:22Z",
-        "validated_at": "2025-11-02T07:50:22Z",
-        "validator": "integration-agent",
-        "r323_compliance": "FAILED"
+      "efforts_to_integrate": [],
+      "effort_branches": [],
+      "integration_plan_file": null,
+      "notes": "Wave 2.2 integration review iteration 4: 6 bugs found (3 CRITICAL blockers)",
+      "test_plan_file": "planning/phase2/wave2/WAVE-TEST-PLAN.md",
+      "test_count": 50,
+      "coverage_targets": {
+        "statement": "90%",
+        "branch": "85%"
       },
-      "test_execution": {
-        "status": "BLOCKED",
-        "tests_run": 0,
-        "tests_passing": 0,
-        "blocked_reason": "Build failure prevents test execution"
-      },
+      "tdd_phase": "RED",
+      "integration_report_file": null,
+      "integration_completed_at": null,
+      "build_validation": null,
+      "test_execution": null,
       "conflicts_resolved": 0,
       "conflict_details": [],
-      "build_validation_complete": true,
+      "build_validation_complete": false,
       "artifact_generated": false,
       "ready_for_pr": false,
       "ready_for_architecture_review": false,
       "awaiting_architect_review": false,
-      "review_state": "NEEDS_CODE_REVIEW",
-      "upstream_bugs_found": [
-        {
-          "bug_id": "BUG-013-INTEGRATION-VIPER-ARG",
-          "severity": "CRITICAL",
-          "source_effort": "effort-1-registry-override-viper",
-          "requires_backport": true,
-          "r300_cascade": true
-        }
-      ],
+      "review_state": "NOT_STARTED",
       "architecture_review": null,
       "review_complete": false,
       "ready_for_completion": false,
-      "ready_for_build_validation": false
+      "ready_for_build_validation": false,
+      "iteration_history": [
+        {
+          "iteration": 4,
+          "started_at": "2025-11-02T07:09:30Z",
+          "completed_at": "2025-11-02T08:06:41Z",
+          "review_report": "efforts/phase2/wave2/integration-workspace/.software-factory/phase2/wave2/integration/INTEGRATION_CODE_REVIEW_REPORT.md",
+          "bugs_found": 6,
+          "bugs_fixed": 0,
+          "status": "BUGS_FOUND",
+          "reviewer": "code-reviewer-integration",
+          "notes": "Integration review found 6 bugs (3 CRITICAL blockers) - build failure, size violation, metadata placement violation",
+          "review_timestamp": "2025-11-02T08:06:41Z"
+        }
+      ]
     }
   ],
   "integration_history": [],
@@ -399,14 +392,14 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-02T07:50:22Z",
-    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → REVIEW_WAVE_INTEGRATION (integration failed, needs code review)",
-    "state_transition": "REVIEW_WAVE_INTEGRATION",
+    "last_updated": "2025-11-02T08:06:41Z",
+    "notes": "State transition: REVIEW_WAVE_INTEGRATION → CREATE_WAVE_FIX_PLAN (wave 2.2 iteration 4 - 6 bugs found)",
+    "state_transition": "CREATE_WAVE_FIX_PLAN",
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "current_state": "REVIEW_WAVE_INTEGRATION",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_transition": "2025-11-02T07:50:22Z"
+    "current_state": "CREATE_WAVE_FIX_PLAN",
+    "previous_state": "REVIEW_WAVE_INTEGRATION",
+    "last_transition": "2025-11-02T08:06:41Z"
   }
 }
