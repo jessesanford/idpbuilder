@@ -312,26 +312,26 @@
       "container_id": "wave-phase2-wave2",
       "phase": 2,
       "wave": 2,
-      "status": "pending_reintegration",
-      "iteration": 6,
+      "status": "integrating",
+      "iteration": 7,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase2/wave2/integration",
       "workspace": "efforts/phase2/wave2/integration-workspace",
       "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
       "created_at": "2025-11-01T14:35:00Z",
       "integration_started_at": null,
-      "last_iteration_at": "2025-11-02T17:34:45Z",
+      "last_iteration_at": "2025-11-02T18:50:08Z",
       "convergence_metrics": {
         "bugs_remaining": 1,
         "bugs_found": 1,
         "test_failures": 0,
         "build_failures": 0,
-        "bugs_fixed": 2
+        "bugs_fixed": 0
       },
       "efforts_to_integrate": [],
       "effort_branches": [],
       "integration_plan_file": null,
-      "notes": "Wave 2.2 iteration 6: Integration build succeeded (66M binary, 89.6% coverage, 39 tests), code review found 1 CATASTROPHIC bug (R359 violation - code deletion). Fix cascade required.",
+      "notes": "Wave 2.2 iteration 7: Workspace corruption resolved (deleted integration-workspace). Re-integrating from clean Wave 2.1 base to fix BUG-019 R359 violation.",
       "test_plan_file": "planning/phase2/wave2/WAVE-TEST-PLAN.md",
       "test_count": 50,
       "coverage_targets": {
@@ -357,49 +357,6 @@
       "ready_for_build_validation": false,
       "iteration_history": [
         {
-          "iteration": 4,
-          "started_at": "2025-11-02T07:09:30Z",
-          "completed_at": "2025-11-02T08:06:41Z",
-          "review_report": "efforts/phase2/wave2/integration-workspace/.software-factory/phase2/wave2/integration/INTEGRATION_CODE_REVIEW_REPORT.md",
-          "bugs_found": 6,
-          "bugs_fixed": 0,
-          "status": "BUGS_FOUND",
-          "reviewer": "code-reviewer-integration",
-          "notes": "Integration review found 6 bugs (3 CRITICAL blockers) - build failure, size violation, metadata placement violation",
-          "review_timestamp": "2025-11-02T08:06:41Z"
-        },
-        {
-          "iteration": 5,
-          "started_at": "2025-11-02T17:34:45Z",
-          "status": "READY",
-          "notes": "Upstream bugs fixed: BUG-007/009/013 (build), BUG-008/010 (size). Ready for re-integration per R327/R531."
-        },
-        {
-          "iteration": 6,
-          "started_at": "2025-11-02T17:42:00Z",
-          "completed_at": "2025-11-02T18:18:52Z",
-          "review_report": ".software-factory/phase2/wave2/integration/CODE-REVIEW-REPORT--20251102-181852.md",
-          "bugs_found": 1,
-          "bugs_fixed": 0,
-          "bug_ids": [
-            "BUG-019-R359-CODE-DELETION"
-          ],
-          "status": "BUGS_FOUND",
-          "reviewer": "code-reviewer",
-          "notes": "Integration review found 1 CATASTROPHIC bug: R359 Supreme Law violation (deleted 731 lines of approved Wave 2.1 code in commit 37b5e68). Wave 2.2 implementation itself is production-ready (89.6% coverage, 39 tests), but code deletion violation is BLOCKING.",
-          "review_timestamp": "2025-11-02T18:18:52Z",
-          "decision": "NEEDS_FIXES",
-          "blocking_bugs": [
-            "BUG-019-R359-CODE-DELETION"
-          ],
-          "severity_breakdown": {
-            "CATASTROPHIC": 1,
-            "BLOCKING": 0,
-            "MAJOR": 0,
-            "MINOR": 0
-          }
-        },
-        {
           "iteration": 6,
           "started_at": "2025-11-02T17:42:00Z",
           "completed_at": "2025-11-02T18:18:52Z",
@@ -423,19 +380,27 @@
             "MAJOR": 0,
             "MINOR": 0
           }
+        },
+        {
+          "iteration": 7,
+          "started_at": "2025-11-02T18:50:08Z",
+          "status": "IN_PROGRESS",
+          "notes": "Iteration 7: Workspace corruption resolved (deleted integration-workspace). Re-integrating from clean Wave 2.1 base to fix BUG-019 R359 violation."
         }
       ],
       "iteration_number": 7,
-      "integration_workspace_status": "CORRUPTED_REQUIRES_DELETION",
-      "workspace_path": "efforts/phase2/wave2/integration-workspace",
+      "integration_workspace_status": "DELETED",
+      "workspace_path": null,
       "corruption_details": {
         "corrupted_by_commit": "37b5e68",
         "deleted_lines": 731,
         "deleted_from_wave": "2.1",
         "violation": "R359_SUPREME_LAW_VIOLATION"
       },
-      "requires_workspace_deletion": true,
-      "will_reintegrate_in_iteration": 7
+      "requires_workspace_deletion": false,
+      "will_reintegrate_in_iteration": null,
+      "reintegration_in_progress": true,
+      "reintegration_started_at": "2025-11-02T18:50:08Z"
     }
   ],
   "integration_history": [],
@@ -459,17 +424,17 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-02T18:33:55Z",
-    "notes": "State transition: CREATE_WAVE_FIX_PLAN to FIX_WAVE_UPSTREAM_BUGS",
-    "state_transition": "FIX_WAVE_UPSTREAM_BUGS",
+    "last_updated": "2025-11-02T18:50:08Z",
+    "notes": "State transition: START_WAVE_ITERATION to INTEGRATE_WAVE_EFFORTS (iteration 7)",
+    "state_transition": "INTEGRATE_WAVE_EFFORTS",
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "orchestrator_state": "START_WAVE_ITERATION",
-    "last_sync": "2025-11-02T18:41:29Z",
+    "orchestrator_state": "INTEGRATE_WAVE_EFFORTS",
+    "last_sync": "2025-11-02T18:50:08Z",
     "in_sync": true
   },
-  "current_state": "START_WAVE_ITERATION",
+  "current_state": "INTEGRATE_WAVE_EFFORTS",
   "phase": 2,
   "wave": 2,
   "last_updated_by": "state-manager"
