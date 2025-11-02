@@ -378,12 +378,12 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-    "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW → MONITORING_EFFORT_REVIEWS (Effort 2.2.1 review completed with critical findings)"
+    "last_updated": "2025-11-02T06:44:04Z",
+    "notes": "State transition: SPAWN_CODE_REVIEWER_FIX_PLAN → WAITING_FOR_FIX_PLANS (Fix plan created for effort 2.2.1)"
   },
   "state_machine_sync": {
-    "current_state": "MONITORING_EFFORT_REVIEWS",
-    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "last_transition": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+    "current_state": "WAITING_FOR_FIX_PLANS",
+    "previous_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+    "last_transition": "2025-11-02T06:44:04Z"
   }
 }

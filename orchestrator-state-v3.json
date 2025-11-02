@@ -3,14 +3,14 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
-    "previous_state": "MONITORING_EFFORT_REVIEWS",
-    "last_transition_timestamp": "2025-11-02T05:12:08Z",
+    "current_state": "WAITING_FOR_FIX_PLANS",
+    "previous_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+    "last_transition_timestamp": "2025-11-02T06:43:54Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-02T05:12:07Z",
+      "timestamp": "2025-11-02T06:43:54Z",
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "from_state": "MONITORING_SWE_PROGRESS",
-      "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+      "from_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+      "to_state": "WAITING_FOR_FIX_PLANS",
       "validated": true
     },
     "state_history": [
@@ -2099,6 +2099,34 @@
         "proposal_accepted": true,
         "transition_invalid": false,
         "reason": "Critical bugs found in effort 2.2.1 review, requiring fix planning"
+      },
+      {
+        "from_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
+        "to_state": "WAITING_FOR_FIX_PLANS",
+        "timestamp": "2025-11-02T06:43:54Z",
+        "validated_by": "state-manager",
+        "reason": "Fix plan created for effort 2.2.1. Code Reviewer analyzed critical bugs (BUG-007 build failure missing viper parameter, BUG-008 size violation 831>800 lines) and generated comprehensive fix plan at efforts/phase2/wave2/effort-1-registry-override-viper/FIX_PLAN_2.2.1.md. Fix plan addresses both build error and size violation. Ready to wait for orchestrator to review and distribute fix instructions.",
+        "phase": 2,
+        "wave": 2,
+        "effort": "2.2.1",
+        "orchestrator_proposal": "WAITING_FOR_FIX_PLANS",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "fix_plan_exists": true,
+          "fix_plan_file": "efforts/phase2/wave2/effort-1-registry-override-viper/FIX_PLAN_2.2.1.md",
+          "bugs_addressed": [
+            "BUG-007-BUILD-VIPER-ARG",
+            "BUG-008-SIZE-VIOLATION"
+          ],
+          "r288_compliance": true,
+          "r322_consultation": true,
+          "state_machine_compliance": "VERIFIED"
+        }
       }
     ],
     "loop_detection": {
