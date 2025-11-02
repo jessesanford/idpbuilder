@@ -1,8 +1,22 @@
 # Git Commit Hooks Organization
 
-## Overview
+## ⚠️ COMPREHENSIVE DOCUMENTATION AVAILABLE
 
-The Software Factory 2.0 template uses a structured git hook system that automatically validates commits based on repository type. This ensures compliance with Software Factory rules and prevents common mistakes.
+**For complete, detailed documentation of the unified hook system, see:**
+- [README-UNIFIED-HOOKS.md](./README-UNIFIED-HOOKS.md) - Full documentation with examples and troubleshooting
+
+This README provides a quick overview. See the comprehensive document for:
+- Detailed hook execution flow
+- Repository type detection logic
+- Installation methods
+- Troubleshooting guide
+- Development guidelines
+
+---
+
+## Quick Overview
+
+The Software Factory uses a **unified git hook system** that automatically validates commits based on repository type and SF version (2.0/3.0). All hooks are stored in a single location and managed consistently.
 
 ## Directory Structure
 

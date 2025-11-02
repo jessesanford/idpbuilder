@@ -140,12 +140,13 @@ DEFAULT_BRANCH=$(yq '.default_branch' "$TARGET_CONFIG")
 # Create isolated project integration workspace
 PROJECT_INTEGRATE_WAVE_EFFORTS_DIR="$CLAUDE_PROJECT_DIR/efforts/project/integration-workspace"
 rm -rf "$PROJECT_INTEGRATE_WAVE_EFFORTS_DIR"
-mkdir -p "$PROJECT_INTEGRATE_WAVE_EFFORTS_DIR"
-cd "$PROJECT_INTEGRATE_WAVE_EFFORTS_DIR"
 
-# Clone TARGET repository (R508 - NEVER software-factory!)
-git clone "$TARGET_REPO_PATH" "$TARGET_REPO_NAME"
-cd "$TARGET_REPO_NAME"
+# Clone TARGET repository DIRECTLY into integration-workspace (R250/R271)
+# NO subdirectories - integration-workspace IS the git repository
+git clone --single-branch --branch "$DEFAULT_BRANCH" "$TARGET_REPO_PATH" "$PROJECT_INTEGRATE_WAVE_EFFORTS_DIR"
+
+# Now IN the git repository (integration-workspace IS the repo)
+cd "$PROJECT_INTEGRATE_WAVE_EFFORTS_DIR"
 
 # CRITICAL SAFETY CHECK - Verify correct repository
 REMOTE_URL=$(git remote get-url origin)

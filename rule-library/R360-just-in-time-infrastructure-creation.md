@@ -12,6 +12,8 @@ Infrastructure for efforts and splits must be EXECUTED "just in time" - only whe
 
 **IMPORTANT**: R504 handles ALL naming/pathing decisions upfront. R360 only controls WHEN to execute pre-planned infrastructure.
 
+**RELATED**: R603 (Sequential Effort Infrastructure Timing) handles dependency checking and determines WHICH efforts are ready based on R213 metadata. R360 provides the general principle, R603 provides the implementation logic.
+
 ## Requirements
 
 ### 1. Infrastructure Creation Timing
@@ -164,6 +166,9 @@ done
 
 ## Related Rules
 
+- R603: Sequential effort infrastructure timing (dependency checking implementation)
+- R213: Effort metadata requirements (source of dependency information)
+- R504: Pre-infrastructure planning protocol (naming/pathing decisions)
 - R196: Base branch selection
 - R308: Incremental branching strategy
 - R312: Git config immutability

@@ -1268,3 +1268,156 @@
   - Path not tracked: -20% per plan
   - Wrong naming: -25% per file
   - Plan not found: -100% IMMEDIATE FAILURE
+
+## R603 - Sequential Effort Infrastructure Timing
+- **File**: rule-library/R603-sequential-effort-infrastructure-timing.md
+- **Criticality**: HIGH - Critical for cascade maintenance
+- **Summary**: Sequential efforts (parallelizable: false, with dependencies) must have infrastructure created incrementally "just-in-time" as dependencies complete, ensuring proper cascade pattern
+- **Enforcement**: Exit code 603, -50% penalty for premature infrastructure creation
+- **Scope**: CREATE_NEXT_INFRASTRUCTURE state, Orchestrator agent
+- **Key Requirements**:
+  - Check R213 metadata for `parallelizable` and `depends_on` fields
+  - Create infrastructure ONLY when ALL dependencies are satisfied
+  - Verify effort status = "approved" for effort dependencies
+  - Verify branch exists for integration dependencies
+  - Sequential efforts: create one at a time, wait for completion
+  - Parallel efforts: can batch create (but incremental is safer)
+- **Problem Addressed**:
+  - WITHOUT R603: All efforts get infrastructure created simultaneously
+  - Result: Later efforts based on wrong branch, missing earlier efforts' commits
+  - R509 validation fails: expected files not in base branch
+- **WITH R603**:
+  - Later efforts wait for earlier efforts to complete
+  - Infrastructure created with correct base branch
+  - Cascade pattern maintained automatically
+  - R509 validation passes
+- **Integration**: Implements R360 (JIT) principle with R213 (metadata) checking, works with R501 (cascade), R509 (validation), R514 (creation protocol)
+- **Related Rules**: R360 (JIT execution), R213 (metadata), R501 (cascade), R509 (validation), R514 (creation protocol), R504 (pre-planning)
+- **Grading Penalties**:
+  - Infrastructure created before dependencies satisfied: -50%
+  - Ignoring R213 parallelizable field: -30%
+  - Ignoring depends_on relationships: -40%
+  - Resulting cascade violation (R509 failure): -100%
+
+## R610 - Agent Metadata Lifecycle Protocol
+- **File**: rule-library/R610-agent-metadata-lifecycle-protocol.md
+- **Criticality**: 🚨🚨🚨 BLOCKING
+- **Summary**: All completed agents must be automatically cleaned up from active_agents within 60 seconds and moved to agents_history with minimal metadata
+- **Enforcement**: Exit code 610, -30% to -75% for violations
+- **Scope**: MONITORING states (primary), COMPLETE_* states (validation), all agents
+- **Key Requirements**:
+  - Detect completion in MONITORING_SWE_PROGRESS and MONITORING_EFFORT_REVIEWS
+  - Cleanup within 60 seconds of detection
+  - Extract minimal metadata per R612 schema
+  - Atomic move from active_agents to agents_history
+  - Backup before modification
+  - Cannot transition without cleanup
+- **Agent Lifecycle States**:
+  - SPAWNED: Agent created and added to active_agents
+  - ACTIVE: Agent executing work in non-terminal states
+  - COMPLETED: Agent reached terminal state (COMPLETE/COMPLETED)
+  - ARCHIVED: Agent moved to agents_history, removed from active_agents
+- **Integration**: Works with R611 (defines "active"), R612 (history schema), R613 (size management)
+- **Tools**: tools/cleanup-completed-agents.sh (automatic cleanup utility)
+- **Related Rules**: R611 (active agents cleanup), R612 (history management), R613 (state file growth)
+- **Grading Penalties**:
+  - No cleanup: -50%
+  - Cleanup delayed >60s: -30%
+  - Corrupted state file: -75%
+  - Missing history metadata: -20%
+  - No backup: -15%
+
+## R611 - Active Agents Cleanup Protocol
+- **File**: rule-library/R611-active-agents-cleanup-protocol.md
+- **Criticality**: ⚠️⚠️⚠️ WARNING
+- **Summary**: The active_agents array must contain only truly active agents; completed, archived, or stale agents must be removed for performance
+- **Enforcement**: Query performance monitoring, -20% to -40% for violations
+- **Scope**: MONITORING states (automatic cleanup), boundary states (validation)
+- **Key Requirements**:
+  - Active agents: state != COMPLETE/COMPLETED/ARCHIVED/FAILED
+  - Inactive agents: terminal states, stuck >24h, stale >7 days
+  - Automatic cleanup in monitoring states (per R610)
+  - Validation cleanup at boundary states (safety net)
+  - Performance targets: <100ms queries, <50KB array size
+- **Performance Targets**:
+  - Array size target: <25KB (1-5 agents optimal)
+  - Query time target: <100ms
+  - Critical threshold: >50 agents or >100KB
+- **States Performing Cleanup**:
+  - MONITORING_SWE_PROGRESS (SW-Engineer agents)
+  - MONITORING_EFFORT_REVIEWS (Code-Reviewer agents)
+  - MONITORING_EFFORT_FIXES (Fix agents)
+- **Validation States**:
+  - COMPLETE_WAVE, COMPLETE_PHASE, COMPLETE_PROJECT (safety net)
+- **Integration**: Implements R610 cleanup timing, works with R612 (archival), R613 (size monitoring)
+- **Related Rules**: R610 (lifecycle protocol), R612 (agent history), R613 (state file growth)
+- **Grading Penalties**:
+  - Stale agents in active: -20% per agent
+  - Oversized array >100KB: -30%
+  - Slow queries >200ms: -15%
+  - No cleanup in monitoring: -40%
+
+## R612 - Agent History Management
+- **File**: rule-library/R612-agent-history-management.md
+- **Criticality**: 📋📋📋 STANDARD
+- **Summary**: The agents_history array provides permanent historical record with minimal metadata, structured for queryability and validated against schema
+- **Enforcement**: Schema validation, size monitoring, -10% to -30% for violations
+- **Scope**: All agent types, archival operations, metrics/audit queries
+- **Key Requirements**:
+  - Required fields: agent_id, agent_type, final_state, completed_at, work_summary, metrics
+  - Agent-specific schemas for SW-Engineer, Code-Reviewer, Architect, Integration
+  - Target size: ~500 bytes per agent, <100KB total for typical project
+  - Immutable record: never modify historical entries, only append
+  - Schema validation before appending
+  - Atomic append operations with backup
+- **Purpose**:
+  - Audit trail: Complete record of all agents ever spawned
+  - Metrics source: Aggregate statistics and performance data
+  - Debugging aid: Reference past agent behavior and patterns
+  - Compliance: Demonstrate all work reviewed
+- **Agent-Type Metadata**:
+  - SW-Engineer: effort_id, branch, lines_added, commits, duration
+  - Code-Reviewer: reviewed_effort, bugs_found, review_outcome, duration
+  - Architect: review_scope, architecture_outcome, efforts_reviewed
+  - Integration: integration_type, efforts_integrated, merge_conflicts
+- **Integration**: R610 extracts metadata during cleanup, R612 validates and stores, R613 monitors total size
+- **Schema**: schemas/agents-history-schema.json (JSON Schema validation)
+- **Related Rules**: R610 (cleanup timing), R611 (active agents), R613 (growth management)
+- **Grading Penalties**:
+  - Invalid schema: -20% per entry
+  - Oversized entries >2KB: -15%
+  - Oversized history >150KB: -30%
+  - Missing required fields: -25% per entry
+
+## R613 - State File Growth Management
+- **File**: rule-library/R613-state-file-growth-management.md
+- **Criticality**: 📊📊📊 STANDARD
+- **Summary**: The orchestrator-state-v3.json file must remain manageable (<500KB target, <1MB hard limit) through monitoring and automated cleanup
+- **Enforcement**: Size monitoring, automated alerts, -15% to -40% for violations
+- **Scope**: State file operations, boundary states, cleanup triggers
+- **Key Requirements**:
+  - Size targets: <250KB optimal, 250-500KB acceptable, 500KB-1MB warning, >1MB critical
+  - Component monitoring: active_agents, agents_history, phases, waves, efforts, metadata
+  - Automatic cleanup triggers when thresholds exceeded
+  - Growth rate tracking: alert if >100KB/hour
+  - Boundary state validation: COMPLETE_WAVE, COMPLETE_PHASE, COMPLETE_PROJECT
+- **Performance Impact**:
+  - <100KB: Fast queries (10-50ms), instant context loading
+  - 100-500KB: Acceptable queries (50-200ms), noticeable loading
+  - 500KB-1MB: Slow queries (200-500ms), delayed operations
+  - >1MB: Critical degradation (>500ms), immediate action required
+- **Component Size Targets**:
+  - active_agents: <25KB target, >100KB critical (R610 cleanup)
+  - agents_history: <50KB target, >150KB critical (R612 archival)
+  - Total state file: <250KB optimal, >1MB blocking
+- **Cleanup Strategies**:
+  - R610 cleanup (completed agents) - primary bloat source
+  - R612 archival (old history) - if >150 entries
+  - Prune verbose metadata (logs, debug info)
+- **Integration**: Monitors total size, triggers R610/R612 cleanup as needed, validates performance
+- **Related Rules**: R610 (agent cleanup), R611 (active agents), R612 (history archival), R288 (atomic updates)
+- **Grading Penalties**:
+  - Exceeds 1MB: -40% CRITICAL
+  - Exceeds 500KB without cleanup: -25%
+  - No monitoring: -20%
+  - Excessive growth rate: -15%

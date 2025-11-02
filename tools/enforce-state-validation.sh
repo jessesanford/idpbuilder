@@ -49,13 +49,13 @@ print_section() {
 print_error() {
     echo -e "${RED}❌ $1${NC}"
     VALIDATION_FAILED=true
-    ((CRITICAL_FAILURES++))
+    CRITICAL_FAILURES=$((CRITICAL_FAILURES + 1))
 }
 
 # Print warning
 print_warning() {
     echo -e "${YELLOW}⚠️  $1${NC}"
-    ((WARNINGS++))
+    WARNINGS=$((WARNINGS + 1))
 }
 
 # Print success
@@ -75,21 +75,38 @@ if [ ! -f "$STATE_FILE" ]; then
 fi
 
 # Load target repository configuration
-TARGET_REPO_CONFIG="$CLAUDE_PROJECT_DIR/target-repo-config.yaml"
+# If validating an external state file, look for config in that file's directory
+if [ "$STATE_FILE" != "$DEFAULT_STATE_FILE" ]; then
+    STATE_DIR=$(dirname "$STATE_FILE")
+    if [ -f "$STATE_DIR/target-repo-config.yaml" ]; then
+        TARGET_REPO_CONFIG="$STATE_DIR/target-repo-config.yaml"
+    else
+        TARGET_REPO_CONFIG="$CLAUDE_PROJECT_DIR/target-repo-config.yaml"
+    fi
+else
+    TARGET_REPO_CONFIG="$CLAUDE_PROJECT_DIR/target-repo-config.yaml"
+fi
+
 if [ ! -f "$TARGET_REPO_CONFIG" ]; then
-    print_error "target-repo-config.yaml not found at: $TARGET_REPO_CONFIG"
-    exit 1
+    print_warning "target-repo-config.yaml not found at: $TARGET_REPO_CONFIG"
+    print_info "Skipping repository URL validation"
+    TARGET_REPO="<unknown>"
+else
+    # Extract target repository URL
+    TARGET_REPO=$(grep "url:" "$TARGET_REPO_CONFIG" | head -1 | sed 's/.*url:[[:space:]]*"//' | sed 's/".*//')
+    if [ -z "$TARGET_REPO" ]; then
+        print_warning "Could not extract repository URL from target-repo-config.yaml"
+        TARGET_REPO="<unknown>"
+    fi
 fi
 
-# Extract target repository URL
-TARGET_REPO=$(grep "url:" "$TARGET_REPO_CONFIG" | head -1 | sed 's/.*url:[[:space:]]*"//' | sed 's/".*//')
-if [ -z "$TARGET_REPO" ]; then
-    print_error "Could not extract repository URL from target-repo-config.yaml"
-    exit 1
-fi
-
-# Extract project prefix from state file (if exists)
-PROJECT_PREFIX=$(jq -r '.project_info.project_prefix // empty' "$STATE_FILE" 2>/dev/null || echo "")
+# Extract project prefix from state file (if exists) - handle both SF 2.0 and 3.0
+# Try SF 3.0 nested structure first, fallback to SF 2.0 flat structure
+PROJECT_PREFIX=$(jq -r '
+    .project_progression.current_project.project_prefix //
+    .project_info.project_prefix //
+    empty
+' "$STATE_FILE" 2>/dev/null || echo "")
 
 # If not in state file, check branch_naming section in config
 if [ -z "$PROJECT_PREFIX" ]; then
@@ -116,31 +133,67 @@ fi
 
 # 2. REQUIRED FIELDS CHECK
 print_section "2. REQUIRED FIELDS CHECK"
-REQUIRED_FIELDS=(
-    "current_phase"
-    "current_wave"
-    "current_state"
-    "previous_state"
-    "transition_time"
-    "phases_planned"
-    "waves_per_phase"
-    "efforts_completed"
-    "efforts_in_progress"
-    "efforts_pending"
-    "project_info"
-)
 
-for field in "${REQUIRED_FIELDS[@]}"; do
-    if jq -e "has(\"$field\")" "$STATE_FILE" >/dev/null 2>&1; then
-        print_success "Required field '$field' present"
+# Detect SF version by checking for nested structure
+if jq -e 'has("state_machine")' "$STATE_FILE" >/dev/null 2>&1; then
+    print_info "Detected Software Factory 3.0 state file (nested structure)"
+    SF_VERSION="3.0"
+
+    # SF 3.0 required fields (nested structure)
+    REQUIRED_CHECKS=(
+        "state_machine:State machine container"
+        "state_machine.current_state:Current state"
+        "state_machine.previous_state:Previous state"
+        "state_machine.last_transition_timestamp:Transition timestamp"
+        "state_machine.state_history:State history array"
+        "project_progression:Project progression container"
+        "project_progression.current_project:Current project object"
+        "project_progression.current_phase:Current phase object"
+        "project_progression.current_wave:Current wave object"
+        "references:References to other state files"
+    )
+else
+    print_info "Detected Software Factory 2.0 state file (flat structure)"
+    SF_VERSION="2.0"
+
+    # SF 2.0 required fields (flat structure)
+    REQUIRED_CHECKS=(
+        "current_phase:Current phase"
+        "current_wave:Current wave"
+        "current_state:Current state"
+        "previous_state:Previous state"
+        "transition_time:Transition timestamp"
+        "phases_planned:Phases planned"
+        "waves_per_phase:Waves per phase"
+        "efforts_completed:Efforts completed array"
+        "efforts_in_progress:Efforts in progress array"
+        "efforts_pending:Efforts pending array"
+        "project_info:Project info object"
+    )
+fi
+
+# Validate required fields based on detected version
+for check in "${REQUIRED_CHECKS[@]}"; do
+    field="${check%%:*}"
+    description="${check##*:}"
+
+    if jq -e ".$field" "$STATE_FILE" >/dev/null 2>&1; then
+        print_success "Required field '$field' present ($description)"
     else
-        print_error "Missing required field: $field"
+        print_error "Missing required field: $field ($description)"
     fi
 done
 
 # 3. STATE MACHINE VALIDATION
 print_section "3. STATE MACHINE VALIDATION"
-CURRENT_STATE=$(jq -r '.current_state' "$STATE_FILE")
+
+# Extract current state based on SF version
+if [ "$SF_VERSION" = "3.0" ]; then
+    CURRENT_STATE=$(jq -r '.state_machine.current_state' "$STATE_FILE")
+else
+    CURRENT_STATE=$(jq -r '.current_state' "$STATE_FILE")
+fi
+
 STATE_MACHINE_JSON="$CLAUDE_PROJECT_DIR/state-machines/software-factory-3.0-state-machine.json"
 STATE_MACHINE_MD="$CLAUDE_PROJECT_DIR/state-machines/software-factory-3.0-state-machine.json"
 
@@ -149,11 +202,17 @@ if [ -f "$STATE_MACHINE_JSON" ]; then
     # Get the agent type from the state file (default to orchestrator)
     AGENT_TYPE="orchestrator"
 
-    # Extract valid states from JSON for the specific agent
-    VALID_STATES=$(jq -r ".transition_matrix.${AGENT_TYPE} | keys[]" "$STATE_MACHINE_JSON" 2>/dev/null)
+    # Extract valid states from JSON - SF 3.0 uses .states structure
+    # Try SF 3.0 structure first (.states)
+    VALID_STATES=$(jq -r '.states | keys[]' "$STATE_MACHINE_JSON" 2>/dev/null)
 
     if [ -z "$VALID_STATES" ]; then
-        # Try getting all orchestrator states if the above fails
+        # Fallback to SF 2.0 structure (.transition_matrix.orchestrator)
+        VALID_STATES=$(jq -r ".transition_matrix.${AGENT_TYPE} | keys[]" "$STATE_MACHINE_JSON" 2>/dev/null)
+    fi
+
+    if [ -z "$VALID_STATES" ]; then
+        # Final fallback - try all orchestrator states
         VALID_STATES=$(jq -r '.transition_matrix.orchestrator | keys[]' "$STATE_MACHINE_JSON" 2>/dev/null)
     fi
 
@@ -277,6 +336,31 @@ fi
 
 # 5. EFFORT METADATA VALIDATION
 print_section "5. EFFORT METADATA VALIDATION"
+
+# SF 3.0 uses integration-containers.json for effort tracking
+if [ "$SF_VERSION" = "3.0" ]; then
+    print_info "Software Factory 3.0 detected - effort metadata is in integration-containers.json"
+
+    # Check if integration-containers.json exists
+    INTEGRATION_CONTAINERS=$(jq -r '.references.integration_containers_file // "integration-containers.json"' "$STATE_FILE" 2>/dev/null)
+    INTEGRATION_CONTAINERS_PATH="$CLAUDE_PROJECT_DIR/$INTEGRATION_CONTAINERS"
+
+    if [ -f "$INTEGRATION_CONTAINERS_PATH" ]; then
+        print_success "Integration containers file found: $INTEGRATION_CONTAINERS"
+        print_info "For full effort validation, run validation on: $INTEGRATION_CONTAINERS_PATH"
+    else
+        print_warning "Integration containers file not found: $INTEGRATION_CONTAINERS_PATH"
+        print_info "This file is created during infrastructure setup"
+    fi
+
+    # Skip effort metadata validation for SF 3.0 (different structure)
+    print_info "Skipping effort metadata validation (SF 3.0 uses separate files)"
+else
+    print_info "Software Factory 2.0 detected - validating effort metadata in state file"
+fi
+
+# SF 2.0 effort metadata validation (only if SF 2.0)
+if [ "$SF_VERSION" = "2.0" ]; then
 
 # Function to validate ISO timestamp
 validate_timestamp() {
@@ -678,13 +762,21 @@ if [ "$IN_PROGRESS_COUNT" -gt 0 ]; then
     done
 fi
 
+fi  # End SF 2.0 effort metadata validation
+
 # 6. PROJECT PREFIX VALIDATION
 print_section "6. PROJECT PREFIX VALIDATION"
 if [ -n "$PROJECT_PREFIX" ]; then
     print_info "Project prefix configured: $PROJECT_PREFIX"
 
-    # Check if all branches follow the prefix
-    ALL_BRANCHES=$(jq -r '[.efforts_completed[].current_branch // .efforts_completed[].branch // empty, .efforts_in_progress[].current_branch // .efforts_in_progress[].branch // empty] | map(select(. != "")) | unique | .[]' "$STATE_FILE" 2>/dev/null)
+    # Check if all branches follow the prefix (SF 2.0 only)
+    if [ "$SF_VERSION" = "2.0" ]; then
+        ALL_BRANCHES=$(jq -r '[.efforts_completed[].current_branch // .efforts_completed[].branch // empty, .efforts_in_progress[].current_branch // .efforts_in_progress[].branch // empty] | map(select(. != "")) | unique | .[]' "$STATE_FILE" 2>/dev/null)
+    else
+        # SF 3.0 - skip branch validation (branches are in integration-containers.json)
+        print_info "SF 3.0: Branch validation skipped (branches stored in integration-containers.json)"
+        ALL_BRANCHES=""
+    fi
 
     if [ -n "$ALL_BRANCHES" ]; then
         INVALID_PREFIX_COUNT=0
@@ -692,7 +784,7 @@ if [ -n "$PROJECT_PREFIX" ]; then
             if [ -n "$branch" ] && [ "$branch" != "null" ]; then
                 if ! echo "$branch" | grep -q "^${PROJECT_PREFIX}/"; then
                     print_warning "Branch missing project prefix: $branch"
-                    ((INVALID_PREFIX_COUNT++))
+                    INVALID_PREFIX_COUNT=$((INVALID_PREFIX_COUNT + 1))
                 fi
             fi
         done <<< "$ALL_BRANCHES"

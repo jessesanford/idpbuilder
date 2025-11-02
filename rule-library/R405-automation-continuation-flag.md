@@ -49,7 +49,17 @@ Enable full automation of Software Factory 2.0 by providing a universal machine-
 
 ## Format (EXACT - NO VARIATIONS)
 
-### Basic Format (Still Valid):
+**CRITICAL: The flag MUST be emitted with the full variable name, NOT just the value!**
+
+### ❌ WRONG - DO NOT USE:
+```bash
+# These are INVALID and will break automation
+TRUE
+FALSE
+R405 Continuation Flag: TRUE
+```
+
+### ✅ CORRECT - Basic Format (REQUIRED):
 ```bash
 # Success - continue to next state
 CONTINUE-SOFTWARE-FACTORY=TRUE
@@ -79,9 +89,10 @@ CONTINUE-SOFTWARE-FACTORY=FALSE REASON=ERROR_TYPE
 ## Critical Requirements
 1. **UNIVERSAL**: Every single state for every single agent must have this
 2. **CONSISTENT**: Always use exactly "CONTINUE-SOFTWARE-FACTORY" (not CONTINUE-ORCHESTRATING or any variant)
-3. **LAST OUTPUT**: Must be the absolute last line of output when agent completes state
-4. **GREPPABLE**: Must be on its own line for easy grep/parsing
-5. **MANDATORY**: No state can omit this flag - -100% penalty for omission
+3. **COMPLETE**: Always include the full variable assignment "CONTINUE-SOFTWARE-FACTORY=TRUE" NOT just "TRUE"
+4. **LAST OUTPUT**: Must be the absolute last line of output when agent completes state
+5. **GREPPABLE**: Must be on its own line for easy grep/parsing
+6. **MANDATORY**: No state can omit this flag - -100% penalty for omission
 
 ## Checkpoint Context Types (Enhanced Format)
 
@@ -328,9 +339,14 @@ for file in agent-states/*/*/rules.md; do
     fi
 done
 
-# Check agent outputs include flag
-if ! echo "$AGENT_OUTPUT" | grep -q "CONTINUE-SOFTWARE-FACTORY=[TRUE|FALSE]$"; then
-    echo "VIOLATION: Agent did not output continuation flag"
+# Check agent outputs include flag with FULL FORMAT
+if ! echo "$AGENT_OUTPUT" | grep -q "^CONTINUE-SOFTWARE-FACTORY=\(TRUE\|FALSE\)"; then
+    echo "VIOLATION: Agent did not output continuation flag with full format"
+fi
+
+# Detect incorrect short format
+if echo "$AGENT_OUTPUT" | grep -q "^R405.*: \(TRUE\|FALSE\)$"; then
+    echo "VIOLATION: Agent used short format 'R405...: TRUE' instead of 'CONTINUE-SOFTWARE-FACTORY=TRUE'"
 fi
 ```
 

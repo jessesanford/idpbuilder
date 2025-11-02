@@ -26,34 +26,45 @@ The configuration MUST specify:
 
 ### 2. Integration Workspace Creation
 
+**CRITICAL per R250/R271**: Integration workspaces clone the target repository DIRECTLY into the integration-workspace directory. NO subdirectories.
+
 #### Wave Integration
 ```bash
-# Wave integration workspace structure
-$CLAUDE_PROJECT_DIR/efforts/waveX/integration-workspace/
-└── [target-repo-name]/  # Clone of TARGET repository
-    ├── .git/
-    ├── [project files]
-    └── wave-X-integration  # Integration branch created HERE
+# Wave integration workspace structure (R250-compliant)
+$CLAUDE_PROJECT_DIR/efforts/phase{N}/wave{W}/integration-workspace/
+├── .git/                    # Git repository at root level
+├── [project files]          # Project files at root level
+├── .software-factory/       # SF metadata (R343)
+└── wave-{N}-{W}-integration # Integration branch created HERE
+
+# WRONG (deprecated):
+# $CLAUDE_PROJECT_DIR/efforts/wave{W}/integration-workspace/[target-repo-name]/
 ```
 
-#### Phase Integration  
+#### Phase Integration
 ```bash
-# Phase integration workspace structure
-$CLAUDE_PROJECT_DIR/efforts/phaseX/integration-workspace/
-└── [target-repo-name]/  # Clone of TARGET repository
-    ├── .git/
-    ├── [project files]
-    └── phase-X-integration  # Integration branch created HERE
+# Phase integration workspace structure (R250-compliant)
+$CLAUDE_PROJECT_DIR/efforts/phase{N}/integration-workspace/
+├── .git/                     # Git repository at root level
+├── [project files]           # Project files at root level
+├── .software-factory/        # SF metadata (R343)
+└── phase-{N}-integration     # Integration branch created HERE
+
+# WRONG (deprecated):
+# $CLAUDE_PROJECT_DIR/efforts/phase{N}/integration-workspace/[target-repo-name]/
 ```
 
 #### Project Integration
 ```bash
-# Project integration workspace structure
+# Project integration workspace structure (R250-compliant)
 $CLAUDE_PROJECT_DIR/efforts/project/integration-workspace/
-└── [target-repo-name]/  # Clone of TARGET repository
-    ├── .git/
-    ├── [project files]
-    └── project-integration  # Integration branch created HERE
+├── .git/                     # Git repository at root level
+├── [project files]           # Project files at root level
+├── .software-factory/        # SF metadata (R343)
+└── project-integration       # Integration branch created HERE
+
+# WRONG (deprecated):
+# $CLAUDE_PROJECT_DIR/efforts/project/integration-workspace/[target-repo-name]/
 ```
 
 ### 3. Repository Verification
@@ -66,13 +77,25 @@ if [[ ! -d ".git" ]] || [[ "$(git remote get-url origin)" != *"target-repo"* ]];
 fi
 ```
 
-### 4. Branch Creation Protocol
+### 4. Branch Creation Protocol (R250/R271-Compliant)
 ```bash
-# Always create from the target repo's default branch
-cd $CLAUDE_PROJECT_DIR/efforts/[wave|phase|project]/integration-workspace/[target-repo-name]
-git checkout main  # or master, from config
-git pull origin main
-git checkout -b [wave|phase|project]-X-integration
+# CRITICAL: Use direct cloning per R250 - NO subdirectories!
+INTEGRATION_DIR="$CLAUDE_PROJECT_DIR/efforts/phase{N}/wave{W}/integration-workspace"  # or phase/project
+BASE_BRANCH=$(yq '.default_branch' target-repo-config.yaml)  # Usually "main"
+TARGET_REPO_URL=$(yq '.repository_path' target-repo-config.yaml)
+
+# Clone DIRECTLY into integration-workspace (R250)
+git clone --single-branch --branch "$BASE_BRANCH" "$TARGET_REPO_URL" "$INTEGRATION_DIR"
+
+# Now IN the repository (integration-workspace IS the git repo)
+cd "$INTEGRATION_DIR"
+
+# Create integration branch from base
+git checkout -b "phase{N}/wave{W}/integration" "$BASE_BRANCH"  # or phase{N}/integration or project/integration
+git push -u origin "phase{N}/wave{W}/integration"
+
+# WRONG (old pattern):
+# cd integration-workspace/[target-repo-name]  # Extra subdirectory NO LONGER EXISTS
 ```
 
 ## Common Violations
@@ -81,12 +104,16 @@ git checkout -b [wave|phase|project]-X-integration
 3. Not cloning target repository first
 4. Using wrong base branch
 
-## Validation
+## Validation (R250-Compliant)
 ```bash
-# Correct integration branch location
-pwd  # Should show: .../integration-workspace/[target-repo-name]
-git branch --show-current  # Should show: [wave|phase|project]-X-integration
+# Correct integration branch location per R250
+pwd  # Should show: .../integration-workspace (NO subdirectory!)
+git branch --show-current  # Should show: phase{N}/wave{W}/integration (or phase/project)
 git remote -v  # Should show: TARGET repository, not software-factory
+ls -la .git  # Should exist (we ARE in the git repository)
+
+# WRONG (old pattern):
+# pwd  # showing: .../integration-workspace/[target-repo-name]
 ```
 
 ## Dependencies

@@ -50,15 +50,14 @@ graph LR
 create_project_integration_branch() {
     echo "🔴 R342: Creating project integration branch for test storage"
     
-    # Create in proper workspace (R104)
+    # Create in proper workspace (R104/R250/R271 - direct cloning)
     PROJECT_DIR="/efforts/project/integration-workspace"
-    mkdir -p "$PROJECT_DIR"
-    cd "$PROJECT_DIR"
-    
-    # Clone target repository
-    git clone "$TARGET_REPO" target-repo
-    cd target-repo
-    
+    rm -rf "$PROJECT_DIR"
+
+    # Clone target repository DIRECTLY (R250 - NO subdirectories!)
+    git clone --single-branch --branch "main" "$TARGET_REPO" "$PROJECT_DIR"
+    cd "$PROJECT_DIR"  # Now IN the git repository
+
     # Create branch from main
     git checkout -b project-integration
     
@@ -92,14 +91,13 @@ create_phase_integration_branch() {
         BASE="phase-$((PHASE-1))-integration"  # Previous phase
     fi
     
-    # Create in proper workspace
+    # Create in proper workspace (R250/R271 - direct cloning)
     PHASE_DIR="/efforts/phase${PHASE}/integration-workspace"
-    mkdir -p "$PHASE_DIR"
-    cd "$PHASE_DIR"
-    
-    # Clone and branch
-    git clone "$TARGET_REPO" target-repo
-    cd target-repo
+    rm -rf "$PHASE_DIR"
+
+    # Clone DIRECTLY into integration-workspace (R250 - NO subdirectories!)
+    git clone --single-branch --branch "$BASE" "$TARGET_REPO" "$PHASE_DIR"
+    cd "$PHASE_DIR"  # Now IN the git repository
     git checkout -b "phase-${PHASE}-integration" "$BASE"
     
     # Store phase tests
@@ -132,14 +130,13 @@ create_wave_integration_branch() {
         BASE="phase-${PHASE}-wave-$((WAVE-1))-integration"  # Previous wave
     fi
     
-    # Create in proper workspace
+    # Create in proper workspace (R250/R271 - direct cloning)
     WAVE_DIR="/efforts/phase${PHASE}/wave${WAVE}/integration-workspace"
-    mkdir -p "$WAVE_DIR"
-    cd "$WAVE_DIR"
-    
-    # Clone and branch
-    git clone "$TARGET_REPO" target-repo
-    cd target-repo
+    rm -rf "$WAVE_DIR"
+
+    # Clone DIRECTLY into integration-workspace (R250 - NO subdirectories!)
+    git clone --single-branch --branch "$BASE" "$TARGET_REPO" "$WAVE_DIR"
+    cd "$WAVE_DIR"  # Now IN the git repository
     git checkout -b "phase-${PHASE}-wave-${WAVE}-integration" "$BASE"
     
     # Store wave tests
