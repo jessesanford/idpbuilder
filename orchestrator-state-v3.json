@@ -2341,13 +2341,110 @@
             "architecture_plan": "planning/phase1/wave1/WAVE-1.1-ARCHITECTURE.md",
             "implementation_plan": "planning/phase1/wave1/WAVE-IMPLEMENTATION-PLAN.md",
             "test_plan": "planning/phase1/wave1/WAVE-TEST-PLAN.md",
-            "efforts": {}
+            "efforts": {
+              "effort-1-docker-interface": {
+                "effort_id": "1.1.1",
+                "effort_name": "Docker Client Interface Definition",
+                "status": "reviewed",
+                "reviewed": true,
+                "implementation_plan": "efforts/phase1/wave1/effort-1-docker-interface/.software-factory/phase1/wave1/effort-1-docker-interface/IMPLEMENTATION-PLAN--20251029-034935.md",
+                "code_review_report": "efforts/phase1/wave1/effort-1-docker-interface/.software-factory/phase1/wave1/effort-1-docker-interface/CODE-REVIEW-REPORT--20251029-050315.md",
+                "plan_created_at": "2025-10-29T03:49:35Z",
+                "review_completed_at": "2025-10-29T05:03:15Z",
+                "branch_name": "idpbuilder-oci-push/phase1/wave1/effort-1-docker-interface",
+                "base_branch": "idpbuilder-oci-push/phase1/wave1/integration"
+              },
+              "effort-2-registry-interface": {
+                "effort_id": "1.1.2",
+                "effort_name": "Registry Client Interface Definition",
+                "status": "reviewed",
+                "reviewed": true,
+                "implementation_plan": "efforts/phase1/wave1/effort-2-registry-interface/.software-factory/phase1/wave1/effort-2-registry-interface/IMPLEMENTATION-PLAN--20251029-040803.md",
+                "code_review_report": "efforts/phase1/wave1/effort-2-registry-interface/.software-factory/phase1/wave1/effort-2-registry-interface/CODE-REVIEW-REPORT--20251029-050849.md",
+                "plan_created_at": "2025-10-29T04:08:03Z",
+                "review_completed_at": "2025-10-29T05:08:49Z",
+                "branch_name": "idpbuilder-oci-push/phase1/wave1/effort-2-registry-interface",
+                "base_branch": "idpbuilder-oci-push/phase1/wave1/effort-1-docker-interface"
+              },
+              "effort-3-auth-tls-interfaces": {
+                "effort_id": "1.1.3",
+                "effort_name": "Auth & TLS Interface Definitions",
+                "status": "reviewed",
+                "reviewed": true,
+                "implementation_plan": "efforts/phase1/wave1/effort-3-auth-tls-interfaces/.software-factory/phase1/wave1/effort-3-auth-tls-interfaces/IMPLEMENTATION-PLAN--20251029-040810.md",
+                "code_review_report": "efforts/phase1/wave1/effort-3-auth-tls-interfaces/.software-factory/phase1/wave1/effort-3-auth-tls-interfaces/CODE-REVIEW-REPORT--20251029-050749.md",
+                "plan_created_at": "2025-10-29T04:08:10Z",
+                "review_completed_at": "2025-10-29T05:07:49Z",
+                "branch_name": "idpbuilder-oci-push/phase1/wave1/effort-3-auth-tls-interfaces",
+                "base_branch": "idpbuilder-oci-push/phase1/wave1/effort-2-registry-interface"
+              },
+              "effort-4-command-structure": {
+                "effort_id": "1.1.4",
+                "effort_name": "Command Structure & Flag Definitions",
+                "status": "reviewed",
+                "reviewed": true,
+                "implementation_plan": "efforts/phase1/wave1/effort-4-command-structure/.software-factory/phase1/wave1/effort-4-command-structure/IMPLEMENTATION-PLAN--20251029-040815.md",
+                "code_review_report": "efforts/phase1/wave1/effort-4-command-structure/.software-factory/phase1/wave1/effort-4-command-structure/CODE-REVIEW-REPORT--20251029-050816.md",
+                "plan_created_at": "2025-10-29T04:08:15Z",
+                "review_completed_at": "2025-10-29T05:08:16Z",
+                "branch_name": "idpbuilder-oci-push/phase1/wave1/effort-4-command-structure",
+                "base_branch": "idpbuilder-oci-push/phase1/wave1/effort-3-auth-tls-interfaces"
+              }
+            }
           },
           "wave2": {
             "architecture_plan": "planning/phase1/wave2/WAVE-1.2-ARCHITECTURE.md",
             "implementation_plan": "planning/phase1/wave2/WAVE-IMPLEMENTATION-PLAN.md",
             "test_plan": "planning/phase1/wave2/WAVE-TEST-PLAN.md",
-            "efforts": {}
+            "efforts": {
+              "effort-1-docker-client": {
+                "effort_id": "1.2.1",
+                "effort_name": "Docker Client Implementation",
+                "status": "reviewed",
+                "reviewed": true,
+                "implementation_plan": "efforts/phase1/wave2/effort-1-docker-client/.software-factory/phase1/wave2/effort-1-docker-client/IMPLEMENTATION-PLAN--20251029-214603.md",
+                "code_review_report": "efforts/phase1/wave2/effort-1-docker-client/.software-factory/phase1/wave2/effort-1-docker-client/CODE-REVIEW-REPORT--20251029-231754.md",
+                "plan_created_at": "2025-10-29T21:46:03Z",
+                "review_completed_at": "2025-10-29T23:17:54Z",
+                "branch_name": "idpbuilder-oci-push/phase1/wave2/effort-1-docker-client",
+                "base_branch": "idpbuilder-oci-push/phase1/wave2/integration"
+              },
+              "effort-2-registry-client": {
+                "effort_id": "1.2.2",
+                "effort_name": "Registry Client Implementation",
+                "status": "reviewed",
+                "reviewed": true,
+                "implementation_plan": "efforts/phase1/wave2/effort-2-registry-client/.software-factory/phase1/wave2/effort-2-registry-client/IMPLEMENTATION-PLAN--20251029-213344.md",
+                "code_review_report": "efforts/phase1/wave2/effort-2-registry-client/CODE-REVIEW-REPORT.md",
+                "plan_created_at": "2025-10-29T21:33:44Z",
+                "branch_name": "idpbuilder-oci-push/phase1/wave2/effort-2-registry-client",
+                "base_branch": "idpbuilder-oci-push/phase1/wave2/integration"
+              },
+              "effort-3-auth": {
+                "effort_id": "1.2.3",
+                "effort_name": "Authentication Implementation",
+                "status": "reviewed",
+                "reviewed": true,
+                "implementation_plan": "efforts/phase1/wave2/effort-3-auth/.software-factory/phase1/wave2/effort-3-auth/IMPLEMENTATION-PLAN--20251029-213326.md",
+                "code_review_report": "efforts/phase1/wave2/effort-3-auth/.software-factory/phase1/wave2/effort-3-auth/CODE-REVIEW-REPORT--20251029-231902.md",
+                "plan_created_at": "2025-10-29T21:33:26Z",
+                "review_completed_at": "2025-10-29T23:19:02Z",
+                "branch_name": "idpbuilder-oci-push/phase1/wave2/effort-3-auth",
+                "base_branch": "idpbuilder-oci-push/phase1/wave2/integration"
+              },
+              "effort-4-tls": {
+                "effort_id": "1.2.4",
+                "effort_name": "TLS Configuration Implementation",
+                "status": "reviewed",
+                "reviewed": true,
+                "implementation_plan": "efforts/phase1/wave2/effort-4-tls/.software-factory/phase1/wave2/effort-4-tls/IMPLEMENTATION-PLAN--20251029-213316.md",
+                "code_review_report": "efforts/phase1/wave2/effort-4-tls/.software-factory/phase1/wave2/effort-4-tls/CODE-REVIEW-REPORT--20251029-231723.md",
+                "plan_created_at": "2025-10-29T21:33:16Z",
+                "review_completed_at": "2025-10-29T23:17:23Z",
+                "branch_name": "idpbuilder-oci-push/phase1/wave2/effort-4-tls",
+                "base_branch": "idpbuilder-oci-push/phase1/wave2/integration"
+              }
+            }
           }
         }
       },
@@ -2413,9 +2510,52 @@
           },
           "wave2": {
             "architecture_plan": "planning/phase2/wave2/WAVE-2.2-ARCHITECTURE.md",
-            "implementation_plan": null,
+            "implementation_plan": "planning/phase2/wave2/WAVE-IMPLEMENTATION-PLAN.md",
             "test_plan": "planning/phase2/wave2/WAVE-TEST-PLAN.md",
-            "efforts": {},
+            "efforts": {
+              "effort-1-registry-override-viper": {
+                "effort_id": "2.2.1",
+                "effort_name": "Registry Override & Viper Integration",
+                "status": "completed",
+                "reviewed": true,
+                "approved": true,
+                "implementation_plan": "efforts/phase2/wave2/effort-1-registry-override-viper/.software-factory/phase2/wave2/effort-1-registry-override-viper/IMPLEMENTATION-PLAN--20251101-175300.md",
+                "implementation_complete": "efforts/phase2/wave2/effort-1-registry-override-viper/.software-factory/phase2/wave2/effort-1-registry-override-viper/IMPLEMENTATION-COMPLETE--20251101-185100.md",
+                "code_review_report": "efforts/phase2/wave2/effort-1-registry-override-viper/.software-factory/phase2/wave2/effort-1-registry-override-viper/CODE-REVIEW-REPORT--20251101-192258.md",
+                "implementation_lines": 247,
+                "total_lines_with_tests": 332,
+                "within_limit": true,
+                "plan_created_at": "2025-11-01T17:53:00Z",
+                "implementation_started_at": "2025-11-01T18:47:00Z",
+                "implementation_completed_at": "2025-11-01T18:51:00Z",
+                "review_completed_at": "2025-11-01T19:22:58Z",
+                "review_decision": "APPROVED",
+                "branch_name": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+                "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
+                "commit_hash": "8791bbb",
+                "dependencies": [],
+                "can_parallelize": false,
+                "theme": "Configuration management with environment variable support",
+                "scope": "PushConfig implementation, LoadConfig, viper integration, Wave 2.1 compatibility"
+              },
+              "effort-2-env-variable-support": {
+                "effort_id": "2.2.2",
+                "effort_name": "Environment Variable Support & Integration Testing",
+                "status": "infrastructure_created",
+                "reviewed": false,
+                "approved": false,
+                "implementation_plan": null,
+                "infrastructure_created_at": "2025-11-01T21:07:00Z",
+                "branch_name": "idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support",
+                "base_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+                "dependencies": [
+                  "2.2.1"
+                ],
+                "can_parallelize": false,
+                "r603_compliant": true,
+                "notes": "Infrastructure recreated per R603 after R509 violation detected and fixed"
+              }
+            },
             "test_count": 50,
             "coverage_targets": {
               "statement": "90%",
