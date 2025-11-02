@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-    "previous_state": "WAITING_FOR_EFFORT_PLANS",
+    "current_state": "ERROR_RECOVERY",
+    "previous_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
     "last_transition_timestamp": "2025-11-01T23:47:30Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-01T23:47:30Z",
@@ -1943,6 +1943,18 @@
           "r234_sequence_validated": true,
           "r255_compliance_verified": true
         }
+      },
+      {
+        "from_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+        "to_state": "ERROR_RECOVERY",
+        "timestamp": "2025-11-02T02:06:29Z",
+        "trigger": "R517 shutdown consultation REJECTION - work summary contained critical discrepancies",
+        "validated_by": "state-manager",
+        "decision_rationale": "Orchestrator analyzed wrong phase/wave (claimed P1W1 with 4 efforts, actual state is P2W2 with 2 efforts). R407 violation - state file not validated before work.",
+        "r517_compliance": true,
+        "orchestrator_proposed": "SPAWN_SW_ENGINEERS",
+        "state_manager_rejected": true,
+        "state_manager_mandated": "ERROR_RECOVERY"
       }
     ],
     "loop_detection": {
@@ -1960,26 +1972,48 @@
     "transition_validated": true,
     "sub_state_machine": null,
     "error_recovery": {
-      "active": false,
-      "initiated_at": "2025-10-31T21:54:27Z",
-      "reason": "Sequence violation - skipped CREATE_NEXT_INFRASTRUCTURE step",
-      "invalid_transition": {
-        "from_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-        "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-        "timestamp": "2025-10-31T21:49:21Z",
-        "validated_by": "state-manager",
-        "reason": "Parallelization analysis complete. Wave 2.1 has 2 efforts (2.1.1, 2.1.2) that must execute sequentially per R213 metadata. Effort 2.1.2 depends on 2.1.1 callback signature. Ready to spawn Code Reviewers for effort planning."
+      "triggered_at": "2025-11-02T02:06:29Z",
+      "triggered_by": "state-manager",
+      "reason": "R517 SHUTDOWN_CONSULTATION REJECTION - Critical discrepancy between orchestrator work summary and actual state",
+      "violations": [
+        {
+          "rule": "R407",
+          "description": "Orchestrator failed to validate state file before working",
+          "severity": "CRITICAL"
+        },
+        {
+          "rule": "R517",
+          "description": "Shutdown consultation contained incorrect/inconsistent information",
+          "severity": "CRITICAL"
+        }
+      ],
+      "discrepancies_found": {
+        "claimed_phase_wave": "Phase 1, Wave 1",
+        "actual_phase_wave": "Phase 2, Wave 2",
+        "claimed_effort_count": 4,
+        "actual_effort_count": 2,
+        "claimed_efforts": [
+          "1.1.1",
+          "1.1.2",
+          "1.1.3",
+          "1.1.4"
+        ],
+        "actual_efforts": [
+          "2.2.1",
+          "2.2.2"
+        ]
       },
-      "target_state_after_recovery": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-      "required_next_state": "CREATE_NEXT_INFRASTRUCTURE",
-      "recovery_plan": [
-        "State rolled back to ANALYZE_CODE_REVIEWER_PARALLELIZATION",
-        "Orchestrator must transition to CREATE_NEXT_INFRASTRUCTURE",
-        "Create effort infrastructure from R213 metadata",
-        "Then proceed to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING"
-      ]
+      "required_actions": [
+        "Read orchestrator-state-v3.json completely and accurately",
+        "Identify current phase and wave from .project_progression",
+        "Read correct implementation plan (Phase 2 Wave 2, not Phase 1 Wave 1)",
+        "Re-perform parallelization analysis on CORRECT efforts",
+        "Return to ANALYZE_IMPLEMENTATION_PARALLELIZATION with accurate data",
+        "Request new shutdown consultation with correct information"
+      ],
+      "state_manager_ruling": "REJECTION - transition to SPAWN_SW_ENGINEERS denied due to invalid analysis basis"
     },
-    "last_transition": "2025-11-01T19:33:24Z",
+    "last_transition": "2025-11-02T02:06:29Z",
     "transition_timestamp": "2025-11-01T19:56:25Z",
     "transition_reason": "R509 violation corrected, ready to rebuild effort 2.2.2 infrastructure with correct base branch",
     "transition_time": "2025-11-01T20:58:28Z",
