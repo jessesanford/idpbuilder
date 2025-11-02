@@ -59,7 +59,7 @@ echo "🔴 MANDATORY: Spawning State Manager for SHUTDOWN_CONSULTATION"
 
 See: `rule-library/R517-universal-state-manager-consultation-law.md`
 ## State Purpose
-Create split plans when an effort exceeds size limits (>700 lines soft, >800 lines hard). Split plans divide work into smaller, sequential splits while maintaining R420 cross-split awareness to prevent API mismatches and integration failures.
+Create split plans when an effort exceeds size limits (>700 lines soft warning, >900 lines hard enforcement per R535). Split plans divide work into smaller, sequential splits while maintaining R420 cross-split awareness to prevent API mismatches and integration failures.
 
 ## 🚨🚨🚨 MANDATORY PRE-FLIGHT: R420 Sibling Split Analysis 🚨🚨🚨
 
@@ -259,7 +259,7 @@ EFFORT_ID=$(echo "$CURRENT_EFFORT" | jq -r '.effort_id')
 CURRENT_LINES=$(echo "$CURRENT_EFFORT" | jq -r '.line_count_tracking.current_line_count')
 
 echo "Splitting effort: $EFFORT_ID"
-echo "Current size: $CURRENT_LINES lines (exceeds limit)"
+echo "Current size: $CURRENT_LINES lines (exceeds 900-line enforcement threshold per R535)"
 ```
 
 ### 2. Create Split Inventory (MANDATORY - Systematic Analysis)
@@ -519,8 +519,8 @@ bash tools/validate-split-plan.sh <split-plan-file> || exit 1
 for split in split-001 split-002 split-003; do
     ESTIMATED_LINES=$(grep -A10 "^### $split:" <split-plan-file> | grep "Estimated Lines" | grep -o "[0-9]*")
 
-    if [ $ESTIMATED_LINES -gt 800 ]; then
-        echo "❌ BLOCKING: $split estimated at $ESTIMATED_LINES lines (exceeds 800)"
+    if [ $ESTIMATED_LINES -gt 900 ]; then
+        echo "❌ BLOCKING: $split estimated at $ESTIMATED_LINES lines (exceeds 900-line enforcement threshold)"
         echo "   VIOLATION of R511: Cannot split a split!"
         echo "   This indicates fundamental design problem - need human architect"
         exit 1
@@ -570,7 +570,7 @@ jq ".efforts_in_progress[0].status = \"SPLIT_PLANNED\"" orchestrator-state-v3.js
 **Source:** rule-library/R511-absolute-prohibition-recursive-splits.md
 
 **MANDATORY in CREATE_SPLIT_PLAN:**
-- If ANY split exceeds 800 lines, STOP IMMEDIATELY
+- If ANY split exceeds 900 lines (R535 enforcement), STOP IMMEDIATELY
 - DO NOT attempt to split a split
 - Request human architect intervention
 - This is a DESIGN problem, not implementation problem
@@ -622,7 +622,7 @@ jq ".efforts_in_progress[0].status = \"SPLIT_PLANNED\"" orchestrator-state-v3.js
 3. ✅ API compatibility verified for all previous splits
 4. ✅ Method visibility checked for all previous splits
 5. ✅ Plan passes R420 validation
-6. ✅ All splits estimated under 800 lines (R511)
+6. ✅ All splits estimated under 900 lines (R511 + R535 enforcement)
 7. ✅ Split execution order defined
 8. ✅ Test distribution documented (R403)
 9. ✅ Plan saved to metadata location
@@ -633,7 +633,7 @@ jq ".efforts_in_progress[0].status = \"SPLIT_PLANNED\"" orchestrator-state-v3.js
 - ❌ API compatibility not verified
 - ❌ Method visibility not checked
 - ❌ R420 validation fails
-- ❌ Any split exceeds 800 lines (R511 violation)
+- ❌ Any split exceeds 900 lines (R511 + R535 violation)
 - ❌ Vague split scopes (R310 violation)
 
 ## Grading Criteria for This State
@@ -648,7 +648,7 @@ jq ".efforts_in_progress[0].status = \"SPLIT_PLANNED\"" orchestrator-state-v3.js
 ### Split Plan Quality (30%)
 - ✅ Clear split boundaries
 - ✅ Sequential execution order defined
-- ✅ Size estimates under 800 lines each
+- ✅ Size estimates under 900 lines each (R535 enforcement threshold)
 - ✅ Dependencies explicitly stated
 - ✅ Tests distributed appropriately
 
@@ -770,7 +770,7 @@ Before completing CREATE_SPLIT_PLAN state:
 - [ ] Method Visibility Findings table complete
 - [ ] API Assumptions Verified section complete
 - [ ] R420 validation script passes
-- [ ] All splits estimated under 800 lines
+- [ ] All splits estimated under 900 lines (R535 enforcement)
 - [ ] No recursive split violations (R511)
 - [ ] Split scopes clearly defined (R310)
 - [ ] Test distribution documented (R403)

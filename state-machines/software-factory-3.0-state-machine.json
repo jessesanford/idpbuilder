@@ -337,7 +337,7 @@
     "CREATE_WAVE_FIX_PLAN": {
       "description": "Create plan to fix bugs found during wave integration review",
       "agent": "orchestrator",
-      "checkpoint": true,
+      "checkpoint": false,
       "iteration_level": "wave",
       "iteration_type": "ITERATION_CONTAINER",
       "allowed_transitions": [
@@ -355,7 +355,7 @@
         "Analyze bugs for upstream vs integration-specific",
         "Create fix plan per bug",
         "Identify affected upstream branches",
-        "Present plan to user for approval (R322 checkpoint)"
+        "Execute fix plan automatically (R536 automated fix cascade)"
       ]
     },
     "FIX_WAVE_UPSTREAM_BUGS": {
@@ -648,7 +648,7 @@
     "CREATE_PHASE_FIX_PLAN": {
       "description": "Create plan to fix bugs found during phase integration review",
       "agent": "orchestrator",
-      "checkpoint": true,
+      "checkpoint": false,
       "iteration_level": "phase",
       "iteration_type": "ITERATION_CONTAINER",
       "allowed_transitions": [
@@ -665,7 +665,7 @@
         "Analyze phase-level bugs",
         "Determine if bugs affect multiple waves (cascade)",
         "Create fix plan identifying affected upstream branches",
-        "Present phase fix plan to user for approval (R322 checkpoint)"
+        "Execute phase fix plan automatically (R536 automated fix cascade)"
       ]
     },
     "FIX_PHASE_UPSTREAM_BUGS": {
@@ -851,7 +851,7 @@
     "CREATE_PROJECT_FIX_PLAN": {
       "description": "Create plan to fix bugs found during project integration review",
       "agent": "orchestrator",
-      "checkpoint": true,
+      "checkpoint": false,
       "iteration_level": "project",
       "iteration_type": "ITERATION_CONTAINER",
       "allowed_transitions": [
@@ -868,7 +868,7 @@
         "Analyze project-level bugs",
         "Determine if bugs affect multiple phases (cascade)",
         "Create fix plan identifying affected upstream branches",
-        "Present project fix plan to user for approval (R322 checkpoint)"
+        "Execute project fix plan automatically (R536 automated fix cascade)"
       ]
     },
     "FIX_PROJECT_UPSTREAM_BUGS": {

@@ -2,3 +2,6 @@ efforts/*
 backups/*
 *__pycache__*
 orchestrator-state-v3.json.backup-r610-cleanup-*
+tools.bak/*
+.state-backup/*
+.state_rules*

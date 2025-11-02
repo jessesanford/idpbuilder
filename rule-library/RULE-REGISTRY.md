@@ -62,9 +62,10 @@
 47. **R512.0.0** - Trunk-Based Development Integration Model (SUPREME LAW - INTEGRATE EFFORT BRANCHES NOT INTEGRATE_WAVE_EFFORTS BRANCHES - -100% FOR VIOLATIONS!)
 48. **R513.0.0** - Orchestrator Layer Tracking Protocol (SUPREME LAW - EXPLICIT LAYER METADATA PREVENTS CONFUSION - -100% FOR LAYER CONFUSION!)
 49. **R517.0.0** - Universal State Manager Consultation Law (SUPREME LAW - ALL STATE TRANSITIONS MUST CONSULT STATE MANAGER - NO DIRECT TRANSITIONS - -100% FOR BYPASS!)
-50. **R540.0.0** - State File Schema Compliance (SUPREME LAW - ALL STATE FILES MUST VALIDATE AGAINST JSON SCHEMA - -100% FOR VIOLATIONS!)
-51. **R550.0.0** - Plan Path Consistency and Discovery (SUPREME LAW - ALL PLANNING FILES TRACKED IN STATE - NO FILESYSTEM SEARCHING - -100% FOR UNFINDABLE PLANS!)
-52. **R614.0.0** - Fresh Base Pull Before Agent Spawn (SUPREME LAW - MUST PULL LATEST FROM BASE BRANCH BEFORE SPAWNING - MAINTAINS CASCADE INTEGRITY - -100% FOR STALE WORK!)
+50. **R536.0.0** - Automated Fix Cascade Protocol (SUPREME LAW - BUG FIXES ARE NORMAL OPERATION - AUTOMATIC CONVERGENCE LOOP - -100% FOR STOPPING CASCADES!)
+51. **R540.0.0** - State File Schema Compliance (SUPREME LAW - ALL STATE FILES MUST VALIDATE AGAINST JSON SCHEMA - -100% FOR VIOLATIONS!)
+52. **R550.0.0** - Plan Path Consistency and Discovery (SUPREME LAW - ALL PLANNING FILES TRACKED IN STATE - NO FILESYSTEM SEARCHING - -100% FOR UNFINDABLE PLANS!)
+53. **R614.0.0** - Fresh Base Pull Before Agent Spawn (SUPREME LAW - MUST PULL LATEST FROM BASE BRANCH BEFORE SPAWNING - MAINTAINS CASCADE INTEGRITY - -100% FOR STALE WORK!)
 
 ## Rule Categories
 
@@ -343,6 +344,8 @@
 - R524.0.0 - Bug Status Propagation Protocol | 🚨🚨🚨 BLOCKING | Canonical bug fix auto-propagates status to ALL duplicates, prevents manual duplicate fixing (-100% for inconsistent states)
 - R525.0.0 - Duplicate Work Redirection Rule | 🚨 CRITICAL | Agents NEVER work on duplicates, redirect to canonical automatically (-60% for working on duplicates)
 - R530.0.0 - Cascade Terminology Disambiguation | INFORMATIONAL | Clarifies three types of "cascade": integration cascade (R406), bug status propagation (R524), layered cascade (R410)
+- R535.0.0 - Code Reviewer Size Violation Threshold (900 Lines) | 🚨 CRITICAL | Code Reviewers enforce at 900 lines (not 800), creating grace buffer while keeping SW Engineers conservative (-20% for false positive bugs)
+- R536.0.0 - Automated Fix Cascade Protocol | 🔴🔴🔴 SUPREME LAW | Bug fixes and fix cascades are NORMAL OPERATION - system loops automatically until convergence (bugs → 0) or max iterations exceeded (-100% for stopping cascades unnecessarily)
 
 ## R360 - Just-In-Time Infrastructure Creation
 - **File**: rule-library/R360-just-in-time-infrastructure-creation.md
@@ -1426,19 +1429,14 @@
 ## R614 - Fresh Base Pull Before Agent Spawn Protocol
 - **File**: rule-library/R614-fresh-base-pull-before-agent-spawn.md
 - **Criticality**: 🔴🔴🔴 SUPREME LAW - CASCADE INTEGRITY
-- **Summary**: Before spawning ANY agent to work on an effort, orchestrator MUST pull latest changes from the effort's base branch to ensure agent works on fresh code, maintaining cascade integrity. Includes comprehensive pre-pull verification: repository verification, base branch verification, and CRITICAL source effort push verification for sequential dependencies.
+- **Summary**: Before spawning ANY agent to work on an effort, orchestrator MUST pull latest changes from the effort's base branch to ensure agent works on fresh code, maintaining cascade integrity
 - **Enforcement**: Exit code 614, ERROR_RECOVERY on pull failure, -50% to -100% for violations
 - **Scope**: SPAWN_SW_ENGINEERS (MANDATORY), SPAWN_CODE_REVIEWERS_EFFORT_REVIEW (RECOMMENDED), all spawn states
 - **Key Requirements**:
-  - **STEP 0**: Verify correct effort directory and load metadata from state
-  - **STEP 1**: Verify remote origin matches target_repo_url from state
-  - **STEP 2**: Verify base_branch exists in pre_planned_infrastructure
-  - **STEP 3**: **CRITICAL - Source Effort Push Verification**: If base is another effort (sequential dependency), verify source has pushed all changes and has no uncommitted changes
-  - **STEP 4**: Fetch latest from origin/base_branch
-  - **STEP 5**: Pull latest from origin/base_branch
-  - **STEP 6**: Verify local matches remote (fresh base)
-  - Complete sequence: CD → Verify Repo → Verify Source Pushed → Pull → Verify Fresh → Spawn
-  - Helper script: tools/verify-source-effort-pushed.sh (automatic verification)
+  - Pull latest from base_branch BEFORE spawning agent (extends R208)
+  - Complete sequence: CD → Pull → Verify → Spawn
+  - Verify working directory clean before pull
+  - Verify merge-base shows fresh commits after pull
   - Handle edge cases: first effort in wave, network failures, conflicts
   - Validation: tools/validate-fresh-base.sh script
 - **Problem Solved**:
@@ -1461,8 +1459,4 @@
   - Pull failure ignored: -75% (allows work on incorrect base)
   - Uncommitted changes before pull: -100% (R220 violation)
   - Merge conflict in cascade: -100% (CASCADE CORRUPTION)
-  - Wrong repository: -100% (CATASTROPHIC - infrastructure corruption)
-  - Source effort unpushed commits: -100% (CATASTROPHIC - stale cascade)
-  - Source effort uncommitted changes: -100% (CATASTROPHIC - R220 violation upstream)
-  - Missing source push verification: -75% (CRITICAL - cascade integrity risk)
 - **Related Rules**: R208 (CD Before Spawn), R603 (Sequential Timing), R501 (Progressive Cascade), R514 (Infrastructure Creation), R509 (Base Branch Validation)

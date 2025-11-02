@@ -298,6 +298,136 @@ echo "❌ Recursive split required - needs human review"
 echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=RECURSIVE_SPLIT"  # Enhanced format
 ```
 
+### 🔴🔴🔴 BUG FIX AUTOMATION EXAMPLES (R536) 🔴🔴🔴
+
+**CRITICAL**: Bug fixes and fix cascades are NORMAL OPERATIONS. They should ALWAYS use TRUE unless convergence fails.
+
+#### ✅ NORMAL - Bugs Found During Integration (TRUE)
+```bash
+# Integration review finds bugs - THIS IS NORMAL!
+echo "📊 Integration Review Results:"
+echo "  - Bugs found: 12"
+echo "  - Creating fix plan automatically..."
+echo "✅ NORMAL OPERATION: Bug fixes are automated"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Continue to CREATE_WAVE_FIX_PLAN
+```
+
+**Why TRUE**: Finding bugs during integration is EXPECTED and designed behavior. The system should automatically create and execute fix plans.
+
+#### ✅ NORMAL - Fix Plan Created (TRUE)
+```bash
+# Fix plan analysis complete
+echo "📋 Fix Plan Created:"
+echo "  - 8 bugs assigned to upstream branches"
+echo "  - 4 bugs require integration-specific fixes"
+echo "✅ NORMAL OPERATION: Executing fix plan automatically..."
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Continue to FIX_WAVE_UPSTREAM_BUGS
+```
+
+**Why TRUE**: Creating fix plans is normal development. No human approval needed.
+
+#### ✅ NORMAL - First Fix Cascade (TRUE)
+```bash
+# First time fixing bugs in this wave
+echo "🔧 Applying fixes to effort branches..."
+echo "  - Iteration 1 of fix cascade"
+echo "  - 15 bugs being fixed"
+echo "✅ NORMAL OPERATION: First fix cascade executing"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Continue cascade loop
+```
+
+**Why TRUE**: First fix cascade is completely normal. System should loop automatically.
+
+#### ✅ NORMAL - Multiple Fix Iterations (TRUE)
+```bash
+# Iteration 5 of fix cascade
+echo "🔁 Fix Cascade Iteration 5:"
+echo "  - Bugs: 15 → 8 → 4 → 2 → 1"
+echo "  - Convergence: IN PROGRESS"
+echo "  - Creating next fix plan..."
+echo "✅ NORMAL OPERATION: Convergence in progress"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Keep iterating!
+```
+
+**Why TRUE**: Multiple iterations show convergence working. Continue until bugs → 0.
+
+#### ✅ NORMAL - Convergence Achieved (TRUE)
+```bash
+# Bugs reached zero
+echo "✅ Fix Cascade Complete:"
+echo "  - Iterations: 7"
+echo "  - Final bugs: 0"
+echo "  - Convergence: ACHIEVED"
+echo "✅ NORMAL OPERATION: Integration clean, wave complete"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Continue to WAVE_COMPLETE
+```
+
+**Why TRUE**: Successful convergence is the GOAL. Continue to wave completion.
+
+#### ✅ NORMAL - Integration Failures (TRUE)
+```bash
+# Build failed during integration
+echo "🔴 Integration build failed"
+echo "  - Merge conflicts: 3"
+echo "  - Build errors: 5"
+echo "✅ NORMAL OPERATION: Creating fix plan for build failures..."
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Treat as bugs, fix automatically
+```
+
+**Why TRUE**: Build failures ARE bugs. Fix them through normal cascade.
+
+#### ✅ NORMAL - Test Failures (TRUE)
+```bash
+# Tests failing on integration branch
+echo "🔴 Tests failing on integration branch"
+echo "  - Failed tests: 8"
+echo "  - Test suites affected: 3"
+echo "✅ NORMAL OPERATION: Creating fix plan for test failures..."
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Treat as bugs, fix automatically
+```
+
+**Why TRUE**: Test failures ARE bugs. Fix them through normal cascade.
+
+#### ❌ EXCEPTIONAL - Iteration Overflow (FALSE REASON=ITERATION_OVERFLOW)
+```bash
+# 11th iteration with same bugs
+echo "❌ FIX CASCADE FAILURE: Iteration overflow"
+echo "  - Iterations: 11/10 (exceeded maximum)"
+echo "  - Bugs: 3 (same bugs after 11 iterations)"
+echo "  - Convergence: FAILED (non-convergence detected)"
+echo "❌ EXCEPTIONAL: Manual investigation required"
+echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=ITERATION_OVERFLOW"
+```
+
+**Why FALSE**: System tried 10+ times and couldn't converge. Needs human investigation of root cause.
+
+#### ❌ EXCEPTIONAL - Divergence Detected (FALSE REASON=DIVERGENCE)
+```bash
+# Bugs increasing instead of decreasing
+echo "❌ FIX CASCADE FAILURE: Divergence detected"
+echo "  - Bug history: 3 → 5 → 8 → 12"
+echo "  - Fixes making things WORSE"
+echo "  - Convergence: FAILED (diverging)"
+echo "❌ EXCEPTIONAL: Manual investigation required"
+echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=DIVERGENCE"
+```
+
+**Why FALSE**: Fixes are making things worse. Fundamental problem needs human analysis.
+
+### 🎯 BUG FIX DECISION MATRIX
+
+```
+Bugs found during integration?
+  → YES + iteration < 10 + bugs decreasing → TRUE (continue cascade)
+  → YES + iteration < 10 + bugs stable → TRUE (continue cascade)
+  → YES + iteration >= 10 + bugs stable → FALSE REASON=ITERATION_OVERFLOW
+  → YES + bugs increasing → FALSE REASON=DIVERGENCE
+  → NO (bugs = 0) → TRUE (convergence achieved)
+```
+
+**DEFAULT FOR BUG FIXES**: TRUE (automated cascade)
+**ONLY USE FALSE**: When convergence impossible (overflow/divergence)
+
 ### EXCEPTIONAL - Multiple Cascades (FALSE REASON=ITERATION_OVERFLOW)
 ```bash
 echo "❌ ERROR: This is the 4th fix cascade for same issues"

@@ -1522,7 +1522,8 @@ EFFORT_HEADERS=$(sed -n '/### Effort.*${EFFORT}/,/^###\|^##/p' WAVE-PLAN.md | he
 - **Estimated Lines**: [count]
 - **Measurement Tool**: ${PROJECT_ROOT}/tools/line-counter.sh (find project root first)
 - **Check Frequency**: Every 200 lines
-- **Split Threshold**: 700 lines (warning), 800 lines (stop)
+- **Split Threshold (R535)**: 700 lines (warning), 900 lines (Code Reviewer enforcement)
+- **Note**: SW Engineers see 800-line limit, Code Reviewers enforce at 900 (grace buffer)
 
 ## Test Requirements
 - **Unit Tests**: [coverage %]
@@ -1735,34 +1736,36 @@ Bash: cd $EFFORT_DIR && $PROJECT_ROOT/tools/line-counter.sh
 # ❌ git diff main --stat  # WRONG! Wrong base branch!
 # ❌ wc -l *.go  # WRONG! Manual counting forbidden!
 
-# Size decision logic:
+# Size decision logic (R535 - Code Reviewer uses 900-line enforcement):
 if size < 700:
     status = "COMPLIANT"
-elif size < 800:
-    status = "WARNING - approaching limit"
+elif size < 900:
+    status = "WARNING - approaching enforcement threshold"
+    # Note: 800-900 is grace buffer (SW Engineers see 800 as limit)
 else:
-    status = "EXCEEDS LIMIT - requires split"
+    status = "EXCEEDS ENFORCEMENT THRESHOLD - requires split and BUG creation"
 ```
 
 ### Review Decision Matrix
 ```bash
-# Review outcomes:
-ACCEPTED: 
+# Review outcomes (R535 - Code Reviewer enforcement at 900 lines):
+ACCEPTED:
   - Functionality correct
-  - Size compliant (<800 lines)
+  - Size compliant (≤900 lines) - R535 enforcement threshold
   - Tests adequate
   - Patterns followed
   - No security issues
 
 NEEDS_FIXES:
   - Minor issues found
-  - Size compliant
+  - Size compliant (≤900 lines)
   - Fixable without split
 
 NEEDS_SPLIT:
-  - Size >= 800 lines
+  - Size > 900 lines - R535 enforcement threshold exceeded
   - Requires effort decomposition
   - Must create split plan
+  - Must create SIZE_VIOLATION bug
 ```
 
 ### Review Report Template
@@ -1780,7 +1783,7 @@ NEEDS_SPLIT:
 **Command:** ${PROJECT_ROOT}/tools/line-counter.sh [branch_name]
 **Auto-detected Base:** [base_branch_from_tool_output]
 **Timestamp:** [ISO_8601_timestamp]
-**Within Limit:** ✅/❌ [Yes/No] ([count] < 800)
+**Within Enforcement Threshold:** ✅/❌ [Yes/No] ([count] ≤ 900) - R535
 **Excludes:** tests/demos/docs per R007
 
 ### Raw Output:
@@ -1788,10 +1791,11 @@ NEEDS_SPLIT:
 [PASTE EXACT TOOL OUTPUT HERE]
 ```
 
-## Size Analysis
+## Size Analysis (R535 Code Reviewer Enforcement)
 - **Current Lines**: [count from tool]
-- **Limit**: 800 lines
-- **Status**: [COMPLIANT/WARNING/EXCEEDS]
+- **Code Reviewer Enforcement Threshold**: 900 lines
+- **SW Engineer Target (they see)**: 800 lines
+- **Status**: [COMPLIANT/WARNING/EXCEEDS_ENFORCEMENT_THRESHOLD]
 - **Requires Split**: [YES/NO]
 
 ## Functionality Review
@@ -1909,12 +1913,13 @@ check_fix_grace_period() {
 }
 ```
 
-### When Split Required (≥800 lines for initial, ≥900 for fixes)
+### When Split Required (>900 lines - R535 Code Reviewer enforcement)
 ```bash
-echo "🚨 SIZE LIMIT EXCEEDED"
+echo "🚨 SIZE ENFORCEMENT THRESHOLD EXCEEDED"
 echo "Current size: [count] lines"
-echo "Limit: 800 lines (initial) or 900 lines (fixes with grace)"
+echo "Code Reviewer Enforcement Threshold: 900 lines (R535)"
 echo "🔀 INITIATING COMPLETE SPLIT PLANNING"
+echo "🐛 CREATING SIZE_VIOLATION BUG"
 
 # YOU plan ALL splits with full context:
 ANALYZE: ENTIRE codebase structure
@@ -1984,7 +1989,7 @@ NO splits should reference efforts outside this path!
 - [ ] All files from original effort covered
 - [ ] Each split compiles independently
 - [ ] Dependencies properly ordered
-- [ ] Each split <800 lines (target <700)
+- [ ] Each split ≤900 lines (target <700) - R535 enforcement threshold
 EOF
 }
 ```
@@ -2124,9 +2129,10 @@ CONTINUE: From saved review checkpoint
 ### FORBIDDEN ACTIONS
 - ❌ Implement code yourself
 - ❌ Use manual line counting (must use designated tool)
-- ❌ Approve >800 line implementations
+- ❌ Approve >900 line implementations (R535 enforcement threshold)
 - ❌ Skip test coverage validation
 - ❌ Create inadequate implementation plans
+- ❌ Create size violation bugs for 800-900 line range (grace buffer per R535)
 
 ### REQUIRED BEHAVIORS
 - ✅ Create detailed implementation plans

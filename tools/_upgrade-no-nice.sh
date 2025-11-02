@@ -200,8 +200,26 @@ if [ -n "$CONFIG_FILE" ]; then
     echo -e "Config File:     ${CYAN}$CONFIG_FILE${NC}"
 fi
 echo -e "Dry Run:         ${CYAN}$DRY_RUN${NC}"
-echo -e "Create Backup:   ${CYAN}$CREATE_BACKUP${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
+
+# Interactive backup prompt if not already specified and not in force/dry-run mode
+if [ "$FORCE" != true ] && [ "$DRY_RUN" != true ]; then
+    # Only prompt if backup wasn't explicitly set via flags
+    if [ "$CREATE_BACKUP" = true ]; then
+        echo ""
+        echo -e "${YELLOW}This will upgrade your project with the latest rules from the template.${NC}"
+        echo ""
+        echo -ne "${CYAN}Do you want to create a backup before upgrading? (yes/no): ${NC}"
+        read -r backup_response
+        if [[ ! "$backup_response" =~ ^[Yy]([Ee][Ss])?$ ]]; then
+            CREATE_BACKUP=false
+            echo -e "${YELLOW}⏭️  Skipping backup (as requested)${NC}"
+        fi
+    fi
+fi
+
+# Default: don't compress unless user asks
+COMPRESS_BACKUP=false
 
 # Load configuration if provided
 PROJECT_NAME=""
@@ -236,24 +254,33 @@ fi
 # Function to create backup
 create_backup() {
     if [ "$DRY_RUN" = true ]; then
-        echo -e "${CYAN}[DRY RUN] Would create backup at: $TARGET_DIR.backup.$(date +%Y%m%d-%H%M%S)${NC}"
+        echo -e "${CYAN}[DRY RUN] Would create backup in: backups/backup-$(date +%Y%m%d-%H%M%S)${NC}"
         echo -e "${CYAN}[DRY RUN] Would also backup effort directories with full git history${NC}"
         return
     fi
 
     local backup_timestamp=$(date +%Y%m%d-%H%M%S)
-    local backup_dir="$TARGET_DIR.backup.$backup_timestamp"
-    echo -e "${CYAN}Creating backup at: $backup_dir${NC}"
+    local backup_dir="$TARGET_DIR/backups/backup-$backup_timestamp"
 
-    # Create backup excluding large/temporary directories and previous backups
-    ionice -c 2 -n 7 nice -n 10 rsync -av --exclude='efforts/' \
+    echo ""
+    echo -e "${CYAN}📦 Creating backup at: ${backup_dir#$TARGET_DIR/}${NC}"
+
+    # Create backups directory if it doesn't exist
+    mkdir -p "$TARGET_DIR/backups"
+
+    # Create backup excluding large/temporary directories and the backups folder itself
+    # CRITICAL: --exclude='backups/' prevents recursive backup-of-backups!
+    ionice -c 2 -n 7 nice -n 10 rsync -av \
               --exclude='backups/' \
+              --exclude='efforts/' \
               --exclude='.backup.*' \
               --exclude='*.backup-*' \
-              --exclude='*.git' \
-              --exclude='node_modules' \
-              --exclude='__pycache__' \
+              --exclude='.git/' \
+              --exclude='node_modules/' \
+              --exclude='vendor/' \
+              --exclude='__pycache__/' \
               --exclude='*.pyc' \
+              --exclude='*.log' \
               "$TARGET_DIR/" "$backup_dir/"
 
     # CRITICAL: Backup effort directories with complete git history
@@ -320,7 +347,44 @@ create_backup() {
         done
     fi
 
-    echo -e "${GREEN}✓ Comprehensive backup created at: $backup_dir${NC}"
+    echo -e "${GREEN}✓ Backup created: ${backup_dir#$TARGET_DIR/}${NC}"
+    echo ""
+
+    # Ask about compression (interactive mode only)
+    if [ "$FORCE" != true ]; then
+        echo -ne "${CYAN}Do you want to compress the backup to save space? (yes/no): ${NC}"
+        read -r compress_response
+
+        if [[ "$compress_response" =~ ^[Yy]([Ee][Ss])?$ ]]; then
+            COMPRESS_BACKUP=true
+            echo -e "${CYAN}🗜️  Compressing backup...${NC}"
+
+            # Change to backups directory for cleaner tar paths
+            local original_dir="$(pwd)"
+            cd "$TARGET_DIR/backups"
+
+            # Compress the backup
+            if tar -czf "backup-$backup_timestamp.tar.gz" "backup-$backup_timestamp" 2>/dev/null; then
+                # Remove uncompressed backup
+                rm -rf "backup-$backup_timestamp"
+
+                # Show size savings
+                local compressed_size=$(du -h "backup-$backup_timestamp.tar.gz" | cut -f1)
+                echo -e "${GREEN}✓ Backup compressed: backups/backup-$backup_timestamp.tar.gz${NC}"
+                echo -e "${CYAN}   Compressed size: $compressed_size${NC}"
+            else
+                echo -e "${RED}❌ ERROR: Compression failed!${NC}"
+                echo -e "${YELLOW}   Keeping uncompressed backup${NC}"
+                COMPRESS_BACKUP=false
+            fi
+
+            cd "$original_dir"
+        else
+            echo -e "${YELLOW}⏭️  Keeping backup uncompressed${NC}"
+        fi
+    fi
+
+    echo ""
     echo -e "${YELLOW}  📝 Note: Full effort backups preserved for disaster recovery${NC}"
 }
 
@@ -1596,13 +1660,22 @@ else
     echo -e ""
     
     if [ "$CREATE_BACKUP" = true ]; then
-        echo -e "${CYAN}Backup locations:${NC}"
-        echo -e "  Main backup: $TARGET_DIR.backup.*"
-        echo -e "  Effort backups: $TARGET_DIR.backup.*/efforts-backup-*/"
-        echo -e "  Auto-generated backups: $TARGET_DIR/backups/efforts-upgrade-*/"
+        echo -e "${CYAN}Backup information:${NC}"
+        if [ "$COMPRESS_BACKUP" = true ]; then
+            echo -e "  💾 Backup location: backups/backup-*.tar.gz (compressed)"
+            echo -e "  📁 Backup contents: All project files (excluding backups/, efforts/, .git/)"
+        else
+            echo -e "  💾 Backup location: backups/backup-*/ (uncompressed)"
+            echo -e "  📁 Backup contents: All project files (excluding backups/, efforts/, .git/)"
+        fi
+        echo -e "  🔄 Effort backups: backups/efforts-upgrade-*/ (with full git history)"
         echo -e ""
         echo -e "${YELLOW}⚠️  IMPORTANT: Effort backups contain complete git history${NC}"
         echo -e "${YELLOW}   Keep these backups until you're certain all branches are safe${NC}"
+        echo ""
+        echo -e "${CYAN}Manage backups:${NC}"
+        echo -e "  • View all backups: ls -lh backups/"
+        echo -e "  • Cleanup old backups: bash tools/cleanup-backups.sh"
     fi
     
     # Display version info if created

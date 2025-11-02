@@ -278,11 +278,14 @@ bash tools/validate-R420-compliance.sh <plan-file> || exit 1
 # Run general plan validation
 bash tools/validate-implementation-plan.sh <plan-file> || exit 1
 
-# Check size estimates
+# Check size estimates (R535 - Code Reviewer enforcement at 900 lines)
 ESTIMATED_LINES=$(grep "Estimated Lines" <plan-file> | grep -o "[0-9]*")
-if [ $ESTIMATED_LINES -gt 800 ]; then
-    echo "⚠️ WARNING: Estimated $ESTIMATED_LINES lines exceeds 800 line limit"
+if [ $ESTIMATED_LINES -gt 900 ]; then
+    echo "⚠️ WARNING: Estimated $ESTIMATED_LINES lines exceeds 900 line enforcement threshold (R535)"
     echo "   Consider splitting effort during planning phase"
+elif [ $ESTIMATED_LINES -gt 800 ]; then
+    echo "ℹ️ Note: $ESTIMATED_LINES lines in grace buffer (800-900) per R535"
+    echo "   SW Engineers see 800 limit, Code Reviewers enforce at 900"
 fi
 ```
 
@@ -422,9 +425,10 @@ git push
 **MANDATORY in EFFORT_PLAN_CREATION:**
 - Estimate total line count for effort
 - If estimate > 700 lines, consider pre-splitting during planning
+- If estimate > 900 lines, MUST pre-split (R535 enforcement threshold)
 - Document size estimates in plan
 
-**Grading Penalty:** Exceeding 800 lines without split = automatic split required
+**Grading Penalty:** Exceeding 900 lines without split = automatic split required (R535)
 
 ## State Transition Criteria
 
@@ -443,7 +447,7 @@ git push
 - ❌ R420 validation fails
 - ❌ Conflicts detected but not resolved
 - ❌ Plan missing required sections
-- ❌ Size estimates exceed 800 lines without split consideration
+- ❌ Size estimates exceed 900 lines without split consideration (R535 enforcement)
 
 ## Grading Criteria for This State
 
