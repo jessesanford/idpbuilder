@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-02T18:08:30Z",
+  "last_updated": "2025-11-02T18:33:55Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -813,9 +813,9 @@
     ]
   },
   "metadata": {
-    "last_updated": "2025-11-02T18:20:00Z",
-    "notes": "State transition: REVIEW_WAVE_INTEGRATION to CREATE_WAVE_FIX_PLAN (iteration 6: 1 CATASTROPHIC bug found)",
-    "state_transition": "CREATE_WAVE_FIX_PLAN",
+    "last_updated": "2025-11-02T18:33:55Z",
+    "notes": "State transition: CREATE_WAVE_FIX_PLAN to FIX_WAVE_UPSTREAM_BUGS (1 CATASTROPHIC bug found)",
+    "state_transition": "FIX_WAVE_UPSTREAM_BUGS",
     "updated_by": "state-manager"
   },
   "last_state_transition": {
@@ -825,12 +825,12 @@
     "reason": "REVIEW_WAVE_INTEGRATION complete: 6 bugs found (BUG-007 through BUG-018), guard condition bugs_found > 0 satisfied"
   },
   "state_machine_sync": {
-    "current_state": "CREATE_WAVE_FIX_PLAN",
-    "previous_state": "REVIEW_WAVE_INTEGRATION",
-    "last_transition": "2025-11-02T18:20:00Z",
-    "last_sync": "2025-11-02T18:20:00Z"
+    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
+    "previous_state": "CREATE_WAVE_FIX_PLAN",
+    "last_transition": "2025-11-02T18:33:55Z",
+    "last_sync": "2025-11-02T18:33:55Z"
   },
-  "current_state": "CREATE_WAVE_FIX_PLAN",
+  "current_state": "FIX_WAVE_UPSTREAM_BUGS",
   "phase": 2,
   "wave": 2,
   "last_updated_by": "state-manager"

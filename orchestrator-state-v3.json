@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_WAVE_FIX_PLAN",
-    "previous_state": "REVIEW_WAVE_INTEGRATION",
-    "last_transition_timestamp": "2025-11-02T18:20:00Z",
+    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
+    "previous_state": "CREATE_WAVE_FIX_PLAN",
+    "last_transition_timestamp": "2025-11-02T18:33:47Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-02T18:20:00Z",
       "consultation_type": "SHUTDOWN_CONSULTATION",
@@ -2605,6 +2605,15 @@
           "r322_consultation": true,
           "state_machine_compliance": "VERIFIED"
         }
+      },
+      {
+        "from_state": "CREATE_WAVE_FIX_PLAN",
+        "to_state": "FIX_WAVE_UPSTREAM_BUGS",
+        "timestamp": "2025-11-02T18:33:47Z",
+        "validated_by": "state-manager",
+        "orchestrator_proposal": "FIX_WAVE_UPSTREAM_BUGS",
+        "proposal_accepted": true,
+        "reason": "CREATE_WAVE_FIX_PLAN complete: 1 CATASTROPHIC bug (BUG-019-CODE-DELETION) found requiring fix cascade, guard condition bugs_found > 0 met, user approval obtained per R322"
       }
     ],
     "loop_detection": {
