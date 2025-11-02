@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-02T05:12:16Z",
+  "last_updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -378,12 +378,12 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-02T02:06:40Z",
-    "notes": "State transition: MONITORING_SWE_PROGRESS → SPAWN_CODE_REVIEWERS_EFFORT_REVIEW (State Manager validation - both SW implementations complete)"
+    "last_updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+    "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW → MONITORING_EFFORT_REVIEWS (Effort 2.2.1 review completed with critical findings)"
   },
   "state_machine_sync": {
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "previous_state": "MONITORING_SWE_PROGRESS",
-    "last_transition": "2025-11-02T05:12:16Z"
+    "current_state": "MONITORING_EFFORT_REVIEWS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+    "last_transition": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   }
 }

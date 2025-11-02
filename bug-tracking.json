@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-02T05:12:16Z",
+  "last_updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -272,9 +272,91 @@
       "affected_effort": "integration",
       "verified_at": "2025-10-30T03:08:38Z",
       "verification_report": "efforts/phase1/wave2/integration/.software-factory/phase1/wave2/integration/WAVE-INTEGRATION-VERIFICATION-REPORT--20251030-030624.md"
+    },
+    {
+      "bug_id": "BUG-007-BUILD-VIPER-ARG",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "phase": 2,
+      "wave": 2,
+      "effort_id": "2.2.1",
+      "title": "Build failure - missing viper parameter in root.go",
+      "description": "pkg/cmd/root.go:29 calls push.NewPushCommand() without required *viper.Viper parameter, causing compilation error",
+      "category": "build",
+      "affected_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T05:20:38Z",
+      "found_in_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+      "location": {
+        "file_path": "pkg/cmd/root.go",
+        "line_number": 29,
+        "function_name": "init",
+        "context": "rootCmd.AddCommand(push.NewPushCommand()) - missing viper parameter"
+      },
+      "symptoms": [
+        "go build fails with not enough arguments error",
+        "Code cannot compile",
+        "Tests cannot run"
+      ],
+      "impact": "Complete build failure - no code can compile or be tested",
+      "resolution_plan": [
+        "Create viper instance in root command",
+        "Pass viper instance to NewPushCommand(v)",
+        "Verify build passes"
+      ],
+      "affected_effort": "2.2.1"
+    },
+    {
+      "bug_id": "BUG-008-SIZE-VIOLATION",
+      "severity": "CRITICAL",
+      "status": "OPEN",
+      "phase": 2,
+      "wave": 2,
+      "effort_id": "2.2.1",
+      "title": "Hard size limit violation - 831 lines exceeds 800 limit",
+      "description": "Implementation contains 831 lines, exceeding the 800-line hard limit by 31 lines (3.9% overage)",
+      "category": "size_violation",
+      "affected_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-02T05:20:38Z",
+      "found_in_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+      "location": {
+        "file_path": "N/A",
+        "line_number": null,
+        "function_name": null,
+        "context": "Total implementation: 831 lines (includes 389 lines of out-of-scope Phase 1 stubs)"
+      },
+      "symptoms": [
+        "Line counter shows 831 lines",
+        "Hard limit: 800 lines",
+        "Overage: +31 lines",
+        "Includes 389 lines of Phase 1/Wave 2.1 stub code"
+      ],
+      "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
+      "resolution_plan": [
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
+        "Option B: Create split plan into 2 efforts (Split-001: 389 lines stubs, Split-002: 406 lines core)",
+        "Re-measure after fix",
+        "Verify under 800 line limit"
+      ],
+      "affected_effort": "2.2.1",
+      "scope_violation_details": {
+        "total_out_of_scope_lines": 389,
+        "out_of_scope_files": [
+          "pkg/auth/provider.go (46 lines)",
+          "pkg/docker/client.go (36 lines)",
+          "pkg/progress/interface.go (16 lines)",
+          "pkg/progress/reporter.go (154 lines)",
+          "pkg/registry/client.go (58 lines)",
+          "pkg/tls/config.go (38 lines)",
+          "pkg/cmd/push/types.go (41 lines)"
+        ],
+        "core_implementation_lines": 406,
+        "theme_purity": "51.1%"
+      }
     }
   ],
-  "active_bug_count": 0,
+  "active_bug_count": 2,
   "resolved_bug_count": 6,
   "bug_categories": {
     "integration_failures": [
@@ -283,7 +365,8 @@
       "BUG-006-INTEGRATION-LEAK"
     ],
     "build_failures": [
-      "BUG-004-INTEGRATION-GOSUM"
+      "BUG-004-INTEGRATION-GOSUM",
+      "BUG-007-BUILD-VIPER-ARG"
     ],
     "test_failures": [],
     "review_findings": [
@@ -291,21 +374,26 @@
       "BUG-003-META-LOCATION",
       "BUG-004-INTEGRATION-GOSUM",
       "BUG-005-INTEGRATION-PARSE",
-      "BUG-006-INTEGRATION-LEAK"
+      "BUG-006-INTEGRATION-LEAK",
+      "BUG-007-BUILD-VIPER-ARG",
+      "BUG-008-SIZE-VIOLATION"
+    ],
+    "size_violations": [
+      "BUG-008-SIZE-VIOLATION"
     ]
   },
   "metadata": {
-    "notes": "State transition: ANALYZE_IMPLEMENTATION_PARALLELIZATION → ERROR_RECOVERY (State Manager rejection - orchestrator analyzed wrong phase/wave)"
+    "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW → MONITORING_EFFORT_REVIEWS (2 critical bugs found in effort 2.2.1)"
   },
   "last_state_transition": {
-    "from": "MONITORING_SWE_PROGRESS",
-    "to": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "timestamp": "2025-11-02T05:12:16Z",
-    "reason": "SW implementations complete - ready for effort reviews"
+    "from": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+    "to": "MONITORING_EFFORT_REVIEWS",
+    "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+    "reason": "Effort 2.2.1 review completed with critical findings: build failure + size violation"
   },
   "state_machine_sync": {
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "previous_state": "MONITORING_SWE_PROGRESS",
-    "last_transition": "2025-11-02T05:12:16Z"
+    "current_state": "MONITORING_EFFORT_REVIEWS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+    "last_transition": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   }
 }
