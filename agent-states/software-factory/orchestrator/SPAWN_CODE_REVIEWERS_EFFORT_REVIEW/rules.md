@@ -265,8 +265,8 @@ After reading and acknowledging all state rules, you MUST create a verification 
 
 ```bash
 # MANDATORY: Create verification marker after reading rules
-touch .state_rules_read_orchestrator_SPAWN_CODE_REVIEWERS_EFFORT_REVIEW
-echo "$(date +%s) - Rules read and acknowledged for SPAWN_CODE_REVIEWERS_EFFORT_REVIEW" > .state_rules_read_orchestrator_SPAWN_CODE_REVIEWERS_EFFORT_REVIEW
+mkdir -p markers/state-verification && touch "markers/state-verification/state_rules_read_orchestrator_SPAWN_CODE_REVIEWERS_EFFORT_REVIEW-$(date +%Y%m%d-%H%M%S)"
+echo "$(date +%s) - Rules read and acknowledged for SPAWN_CODE_REVIEWERS_EFFORT_REVIEW" > "markers/state-verification/state_rules_read_orchestrator_SPAWN_CODE_REVIEWERS_EFFORT_REVIEW-$(date +%Y%m%d-%H%M%S)"
 ```
 
 **FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**

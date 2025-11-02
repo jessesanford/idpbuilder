@@ -109,8 +109,8 @@ After reading and acknowledging all state rules, you MUST create a verification 
 
 ```bash
 # MANDATORY: Create verification marker after reading rules
-touch .state_rules_read_orchestrator_ANALYZE_CODE_REVIEWER_PARALLELIZATION
-echo "$(date +%s) - Rules read and acknowledged for ANALYZE_CODE_REVIEWER_PARALLELIZATION" > .state_rules_read_orchestrator_ANALYZE_CODE_REVIEWER_PARALLELIZATION
+mkdir -p markers/state-verification && touch "markers/state-verification/state_rules_read_orchestrator_ANALYZE_CODE_REVIEWER_PARALLELIZATION-$(date +%Y%m%d-%H%M%S)"
+echo "$(date +%s) - Rules read and acknowledged for ANALYZE_CODE_REVIEWER_PARALLELIZATION" > "markers/state-verification/state_rules_read_orchestrator_ANALYZE_CODE_REVIEWER_PARALLELIZATION-$(date +%Y%m%d-%H%M%S)"
 ```
 
 **FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**

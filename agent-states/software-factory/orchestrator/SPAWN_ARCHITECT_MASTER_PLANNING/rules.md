@@ -17,8 +17,8 @@ This state file uses the **BOOKEND PATTERN** (R600):
 The State Manager (`run-software-factory.sh`) handles ALL state transitions.
 
 **See:**
-- `$CLAUDE_PROJECT_DIR/rule-library/R288-state-transition-authority.md` (SUPREME LAW)
-- `$CLAUDE_PROJECT_DIR/rule-library/R600-orchestrator-bookend-pattern.md`
+- `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md` (SUPREME LAW)
+- `$CLAUDE_PROJECT_DIR/rule-library/R600-checklist-execution-protocol.md`
 
 ---
 

@@ -567,7 +567,7 @@ jq ".efforts_in_progress[0].status = \"SPLIT_PLANNED\"" orchestrator-state-v3.js
 ---
 
 ### 🚨🚨🚨 R511 - Absolute Prohibition on Recursive Splits (BLOCKING)
-**Source:** rule-library/R511-absolute-prohibition-recursive-splits.md
+**Source:** rule-library/R511-checklist-creation-protocol.md
 
 **MANDATORY in CREATE_SPLIT_PLAN:**
 - If ANY split exceeds 900 lines (R535 enforcement), STOP IMMEDIATELY
@@ -592,7 +592,7 @@ jq ".efforts_in_progress[0].status = \"SPLIT_PLANNED\"" orchestrator-state-v3.js
 ---
 
 ### 🚨🚨 R310 - Split Scope Strict Adherence Protocol (BLOCKING)
-**Source:** rule-library/R310-split-scope-strict-adherence-protocol.md
+**Source:** rule-library/R310-split-scope-strict-adherence.md
 
 **MANDATORY in CREATE_SPLIT_PLAN:**
 - Split plans MUST be SPECIFIC and DETAILED

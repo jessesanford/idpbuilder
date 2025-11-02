@@ -84,7 +84,7 @@ TRANSITION_REASON="Wave planning complete"
 3. Set CONTINUE-SOFTWARE-FACTORY=TRUE
 4. Exit and let State Manager update state file
 
-**See:** $CLAUDE_PROJECT_DIR/rule-library/R600-state-manager-bookend-protocol.md
+**See:** $CLAUDE_PROJECT_DIR/rule-library/R600-checklist-execution-protocol.md
 
 ---
 

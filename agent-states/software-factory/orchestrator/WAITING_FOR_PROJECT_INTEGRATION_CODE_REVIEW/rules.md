@@ -98,7 +98,7 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
    - Summary: WAITING states require active monitoring, not passive waiting
 
 6. **🔴🔴🔴 R358** - 30-Second Project Review Completion Detection
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R358-completion-detection-30-second.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R358-integration-completion-detection.md`
    - Criticality: SUPREME LAW - Must detect project review completion within 30 seconds
    - Summary: Active monitoring loop required to detect project review completion immediately
 

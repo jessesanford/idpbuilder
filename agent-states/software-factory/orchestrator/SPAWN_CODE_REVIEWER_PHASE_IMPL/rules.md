@@ -212,7 +212,7 @@ exit 0
 ### State-Specific Rules:
 
 7. **🚨🚨🚨 R502** - IMPLEMENTATION PLAN QUALITY GATES (BLOCKING)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R502-plan-quality-validation.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R502-mandatory-plan-validation-gates.md`
    - Criticality: BLOCKING - Phase implementation plan validation
    - Summary: Phase implementation plan must be WAVE LIST ONLY (NO detailed effort definitions)
 

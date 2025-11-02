@@ -184,7 +184,7 @@ exit 0
 ### State-Specific Rules:
 
 7. **🚨🚨🚨 R340** - ARCHITECTURE PLAN QUALITY GATES
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R340-architecture-plan-quality-gates.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R340-planning-file-metadata-tracking.md`
    - Summary: Wave architecture must be CONCRETE level (REAL CODE examples from previous waves)
 
 ## 🔴🔴🔴 MANDATORY EXECUTION CHECKLIST

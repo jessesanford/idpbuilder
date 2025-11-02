@@ -75,8 +75,8 @@ This state file uses the **BOOKEND PATTERN** (R600):
 The State Manager (`run-software-factory.sh`) handles ALL state transitions.
 
 **See:**
-- `$CLAUDE_PROJECT_DIR/rule-library/R288-state-transition-authority.md` (SUPREME LAW)
-- `$CLAUDE_PROJECT_DIR/rule-library/R600-orchestrator-bookend-pattern.md`
+- `$CLAUDE_PROJECT_DIR/rule-library/R288-state-file-update-and-commit-protocol.md` (SUPREME LAW)
+- `$CLAUDE_PROJECT_DIR/rule-library/R600-checklist-execution-protocol.md`
 
 ---
 
@@ -264,8 +264,8 @@ After reading and acknowledging all state rules, you MUST create a verification 
 
 ```bash
 # MANDATORY: Create verification marker after reading rules
-touch .state_rules_read_orchestrator_SPAWN_ARCHITECT_PHASE_ASSESSMENT
-echo "$(date +%s) - Rules read and acknowledged for SPAWN_ARCHITECT_PHASE_ASSESSMENT" > .state_rules_read_orchestrator_SPAWN_ARCHITECT_PHASE_ASSESSMENT
+mkdir -p markers/state-verification && touch "markers/state-verification/state_rules_read_orchestrator_SPAWN_ARCHITECT_PHASE_ASSESSMENT-$(date +%Y%m%d-%H%M%S)"
+echo "$(date +%s) - Rules read and acknowledged for SPAWN_ARCHITECT_PHASE_ASSESSMENT" > "markers/state-verification/state_rules_read_orchestrator_SPAWN_ARCHITECT_PHASE_ASSESSMENT-$(date +%Y%m%d-%H%M%S)"
 ```
 
 **FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**

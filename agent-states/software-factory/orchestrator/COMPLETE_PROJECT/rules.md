@@ -104,7 +104,7 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
    - Summary: Wave integration creates iteration containers that must converge before next wave
 
 7. **🔴🔴🔴 R234** - Mandatory State Traversal
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal-supreme-law.md`
    - Criticality: SUPREME LAW
    - Summary: Determine correct next state (next project or phase infrastructure)
 

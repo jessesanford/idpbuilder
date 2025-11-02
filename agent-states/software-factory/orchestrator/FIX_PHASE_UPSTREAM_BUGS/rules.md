@@ -99,17 +99,17 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
 ### State-Specific Rules:
 
 6. **🔴🔴🔴 R321** - Immediate Backport Protocol
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R321-immediate-backport-protocol.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R321-immediate-backport-during-integration.md`
    - Criticality: SUPREME LAW
    - Summary: Fix bugs in upstream wave branches, never in integration branch
 
 7. **🚨🚨🚨 R232** - Spawn Agent Protocol
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R232-spawn-agent-protocol.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R232-enforcement-examples.md`
    - Criticality: BLOCKING
    - Summary: Spawn SW Engineer agents to fix bugs in upstream branches
 
 8. **🔴🔴🔴 R313** - Bug Tracking Requirements
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R313-bug-tracking-requirements.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R313-mandatory-stop-after-spawn.md`
    - Criticality: SUPREME LAW
    - Summary: Update bug status as fixes are applied
 

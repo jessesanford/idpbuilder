@@ -104,12 +104,12 @@ THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION
 ### State-Specific Rules:
 
 7. **🚨🚨🚨 R233** - ACTIVE MONITORING PROTOCOL (BLOCKING)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R233-active-monitoring-protocol.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R233-all-states-immediate-action.md`
    - Criticality: BLOCKING - Defines monitoring requirements for waiting states
    - Summary: MUST actively monitor Architect progress every 5 messages
 
 8. **🚨🚨🚨 R340** - ARCHITECTURE PLAN QUALITY GATES (BLOCKING)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R340-architecture-plan-quality-gates.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R340-planning-file-metadata-tracking.md`
    - Criticality: BLOCKING - Defines quality requirements for phase architecture
    - Summary: Phase architecture must be PSEUDOCODE level with specific quality gates
 

@@ -209,6 +209,12 @@ main() {
 
     # SF 3.0: Use new validation
     if [ "$sf_version" = "3.0" ]; then
+        # Run ARCHIVED state validation first (universal check)
+        if ! run_hook "tools/git-commit-hooks/shared-hooks/archived-state-validation.hook" \
+                      "ARCHIVED State Contamination Check"; then
+            validation_failed=true
+        fi
+
         if ! run_sf3_validation; then
             validation_failed=true
         fi
@@ -245,6 +251,12 @@ main() {
 
     if ! run_hook "tools/git-commit-hooks/shared-hooks/orchestrator-state-validation.hook" \
                   "Orchestrator State Validation"; then
+        validation_failed=true
+    fi
+
+    # ARCHIVED State Validation: Prevents contamination of active projects
+    if ! run_hook "tools/git-commit-hooks/shared-hooks/archived-state-validation.hook" \
+                  "ARCHIVED State Contamination Check"; then
         validation_failed=true
     fi
 

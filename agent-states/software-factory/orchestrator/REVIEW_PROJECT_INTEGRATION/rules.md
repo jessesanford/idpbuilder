@@ -99,12 +99,12 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
 ### State-Specific Rules:
 
 6. **🚨🚨🚨 R232** - Spawn Agent Protocol
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R232-spawn-agent-protocol.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R232-enforcement-examples.md`
    - Criticality: BLOCKING
    - Summary: Spawn code reviewer agent with proper context and workspace
 
 7. **🔴🔴🔴 R313** - Bug Tracking Requirements
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R313-bug-tracking-requirements.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R313-mandatory-stop-after-spawn.md`
    - Criticality: SUPREME LAW
    - Summary: Record all bugs in bug-tracking.json with proper categorization
 

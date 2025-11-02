@@ -407,7 +407,7 @@ git push
 ---
 
 ### 🚨 R400/R401 - TDD Requirements (BLOCKING)
-**Source:** rule-library/R400-tdd-mandatory.md, R401-tests-first-enforcement.md
+**Source:** rule-library/R400-tdd-mandatory.md)
 
 **MANDATORY in EFFORT_PLAN_CREATION:**
 - Plan MUST include test pseudo-code BEFORE implementation details

@@ -186,9 +186,9 @@ RESTORE_SCRIPT
 
 # Optional compression
 compress_backup() {
-    log "${CYAN}" "\n🗜️  Compressing backup..."
-    
-    read -p "Compress backup for storage? (y/N) " -n 1 -r
+    log "${CYAN}" "\n🗜️  Compressing EFFORTS backup..."
+
+    read -p "Compress EFFORTS backup for storage? (y/N) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         local archive_name="${BACKUP_DIR}.tar.gz"

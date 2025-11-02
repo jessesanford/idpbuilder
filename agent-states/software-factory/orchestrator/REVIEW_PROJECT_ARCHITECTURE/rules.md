@@ -99,12 +99,12 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
 ### State-Specific Rules:
 
 6. **🚨🚨🚨 R232** - Spawn Agent Protocol
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R232-spawn-agent-protocol.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R232-enforcement-examples.md`
    - Criticality: BLOCKING
    - Summary: Spawn architect agent with proper context and workspace
 
 7. **🔴🔴🔴 R233** - Architect Review Requirements
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R233-architect-review-requirements.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R233-all-states-immediate-action.md`
    - Criticality: SUPREME LAW
    - Summary: Architect validates pattern compliance and system coherence
 

@@ -71,7 +71,7 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
 ### Core Mandatory Rules (ALL code-reviewer states must have these):
 
 1. **🚨🚨🚨 R006** - CODE REVIEWER NEVER WRITES CODE (BLOCKING)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R006-code-reviewer-never-writes-code.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R006-orchestrator-never-writes-code.md`
    - Criticality: BLOCKING
    - Summary: Code Reviewer ONLY creates plans and instructions, NEVER implements code
 
@@ -106,7 +106,7 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
    - Summary: STOP after completing state work, do NOT auto-continue
 
 8. **🔴🔴🔴 R355** - CODE REVIEWER VALIDATION REQUIREMENTS (SUPREME LAW)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R355-code-reviewer-validation-requirements.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R355-production-ready-code-enforcement-supreme-law.md`
    - Criticality: SUPREME LAW
    - Summary: All review outputs must be validated and complete
 
@@ -118,12 +118,12 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
    - Summary: ALL artifacts MUST be tracked in orchestrator-state-v3.json with complete metadata
 
 10. **⚠️⚠️⚠️ R383** - METADATA FILE STANDARDS (WARNING)
-    - File: `$CLAUDE_PROJECT_DIR/rule-library/R383-metadata-file-standards.md`
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R383-metadata-file-timestamp-requirements.md`
     - Criticality: WARNING
     - Summary: Fix plans must follow proper metadata format and naming
 
 11. **⚠️⚠️⚠️ R343** - STRUCTURED OUTPUT REQUIREMENTS (WARNING)
-    - File: `$CLAUDE_PROJECT_DIR/rule-library/R343-structured-output-requirements.md`
+    - File: `$CLAUDE_PROJECT_DIR/rule-library/R343-metadata-directory-standardization.md`
     - Criticality: WARNING
     - Summary: All outputs must be properly structured and parseable
 

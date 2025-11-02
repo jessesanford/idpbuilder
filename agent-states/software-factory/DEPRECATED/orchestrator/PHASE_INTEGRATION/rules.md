@@ -109,8 +109,8 @@ After reading and acknowledging all state rules, you MUST create a verification 
 
 ```bash
 # MANDATORY: Create verification marker after reading rules
-touch .state_rules_read_orchestrator_INTEGRATE_PHASE_WAVES
-echo "$(date +%s) - Rules read and acknowledged for INTEGRATE_PHASE_WAVES" > .state_rules_read_orchestrator_INTEGRATE_PHASE_WAVES
+mkdir -p markers/state-verification && touch "markers/state-verification/state_rules_read_orchestrator_INTEGRATE_PHASE_WAVES-$(date +%Y%m%d-%H%M%S)"
+echo "$(date +%s) - Rules read and acknowledged for INTEGRATE_PHASE_WAVES" > "markers/state-verification/state_rules_read_orchestrator_INTEGRATE_PHASE_WAVES-$(date +%Y%m%d-%H%M%S)"
 ```
 
 **FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**
@@ -255,7 +255,7 @@ The system will check for this marker. No marker = Immediate failure.
 **Summary**: Use project prefix for phase integration branches
 
 ### 🚨🚨🚨 R296 - Deprecated Branch Marking Protocol
-**File**: `$CLAUDE_PROJECT_DIR/rule-library/R296-deprecated-branch-marking-protocol.md`
+**File**: `$CLAUDE_PROJECT_DIR/rule-library/R302-comprehensive-split-tracking-protocol.md`
 **Criticality**: BLOCKING - Prevents integration of wrong branches
 **Summary**: Check for and prevent integration of deprecated split branches
 

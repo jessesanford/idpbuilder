@@ -51,8 +51,9 @@ STATE TRANSITION PROTOCOL:
 
 2. **Verification Marker File**
    ```
-   .state_rules_read_[agent]_[STATE]
+   markers/state-verification/state_rules_read_[agent]_[STATE]-[TIMESTAMP]
    ```
+   (Note: Markers organized in `markers/state-verification/` with timestamps)
 
 3. **Explicit Acknowledgment**
    ```
@@ -80,31 +81,32 @@ STATE TRANSITION PROTOCOL:
 enter_state() {
     local new_state="$1"
     local agent_type="$2"
-    
+
     # Step 1: Transition authorized by state machine
     echo "Entering state: $new_state"
-    
-    # Step 2: Clear old verification marker
-    local marker_file=".state_rules_read_${agent_type}_${new_state}"
-    rm -f "$marker_file" 2>/dev/null
-    
+
+    # Step 2: Create marker directory if needed
+    mkdir -p markers/state-verification
+
     # Step 3: 🔴 MANDATORY - Read state rules FIRST
     local rules_file="agent-states/${agent_type}/${new_state}/rules.md"
     if [[ ! -f "$rules_file" ]]; then
         echo "❌ FATAL: No rules for state $new_state"
         exit 290
     fi
-    
+
     echo "📖 READING STATE RULES FOR ${new_state}..."
     cat "$rules_file"
-    
+
     # Step 4: Create verification marker with timestamp
+    local timestamp=$(date +%Y%m%d-%H%M%S)
+    local marker_file="markers/state-verification/state_rules_read_${agent_type}_${new_state}-${timestamp}"
     echo "$(date +%s) - Rules read for ${new_state}" > "$marker_file"
-    
+
     # Step 5: Explicit acknowledgment required
     echo "✅ STATE RULES READ AND ACKNOWLEDGED FOR ${new_state}"
     echo "📋 Verification marker created: $marker_file"
-    
+
     # Step 6: NOW execute state actions
     echo "✅ Rules loaded and verified, executing state actions..."
     execute_state_actions "$new_state"
@@ -114,14 +116,25 @@ enter_state() {
 check_rules_were_read() {
     local state="$1"
     local agent_type="$2"
-    local marker_file=".state_rules_read_${agent_type}_${state}"
-    
-    if [[ ! -f "$marker_file" ]]; then
+
+    # Check for marker (most recent one)
+    local marker_pattern="markers/state-verification/state_rules_read_${agent_type}_${state}-*"
+    local marker_file=$(ls $marker_pattern 2>/dev/null | tail -1)
+
+    if [[ -z "$marker_file" ]]; then
         echo "🔴🔴🔴 FATAL ERROR: R290 VIOLATION DETECTED! 🔴🔴🔴"
         echo "State work attempted in ${state} WITHOUT reading rules!"
-        echo "Missing verification marker: $marker_file"
+        echo "Missing verification marker: $marker_pattern"
         echo "AUTOMATIC FAILURE: -100% penalty"
         exit 290
+    fi
+
+    # Check for backward compatibility (old location)
+    local old_marker=".state_rules_read_${agent_type}_${state}"
+    if [[ -f "$old_marker" ]]; then
+        echo "⚠️  Found marker in old location, migrating..."
+        local timestamp=$(date +%Y%m%d-%H%M%S)
+        mv "$old_marker" "markers/state-verification/state_rules_read_${agent_type}_${state}-${timestamp}"
     fi
 }
 ```
@@ -130,7 +143,7 @@ check_rules_were_read() {
 ```
 [TRANSITION] INIT → PLANNING
 [READ] agent-states/software-factory/orchestrator/PLANNING/rules.md
-[MARKER] .state_rules_read_orchestrator_PLANNING created
+[MARKER] markers/state-verification/state_rules_read_orchestrator_PLANNING-20251102-152030 created
 [ACK] "Rules loaded and verified for PLANNING state"
 [ACTION] Begin planning per state rules
 ```

@@ -99,12 +99,12 @@ THAT YOU WILL ABIDE BY THEM ONE AT A TIME GIVING THE RULE NUMBER AND DESCRIPTION
 ### State-Specific Rules:
 
 6. **🚨🚨🚨 R502** - IMPLEMENTATION PLAN QUALITY GATES (BLOCKING)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R502-plan-quality-validation.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R502-mandatory-plan-validation-gates.md`
    - Criticality: BLOCKING - Validates phase implementation plan quality
    - Summary: Phase implementation plan must contain wave list ONLY (NO detailed effort definitions)
 
 7. **🚨🚨🚨 R233** - ACTIVE MONITORING PROTOCOL (BLOCKING)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R233-active-monitoring-protocol.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R233-all-states-immediate-action.md`
    - Criticality: BLOCKING - Requires active agent monitoring
    - Summary: MUST actively monitor spawned agents, not passive waiting
 

@@ -108,8 +108,8 @@ After reading and acknowledging all state rules, you MUST create a verification 
 
 ```bash
 # MANDATORY: Create verification marker after reading rules
-touch .state_rules_read_orchestrator_MONITORING_EFFORT_FIXES
-echo "$(date +%s) - Rules read and acknowledged for MONITORING_EFFORT_FIXES" > .state_rules_read_orchestrator_MONITORING_EFFORT_FIXES
+mkdir -p markers/state-verification && touch "markers/state-verification/state_rules_read_orchestrator_MONITORING_EFFORT_FIXES-$(date +%Y%m%d-%H%M%S)"
+echo "$(date +%s) - Rules read and acknowledged for MONITORING_EFFORT_FIXES" > "markers/state-verification/state_rules_read_orchestrator_MONITORING_EFFORT_FIXES-$(date +%Y%m%d-%H%M%S)"
 ```
 
 **FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**
@@ -144,7 +144,7 @@ echo "$(date +%s) - Rules read and acknowledged for MONITORING_EFFORT_FIXES" > .
    - Summary: Check progress every 5 messages, detect stalls/blockers
 
 5. **🔴🔴🔴 R322** - Mandatory Checkpoints
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-checkpoints.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
    - Criticality: SUPREME LAW - Must stop at checkpoints
    - Summary: STOP after state completion, await /continue-software-factory
 

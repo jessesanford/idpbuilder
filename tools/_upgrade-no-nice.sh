@@ -352,12 +352,12 @@ create_backup() {
 
     # Ask about compression (interactive mode only)
     if [ "$FORCE" != true ]; then
-        echo -ne "${CYAN}Do you want to compress the backup to save space? (yes/no): ${NC}"
+        echo -ne "${CYAN}Do you want to compress the PROJECT FILES backup to save space? (yes/no): ${NC}"
         read -r compress_response
 
         if [[ "$compress_response" =~ ^[Yy]([Ee][Ss])?$ ]]; then
             COMPRESS_BACKUP=true
-            echo -e "${CYAN}🗜️  Compressing backup...${NC}"
+            echo -e "${CYAN}🗜️  Compressing PROJECT FILES backup...${NC}"
 
             # Change to backups directory for cleaner tar paths
             local original_dir="$(pwd)"
@@ -385,7 +385,17 @@ create_backup() {
     fi
 
     echo ""
-    echo -e "${YELLOW}  📝 Note: Full effort backups preserved for disaster recovery${NC}"
+    echo -e "${CYAN}═══════════════════════════════════════════════════════════════════════════${NC}"
+    echo -e "${BOLD}📦 BACKUP SUMMARY${NC}"
+    echo -e "${CYAN}═══════════════════════════════════════════════════════════════════════════${NC}"
+    echo -e "${GREEN}✓ Two separate backups created:${NC}"
+    echo -e "${YELLOW}  1. EFFORTS backup (git repos with full history)${NC}"
+    echo -e "     Location: backups/efforts-upgrade-*/"
+    echo -e "     Contains: Complete effort working copies with all branches"
+    echo -e "${YELLOW}  2. PROJECT FILES backup (configs, rules, state files)${NC}"
+    echo -e "     Location: backups/backup-*/"
+    echo -e "     Contains: Rules, configs, state files (excludes efforts/)"
+    echo -e "${CYAN}═══════════════════════════════════════════════════════════════════════════${NC}"
 }
 
 # Function to preserve important files
@@ -835,12 +845,16 @@ main_upgrade() {
             echo -e "  Syncing complete agent-states directory structure..."
 
             # Copy ALL state machine directories (software-factory, initialization, etc.)
+            # CRITICAL: Exclude ARCHIVED directories - they should NEVER exist in active projects
             if [ "$TEMPLATE_DIR" != "$TARGET_DIR" ]; then
                 # Use rsync to intelligently sync the entire structure
                 ionice -c 2 -n 7 nice -n 10 rsync -av --delete \
+                    --exclude='ARCHIVED' \
+                    --exclude='*/ARCHIVED' \
+                    --exclude='*/*/ARCHIVED' \
                     "$TEMPLATE_DIR/agent-states/" \
                     "$TARGET_DIR/agent-states/"
-                echo -e "    ${GREEN}✓ Synced all state machines and agent states${NC}"
+                echo -e "    ${GREEN}✓ Synced all state machines and agent states (ARCHIVED excluded)${NC}"
             else
                 echo -e "    ${CYAN}Skipping (source and destination are the same)${NC}"
             fi

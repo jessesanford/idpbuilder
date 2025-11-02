@@ -68,7 +68,7 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
 ### State-Specific Rules:
 7. **🚨🚨🚨 R502** - Implementation Plan Quality Gates
 8. **🚨🚨🚨 R213** - Effort Definition Metadata Requirements
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R213-effort-metadata-schema.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R213-wave-and-effort-metadata-protocol.md`
    - Summary: Wave implementation plans must include R213 metadata for each effort
 
 # 🔴🔴🔴 MANDATORY: R322 STOP + R405 CONTINUATION FLAG 🔴🔴🔴

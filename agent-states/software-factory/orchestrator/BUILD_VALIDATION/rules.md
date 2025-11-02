@@ -108,8 +108,8 @@ After reading and acknowledging all state rules, you MUST create a verification 
 
 ```bash
 # MANDATORY: Create verification marker after reading rules
-touch .state_rules_read_orchestrator_BUILD_VALIDATION
-echo "$(date +%s) - Rules read and acknowledged for BUILD_VALIDATION" > .state_rules_read_orchestrator_BUILD_VALIDATION
+mkdir -p markers/state-verification && touch "markers/state-verification/state_rules_read_orchestrator_BUILD_VALIDATION-$(date +%Y%m%d-%H%M%S)"
+echo "$(date +%s) - Rules read and acknowledged for BUILD_VALIDATION" > "markers/state-verification/state_rules_read_orchestrator_BUILD_VALIDATION-$(date +%Y%m%d-%H%M%S)"
 ```
 
 **FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**

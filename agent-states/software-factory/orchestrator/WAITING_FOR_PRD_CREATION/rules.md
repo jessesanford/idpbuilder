@@ -104,8 +104,8 @@ After acknowledging state rules, create verification marker:
 
 ```bash
 # MANDATORY: Create verification marker after reading rules
-touch .state_rules_read_orchestrator_WAITING_FOR_PRD_CREATION
-echo "$(date +%s) - Rules read and acknowledged for WAITING_FOR_PRD_CREATION" > .state_rules_read_orchestrator_WAITING_FOR_PRD_CREATION
+mkdir -p markers/state-verification && touch "markers/state-verification/state_rules_read_orchestrator_WAITING_FOR_PRD_CREATION-$(date +%Y%m%d-%H%M%S)"
+echo "$(date +%s) - Rules read and acknowledged for WAITING_FOR_PRD_CREATION" > "markers/state-verification/state_rules_read_orchestrator_WAITING_FOR_PRD_CREATION-$(date +%Y%m%d-%H%M%S)"
 ```
 
 **FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**

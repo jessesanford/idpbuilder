@@ -123,8 +123,8 @@ After acknowledging state rules, create verification marker:
 
 ```bash
 # MANDATORY: Create verification marker after reading rules
-touch .state_rules_read_orchestrator_SPAWN_PRODUCT_MANAGER_PRD_VALIDATION
-echo "$(date +%s) - Rules read and acknowledged for SPAWN_PRODUCT_MANAGER_PRD_VALIDATION" > .state_rules_read_orchestrator_SPAWN_PRODUCT_MANAGER_PRD_VALIDATION
+mkdir -p markers/state-verification && touch "markers/state-verification/state_rules_read_orchestrator_SPAWN_PRODUCT_MANAGER_PRD_VALIDATION-$(date +%Y%m%d-%H%M%S)"
+echo "$(date +%s) - Rules read and acknowledged for SPAWN_PRODUCT_MANAGER_PRD_VALIDATION" > "markers/state-verification/state_rules_read_orchestrator_SPAWN_PRODUCT_MANAGER_PRD_VALIDATION-$(date +%Y%m%d-%H%M%S)"
 ```
 
 **FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**
@@ -158,7 +158,7 @@ echo "$(date +%s) - Rules read and acknowledged for SPAWN_PRODUCT_MANAGER_PRD_VA
 ### State-Specific Rules:
 
 5. **🚨🚨🚨 R313** - Stop After Spawn (BLOCKING)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R313-stop-after-agent-spawn.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R313-mandatory-stop-after-spawn.md`
    - Criticality: BLOCKING - Must stop after spawning
    - Summary: After spawning Product Manager, MUST stop and await continuation
    - Rationale: Prevents context/rule loss in spawned agent

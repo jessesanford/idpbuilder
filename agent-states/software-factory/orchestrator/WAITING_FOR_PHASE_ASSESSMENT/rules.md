@@ -109,8 +109,8 @@ After reading and acknowledging all state rules, you MUST create a verification 
 
 ```bash
 # MANDATORY: Create verification marker after reading rules
-touch .state_rules_read_orchestrator_WAITING_FOR_PHASE_ASSESSMENT
-echo "$(date +%s) - Rules read and acknowledged for WAITING_FOR_PHASE_ASSESSMENT" > .state_rules_read_orchestrator_WAITING_FOR_PHASE_ASSESSMENT
+mkdir -p markers/state-verification && touch "markers/state-verification/state_rules_read_orchestrator_WAITING_FOR_PHASE_ASSESSMENT-$(date +%Y%m%d-%H%M%S)"
+echo "$(date +%s) - Rules read and acknowledged for WAITING_FOR_PHASE_ASSESSMENT" > "markers/state-verification/state_rules_read_orchestrator_WAITING_FOR_PHASE_ASSESSMENT-$(date +%Y%m%d-%H%M%S)"
 ```
 
 **FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**

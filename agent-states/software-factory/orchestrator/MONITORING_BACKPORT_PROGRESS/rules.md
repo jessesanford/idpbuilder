@@ -108,8 +108,8 @@ After reading and acknowledging all state rules, you MUST create a verification 
 
 ```bash
 # MANDATORY: Create verification marker after reading rules
-touch .state_rules_read_orchestrator_MONITORING_BACKPORT_PROGRESS
-echo "$(date +%s) - Rules read and acknowledged for MONITORING_BACKPORT_PROGRESS" > .state_rules_read_orchestrator_MONITORING_BACKPORT_PROGRESS
+mkdir -p markers/state-verification && touch "markers/state-verification/state_rules_read_orchestrator_MONITORING_BACKPORT_PROGRESS-$(date +%Y%m%d-%H%M%S)"
+echo "$(date +%s) - Rules read and acknowledged for MONITORING_BACKPORT_PROGRESS" > "markers/state-verification/state_rules_read_orchestrator_MONITORING_BACKPORT_PROGRESS-$(date +%Y%m%d-%H%M%S)"
 ```
 
 **FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**
@@ -141,7 +141,7 @@ echo "$(date +%s) - Rules read and acknowledged for MONITORING_BACKPORT_PROGRESS
 ### State-Specific Rules:
 
 5. **⚠️⚠️⚠️ R237** - Waiting State Monitoring Requirements
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R237-DEPRECATED-state-rule-verification-enforcement.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R008-monitoring-frequency.md`
    - Criticality: WARNING - Must actively monitor
    - Summary: Must check progress regularly, not passively wait
 

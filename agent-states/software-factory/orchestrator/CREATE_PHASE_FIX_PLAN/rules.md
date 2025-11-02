@@ -99,17 +99,17 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
 ### State-Specific Rules:
 
 6. **🔴🔴🔴 R322** - Mandatory Checkpoints
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-checkpoints.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R322-mandatory-stop-before-state-transitions.md`
    - Criticality: SUPREME LAW
    - Summary: Present fix plan to user for approval before proceeding
 
 7. **🔴🔴🔴 R313** - Bug Tracking Requirements
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R313-bug-tracking-requirements.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R313-mandatory-stop-after-spawn.md`
    - Criticality: SUPREME LAW
    - Summary: Analyze bugs and create fix assignments in bug-tracking.json
 
 8. **🔴🔴🔴 R321** - Immediate Backport Protocol
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R321-immediate-backport-protocol.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R321-immediate-backport-during-integration.md`
    - Criticality: SUPREME LAW
    - Summary: Fix bugs in upstream wave branches (immediate backport)
 

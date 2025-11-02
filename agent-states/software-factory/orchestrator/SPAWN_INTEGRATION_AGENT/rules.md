@@ -232,8 +232,8 @@ After reading and acknowledging all state rules, you MUST create a verification 
 
 ```bash
 # MANDATORY: Create verification marker after reading rules
-touch .state_rules_read_orchestrator_SPAWN_INTEGRATION_AGENT
-echo "$(date +%s) - Rules read and acknowledged for SPAWN_INTEGRATION_AGENT" > .state_rules_read_orchestrator_SPAWN_INTEGRATION_AGENT
+mkdir -p markers/state-verification && touch "markers/state-verification/state_rules_read_orchestrator_SPAWN_INTEGRATION_AGENT-$(date +%Y%m%d-%H%M%S)"
+echo "$(date +%s) - Rules read and acknowledged for SPAWN_INTEGRATION_AGENT" > "markers/state-verification/state_rules_read_orchestrator_SPAWN_INTEGRATION_AGENT-$(date +%Y%m%d-%H%M%S)"
 ```
 
 **FAILURE TO CREATE MARKER = AUTOMATIC -100% PENALTY**

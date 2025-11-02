@@ -212,7 +212,7 @@ exit 0
 ### State-Specific Rules:
 
 7. **🚨🚨🚨 R340** - ARCHITECTURE PLAN QUALITY GATES (BLOCKING)
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R340-architecture-plan-quality-gates.md`
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R340-planning-file-metadata-tracking.md`
    - Criticality: BLOCKING - Defines pseudocode fidelity requirements
    - Summary: Phase architecture must be PSEUDOCODE level (high-level patterns, NO real code)
 
