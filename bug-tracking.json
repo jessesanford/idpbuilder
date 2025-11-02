@@ -653,24 +653,24 @@
     ]
   },
   "metadata": {
-    "notes": "State transition: FIX_WAVE_UPSTREAM_BUGS → START_WAVE_ITERATION (no upstream bugs existed)",
-    "last_updated": "2025-11-02T16:02:30Z",
-    "state_transition": "START_WAVE_ITERATION",
+    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → REVIEW_WAVE_INTEGRATION (Integration Agent aborted per R300, upstream bugs detected)",
+    "last_updated": "2025-11-02T16:58:29Z",
+    "state_transition": "REVIEW_WAVE_INTEGRATION",
     "updated_by": "state-manager"
   },
   "last_state_transition": {
-    "from": "REVIEW_WAVE_INTEGRATION",
-    "to": "CREATE_WAVE_FIX_PLAN",
-    "timestamp": "2025-11-02T08:06:41Z",
-    "reason": "Wave 2.2 integration review found 6 bugs"
+    "from": "INTEGRATE_WAVE_EFFORTS",
+    "to": "REVIEW_WAVE_INTEGRATION",
+    "timestamp": "2025-11-02T16:58:29Z",
+    "reason": "Integration Agent aborted integration per R300 (6 bugs detected in upstream effort-1 branch)"
   },
   "state_machine_sync": {
-    "current_state": "START_WAVE_ITERATION",
-    "previous_state": "FIX_WAVE_UPSTREAM_BUGS",
-    "last_transition": "2025-11-02T16:02:30Z",
-    "last_sync": "2025-11-02T16:02:30Z"
+    "current_state": "REVIEW_WAVE_INTEGRATION",
+    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "last_transition": "2025-11-02T16:58:29Z",
+    "last_sync": "2025-11-02T16:58:29Z"
   },
-  "current_state": "INTEGRATE_WAVE_EFFORTS",
+  "current_state": "REVIEW_WAVE_INTEGRATION",
   "phase": 2,
   "wave": 2,
   "last_updated_by": "state-manager"
