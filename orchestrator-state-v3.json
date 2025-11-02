@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ERROR_RECOVERY",
-    "previous_state": "WAITING_FOR_FIX_PLANS",
-    "last_transition_timestamp": "2025-11-02T06:52:43Z",
+    "current_state": "START_WAVE_ITERATION",
+    "previous_state": "ERROR_RECOVERY",
+    "last_transition_timestamp": "2025-11-02T07:00:32Z",
     "last_state_manager_consultation": {
       "timestamp": "2025-11-02T06:52:43Z",
       "consultation_type": "SHUTDOWN_CONSULTATION",
@@ -2152,6 +2152,34 @@
           "r322_consultation": true,
           "state_machine_compliance": "VERIFIED_WITH_BUG_NOTED"
         }
+      },
+      {
+        "from_state": "ERROR_RECOVERY",
+        "to_state": "START_WAVE_ITERATION",
+        "timestamp": "2025-11-02T07:00:42Z",
+        "validated_by": "state-manager",
+        "reason": "Error recovery complete. Wave 2.2 planning finished (architecture + implementation plan + test plan all exist). Ready to create wave iteration container and begin wave execution sequence.",
+        "phase": 2,
+        "wave": 2,
+        "orchestrator_proposal": "START_WAVE_ITERATION",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "error_recovery_complete": true,
+          "wave_planning_complete": true,
+          "architecture_exists": true,
+          "test_plan_exists": true,
+          "implementation_plan_exists": true,
+          "integration_container_exists": true,
+          "container_status": "CREATED",
+          "r288_compliance": true,
+          "r322_consultation": true,
+          "state_machine_compliance": "VERIFIED"
+        }
       }
     ],
     "loop_detection": {
@@ -2247,6 +2275,12 @@
         "Resume normal workflow once state machine is corrected",
         "Distribute fix plan to SW Engineer for implementation"
       ]
+    },
+    "metadata": {
+      "phase": 2,
+      "wave": 2,
+      "iteration": 1,
+      "error_recovery_complete": true
     }
   },
   "project_progression": {

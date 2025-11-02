@@ -378,14 +378,14 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-02T06:52:43Z",
-    "notes": "State transition: SPAWN_CODE_REVIEWER_FIX_PLAN → WAITING_FOR_FIX_PLANS (Fix plan created for effort 2.2.1)",
-    "state_transition": "ERROR_RECOVERY",
+    "last_updated": "2025-11-02T07:00:47Z",
+    "notes": "State transition: ERROR_RECOVERY → START_WAVE_ITERATION (Wave 2.2 planning complete, ready for iteration)",
+    "state_transition": "START_WAVE_ITERATION",
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "current_state": "WAITING_FOR_FIX_PLANS",
-    "previous_state": "SPAWN_CODE_REVIEWER_FIX_PLAN",
-    "last_transition": "2025-11-02T06:44:04Z"
+    "current_state": "START_WAVE_ITERATION",
+    "previous_state": "ERROR_RECOVERY",
+    "last_transition": "2025-11-02T07:00:47Z"
   }
 }
