@@ -553,7 +553,10 @@
     ]
   },
   "metadata": {
-    "notes": "State transition: SPAWN_CODE_REVIEWER_FIX_PLAN → WAITING_FOR_FIX_PLANS (Fix plan created for effort 2.2.1 addressing BUG-007 build error and BUG-008 size violation)"
+    "notes": "State transition: SPAWN_CODE_REVIEWER_FIX_PLAN → WAITING_FOR_FIX_PLANS (Fix plan created for effort 2.2.1 addressing BUG-007 build error and BUG-008 size violation)",
+    "last_updated": "2025-11-02T06:52:43Z",
+    "state_transition": "ERROR_RECOVERY",
+    "updated_by": "state-manager"
   },
   "last_state_transition": {
     "from": "SPAWN_CODE_REVIEWER_FIX_PLAN",

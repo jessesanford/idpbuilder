@@ -378,8 +378,10 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-02T06:44:04Z",
-    "notes": "State transition: SPAWN_CODE_REVIEWER_FIX_PLAN → WAITING_FOR_FIX_PLANS (Fix plan created for effort 2.2.1)"
+    "last_updated": "2025-11-02T06:52:43Z",
+    "notes": "State transition: SPAWN_CODE_REVIEWER_FIX_PLAN → WAITING_FOR_FIX_PLANS (Fix plan created for effort 2.2.1)",
+    "state_transition": "ERROR_RECOVERY",
+    "updated_by": "state-manager"
   },
   "state_machine_sync": {
     "current_state": "WAITING_FOR_FIX_PLANS",
