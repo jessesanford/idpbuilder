@@ -3,15 +3,17 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "START_WAVE_ITERATION",
-    "previous_state": "FIX_WAVE_UPSTREAM_BUGS",
-    "last_transition_timestamp": "2025-11-02T15:57:06Z",
+    "current_state": "INTEGRATE_WAVE_EFFORTS",
+    "previous_state": "START_WAVE_ITERATION",
+    "last_transition_timestamp": "2025-11-02T16:25:01Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-02T07:27:44Z",
+      "timestamp": "2025-11-02T16:25:01Z",
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "from_state": "ERROR_RECOVERY",
-      "to_state": "START_WAVE_ITERATION",
-      "validated": true
+      "from_state": "START_WAVE_ITERATION",
+      "to_state": "INTEGRATE_WAVE_EFFORTS",
+      "validated": true,
+      "validation_result": "APPROVED",
+      "validated_by": "state-manager"
     },
     "state_history": [
       {
@@ -2359,6 +2361,23 @@
         "proposal_accepted": true,
         "transition_invalid": false,
         "reason": "No upstream bugs with status=IDENTIFIED exist. All checklist items vacuously complete (0 bugs to fix)."
+      },
+      {
+        "from_state": "START_WAVE_ITERATION",
+        "to_state": "INTEGRATE_WAVE_EFFORTS",
+        "timestamp": "2025-11-02T16:25:01Z",
+        "phase": 2,
+        "wave": 2,
+        "iteration": 7,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_valid": true,
+          "preconditions_met": true,
+          "iteration_incremented": "6 -> 7",
+          "max_iterations_check": "7/10 - within limit"
+        },
+        "validated_by": "state-manager",
+        "notes": "Wave iteration 7 started, proceeding to integrate wave efforts"
       }
     ],
     "loop_detection": {
@@ -2481,7 +2500,7 @@
     "current_wave": {
       "wave_number": 2,
       "name": "Advanced Configuration Features",
-      "iteration": 6,
+      "iteration": 7,
       "status": "IN_PROGRESS",
       "total_efforts": 2,
       "estimated_total_lines": 750,

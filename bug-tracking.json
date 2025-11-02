@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-02T16:02:30Z",
+  "last_updated": "2025-11-02T16:25:01Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -669,5 +669,9 @@
     "previous_state": "FIX_WAVE_UPSTREAM_BUGS",
     "last_transition": "2025-11-02T16:02:30Z",
     "last_sync": "2025-11-02T16:02:30Z"
-  }
+  },
+  "current_state": "INTEGRATE_WAVE_EFFORTS",
+  "phase": 2,
+  "wave": 2,
+  "last_updated_by": "state-manager"
 }
