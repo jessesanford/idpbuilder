@@ -242,6 +242,44 @@ class StateMachineViewer:
         with open(state_file, 'r') as f:
             self.orchestrator_state = json.load(f)
 
+        # Load fix-cascade-state.json if it exists (SF 3.0 separate file structure)
+        self.fix_cascade_state = None
+        cascade_file = None
+        for path in [
+            Path.cwd() / "fix-cascade-state.json",
+            state_file.parent / "fix-cascade-state.json"
+        ]:
+            if path.exists():
+                cascade_file = path
+                break
+
+        if cascade_file:
+            try:
+                with open(cascade_file, 'r') as f:
+                    self.fix_cascade_state = json.load(f)
+            except Exception as e:
+                # Non-fatal - cascade state is optional
+                pass
+
+        # Load integration-containers.json if it exists (for iteration tracking)
+        self.integration_containers = None
+        integration_file = None
+        for path in [
+            Path.cwd() / "integration-containers.json",
+            state_file.parent / "integration-containers.json"
+        ]:
+            if path.exists():
+                integration_file = path
+                break
+
+        if integration_file:
+            try:
+                with open(integration_file, 'r') as f:
+                    self.integration_containers = json.load(f)
+            except Exception as e:
+                # Non-fatal - integration containers is optional
+                pass
+
         with open(machine_file, 'r') as f:
             self.state_machine = json.load(f)
 
@@ -273,6 +311,68 @@ class StateMachineViewer:
         self.build_state_journey()
 
         return True
+
+    def get_fix_cascade_count(self) -> int:
+        """Get the count of fix cascades from fix-cascade-state.json"""
+        if self.fix_cascade_state:
+            # Try to get from statistics first (SF 3.0 structure)
+            if 'statistics' in self.fix_cascade_state:
+                stats = self.fix_cascade_state['statistics']
+                # Could be total, active, or completed depending on what user wants to see
+                # Return total cascades (both active + completed)
+                return stats.get('total_cascades', 0)
+            # Fallback: check if there's a cascade object (active cascade)
+            elif 'cascade' in self.fix_cascade_state:
+                # There's an active cascade
+                return 1
+
+        # Legacy fallback: check orchestrator state for fix_cascade_summary
+        if 'fix_cascade_summary' in self.orchestrator_state:
+            return self.orchestrator_state['fix_cascade_summary'].get('completed_fix_cascades', 0)
+
+        return 0
+
+    def get_iteration_container_counts(self) -> dict:
+        """Get counts of iteration containers from integration-containers.json"""
+        counts = {
+            'total_containers': 0,
+            'containers_with_iterations': 0,
+            'total_iterations': 0,
+            'max_iteration': 0
+        }
+
+        if not self.integration_containers:
+            return counts
+
+        # Check wave integrations
+        for wave in self.integration_containers.get('wave_integrations', []):
+            counts['total_containers'] += 1
+            iteration = wave.get('iteration', 0)
+            if iteration > 0:
+                counts['containers_with_iterations'] += 1
+                counts['total_iterations'] += iteration
+                counts['max_iteration'] = max(counts['max_iteration'], iteration)
+
+        # Check phase integrations
+        for phase in self.integration_containers.get('phase_integrations', []):
+            counts['total_containers'] += 1
+            iteration = phase.get('iteration', 0)
+            if iteration > 0:
+                counts['containers_with_iterations'] += 1
+                counts['total_iterations'] += iteration
+                counts['max_iteration'] = max(counts['max_iteration'], iteration)
+
+        # Check project integration if it has iteration tracking
+        project = self.integration_containers.get('project_integration', {})
+        if 'iteration' in project:
+            counts['total_containers'] += 1
+            iteration = project.get('iteration', 0)
+            if iteration > 0:
+                counts['containers_with_iterations'] += 1
+                counts['total_iterations'] += iteration
+                counts['max_iteration'] = max(counts['max_iteration'], iteration)
+
+        return counts
 
     def build_state_journey(self):
         """Build the journey of states we've visited"""
@@ -481,16 +581,20 @@ class StateMachineViewer:
             phase = self.orchestrator_state.get('current_phase', 'N/A')
             wave = self.orchestrator_state.get('current_wave', 'N/A')
 
-        fix_cascades = 0
-        if 'fix_cascade_summary' in self.orchestrator_state:
-            fix_cascades = self.orchestrator_state['fix_cascade_summary'].get('completed_fix_cascades', 0)
+        # Get fix cascade and iteration metrics
+        fix_cascades = self.get_fix_cascade_count()
+        iteration_counts = self.get_iteration_container_counts()
 
         info_line1 = f"Phase: {Colors.BRIGHT_GREEN}{phase}{Colors.RESET}  "
         info_line1 += f"Wave: {Colors.BRIGHT_GREEN}{wave}{Colors.RESET}  "
         info_line1 += f"Current: {Colors.BRIGHT_YELLOW}{self.current_state}{Colors.RESET}"
 
         info_line2 = f"States Visited: {Colors.GREEN}{len(self.visited_states)}{Colors.RESET}  "
-        info_line2 += f"Fix Cascades: {Colors.BRIGHT_MAGENTA}{fix_cascades}{Colors.RESET}"
+        info_line2 += f"Fix Cascades: {Colors.BRIGHT_MAGENTA}{fix_cascades}{Colors.RESET}  "
+
+        # Add iteration container info if any exist
+        if iteration_counts['total_containers'] > 0:
+            info_line2 += f"Iterations: {Colors.BRIGHT_CYAN}{iteration_counts['containers_with_iterations']}/{iteration_counts['total_containers']} containers{Colors.RESET}"
 
         # Center the info lines if there's extra space
         if self.term_width > 100:
@@ -673,16 +777,27 @@ class StateMachineViewer:
         else:
             lines.append(stats_line)
 
-        # Show fix cascade info if present
-        if 'fix_cascade_summary' in self.orchestrator_state:
-            summary = self.orchestrator_state['fix_cascade_summary']
-            cascades = summary.get('completed_fix_cascades', 0)
-            if cascades > 0:
-                cascade_line = f"Fix Cascades Completed: {Colors.BRIGHT_MAGENTA}{cascades}{Colors.RESET}"
+        # Show fix cascade and iteration info if present
+        fix_cascades = self.get_fix_cascade_count()
+        iteration_counts = self.get_iteration_container_counts()
+
+        metrics_added = False
+        if fix_cascades > 0 or iteration_counts['total_containers'] > 0:
+            metrics_line = ""
+            if fix_cascades > 0:
+                metrics_line += f"Fix Cascades: {Colors.BRIGHT_MAGENTA}{fix_cascades}{Colors.RESET}  "
+                metrics_added = True
+
+            if iteration_counts['total_containers'] > 0:
+                metrics_line += f"Iteration Containers: {Colors.BRIGHT_CYAN}{iteration_counts['containers_with_iterations']}/{iteration_counts['total_containers']}{Colors.RESET}  "
+                metrics_line += f"Max Iteration: {Colors.BRIGHT_CYAN}{iteration_counts['max_iteration']}{Colors.RESET}"
+                metrics_added = True
+
+            if metrics_added:
                 if self.term_width > 100:
-                    lines.append(self.center_text(cascade_line))
+                    lines.append(self.center_text(metrics_line))
                 else:
-                    lines.append(cascade_line)
+                    lines.append(metrics_line)
 
         lines.append("")  # Extra spacing after statistics
         lines.append(f"{Colors.DIM}{self.draw_line('─')}{Colors.RESET}")

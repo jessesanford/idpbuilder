@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-02T17:10:00Z",
+  "last_updated": "2025-11-02T17:34:45Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -312,26 +312,26 @@
       "container_id": "wave-phase2-wave2",
       "phase": 2,
       "wave": 2,
-      "status": "integration_aborted_bugs_in_upstream",
-      "iteration": 4,
+      "status": "ready_for_reintegration",
+      "iteration": 5,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase2/wave2/integration",
       "workspace": "efforts/phase2/wave2/integration-workspace",
       "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
       "created_at": "2025-11-01T14:35:00Z",
       "integration_started_at": null,
-      "last_iteration_at": "2025-11-02T07:09:30Z",
+      "last_iteration_at": "2025-11-02T17:34:45Z",
       "convergence_metrics": {
-        "bugs_remaining": 6,
+        "bugs_remaining": 10,
         "bugs_found": 6,
         "test_failures": 0,
         "build_failures": 0,
-        "bugs_fixed": 0
+        "bugs_fixed": 2
       },
       "efforts_to_integrate": [],
       "effort_branches": [],
       "integration_plan_file": null,
-      "notes": "Wave 2.2 iteration 4: Integration Agent aborted integration per R300 (bugs detected in upstream effort-1 branch before merge). 6 bugs found (3 CRITICAL blockers: build failure, size violation, metadata placement). FIX_PLAN_2.2.1.md created. Awaiting upstream fixes before re-integration.",
+      "notes": "Wave 2.2 iteration 5: Upstream bugs fixed (build + size), ready for fresh integration attempt. Per R327: iteration 4 integration branch is stale (upstream fixes invalidate previous merge state), will be deleted and recreated.",
       "test_plan_file": "planning/phase2/wave2/WAVE-TEST-PLAN.md",
       "test_count": 50,
       "coverage_targets": {
@@ -367,6 +367,12 @@
           "reviewer": "code-reviewer-integration",
           "notes": "Integration review found 6 bugs (3 CRITICAL blockers) - build failure, size violation, metadata placement violation",
           "review_timestamp": "2025-11-02T08:06:41Z"
+        },
+        {
+          "iteration": 5,
+          "started_at": "2025-11-02T17:34:45Z",
+          "status": "READY",
+          "notes": "Upstream bugs fixed: BUG-007/009/013 (build), BUG-008/010 (size). Ready for re-integration per R327/R531."
         }
       ]
     }
@@ -392,18 +398,18 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-02T17:10:00Z",
-    "notes": "State transition: CREATE_WAVE_FIX_PLAN → FIX_WAVE_UPSTREAM_BUGS (6 bugs ready for fixing)",
-    "state_transition": "FIX_WAVE_UPSTREAM_BUGS",
+    "last_updated": "2025-11-02T17:34:45Z",
+    "notes": "State transition: FIX_WAVE_UPSTREAM_BUGS → START_WAVE_ITERATION (iteration 5 ready)",
+    "state_transition": "START_WAVE_ITERATION",
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
-    "previous_state": "CREATE_WAVE_FIX_PLAN",
-    "last_transition": "2025-11-02T17:10:00Z",
-    "last_sync": "2025-11-02T17:10:00Z"
+    "current_state": "START_WAVE_ITERATION",
+    "previous_state": "FIX_WAVE_UPSTREAM_BUGS",
+    "last_transition": "2025-11-02T17:34:45Z",
+    "last_sync": "2025-11-02T17:34:45Z"
   },
-  "current_state": "FIX_WAVE_UPSTREAM_BUGS",
+  "current_state": "START_WAVE_ITERATION",
   "phase": 2,
   "wave": 2,
   "last_updated_by": "state-manager"

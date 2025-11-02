@@ -118,10 +118,12 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
 
 ### BLOCKING REQUIREMENTS (Cannot proceed without)
 
-- [ ] 1. Increment project iteration counter
-  - Tool: `tools/iteration-manager.sh increment_iteration PROJECT`
-  - Validation: Check return value is new iteration number
-  - Proof: `echo "✅ CHECKLIST[1]: Project iteration incremented to N"`
+- [ ] 1. Conditionally increment project iteration counter based on previous state
+  - Tool: `tools/iteration-manager.sh increment_iteration PROJECT` (only if from SETUP or FIX states)
+  - Tool: `tools/iteration-manager.sh get_iteration_count PROJECT` (if retrying same attempt)
+  - Validation: Increment ONLY when from SETUP_PROJECT_INFRASTRUCTURE or FIX_PROJECT_UPSTREAM_BUGS
+  - Validation: Do NOT increment when from IMMEDIATE_BACKPORT_REQUIRED, MONITORING_BACKPORT_PROGRESS, or ERROR_RECOVERY
+  - Proof: `echo "✅ CHECKLIST[1]: Project iteration [incremented to N | remains at N]"`
 
 - [ ] 2. Check max iterations not exceeded
   - Tool: `tools/iteration-manager.sh check_max_iterations PROJECT`
@@ -136,19 +138,49 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
 
 ---
 
-### ✅ Step 1: Increment Project Iteration Counter (R531/R336)
+### ✅ Step 1: Conditionally Increment Project Iteration Counter (R531/R336)
 ```bash
-# Increment project iteration counter using iteration-manager tool
-NEW_ITERATION=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" increment_iteration PROJECT)
+# Determine if iteration counter should increment based on previous state
+# INCREMENT when:
+#   - Coming from SETUP_PROJECT_INFRASTRUCTURE (first iteration: 0->1)
+#   - Coming from FIX_PROJECT_UPSTREAM_BUGS (new attempt after full cycle: N->N+1)
+# DO NOT INCREMENT when:
+#   - Coming from IMMEDIATE_BACKPORT_REQUIRED (retrying same attempt)
+#   - Coming from MONITORING_BACKPORT_PROGRESS (retrying same attempt)
+#   - Coming from ERROR_RECOVERY (resuming same attempt)
 
-if [ $? -ne 0 ]; then
-    echo "❌ Failed to increment project iteration counter"
-    PROPOSED_NEXT_STATE="ERROR_RECOVERY"
-    echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=MANUAL_INTERVENTION_REQUIRED"
-    exit 1
-fi
+PREVIOUS_STATE=$(jq -r '.state_machine.previous_state // "SETUP_PROJECT_INFRASTRUCTURE"' "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
 
-echo "✅ CHECKLIST[1]: Project iteration incremented to ${NEW_ITERATION}"
+case "$PREVIOUS_STATE" in
+    SETUP_PROJECT_INFRASTRUCTURE|FIX_PROJECT_UPSTREAM_BUGS)
+        # These states indicate a NEW integration attempt - increment counter
+        echo "📊 Previous state: $PREVIOUS_STATE - incrementing iteration counter (new attempt)"
+        NEW_ITERATION=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" increment_iteration PROJECT)
+
+        if [ $? -ne 0 ]; then
+            echo "❌ Failed to increment project iteration counter"
+            PROPOSED_NEXT_STATE="ERROR_RECOVERY"
+            echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=MANUAL_INTERVENTION_REQUIRED"
+            exit 1
+        fi
+
+        echo "✅ CHECKLIST[1]: Project iteration incremented to ${NEW_ITERATION}"
+        ;;
+
+    IMMEDIATE_BACKPORT_REQUIRED|MONITORING_BACKPORT_PROGRESS|ERROR_RECOVERY)
+        # These states indicate RETRYING same attempt - do NOT increment counter
+        echo "📊 Previous state: $PREVIOUS_STATE - retrying same iteration (no increment)"
+        CURRENT_ITERATION=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" get_iteration_count PROJECT)
+        echo "✅ CHECKLIST[1]: Project iteration remains at ${CURRENT_ITERATION} (retry of same attempt)"
+        ;;
+
+    *)
+        # Unknown previous state - log warning and increment to be safe
+        echo "⚠️ WARNING: Unknown previous state '$PREVIOUS_STATE' - defaulting to increment"
+        NEW_ITERATION=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" increment_iteration PROJECT)
+        echo "✅ CHECKLIST[1]: Project iteration incremented to ${NEW_ITERATION} (default behavior)"
+        ;;
+esac
 ```
 
 ---

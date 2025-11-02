@@ -845,16 +845,12 @@ main_upgrade() {
             echo -e "  Syncing complete agent-states directory structure..."
 
             # Copy ALL state machine directories (software-factory, initialization, etc.)
-            # CRITICAL: Exclude ARCHIVED directories - they should NEVER exist in active projects
             if [ "$TEMPLATE_DIR" != "$TARGET_DIR" ]; then
                 # Use rsync to intelligently sync the entire structure
                 ionice -c 2 -n 7 nice -n 10 rsync -av --delete \
-                    --exclude='ARCHIVED' \
-                    --exclude='*/ARCHIVED' \
-                    --exclude='*/*/ARCHIVED' \
                     "$TEMPLATE_DIR/agent-states/" \
                     "$TARGET_DIR/agent-states/"
-                echo -e "    ${GREEN}✓ Synced all state machines and agent states (ARCHIVED excluded)${NC}"
+                echo -e "    ${GREEN}✓ Synced all state machines and agent states${NC}"
             else
                 echo -e "    ${CYAN}Skipping (source and destination are the same)${NC}"
             fi

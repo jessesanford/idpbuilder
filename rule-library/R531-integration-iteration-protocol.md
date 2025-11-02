@@ -118,16 +118,125 @@ CURRENT=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" \
   get_iteration_count WAVE)
 ```
 
+## When to Increment Iteration Counters
+
+### Fundamental Principle
+
+**Iteration counters track complete integration ATTEMPTS, not state transitions.**
+
+An integration attempt is a full cycle:
+```
+START_*_ITERATION → INTEGRATE → BUILD → REVIEW
+```
+
+### Increment Scenarios (New Attempt)
+
+Increment the counter when starting a **NEW** integration attempt:
+
+1. **First attempt** (coming from SETUP_*_INFRASTRUCTURE)
+   - Iteration: 0 → 1
+   - This is the initial attempt at integration
+
+2. **Re-attempt after bug fix cascade** (coming from FIX_*_UPSTREAM_BUGS)
+   - Iteration: N → N+1
+   - Previous attempt completed full cycle (integrate→build→review)
+   - Bugs were found in code review
+   - Bugs were fixed in upstream source branches
+   - Now attempting integration AGAIN with fixed sources
+
+### Do NOT Increment Scenarios (Same Attempt)
+
+Do NOT increment when retrying the **SAME** attempt:
+
+3. **Retry after build failure** (coming from IMMEDIATE_BACKPORT_REQUIRED)
+   - Iteration: N (no change)
+   - Integration build/tests failed before review
+   - Never completed the full cycle
+   - Fixing build issues and retrying SAME attempt
+
+4. **Retry after backport monitoring** (coming from MONITORING_BACKPORT_PROGRESS)
+   - Iteration: N (no change)
+   - Monitoring SW Engineers applying backport fixes
+   - Retrying integration with fixed sources
+   - Still the SAME attempt
+
+5. **Resume after error recovery** (coming from ERROR_RECOVERY)
+   - Iteration: N (no change)
+   - Recovering from system error
+   - Resuming the SAME attempt
+
+### Visual Example
+
+```
+┌────────────────────────────────────────────────────┐
+│  ITERATION 1 (counter increments 0→1)              │
+│  SETUP_WAVE_INFRASTRUCTURE → START_WAVE_ITERATION  │
+│    ↓                                               │
+│  INTEGRATE_WAVE_EFFORTS (build FAILS)              │
+│    ↓                                               │
+│  IMMEDIATE_BACKPORT_REQUIRED (fix build)           │
+│    ↓                                               │
+│  MONITORING_BACKPORT_PROGRESS (wait for fixes)     │
+│    ↓                                               │
+│  START_WAVE_ITERATION (NO INCREMENT - retry)       │
+│    ↓                                               │
+│  INTEGRATE_WAVE_EFFORTS (build succeeds)           │
+│    ↓                                               │
+│  REVIEW_WAVE_INTEGRATION (finds 3 bugs)            │
+│    ↓                                               │
+│  CREATE_WAVE_FIX_PLAN                              │
+│    ↓                                               │
+│  FIX_WAVE_UPSTREAM_BUGS (fix bugs in source)       │
+└────────────────────────────────────────────────────┘
+         ↓
+┌────────────────────────────────────────────────────┐
+│  ITERATION 2 (counter increments 1→2)              │
+│  START_WAVE_ITERATION (INCREMENT - new attempt)    │
+│    ↓                                               │
+│  INTEGRATE_WAVE_EFFORTS                            │
+│    ↓                                               │
+│  REVIEW_WAVE_INTEGRATION (finds 0 bugs)            │
+│    ↓                                               │
+│  REVIEW_WAVE_ARCHITECTURE (CLEAN! ✅)              │
+└────────────────────────────────────────────────────┘
+```
+
 ## State Integration Points
 
 ### START_WAVE_ITERATION State
 
 **BLOCKING CHECKLIST ITEMS:**
 
-1. **Increment wave iteration counter**
+1. **Conditionally increment wave iteration counter based on previous state**
+
+   **INCREMENT when coming from:**
+   - `SETUP_WAVE_INFRASTRUCTURE` (first iteration: 0→1)
+   - `FIX_WAVE_UPSTREAM_BUGS` (new attempt after full cycle: N→N+1)
+
+   **DO NOT INCREMENT when coming from:**
+   - `IMMEDIATE_BACKPORT_REQUIRED` (retrying same attempt after build failure)
+   - `MONITORING_BACKPORT_PROGRESS` (retrying same attempt after backport fixes)
+   - `ERROR_RECOVERY` (resuming same attempt after error)
+
+   **Rationale:** Iteration counter tracks complete integration ATTEMPTS (integrate→build→review cycles), not state transitions. An iteration is only complete when integration succeeded, was reviewed, and bugs were found and fixed. Build failures or backports are part of the same attempt.
+
    ```bash
-   NEW_ITERATION=$(bash tools/iteration-manager.sh increment_iteration WAVE)
-   echo "✅ CHECKLIST[1]: Wave iteration incremented to ${NEW_ITERATION}"
+   PREVIOUS_STATE=$(jq -r '.state_machine.previous_state // "SETUP_WAVE_INFRASTRUCTURE"' "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
+
+   case "$PREVIOUS_STATE" in
+       SETUP_WAVE_INFRASTRUCTURE|FIX_WAVE_UPSTREAM_BUGS)
+           NEW_ITERATION=$(bash tools/iteration-manager.sh increment_iteration WAVE)
+           echo "✅ CHECKLIST[1]: Wave iteration incremented to ${NEW_ITERATION}"
+           ;;
+       IMMEDIATE_BACKPORT_REQUIRED|MONITORING_BACKPORT_PROGRESS|ERROR_RECOVERY)
+           CURRENT_ITERATION=$(bash tools/iteration-manager.sh get_iteration_count WAVE)
+           echo "✅ CHECKLIST[1]: Wave iteration remains at ${CURRENT_ITERATION} (retry)"
+           ;;
+       *)
+           NEW_ITERATION=$(bash tools/iteration-manager.sh increment_iteration WAVE)
+           echo "✅ CHECKLIST[1]: Wave iteration incremented to ${NEW_ITERATION} (default)"
+           ;;
+   esac
    ```
 
 2. **Check max iterations not exceeded**
@@ -156,10 +265,34 @@ CURRENT=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" \
 
 **BLOCKING CHECKLIST ITEMS:**
 
-1. **Increment phase iteration counter**
+1. **Conditionally increment phase iteration counter based on previous state**
+
+   **INCREMENT when coming from:**
+   - `SETUP_PHASE_INFRASTRUCTURE` (first iteration: 0→1)
+   - `FIX_PHASE_UPSTREAM_BUGS` (new attempt after full cycle: N→N+1)
+
+   **DO NOT INCREMENT when coming from:**
+   - `IMMEDIATE_BACKPORT_REQUIRED` (retrying same attempt after build failure)
+   - `MONITORING_BACKPORT_PROGRESS` (retrying same attempt after backport fixes)
+   - `ERROR_RECOVERY` (resuming same attempt after error)
+
    ```bash
-   NEW_ITERATION=$(bash tools/iteration-manager.sh increment_iteration PHASE)
-   echo "✅ CHECKLIST[1]: Phase iteration incremented to ${NEW_ITERATION}"
+   PREVIOUS_STATE=$(jq -r '.state_machine.previous_state // "SETUP_PHASE_INFRASTRUCTURE"' "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
+
+   case "$PREVIOUS_STATE" in
+       SETUP_PHASE_INFRASTRUCTURE|FIX_PHASE_UPSTREAM_BUGS)
+           NEW_ITERATION=$(bash tools/iteration-manager.sh increment_iteration PHASE)
+           echo "✅ CHECKLIST[1]: Phase iteration incremented to ${NEW_ITERATION}"
+           ;;
+       IMMEDIATE_BACKPORT_REQUIRED|MONITORING_BACKPORT_PROGRESS|ERROR_RECOVERY)
+           CURRENT_ITERATION=$(bash tools/iteration-manager.sh get_iteration_count PHASE)
+           echo "✅ CHECKLIST[1]: Phase iteration remains at ${CURRENT_ITERATION} (retry)"
+           ;;
+       *)
+           NEW_ITERATION=$(bash tools/iteration-manager.sh increment_iteration PHASE)
+           echo "✅ CHECKLIST[1]: Phase iteration incremented to ${NEW_ITERATION} (default)"
+           ;;
+   esac
    ```
 
 2. **Check max iterations not exceeded**
@@ -180,10 +313,34 @@ CURRENT=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" \
 
 **BLOCKING CHECKLIST ITEMS:**
 
-1. **Increment project iteration counter**
+1. **Conditionally increment project iteration counter based on previous state**
+
+   **INCREMENT when coming from:**
+   - `SETUP_PROJECT_INFRASTRUCTURE` (first iteration: 0→1)
+   - `FIX_PROJECT_UPSTREAM_BUGS` (new attempt after full cycle: N→N+1)
+
+   **DO NOT INCREMENT when coming from:**
+   - `IMMEDIATE_BACKPORT_REQUIRED` (retrying same attempt after build failure)
+   - `MONITORING_BACKPORT_PROGRESS` (retrying same attempt after backport fixes)
+   - `ERROR_RECOVERY` (resuming same attempt after error)
+
    ```bash
-   NEW_ITERATION=$(bash tools/iteration-manager.sh increment_iteration PROJECT)
-   echo "✅ CHECKLIST[1]: Project iteration incremented to ${NEW_ITERATION}"
+   PREVIOUS_STATE=$(jq -r '.state_machine.previous_state // "SETUP_PROJECT_INFRASTRUCTURE"' "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
+
+   case "$PREVIOUS_STATE" in
+       SETUP_PROJECT_INFRASTRUCTURE|FIX_PROJECT_UPSTREAM_BUGS)
+           NEW_ITERATION=$(bash tools/iteration-manager.sh increment_iteration PROJECT)
+           echo "✅ CHECKLIST[1]: Project iteration incremented to ${NEW_ITERATION}"
+           ;;
+       IMMEDIATE_BACKPORT_REQUIRED|MONITORING_BACKPORT_PROGRESS|ERROR_RECOVERY)
+           CURRENT_ITERATION=$(bash tools/iteration-manager.sh get_iteration_count PROJECT)
+           echo "✅ CHECKLIST[1]: Project iteration remains at ${CURRENT_ITERATION} (retry)"
+           ;;
+       *)
+           NEW_ITERATION=$(bash tools/iteration-manager.sh increment_iteration PROJECT)
+           echo "✅ CHECKLIST[1]: Project iteration incremented to ${NEW_ITERATION} (default)"
+           ;;
+   esac
    ```
 
 2. **Check max iterations not exceeded**

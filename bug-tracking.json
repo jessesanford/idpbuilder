@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-02T17:10:00Z",
+  "last_updated": "2025-11-02T17:34:45Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -276,7 +276,7 @@
     {
       "bug_id": "BUG-007-BUILD-VIPER-ARG",
       "severity": "CRITICAL",
-      "status": "OPEN",
+      "status": "FIXED",
       "phase": 2,
       "wave": 2,
       "effort_id": "2.2.1",
@@ -304,12 +304,20 @@
         "Pass viper instance to NewPushCommand(v)",
         "Verify build passes"
       ],
-      "affected_effort": "2.2.1"
+      "affected_effort": "2.2.1",
+      "fixed_at": "2025-11-02T17:30:00Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "aa20b98",
+      "fix_verification": {
+        "build_status": "SUCCESS",
+        "test_status": "PASS",
+        "verified_at": "2025-11-02T17:30:00Z"
+      }
     },
     {
       "bug_id": "BUG-008-SIZE-VIOLATION",
       "severity": "CRITICAL",
-      "status": "OPEN",
+      "status": "FIXED",
       "phase": 2,
       "wave": 2,
       "effort_id": "2.2.1",
@@ -353,12 +361,23 @@
         ],
         "core_implementation_lines": 406,
         "theme_purity": "51.1%"
+      },
+      "fixed_at": "2025-11-02T17:32:00Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "37b5e68",
+      "fix_verification": {
+        "previous_size": 835,
+        "current_size": 430,
+        "size_limit": 800,
+        "compliance": true,
+        "out_of_scope_files_removed": 389,
+        "verified_at": "2025-11-02T17:32:00Z"
       }
     },
     {
       "bug_id": "BUG-009-BUILD-FAILURE",
       "severity": "CRITICAL",
-      "status": "OPEN",
+      "status": "FIXED",
       "phase": 2,
       "wave": 2,
       "effort_id": "2.2.1",
@@ -386,12 +405,20 @@
         "Pass viper instance to NewPushCommand(v)",
         "Verify build passes"
       ],
-      "affected_effort": "2.2.1"
+      "affected_effort": "2.2.1",
+      "fixed_at": "2025-11-02T17:30:00Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "aa20b98",
+      "fix_verification": {
+        "build_status": "SUCCESS",
+        "test_status": "PASS",
+        "verified_at": "2025-11-02T17:30:00Z"
+      }
     },
     {
       "bug_id": "BUG-010-SIZE-VIOLATION",
       "severity": "CRITICAL",
-      "status": "OPEN",
+      "status": "FIXED",
       "phase": 2,
       "wave": 2,
       "effort_id": "2.2.1",
@@ -435,6 +462,17 @@
         ],
         "core_implementation_lines": 406,
         "theme_purity": "51.1%"
+      },
+      "fixed_at": "2025-11-02T17:32:00Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "37b5e68",
+      "fix_verification": {
+        "previous_size": 835,
+        "current_size": 430,
+        "size_limit": 800,
+        "compliance": true,
+        "out_of_scope_files_removed": 389,
+        "verified_at": "2025-11-02T17:32:00Z"
       }
     },
     {
@@ -523,7 +561,7 @@
       "bug_id": "BUG-013-BUILD-VIPER-MISSING",
       "severity": "CRITICAL",
       "category": "BUILD_ERROR",
-      "status": "OPEN",
+      "status": "FIXED",
       "title": "Build Failure - Missing Viper Parameter",
       "description": "Code does not compile due to missing parameter in function call. The push.NewPushCommand() function requires a *viper.Viper parameter, but the call site in root.go does not provide it.",
       "location": {
@@ -537,7 +575,15 @@
       "blocking": true,
       "priority": "P0",
       "discovered_by": "code-reviewer",
-      "discovered_at": "2025-11-02T07:58:12Z"
+      "discovered_at": "2025-11-02T07:58:12Z",
+      "fixed_at": "2025-11-02T17:30:00Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "aa20b98",
+      "fix_verification": {
+        "build_status": "SUCCESS",
+        "test_status": "PASS",
+        "verified_at": "2025-11-02T17:30:00Z"
+      }
     },
     {
       "bug_id": "BUG-015-METADATA-PLACEMENT",
@@ -653,9 +699,9 @@
     ]
   },
   "metadata": {
-    "notes": "State transition: CREATE_WAVE_FIX_PLAN → FIX_WAVE_UPSTREAM_BUGS (6 bugs ready for fixing)",
-    "last_updated": "2025-11-02T17:10:00Z",
-    "state_transition": "FIX_WAVE_UPSTREAM_BUGS",
+    "notes": "State transition: FIX_WAVE_UPSTREAM_BUGS → START_WAVE_ITERATION (2 bugs fixed, 10 bugs remaining)",
+    "last_updated": "2025-11-02T17:34:45Z",
+    "state_transition": "START_WAVE_ITERATION",
     "updated_by": "state-manager"
   },
   "last_state_transition": {
@@ -665,12 +711,12 @@
     "reason": "REVIEW_WAVE_INTEGRATION complete: 6 bugs found (BUG-007 through BUG-018), guard condition bugs_found > 0 satisfied"
   },
   "state_machine_sync": {
-    "current_state": "FIX_WAVE_UPSTREAM_BUGS",
-    "previous_state": "CREATE_WAVE_FIX_PLAN",
-    "last_transition": "2025-11-02T17:10:00Z",
-    "last_sync": "2025-11-02T17:10:00Z"
+    "current_state": "START_WAVE_ITERATION",
+    "previous_state": "FIX_WAVE_UPSTREAM_BUGS",
+    "last_transition": "2025-11-02T17:34:45Z",
+    "last_sync": "2025-11-02T17:34:45Z"
   },
-  "current_state": "FIX_WAVE_UPSTREAM_BUGS",
+  "current_state": "START_WAVE_ITERATION",
   "phase": 2,
   "wave": 2,
   "last_updated_by": "state-manager"

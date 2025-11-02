@@ -36,19 +36,8 @@ essential_dirs=(
 
 for dir in "${essential_dirs[@]}"; do
     if [ -d "$SOURCE_DIR/$dir" ]; then
-        # CRITICAL: For agent-states, use rsync to exclude ARCHIVED directories
-        # ARCHIVED states should NEVER exist in active projects
-        if [ "$dir" = "agent-states" ]; then
-            echo "  Copying $dir/ (excluding ARCHIVED)..."
-            rsync -a \
-                --exclude='ARCHIVED' \
-                --exclude='*/ARCHIVED' \
-                --exclude='*/*/ARCHIVED' \
-                "$SOURCE_DIR/$dir/" "$TARGET_DIR/$dir/"
-        else
-            cp -r "$SOURCE_DIR/$dir" "$TARGET_DIR/"
-            echo "  Copied $dir/"
-        fi
+        cp -r "$SOURCE_DIR/$dir" "$TARGET_DIR/"
+        echo "  Copied $dir/"
     else
         echo "  Warning: Essential directory $dir/ not found in source. Continuing without it." >&2
     fi
