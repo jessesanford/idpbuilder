@@ -3,14 +3,14 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ERROR_RECOVERY",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_transition_timestamp": "2025-11-02T07:19:25Z",
+    "current_state": "START_WAVE_ITERATION",
+    "previous_state": "ERROR_RECOVERY",
+    "last_transition_timestamp": "2025-11-02T07:27:44Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-02T07:19:25Z",
+      "timestamp": "2025-11-02T07:27:44Z",
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "from_state": "INTEGRATE_WAVE_EFFORTS",
-      "to_state": "ERROR_RECOVERY",
+      "from_state": "ERROR_RECOVERY",
+      "to_state": "START_WAVE_ITERATION",
       "validated": true
     },
     "state_history": [
@@ -2228,6 +2228,35 @@
           "checklist_requirement": "#3: integration_workspace directory exists",
           "impact": "Cannot spawn Integration Agent"
         }
+      },
+      {
+        "from_state": "ERROR_RECOVERY",
+        "to_state": "START_WAVE_ITERATION",
+        "timestamp": "2025-11-02T07:27:44+0000",
+        "validated_by": "state-manager",
+        "reason": "ERROR_RECOVERY completed successfully. Infrastructure issue resolved (integration workspace directory created at efforts/phase2/wave2/integration-workspace/). Resuming Phase 2, Wave 2, Iteration 4 integration process per state machine allowed transitions.",
+        "phase": 2,
+        "wave": 2,
+        "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "INTEGRATE_WAVE_EFFORTS not in ERROR_RECOVERY allowed_transitions per state machine",
+        "required_next_state": "START_WAVE_ITERATION",
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
+          "proposal_rejected": true,
+          "rejection_reason": "INTEGRATE_WAVE_EFFORTS not in ERROR_RECOVERY.allowed_transitions",
+          "required_restart_state": "START_WAVE_ITERATION",
+          "infrastructure_repaired": true,
+          "workspace_created": "efforts/phase2/wave2/integration-workspace/",
+          "r288_compliance": true,
+          "r517_consultation": true,
+          "state_machine_compliance": "VERIFIED"
+        }
       }
     ],
     "loop_detection": {
@@ -2492,7 +2521,8 @@
         "parallel_groups": [],
         "r151_compliance": "N/A - single effort",
         "ready_to_spawn": true
-      }
+      },
+      "iteration_number": 4
     },
     "phases_completed": [],
     "waves_completed": [
