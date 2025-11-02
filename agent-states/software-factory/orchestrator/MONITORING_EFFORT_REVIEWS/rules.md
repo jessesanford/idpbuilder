@@ -380,6 +380,42 @@ else
 fi
 ```
 
+### Step 2.5: Cleanup Completed Code Reviewer Agents (R610 - BLOCKING)
+```bash
+# R610: Agent Metadata Lifecycle Protocol - BLOCKING requirement
+# Cleanup completed Code-Reviewer agents within 60 seconds
+
+echo ""
+echo "🧹 R610/R611: Cleaning up completed code reviewer agents..."
+echo "============================================================"
+
+# Find completed code-reviewer agents
+COMPLETED_REVIEWERS=$(jq -r '
+    .active_agents[] |
+    select(.agent_type == "code-reviewer") |
+    select(.state == "COMPLETE" or .state == "COMPLETED") |
+    .agent_id
+' orchestrator-state-v3.json)
+
+if [ -z "$COMPLETED_REVIEWERS" ]; then
+    echo "✅ R610: No completed reviewer agents to cleanup"
+else
+    REVIEWER_COUNT=$(echo "$COMPLETED_REVIEWERS" | wc -l)
+    echo "📊 R610: Found $REVIEWER_COUNT completed code-reviewer agent(s)"
+
+    # Run cleanup utility
+    if bash tools/cleanup-completed-agents.sh; then
+        echo "✅ R610: Code reviewer cleanup successful"
+    else
+        echo "❌ R610 VIOLATION: Cleanup failed!"
+    fi
+fi
+
+echo "✅ R610/R611: Code reviewer cleanup complete"
+```
+
+---
+
 ### Step 3: Verify Review Quality
 ```bash
 # For completed reviews, verify quality and completeness
@@ -853,63 +889,3 @@ exit 0  # If R322 checkpoint
 - **Review findings = Spawn fixes OR integrate = NORMAL!**
 
 **See: $CLAUDE_PROJECT_DIR/rule-library/R405-automation-continuation-flag.md**
-
----
-
-## 🔴 R340 MANDATORY: Update planning_files After Reviews
-
-**CRITICAL**: When Code Reviewers complete, you MUST update `planning_files` with review results!
-
-### When Review Completes (CODE-REVIEW-REPORT detected)
-```bash
-# Extract review decision from CODE-REVIEW-REPORT
-REVIEW_FILE=$(find efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME} -name "CODE-REVIEW-REPORT*.md" | head -1)
-DECISION=$(grep -m1 "Decision.*:" "$REVIEW_FILE" | sed 's/.*Decision.*: *//' | awk '{print $1}')
-APPROVED=$([[ "$DECISION" =~ "APPROVED" ]] && echo "true" || echo "false")
-NEW_STATUS=$([[ "$APPROVED" == "true" ]] && echo "approved" || echo "needs_fixes")
-
-# Update state file with review results
-jq ".planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].reviewed = true |
-    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].approved = ${APPROVED} |
-    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].code_review_report = \"${REVIEW_FILE}\" |
-    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].review_completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" |
-    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].review_decision = \"${DECISION}\" |
-    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].status = \"${NEW_STATUS}\"" \
-    orchestrator-state-v3.json > tmp.json && mv tmp.json orchestrator-state-v3.json
-```
-
-### Pre-Exit Checklist
-- [ ] All reviewed efforts have `reviewed: true` in planning_files
-- [ ] All CODE-REVIEW-REPORT files tracked with paths
-- [ ] review_decision extracted and recorded
-- [ ] approved status set correctly (true/false)
-- [ ] status updated to "approved" or "needs_fixes"
-- [ ] No orphaned CODE-REVIEW-REPORT files (all tracked)
-
-**Failure to update = R340 VIOLATION = -20% per effort**
-
-### Example Complete Effort Entry After Review
-```json
-{
-  "effort-1-example": {
-    "effort_id": "2.2.1",
-    "effort_name": "Example Effort",
-    "status": "approved",
-    "reviewed": true,
-    "approved": true,
-    "implementation_plan": "path/to/IMPLEMENTATION-PLAN--timestamp.md",
-    "implementation_complete": "path/to/IMPLEMENTATION-COMPLETE--timestamp.md",
-    "code_review_report": "path/to/CODE-REVIEW-REPORT--timestamp.md",
-    "implementation_lines": 247,
-    "plan_created_at": "2025-11-01T17:53:00Z",
-    "implementation_started_at": "2025-11-01T18:47:00Z",
-    "implementation_completed_at": "2025-11-01T18:51:00Z",
-    "review_completed_at": "2025-11-01T19:22:58Z",
-    "review_decision": "APPROVED",
-    "branch_name": "idpbuilder-oci-push/phase2/wave2/effort-1-example",
-    "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
-    "commit_hash": "8791bbb"
-  }
-}
-```
-

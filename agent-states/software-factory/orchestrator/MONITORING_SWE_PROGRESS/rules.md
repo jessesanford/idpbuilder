@@ -400,6 +400,86 @@ else
 fi
 ```
 
+### Step 2.5: Cleanup Completed Agents (R610 - BLOCKING)
+```bash
+# R610: Agent Metadata Lifecycle Protocol - BLOCKING requirement
+# R611: Active Agents Cleanup Protocol - WARNING requirement
+#
+# MUST cleanup completed SW-Engineer agents within 60 seconds of detection
+# This prevents active_agents bloat and maintains state file performance
+
+echo ""
+echo "🧹 R610/R611: Cleaning up completed agents..."
+echo "=============================================="
+
+# Find completed agents in active_agents
+COMPLETED_AGENTS=$(jq -r '
+    .active_agents[] |
+    select(.agent_type == "sw-engineer") |
+    select(.state == "COMPLETE" or .state == "COMPLETED") |
+    .agent_id
+' orchestrator-state-v3.json)
+
+if [ -z "$COMPLETED_AGENTS" ]; then
+    echo "✅ R610: No completed agents to cleanup"
+else
+    COMPLETED_COUNT=$(echo "$COMPLETED_AGENTS" | wc -l)
+    echo "📊 R610: Found $COMPLETED_COUNT completed SW-Engineer agent(s)"
+
+    # Run cleanup utility (implements R610 + R612)
+    if bash tools/cleanup-completed-agents.sh; then
+        echo "✅ R610: Cleanup successful - agents moved to agents_history"
+    else
+        echo "❌ R610 VIOLATION: Cleanup failed!"
+        echo "This is a BLOCKING violation - performance will degrade"
+        # Don't fail state, but log the violation
+    fi
+
+    # Verify no completed agents remain (R611 validation)
+    REMAINING=$(jq '
+        [.active_agents[] |
+         select(.agent_type == "sw-engineer") |
+         select(.state == "COMPLETE" or .state == "COMPLETED")] |
+        length
+    ' orchestrator-state-v3.json)
+
+    if [ "$REMAINING" -gt 0 ]; then
+        echo "❌ R611 VIOLATION: $REMAINING completed agents still in active_agents"
+    else
+        echo "✅ R611: Active agents array clean (only active agents remain)"
+    fi
+fi
+
+# R613: Monitor state file size
+STATE_FILE_SIZE=$(wc -c < orchestrator-state-v3.json)
+STATE_FILE_KB=$((STATE_FILE_SIZE / 1024))
+
+echo "📊 R613: State file size: ${STATE_FILE_KB}KB"
+
+if [ "$STATE_FILE_SIZE" -gt 1048576 ]; then
+    echo "❌ R613 CRITICAL: State file >1MB (${STATE_FILE_KB}KB)"
+    echo "Immediate cleanup required!"
+elif [ "$STATE_FILE_SIZE" -gt 512000 ]; then
+    echo "⚠️  R613 WARNING: State file >500KB (${STATE_FILE_KB}KB)"
+    echo "Cleanup recommended"
+else
+    echo "✅ R613: State file size within targets"
+fi
+
+echo "✅ R610/R611/R613: Agent cleanup and size monitoring complete"
+```
+
+**R610/R611/R613 Integration Notes:**
+- R610 defines automatic cleanup timing (within 60s of detection)
+- R611 defines what "active" means (not COMPLETE/COMPLETED)
+- R612 defines agents_history schema (used by cleanup utility)
+- R613 monitors total state file size after cleanup
+- This monitoring state is the PRIMARY cleanup point for SW-Engineer agents
+- Cleanup happens automatically during monitoring loop
+- Boundary states (COMPLETE_WAVE, COMPLETE_PHASE) provide safety net validation
+
+---
+
 ### Step 3: Verify Implementation Quality
 ```bash
 # For completed implementations, verify quality and completeness
@@ -881,42 +961,3 @@ exit 0  # If R322 checkpoint
 - **Implementations complete = Code review needed = NORMAL!**
 
 **See: $CLAUDE_PROJECT_DIR/rule-library/R405-automation-continuation-flag.md**
-
----
-
-## 🔴 R340 MANDATORY: Update planning_files During Monitoring
-
-**CRITICAL**: While monitoring SW Engineer progress, you MUST update `planning_files` section!
-
-### When SW Engineer Starts (entering this state)
-```bash
-jq ".planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].status = \"in_progress\" |
-    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].implementation_started_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"" \
-    orchestrator-state-v3.json > tmp.json && mv tmp.json orchestrator-state-v3.json
-```
-
-### When Implementation Completes (IMPLEMENTATION-COMPLETE detected)
-```bash
-# Extract metadata from IMPLEMENTATION-COMPLETE file
-COMPLETE_FILE=$(find efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME} -name "IMPLEMENTATION-COMPLETE*.md" | head -1)
-IMPL_LINES=$(grep -m1 "implementation_lines\|Total.*lines" "$COMPLETE_FILE" | sed 's/[^0-9]//g')
-COMMIT_HASH=$(git -C "efforts/phase${PHASE}/wave${WAVE}/${EFFORT_NAME}" rev-parse --short HEAD)
-
-# Update state file
-jq ".planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].status = \"completed\" |
-    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].implementation_complete = \"${COMPLETE_FILE}\" |
-    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].implementation_completed_at = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" |
-    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].implementation_lines = ${IMPL_LINES} |
-    .planning_files.phases.phase${PHASE}.waves.wave${WAVE}.efforts[\"${EFFORT_NAME}\"].commit_hash = \"${COMMIT_HASH}\"" \
-    orchestrator-state-v3.json > tmp.json && mv tmp.json orchestrator-state-v3.json
-```
-
-### Pre-Exit Checklist
-- [ ] All completed efforts have `status: "completed"` in planning_files
-- [ ] All IMPLEMENTATION-COMPLETE files tracked with paths
-- [ ] implementation_lines extracted and recorded
-- [ ] commit_hash recorded
-- [ ] No orphaned IMPLEMENTATION-COMPLETE files (all tracked)
-
-**Failure to update = R340 VIOLATION = -20% per effort**
-

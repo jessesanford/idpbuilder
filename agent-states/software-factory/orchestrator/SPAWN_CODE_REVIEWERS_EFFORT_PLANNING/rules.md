@@ -358,6 +358,114 @@ SPAWNING REQUIREMENTS:
 5. Include effort-specific context in each spawn
 6. Return to orchestrator directory after each spawn (R208 SUPREME LAW)
 
+## 🚨🚨🚨 CRITICAL BUG FIX: SEQUENTIAL EFFORT SPAWNING (R208 ENFORCEMENT) 🚨🚨🚨
+
+### SUPREME LAW VIOLATION PREVENTION
+
+**DOCUMENTED BUG**: When spawning Code Reviewers for SEQUENTIAL efforts (effort 2, effort 3, etc.), the orchestrator has historically FAILED to CD to the correct directory for the SECOND+ effort, causing the Code Reviewer to create the plan in the WRONG location.
+
+**ROOT CAUSE**: After spawning Code Reviewer for effort 1, the orchestrator remains in effort 1's directory. When spawning for effort 2, the orchestrator FORGETS to CD to effort 2's directory, violating R208.
+
+### MANDATORY PATTERN FOR SEQUENTIAL EFFORTS:
+
+```bash
+# CORRECT PATTERN FOR SEQUENTIAL EFFORT SPAWNING
+
+# Spawn effort 1
+echo "=== SPAWNING CODE REVIEWER FOR EFFORT 1 ==="
+cd efforts/phase${PHASE}/wave${WAVE}/${EFFORT_1_DIR}
+pwd  # MUST output: efforts/phase${PHASE}/wave${WAVE}/${EFFORT_1_DIR}
+@agent-code-reviewer [spawn instructions for effort 1]
+
+# CRITICAL: Return to orchestrator directory BEFORE spawning effort 2
+cd $CLAUDE_PROJECT_DIR
+pwd  # MUST output: /workspaces/[project-name]
+
+# Spawn effort 2 (DO NOT SKIP THIS CD STEP!)
+echo "=== SPAWNING CODE REVIEWER FOR EFFORT 2 ==="
+cd efforts/phase${PHASE}/wave${WAVE}/${EFFORT_2_DIR}  # ← CRITICAL! DO NOT SKIP!
+pwd  # MUST output: efforts/phase${PHASE}/wave${WAVE}/${EFFORT_2_DIR}
+@agent-code-reviewer [spawn instructions for effort 2]
+
+# Return to orchestrator directory
+cd $CLAUDE_PROJECT_DIR
+pwd  # MUST output: /workspaces/[project-name]
+```
+
+### VALIDATION CHECKLIST (MANDATORY):
+
+Before spawning EACH Code Reviewer in sequential mode, verify:
+
+```bash
+# FOR EACH EFFORT IN SEQUENTIAL LIST:
+for effort_dir in "${EFFORT_DIRECTORIES[@]}"; do
+    echo "🔍 R208 PRE-SPAWN VALIDATION FOR: $effort_dir"
+
+    # 1. Return to orchestrator directory first
+    cd "$CLAUDE_PROJECT_DIR"
+    echo "  ✓ Returned to orchestrator: $(pwd)"
+
+    # 2. CD to effort directory
+    cd "efforts/phase${PHASE}/wave${WAVE}/${effort_dir}" || {
+        echo "❌ CRITICAL: Failed to CD to $effort_dir"
+        echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=R208_DIRECTORY_FAILURE"
+        exit 208
+    }
+
+    # 3. Verify we're in correct directory
+    CURRENT_DIR=$(basename "$(pwd)")
+    if [[ "$CURRENT_DIR" != "$effort_dir" ]]; then
+        echo "❌ CRITICAL R208 VIOLATION: Directory mismatch!"
+        echo "   Expected: $effort_dir"
+        echo "   Actual:   $CURRENT_DIR"
+        echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=R208_VIOLATION"
+        exit 208
+    fi
+    echo "  ✓ Directory validated: $(pwd)"
+
+    # 4. Output PWD before spawn (MANDATORY)
+    pwd
+
+    # 5. Spawn Code Reviewer
+    echo "  🚀 Spawning Code Reviewer in $(pwd)..."
+    @agent-code-reviewer [spawn instructions]
+
+    # 6. Return to orchestrator directory
+    cd "$CLAUDE_PROJECT_DIR"
+    echo "  ✓ Returned to orchestrator: $(pwd)"
+done
+```
+
+### HISTORICAL BUG EXAMPLE (DO NOT REPRODUCE):
+
+```bash
+# ❌ WRONG - This caused bug 2.2.2 implementation plan failure!
+
+cd efforts/phase2/wave2/effort-1-registry-override-viper
+pwd  # Output: efforts/phase2/wave2/effort-1-registry-override-viper
+@agent-code-reviewer [spawn for effort 1]
+
+# BUG: Forgot to CD back to orchestrator, then CD to effort 2!
+# Still in effort-1 directory when spawning effort 2 reviewer!
+@agent-code-reviewer [spawn for effort 2]  # ← WRONG DIRECTORY!
+
+# Result: Code Reviewer for effort 2 uses basename(pwd) = effort-1
+#         Plan created in .software-factory/phase2/wave2/effort-1/...
+#         Instead of .software-factory/phase2/wave2/effort-2/...
+```
+
+### ENFORCEMENT:
+
+**EVERY sequential effort spawn MUST:**
+1. Start from orchestrator directory (`cd $CLAUDE_PROJECT_DIR`)
+2. CD to specific effort directory (`cd efforts/phase${PHASE}/wave${WAVE}/${EFFORT_DIR}`)
+3. Verify directory with `pwd` output (visible in conversation)
+4. Spawn Code Reviewer (they will use `basename $(pwd)` for effort name)
+5. Return to orchestrator directory (`cd $CLAUDE_PROJECT_DIR`)
+6. Repeat for next effort
+
+**FAILURE TO FOLLOW THIS PATTERN = -100% R208 VIOLATION**
+
 ## 🔴🔴🔴 CRITICAL: Effort Plan Storage Instructions 🔴🔴🔴
 
 ### MANDATORY: Instruct Code Reviewers About Plan Location

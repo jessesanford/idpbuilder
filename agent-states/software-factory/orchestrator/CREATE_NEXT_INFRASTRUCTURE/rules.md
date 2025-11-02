@@ -190,8 +190,9 @@ You MUST read and acknowledge these rules:
 - R501: Progressive trunk-based development (SUPREME - CASCADE LAW)
 - R504: Pre-infrastructure planning protocol (SUPREME)
 - R509: Mandatory base branch validation (SUPREME - VALIDATION LAW)
-- R510: Infrastructure creation protocol (SUPREME - CREATION LAW)
+- R514: Infrastructure creation protocol (SUPREME - CREATION LAW)
 - R360: Just-in-time infrastructure execution
+- R603: Sequential effort infrastructure timing (dependency checking)
 - R312: Git config immutability
 - R340: Planning file metadata tracking
 - R302: Comprehensive split tracking
@@ -315,30 +316,138 @@ fi
 echo "✅ Pre-planned infrastructure validated"
 ```
 
-### 2. Determine What Needs Infrastructure
+### 2. Determine What Needs Infrastructure (R603 - Sequential Dependency Checking)
 
 ```bash
-echo "🔧 DETERMINING NEXT INFRASTRUCTURE TO CREATE..."
+echo "🔧 DETERMINING NEXT INFRASTRUCTURE TO CREATE (R603)..."
 
 # Get current phase and wave
 CURRENT_PHASE=$(yq '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
 CURRENT_WAVE=$(yq '.project_progression.current_wave.wave_number' orchestrator-state-v3.json)
 
-# Find next uncreated effort from pre_planned_infrastructure
-next_effort_id=$(yq '.pre_planned_infrastructure.efforts | to_entries[] |
+# Get wave implementation plan path (source of R213 metadata)
+WAVE_PLAN=$(jq -r ".planning_files.phases.phase${CURRENT_PHASE}.waves.wave${CURRENT_WAVE}.implementation_plan" \
+           orchestrator-state-v3.json)
+
+if [ ! -f "$WAVE_PLAN" ]; then
+    echo "🚨 ERROR: Wave implementation plan not found: $WAVE_PLAN"
+    PROPOSED_NEXT_STATE="ERROR_RECOVERY"
+    TRANSITION_REASON="Missing wave implementation plan (R603 violation)"
+    ERROR_OCCURRED="true"
+    exit 603
+fi
+
+echo "📋 Using wave plan: $WAVE_PLAN"
+
+# Find ALL uncreated efforts in current wave
+all_uncreated=$(yq '.pre_planned_infrastructure.efforts | to_entries[] |
   select(.value.phase == "phase'$CURRENT_PHASE'" and
          .value.wave == "wave'$CURRENT_WAVE'" and
          .value.created == false) |
-  .key' orchestrator-state-v3.json | head -1)
+  .key' orchestrator-state-v3.json)
 
-if [ -n "$next_effort_id" ]; then
-    echo "Creating infrastructure for effort: $next_effort_id"
-    infrastructure_type="effort"
-    infrastructure_target="$next_effort_id"
-else
-    echo "All pre-planned infrastructure for Phase $CURRENT_PHASE Wave $CURRENT_WAVE created!"
-    # Transition to appropriate completion state
+if [ -z "$all_uncreated" ]; then
+    echo "✅ All infrastructure for Phase $CURRENT_PHASE Wave $CURRENT_WAVE created"
+    PROPOSED_NEXT_STATE="WAVE_COMPLETE"
+    TRANSITION_REASON="No more infrastructure to create in wave"
+    # Proceed to wave completion
 fi
+
+echo "📋 Uncreated efforts in wave: $(echo "$all_uncreated" | tr '\n' ' ')"
+
+# R603: Check dependencies for each uncreated effort
+next_effort_id=""
+for effort_id in $all_uncreated; do
+    echo "🔍 R603: Checking dependencies for $effort_id..."
+
+    # Extract effort_id number from full ID (e.g., phase2_wave2_effort-2.2.1 → 2.2.1)
+    effort_short_id=$(echo "$effort_id" | sed 's/.*effort-//')
+
+    # Extract R213 metadata from wave plan
+    depends_on=$(grep -A 30 "\"effort_id\": \"${effort_short_id}\"" "$WAVE_PLAN" | \
+                 grep '"depends_on"' | \
+                 sed 's/.*\[//' | sed 's/\].*//' | tr -d '"' | tr ',' ' ')
+
+    echo "  Dependencies: ${depends_on:-none}"
+
+    # Check if all dependencies are satisfied
+    dependencies_satisfied=true
+    for dep in $depends_on; do
+        dep_type=$(echo "$dep" | cut -d: -f1)
+        dep_name=$(echo "$dep" | cut -d: -f2)
+
+        echo "  Checking dependency: $dep (type: $dep_type, name: $dep_name)"
+
+        if [ "$dep_type" = "effort" ]; then
+            # Check if dependent effort is approved
+            # Try multiple possible effort key formats
+            dep_status=$(jq -r ".effort_status.\"effort-${dep_name}\".status // \
+                                .effort_status.\"${dep_name}\".status // \
+                                \"not_found\"" \
+                        orchestrator-state-v3.json)
+
+            if [ "$dep_status" != "approved" ]; then
+                echo "  ⏸️  Dependency effort:$dep_name not satisfied (status: $dep_status)"
+                dependencies_satisfied=false
+                break
+            else
+                echo "  ✅ Dependency effort:$dep_name satisfied (approved)"
+            fi
+
+        elif [ "$dep_type" = "integration" ]; then
+            # Check if integration branch exists
+            TARGET_REPO=$(yq '.pre_planned_infrastructure.target_repo_url' orchestrator-state-v3.json)
+
+            if git ls-remote --heads "$TARGET_REPO" 2>/dev/null | grep -q "refs/heads/$dep_name"; then
+                echo "  ✅ Dependency integration:$dep_name satisfied (branch exists)"
+            else
+                echo "  ⏸️  Dependency integration:$dep_name not satisfied (branch missing)"
+                dependencies_satisfied=false
+                break
+            fi
+        else
+            echo "  ⚠️  Unknown dependency type: $dep_type"
+            dependencies_satisfied=false
+            break
+        fi
+    done
+
+    if [ "$dependencies_satisfied" = "true" ]; then
+        echo "  ✅ All dependencies satisfied for $effort_id"
+        next_effort_id="$effort_id"
+
+        # Check parallelizability for logging
+        parallelizable=$(grep -A 30 "\"effort_id\": \"${effort_short_id}\"" "$WAVE_PLAN" | \
+                        grep '"parallelizable"' | grep -o 'true\|false' || echo "false")
+
+        if [ "$parallelizable" = "true" ]; then
+            echo "  📊 Note: Effort is parallelizable"
+        else
+            echo "  📊 Note: Effort is sequential"
+        fi
+
+        break  # Found a ready effort, create it
+    else
+        echo "  ⏸️  Waiting for dependencies to complete"
+    fi
+done
+
+if [ -z "$next_effort_id" ]; then
+    echo "🚨 ERROR: No efforts ready for infrastructure creation"
+    echo "All uncreated efforts have unsatisfied dependencies"
+    echo "This indicates a dependency deadlock or planning error"
+    echo ""
+    echo "Uncreated efforts: $all_uncreated"
+    echo "Please verify R213 metadata and dependency status in orchestrator-state-v3.json"
+    PROPOSED_NEXT_STATE="ERROR_RECOVERY"
+    TRANSITION_REASON="No ready efforts (R603 dependency deadlock)"
+    ERROR_OCCURRED="true"
+    exit 603
+fi
+
+echo "🎯 Creating infrastructure for: $next_effort_id"
+infrastructure_type="effort"
+infrastructure_target="$next_effort_id"
 ```
 
 ### 3. Read Pre-Calculated Infrastructure (NO DECISIONS!)

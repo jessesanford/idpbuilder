@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "version": "3.0.0",
+    "version": "3.0.1",
     "description": "Software Factory 3.0 State Machine - COMPLETE: Implementation + Integration Iteration Containers with State Manager",
     "architecture_spec": "docs/SOFTWARE-FACTORY-3.0-ARCHITECTURE.md",
-    "last_updated": "2025-10-31T05:26:57+00:00",
+    "last_updated": "2025-11-01T01:58:19+00:00",
     "rules_referenced": [
       "R233",
       "R234",

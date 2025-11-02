@@ -248,6 +248,35 @@ BUGS_FOUND=$(echo "✅ State file updated to: $NEXT_STATE"
 
 ---
 
+### ✅ Step 3.5: Validate No Stale Agents (R610 - BLOCKING)
+```bash
+# R610/R611: Validate active_agents cleanup before wave completion
+# This is a safety net - monitoring states should have cleaned up already
+
+echo "🔍 R610: Validating no stale completed agents..."
+
+if bash tools/cleanup-completed-agents.sh --validate; then
+    echo "✅ R610: No stale agents found"
+else
+    echo "⚠️  R610: Found stale agents - running cleanup..."
+    bash tools/cleanup-completed-agents.sh
+fi
+
+# R613: Check state file size
+STATE_FILE_SIZE=$(wc -c < orchestrator-state-v3.json)
+STATE_FILE_KB=$((STATE_FILE_SIZE / 1024))
+
+echo "📊 R613: State file size: ${STATE_FILE_KB}KB"
+
+if [ "$STATE_FILE_SIZE" -gt 512000 ]; then
+    echo "⚠️  R613: State file large - consider archiving agents_history"
+fi
+
+echo "✅ R610/R613: Agent validation complete"
+```
+
+---
+
 ### ✅ Step 4: Validate State File (R324)
 ```bash
 # Validate state file before committing

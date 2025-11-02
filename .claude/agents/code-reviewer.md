@@ -1062,18 +1062,72 @@ echo "Current branch: $CURRENT_BRANCH"
 EFFORT_NAME=$(basename "$(pwd)")
 echo "Expected effort name in branch: $EFFORT_NAME"
 
+# 🚨 DEFENSIVE VALIDATION: Detect orchestrator R208 violations
+# Historical bug: Orchestrator spawned Code Reviewer in WRONG directory
+# for sequential efforts (stayed in effort-1 when spawning for effort-2)
+# This check catches that violation early before creating plans in wrong location
+echo "🔍 DEFENSIVE R208 VALIDATION: Checking directory vs branch consistency..."
+CURRENT_DIR_FULL=$(pwd)
+echo "Current directory: $CURRENT_DIR_FULL"
+echo "Branch: $CURRENT_BRANCH"
+echo "Effort name from directory: $EFFORT_NAME"
+
+# Extract effort reference from branch (should match directory name)
+# Branch format: [prefix/]phase*/wave*/effort-name[-split-*]
+if [[ "$CURRENT_BRANCH" =~ (phase[0-9]+/wave[0-9]+/(effort-[^/]+)) ]] ||
+   [[ "$CURRENT_BRANCH" =~ .*(phase[0-9]+/wave[0-9]+/(effort-[^/]+)) ]]; then
+    BRANCH_EFFORT_REF="${BASH_REMATCH[2]}"
+    echo "Effort reference from branch: $BRANCH_EFFORT_REF"
+
+    # Remove -split-* suffix if present for comparison
+    BRANCH_EFFORT_BASE="${BRANCH_EFFORT_REF%-split-*}"
+    echo "Effort base name from branch: $BRANCH_EFFORT_BASE"
+
+    # Directory must match branch effort (excluding split suffix)
+    if [[ "$EFFORT_NAME" != "$BRANCH_EFFORT_BASE" ]] &&
+       [[ "$EFFORT_NAME" != "$BRANCH_EFFORT_REF" ]]; then
+        echo "❌❌❌ CRITICAL: ORCHESTRATOR R208 VIOLATION DETECTED! ❌❌❌"
+        echo ""
+        echo "The orchestrator spawned me in the WRONG directory!"
+        echo "  Current directory:  $CURRENT_DIR_FULL"
+        echo "  Directory basename: $EFFORT_NAME"
+        echo "  Branch effort ref:  $BRANCH_EFFORT_REF"
+        echo ""
+        echo "This is a KNOWN BUG pattern:"
+        echo "  - Orchestrator spawned Code Reviewer for sequential effort 2+"
+        echo "  - Orchestrator FAILED to CD to correct effort directory (R208 violation)"
+        echo "  - I would create implementation plan in WRONG .software-factory path"
+        echo "  - State file would record non-existent plan location"
+        echo "  - Workflow would fail silently"
+        echo ""
+        echo "REFUSING TO PROCEED - This would corrupt the system!"
+        echo ""
+        echo "Orchestrator must:"
+        echo "  1. CD back to \$CLAUDE_PROJECT_DIR"
+        echo "  2. CD to correct effort directory matching branch"
+        echo "  3. Re-spawn Code Reviewer in correct directory"
+        echo ""
+        exit 208  # R208 violation exit code
+    fi
+
+    echo "✅ DEFENSIVE VALIDATION PASSED: Directory matches branch effort"
+else
+    echo "⚠️ WARNING: Could not extract effort from branch pattern"
+    echo "   Proceeding with basename check only (less safe)"
+fi
+
 # Branch can have project prefix and must contain effort name
 # Pattern: [project-prefix/]phase*/wave*/effort-name[-split-*]
-if [[ "$CURRENT_BRANCH" =~ phase[0-9]+/wave[0-9]+/.*"$EFFORT_NAME" ]] || 
+if [[ "$CURRENT_BRANCH" =~ phase[0-9]+/wave[0-9]+/.*"$EFFORT_NAME" ]] ||
    [[ "$CURRENT_BRANCH" =~ .*/phase[0-9]+/wave[0-9]+/.*"$EFFORT_NAME" ]]; then
     echo "✅ PASS - Branch matches effort: $EFFORT_NAME"
-else 
-    echo "❌ FAIL - Branch doesn't match effort name"; 
-    echo "❌ Expected effort in branch: $EFFORT_NAME"; 
-    echo "❌ Actual branch: $CURRENT_BRANCH"; 
-    echo "❌ Branch must contain: phase*/wave*/*$EFFORT_NAME*"; 
-    echo "❌ STOPPING IMMEDIATELY - WRONG BRANCH"; 
-    exit 1; 
+else
+    echo "❌ FAIL - Branch doesn't match effort name";
+    echo "❌ Expected effort in branch: $EFFORT_NAME";
+    echo "❌ Actual branch: $CURRENT_BRANCH";
+    echo "❌ Branch must contain: phase*/wave*/*$EFFORT_NAME*";
+    echo "❌ STOPPING IMMEDIATELY - WRONG BRANCH";
+    exit 1;
 fi
 
 # CHECK 4: CHECK GIT STATUS

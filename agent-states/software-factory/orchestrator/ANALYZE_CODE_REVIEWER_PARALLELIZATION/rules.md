@@ -303,7 +303,7 @@ After completing state work and committing state file:
 2. Extract ALL parallelization metadata - Penalty: -30%
 3. Create and save parallelization plan - Penalty: -20%
 4. Output acknowledgment of decision - Penalty: -15%
-5. Transition to CREATE_NEXT_INFRASTRUCTURE - Penalty: -100%
+5. Transition to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING - Penalty: -100%
 
 ### Success Criteria:
 - ✅ Wave plan READ with Read tool
@@ -362,12 +362,10 @@ See: `$CLAUDE_PROJECT_DIR/rule-library/R234-mandatory-state-traversal-supreme-la
 
 ### YOUR POSITION IN THE MANDATORY SEQUENCE:
 ```
-INJECT_WAVE_METADATA (✓ completed)
+CREATE_NEXT_INFRASTRUCTURE (✓ completed)
     ↓
 ANALYZE_CODE_REVIEWER_PARALLELIZATION (👈 YOU ARE HERE)
     ↓ (MUST GO HERE NEXT)
-CREATE_NEXT_INFRASTRUCTURE
-    ↓
 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
     ↓
 WAITING_FOR_EFFORT_PLANS
@@ -377,22 +375,16 @@ ANALYZE_IMPLEMENTATION_PARALLELIZATION
 SPAWN_SW_ENGINEERS
 ```
 
-**CRITICAL:** You got here from INJECT_WAVE_METADATA (correct!)
-**MANDATORY:** You MUST go to CREATE_NEXT_INFRASTRUCTURE next
+**CRITICAL:** You got here from CREATE_NEXT_INFRASTRUCTURE (correct!)
+**MANDATORY:** You MUST go to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING next
 **FORBIDDEN:** Skipping ahead to any other state = -100% FAILURE
-
-**STATE MACHINE VALIDATION:**
-- Allowed Transitions: ["CREATE_NEXT_INFRASTRUCTURE", "ERROR_RECOVERY"]
-- SPAWN_CODE_REVIEWERS_EFFORT_PLANNING is NOT an allowed transition!
-- Attempting to transition there = R234 VIOLATION (-100% failure)
 
 ## 🔴🔴🔴 ABSOLUTE REQUIREMENT 🔴🔴🔴
 
 **THIS STATE IS A MANDATORY STOP!**
-- You CANNOT proceed to CREATE_NEXT_INFRASTRUCTURE without completing this analysis
+- You CANNOT proceed to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING without completing this analysis
 - You MUST create a parallelization plan and save it to orchestrator-state-v3.json
-- You MUST acknowledge your parallelization decision BEFORE transitioning
-- After analysis, you MUST transition to CREATE_NEXT_INFRASTRUCTURE (NOT SPAWN_CODE_REVIEWERS_EFFORT_PLANNING!)
+- You MUST acknowledge your parallelization decision BEFORE any spawning
 
 
 ## Mandatory Analysis Protocol

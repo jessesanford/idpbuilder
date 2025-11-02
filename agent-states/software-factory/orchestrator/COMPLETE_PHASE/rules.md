@@ -248,6 +248,23 @@ BUGS_FOUND=$(echo "✅ State file updated to: $NEXT_STATE"
 
 ---
 
+### ✅ Step 3.5: Validate No Stale Agents (R610 - BLOCKING)
+```bash
+# R610/R611: Final validation before phase completion
+echo "🔍 R610: Validating no stale agents before phase completion..."
+
+if bash tools/cleanup-completed-agents.sh --validate; then
+    echo "✅ R610: No stale agents"
+else
+    echo "⚠️  R610: Stale agents found - cleaning up..."
+    bash tools/cleanup-completed-agents.sh
+fi
+
+echo "✅ R610/R611: Agent cleanup validation complete"
+```
+
+---
+
 ### ✅ Step 4: Validate State File (R324)
 ```bash
 # Validate state file before committing
