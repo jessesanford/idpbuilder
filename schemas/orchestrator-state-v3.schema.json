@@ -307,6 +307,24 @@
               "minimum": 1,
               "default": 10
             },
+            "backport_attempts_this_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Counter for backport fix cycles within the current iteration (per R532 - prevents infinite loops)",
+              "minimum": 0,
+              "default": 0
+            },
+            "max_backport_attempts_per_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Maximum backport attempts allowed within single iteration before escalation to ERROR_RECOVERY (per R532)",
+              "minimum": 1,
+              "default": 3
+            },
             "status": {
               "type": [
                 "string",
@@ -319,6 +337,104 @@
                 null
               ],
               "default": "IN_PROGRESS"
+            },
+            "bugs": {
+              "type": ["object", "null"],
+              "description": "Bug tracking for progress-based iteration limits (R533, R534)",
+              "properties": {
+                "total_found": {
+                  "type": "integer",
+                  "description": "Total bugs discovered across all iterations",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "total_closed": {
+                  "type": "integer",
+                  "description": "Total bugs fixed across all iterations",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "total_open": {
+                  "type": "integer",
+                  "description": "Current open bugs",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "reopened_count": {
+                  "type": "integer",
+                  "description": "Total bugs that have been reopened (flapping)",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "history": {
+                  "type": "array",
+                  "description": "Bug counts per iteration for progress analysis",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "iteration": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "bugs_found": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_closed": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_open": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_reopened": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bug_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "progress_category": {
+                        "type": "string",
+                        "enum": ["PURE_PROGRESS", "DISCOVERY_PROGRESS", "SLOW_PROGRESS", "STALL", "REGRESSION"]
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": ["iteration", "bugs_found", "bugs_closed", "bugs_open", "progress_category"]
+                  }
+                },
+                "progress_stalls": {
+                  "type": "integer",
+                  "description": "Consecutive iterations with no progress (R533 no-progress counter)",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "max_stalls_allowed": {
+                  "type": "integer",
+                  "description": "Maximum stalls before ERROR_RECOVERY (R533 no-progress limit)",
+                  "minimum": 1,
+                  "default": 5
+                },
+                "max_iterations": {
+                  "type": "integer",
+                  "description": "Maximum total iterations (R533 some-progress limit)",
+                  "minimum": 1,
+                  "default": 10
+                },
+                "current_iteration": {
+                  "type": "integer",
+                  "description": "Current iteration number for bug tracking",
+                  "minimum": 0,
+                  "default": 0
+                }
+              }
             }
           }
         },
@@ -357,6 +473,24 @@
               "minimum": 1,
               "default": 10
             },
+            "backport_attempts_this_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Counter for backport fix cycles within the current iteration (per R532 - prevents infinite loops)",
+              "minimum": 0,
+              "default": 0
+            },
+            "max_backport_attempts_per_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Maximum backport attempts allowed within single iteration before escalation to ERROR_RECOVERY (per R532)",
+              "minimum": 1,
+              "default": 3
+            },
             "status": {
               "type": [
                 "string",
@@ -381,6 +515,104 @@
               "description": "Number of waves completed in this phase - used with total_waves_in_phase for guard evaluation",
               "minimum": 0,
               "default": 0
+            },
+            "bugs": {
+              "type": ["object", "null"],
+              "description": "Bug tracking for progress-based iteration limits (R533, R534)",
+              "properties": {
+                "total_found": {
+                  "type": "integer",
+                  "description": "Total bugs discovered across all iterations",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "total_closed": {
+                  "type": "integer",
+                  "description": "Total bugs fixed across all iterations",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "total_open": {
+                  "type": "integer",
+                  "description": "Current open bugs",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "reopened_count": {
+                  "type": "integer",
+                  "description": "Total bugs that have been reopened (flapping)",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "history": {
+                  "type": "array",
+                  "description": "Bug counts per iteration for progress analysis",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "iteration": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "bugs_found": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_closed": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_open": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_reopened": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bug_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "progress_category": {
+                        "type": "string",
+                        "enum": ["PURE_PROGRESS", "DISCOVERY_PROGRESS", "SLOW_PROGRESS", "STALL", "REGRESSION"]
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": ["iteration", "bugs_found", "bugs_closed", "bugs_open", "progress_category"]
+                  }
+                },
+                "progress_stalls": {
+                  "type": "integer",
+                  "description": "Consecutive iterations with no progress (R533 no-progress counter)",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "max_stalls_allowed": {
+                  "type": "integer",
+                  "description": "Maximum stalls before ERROR_RECOVERY (R533 no-progress limit)",
+                  "minimum": 1,
+                  "default": 5
+                },
+                "max_iterations": {
+                  "type": "integer",
+                  "description": "Maximum total iterations (R533 some-progress limit)",
+                  "minimum": 1,
+                  "default": 10
+                },
+                "current_iteration": {
+                  "type": "integer",
+                  "description": "Current iteration number for bug tracking",
+                  "minimum": 0,
+                  "default": 0
+                }
+              }
             }
           }
         },
@@ -417,6 +649,24 @@
               "minimum": 1,
               "default": 10
             },
+            "backport_attempts_this_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Counter for backport fix cycles within the current iteration (per R532 - prevents infinite loops)",
+              "minimum": 0,
+              "default": 0
+            },
+            "max_backport_attempts_per_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Maximum backport attempts allowed within single iteration before escalation to ERROR_RECOVERY (per R532)",
+              "minimum": 1,
+              "default": 3
+            },
             "status": {
               "type": [
                 "string",
@@ -442,6 +692,104 @@
                   "string",
                   "null"
                 ]
+              }
+            },
+            "bugs": {
+              "type": ["object", "null"],
+              "description": "Bug tracking for progress-based iteration limits (R533, R534)",
+              "properties": {
+                "total_found": {
+                  "type": "integer",
+                  "description": "Total bugs discovered across all iterations",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "total_closed": {
+                  "type": "integer",
+                  "description": "Total bugs fixed across all iterations",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "total_open": {
+                  "type": "integer",
+                  "description": "Current open bugs",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "reopened_count": {
+                  "type": "integer",
+                  "description": "Total bugs that have been reopened (flapping)",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "history": {
+                  "type": "array",
+                  "description": "Bug counts per iteration for progress analysis",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "iteration": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "bugs_found": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_closed": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_open": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_reopened": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bug_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "progress_category": {
+                        "type": "string",
+                        "enum": ["PURE_PROGRESS", "DISCOVERY_PROGRESS", "SLOW_PROGRESS", "STALL", "REGRESSION"]
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": ["iteration", "bugs_found", "bugs_closed", "bugs_open", "progress_category"]
+                  }
+                },
+                "progress_stalls": {
+                  "type": "integer",
+                  "description": "Consecutive iterations with no progress (R533 no-progress counter)",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "max_stalls_allowed": {
+                  "type": "integer",
+                  "description": "Maximum stalls before ERROR_RECOVERY (R533 no-progress limit)",
+                  "minimum": 1,
+                  "default": 5
+                },
+                "max_iterations": {
+                  "type": "integer",
+                  "description": "Maximum total iterations (R533 some-progress limit)",
+                  "minimum": 1,
+                  "default": 10
+                },
+                "current_iteration": {
+                  "type": "integer",
+                  "description": "Current iteration number for bug tracking",
+                  "minimum": 0,
+                  "default": 0
+                }
               }
             }
           }

@@ -87,28 +87,88 @@
       "name": "Software Factory Microservices Platform",
       "iteration": 0,
       "max_iterations": 10,
-      "status": "IN_PROGRESS"
+      "backport_attempts_this_iteration": 0,
+      "max_backport_attempts_per_iteration": 3,
+      "status": "IN_PROGRESS",
+      "bugs": {
+        "total_found": 0,
+        "total_closed": 0,
+        "total_open": 0,
+        "reopened_count": 0,
+        "history": [],
+        "progress_stalls": 0,
+        "max_stalls_allowed": 5,
+        "max_iterations": 10,
+        "current_iteration": 0
+      }
     },
     "current_phase": {
       "phase_number": 2,
       "name": "API Layer and Business Logic",
       "iteration": 0,
       "max_iterations": 10,
+      "backport_attempts_this_iteration": 0,
+      "max_backport_attempts_per_iteration": 3,
       "status": "IN_PROGRESS",
       "waves_completed": 2,
-      "total_waves_in_phase": 3
+      "total_waves_in_phase": 3,
+      "bugs": {
+        "total_found": 0,
+        "total_closed": 0,
+        "total_open": 0,
+        "reopened_count": 0,
+        "history": [],
+        "progress_stalls": 0,
+        "max_stalls_allowed": 5,
+        "max_iterations": 10,
+        "current_iteration": 0
+      }
     },
     "current_wave": {
       "wave_number": 3,
       "name": "Advanced API Features",
       "iteration": 2,
       "max_iterations": 10,
+      "backport_attempts_this_iteration": 1,
+      "max_backport_attempts_per_iteration": 3,
       "status": "IN_PROGRESS",
       "efforts_completed": [
         "phase2-wave3-rate-limiting",
         "phase2-wave3-caching-layer",
         "phase2-wave3-webhook-system"
-      ]
+      ],
+      "bugs": {
+        "total_found": 15,
+        "total_closed": 8,
+        "total_open": 7,
+        "reopened_count": 2,
+        "history": [
+          {
+            "iteration": 1,
+            "bugs_found": 5,
+            "bugs_closed": 0,
+            "bugs_open": 5,
+            "bugs_reopened": 0,
+            "bug_ids": ["W3-BUG-001", "W3-BUG-002", "W3-BUG-003", "W3-BUG-004", "W3-BUG-005"],
+            "progress_category": "STALL",
+            "timestamp": "2025-10-08T10:00:00Z"
+          },
+          {
+            "iteration": 2,
+            "bugs_found": 10,
+            "bugs_closed": 3,
+            "bugs_open": 12,
+            "bugs_reopened": 0,
+            "bug_ids": ["W3-BUG-001", "W3-BUG-003", "W3-BUG-006", "W3-BUG-007", "W3-BUG-008", "W3-BUG-009", "W3-BUG-010", "W3-BUG-011", "W3-BUG-012", "W3-BUG-013", "W3-BUG-014", "W3-BUG-015"],
+            "progress_category": "DISCOVERY_PROGRESS",
+            "timestamp": "2025-10-08T13:15:00Z"
+          }
+        ],
+        "progress_stalls": 0,
+        "max_stalls_allowed": 5,
+        "max_iterations": 10,
+        "current_iteration": 2
+      }
     },
     "iteration_tracking": {
       "active_container_level": "wave",

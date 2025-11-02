@@ -108,6 +108,21 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
    - Criticality: SUPREME LAW
    - Summary: Iteration counter management and re-integration procedures
 
+8. **🔴🔴🔴 R532** - Backport Attempt Limits
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R532-backport-attempt-limits.md`
+   - Criticality: SUPREME LAW
+   - Summary: Backport attempt counter limits to prevent infinite loops within same iteration
+
+9. **🔴🔴🔴 R533** - Progress-Based Iteration Limits
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R533-progress-based-iteration-limits.md`
+   - Criticality: SUPREME LAW
+   - Summary: Two-tiered iteration limits (5 no-progress, 10 some-progress) based on actual bug fixes
+
+10. **🔴🔴🔴 R534** - Bug Lifecycle Tracking Protocol
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R534-bug-lifecycle-tracking.md`
+   - Criticality: SUPREME LAW
+   - Summary: Bug identification, lifecycle states (OPEN/CLOSED/REOPENED), and tracking requirements
+
 ---
 
 ## 🔴🔴🔴 MANDATORY EXECUTION CHECKLIST
@@ -118,15 +133,42 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
 
 ### BLOCKING REQUIREMENTS (Cannot proceed without)
 
-- [ ] 1. Increment wave iteration counter
-  - Tool: `tools/iteration-manager.sh increment_iteration WAVE`
-  - Validation: Check return value is new iteration number
-  - Proof: `echo "✅ CHECKLIST[1]: Wave iteration incremented to N"`
+- [ ] 1. Conditionally increment wave iteration counter based on previous state
+  - Tool: `tools/iteration-manager.sh increment_iteration WAVE` (only if from SETUP or FIX states)
+  - Tool: `tools/iteration-manager.sh get_iteration_count WAVE` (if retrying same attempt)
+  - Validation: Increment ONLY when from SETUP_WAVE_INFRASTRUCTURE or FIX_WAVE_UPSTREAM_BUGS
+  - Validation: Do NOT increment when from IMMEDIATE_BACKPORT_REQUIRED, MONITORING_BACKPORT_PROGRESS, or ERROR_RECOVERY
+  - Proof: `echo "✅ CHECKLIST[1]: Wave iteration [incremented to N | remains at N]"`
 
-- [ ] 2. Check max iterations not exceeded
+- [ ] 1b. Reset or check backport attempt counter (R532)
+  - Tool: `tools/backport-attempt-manager.sh reset_backport_attempts WAVE` (if new iteration)
+  - Tool: `tools/backport-attempt-manager.sh check_max_backport_attempts WAVE` (if retry)
+  - Validation: Reset when R531 counter incremented (new iteration)
+  - Validation: Check limit when R531 counter stayed same (retry)
+  - Escalate: To ERROR_RECOVERY if backport attempts exceeded (exit 532)
+  - Proof: `echo "✅ CHECKLIST[1b]: Backport attempts [reset to 0 | check passed N/M]"`
+
+- [ ] 1c. Analyze bug progress and apply two-tiered iteration limits (R533, R534)
+  - Tool: `bash tools/bug-progress-analyzer.sh should_continue_or_escalate WAVE $CURRENT_ITERATION`
+  - Purpose: Determine if making ACTUAL progress (bugs fixed) vs just churning
+  - Decision Logic:
+    - PURE_PROGRESS/DISCOVERY_PROGRESS: Reset stall counter to 0, continue
+    - SLOW_PROGRESS: Keep stall counter, continue
+    - STALL/REGRESSION: Increment stall counter
+    - FLAPPING (reopened bugs): Increment stall counter
+  - Two-Tiered Limits:
+    - Tier 1 (No-Progress): stall_counter >= 5 → ERROR_RECOVERY
+    - Tier 2 (Some-Progress): iteration >= 10 → ERROR_RECOVERY
+  - Validation: Tool returns decision: "CONTINUE" or "ERROR_RECOVERY"
+  - On ERROR_RECOVERY: Exit with reason (no-progress or some-progress limit)
+  - **BLOCKING**: Must analyze progress before checking blind iteration limit
+  - Proof: `echo "✅ CHECKLIST[1c]: Progress analysis: [CATEGORY] (stalls: N/5, iterations: M/10, decision: [CONTINUE|ERROR_RECOVERY])"`
+
+- [ ] 2. Check max iterations not exceeded (legacy R531 check - superseded by R533 progress-aware limits)
   - Tool: `tools/iteration-manager.sh check_max_iterations WAVE`
   - Validation: Must return "WITHIN_LIMIT"
   - On EXCEEDED: Escalate to ERROR_RECOVERY state
+  - Note: This is now a backup check; R533 progress analysis (item 1c) is the primary enforcement
   - Proof: `echo "✅ CHECKLIST[2]: Max iterations check passed (N/10)"`
 
 - [ ] 3. Determine next state
@@ -136,19 +178,123 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
 
 ---
 
-### ✅ Step 1: Increment Wave Iteration Counter (R531/R336)
+### ✅ Step 1: Conditionally Increment Wave Iteration Counter (R531/R336)
 ```bash
-# Increment wave iteration counter using iteration-manager tool
-NEW_ITERATION=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" increment_iteration WAVE)
+# Determine if iteration counter should increment based on previous state
+# INCREMENT when:
+#   - Coming from SETUP_WAVE_INFRASTRUCTURE (first iteration: 0->1)
+#   - Coming from FIX_WAVE_UPSTREAM_BUGS (new attempt after full cycle: N->N+1)
+# DO NOT INCREMENT when:
+#   - Coming from IMMEDIATE_BACKPORT_REQUIRED (retrying same attempt)
+#   - Coming from MONITORING_BACKPORT_PROGRESS (retrying same attempt)
+#   - Coming from ERROR_RECOVERY (resuming same attempt)
 
-if [ $? -ne 0 ]; then
-    echo "❌ Failed to increment wave iteration counter"
-    PROPOSED_NEXT_STATE="ERROR_RECOVERY"
-    echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=MANUAL_INTERVENTION_REQUIRED"
-    exit 1
-fi
+PREVIOUS_STATE=$(jq -r '.state_machine.previous_state // "SETUP_WAVE_INFRASTRUCTURE"' "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
 
-echo "✅ CHECKLIST[1]: Wave iteration incremented to ${NEW_ITERATION}"
+case "$PREVIOUS_STATE" in
+    SETUP_WAVE_INFRASTRUCTURE|FIX_WAVE_UPSTREAM_BUGS)
+        # These states indicate a NEW integration attempt - increment counter
+        echo "📊 Previous state: $PREVIOUS_STATE - incrementing iteration counter (new attempt)"
+        NEW_ITERATION=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" increment_iteration WAVE)
+
+        if [ $? -ne 0 ]; then
+            echo "❌ Failed to increment wave iteration counter"
+            PROPOSED_NEXT_STATE="ERROR_RECOVERY"
+            echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=MANUAL_INTERVENTION_REQUIRED"
+            exit 1
+        fi
+
+        echo "✅ CHECKLIST[1]: Wave iteration incremented to ${NEW_ITERATION}"
+        ;;
+
+    IMMEDIATE_BACKPORT_REQUIRED|MONITORING_BACKPORT_PROGRESS|ERROR_RECOVERY)
+        # These states indicate RETRYING same attempt - do NOT increment counter
+        echo "📊 Previous state: $PREVIOUS_STATE - retrying same iteration (no increment)"
+        CURRENT_ITERATION=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" get_iteration_count WAVE)
+        echo "✅ CHECKLIST[1]: Wave iteration remains at ${CURRENT_ITERATION} (retry of same attempt)"
+        ;;
+
+    *)
+        # Unknown previous state - log warning and increment to be safe
+        echo "⚠️ WARNING: Unknown previous state '$PREVIOUS_STATE' - defaulting to increment"
+        NEW_ITERATION=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" increment_iteration WAVE)
+        echo "✅ CHECKLIST[1]: Wave iteration incremented to ${NEW_ITERATION} (default behavior)"
+        ;;
+esac
+```
+
+---
+
+### ✅ Step 1b: Reset or Check Backport Attempt Counter (R532)
+```bash
+# R532: Manage backport_attempts_this_iteration to prevent infinite loops
+# This counter tracks retries WITHIN the same iteration
+
+case "$PREVIOUS_STATE" in
+    SETUP_WAVE_INFRASTRUCTURE|FIX_WAVE_UPSTREAM_BUGS)
+        # New iteration starting (R531 counter incremented above)
+        # R532: Reset backport counter to 0 for fresh iteration
+        echo "🔄 R532: Resetting backport attempts counter (new iteration)"
+        bash "$CLAUDE_PROJECT_DIR/tools/backport-attempt-manager.sh" reset_backport_attempts WAVE
+
+        if [ $? -ne 0 ]; then
+            echo "❌ Failed to reset backport attempts counter"
+            PROPOSED_NEXT_STATE="ERROR_RECOVERY"
+            echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=MANUAL_INTERVENTION_REQUIRED"
+            exit 1
+        fi
+
+        echo "✅ CHECKLIST[1b]: Backport attempts counter reset to 0 (new iteration per R532)"
+        ;;
+
+    IMMEDIATE_BACKPORT_REQUIRED|MONITORING_BACKPORT_PROGRESS|ERROR_RECOVERY)
+        # Same iteration retry (R531 counter did NOT increment)
+        # R532: Check if backport attempts have exceeded limit
+        echo "🔍 R532: Checking backport attempts limit (retrying same iteration)"
+
+        BACKPORT_STATUS=$(bash "$CLAUDE_PROJECT_DIR/tools/backport-attempt-manager.sh" \
+            check_max_backport_attempts WAVE)
+
+        if [ "$BACKPORT_STATUS" = "EXCEEDED" ]; then
+            BACKPORT_COUNT=$(bash "$CLAUDE_PROJECT_DIR/tools/backport-attempt-manager.sh" \
+                get_backport_attempt_count WAVE)
+            MAX_BACKPORT=$(jq -r '.project_progression.current_wave.max_backport_attempts_per_iteration // 3' \
+                "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
+            CURRENT_ITERATION=$(bash "$CLAUDE_PROJECT_DIR/tools/iteration-manager.sh" \
+                get_iteration_count WAVE)
+
+            echo "❌ R532 VIOLATION: Max backport attempts exceeded"
+            echo "   Current iteration: ${CURRENT_ITERATION}"
+            echo "   Backport attempts this iteration: ${BACKPORT_COUNT}/${MAX_BACKPORT}"
+            echo "   Previous state: ${PREVIOUS_STATE}"
+            echo ""
+            echo "This indicates:"
+            echo "- Backport fixes are not effective"
+            echo "- Same issues reoccurring despite fixes"
+            echo "- Upstream branches have systemic problems"
+            echo "- Possible architecture issues"
+            echo ""
+            echo "REQUIRED ACTION: Escalate to ERROR_RECOVERY"
+
+            PROPOSED_NEXT_STATE="ERROR_RECOVERY"
+            echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=MAX_BACKPORT_ATTEMPTS_EXCEEDED"
+            exit 532
+        fi
+
+        BACKPORT_COUNT=$(bash "$CLAUDE_PROJECT_DIR/tools/backport-attempt-manager.sh" \
+            get_backport_attempt_count WAVE)
+        MAX_BACKPORT=$(jq -r '.project_progression.current_wave.max_backport_attempts_per_iteration // 3' \
+            "$CLAUDE_PROJECT_DIR/orchestrator-state-v3.json")
+        echo "✅ CHECKLIST[1b]: Backport attempts check passed (${BACKPORT_COUNT}/${MAX_BACKPORT} per R532)"
+        ;;
+
+    *)
+        # Unknown previous state - reset to be safe
+        echo "⚠️ WARNING: Unknown previous state '$PREVIOUS_STATE' - resetting backport counter to be safe"
+        bash "$CLAUDE_PROJECT_DIR/tools/backport-attempt-manager.sh" reset_backport_attempts WAVE
+        echo "✅ CHECKLIST[1b]: Backport attempts counter reset (unknown previous state)"
+        ;;
+esac
 ```
 
 ---
