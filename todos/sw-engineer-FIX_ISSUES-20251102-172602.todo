@@ -1,0 +1,33 @@
+# SW Engineer TODOs - Trigger: R287_COMPLETION_CHECKPOINT
+# State: FIX_ISSUES
+# Effort: effort-1-registry-override-viper
+# Timestamp: 2025-11-02T17:30:00Z
+
+COMPLETED TASKS:
+✅ Priority 1: Fixed build error
+  - Added viper import to root.go
+  - Created global viper instance
+  - Passed viper instance to NewPushCommand(v)
+  - Build verification: go build ./... SUCCESS
+  - Build verification: go vet ./... CLEAN
+  - Committed: aa20b98
+  - Pushed: ✅
+
+✅ Created BUG_FIX_REPORT.md with complete analysis
+  - Committed: c653de7
+  - Pushed: ✅
+
+BLOCKED TASKS:
+❌ Priority 2: Size violation (835 lines > 800 limit)
+  - Root cause: 389 lines out-of-scope stub files
+  - Dependencies: push.go imports these packages
+  - Decision required: Option A (remove stubs) vs Option B (split plan)
+  - Blocker: Orchestrator must investigate and provide guidance
+
+NEXT ACTIONS (for orchestrator):
+1. Read BUG_FIX_REPORT.md
+2. Investigate Phase 1/Wave 2.1 completion status
+3. Choose resolution: Option A or Option B
+4. Provide guidance to SW Engineer for Priority 2 fix
+
+STATUS: Priority 1 COMPLETE, Priority 2 BLOCKED awaiting orchestrator decision
