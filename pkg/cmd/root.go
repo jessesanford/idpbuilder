@@ -12,7 +12,11 @@ import (
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/push"
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/version"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
+
+// Global viper instance for configuration management
+var v = viper.New()
 
 var rootCmd = &cobra.Command{
 	Use:   "idpbuilder",
@@ -26,7 +30,7 @@ func init() {
 	rootCmd.AddCommand(create.CreateCmd)
 	rootCmd.AddCommand(get.GetCmd)
 	rootCmd.AddCommand(delete.DeleteCmd)
-	rootCmd.AddCommand(push.NewPushCommand())
+	rootCmd.AddCommand(push.NewPushCommand(v))
 	rootCmd.AddCommand(version.VersionCmd)
 }
 
