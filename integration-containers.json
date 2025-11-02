@@ -312,8 +312,8 @@
       "container_id": "wave-phase2-wave2",
       "phase": 2,
       "wave": 2,
-      "status": "ready_for_reintegration",
-      "iteration": 5,
+      "status": "needs_fixes",
+      "iteration": 6,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase2/wave2/integration",
       "workspace": "efforts/phase2/wave2/integration-workspace",
@@ -322,8 +322,8 @@
       "integration_started_at": null,
       "last_iteration_at": "2025-11-02T17:34:45Z",
       "convergence_metrics": {
-        "bugs_remaining": 10,
-        "bugs_found": 6,
+        "bugs_remaining": 1,
+        "bugs_found": 1,
         "test_failures": 0,
         "build_failures": 0,
         "bugs_fixed": 2
@@ -331,7 +331,7 @@
       "efforts_to_integrate": [],
       "effort_branches": [],
       "integration_plan_file": null,
-      "notes": "Wave 2.2 iteration 5: Upstream bugs fixed (build + size), ready for fresh integration attempt. Per R327: iteration 4 integration branch is stale (upstream fixes invalidate previous merge state), will be deleted and recreated.",
+      "notes": "Wave 2.2 iteration 6: Integration build succeeded (66M binary, 89.6% coverage, 39 tests), code review found 1 CATASTROPHIC bug (R359 violation - code deletion). Fix cascade required.",
       "test_plan_file": "planning/phase2/wave2/WAVE-TEST-PLAN.md",
       "test_count": 50,
       "coverage_targets": {
@@ -373,6 +373,56 @@
           "started_at": "2025-11-02T17:34:45Z",
           "status": "READY",
           "notes": "Upstream bugs fixed: BUG-007/009/013 (build), BUG-008/010 (size). Ready for re-integration per R327/R531."
+        },
+        {
+          "iteration": 6,
+          "started_at": "2025-11-02T17:42:00Z",
+          "completed_at": "2025-11-02T18:18:52Z",
+          "review_report": ".software-factory/phase2/wave2/integration/CODE-REVIEW-REPORT--20251102-181852.md",
+          "bugs_found": 1,
+          "bugs_fixed": 0,
+          "bug_ids": [
+            "BUG-019-R359-CODE-DELETION"
+          ],
+          "status": "BUGS_FOUND",
+          "reviewer": "code-reviewer",
+          "notes": "Integration review found 1 CATASTROPHIC bug: R359 Supreme Law violation (deleted 731 lines of approved Wave 2.1 code in commit 37b5e68). Wave 2.2 implementation itself is production-ready (89.6% coverage, 39 tests), but code deletion violation is BLOCKING.",
+          "review_timestamp": "2025-11-02T18:18:52Z",
+          "decision": "NEEDS_FIXES",
+          "blocking_bugs": [
+            "BUG-019-R359-CODE-DELETION"
+          ],
+          "severity_breakdown": {
+            "CATASTROPHIC": 1,
+            "BLOCKING": 0,
+            "MAJOR": 0,
+            "MINOR": 0
+          }
+        },
+        {
+          "iteration": 6,
+          "started_at": "2025-11-02T17:42:00Z",
+          "completed_at": "2025-11-02T18:18:52Z",
+          "review_report": ".software-factory/phase2/wave2/integration/CODE-REVIEW-REPORT--20251102-181852.md",
+          "bugs_found": 1,
+          "bugs_fixed": 0,
+          "bug_ids": [
+            "BUG-019-CODE-DELETION"
+          ],
+          "status": "BUGS_FOUND",
+          "reviewer": "code-reviewer",
+          "notes": "Integration review found 1 CATASTROPHIC bug: R359 Supreme Law violation (deleted 731 lines of approved Wave 2.1 code in commit 37b5e68). Wave 2.2 implementation itself is production-ready (89.6% coverage, 39 tests), but code deletion violation is BLOCKING.",
+          "review_timestamp": "2025-11-02T18:18:52Z",
+          "decision": "NEEDS_FIXES",
+          "blocking_bugs": [
+            "BUG-019-CODE-DELETION"
+          ],
+          "severity_breakdown": {
+            "CATASTROPHIC": 1,
+            "BLOCKING": 0,
+            "MAJOR": 0,
+            "MINOR": 0
+          }
         }
       ]
     }
@@ -398,18 +448,18 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-02T18:08:34Z",
-    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → REVIEW_WAVE_INTEGRATION (iteration 6 complete)",
-    "state_transition": "REVIEW_WAVE_INTEGRATION",
+    "last_updated": "2025-11-02T18:20:00Z",
+    "notes": "State transition: REVIEW_WAVE_INTEGRATION to CREATE_WAVE_FIX_PLAN (iteration 6 complete)",
+    "state_transition": "CREATE_WAVE_FIX_PLAN",
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "current_state": "REVIEW_WAVE_INTEGRATION",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_transition": "2025-11-02T18:08:34Z",
-    "last_sync": "2025-11-02T18:08:34Z"
+    "current_state": "CREATE_WAVE_FIX_PLAN",
+    "previous_state": "REVIEW_WAVE_INTEGRATION",
+    "last_transition": "2025-11-02T18:20:00Z",
+    "last_sync": "2025-11-02T18:20:00Z"
   },
-  "current_state": "REVIEW_WAVE_INTEGRATION",
+  "current_state": "CREATE_WAVE_FIX_PLAN",
   "phase": 2,
   "wave": 2,
   "last_updated_by": "state-manager"

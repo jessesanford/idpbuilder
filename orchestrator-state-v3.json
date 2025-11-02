@@ -3,32 +3,31 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "REVIEW_WAVE_INTEGRATION",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_transition_timestamp": "2025-11-02T18:08:24Z",
+    "current_state": "CREATE_WAVE_FIX_PLAN",
+    "previous_state": "REVIEW_WAVE_INTEGRATION",
+    "last_transition_timestamp": "2025-11-02T18:20:00Z",
     "last_state_manager_consultation": {
-      "timestamp": "2025-11-02T18:08:24Z",
+      "timestamp": "2025-11-02T18:20:00Z",
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "from_state": "INTEGRATE_WAVE_EFFORTS",
-      "to_state": "REVIEW_WAVE_INTEGRATION",
+      "from_state": "REVIEW_WAVE_INTEGRATION",
+      "to_state": "CREATE_WAVE_FIX_PLAN",
       "validated": true,
       "validation_result": "APPROVED",
       "validated_by": "state-manager",
-      "guard_condition_check": "integration_complete AND build_passes (verified)",
+      "guard_condition_check": "bugs_found > 0 (verified: 1 CATASTROPHIC bug BUG-019)",
       "transition_allowed": true,
       "exit_criteria_met": {
-        "integration_completed": true,
-        "efforts_merged": 2,
-        "conflicts_resolved": 0,
-        "build_passing": true,
-        "tests_passing": true,
-        "build_artifact": "66M binary",
-        "test_coverage": "89.6%",
-        "test_count": 85
+        "code_review_complete": true,
+        "bugs_identified": true,
+        "bugs_found": 1,
+        "bug_severity": "CATASTROPHIC",
+        "bug_category": "R359_SUPREME_LAW_VIOLATION",
+        "review_report_created": true,
+        "iteration_updated": true
       },
       "entry_criteria_met": {
-        "integration_complete": true,
-        "build_passes": true
+        "bugs_found_gt_0": true,
+        "bugs_recorded": true
       }
     },
     "state_history": [
@@ -2550,6 +2549,62 @@
         "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
         "proposal_accepted": true,
         "transition_invalid": false
+      },
+      {
+        "from_state": "REVIEW_WAVE_INTEGRATION",
+        "to_state": "CREATE_WAVE_FIX_PLAN",
+        "timestamp": "2025-11-02T18:20:00Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.2 Iteration 6: Code review complete with 1 CATASTROPHIC bug found (BUG-019-R359-CODE-DELETION). Bug: Deleted 731 lines of APPROVED Wave 2.1 code in commit 37b5e68 (7 files: auth/provider, docker/client, progress/interface, progress/reporter, progress/reporter_test, registry/client, tls/config). R359 Supreme Law violation prohibits deleting approved code for ANY reason. Guard condition bugs_found > 0 satisfied. Transition to CREATE_WAVE_FIX_PLAN to create fix plan per state machine protocol.",
+        "phase": 2,
+        "wave": 2,
+        "iteration": 6,
+        "orchestrator_proposal": "CREATE_WAVE_FIX_PLAN",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "guard_condition_satisfied": true,
+          "guard_condition": "bugs_found > 0",
+          "bugs_found": 1,
+          "bug_severity": "CATASTROPHIC",
+          "exit_criteria_met": true,
+          "entry_criteria_met": true,
+          "r288_compliance": true,
+          "r322_consultation": true,
+          "state_machine_compliance": "VERIFIED"
+        }
+      },
+      {
+        "from_state": "REVIEW_WAVE_INTEGRATION",
+        "to_state": "CREATE_WAVE_FIX_PLAN",
+        "timestamp": "2025-11-02T18:20:00Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.2 Iteration 6: Code review complete with 1 CATASTROPHIC bug found (BUG-019-R359-CODE-DELETION). Bug: Deleted 731 lines of APPROVED Wave 2.1 code in commit 37b5e68 (7 files: auth/provider, docker/client, progress/interface, progress/reporter, progress/reporter_test, registry/client, tls/config). R359 Supreme Law violation prohibits deleting approved code for ANY reason. Guard condition bugs_found > 0 satisfied. Transition to CREATE_WAVE_FIX_PLAN to create fix plan per state machine protocol.",
+        "phase": 2,
+        "wave": 2,
+        "iteration": 6,
+        "orchestrator_proposal": "CREATE_WAVE_FIX_PLAN",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "guard_condition_satisfied": true,
+          "guard_condition": "bugs_found > 0",
+          "bugs_found": 1,
+          "bug_severity": "CATASTROPHIC",
+          "exit_criteria_met": true,
+          "entry_criteria_met": true,
+          "r288_compliance": true,
+          "r322_consultation": true,
+          "state_machine_compliance": "VERIFIED"
+        }
       }
     ],
     "loop_detection": {
