@@ -2041,9 +2041,10 @@
         }
       },
       {
-        "from": "SPAWN_SW_ENGINEERS",
-        "to": "MONITORING_SWE_PROGRESS",
-        "timestamp": "2025-11-02T03:13:23Z",
+        "from_state": "SPAWN_SW_ENGINEERS",
+        "to_state": "MONITORING_SWE_PROGRESS",
+        "timestamp": "2025-11-02T03:14:09Z",
+        "validated_by": "state-manager",
         "reason": "SW Engineer spawned and completed implementation for effort 2.2.2"
       }
     ],
