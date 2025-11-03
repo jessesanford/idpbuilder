@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-03T08:47:53Z",
+  "last_updated": "2025-11-03T11:42:46Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -342,7 +342,7 @@
       ],
       "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
       "resolution_plan": [
-        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files \u2192 ~406 lines",
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
         "Option B: Create split plan into 2 efforts (Split-001: 389 lines stubs, Split-002: 406 lines core)",
         "Re-measure after fix",
         "Verify under 800 line limit"
@@ -443,7 +443,7 @@
       ],
       "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
       "resolution_plan": [
-        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files \u2192 ~406 lines",
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
         "Option B: Create split plan into 2 efforts",
         "Re-measure after fix",
         "Verify under 800 line limit"
@@ -726,7 +726,7 @@
         "Integration workspace at efforts/phase2/wave2/integration-workspace is corrupted",
         "Commit 37b5e68 deleted 731 lines of approved Wave 2.1 code",
         "Workspace deletion completed in iteration 6",
-        "Re-integration will occur in iteration 7 (START_WAVE_ITERATION \u2192 INTEGRATE_WAVE_EFFORTS)",
+        "Re-integration will occur in iteration 7 (START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS)",
         "Will properly build Wave 2.2 ON TOP OF Wave 2.1 without deletions"
       ],
       "fix_strategy_determined_at": "2025-11-02T18:41:29Z",
@@ -739,7 +739,7 @@
     {
       "bug_id": "BUG-020-VALIDATOR-REDECLARATIONS",
       "severity": "CRITICAL",
-      "status": "OPEN",
+      "status": "FIXED",
       "phase": 2,
       "wave": 3,
       "effort_id": "2.3.2",
@@ -776,7 +776,20 @@
       "affected_effort": "2.3.2",
       "fix_branch": "idpbuilder-oci-push/phase2/wave3/effort-2-error-system",
       "requires_sw_engineer": true,
-      "integration_report": "efforts/phase2/wave3/integration-workspace/.software-factory/phase2/wave3/integration/INTEGRATION-REPORT--20251103-084339.md"
+      "integration_report": "efforts/phase2/wave3/integration-workspace/.software-factory/phase2/wave3/integration/INTEGRATION-REPORT--20251103-084339.md",
+      "fixed_at": "2025-11-03T11:42:46Z",
+      "fixed_by": "sw-engineer",
+      "fix_commit": "c36d629, d2144ee",
+      "fix_verification": {
+        "build_status": "PENDING_REINTEGRATION",
+        "fix_applied_to": "idpbuilder-oci-push/phase2/wave3/effort-2-error-system",
+        "commits": [
+          "c36d629",
+          "d2144ee"
+        ],
+        "verified_at": "2025-11-03T11:42:46Z",
+        "fix_description": "Removed pkg/validator/validator.go stub file causing function redeclarations"
+      }
     }
   ],
   "active_bug_count": 14,
@@ -816,7 +829,7 @@
     "notes": "State transition: START_WAVE_ITERATION to INTEGRATE_WAVE_EFFORTS (Wave 2.3 iteration 1 started)",
     "state_transition": "INTEGRATE_WAVE_EFFORTS",
     "updated_by": "state-manager",
-    "last_modified": "2025-11-03T08:34:44Z"
+    "last_modified": "2025-11-03T11:42:46Z"
   },
   "last_state_transition": {
     "from": "START_WAVE_ITERATION",
@@ -855,7 +868,7 @@
       "effort": null,
       "iteration": 1,
       "validated_by": "state-manager",
-      "reason": "Wave iteration 1 started. Iteration counter incremented 0 \u2192 1. Ready to integrate Wave 2.3 efforts."
+      "reason": "Wave iteration 1 started. Iteration counter incremented 0 → 1. Ready to integrate Wave 2.3 efforts."
     },
     {
       "timestamp": "2025-11-03T07:14:17Z",

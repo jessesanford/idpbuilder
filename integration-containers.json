@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-03T08:47:53Z",
+  "last_updated": "2025-11-03T11:43:00Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -452,15 +452,15 @@
       "container_id": "wave-phase2-wave3",
       "phase": 2,
       "wave": 3,
-      "status": "FAILED",
-      "iteration": 1,
+      "status": "PREPARING_RETRY",
+      "iteration": 2,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase2/wave3/integration",
       "workspace": "efforts/phase2/wave3/integration-workspace",
       "base_branch": "idpbuilder-oci-push/phase2/wave2/integration",
       "created_at": "2025-11-03T01:42:39Z",
       "integration_started_at": "2025-11-03T08:34:44Z",
-      "last_iteration_at": "2025-11-03T08:47:53Z",
+      "last_iteration_at": "2025-11-03T11:43:00Z",
       "convergence_metrics": {
         "bugs_remaining": 0,
         "bugs_found": 1,
@@ -471,7 +471,7 @@
       "efforts_to_integrate": [],
       "effort_branches": [],
       "integration_plan_file": null,
-      "notes": "Wave 2.3 Iteration 1: Integration FAILED with upstream bug BUG-020. Both efforts merged successfully (1 conflict resolved per R262), but build failed due to function redeclarations in pkg/validator/. Integration agent documented bug per R266, cannot fix. Requires SW Engineer to fix effort-2 branch per R300.",
+      "notes": "Wave 2.3 Iteration 2: Bug BUG-020 fixed in effort-2 branch (c36d629, d2144ee). Preparing fresh integration workspace.",
       "test_plan_file": "planning/phase2/wave3/WAVE-TEST-PLAN.md",
       "test_count": 63,
       "coverage_targets": {
@@ -523,10 +523,10 @@
   },
   "metadata": {
     "last_updated": "2025-11-03T08:34:44Z",
-    "notes": "State transition: START_WAVE_ITERATION to INTEGRATE_WAVE_EFFORTS (Wave 2.3 iteration 1 started)",
+    "notes": "State transition: ERROR_RECOVERY to START_WAVE_ITERATION (Wave 2.3 iteration 2 - retry after BUG-020 fix)",
     "state_transition": "INTEGRATE_WAVE_EFFORTS",
     "updated_by": "state-manager",
-    "last_modified": "2025-11-03T08:34:44Z"
+    "last_modified": "2025-11-03T11:43:00Z"
   },
   "state_machine_sync": {
     "orchestrator_state": "INTEGRATE_WAVE_EFFORTS",
@@ -534,7 +534,7 @@
     "in_sync": true,
     "current_state": "ERROR_RECOVERY",
     "previous_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_transition": "2025-11-03T08:47:53Z"
+    "last_transition": "2025-11-03T11:43:00Z"
   },
   "current_state": "ERROR_RECOVERY",
   "phase": 2,
@@ -566,7 +566,7 @@
       "wave": 3,
       "iteration": 1,
       "validated_by": "state-manager",
-      "reason": "Wave iteration 1 started. Iteration counter incremented 0 \u2192 1. Backport attempts reset to 0 (R532 compliance). Progress analysis: CONTINUE (first iteration, R615 compliance). Max iterations check: 1/10 (R531/R336 compliance). Ready to integrate Wave 2.3 efforts."
+      "reason": "Wave iteration 1 started. Iteration counter incremented 0 → 1. Backport attempts reset to 0 (R532 compliance). Progress analysis: CONTINUE (first iteration, R615 compliance). Max iterations check: 1/10 (R531/R336 compliance). Ready to integrate Wave 2.3 efforts."
     },
     {
       "timestamp": "2025-11-03T07:14:17Z",
