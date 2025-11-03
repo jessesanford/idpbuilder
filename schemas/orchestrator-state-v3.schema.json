@@ -1172,6 +1172,28 @@
         "target_repo_url",
         "efforts"
       ],
+      "if": {
+        "properties": {
+          "validated": {
+            "const": true
+          }
+        },
+        "required": [
+          "validated"
+        ]
+      },
+      "then": {
+        "properties": {
+          "efforts": {
+            "type": "object",
+            "minProperties": 1
+          }
+        },
+        "required": [
+          "efforts"
+        ],
+        "errorMessage": "R504 VIOLATION: validated=true requires efforts to be populated (pre-planned infrastructure must have at least one effort)"
+      },
       "properties": {
         "validated": {
           "type": "boolean",

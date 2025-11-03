@@ -155,6 +155,161 @@ detect_cascade_context() {
 
 **See**: rule-library/R521-integration-known-fixes-and-conflict-resolution-scope.md
 
+## 🔴🔴🔴 BUG HANDLING AND CONTINUATION FLAGS - CRITICAL UNDERSTANDING 🔴🔴🔴
+
+**SOFTWARE FACTORY 3.0 IS DESIGNED TO HANDLE BUGS AUTOMATICALLY!**
+
+### 🚨🚨🚨 THE ABSOLUTE TRUTH: BUGS = TRUE, NOT FALSE 🚨🚨🚨
+
+**When you find bugs during integration:**
+
+1. **Document the Bug** (R300 per R266)
+   ```bash
+   # Add to bug-tracking.json
+   {
+     "bug_id": "BUG-020",
+     "severity": "P0",
+     "blocks_integration": true,
+     "found_during": "wave_integration_iteration_1"
+   }
+   ```
+
+2. **Report Integration Status**
+   ```bash
+   # In your integration report
+   echo "Integration: BLOCKED"
+   echo "Bug: BUG-020 documented"
+   echo "Needs: Upstream fix from effort-2"
+   ```
+
+3. **Set Continuation Flag to TRUE** ✅
+   ```bash
+   # THIS IS THE CRITICAL PART!
+   echo "CONTINUE-SOFTWARE-FACTORY=TRUE"
+
+   # Why TRUE? Because:
+   # - You documented the bug (job done!) ✅
+   # - ERROR_RECOVERY will spawn fix agents automatically ✅
+   # - Fix cascade will handle the upstream fix ✅
+   # - Re-integration will occur automatically ✅
+   # - This is iteration 1; system expects 2-5 iterations ✅
+   # - THIS IS NORMAL OPERATION! ✅
+   ```
+
+### What Happens After You Set TRUE
+
+```
+You: Found BUG-020 → Documented → Set TRUE → Report complete
+       ↓
+Orchestrator: Receives your report → Sees TRUE → Continues automatically
+       ↓
+Orchestrator: Transitions to ERROR_RECOVERY (automatic)
+       ↓
+ERROR_RECOVERY: Reads bug-tracking.json → Spawns SW Engineer for effort-2
+       ↓
+SW Engineer: Fixes BUG-020 on effort-2 branch
+       ↓
+Fix Cascade (R300): Propagates fix to downstream branches
+       ↓
+Orchestrator: Returns to INTEGRATE_WAVE_EFFORTS (iteration 2)
+       ↓
+Orchestrator: Spawns NEW integration agent for iteration 2
+       ↓
+New Integration Agent: Merges efforts (now with fix) → Build succeeds! ✅
+       ↓
+Integration: COMPLETE after 2 iterations (TOTALLY NORMAL!)
+```
+
+### ✅ CORRECT Pattern - Build/Test Failures (Use TRUE)
+
+```bash
+# Integration finds build failures
+echo "🔴 Integration build FAILED"
+echo "  - Function redeclarations in pkg/validator"
+echo "  - 5 build errors total"
+echo "📝 Documenting as BUG-020 per R300"
+
+# Document bug
+document_bug "BUG-020" "P0" "build_failure" "Function redeclarations"
+
+# Report status
+echo "Integration: BLOCKED by BUG-020"
+echo "Bug: Documented in bug-tracking.json"
+echo "Next: ERROR_RECOVERY will spawn fix agents"
+
+# ✅ CRITICAL: Set TRUE!
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"
+echo "Reason: Bug documented, fix cascade will handle automatically"
+
+# Why TRUE? This is NORMAL! Iteration containers expect this!
+# ERROR_RECOVERY will fix the bug and retry integration.
+# This is THE DESIGN of Software Factory 3.0!
+```
+
+### ✅ CORRECT Pattern - Test Failures (Use TRUE)
+
+```bash
+# Integration finds test failures
+echo "🔴 Integration tests FAILED"
+echo "  - 8 tests failing in validator package"
+echo "  - 3 test suites affected"
+echo "📝 Documenting as BUG-021 per R300"
+
+# Document bug
+document_bug "BUG-021" "P0" "test_failure" "Validator tests failing"
+
+# ✅ Set TRUE!
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"
+echo "Reason: Test failures are bugs, will be fixed automatically"
+```
+
+### ✅ CORRECT Pattern - Demo Failures (Use TRUE per R291)
+
+```bash
+# Integration finds demo failures
+echo "🔴 Demo execution FAILED"
+echo "  - demo-features.sh exits with error"
+echo "  - Demo script issues in effort-2"
+echo "📝 Documenting as BUG-022 per R300"
+
+# Document bug
+document_bug "BUG-022" "P0" "demo_failure" "Demo script broken"
+
+# ✅ Set TRUE!
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"
+echo "Reason: Demo failures are bugs per R291, will be fixed automatically"
+```
+
+### ❌ ONLY Use FALSE for CATASTROPHIC Failures
+
+```bash
+# Git infrastructure completely broken
+if ! git push origin "$INTEGRATION_BRANCH" 2>/dev/null; then
+    echo "❌ CATASTROPHIC: Cannot push to git remote"
+    echo "❌ Git infrastructure appears broken"
+    echo "❌ Cannot proceed with any integration"
+    echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=GIT_INFRASTRUCTURE_FAILURE"
+    exit 1
+fi
+```
+
+### Summary: Integration Agent Continuation Flag Decision
+
+| Scenario | Flag | Rationale |
+|----------|------|-----------|
+| Build failures during integration | TRUE ✅ | Bugs, will be fixed via ERROR_RECOVERY |
+| Test failures during integration | TRUE ✅ | Bugs, will be fixed via ERROR_RECOVERY |
+| Demo failures during integration | TRUE ✅ | Bugs per R291, will be fixed |
+| Merge conflicts encountered | TRUE ✅ | Resolve, document if needed, continue |
+| Upstream bugs found | TRUE ✅ | Document per R266, ERROR_RECOVERY handles |
+| Integration succeeded | TRUE ✅ | Normal success, continue to next state |
+| Git infrastructure broken | FALSE ❌ | Cannot operate at all |
+| Cannot spawn (system broken) | FALSE ❌ | Core system failure |
+
+**DEFAULT: TRUE (bugs are normal, the system handles them automatically!)**
+
+---
+
 ## 🔴🔴🔴 SUPREME LAWS - NEVER VIOLATE 🔴🔴🔴
 
 ### LAW 1: NEVER MODIFY ORIGINAL BRANCHES
@@ -176,6 +331,7 @@ detect_cascade_context() {
 - Document bugs, don't fix them
 - Report issues, don't patch them
 - Identify problems, don't solve them
+- **BUT ALWAYS SET CONTINUE-SOFTWARE-FACTORY=TRUE** because bug fixes are automatic!
 - **Violation = Instant Failure**
 
 ### LAW 4: NEVER CREATE NEW CODE (R361) - EXCEPT DEMO INFRASTRUCTURE (R291)

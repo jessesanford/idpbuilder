@@ -263,27 +263,165 @@ Before setting FALSE, ask yourself:
 
 **Remember**: FALSE is an admission of defeat, not an excuse for laziness.
 
-## When to Output FALSE (EXCEPTIONAL CASES ONLY)
-**ONLY set FALSE for these TRULY EXCEPTIONAL situations:**
-- **Unrecoverable errors** - System cannot proceed at all
-- **Missing CRITICAL files** - Required configuration or state files missing/corrupted
-- **Invalid state machine** - Current state not in state machine
-- **Wrong working directory/branch** - Agent in completely wrong location
-- **Recursive splits** - When a split needs to be split AGAIN (split of a split)
-- **Multiple fix cascades** - More than 3 cascades with recurring failures (4+ is exceptional)
-- **Integration process crashed** - Integration agent died without producing report
+## 🔴🔴🔴 BUGS ARE NORMAL OPERATION - CRITICAL UNDERSTANDING 🔴🔴🔴
 
-**NOT reasons to set FALSE:**
-- ❌ Integration build failures (NORMAL - triggers fix cascade)
-- ❌ Integration test failures (NORMAL - triggers fix cascade)
-- ❌ Integration demo failures (NORMAL - triggers fix cascade)
-- ❌ Failed effort with 0 lines (NORMAL - can spawn reviewer)
-- ❌ Normal state transitions (monitoring → review)
-- ❌ Routine review failures (spawn fixes)
-- ❌ First-time split needed (normal operation)
-- ❌ Tests failing once, twice, or three times (can be fixed)
-- ❌ Normal monitoring transitions
-- ❌ First, second, or third fix cascade (system handles automatically)
+**Software Factory 3.0's FUNDAMENTAL DESIGN PRINCIPLE:**
+
+**BUGS TRIGGER WORKFLOWS, NOT FAILURES!**
+
+The entire system is architected around:
+1. **Iteration Containers**: Wave/Phase/Project integration has `max_iterations` (default: 5-10)
+2. **Fix Cascade Protocol (R300)**: Automatic bug → document → fix → cascade → re-integrate
+3. **ERROR_RECOVERY State**: Spawns fix agents, manages fix lifecycle automatically
+4. **Expected Flow**: Find bug → Fix → Retry → Success (multiple iterations EXPECTED)
+
+### 🚨🚨🚨 THE ABSOLUTE TRUTH: BUGS = TRUE, NOT FALSE 🚨🚨🚨
+
+**ALWAYS Use TRUE for:**
+- ✅ Integration build failures (R300 fix cascade handles automatically)
+- ✅ Integration test failures (fix and retry automatically)
+- ✅ Integration demo failures (fix and retry automatically)
+- ✅ Bugs discovered during integration (iteration containers designed for this)
+- ✅ Upstream bugs blocking progress (ERROR_RECOVERY spawns fixes automatically)
+- ✅ Merge conflicts during integration (resolve and retry automatically)
+- ✅ Code quality issues found during review (fix and re-integrate automatically)
+- ✅ First, second, third, FOURTH, FIFTH bug fixes (up to max_iterations)
+- ✅ Build failures during fix cascade (R410 layered cascade handles)
+- ✅ Test failures during effort implementation (fix and retry)
+- ✅ Failed effort with 0 lines (NORMAL - can spawn reviewer)
+- ✅ Routine review failures (spawn fixes automatically)
+- ✅ First-time split needed (normal operation)
+- ✅ Normal state transitions (monitoring → review)
+- ✅ Normal monitoring transitions
+
+**ONLY Use FALSE for:**
+- ❌ Data corruption actively spreading across system
+- ❌ Critical security breach requiring immediate halt
+- ❌ System infrastructure completely broken (cannot spawn agents)
+- ❌ State machine corrupted beyond recovery
+- ❌ Iteration overflow (>10 attempts with ZERO progress)
+- ❌ Divergence (bugs INCREASING with each fix attempt)
+- ❌ Recursive splits (split of split - needs human review)
+
+### Real-World Decision Tree for Integration Bugs
+
+```
+Bug found during integration?
+├─ YES → Document bug (R300) ✅
+│        ├─ Transition to ERROR_RECOVERY ✅
+│        ├─ Set CONTINUE-SOFTWARE-FACTORY=TRUE ✅  <-- THIS IS THE KEY!
+│        └─ What happens next:
+│           ├─ ERROR_RECOVERY spawns SW Engineer to fix upstream effort
+│           ├─ SW Engineer fixes bug on effort branch
+│           ├─ Fix cascades per R300 protocol automatically
+│           ├─ System returns to INTEGRATE_WAVE_EFFORTS (next iteration)
+│           ├─ Re-integration occurs automatically
+│           └─ Success! (maybe 2-5 iterations total - ALL NORMAL!)
+│
+└─ NO → Integration succeeded first try → TRUE → Continue to next wave
+```
+
+### Example Flow (NORMAL OPERATION - Use TRUE Throughout!)
+
+```
+INTEGRATE_WAVE_EFFORTS (Iteration 1)
+├─ Spawn Integration Agent ✅
+├─ Integration Agent merges efforts ✅
+├─ Build: FAILED (function redeclarations found) ❌
+├─ Document BUG-020 per R300 ✅
+├─ Integration Agent: CONTINUE-SOFTWARE-FACTORY=TRUE ✅  <-- CORRECT!
+├─ Orchestrator receives report, sees TRUE ✅
+└─ Orchestrator: CONTINUE-SOFTWARE-FACTORY=TRUE ✅  <-- CORRECT!
+    └─ Transition: ERROR_RECOVERY
+
+ERROR_RECOVERY (Automatic fix spawning)
+├─ Read bug-tracking.json ✅
+├─ Find BUG-020 blocks integration (severity: P0) ✅
+├─ Spawn SW Engineer to fix effort-2 branch ✅
+├─ SW Engineer removes conflicting function stubs ✅
+├─ Fix cascades per R300 (downstream effort branches updated) ✅
+└─ Orchestrator: CONTINUE-SOFTWARE-FACTORY=TRUE ✅  <-- CORRECT!
+    └─ Transition: INTEGRATE_WAVE_EFFORTS (Iteration 2)
+
+INTEGRATE_WAVE_EFFORTS (Iteration 2)
+├─ Spawn Integration Agent ✅
+├─ Integration Agent merges efforts (now with fix) ✅
+├─ Build: SUCCESS ✅
+├─ Tests: PASS ✅
+├─ Demo: WORKING ✅
+└─ Integration Agent: CONTINUE-SOFTWARE-FACTORY=TRUE ✅
+    └─ Transition: COMPLETE_WAVE
+
+Result: 2 iterations, bug fixed automatically, ZERO human intervention
+        This is THE DESIGN! This is NORMAL! This is why we use TRUE!
+```
+
+### What Actually Happened in Wave 2.3 (THE PROBLEM)
+
+```
+❌ WRONG BEHAVIOR:
+Integration Agent: Found BUG-020 → Set CONTINUE-SOFTWARE-FACTORY=FALSE
+Orchestrator: Received FALSE → Stopped automation → Waited for human
+Human: "Why did it stop? Bugs are normal!"
+
+✅ CORRECT BEHAVIOR (What should have happened):
+Integration Agent: Found BUG-020 → Set CONTINUE-SOFTWARE-FACTORY=TRUE
+Orchestrator: Received TRUE → Continued automatically → ERROR_RECOVERY
+ERROR_RECOVERY: Spawned fix agent → Fixed bug → Re-integrated → Success
+Human: Never needed to intervene! (Perfect automation!)
+```
+
+### Iteration Container Tracking Example
+
+```json
+{
+  "wave_integration": {
+    "container_id": "wave-2-integration",
+    "iteration": 2,
+    "max_iterations": 5,
+    "bugs_found_iteration_1": ["BUG-020"],
+    "bugs_fixed_iteration_1": ["BUG-020"],
+    "bugs_found_iteration_2": [],
+    "convergence_status": "ACHIEVED",
+    "outcome": "SUCCESS_AFTER_2_ITERATIONS"
+  }
+}
+```
+
+**This is why iteration containers exist!**
+**This is why ERROR_RECOVERY exists!**
+**This is why R300 fix cascade protocol exists!**
+
+**ALL OF THESE ARE DESIGNED FOR AUTOMATIC BUG HANDLING!**
+
+### Summary Table: Bugs vs Continuation Flag
+
+| Scenario | Bug Count | Iteration | Flag | Rationale |
+|----------|-----------|-----------|------|-----------|
+| Integration finds bugs | 15 | 1 | TRUE ✅ | R300 will fix automatically |
+| After fixes, still bugs | 8 | 2 | TRUE ✅ | Convergence in progress |
+| After more fixes | 3 | 3 | TRUE ✅ | Still converging |
+| After more fixes | 1 | 4 | TRUE ✅ | Almost there |
+| Finally clean | 0 | 5 | TRUE ✅ | Success! |
+| Bugs not decreasing | 15 → 15 → 15 | 11+ | FALSE ❌ | Iteration overflow |
+| Bugs INCREASING | 3 → 8 → 15 | 4+ | FALSE ❌ | Divergence detected |
+
+**Default for any bug scenario: TRUE (let the system handle it!)**
+
+---
+
+## When to Output FALSE (TRULY EXCEPTIONAL CASES ONLY)
+**ONLY set FALSE for these CATASTROPHIC situations:**
+- **Data corruption spreading** - System state files corrupting other files
+- **Critical security breach** - Immediate halt required for security
+- **System cannot spawn agents** - Spawning mechanism completely broken
+- **State machine corrupted** - JSON invalid, cannot parse transitions
+- **Iteration overflow with ZERO progress** - 10+ attempts, same bugs, no convergence
+- **Divergence detected** - Bugs INCREASING with each fix (3→8→15)
+- **Recursive splits** - Split of split needed (design problem)
+- **Git infrastructure destroyed** - Cannot push/pull/commit at all
+
+**These are <0.1% of cases! Bugs are 99.9% of "failures" and they ALL use TRUE!**
 
 ## When to Output TRUE (DEFAULT FOR NORMAL OPERATIONS)
 **This should be your DEFAULT choice! Set TRUE for:**

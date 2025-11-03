@@ -407,20 +407,139 @@ OR
 CONTINUE-SOFTWARE-FACTORY=FALSE
 ```
 
-**When to use TRUE:**
-- ✅ All effort branches merged successfully
-- ✅ Conflicts resolved (if any)
-- ✅ Build passes
+## 🔴🔴🔴 CRITICAL: INTEGRATION BUGS ARE NORMAL OPERATION 🔴🔴🔴
+
+**SOFTWARE FACTORY 3.0 IS DESIGNED FOR INTEGRATION BUGS!**
+
+### 🚨🚨🚨 THE ABSOLUTE TRUTH: INTEGRATION BUGS = TRUE, NOT FALSE 🚨🚨🚨
+
+**When Integration Agent Reports Bugs:**
+
+The integration agent will document bugs and set its own continuation flag to TRUE.
+When you (Orchestrator) receive the integration report showing bugs, you MUST ALSO set TRUE!
+
+### What Happens When Integration Finds Bugs
+
+```
+Iteration 1:
+├─ You spawn Integration Agent ✅
+├─ Integration Agent merges efforts ✅
+├─ Build: FAILED (bugs found) ❌
+├─ Integration Agent documents BUG-020 per R300 ✅
+├─ Integration Agent: CONTINUE-SOFTWARE-FACTORY=TRUE ✅  <-- Integration Agent correct!
+├─ You receive report: "Integration BLOCKED, BUG-020 documented"
+└─ YOU MUST: CONTINUE-SOFTWARE-FACTORY=TRUE ✅  <-- YOU must also be correct!
+    └─ Transition: ERROR_RECOVERY
+
+ERROR_RECOVERY (Automatic):
+├─ Reads bug-tracking.json ✅
+├─ Finds BUG-020 blocks integration ✅
+├─ Spawns SW Engineer to fix effort-2 branch ✅
+├─ SW Engineer removes bug ✅
+├─ Fix cascades per R300 to downstream branches ✅
+└─ Orchestrator: CONTINUE-SOFTWARE-FACTORY=TRUE ✅
+    └─ Transition: INTEGRATE_WAVE_EFFORTS (Iteration 2)
+
+Iteration 2:
+├─ You spawn NEW Integration Agent ✅
+├─ Integration Agent merges efforts (now with fix) ✅
+├─ Build: SUCCESS ✅
+├─ Tests: PASS ✅
+└─ Integration Agent: CONTINUE-SOFTWARE-FACTORY=TRUE ✅
+    └─ Transition: REVIEW_WAVE_INTEGRATION
+
+Total: 2 iterations (COMPLETELY NORMAL!)
+```
+
+### ✅ CORRECT Pattern - Integration Reports Bugs (Use TRUE)
+
+```bash
+# Integration agent reports build failures
+INTEGRATION_STATUS="BLOCKED"
+BUGS_FOUND=["BUG-020"]
+BUILD_STATUS="FAILED"
+
+echo "🔴 Integration Agent Report:"
+echo "  Status: BLOCKED by BUG-020"
+echo "  Build: FAILED (function redeclarations)"
+echo "  Bug: Documented in bug-tracking.json"
+
+echo "📊 This is NORMAL for iteration 1!"
+echo "  - Bugs are expected during first integration"
+echo "  - ERROR_RECOVERY will fix automatically"
+echo "  - Re-integration will occur in iteration 2"
+echo "  - Iteration containers designed for this!"
+
+# ✅ CRITICAL: Set TRUE!
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE REASON=INTEGRATION_BUG_NORMAL_OPERATION"
+
+# What happens next:
+# 1. Orchestrator transitions to ERROR_RECOVERY automatically
+# 2. ERROR_RECOVERY spawns SW Engineer to fix BUG-020
+# 3. Fix cascades to all downstream branches
+# 4. System returns here for iteration 2
+# 5. Re-integration succeeds!
+```
+
+### ✅ CORRECT Pattern - Integration Test Failures (Use TRUE)
+
+```bash
+# Integration agent reports test failures
+BUILD_STATUS="PASSED"
+TEST_STATUS="FAILED"
+BUGS_FOUND=["BUG-021"]
+
+echo "🔴 Integration Agent Report:"
+echo "  Status: BLOCKED by BUG-021"
+echo "  Build: PASSED"
+echo "  Tests: FAILED (8 tests in validator)"
+echo "  Bug: Documented in bug-tracking.json"
+
+# ✅ Set TRUE!
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE REASON=TEST_FAILURES_ARE_BUGS"
+
+# ERROR_RECOVERY will handle the fixes automatically
+```
+
+### ✅ CORRECT Pattern - Integration Demo Failures (Use TRUE)
+
+```bash
+# Integration agent reports demo failures (R291)
+BUILD_STATUS="PASSED"
+TEST_STATUS="PASSED"
+DEMO_STATUS="FAILED"
+BUGS_FOUND=["BUG-022"]
+
+echo "🔴 Integration Agent Report:"
+echo "  Status: BLOCKED by BUG-022"
+echo "  Demo: FAILED (demo-features.sh error)"
+echo "  Bug: Documented in bug-tracking.json per R291"
+
+# ✅ Set TRUE!
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE REASON=DEMO_FAILURES_ARE_BUGS_PER_R291"
+
+# ERROR_RECOVERY will fix demo issues automatically
+```
+
+### ✅ When to use TRUE (ALMOST ALWAYS):
+
+- ✅ Integration Agent reports bugs (bugs = NORMAL!)
+- ✅ Build failures during integration (bugs, will be fixed)
+- ✅ Test failures during integration (bugs, will be fixed)
+- ✅ Demo failures during integration (bugs per R291, will be fixed)
+- ✅ Merge conflicts encountered (resolved, continue)
+- ✅ Integration succeeded (normal success path)
 - ✅ State transition validated by State Manager
-- ✅ Ready to proceed to REVIEW_WAVE_INTEGRATION
+- ✅ Ready to proceed (either to ERROR_RECOVERY for fixes, or to REVIEW_WAVE_INTEGRATION if clean)
 
-**When to use FALSE:**
-- ❌ Integration failed
-- ❌ Build broken after merge
-- ❌ Critical conflicts unresolvable
-- ❌ Requires human intervention
+### ❌ When to use FALSE (ONLY CATASTROPHIC):
 
-**DEFAULT for this state: TRUE** (integration typically succeeds, failures go to ERROR_RECOVERY)
+- ❌ Git infrastructure completely broken (cannot push/pull at all)
+- ❌ State files corrupted beyond recovery
+- ❌ Cannot spawn Integration Agent (spawning mechanism broken)
+- ❌ System infrastructure failure (not bugs!)
+
+**DEFAULT for this state: TRUE (bugs are normal, ERROR_RECOVERY handles them automatically!)**
 
 **IMPORTANT:** This is NOT an R322 checkpoint state. Factory continues automatically after integration.
 

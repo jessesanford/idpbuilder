@@ -61,6 +61,17 @@ def get_project_root() -> Path:
 
 class StateVisualizer:
     def __init__(self):
+        # Runtime UI integration knobs (Textual TUI may set these via attrs or setters)
+        # Default to environment-driven or sane defaults
+        try:
+            env_cols = int(os.environ.get("COLUMNS", "0")) or int(os.environ.get("TERM_COLUMNS", "0"))
+        except Exception:
+            env_cols = 0
+        self.columns: int = env_cols if env_cols > 0 else 80
+        self.manual_width: Optional[int] = None  # TUI may set and call update_terminal_size()
+        self.non_interactive: bool = True
+        self.current_view: str = "journey"  # 'journey' | 'overview' | 'focused'
+
         self.project_root = get_project_root()
         self.state_file = self.project_root / "orchestrator-state-v3.json"
         self.state_machine_file = self.project_root / "state-machines" / "software-factory-3.0-state-machine.json"
@@ -81,6 +92,44 @@ class StateVisualizer:
         self.current_state = {}
         self.state_machine = {}
         self.state_history = []
+        self._last_lines: List[str] = []
+
+    # --- Width and interaction setters expected by the TUI (best-effort no-throw) ---
+    def update_terminal_size(self) -> None:
+        # Honor a manually requested width if provided
+        if isinstance(self.manual_width, int) and self.manual_width > 0:
+            self.columns = self.manual_width
+
+    def set_columns(self, n: int) -> None:
+        try:
+            n = int(n)
+            if n > 0:
+                self.columns = n
+        except Exception:
+            pass
+
+    def set_terminal_columns(self, n: int) -> None:
+        self.set_columns(n)
+
+    def set_width(self, n: int) -> None:
+        self.set_columns(n)
+
+    def set_non_interactive(self, flag: bool) -> None:
+        try:
+            self.non_interactive = bool(flag)
+        except Exception:
+            pass
+
+    def set_interactive(self, flag: bool) -> None:
+        # inverse of non_interactive if provided
+        try:
+            self.non_interactive = not bool(flag)
+        except Exception:
+            pass
+
+    def set_view(self, view_name: str) -> None:
+        if view_name in ("journey", "overview", "focused"):
+            self.current_view = view_name
 
     def load_data(self) -> bool:
         """Load state files"""
@@ -258,9 +307,10 @@ class StateVisualizer:
         output = []
 
         # Header
-        output.append("=" * 80)
+        width = max(40, int(self.columns or 80))
+        output.append("=" * width)
         output.append(f"{Colors.BOLD}{Colors.CYAN}SOFTWARE FACTORY 3.0 - STATE MACHINE VISUALIZATION{Colors.RESET}")
-        output.append("=" * 80)
+        output.append("=" * width)
         output.append("")
 
         # Current state info
@@ -348,9 +398,9 @@ class StateVisualizer:
             output.append(f"  Return to: {sub_state.get('return_state', 'N/A')}")
 
         output.append("")
-        output.append("-" * 80)
+        output.append("-" * width)
         output.append(f"{Colors.BOLD}State Flow:{Colors.RESET}")
-        output.append("-" * 80)
+        output.append("-" * width)
         output.append("")
 
         # Get the path to current state
@@ -387,9 +437,9 @@ class StateVisualizer:
 
         # Show state type and description
         output.append("")
-        output.append("-" * 80)
+        output.append("-" * width)
         output.append(f"{Colors.BOLD}Current State Details:{Colors.RESET}")
-        output.append("-" * 80)
+        output.append("-" * width)
 
         if current in states_dict:
             state_data = states_dict[current]
@@ -422,9 +472,9 @@ class StateVisualizer:
 
         # Legend
         output.append("")
-        output.append("-" * 80)
+        output.append("-" * width)
         output.append(f"{Colors.BOLD}Legend:{Colors.RESET}")
-        output.append("-" * 80)
+        output.append("-" * width)
         output.append(f"[STATE]                    - Normal state")
         output.append(f"{Colors.GREEN}╔════════════╗{Colors.RESET}")
         output.append(f"{Colors.GREEN}║{Colors.YELLOW} CURRENT ST {Colors.GREEN}║{Colors.RESET} {Colors.RED}◄── YOU ARE HERE{Colors.RESET} - Current state")
@@ -436,12 +486,34 @@ class StateVisualizer:
 
         # Footer
         output.append("")
-        output.append("=" * 80)
+        output.append("=" * width)
         output.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         output.append(f"State File: {self.state_file}")
-        output.append("=" * 80)
+        output.append("=" * width)
 
         return "\n".join(output)
+
+    # --- Alternative renderers the TUI may probe ---
+    def render_journey_view(self) -> List[str]:
+        return self.generate_visualization().splitlines()
+
+    def render_overview_view(self) -> List[str]:
+        # Compact view as an overview
+        return self.generate_compact_view().splitlines()
+
+    def render_focused_view(self) -> str:
+        # Focused mode uses compact view string
+        return self.generate_compact_view()
+
+    def get_lines(self) -> List[str]:
+        # Provide lines according to the current view
+        if self.current_view == "focused":
+            self._last_lines = self.render_focused_view().splitlines()
+        elif self.current_view == "overview":
+            self._last_lines = self.render_overview_view()
+        else:
+            self._last_lines = self.render_journey_view()
+        return self._last_lines
 
     def generate_compact_view(self) -> str:
         """Generate a compact view for quick reference"""

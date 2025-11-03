@@ -146,37 +146,40 @@ run_sf3_validation() {
     print_info "Validating SF 3.0 state files..."
 
     local status=0
-    local validator="$GIT_ROOT/tools/validate-state-file.sh"
 
-    # Check if validator exists
-    if [ ! -f "$validator" ]; then
-        print_error "SF 3.0 validator not found: $validator"
-        print_warning "Pre-commit hook expected tools/validate-state-file.sh"
-        return 1
+    # CRITICAL: State File Protection Hook (prevents deletion & corruption)
+    # This hook prevents the exact incident that occurred with integration-containers.json
+    if ! run_hook "tools/git-commit-hooks/shared-hooks/state-file-protection.hook" \
+                  "State File Protection (Critical)"; then
+        status=1
     fi
 
-    # Define SF 3.0 state files to validate
-    local state_files=(
-        "orchestrator-state-v3.json"
-        "bug-tracking.json"
-        "integration-containers.json"
-        "fix-cascade-state.json"
-    )
+    # Legacy validator (if exists)
+    local validator="$GIT_ROOT/tools/validate-state-file.sh"
+    if [ -f "$validator" ]; then
+        # Define SF 3.0 state files to validate
+        local state_files=(
+            "orchestrator-state-v3.json"
+            "bug-tracking.json"
+            "integration-containers.json"
+            "fix-cascade-state.json"
+        )
 
-    # Validate each file that exists and is staged for commit
-    for file in "${state_files[@]}"; do
-        if [ -f "$GIT_ROOT/$file" ]; then
-            # Check if file is staged for commit
-            if git diff --cached --name-only | grep -q "^${file}$"; then
-                if bash "$validator" "$GIT_ROOT/$file"; then
-                    print_success "$file validation passed"
-                else
-                    print_error "$file validation failed"
-                    status=1
+        # Validate each file that exists and is staged for commit
+        for file in "${state_files[@]}"; do
+            if [ -f "$GIT_ROOT/$file" ]; then
+                # Check if file is staged for commit
+                if git diff --cached --name-only | grep -q "^${file}$"; then
+                    if bash "$validator" "$GIT_ROOT/$file"; then
+                        print_success "$file validation passed"
+                    else
+                        print_error "$file validation failed"
+                        status=1
+                    fi
                 fi
             fi
-        fi
-    done
+        done
+    fi
 
     # R550: Plan Path Consistency Validation
     if [ -f "$GIT_ROOT/tools/validate-R550-compliance.sh" ]; then

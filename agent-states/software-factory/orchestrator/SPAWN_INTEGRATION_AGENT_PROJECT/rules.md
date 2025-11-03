@@ -131,7 +131,7 @@ update_state "[NEXT_STATE]"
 commit_state_files_per_r288()
 
 # 3. Save TODOs per R287
-save_todos "SPAWNED_[AGENT_TYPE]"
+save_todos "SPAWNED_INTEGRATION_AGENT"
 
 # 4. R322: Stop conversation (context preservation)
 echo "🛑 R322: Stopping after spawn for context preservation"
