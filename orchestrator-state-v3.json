@@ -3,15 +3,15 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "previous_state": "MONITORING_SWE_PROGRESS",
-    "last_transition_timestamp": "2025-11-03T06:57:14Z",
+    "current_state": "MONITORING_EFFORT_REVIEWS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+    "last_transition_timestamp": "2025-11-03T07:14:17Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "timestamp": "2025-11-03T06:57:14Z",
-      "from_state": "SPAWN_SW_ENGINEERS",
-      "to_state_proposed": "MONITORING_SWE_PROGRESS",
-      "to_state_required": "MONITORING_SWE_PROGRESS",
+      "timestamp": "2025-11-03T07:14:17Z",
+      "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+      "to_state_proposed": "MONITORING_EFFORT_REVIEWS",
+      "to_state_required": "MONITORING_EFFORT_REVIEWS",
       "validated_by": "state-manager",
       "orchestrator_proposal_accepted": true,
       "proposal_rejected": false,
@@ -21,29 +21,61 @@
         "to_state_exists": true,
         "in_allowed_transitions": true,
         "allowed_transitions": [
-          "MONITORING_SWE_PROGRESS",
+          "MONITORING_EFFORT_REVIEWS",
           "ERROR_RECOVERY"
         ],
         "guards_satisfied": {
-          "sw_engineer_spawned": true,
-          "effort_2_3_1_implementation_complete": true,
+          "code_reviewer_spawned": true,
+          "effort_2_3_1_review_complete": true,
+          "review_status_accepted": true,
           "sequential_strategy_active": true
         }
       },
       "work_completed": {
-        "effort_2_3_1_spawned": true,
-        "effort_2_3_1_implementation_complete": true,
-        "implementation_lines": 364,
+        "code_reviewer_spawned_at": "2025-11-03T07:06:16Z",
+        "effort_2_3_1_review_complete": true,
+        "review_status": "ACCEPTED",
+        "implementation_lines": 394,
         "test_coverage": "94.6%",
         "tests_passing": "38/38",
-        "effort_2_3_2_status": "awaiting_2_3_1_review",
+        "no_split_needed": true,
+        "size_compliance": "EXCELLENT",
+        "effort_2_3_2_status": "awaiting_2_3_1_review_completion",
         "sequential_strategy": "ACTIVE"
       },
       "phase": 2,
       "wave": 3,
-      "decision_rationale": "Transition APPROVED: SPAWN_SW_ENGINEERS → MONITORING_SWE_PROGRESS. SW Engineer spawned for Effort 2.3.1 and implementation complete. Sequential strategy: monitoring 2.3.1 progress before spawning 2.3.2."
+      "decision_rationale": "Transition APPROVED: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW → MONITORING_EFFORT_REVIEWS. Code Reviewer spawned for Effort 2.3.1 at 2025-11-03T07:06:16Z and review completed successfully. Implementation: 394 lines (within 800 line limit, no split needed). Test coverage: 94.6% (38/38 tests passing). Review result: ACCEPTED, no fixes needed. Sequential strategy active - need to monitor this review completion before spawning Effort 2.3.2."
     },
     "state_history": [
+      {
+        "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+        "to_state": "MONITORING_EFFORT_REVIEWS",
+        "timestamp": "2025-11-03T07:14:17Z",
+        "validated_by": "state-manager",
+        "reason": "Code Reviewer spawned for Effort 2.3.1 (input-validation) and review complete. Review shows 394 lines (ACCEPTED, no split needed). Test coverage 94.6% (38/38 tests passing). Sequential strategy active - monitoring review before spawning 2.3.2.",
+        "phase": 2,
+        "wave": 3,
+        "effort": "2.3.1",
+        "validation_summary": {
+          "code_reviewer_spawned": true,
+          "review_complete": true,
+          "review_status": "ACCEPTED",
+          "implementation_lines": 394,
+          "within_800_limit": true,
+          "no_split_needed": true,
+          "test_coverage": "94.6%",
+          "tests_passing": 38,
+          "sequential_strategy": "ACTIVE",
+          "next_effort_ready": "2.3.2"
+        },
+        "guards_satisfied": {
+          "code_reviewer_spawned_and_complete": true,
+          "review_status_accepted": true,
+          "size_compliant": true,
+          "sequential_monitoring_needed": true
+        }
+      },
       {
         "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
         "to_state": "WAITING_FOR_EFFORT_PLANS",

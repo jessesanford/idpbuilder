@@ -770,29 +770,39 @@
     ]
   },
   "metadata": {
-    "last_updated": "2025-11-03T06:29:16Z",
-    "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING to WAITING_FOR_EFFORT_PLANS (Wave 2.3 awaiting effort plans)",
-    "state_transition": "WAITING_FOR_EFFORT_PLANS",
+    "last_updated": "2025-11-03T07:14:17Z",
+    "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW to MONITORING_EFFORT_REVIEWS (Effort 2.3.1 review complete - ACCEPTED, 394 lines)",
+    "state_transition": "MONITORING_EFFORT_REVIEWS",
     "updated_by": "state-manager",
-    "last_modified": "2025-11-03T06:36:08Z"
+    "last_modified": "2025-11-03T07:14:17Z"
   },
   "last_state_transition": {
-    "from": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "to": "WAITING_FOR_EFFORT_PLANS",
-    "timestamp": "2025-11-03T06:29:16Z"
+    "from": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+    "to": "MONITORING_EFFORT_REVIEWS",
+    "timestamp": "2025-11-03T07:14:17Z"
   },
   "state_machine_sync": {
-    "current_state": "WAITING_FOR_EFFORT_PLANS",
-    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "last_transition": "2025-11-03T06:29:16Z",
-    "last_sync": "2025-11-03T06:29:16Z"
+    "current_state": "MONITORING_EFFORT_REVIEWS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+    "last_transition": "2025-11-03T07:14:17Z",
+    "last_sync": "2025-11-03T07:14:17Z"
   },
-  "current_state": "WAITING_FOR_EFFORT_PLANS",
+  "current_state": "MONITORING_EFFORT_REVIEWS",
   "phase": 2,
   "wave": 3,
   "last_updated_by": "state-manager",
-  "last_sync": "2025-11-03T06:36:08Z",
+  "last_sync": "2025-11-03T07:14:17Z",
   "state_transitions": [
+    {
+      "timestamp": "2025-11-03T07:14:17Z",
+      "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+      "to_state": "MONITORING_EFFORT_REVIEWS",
+      "phase": 2,
+      "wave": 3,
+      "effort": "2.3.1",
+      "validated_by": "state-manager",
+      "reason": "Code Reviewer spawned for Effort 2.3.1 and review complete. Review shows 394 lines (ACCEPTED, no split needed, 94.6% coverage, 38/38 tests). Sequential strategy - monitoring before spawning 2.3.2."
+    },
     {
       "timestamp": "2025-11-03T06:57:14Z",
       "from_state": "SPAWN_SW_ENGINEERS",
