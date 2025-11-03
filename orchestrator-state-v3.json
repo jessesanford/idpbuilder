@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "MONITORING_EFFORT_REVIEWS",
-    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "last_transition_timestamp": "2025-11-03T08:06:28Z",
+    "current_state": "WAVE_COMPLETE",
+    "previous_state": "MONITORING_EFFORT_REVIEWS",
+    "last_transition_timestamp": "2025-11-03T08:13:37Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
       "timestamp": "2025-11-03T08:06:28Z",
@@ -3448,6 +3448,16 @@
         },
         "orchestrator_proposal": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
         "proposal_accepted": true
+      },
+      {
+        "from_state": "MONITORING_EFFORT_REVIEWS",
+        "to_state": "WAVE_COMPLETE",
+        "timestamp": "2025-11-03T08:13:37Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-1762157617",
+        "orchestrator_proposal": "WAVE_COMPLETE",
+        "proposal_accepted": true,
+        "transition_invalid": false
       }
     ],
     "loop_detection": {
