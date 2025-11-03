@@ -1,0 +1,285 @@
+#!/bin/bash
+#
+# SOFTWARE FACTORY 3.0 - STATE FILE PROTECTION HOOK
+#
+# Purpose: Protect critical state files from deletion and corruption
+# Prevents the exact incident that occurred with integration-containers.json
+#
+# This hook provides comprehensive protection:
+# - Validates JSON schemas for all state files
+# - Prevents deletion of critical state files in project instances
+# - Detects corruption patterns (wrong jq paths, missing required fields)
+# - Template-specific protection against instance files
+#
+# Protection Mechanisms:
+# 1. JSON Schema Validation (uses ajv for draft-07 support)
+# 2. State File Deletion Prevention (project instances only)
+# 3. Data Structure Verification (correct jq paths, required fields)
+# 4. Template Instance File Prevention (template repos only)
+
+set -euo pipefail
+
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
+
+# Colors for output
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+# Get git root
+GIT_ROOT="$(git rev-parse --show-toplevel)"
+
+# Determine repository type
+IS_TEMPLATE=false
+if [ -f "$GIT_ROOT/.template-repo" ]; then
+    IS_TEMPLATE=true
+fi
+
+# Track violations
+VIOLATIONS=0
+WARNINGS=0
+
+# Path to schema directory (relative to repo root)
+SCHEMA_DIR="$GIT_ROOT/schemas"
+
+# Critical state files that must NEVER be deleted (project instances only)
+CRITICAL_STATE_FILES=(
+    "orchestrator-state-v3.json"
+    "integration-containers.json"
+    "bug-tracking.json"
+    "fix-cascade-state.json"
+)
+
+# Map state files to their schemas
+declare -A STATE_FILE_SCHEMAS=(
+    ["orchestrator-state-v3.json"]="orchestrator-state-v3.schema.json"
+    ["integration-containers.json"]="integration-containers.schema.json"
+    ["bug-tracking.json"]="bug-tracking.schema.json"
+    ["fix-cascade-state.json"]="fix-cascade-state.schema.json"
+)
+
+# ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
+
+# Check if ajv is available
+check_validator_available() {
+    if command -v ajv >/dev/null 2>&1; then
+        return 0
+    elif command -v jsonschema >/dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Validate JSON file against schema using ajv (preferred) or jsonschema
+validate_json_schema() {
+    local json_file="$1"
+    local schema_file="$2"
+    local validator=""
+    local validation_output=""
+    local exit_code=0
+
+    # Skip if file doesn't exist (might be deleted)
+    if [ ! -f "$GIT_ROOT/$json_file" ]; then
+        return 0
+    fi
+
+    # Skip if schema doesn't exist
+    if [ ! -f "$schema_file" ]; then
+        return 0
+    fi
+
+    # Try ajv first (better draft-07 support)
+    if command -v ajv >/dev/null 2>&1; then
+        validator="ajv"
+        validation_output=$(ajv validate -s "$schema_file" -d "$GIT_ROOT/$json_file" 2>&1) || exit_code=$?
+    # Fallback to jsonschema
+    elif command -v jsonschema >/dev/null 2>&1; then
+        validator="jsonschema"
+        validation_output=$(jsonschema -i "$GIT_ROOT/$json_file" "$schema_file" 2>&1) || exit_code=$?
+    else
+        return 0  # No validator available, skip validation
+    fi
+
+    if [ $exit_code -ne 0 ]; then
+        echo -e "${RED}❌ SCHEMA VALIDATION FAILED: ${json_file}${NC}"
+        echo -e "${RED}   Validator: ${validator}${NC}"
+        echo ""
+        echo "$validation_output" | head -20
+        if [ $(echo "$validation_output" | wc -l) -gt 20 ]; then
+            echo "   ... (output truncated)"
+        fi
+        echo ""
+        return 1
+    fi
+
+    return 0
+}
+
+# Check for integration-containers.json data structure issues
+validate_integration_containers_structure() {
+    local file="integration-containers.json"
+
+    # Skip if file not staged
+    if ! git diff --cached --name-only | grep -q "^${file}$"; then
+        return 0
+    fi
+
+    # Skip if file doesn't exist
+    if [ ! -f "$GIT_ROOT/$file" ]; then
+        return 0
+    fi
+
+    # Check if file has .active_integrations array (correct structure)
+    if ! jq -e '.active_integrations' "$GIT_ROOT/$file" >/dev/null 2>&1; then
+        echo -e "${RED}❌ CORRUPTION DETECTED: ${file}${NC}"
+        echo "   Missing required field: .active_integrations"
+        echo "   This is the EXACT error that caused the incident!"
+        echo ""
+        echo "   The file MUST have an 'active_integrations' array at the root level."
+        echo "   Incorrect structure detected - this would break all orchestrator operations."
+        echo ""
+        return 1
+    fi
+
+    # Warn if someone tries to use wrong path .integration_containers (the bug!)
+    if jq -e '.integration_containers' "$GIT_ROOT/$file" >/dev/null 2>&1; then
+        echo -e "${YELLOW}⚠️  WARNING: ${file} contains '.integration_containers' field${NC}"
+        echo "   This field name is INCORRECT! The correct field is '.active_integrations'"
+        echo "   This is the exact bug that caused the orchestrator failure."
+        echo ""
+        ((WARNINGS++))
+    fi
+
+    return 0
+}
+
+# Check for orchestrator-state-v3.json data structure issues
+validate_orchestrator_state_structure() {
+    local file="orchestrator-state-v3.json"
+
+    # Skip if file not staged
+    if ! git diff --cached --name-only | grep -q "^${file}$"; then
+        return 0
+    fi
+
+    # Skip if file doesn't exist
+    if [ ! -f "$GIT_ROOT/$file" ]; then
+        return 0
+    fi
+
+    # Check required top-level fields
+    local required_fields=("state_machine" "project_progression" "references")
+    for field in "${required_fields[@]}"; do
+        if ! jq -e ".${field}" "$GIT_ROOT/$file" >/dev/null 2>&1; then
+            echo -e "${RED}❌ CORRUPTION DETECTED: ${file}${NC}"
+            echo "   Missing required field: .${field}"
+            echo ""
+            return 1
+        fi
+    done
+
+    # Check state_machine.current_state exists
+    if ! jq -e '.state_machine.current_state' "$GIT_ROOT/$file" >/dev/null 2>&1; then
+        echo -e "${RED}❌ CORRUPTION DETECTED: ${file}${NC}"
+        echo "   Missing required field: .state_machine.current_state"
+        echo ""
+        return 1
+    fi
+
+    return 0
+}
+
+# ============================================================================
+# MAIN VALIDATION LOGIC
+# ============================================================================
+
+echo -e "${BOLD}${BLUE}🛡️  State File Protection: Comprehensive validation...${NC}"
+
+# PROTECTION LAYER 1: State File Deletion Prevention (PROJECT INSTANCES)
+if [ "$IS_TEMPLATE" = false ]; then
+    for file in "${CRITICAL_STATE_FILES[@]}"; do
+        # Check if file is being deleted
+        if git diff --cached --name-only --diff-filter=D | grep -q "^${file}$"; then
+            # Verify file actually exists in working directory
+            if [ -f "$GIT_ROOT/$file" ]; then
+                echo -e "${RED}❌ BLOCKED: Attempting to delete critical state file: ${file}${NC}"
+                echo "   This file is CRITICAL to Software Factory operation"
+                echo "   File exists with size: $(stat -c%s "$GIT_ROOT/$file" 2>/dev/null || stat -f%z "$GIT_ROOT/$file" 2>/dev/null) bytes"
+                echo ""
+                echo "   This protection prevents the exact incident that occurred!"
+                echo ""
+                ((VIOLATIONS++))
+            fi
+        fi
+    done
+fi
+
+# PROTECTION LAYER 2: JSON SCHEMA VALIDATION (ALL REPOS)
+if check_validator_available; then
+    # Get list of staged state files
+    STAGED_STATE_FILES=$(git diff --cached --name-only | grep -E '\.(json)$' | grep -E '^(orchestrator-state|integration-containers|bug-tracking|fix-cascade-state)' || true)
+
+    if [ -n "$STAGED_STATE_FILES" ]; then
+        for state_file in $STAGED_STATE_FILES; do
+            # Skip deleted files
+            if git diff --cached --name-only --diff-filter=D | grep -q "^${state_file}$"; then
+                continue
+            fi
+
+            # Get schema for this state file
+            basename_file=$(basename "$state_file")
+            if [ -n "${STATE_FILE_SCHEMAS[$basename_file]:-}" ]; then
+                schema_file="${SCHEMA_DIR}/${STATE_FILE_SCHEMAS[$basename_file]}"
+
+                if ! validate_json_schema "$state_file" "$schema_file"; then
+                    ((VIOLATIONS++))
+                fi
+            fi
+        done
+    fi
+fi
+
+# PROTECTION LAYER 3: DATA STRUCTURE VERIFICATION (ALL REPOS)
+# Check integration-containers.json structure
+if ! validate_integration_containers_structure; then
+    ((VIOLATIONS++))
+fi
+
+# Check orchestrator-state-v3.json structure
+if ! validate_orchestrator_state_structure; then
+    ((VIOLATIONS++))
+fi
+
+# ============================================================================
+# FINAL REPORT AND EXIT
+# ============================================================================
+
+if [ $VIOLATIONS -gt 0 ]; then
+    echo ""
+    echo -e "${RED}${BOLD}⚠️  State File Protection: ${VIOLATIONS} violation(s) found${NC}"
+    if [ $WARNINGS -gt 0 ]; then
+        echo -e "${YELLOW}⚠️  Found ${WARNINGS} warning(s)${NC}"
+    fi
+    echo ""
+    echo "Critical state files are protected from deletion and corruption."
+    echo "This protection prevents the exact incident that occurred."
+    echo ""
+    echo "Note: R506 PROHIBITS using --no-verify for state file commits!"
+    echo "Bypassing = SYSTEM-WIDE CORRUPTION = -100% grade"
+    echo ""
+    exit 1
+else
+    if [ $WARNINGS -gt 0 ]; then
+        echo -e "${YELLOW}⚠️  Found ${WARNINGS} warning(s) - review above${NC}"
+    fi
+    echo -e "${GREEN}✅ State file protection: No violations found${NC}"
+    exit 0
+fi
