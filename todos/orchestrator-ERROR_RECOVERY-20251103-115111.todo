@@ -1,0 +1,20 @@
+# Orchestrator TODO State - ERROR_RECOVERY
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: R287 - Before state transition
+
+## Completed Tasks:
+- [x] Analyze BUG-020 to understand fix requirements
+- [x] Spawn SW Engineer to fix effort-2.3.2 branch per R300  
+- [x] Verify fixes applied to effort branch (R300 compliance)
+- [x] Determine correct next state after ERROR_RECOVERY
+- [x] Consult State Manager for state transition
+
+## Current Status:
+- ERROR_RECOVERY work complete
+- BUG-020 fix applied to effort branch
+- Ready to transition to START_WAVE_ITERATION for iteration 2
+
+## Next Actions (after State Manager consultation):
+- State Manager will transition to START_WAVE_ITERATION
+- Iteration 2 will re-integrate with fixed effort branches
+- Integration should succeed without redeclaration errors
