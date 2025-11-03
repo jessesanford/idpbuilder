@@ -1,0 +1,28 @@
+# Orchestrator TODO State - CREATE_PHASE_FIX_PLAN
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: R287 - Before state transition
+
+## Completed
+- [x] Load bugs from bug-tracking.json for current iteration
+- [x] Analyze each bug for upstream vs integration-specific
+- [x] Identify affected upstream branches for each bug
+- [x] Create fix plan for each bug
+- [x] Present fix plan to user for approval (R322 checkpoint)
+
+## In Progress
+- [ ] Await user approval of fix plan
+- [ ] Spawn State Manager for SHUTDOWN_CONSULTATION (after approval)
+
+## Pending
+- [ ] Save TODOs per R287
+- [ ] Output CONTINUE-SOFTWARE-FACTORY flag per R405
+- [ ] Stop execution per R322
+
+## Context
+- State: CREATE_PHASE_FIX_PLAN
+- Phase: 2 (Error Handling & Validation)
+- Bugs to fix: 2 (BUG-022-STUB-VIOLATION, BUG-023-TEST-FAILURE)
+- Both bugs are upstream (require R321 backport)
+- Affected efforts: wave1/effort-1-push-command-core, wave3/effort-2-error-system
+- Next state (proposed): FIX_PHASE_UPSTREAM_BUGS
+- R322 checkpoint: User approval required before proceeding
