@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-03T06:29:22Z",
+  "last_updated": "2025-11-03T08:47:53Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -452,7 +452,7 @@
       "container_id": "wave-phase2-wave3",
       "phase": 2,
       "wave": 3,
-      "status": "integrating",
+      "status": "FAILED",
       "iteration": 1,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase2/wave3/integration",
@@ -460,18 +460,18 @@
       "base_branch": "idpbuilder-oci-push/phase2/wave2/integration",
       "created_at": "2025-11-03T01:42:39Z",
       "integration_started_at": "2025-11-03T08:34:44Z",
-      "last_iteration_at": "2025-11-03T08:34:44Z",
+      "last_iteration_at": "2025-11-03T08:47:53Z",
       "convergence_metrics": {
         "bugs_remaining": 0,
-        "bugs_found": 0,
+        "bugs_found": 1,
         "test_failures": 0,
-        "build_failures": 0,
+        "build_failures": 1,
         "bugs_fixed": 0
       },
       "efforts_to_integrate": [],
       "effort_branches": [],
       "integration_plan_file": null,
-      "notes": "Wave 2.3 container initialized with iteration=0. Ready to increment to 1 in START_WAVE_ITERATION. Infrastructure: branch idpbuilder-oci-push/phase2/wave3/integration, workspace efforts/phase2/wave3/integration-workspace.",
+      "notes": "Wave 2.3 Iteration 1: Integration FAILED with upstream bug BUG-020. Both efforts merged successfully (1 conflict resolved per R262), but build failed due to function redeclarations in pkg/validator/. Integration agent documented bug per R266, cannot fix. Requires SW Engineer to fix effort-2 branch per R300.",
       "test_plan_file": "planning/phase2/wave3/WAVE-TEST-PLAN.md",
       "test_count": 63,
       "coverage_targets": {
@@ -530,13 +530,13 @@
   },
   "state_machine_sync": {
     "orchestrator_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_sync": "2025-11-03T08:34:44Z",
+    "last_sync": "2025-11-03T08:47:53Z",
     "in_sync": true,
-    "current_state": "INTEGRATE_WAVE_EFFORTS",
-    "previous_state": "START_WAVE_ITERATION",
-    "last_transition": "2025-11-03T08:34:44Z"
+    "current_state": "ERROR_RECOVERY",
+    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "last_transition": "2025-11-03T08:47:53Z"
   },
-  "current_state": "INTEGRATE_WAVE_EFFORTS",
+  "current_state": "ERROR_RECOVERY",
   "phase": 2,
   "wave": 3,
   "last_updated_by": "state-manager",
@@ -549,6 +549,16 @@
   },
   "state_transitions": [
     {
+      "timestamp": "2025-11-03T08:47:53Z",
+      "from_state": "INTEGRATE_WAVE_EFFORTS",
+      "to_state": "ERROR_RECOVERY",
+      "phase": 2,
+      "wave": 3,
+      "iteration": 1,
+      "validated_by": "state-manager",
+      "reason": "Integration build failed with upstream bug BUG-020 (function redeclarations in pkg/validator/). Integration agent documented per R266, requires SW Engineer fix per R300."
+    },
+    {
       "timestamp": "2025-11-03T08:34:44Z",
       "from_state": "START_WAVE_ITERATION",
       "to_state": "INTEGRATE_WAVE_EFFORTS",
@@ -556,7 +566,7 @@
       "wave": 3,
       "iteration": 1,
       "validated_by": "state-manager",
-      "reason": "Wave iteration 1 started. Iteration counter incremented 0 → 1. Backport attempts reset to 0 (R532 compliance). Progress analysis: CONTINUE (first iteration, R615 compliance). Max iterations check: 1/10 (R531/R336 compliance). Ready to integrate Wave 2.3 efforts."
+      "reason": "Wave iteration 1 started. Iteration counter incremented 0 \u2192 1. Backport attempts reset to 0 (R532 compliance). Progress analysis: CONTINUE (first iteration, R615 compliance). Max iterations check: 1/10 (R531/R336 compliance). Ready to integrate Wave 2.3 efforts."
     },
     {
       "timestamp": "2025-11-03T07:14:17Z",
