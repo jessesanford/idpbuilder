@@ -525,7 +525,8 @@
     "last_updated": "2025-11-03T06:29:22Z",
     "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING to WAITING_FOR_EFFORT_PLANS (Wave 2.3 awaiting effort plans)",
     "state_transition": "WAITING_FOR_EFFORT_PLANS",
-    "updated_by": "state-manager"
+    "updated_by": "state-manager",
+    "last_modified": "2025-11-03T06:36:08Z"
   },
   "state_machine_sync": {
     "orchestrator_state": "WAITING_FOR_EFFORT_PLANS",

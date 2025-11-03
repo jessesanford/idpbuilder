@@ -3,15 +3,15 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_EFFORT_PLANS",
-    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "last_transition_timestamp": "2025-11-03T06:29:08Z",
+    "current_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+    "previous_state": "WAITING_FOR_EFFORT_PLANS",
+    "last_transition_timestamp": "2025-11-03T06:35:59Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "timestamp": "2025-11-03T06:29:08Z",
-      "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-      "to_state_proposed": "WAITING_FOR_EFFORT_PLANS",
-      "to_state_required": "WAITING_FOR_EFFORT_PLANS",
+      "timestamp": "2025-11-03T06:35:59Z",
+      "from_state": "WAITING_FOR_EFFORT_PLANS",
+      "to_state_proposed": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+      "to_state_required": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
       "validated_by": "state-manager",
       "orchestrator_proposal_accepted": true,
       "proposal_rejected": false,
@@ -21,30 +21,33 @@
         "to_state_exists": true,
         "in_allowed_transitions": true,
         "allowed_transitions": [
-          "WAITING_FOR_EFFORT_PLANS",
+          "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+          "SPAWN_SW_ENGINEERS",
           "ERROR_RECOVERY"
         ],
         "guards_satisfied": {
-          "code_reviewers_spawned": true
+          "effort_count_gt_1": true,
+          "both_plans_complete": true,
+          "plans_committed": true
         },
         "exit_criteria_met": true,
         "entry_criteria_met": true,
         "state_machine_compliance": "APPROVED"
       },
       "work_completed": {
-        "code_reviewers_spawned": 2,
-        "effort_planning_initiated": true,
-        "efforts_planned": [
-          "2.3.1",
-          "2.3.2"
-        ],
-        "sequential_strategy_followed": true,
-        "r208_cd_protocol_followed": true,
-        "r287_todos_saved": true
+        "effort_2_3_1_plan_complete": true,
+        "effort_2_3_1_location": ".software-factory/phase2/wave3/effort-1-input-validation/IMPLEMENTATION-PLAN--20251103-061910.md",
+        "effort_2_3_1_lines": 1005,
+        "effort_2_3_2_plan_complete": true,
+        "effort_2_3_2_location": ".software-factory/phase2/wave3/effort-2-error-system/IMPLEMENTATION-PLAN-20251103-062330.md",
+        "effort_2_3_2_lines": 833,
+        "all_plans_verified": true,
+        "all_plans_committed": true,
+        "r383_locations_correct": true
       },
       "phase": 2,
       "wave": 3,
-      "decision_rationale": "Code Reviewers spawned for both Wave 2.3 efforts (2.3.1 input-validation, 2.3.2 error-system). Implementation plans created in correct .software-factory locations per R303. Sequential spawning strategy followed per R218. R208 CD protocol followed for each spawn. TODOs saved and committed per R287. Ready to wait for effort plan completion."
+      "decision_rationale": "Per SF 3.0 mandatory sequence and R356 optimization: with 2 efforts (>1), orchestrator MUST transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION to analyze implementation plans and determine SW Engineer spawn strategy (parallel vs sequential) before spawning any SW Engineers. This is a REQUIRED transition, not optional."
     },
     "state_history": [
       {
@@ -3238,6 +3241,27 @@
         "reason": "R213 metadata injection validated and complete. Ready to analyze Code Reviewer parallelization strategy for effort planning.",
         "orchestrator_proposal": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
         "proposal_accepted": true
+      },
+      {
+        "from_state": "WAITING_FOR_EFFORT_PLANS",
+        "to_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+        "timestamp": "2025-11-03T06:35:59Z",
+        "validated_by": "state-manager",
+        "reason": "Both Code Reviewers completed effort planning for Wave 2.3. Implementation plans exist: effort 2.3.1 (1005 lines, input-validation) and effort 2.3.2 (833 lines, error-system). Per R356 guard requirements: effort_count=2 > 1, therefore ANALYZE_IMPLEMENTATION_PARALLELIZATION is REQUIRED before spawning SW Engineers.",
+        "phase": 2,
+        "wave": 3,
+        "validation_summary": {
+          "effort_count": 2,
+          "plans_complete": true,
+          "plans_committed": true,
+          "r356_guard_satisfied": true,
+          "required_transition": true
+        },
+        "guards_satisfied": {
+          "effort_count_gt_1": true,
+          "both_plans_complete": true,
+          "plans_committed": true
+        }
       }
     ],
     "loop_detection": {

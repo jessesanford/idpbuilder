@@ -162,7 +162,8 @@
     "last_updated": "2025-11-03T05:52:43Z",
     "notes": "State transition: CREATE_NEXT_INFRASTRUCTURE to VALIDATE_INFRASTRUCTURE (Wave 2.3 infrastructure validation)",
     "state_transition": "VALIDATE_INFRASTRUCTURE",
-    "updated_by": "state-manager"
+    "updated_by": "state-manager",
+    "last_modified": "2025-11-03T06:36:08Z"
   },
   "last_updated": "2025-11-03T05:52:43Z",
   "state_machine_sync": {
