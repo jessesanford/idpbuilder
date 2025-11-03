@@ -3,7 +3,9 @@ package push
 import (
 	"context"
 	"fmt"
+	"os"
 
+	"github.com/cnoe-io/idpbuilder/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -59,8 +61,17 @@ Examples:
 			// Convert to PushOptions for compatibility
 			opts := config.ToPushOptions()
 
-			// Execute push (implementation will be added in Phase 3)
-			return runPush(cmd.Context(), opts)
+			// Execute push with error wrapping and exit code handling
+			if err := runPush(cmd.Context(), opts); err != nil {
+				// Format error with appropriate styling
+				fmt.Fprintln(os.Stderr, errors.FormatError(err))
+
+				// Get exit code for this error type
+				exitCode := errors.GetExitCode(err)
+				os.Exit(exitCode)
+			}
+
+			return nil
 		},
 	}
 
@@ -79,20 +90,44 @@ Examples:
 	return cmd
 }
 
-// runPush is a placeholder for the actual push implementation (Phase 3)
-// Phase 2 Wave 2 focuses only on configuration management infrastructure
+// runPush executes the push operation with comprehensive error handling.
+// Errors are wrapped with appropriate types (ValidationError, AuthenticationError,
+// NetworkError, ImageNotFoundError) to enable proper exit code mapping.
 func runPush(ctx context.Context, opts *PushOptions) error {
-	// Validate options first
-	if err := opts.Validate(); err != nil {
-		return fmt.Errorf("validation failed: %w", err)
+	// Validate options with security checks (Phase 2 Wave 3)
+	if err := validatePushOptions(opts); err != nil {
+		// validatePushOptions returns typed errors, pass through
+		return err
 	}
 
 	// TODO: Phase 3 will integrate actual push implementation using:
-	// - Docker client (pkg/docker)
-	// - Registry client (pkg/registry)
+	// - Docker client (pkg/docker) - wrap errors with WrapDockerError()
+	// - Registry client (pkg/registry) - wrap errors with WrapRegistryError()
 	// - Auth provider (pkg/auth)
 	// - TLS config (pkg/tls)
 	// - Progress reporting (pkg/progress)
+	//
+	// Example integration:
+	//   dockerClient, err := docker.NewClient()
+	//   if err != nil {
+	//       return WrapDockerError(err, opts.ImageName)
+	//   }
+	//   defer dockerClient.Close()
+	//
+	//   image, err := dockerClient.GetImage(ctx, opts.ImageName)
+	//   if err != nil {
+	//       return WrapDockerError(err, opts.ImageName)
+	//   }
+	//
+	//   registryClient, err := registry.NewClient(authProvider, tlsProvider)
+	//   if err != nil {
+	//       return WrapRegistryError(err, opts.Registry)
+	//   }
+	//
+	//   err = registryClient.Push(ctx, image, targetRef, progressCallback)
+	//   if err != nil {
+	//       return WrapRegistryError(err, opts.Registry)
+	//   }
 
 	return fmt.Errorf("push implementation pending Phase 3 integration")
 }
