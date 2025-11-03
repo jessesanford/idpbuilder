@@ -770,29 +770,40 @@
     ]
   },
   "metadata": {
-    "last_updated": "2025-11-03T08:13:47Z",
-    "notes": "State transition: MONITORING_EFFORT_REVIEWS to WAVE_COMPLETE (All Wave 2.3 effort reviews complete - 2/2 ACCEPTED)",
-    "state_transition": "WAVE_COMPLETE",
+    "last_updated": "2025-11-03T08:34:44Z",
+    "notes": "State transition: START_WAVE_ITERATION to INTEGRATE_WAVE_EFFORTS (Wave 2.3 iteration 1 started)",
+    "state_transition": "INTEGRATE_WAVE_EFFORTS",
     "updated_by": "state-manager",
-    "last_modified": "2025-11-03T08:13:47Z"
+    "last_modified": "2025-11-03T08:34:44Z"
   },
   "last_state_transition": {
-    "from": "MONITORING_EFFORT_REVIEWS",
-    "to": "WAVE_COMPLETE",
-    "timestamp": "2025-11-03T08:13:47Z"
+    "from": "START_WAVE_ITERATION",
+    "to": "INTEGRATE_WAVE_EFFORTS",
+    "timestamp": "2025-11-03T08:34:44Z"
   },
   "state_machine_sync": {
-    "current_state": "WAVE_COMPLETE",
-    "previous_state": "MONITORING_EFFORT_REVIEWS",
-    "last_transition": "2025-11-03T08:13:47Z",
-    "last_sync": "2025-11-03T08:13:47Z"
+    "current_state": "INTEGRATE_WAVE_EFFORTS",
+    "previous_state": "START_WAVE_ITERATION",
+    "last_transition": "2025-11-03T08:34:44Z",
+    "last_sync": "2025-11-03T08:34:44Z"
   },
-  "current_state": "WAVE_COMPLETE",
+  "current_state": "INTEGRATE_WAVE_EFFORTS",
   "phase": 2,
   "wave": 3,
   "last_updated_by": "state-manager",
   "last_sync": "2025-11-03T07:14:17Z",
   "state_transitions": [
+    {
+      "timestamp": "2025-11-03T08:34:44Z",
+      "from_state": "START_WAVE_ITERATION",
+      "to_state": "INTEGRATE_WAVE_EFFORTS",
+      "phase": 2,
+      "wave": 3,
+      "effort": null,
+      "iteration": 1,
+      "validated_by": "state-manager",
+      "reason": "Wave iteration 1 started. Iteration counter incremented 0 → 1. Ready to integrate Wave 2.3 efforts."
+    },
     {
       "timestamp": "2025-11-03T07:14:17Z",
       "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",

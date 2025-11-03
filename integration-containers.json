@@ -452,15 +452,15 @@
       "container_id": "wave-phase2-wave3",
       "phase": 2,
       "wave": 3,
-      "status": "ready_to_start",
-      "iteration": 0,
+      "status": "integrating",
+      "iteration": 1,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase2/wave3/integration",
       "workspace": "efforts/phase2/wave3/integration-workspace",
       "base_branch": "idpbuilder-oci-push/phase2/wave2/integration",
       "created_at": "2025-11-03T01:42:39Z",
-      "integration_started_at": null,
-      "last_iteration_at": null,
+      "integration_started_at": "2025-11-03T08:34:44Z",
+      "last_iteration_at": "2025-11-03T08:34:44Z",
       "convergence_metrics": {
         "bugs_remaining": 0,
         "bugs_found": 0,
@@ -522,32 +522,42 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-03T08:27:56Z",
-    "notes": "State transition: SETUP_WAVE_INFRASTRUCTURE to START_WAVE_ITERATION (Wave 2.3 container initialized, iteration=0)",
-    "state_transition": "START_WAVE_ITERATION",
+    "last_updated": "2025-11-03T08:34:44Z",
+    "notes": "State transition: START_WAVE_ITERATION to INTEGRATE_WAVE_EFFORTS (Wave 2.3 iteration 1 started)",
+    "state_transition": "INTEGRATE_WAVE_EFFORTS",
     "updated_by": "state-manager",
-    "last_modified": "2025-11-03T08:13:56Z"
+    "last_modified": "2025-11-03T08:34:44Z"
   },
   "state_machine_sync": {
-    "orchestrator_state": "START_WAVE_ITERATION",
-    "last_sync": "2025-11-03T08:13:56Z",
+    "orchestrator_state": "INTEGRATE_WAVE_EFFORTS",
+    "last_sync": "2025-11-03T08:34:44Z",
     "in_sync": true,
-    "current_state": "START_WAVE_ITERATION",
-    "previous_state": "SETUP_WAVE_INFRASTRUCTURE",
-    "last_transition": "2025-11-03T08:27:56Z"
+    "current_state": "INTEGRATE_WAVE_EFFORTS",
+    "previous_state": "START_WAVE_ITERATION",
+    "last_transition": "2025-11-03T08:34:44Z"
   },
-  "current_state": "START_WAVE_ITERATION",
+  "current_state": "INTEGRATE_WAVE_EFFORTS",
   "phase": 2,
   "wave": 3,
   "last_updated_by": "state-manager",
-  "current_orchestrator_state": "START_WAVE_ITERATION",
-  "orchestrator_state": "START_WAVE_ITERATION",
+  "current_orchestrator_state": "INTEGRATE_WAVE_EFFORTS",
+  "orchestrator_state": "INTEGRATE_WAVE_EFFORTS",
   "last_state_transition": {
-    "from": "SETUP_WAVE_INFRASTRUCTURE",
-    "to": "START_WAVE_ITERATION",
-    "timestamp": "2025-11-03T08:27:56Z"
+    "from": "START_WAVE_ITERATION",
+    "to": "INTEGRATE_WAVE_EFFORTS",
+    "timestamp": "2025-11-03T08:34:44Z"
   },
   "state_transitions": [
+    {
+      "timestamp": "2025-11-03T08:34:44Z",
+      "from_state": "START_WAVE_ITERATION",
+      "to_state": "INTEGRATE_WAVE_EFFORTS",
+      "phase": 2,
+      "wave": 3,
+      "iteration": 1,
+      "validated_by": "state-manager",
+      "reason": "Wave iteration 1 started. Iteration counter incremented 0 → 1. Backport attempts reset to 0 (R532 compliance). Progress analysis: CONTINUE (first iteration, R615 compliance). Max iterations check: 1/10 (R531/R336 compliance). Ready to integrate Wave 2.3 efforts."
+    },
     {
       "timestamp": "2025-11-03T07:14:17Z",
       "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
