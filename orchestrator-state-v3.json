@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
-    "previous_state": "WAVE_START",
+    "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+    "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
     "last_transition_timestamp": "2025-11-03T01:54:09Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
@@ -3051,6 +3051,14 @@
         },
         "mandatory_sequence": null,
         "sequence_position": null
+      },
+      {
+        "timestamp": "2025-11-03T02:06:44Z",
+        "from_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+        "to_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "validated_by": "state-manager",
+        "transition_type": "SHUTDOWN_CONSULTATION",
+        "reason": "Wave architecture file exists (WAVE-1.1-ARCHITECTURE.md, 47KB, CONCRETE fidelity). Architect work completed in previous session."
       }
     ],
     "loop_detection": {
@@ -3112,7 +3120,7 @@
     "last_transition": "2025-11-03T01:00:20Z",
     "transition_timestamp": "2025-11-01T19:56:25Z",
     "transition_reason": "Integration completed with FAILED status - upstream bug in effort-1 requires backport fix",
-    "transition_time": "2025-11-02T07:49:45Z",
+    "transition_time": "2025-11-03T02:06:44Z",
     "last_updated": "2025-11-02T17:47:18Z",
     "validated_by": "state-manager",
     "last_state_change": "2025-11-02T05:25:28Z",
