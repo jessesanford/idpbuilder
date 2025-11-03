@@ -358,7 +358,10 @@ documentation: true               # Records what happened
   - Value: `TRUE` (if successful completion, factory can continue)
   - Value: `FALSE` (if catastrophic error, must halt everything)
   - Context: Explain why TRUE or FALSE
-  - **NOTE**: R322 checkpoints = TRUE (agent stops but factory continues)
+  - **🚨🚨🚨 CRITICAL**: R322 checkpoints = TRUE (NOT FALSE!)
+  - **CHECKPOINT ≠ FAILURE**: Stopping for user continuation is NORMAL workflow
+  - **IF STATE WORK COMPLETED SUCCESSFULLY → USE TRUE** (even if stopping at checkpoint)
+  - **ONLY USE FALSE**: For truly unrecoverable errors that prevent any progress
 
 - [ ] 10. Display checkpoint message (if this is R322 checkpoint state)
   - Format: Clear message about what was done

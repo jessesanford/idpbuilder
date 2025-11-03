@@ -153,12 +153,40 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
 
 - [ ] 5. Spawn integration agent to perform integration work (R329 - ORCHESTRATOR NEVER MERGES)
   - **CRITICAL**: Per R006 and R329, orchestrator MUST NEVER perform git merges
-  - Agent: integration-agent
-  - State: EXECUTE_WAVE_INTEGRATION
-  - Workspace: Wave integration workspace
-  - Instructions: Pass integration instructions file
-  - Task: Sequential merge of all effort branches, conflict resolution, build validation, comprehensive testing
+  - **ACTION**: Execute Task tool invocation NOW (don't defer, don't create TODO):
+
+  ```bash
+  echo "🚀 CHECKLIST[5]: Spawning integration agent..."
+
+  # MANDATORY: Use Task tool to spawn integration agent
+  Task: integration-agent
+  Subagent Type: integration
+  Description: Execute Wave ${WAVE_ID} integration
+  Workspace: ${WAVE_INTEGRATION_WORKSPACE}
+  Instructions: |
+    - Merge effort branches sequentially per R308
+    - Resolve any conflicts per R262
+    - Run build validation per R265
+    - Run test validation per R265
+    - Create integration report
+    - Push integration branch to remote
+
+  # Wait for agent to complete
+  echo "⏳ Waiting for integration agent completion..."
+
+  # Agent will return integration report when complete
+  INTEGRATION_STATUS=$(check_integration_report)
+
+  if [ "$INTEGRATION_STATUS" = "SUCCESS" ]; then
+      echo "✅ CHECKLIST[5]: Integration agent completed - report created"
+  else
+      echo "❌ CHECKLIST[5]: Integration agent failed"
+      NEXT_STATE="ERROR_RECOVERY"
+  fi
+  ```
+
   - **BLOCKING**: Integration requires agent execution (orchestrator cannot do merges)
+  - **PROOF**: Integration report file created with timestamp
 
 - [ ] 6. Monitor integration agent completion
   - Check: Integration agent reports completion
@@ -187,6 +215,12 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
   - Validation: Remote branch updated with all merges
 
 ### EXIT REQUIREMENTS (Must complete before transition)
+
+- [ ] 9a. Validate integration work completed (R510 Enforcement)
+  - Script: `bash tools/validate-integrate-wave-efforts-exit.sh`
+  - Validates integration agent was spawned
+  - Validates integration report exists for current iteration
+  - **BLOCKING**: Fails if integration agent was not spawned
 
 - [ ] 10. Update state file to REVIEW_WAVE_INTEGRATION per R288
   - Spawn: State Manager agent for SHUTDOWN_CONSULTATION

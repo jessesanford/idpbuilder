@@ -1,9 +1,7 @@
 version: 3.0
-upgraded_at: 20251103-014007
+upgraded_at: 20251103-043551
 upgraded_from: /home/vscode/software-factory-template
-template_commit: e8c3d03b68e472fdffab5f0b2c2144bc0640342c
+template_commit: 76651da52bad38a3b44fcb550bf584532b909b39
 template_branch: backport-rule-changes-for-itteration-counting
 template_remote: https://github.com/jessesanford/software-factory-template.git
-upgrade_date: 2025-11-03T01:40:07Z
-state: ERROR_RECOVERY
-last_state_transition: 2025-11-03T02:48:29Z
+upgrade_date: 2025-11-03T04:35:51Z

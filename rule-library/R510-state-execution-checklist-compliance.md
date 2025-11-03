@@ -34,6 +34,74 @@
 
 ---
 
+## 🔴🔴🔴 CRITICAL: BLOCKING ITEMS ARE EXECUTABLE ACTIONS 🔴🔴🔴
+
+### The Execute-Don't-Defer Principle
+
+**BLOCKING requirements are ACTIONS to perform NOW, not notes to remember later.**
+
+❌ **WRONG Pattern** (causes stalls):
+```bash
+# Read checklist: "5. Spawn integration agent"
+echo "✅ I identified that integration agent should be spawned"
+# Create TODO: "⏹️ Spawn integration agent"
+# Stop with: CONTINUE-SOFTWARE-FACTORY=FALSE
+```
+
+✅ **CORRECT Pattern** (seamless flow):
+```bash
+# Read checklist: "5. Spawn integration agent"
+echo "🚀 Spawning integration agent NOW..."
+Task: integration-agent
+State: EXECUTE_WAVE_INTEGRATION
+Workspace: ${integration_workspace}
+# Wait for completion
+echo "✅ CHECKLIST[5]: Spawned integration agent [agent-id-timestamp]"
+# Continue with: CONTINUE-SOFTWARE-FACTORY=TRUE
+```
+
+### Common Misinterpretation
+
+**Checklist says**: "Spawn integration agent to perform integration work"
+
+**WRONG interpretation**: "I should note that an integration agent needs to be spawned"
+- Creates pending TODO
+- Stops execution
+- Waits for human intervention
+- **Result**: System stall
+
+**CORRECT interpretation**: "I will use the Task tool right now to spawn the integration agent"
+- Invokes Task tool immediately
+- Provides agent parameters
+- Waits for agent completion
+- Acknowledges completion
+- **Result**: Seamless flow
+
+### Rule: If You Can Do It Now, Do It Now
+
+Before stopping with CONTINUE-SOFTWARE-FACTORY=FALSE, ask:
+1. Can I execute this checklist item with available tools? → YES → **DO IT NOW**
+2. Is this blocked by external dependency? → NO → **DO IT NOW**
+3. Does this require human decision? → NO → **DO IT NOW**
+
+**Only stop with FALSE if work is truly IMPOSSIBLE**, not just incomplete.
+
+### Examples Across States
+
+**SPAWN_SW_ENGINEERS**: "Spawn 3 SW Engineers for implementation"
+- ❌ WRONG: Note "need to spawn engineers" → Stop
+- ✅ RIGHT: Spawn 3 agents with Task tool → Acknowledge → Continue
+
+**CREATE_WAVE_FIX_PLAN**: "Spawn Code Reviewer to create fix plan"
+- ❌ WRONG: Create TODO "spawn reviewer" → Stop
+- ✅ RIGHT: Task: code-reviewer → Wait → Continue
+
+**INTEGRATE_WAVE_EFFORTS**: "Spawn integration agent to perform merges"
+- ❌ WRONG: Identify "agent not spawned" → Stop with FALSE
+- ✅ RIGHT: Task: integration-agent → Monitor → TRUE
+
+---
+
 ## 🔴🔴🔴 CHECKLIST STRUCTURE REQUIREMENTS 🔴🔴🔴
 
 ### Mandatory Three-Section Format
@@ -345,10 +413,14 @@ git push
 echo "✅ CHECKLIST[6]: Pushed changes to origin/$(git branch --show-current)"
 
 echo "🏭 CHECKLIST[7]: Setting automation continuation flag..."
+# 🚨 CRITICAL: Use TRUE here! R322 checkpoint is NORMAL workflow, not a failure
+# State work completed successfully → TRUE (even though we're stopping for user)
 echo "CONTINUE-SOFTWARE-FACTORY=TRUE"
 echo "✅ CHECKLIST[7]: CONTINUE-SOFTWARE-FACTORY=TRUE (successful spawn, factory can proceed)"
 
 echo "🛑 CHECKLIST[8]: Stopping execution per R322..."
+# Note: Stopping at checkpoint (R322) does NOT mean FALSE flag!
+# Checkpoint = designed workflow = TRUE flag above
 exit 0
 echo "✅ CHECKLIST[8]: Stopped with exit 0"
 ```

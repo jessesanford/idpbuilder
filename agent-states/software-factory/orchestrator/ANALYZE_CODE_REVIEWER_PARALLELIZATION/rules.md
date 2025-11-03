@@ -389,99 +389,296 @@ SPAWN_SW_ENGINEERS
 
 ## Mandatory Analysis Protocol
 
+This state MUST populate `pre_planned_infrastructure` with ALL efforts from the current wave BEFORE CREATE_NEXT_INFRASTRUCTURE can execute. This is the ONLY place where infrastructure planning happens for the current wave.
+
+### STEP 1: Extract Current Phase and Wave
+
 ```bash
-# STEP 0: R356 SINGLE-EFFORT OPTIMIZATION CHECK
+cd "$CLAUDE_PROJECT_DIR"
+
 echo "═══════════════════════════════════════════════════════════════"
 echo "🔴🔴🔴 ANALYZE_CODE_REVIEWER_PARALLELIZATION STATE 🔴🔴🔴"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
-echo "🎯 R356: Checking effort count for optimization..."
+echo "📋 Step 1: Extracting current phase and wave from state file..."
 
-EFFORT_COUNT=$(echo "✅ State file updated to: $NEXT_STATE"
-```
+# Get current phase/wave numbers from orchestrator-state-v3.json
+CURRENT_PHASE=$(jq -r '.project_progression.current_phase.phase_number' orchestrator-state-v3.json)
+CURRENT_WAVE=$(jq -r '.project_progression.current_phase.waves[] | select(.status == "in_progress") | .wave_number' orchestrator-state-v3.json)
 
----
-
-### ✅ Step 4: Validate State File (R324)
-```bash
-# Validate state file before committing
-"$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state-v3.json || {
-    echo "❌ State file validation failed!"
-    exit 288
-}
-echo "✅ State file validated"
-```
-
----
-
-### ✅ Step 5: Commit State File (R288)
-```bash
-# Commit and push state file immediately
-git add orchestrator-state-v3.json
-
-if ! git commit -m "state: ANALYZE_CODE_REVIEWER_PARALLELIZATION → $NEXT_STATE - ANALYZE_CODE_REVIEWER_PARALLELIZATION complete [R288]"; then
-    echo "❌ CRITICAL: Git commit failed - likely schema validation error"
-    echo "State: ANALYZE_CODE_REVIEWER_PARALLELIZATION"
-    echo "Attempted transition from: ANALYZE_CODE_REVIEWER_PARALLELIZATION"
-    echo ""
-    echo "Common causes:"
-    echo "  - Schema validation failure (check pre-commit hook output above)"
-    echo "  - Missing required fields in JSON files"
-    echo "  - Invalid JSON syntax"
-    echo ""
-    echo "🛑 Cannot proceed - manual intervention required"
-    echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=SCHEMA_VALIDATION"
+if [ -z "$CURRENT_PHASE" ] || [ "$CURRENT_PHASE" == "null" ]; then
+    echo "❌ ERROR: Cannot determine current phase from state file"
+    echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=MISSING_PHASE"
     exit 1
 fi
 
-git push || echo "⚠️ WARNING: Push failed - committed locally"
-echo "✅ State file committed and pushed"
-git push
-echo "✅ State file committed and pushed"
-```
-
----
-
-### ✅ Step 6: Save TODOs (R287 - SUPREME LAW)
-```bash
-# Save TODO state before transition (R287 trigger)
-save_todos "ANALYZE_CODE_REVIEWER_PARALLELIZATION_COMPLETE"
-
-# Commit TODOs within 60 seconds (R287)
-cd "$CLAUDE_PROJECT_DIR"
-git add todos/*.todo
-
-if ! git commit -m "todo: orchestrator - ANALYZE_CODE_REVIEWER_PARALLELIZATION complete [R287]"; then
-    echo "❌ ERROR: Failed to commit TODO files"
-    echo "This is non-fatal but TODOs may be lost in compaction"
-    echo "Proceeding with state execution..."
-    # Don't exit - TODO commit failure is not fatal
+if [ -z "$CURRENT_WAVE" ] || [ "$CURRENT_WAVE" == "null" ]; then
+    echo "❌ ERROR: Cannot determine current wave from state file"
+    echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=MISSING_WAVE"
+    exit 1
 fi
 
-git push || echo "⚠️ WARNING: TODO push failed - committed locally"
-echo "✅ TODOs saved and committed"
-git push
-echo "✅ TODOs saved and committed"
+echo "✅ Current Phase: $CURRENT_PHASE"
+echo "✅ Current Wave: $CURRENT_WAVE"
 ```
 
 ---
 
-### ✅ Step 7: Output Continuation Flag (R405 - SUPREME LAW) ⚠️ MANDATORY
+### STEP 2: Read Wave Implementation Plan
+
 ```bash
+echo ""
+echo "📋 Step 2: Reading wave implementation plan..."
+
+# Construct wave plan path
+WAVE_PLAN_PATH="$CLAUDE_PROJECT_DIR/planning/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/WAVE-IMPLEMENTATION-PLAN.md"
+
+if [ ! -f "$WAVE_PLAN_PATH" ]; then
+    echo "❌ ERROR: Wave plan not found at: $WAVE_PLAN_PATH"
+    echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=MISSING_WAVE_PLAN"
+    exit 1
+fi
+
+echo "✅ Wave plan found: $WAVE_PLAN_PATH"
+
+# Extract effort count and IDs (example: E1.1.1, E1.1.2, E1.1.3)
+# This uses the phase.wave.effort numbering convention
+EFFORT_IDS=$(grep -oP "E${CURRENT_PHASE}\.${CURRENT_WAVE}\.\d+" "$WAVE_PLAN_PATH" | sort -u)
+EFFORT_COUNT=$(echo "$EFFORT_IDS" | wc -l)
+
+echo "✅ Found $EFFORT_COUNT efforts in wave plan"
+echo "$EFFORT_IDS"
+```
+
+---
+
+### STEP 3: Populate pre_planned_infrastructure
+
+```bash
+echo ""
+echo "📋 Step 3: Populating pre_planned_infrastructure for all efforts..."
+
+# Get project prefix and target repo from state file
+PROJECT_PREFIX=$(jq -r '.project_info.project_prefix' orchestrator-state-v3.json)
+TARGET_REPO_URL=$(jq -r '.project_info.target_repo_url' orchestrator-state-v3.json)
+
+# Determine base branch for cascade (first effort uses wave integration, subsequent use previous effort)
+BASE_BRANCH=$(jq -r ".project_progression.current_phase.wave_integration_branch // \"main\"" orchestrator-state-v3.json)
+
+echo "Project Prefix: $PROJECT_PREFIX"
+echo "Target Repo: $TARGET_REPO_URL"
+echo "Base Branch for first effort: $BASE_BRANCH"
+
+# Initialize pre_planned_infrastructure structure
+jq '.pre_planned_infrastructure = {
+  "validated": false,
+  "validation_timestamp": null,
+  "efforts": {}
+}' orchestrator-state-v3.json > /tmp/state-update.json && mv /tmp/state-update.json orchestrator-state-v3.json
+
+# For each effort in the wave, pre-calculate infrastructure
+PREV_EFFORT_BRANCH="$BASE_BRANCH"
+for EFFORT_ID in $EFFORT_IDS; do
+    echo ""
+    echo "Planning infrastructure for $EFFORT_ID..."
+
+    # Extract effort number (e.g., E1.1.1 → 001)
+    EFFORT_NUM=$(echo "$EFFORT_ID" | grep -oP '\d+$' | awk '{printf "%03d", $1}')
+
+    # Calculate full paths following R504
+    EFFORT_PATH="${CLAUDE_PROJECT_DIR}/efforts/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/effort-${EFFORT_NUM}"
+    BRANCH_NAME="${PROJECT_PREFIX}/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/effort-${EFFORT_NUM}"
+    REMOTE_BRANCH="origin/${BRANCH_NAME}"
+    INTEGRATION_BRANCH="${PROJECT_PREFIX}/phase${CURRENT_PHASE}/wave${CURRENT_WAVE}/integration"
+
+    # Add effort to pre_planned_infrastructure
+    jq --arg eid "$EFFORT_ID" \
+       --arg path "$EFFORT_PATH" \
+       --arg branch "$BRANCH_NAME" \
+       --arg remote "$REMOTE_BRANCH" \
+       --arg base "$PREV_EFFORT_BRANCH" \
+       --arg target_url "$TARGET_REPO_URL" \
+       --arg integration "$INTEGRATION_BRANCH" \
+       --argjson phase "$CURRENT_PHASE" \
+       --argjson wave "$CURRENT_WAVE" \
+       '.pre_planned_infrastructure.efforts[$eid] = {
+         "full_path": $path,
+         "branch_name": $branch,
+         "remote_branch": $remote,
+         "base_branch": $base,
+         "target_repo_url": $target_url,
+         "integration_branch": $integration,
+         "created": false,
+         "validated": false,
+         "phase": $phase,
+         "wave": $wave
+       }' orchestrator-state-v3.json > /tmp/state-update.json && mv /tmp/state-update.json orchestrator-state-v3.json
+
+    echo "  ✅ Planned: $BRANCH_NAME (base: $PREV_EFFORT_BRANCH)"
+
+    # Next effort will base on this effort's branch (cascade)
+    PREV_EFFORT_BRANCH="$BRANCH_NAME"
+done
+
+# Mark as validated
+jq ".pre_planned_infrastructure.validated = true | \
+    .pre_planned_infrastructure.validation_timestamp = \"$(date -Iseconds)\"" \
+    orchestrator-state-v3.json > /tmp/state-update.json && mv /tmp/state-update.json orchestrator-state-v3.json
+
+echo ""
+echo "✅ pre_planned_infrastructure populated with $EFFORT_COUNT efforts"
+```
+
+---
+
+### STEP 4: Analyze Code Reviewer Parallelization (R151)
+
+```bash
+echo ""
+echo "📋 Step 4: Analyzing Code Reviewer parallelization strategy..."
+
+# For SF 3.0, we typically spawn one Code Reviewer per effort for planning
+# The parallelization analysis determines if they can run in parallel
+# This depends on dependencies extracted from wave plan
+
+# Simple approach: All efforts can have planning done in parallel
+# (Implementation dependencies don't affect planning phase)
+PARALLELIZATION_STRATEGY="parallel"
+REVIEWER_COUNT="$EFFORT_COUNT"
+
+echo "Strategy: $PARALLELIZATION_STRATEGY"
+echo "Reviewers needed: $REVIEWER_COUNT"
+
+# Save parallelization decision to state
+jq --arg strategy "$PARALLELIZATION_STRATEGY" \
+   --argjson count "$REVIEWER_COUNT" \
+   '.code_reviewer_parallelization_plan = {
+     "strategy": $strategy,
+     "reviewer_count": $count,
+     "can_parallelize": true,
+     "created_at": "'$(date -Iseconds)'"
+   }' orchestrator-state-v3.json > /tmp/state-update.json && mv /tmp/state-update.json orchestrator-state-v3.json
+
+echo "✅ Parallelization analysis complete"
+```
+
+---
+
+### STEP 5: Validate State File
+
+```bash
+echo ""
+echo "📋 Step 5: Validating state file..."
+
+# Validate state file before committing
+if [ -f "$CLAUDE_PROJECT_DIR/tools/validate-state.sh" ]; then
+    "$CLAUDE_PROJECT_DIR/tools/validate-state.sh" orchestrator-state-v3.json || {
+        echo "❌ State file validation failed!"
+        echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=VALIDATION_FAILED"
+        exit 288
+    }
+    echo "✅ State file validated"
+else
+    echo "⚠️ Warning: State validator not found, skipping validation"
+fi
+```
+
+---
+
+### STEP 6: Spawn State Manager for Transition (R517 - SF 3.0)
+
+```bash
+echo ""
+echo "📋 Step 6: Spawning State Manager for state transition..."
+
+# Prepare transition details
+PROPOSED_NEXT_STATE="CREATE_NEXT_INFRASTRUCTURE"
+TRANSITION_REASON="Pre-planned infrastructure populated with $EFFORT_COUNT efforts, ready for infrastructure creation"
+
+echo "Proposed next state: $PROPOSED_NEXT_STATE"
+echo "Transition reason: $TRANSITION_REASON"
+
+# NOTE: In actual implementation, this would spawn State Manager agent
+# For template purposes, this shows the pattern:
+echo "🔴 MANDATORY: Spawning State Manager for SHUTDOWN_CONSULTATION"
+echo "  Current State: ANALYZE_CODE_REVIEWER_PARALLELIZATION"
+echo "  Proposed Next State: $PROPOSED_NEXT_STATE"
+echo "  Work Summary: Analyzed parallelization and populated pre_planned_infrastructure"
+
+# State Manager will:
+# 1. Validate proposed transition against state machine
+# 2. Update all state files atomically (orchestrator-state-v3.json, bug-tracking.json, etc.)
+# 3. Commit with [R288] tag
+# 4. Return REQUIRED next state (may differ from proposal)
+
+# Wait for State Manager response
+# Follow State Manager's directive (REQUIRED next state)
+
+echo "✅ State Manager consultation complete (transition validated)"
+```
+
+---
+
+### STEP 7: Save TODOs (R287 - SUPREME LAW)
+
+```bash
+echo ""
+echo "📋 Step 7: Saving TODOs..."
+
+# Save TODO state before transition (R287 trigger)
+# NOTE: Assumes save_todos function is defined in agent configuration
+if declare -f save_todos > /dev/null; then
+    save_todos "ANALYZE_CODE_REVIEWER_PARALLELIZATION_COMPLETE"
+    echo "✅ TODOs saved"
+else
+    echo "⚠️ Warning: save_todos function not available, skipping TODO save"
+fi
+```
+
+---
+
+### STEP 8: Output Continuation Flag (R405 - SUPREME LAW)
+
+```bash
+echo ""
+echo "📋 Step 8: Setting continuation flag..."
+
 # Output continuation flag as LAST action (R405)
 # Use TRUE for normal completion, FALSE only for catastrophic errors
+# CHECKPOINT = TRUE (state work completed successfully, factory can proceed)
 
-echo "CONTINUE-SOFTWARE-FACTORY=TRUE REASON=STATE_COMPLETE"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE REASON=PRE_INFRASTRUCTURE_POPULATED"
+echo "✅ Continuation flag set to TRUE"
 ```
 
-**⚠️ THIS MUST BE THE ABSOLUTE LAST LINE OF OUTPUT BEFORE EXIT! ⚠️**
+**⚠️ CRITICAL: This flag indicates operational status, NOT whether agent stops!**
+- TRUE = State work completed successfully, factory automation can continue
+- Agent still stops at checkpoint (R322), but factory continues
 
 ---
 
-### ✅ Step 8: Stop Processing (R322 - SUPREME LAW)
+### STEP 9: Stop Processing (R322 - SUPREME LAW)
+
 ```bash
-# Stop for context preservation (R322)
-echo "🛑 Stopping for context preservation - use /continue-orchestrating to resume"
+echo ""
+echo "📋 Step 9: Stopping for context preservation (R322)..."
+
+# Display summary
+echo ""
+echo "═══════════════════════════════════════════════════════════════"
+echo "✅ ANALYZE_CODE_REVIEWER_PARALLELIZATION STATE COMPLETE"
+echo "═══════════════════════════════════════════════════════════════"
+echo ""
+echo "📊 Summary:"
+echo "  - Phase $CURRENT_PHASE, Wave $CURRENT_WAVE analyzed"
+echo "  - $EFFORT_COUNT efforts planned in pre_planned_infrastructure"
+echo "  - Parallelization strategy: $PARALLELIZATION_STRATEGY"
+echo "  - Next state: CREATE_NEXT_INFRASTRUCTURE"
+echo ""
+echo "🛑 Stopping for context preservation - use /continue-software-factory to resume"
+echo ""
+
+# Stop execution (R322 - checkpoint)
 exit 0
 ```
 

@@ -1460,3 +1460,30 @@
   - Uncommitted changes before pull: -100% (R220 violation)
   - Merge conflict in cascade: -100% (CASCADE CORRUPTION)
 - **Related Rules**: R208 (CD Before Spawn), R603 (Sequential Timing), R501 (Progressive Cascade), R514 (Infrastructure Creation), R509 (Base Branch Validation)
+
+## R615 - Progress-Based Iteration Limits
+- **File**: rule-library/R615-progress-based-iteration-limits.md
+- **Criticality**: SUPREME LAW
+- **Grading Impact**: -100% for violating iteration limits
+- **Purpose**: Two-tiered iteration limits (5 no-progress, 10 some-progress) based on actual bug fixes
+- **Enforcement**: CONTINUOUS - Every iteration decision point
+- **States Enforcing**:
+  - START_WAVE_ITERATION
+  - START_PHASE_ITERATION (future)
+  - START_PROJECT_ITERATION (future)
+- **Key Principle**: Track ACTUAL progress (bugs fixed) not blind counters; distinguish stall from slow-but-steady
+- **Integration**: Uses R616 bug tracking data for progress analysis
+
+## R616 - Bug Lifecycle Tracking Protocol
+- **File**: rule-library/R616-bug-lifecycle-tracking.md
+- **Criticality**: SUPREME LAW
+- **Grading Impact**: -100% for improper bug tracking
+- **Purpose**: Bug identification, lifecycle states (OPEN/CLOSED/REOPENED), and tracking requirements
+- **Enforcement**: CONTINUOUS - Every bug discovery and closure
+- **States Enforcing**:
+  - CODE_REVIEW (bug discovery)
+  - CREATE_FIX_PLAN (bug assignment)
+  - All iteration states (bug tracking)
+- **Key Principle**: Stable bug IDs, complete lifecycle, verification evidence for closure
+- **Integration**: Provides data for R615 progress analysis
+

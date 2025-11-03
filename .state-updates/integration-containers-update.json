@@ -1,0 +1,58 @@
+{
+  "wave_integrations": {
+    "wave-phase2-wave2": {
+      "iteration": 7,
+      "iteration_history": [
+        {
+          "iteration": 6,
+          "started_at": "2025-11-02T17:42:00Z",
+          "completed_at": "2025-11-02T18:18:52Z",
+          "review_report": ".software-factory/phase2/wave2/integration/CODE-REVIEW-REPORT--20251102-181852.md",
+          "bugs_found": 1,
+          "bugs_fixed": 0,
+          "bug_ids": ["BUG-019-CODE-DELETION"],
+          "status": "BUGS_FOUND",
+          "reviewer": "code-reviewer",
+          "notes": "Integration review found 1 CATASTROPHIC bug: R359 Supreme Law violation (deleted 731 lines of approved Wave 2.1 code in commit 37b5e68). Wave 2.2 implementation itself is production-ready (89.6% coverage, 39 tests), but code deletion violation is BLOCKING.",
+          "review_timestamp": "2025-11-02T18:18:52Z",
+          "decision": "NEEDS_FIXES",
+          "blocking_bugs": ["BUG-019-CODE-DELETION"],
+          "severity_breakdown": {
+            "CATASTROPHIC": 1,
+            "BLOCKING": 0,
+            "MAJOR": 0,
+            "MINOR": 0
+          }
+        },
+        {
+          "iteration": 7,
+          "started_at": "2025-11-02T18:50:08Z",
+          "status": "IN_PROGRESS",
+          "notes": "Iteration 7: Workspace corruption resolved (deleted integration-workspace). Re-integrating from clean Wave 2.1 base to fix BUG-019 R359 violation."
+        }
+      ],
+      "convergence_metrics": {
+        "bugs_remaining": 1,
+        "bugs_found": 1,
+        "test_failures": 0,
+        "build_failures": 0,
+        "bugs_fixed": 0
+      },
+      "status": "integrating",
+      "notes": "Wave 2.2 iteration 7: Workspace corruption resolved (deleted integration-workspace). Re-integrating from clean Wave 2.1 base to fix BUG-019 R359 violation.",
+      "last_iteration_at": "2025-11-02T18:50:08Z",
+      "integration_workspace_status": "DELETED",
+      "workspace_path": null,
+      "requires_workspace_deletion": false,
+      "will_reintegrate_in_iteration": null,
+      "reintegration_in_progress": true,
+      "reintegration_started_at": "2025-11-02T18:50:08Z"
+    }
+  },
+  "metadata.last_updated": "2025-11-02T18:50:08Z",
+  "metadata.notes": "State transition: START_WAVE_ITERATION to INTEGRATE_WAVE_EFFORTS (iteration 7)",
+  "metadata.state_transition": "INTEGRATE_WAVE_EFFORTS",
+  "state_machine_sync.orchestrator_state": "INTEGRATE_WAVE_EFFORTS",
+  "state_machine_sync.last_sync": "2025-11-02T18:50:08Z",
+  "current_state": "INTEGRATE_WAVE_EFFORTS"
+}

@@ -35,7 +35,13 @@
 effort_id: "1.1.1"
 effort_name: "Docker Client Interface Definition"
 estimated_lines: 180
+can_parallelize: false
+blocks: []
 dependencies: []
+assigned_to: "sw-engineer-1"
+working_directory: "efforts/phase1/wave1/effort-1-docker-interface"
+branch_name: "idpbuilder-oci-push/phase1/wave1/effort-1-docker-interface"
+base_branch: "idpbuilder-oci-push/phase1/wave1/integration"
 files_touched:
   - "pkg/docker/interface.go"
   - "pkg/docker/errors.go"
@@ -43,9 +49,7 @@ files_touched:
   - "pkg/docker/interface_test.go"
   - "pkg/docker/mock_test.go"
   - "pkg/docker/errors_test.go"
-branch_name: "idpbuilder-oci-push/phase1/wave1/effort-1-docker-interface"
 parallelization: "sequential"
-base_branch: "idpbuilder-oci-push/phase1/wave1/integration"
 ```
 
 #### Scope
@@ -328,7 +332,13 @@ require (
 effort_id: "1.1.2"
 effort_name: "Registry Client Interface Definition"
 estimated_lines: 200
+can_parallelize: false
+blocks: []
 dependencies: []
+assigned_to: "sw-engineer-2"
+working_directory: "efforts/phase1/wave1/effort-2-registry-interface"
+branch_name: "idpbuilder-oci-push/phase1/wave1/effort-2-registry-interface"
+base_branch: "idpbuilder-oci-push/phase1/wave1/integration"
 files_touched:
   - "pkg/registry/interface.go"
   - "pkg/registry/errors.go"
@@ -336,9 +346,7 @@ files_touched:
   - "pkg/registry/interface_test.go"
   - "pkg/registry/mock_test.go"
   - "pkg/registry/errors_test.go"
-branch_name: "idpbuilder-oci-push/phase1/wave1/effort-2-registry-interface"
 parallelization: "sequential"
-base_branch: "idpbuilder-oci-push/phase1/wave1/integration"
 ```
 
 #### Scope
@@ -633,7 +641,13 @@ require (
 effort_id: "1.1.3"
 effort_name: "Auth & TLS Interface Definitions"
 estimated_lines: 140
+can_parallelize: false
+blocks: []
 dependencies: []
+assigned_to: "sw-engineer-3"
+working_directory: "efforts/phase1/wave1/effort-3-auth-tls-interfaces"
+branch_name: "idpbuilder-oci-push/phase1/wave1/effort-3-auth-tls-interfaces"
+base_branch: "idpbuilder-oci-push/phase1/wave1/integration"
 files_touched:
   - "pkg/auth/interface.go"
   - "pkg/auth/errors.go"
@@ -644,9 +658,7 @@ files_touched:
   - "pkg/tls/doc.go"
   - "pkg/tls/interface_test.go"
   - "pkg/tls/mock_test.go"
-branch_name: "idpbuilder-oci-push/phase1/wave1/effort-3-auth-tls-interfaces"
 parallelization: "sequential"
-base_branch: "idpbuilder-oci-push/phase1/wave1/integration"
 ```
 
 #### Scope
@@ -913,13 +925,17 @@ require (
 effort_id: "1.1.4"
 effort_name: "Command Structure & Flag Definitions"
 estimated_lines: 130
+can_parallelize: false
+blocks: []
 dependencies: ["1.1.1", "1.1.2", "1.1.3"]
+assigned_to: "sw-engineer-4"
+working_directory: "efforts/phase1/wave1/effort-4-command-structure"
+branch_name: "idpbuilder-oci-push/phase1/wave1/effort-4-command-structure"
+base_branch: "idpbuilder-oci-push/phase1/wave1/integration"
 files_touched:
   - "cmd/push.go"
   - "cmd/push_test.go"
-branch_name: "idpbuilder-oci-push/phase1/wave1/effort-4-command-structure"
 parallelization: "sequential"
-base_branch: "idpbuilder-oci-push/phase1/wave1/integration"
 ```
 
 #### Scope

@@ -113,13 +113,13 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
    - Criticality: SUPREME LAW
    - Summary: Backport attempt counter limits to prevent infinite loops within same iteration
 
-9. **🔴🔴🔴 R533** - Progress-Based Iteration Limits
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R533-progress-based-iteration-limits.md`
+9. **🔴🔴🔴 R615** - Progress-Based Iteration Limits
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R615-progress-based-iteration-limits.md`
    - Criticality: SUPREME LAW
    - Summary: Two-tiered iteration limits (5 no-progress, 10 some-progress) based on actual bug fixes
 
-10. **🔴🔴🔴 R534** - Bug Lifecycle Tracking Protocol
-   - File: `$CLAUDE_PROJECT_DIR/rule-library/R534-bug-lifecycle-tracking.md`
+10. **🔴🔴🔴 R616** - Bug Lifecycle Tracking Protocol
+   - File: `$CLAUDE_PROJECT_DIR/rule-library/R616-bug-lifecycle-tracking.md`
    - Criticality: SUPREME LAW
    - Summary: Bug identification, lifecycle states (OPEN/CLOSED/REOPENED), and tracking requirements
 
@@ -148,7 +148,7 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
   - Escalate: To ERROR_RECOVERY if backport attempts exceeded (exit 532)
   - Proof: `echo "✅ CHECKLIST[1b]: Backport attempts [reset to 0 | check passed N/M]"`
 
-- [ ] 1c. Analyze bug progress and apply two-tiered iteration limits (R533, R534)
+- [ ] 1c. Analyze bug progress and apply two-tiered iteration limits (R615, R616)
   - Tool: `bash tools/bug-progress-analyzer.sh should_continue_or_escalate WAVE $CURRENT_ITERATION`
   - Purpose: Determine if making ACTUAL progress (bugs fixed) vs just churning
   - Decision Logic:
@@ -164,11 +164,11 @@ See: `rule-library/R517-universal-state-manager-consultation-law.md`
   - **BLOCKING**: Must analyze progress before checking blind iteration limit
   - Proof: `echo "✅ CHECKLIST[1c]: Progress analysis: [CATEGORY] (stalls: N/5, iterations: M/10, decision: [CONTINUE|ERROR_RECOVERY])"`
 
-- [ ] 2. Check max iterations not exceeded (legacy R531 check - superseded by R533 progress-aware limits)
+- [ ] 2. Check max iterations not exceeded (legacy R531 check - superseded by R615 progress-aware limits)
   - Tool: `tools/iteration-manager.sh check_max_iterations WAVE`
   - Validation: Must return "WITHIN_LIMIT"
   - On EXCEEDED: Escalate to ERROR_RECOVERY state
-  - Note: This is now a backup check; R533 progress analysis (item 1c) is the primary enforcement
+  - Note: This is now a backup check; R615 progress analysis (item 1c) is the primary enforcement
   - Proof: `echo "✅ CHECKLIST[2]: Max iterations check passed (N/10)"`
 
 - [ ] 3. Determine next state

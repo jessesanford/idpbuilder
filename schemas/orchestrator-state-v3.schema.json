@@ -68,7 +68,9 @@
               "validated_by": {
                 "type": "string",
                 "description": "State Manager agent that validated this transition (MUST be 'state-manager' for SF 3.0 compliance)",
-                "enum": ["state-manager"],
+                "enum": [
+                  "state-manager"
+                ],
                 "default": "state-manager"
               },
               "reason": {
@@ -123,26 +125,18 @@
             },
             "if": {
               "properties": {
-                "orchestrator_proposal": {
-                  "type": "string"
-                }
-              },
-              "required": ["orchestrator_proposal"]
-            },
-            "then": {
-              "required": ["proposal_accepted"]
-            },
-            "else": {},
-            "if": {
-              "properties": {
                 "proposal_accepted": {
                   "const": false
                 }
               },
-              "required": ["proposal_accepted"]
+              "required": [
+                "proposal_accepted"
+              ]
             },
             "then": {
-              "required": ["proposal_rejected_reason"]
+              "required": [
+                "proposal_rejected_reason"
+              ]
             },
             "else": {}
           }
@@ -337,104 +331,6 @@
                 null
               ],
               "default": "IN_PROGRESS"
-            },
-            "bugs": {
-              "type": ["object", "null"],
-              "description": "Bug tracking for progress-based iteration limits (R533, R534)",
-              "properties": {
-                "total_found": {
-                  "type": "integer",
-                  "description": "Total bugs discovered across all iterations",
-                  "minimum": 0,
-                  "default": 0
-                },
-                "total_closed": {
-                  "type": "integer",
-                  "description": "Total bugs fixed across all iterations",
-                  "minimum": 0,
-                  "default": 0
-                },
-                "total_open": {
-                  "type": "integer",
-                  "description": "Current open bugs",
-                  "minimum": 0,
-                  "default": 0
-                },
-                "reopened_count": {
-                  "type": "integer",
-                  "description": "Total bugs that have been reopened (flapping)",
-                  "minimum": 0,
-                  "default": 0
-                },
-                "history": {
-                  "type": "array",
-                  "description": "Bug counts per iteration for progress analysis",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "iteration": {
-                        "type": "integer",
-                        "minimum": 1
-                      },
-                      "bugs_found": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "bugs_closed": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "bugs_open": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "bugs_reopened": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "bug_ids": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "progress_category": {
-                        "type": "string",
-                        "enum": ["PURE_PROGRESS", "DISCOVERY_PROGRESS", "SLOW_PROGRESS", "STALL", "REGRESSION"]
-                      },
-                      "timestamp": {
-                        "type": "string",
-                        "format": "date-time"
-                      }
-                    },
-                    "required": ["iteration", "bugs_found", "bugs_closed", "bugs_open", "progress_category"]
-                  }
-                },
-                "progress_stalls": {
-                  "type": "integer",
-                  "description": "Consecutive iterations with no progress (R533 no-progress counter)",
-                  "minimum": 0,
-                  "default": 0
-                },
-                "max_stalls_allowed": {
-                  "type": "integer",
-                  "description": "Maximum stalls before ERROR_RECOVERY (R533 no-progress limit)",
-                  "minimum": 1,
-                  "default": 5
-                },
-                "max_iterations": {
-                  "type": "integer",
-                  "description": "Maximum total iterations (R533 some-progress limit)",
-                  "minimum": 1,
-                  "default": 10
-                },
-                "current_iteration": {
-                  "type": "integer",
-                  "description": "Current iteration number for bug tracking",
-                  "minimum": 0,
-                  "default": 0
-                }
-              }
             }
           }
         },
@@ -517,8 +413,11 @@
               "default": 0
             },
             "bugs": {
-              "type": ["object", "null"],
-              "description": "Bug tracking for progress-based iteration limits (R533, R534)",
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Bug tracking for progress-based iteration limits (R615, R616)",
               "properties": {
                 "total_found": {
                   "type": "integer",
@@ -578,37 +477,49 @@
                       },
                       "progress_category": {
                         "type": "string",
-                        "enum": ["PURE_PROGRESS", "DISCOVERY_PROGRESS", "SLOW_PROGRESS", "STALL", "REGRESSION"]
+                        "enum": [
+                          "PURE_PROGRESS",
+                          "DISCOVERY_PROGRESS",
+                          "SLOW_PROGRESS",
+                          "STALL",
+                          "REGRESSION"
+                        ]
                       },
                       "timestamp": {
                         "type": "string",
                         "format": "date-time"
                       }
                     },
-                    "required": ["iteration", "bugs_found", "bugs_closed", "bugs_open", "progress_category"]
+                    "required": [
+                      "iteration",
+                      "bugs_found",
+                      "bugs_closed",
+                      "bugs_open",
+                      "progress_category"
+                    ]
                   }
                 },
                 "progress_stalls": {
                   "type": "integer",
-                  "description": "Consecutive iterations with no progress (R533 no-progress counter)",
+                  "description": "Consecutive iterations with no progress (R615 no-progress counter)",
                   "minimum": 0,
                   "default": 0
                 },
                 "max_stalls_allowed": {
                   "type": "integer",
-                  "description": "Maximum stalls before ERROR_RECOVERY (R533 no-progress limit)",
+                  "description": "Maximum stalls before ERROR_RECOVERY (R615 no-progress limit)",
                   "minimum": 1,
                   "default": 5
                 },
                 "max_iterations": {
                   "type": "integer",
-                  "description": "Maximum total iterations (R533 some-progress limit)",
+                  "description": "Maximum total iterations (R615 some-progress limit)",
                   "minimum": 1,
                   "default": 10
                 },
                 "current_iteration": {
                   "type": "integer",
-                  "description": "Current iteration number for bug tracking",
+                  "description": "Current iteration number for this scope",
                   "minimum": 0,
                   "default": 0
                 }
@@ -695,8 +606,11 @@
               }
             },
             "bugs": {
-              "type": ["object", "null"],
-              "description": "Bug tracking for progress-based iteration limits (R533, R534)",
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Bug tracking for progress-based iteration limits (R615, R616)",
               "properties": {
                 "total_found": {
                   "type": "integer",
@@ -756,37 +670,49 @@
                       },
                       "progress_category": {
                         "type": "string",
-                        "enum": ["PURE_PROGRESS", "DISCOVERY_PROGRESS", "SLOW_PROGRESS", "STALL", "REGRESSION"]
+                        "enum": [
+                          "PURE_PROGRESS",
+                          "DISCOVERY_PROGRESS",
+                          "SLOW_PROGRESS",
+                          "STALL",
+                          "REGRESSION"
+                        ]
                       },
                       "timestamp": {
                         "type": "string",
                         "format": "date-time"
                       }
                     },
-                    "required": ["iteration", "bugs_found", "bugs_closed", "bugs_open", "progress_category"]
+                    "required": [
+                      "iteration",
+                      "bugs_found",
+                      "bugs_closed",
+                      "bugs_open",
+                      "progress_category"
+                    ]
                   }
                 },
                 "progress_stalls": {
                   "type": "integer",
-                  "description": "Consecutive iterations with no progress (R533 no-progress counter)",
+                  "description": "Consecutive iterations with no progress (R615 no-progress counter)",
                   "minimum": 0,
                   "default": 0
                 },
                 "max_stalls_allowed": {
                   "type": "integer",
-                  "description": "Maximum stalls before ERROR_RECOVERY (R533 no-progress limit)",
+                  "description": "Maximum stalls before ERROR_RECOVERY (R615 no-progress limit)",
                   "minimum": 1,
                   "default": 5
                 },
                 "max_iterations": {
                   "type": "integer",
-                  "description": "Maximum total iterations (R533 some-progress limit)",
+                  "description": "Maximum total iterations (R615 some-progress limit)",
                   "minimum": 1,
                   "default": 10
                 },
                 "current_iteration": {
                   "type": "integer",
-                  "description": "Current iteration number for bug tracking",
+                  "description": "Current iteration number for this scope",
                   "minimum": 0,
                   "default": 0
                 }
@@ -1253,7 +1179,10 @@
           "default": false
         },
         "validation_timestamp": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time",
           "description": "ISO 8601 timestamp when infrastructure was validated (null before validation)"
         },
@@ -1368,11 +1297,17 @@
                 "default": false
               },
               "validation_failure_reason": {
-                "type": ["string", "null"],
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "description": "Reason for validation failure if validated=false, null otherwise (optional - only present if validation fails)"
               },
               "created_at": {
-                "type": ["string", "null"],
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "format": "date-time",
                 "description": "ISO 8601 timestamp when effort infrastructure was created (optional - only present after creation)"
               },
@@ -1560,6 +1495,123 @@
                 "format": "date-time",
                 "description": "When this cascade base was calculated"
               }
+            }
+          }
+        }
+      }
+    },
+    "project_level": {
+      "properties": {
+        "bugs": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Bug tracking for progress-based iteration limits (R615, R616)",
+          "properties": {
+            "total_found": {
+              "type": "integer",
+              "description": "Total bugs discovered across all iterations",
+              "minimum": 0,
+              "default": 0
+            },
+            "total_closed": {
+              "type": "integer",
+              "description": "Total bugs fixed across all iterations",
+              "minimum": 0,
+              "default": 0
+            },
+            "total_open": {
+              "type": "integer",
+              "description": "Current open bugs",
+              "minimum": 0,
+              "default": 0
+            },
+            "reopened_count": {
+              "type": "integer",
+              "description": "Total bugs that have been reopened (flapping)",
+              "minimum": 0,
+              "default": 0
+            },
+            "history": {
+              "type": "array",
+              "description": "Bug counts per iteration for progress analysis",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "iteration": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "bugs_found": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bugs_closed": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bugs_open": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bugs_reopened": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bug_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "progress_category": {
+                    "type": "string",
+                    "enum": [
+                      "PURE_PROGRESS",
+                      "DISCOVERY_PROGRESS",
+                      "SLOW_PROGRESS",
+                      "STALL",
+                      "REGRESSION"
+                    ]
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "iteration",
+                  "bugs_found",
+                  "bugs_closed",
+                  "bugs_open",
+                  "progress_category"
+                ]
+              }
+            },
+            "progress_stalls": {
+              "type": "integer",
+              "description": "Consecutive iterations with no progress (R615 no-progress counter)",
+              "minimum": 0,
+              "default": 0
+            },
+            "max_stalls_allowed": {
+              "type": "integer",
+              "description": "Maximum stalls before ERROR_RECOVERY (R615 no-progress limit)",
+              "minimum": 1,
+              "default": 5
+            },
+            "max_iterations": {
+              "type": "integer",
+              "description": "Maximum total iterations (R615 some-progress limit)",
+              "minimum": 1,
+              "default": 10
+            },
+            "current_iteration": {
+              "type": "integer",
+              "description": "Current iteration number for this scope",
+              "minimum": 0,
+              "default": 0
             }
           }
         }

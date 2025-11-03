@@ -91,3 +91,36 @@ Wave tests must be tracked immediately to ensure:
 
 See: rule-library/R342-early-integration-branch-creation.md
 See: docs/PROGRESSIVE-TEST-PLANNING-ARCHITECTURE.md
+
+---
+
+## 🔴🔴🔴 R405 AUTOMATION CONTINUATION FLAG 🔴🔴🔴
+
+### CRITICAL FOR THIS STATE
+
+**THIS IS AN R322 CHECKPOINT STATE - USE TRUE!**
+
+After completing the work in this state:
+- Wave integration branch created ✅
+- Wave tests committed to branch ✅
+- State updated successfully ✅
+- Ready for next state ✅
+
+**YOU MUST OUTPUT:**
+```
+CONTINUE-SOFTWARE-FACTORY=TRUE
+```
+
+**DO NOT OUTPUT FALSE!**
+
+**WHY TRUE?**
+- Your state work completed successfully
+- Creating branch and committing tests = normal workflow
+- Ready to proceed to SPAWN_CODE_REVIEWER_WAVE_IMPL
+- Stopping at checkpoint ≠ failure
+
+**R322 CHECKPOINT = DESIGNED WORKFLOW = TRUE FLAG**
+
+See: rule-library/R405-automation-continuation-flag.md (read the decision flowchart!)
+
+---

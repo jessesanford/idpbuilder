@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Bug Progress Analyzer Tool
-# Implements R533 (Progress-Based Iteration Limits) and R534 (Bug Lifecycle Tracking)
+# Implements R615 (Progress-Based Iteration Limits) and R616 (Bug Lifecycle Tracking)
 #
 # Purpose: Analyze bug fix progress across iterations to determine if system is making
 #          actual progress (bugs fixed) or just churning (same bugs repeated).
@@ -291,13 +291,13 @@ calculate_progress_score() {
 # ============================================================================
 # FUNCTION: should_continue_or_escalate
 # Determine if iteration should continue or escalate to ERROR_RECOVERY
-# Implements R533 two-tiered limits
+# Implements R615 two-tiered limits
 # ============================================================================
 should_continue_or_escalate() {
     local scope="$1"
     local current_iteration="$2"
 
-    echo "🔍 R533: Checking iteration continuation criteria..." >&2
+    echo "🔍 R615: Checking iteration continuation criteria..." >&2
 
     # Get previous iteration
     local previous_iteration=$((current_iteration - 1))
@@ -346,14 +346,14 @@ should_continue_or_escalate() {
     # Check Tier 1: No-progress limit (5 stalls)
     if [ "$new_stall_count" -ge 5 ]; then
         echo "" >&2
-        echo "${RED}❌❌❌ R533 NO-PROGRESS LIMIT EXCEEDED ❌❌❌${NC}" >&2
+        echo "${RED}❌❌❌ R615 NO-PROGRESS LIMIT EXCEEDED ❌❌❌${NC}" >&2
         echo "Stall counter: $new_stall_count / 5" >&2
         echo "No bugs fixed for 5 consecutive iterations" >&2
         echo "ESCALATING TO ERROR_RECOVERY" >&2
 
         jq -n \
             --arg decision "ERROR_RECOVERY" \
-            --arg reason "R533: No-progress limit exceeded ($new_stall_count stalls)" \
+            --arg reason "R615: No-progress limit exceeded ($new_stall_count stalls)" \
             --argjson stalls "$new_stall_count" \
             --argjson analysis "$analysis" \
             '{
@@ -369,14 +369,14 @@ should_continue_or_escalate() {
     # Check Tier 2: Some-progress limit (10 iterations)
     if [ "$current_iteration" -ge 10 ]; then
         echo "" >&2
-        echo "${RED}❌❌❌ R533 SOME-PROGRESS LIMIT EXCEEDED ❌❌❌${NC}" >&2
+        echo "${RED}❌❌❌ R615 SOME-PROGRESS LIMIT EXCEEDED ❌❌❌${NC}" >&2
         echo "Total iterations: $current_iteration / 10" >&2
         echo "Maximum iterations reached even with progress" >&2
         echo "ESCALATING TO ERROR_RECOVERY for replanning" >&2
 
         jq -n \
             --arg decision "ERROR_RECOVERY" \
-            --arg reason "R533: Some-progress limit exceeded ($current_iteration iterations)" \
+            --arg reason "R615: Some-progress limit exceeded ($current_iteration iterations)" \
             --argjson iter "$current_iteration" \
             --argjson stalls "$new_stall_count" \
             --argjson analysis "$analysis" \
@@ -393,7 +393,7 @@ should_continue_or_escalate() {
 
     # Continue iteration
     echo "" >&2
-    echo "${GREEN}✅ R533: Iteration continuation approved${NC}" >&2
+    echo "${GREEN}✅ R615: Iteration continuation approved${NC}" >&2
     echo "  Stall counter: $new_stall_count / 5" >&2
     echo "  Total iterations: $current_iteration / 10" >&2
 

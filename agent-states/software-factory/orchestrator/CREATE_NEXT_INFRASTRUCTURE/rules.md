@@ -761,16 +761,25 @@ Infrastructure is successfully created when:
 
 ## Next State Transitions
 
-### VALID TRANSITIONS FROM CREATE_NEXT_INFRASTRUCTURE (from state-machines/software-factory-3.0-state-machine.json):
-1. **ANALYZE_CODE_REVIEWER_PARALLELIZATION** - When need to determine how to parallelize effort planning
-2. **SPAWN_SW_ENGINEERS** - When ready to spawn software engineers for implementation
+### VALID TRANSITIONS FROM CREATE_NEXT_INFRASTRUCTURE
+
+Per state machine (`state-machines/software-factory-3.0-state-machine.json`), the allowed transitions are:
+
+1. **VALIDATE_INFRASTRUCTURE** - Normal success path (verify infrastructure was created correctly)
+2. **ERROR_RECOVERY** - If infrastructure creation fails
 
 ### Decision Logic:
+
 After successfully creating infrastructure:
-- **If creating effort infrastructure AND effort plans don't exist** → ANALYZE_CODE_REVIEWER_PARALLELIZATION
-- **If creating effort infrastructure AND effort plans exist** → SPAWN_SW_ENGINEERS
-- **If split infrastructure created** → SPAWN_SW_ENGINEERS (splits already have plans)
-- **If no more infrastructure needed** → WAVE_COMPLETE
+- **SUCCESS** → VALIDATE_INFRASTRUCTURE (State Manager will direct this transition)
+- **FAILURE** → ERROR_RECOVERY (If infrastructure creation encounters errors)
+
+**IMPORTANT:** State Manager (R517) determines the actual next state based on:
+- Proposed transition (VALIDATE_INFRASTRUCTURE for success)
+- State machine validation
+- Current system state
+
+The orchestrator proposes VALIDATE_INFRASTRUCTURE, but State Manager has final authority.
 
 ## Common Mistakes to Avoid
 

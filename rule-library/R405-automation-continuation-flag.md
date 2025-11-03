@@ -41,6 +41,53 @@ Before setting this flag in ANY state, read the master guide:
 
 ---
 
+# 🔴🔴🔴 CHECKPOINT vs FAILURE - THE CRITICAL DISTINCTION 🔴🔴🔴
+
+## 📊 DECISION FLOWCHART - READ THIS FIRST
+
+```
+Did your state work complete successfully?
+│
+├─ YES → Is this an R322 checkpoint state (SPAWN_*, WAITING_FOR_*, etc)?
+│         │
+│         ├─ YES → CONTINUE-SOFTWARE-FACTORY=TRUE
+│         │        (Checkpoints are NORMAL, not failures!)
+│         │
+│         └─ NO → CONTINUE-SOFTWARE-FACTORY=TRUE
+│                 (Normal completion = TRUE)
+│
+└─ NO → Can you fix the problem with available tools?
+          │
+          ├─ YES → FIX IT NOW, then CONTINUE-SOFTWARE-FACTORY=TRUE
+          │        (Don't stop if you can complete the work!)
+          │
+          └─ NO → CONTINUE-SOFTWARE-FACTORY=FALSE REASON=<specific_error>
+                   (Only if truly impossible to proceed)
+```
+
+## 🚨🚨🚨 THE ONE RULE YOU MUST REMEMBER 🚨🚨🚨
+
+**IF YOU COMPLETED YOUR STATE'S WORK SUCCESSFULLY → ALWAYS USE TRUE**
+
+**EVEN IF:**
+- You're stopping at an R322 checkpoint → TRUE
+- You're in a WAITING_FOR_* state → TRUE
+- You spawned an agent and are stopping → TRUE
+- User needs to call /continue command → TRUE
+- Work is "paused" for continuation → TRUE
+
+**CHECKPOINTS ARE NOT FAILURES!**
+- Stopping for user continuation = DESIGNED WORKFLOW = TRUE
+- Stopping because work is impossible = UNRECOVERABLE ERROR = FALSE
+
+**THE TEST**: Did my state's work complete as designed?
+- YES → TRUE (even if stopping for checkpoint)
+- NO → Can I fix it?
+  - YES → Fix it, then TRUE
+  - NO → FALSE with specific reason
+
+---
+
 ## Purpose
 Enable full automation of Software Factory 2.0 by providing a universal machine-parseable signal for continuation decisions.
 
@@ -131,6 +178,90 @@ Based on the flag context, the test/automation framework will:
 **CRITICAL**: The default should be TRUE! Only set FALSE for EXCEPTIONAL situations.
 
 **NOTE**: Even at R322 checkpoints, use TRUE! R322 checkpoints are NORMAL workflow, not errors.
+
+## 🔴 COMMON MISUSE: "Incomplete Work" vs "Impossible Work"
+
+### The Critical Distinction
+
+**INCOMPLETE work** = Work you CAN do but HAVEN'T done yet
+- ✅ Use TRUE (do the work, then continue)
+- ❌ NOT FALSE (stopping is wrong)
+
+**IMPOSSIBLE work** = Work you CANNOT do without human intervention
+- ✅ Use FALSE (human must fix something first)
+
+### Examples: When Orchestrator Says "Incomplete Work"
+
+#### ❌ WRONG: Using FALSE for Completable Work
+
+**Scenario**: Integration agent not spawned yet
+```bash
+# WRONG approach:
+echo "Integration agent not spawned for iteration 7"
+echo "Work is incomplete - setting FALSE"
+echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=INCOMPLETE_WORK"
+exit 0
+```
+
+**Why wrong**: Orchestrator CAN spawn integration agent using Task tool!
+
+**CORRECT approach**:
+```bash
+echo "Integration agent not spawned yet - spawning now..."
+Task: integration-agent ...
+echo "✅ Integration agent spawned"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Work is COMPLETE
+exit 0
+```
+
+#### ✅ RIGHT: Using FALSE for Impossible Work
+
+**Scenario**: State file corrupted beyond repair
+```bash
+# CORRECT approach:
+if ! jq . orchestrator-state-v3.json > /dev/null 2>&1; then
+    echo "❌ State file is corrupted - invalid JSON"
+    echo "❌ Cannot proceed without manual repair"
+    echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=STATE_CORRUPTION"
+    exit 1
+fi
+```
+
+**Why correct**: Orchestrator CANNOT fix corrupted state file!
+
+### Decision Tree
+
+```
+Is the work complete?
+  ├─ YES → CONTINUE-SOFTWARE-FACTORY=TRUE
+  └─ NO → Can I complete it with available tools?
+           ├─ YES → COMPLETE IT NOW → TRUE
+           └─ NO → Is it blocked by external factor?
+                    ├─ YES → FALSE REASON=<specific_blocker>
+                    └─ NO → COMPLETE IT NOW → TRUE
+```
+
+### Specific Cases
+
+| Situation | Can Do? | Flag | Action |
+|-----------|---------|------|--------|
+| Agent not spawned | ✅ YES | TRUE | Spawn agent, then TRUE |
+| State file missing | ❌ NO | FALSE | Human must provide |
+| Checklist incomplete | ✅ YES | TRUE | Complete checklist, then TRUE |
+| Integration not done | ✅ YES | TRUE | Spawn integration agent, then TRUE |
+| Git repo corrupted | ❌ NO | FALSE | Human must fix repo |
+| Tests failing | ✅ YES | TRUE | Spawn fix cascade, then TRUE |
+| Network down | ❌ NO | FALSE | Human must restore network |
+
+### The "I Will Do It" Test
+
+Before setting FALSE, ask yourself:
+> "Can I use a tool to complete this work right now?"
+
+- If YES → **Do it, then set TRUE**
+- If NO → **Set FALSE with specific reason**
+
+**Remember**: FALSE is an admission of defeat, not an excuse for laziness.
 
 ## When to Output FALSE (EXCEPTIONAL CASES ONLY)
 **ONLY set FALSE for these TRULY EXCEPTIONAL situations:**

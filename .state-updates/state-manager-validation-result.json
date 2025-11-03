@@ -1,0 +1,97 @@
+{
+  "validation_result": "REJECTED_AND_CORRECTED",
+  "timestamp": "2025-11-03T02:08:00Z",
+  "validated_by": "state-manager",
+
+  "orchestrator_proposal": {
+    "from_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+    "to_state_proposed": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+    "reason": "Wave 2.3 architecture validated, ready for test planning"
+  },
+
+  "state_manager_decision": {
+    "proposal_accepted": false,
+    "proposal_rejected": true,
+    "rejection_reason": "Test plan already exists - would duplicate completed work",
+    "state_corruption_detected": true
+  },
+
+  "corruption_analysis": {
+    "root_cause": "Context loss caused orchestrator to restart from INIT, creating invalid state",
+    "actual_reality": {
+      "architecture_exists": true,
+      "architecture_file": "planning/phase2/wave3/WAVE-2.3-ARCHITECTURE.md",
+      "test_plan_exists": true,
+      "test_plan_file": "planning/phase2/wave3/WAVE-TEST-PLAN.md",
+      "test_count": 63,
+      "test_plan_created_at": "2025-11-03T00:54:00Z",
+      "integration_branch_exists": true,
+      "integration_branch": "idpbuilder-oci-push/phase2/wave3/integration",
+      "implementation_plan_exists": false
+    },
+    "state_file_issues": {
+      "top_level_current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+      "top_level_planning_context": null,
+      "top_level_current_phase": null,
+      "top_level_current_wave": null,
+      "schema_violations": [
+        "Invalid top-level fields: current_phase, current_wave, planning_context",
+        "These fields must be in project_progression structure"
+      ]
+    }
+  },
+
+  "corrective_actions_taken": [
+    "Rejected orchestrator proposal to avoid duplicate work",
+    "Corrected current_state to SPAWN_CODE_REVIEWER_WAVE_IMPL",
+    "Corrected previous_state to CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+    "Set project_progression.current_phase.phase_number = 2",
+    "Set project_progression.current_wave.wave_number = 3",
+    "Removed invalid top-level fields (current_phase, current_wave, planning_context)",
+    "Added state recovery entry to state_history",
+    "Committed corrected state with [R288] tag"
+  ],
+
+  "corrected_state": {
+    "current_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+    "previous_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+    "phase": 2,
+    "wave": 3,
+    "schema_valid": true
+  },
+
+  "required_next_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
+
+  "next_actions_for_orchestrator": [
+    "DO NOT spawn Code Reviewer for test planning (tests already exist)",
+    "DO spawn Code Reviewer for IMPLEMENTATION PLANNING",
+    "Implementation plan should create WAVE-2.3-IMPLEMENTATION-PLAN.md",
+    "After spawning Code Reviewer, transition to WAITING_FOR_IMPLEMENTATION_PLAN",
+    "Continue normal wave execution flow from implementation planning"
+  ],
+
+  "state_machine_compliance": {
+    "transition_validated": false,
+    "orchestrator_proposed_transition_allowed": false,
+    "corrected_transition": "WAITING_FOR_WAVE_ARCHITECTURE → SPAWN_CODE_REVIEWER_WAVE_IMPL (recovery)",
+    "allowed_transitions_from_corrected_state": [
+      "WAITING_FOR_IMPLEMENTATION_PLAN",
+      "ERROR_RECOVERY"
+    ]
+  },
+
+  "validation_checks": {
+    "from_state_exists": true,
+    "to_state_proposed_exists": true,
+    "transition_in_allowed_list": false,
+    "work_not_duplicative": false,
+    "state_corruption_detected": true,
+    "schema_violations_fixed": true,
+    "r288_compliance": true,
+    "r322_consultation": true,
+    "state_machine_compliance": "CORRECTED"
+  },
+
+  "commit_hash": "3f44821",
+  "commit_message": "[R288] STATE RECOVERY: WAITING_FOR_WAVE_ARCHITECTURE → SPAWN_CODE_REVIEWER_WAVE_IMPL"
+}
