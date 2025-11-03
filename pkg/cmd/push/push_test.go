@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/cnoe-io/idpbuilder/pkg/cmd/push"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -32,7 +33,7 @@ type mockTLSProvider struct {
 // T-2.1.1-01: Test flag existence
 func TestNewPushCommand_Flags(t *testing.T) {
 	// When: Creating push command
-	cmd := push.NewPushCommand()
+	cmd := push.NewPushCommand(viper.New())
 
 	// Then: All flags exist
 	registryFlag := cmd.Flags().Lookup("registry")
@@ -53,7 +54,7 @@ func TestNewPushCommand_Flags(t *testing.T) {
 
 // T-2.1.1-02: Test flag defaults
 func TestNewPushCommand_FlagDefaults(t *testing.T) {
-	cmd := push.NewPushCommand()
+	cmd := push.NewPushCommand(viper.New())
 
 	registryFlag := cmd.Flags().Lookup("registry")
 	assert.Equal(t, "gitea.cnoe.localtest.me:8443", registryFlag.DefValue, "registry default should be Gitea")
@@ -67,7 +68,7 @@ func TestNewPushCommand_FlagDefaults(t *testing.T) {
 
 // T-2.1.1-03: Test required flags
 func TestNewPushCommand_RequiredFlags(t *testing.T) {
-	cmd := push.NewPushCommand()
+	cmd := push.NewPushCommand(viper.New())
 
 	// Username should be required
 	usernameFlag := cmd.Flags().Lookup("username")
@@ -225,7 +226,7 @@ func TestRunPush_CustomRegistry(t *testing.T) {
 
 // T-2.1.1-24: Test Cobra integration
 func TestNewPushCommand_CobraIntegration(t *testing.T) {
-	cmd := push.NewPushCommand()
+	cmd := push.NewPushCommand(viper.New())
 
 	assert.Equal(t, "push", cmd.Use[:4], "command name should be 'push'")
 	assert.NotEmpty(t, cmd.Short, "short description should be set")
@@ -235,7 +236,7 @@ func TestNewPushCommand_CobraIntegration(t *testing.T) {
 
 // T-2.1.1-25: Test help text
 func TestNewPushCommand_HelpText(t *testing.T) {
-	cmd := push.NewPushCommand()
+	cmd := push.NewPushCommand(viper.New())
 
 	helpText := cmd.Long
 	assert.Contains(t, helpText, "Push a local Docker image", "help should describe push operation")
