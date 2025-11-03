@@ -1,0 +1,29 @@
+# TODO STATE: orchestrator - BUILD_VALIDATION
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: State transition from BUILD_VALIDATION to WAVE_START (R287)
+
+[✓] Read state file to understand BUILD_VALIDATION context
+[✓] Determine if build validation has been completed
+[✓] Spawn Code Reviewer for build validation (per R319/R323)
+[✓] Wait for Code Reviewer build validation report
+[✓] Verify artifact exists per R323 from report
+[✓] Determine next state: START_WAVE_ITERATION for Wave 3
+[✓] Spawn State Manager for SHUTDOWN_CONSULTATION
+[✓] State Manager corrected to WAVE_START (not START_WAVE_ITERATION)
+[✓] Save TODOs per R287
+[ ] Output CONTINUE-SOFTWARE-FACTORY flag per R405
+
+## Work Summary
+- BUILD_VALIDATION state work completed successfully
+- Code Reviewer performed build validation (R319 compliance)
+- Final artifact verified: idpbuilder (66M executable)
+- All R323 requirements met (artifact documented)
+- State Manager consultation completed (R517 compliance)
+- Transition corrected: BUILD_VALIDATION → WAVE_START (not START_WAVE_ITERATION)
+- Next state: WAVE_START for Phase 2 Wave 3 initialization
+
+## Critical Notes
+- Orchestrator must NEVER build/test/measure code (R006, R319)
+- All state transitions require State Manager consultation (R517)
+- WAVE_START vs START_WAVE_ITERATION distinction critical
+- Phase 2 has 3 waves total, now starting Wave 3
