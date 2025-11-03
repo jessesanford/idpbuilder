@@ -1,0 +1,30 @@
+# Code Reviewer TODOs - Trigger: FIX_PLAN_CREATION_COMPLETE
+# State: SPAWN_CODE_REVIEWER_FIX_PLAN
+# Bug: BUG-020-VALIDATOR-REDECLARATIONS
+# Timestamp: 2025-11-03T11:54:43Z
+
+## Completed Tasks
+- [x] Analyzed bug from integration report
+- [x] Identified root cause (stub file conflicts)
+- [x] Determined fix strategy (delete stub file)
+- [x] Created comprehensive fix plan with all verification steps
+- [x] Saved fix plan to .software-factory with R383 timestamp
+- [x] Fix plan location: efforts/phase2/wave3/effort-2-error-system/.software-factory/phase2/wave3/effort-2-error-system/FIX-PLAN-BUG-020--20251103-115443.md
+
+## Current Task
+- [ ] Emit R405 CONTINUE-SOFTWARE-FACTORY=TRUE flag
+
+## Fix Plan Summary
+- Bug: BUG-020-VALIDATOR-REDECLARATIONS
+- Severity: CRITICAL (blocks build)
+- Fix: Delete pkg/validator/validator.go from effort-2 branch
+- Risk: VERY LOW (stub file only)
+- Estimated Time: 30 minutes
+- Tests: All 68 tests will pass after fix
+
+## Next Steps for Orchestrator
+1. Spawn SW Engineer for effort-2 branch
+2. SW Engineer executes fix plan (delete stub file)
+3. SW Engineer commits/pushes to effort-2 branch
+4. Orchestrator re-runs integration from clean state
+5. Integration should succeed with all tests passing
