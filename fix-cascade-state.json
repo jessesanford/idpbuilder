@@ -164,7 +164,7 @@
     "state_transition": "BUILD_VALIDATION",
     "updated_by": "state-manager"
   },
-  "last_updated": "2025-11-03T00:14:59Z",
+  "last_updated": "2025-11-03T02:40:01Z",
   "state_machine_sync": {
     "orchestrator_state": "BUILD_VALIDATION",
     "last_sync": "2025-11-03T00:14:59Z",
@@ -185,5 +185,6 @@
     "created_at": "2025-11-02T18:20:00Z",
     "notes": "Wave 2.2 iteration 7: Workspace deletion complete. Re-integrating from clean Wave 2.1 base to fix R359 violation.",
     "fix_started_at": "2025-11-02T18:50:08Z"
-  }
+  },
+  "orchestrator_state": "CREATE_NEXT_INFRASTRUCTURE"
 }
