@@ -1,5 +1,7 @@
+========================================
+EFFORT 1: Input Validation & Security Checks (2.3.1)
+========================================
 Completed at: 2025-11-03 06:54:50 UTC
-Effort: Input Validation & Security Checks (2.3.1)
 Branch: idpbuilder-oci-push/phase2/wave3/effort-1-input-validation
 Implementation lines: 364 lines (excluding tests)
 Total lines with tests: 759 lines
@@ -10,7 +12,7 @@ Status: IMPLEMENTATION COMPLETE
 
 Files implemented:
 - pkg/validator/types.go (46 lines)
-- pkg/validator/imagename.go (112 lines)  
+- pkg/validator/imagename.go (112 lines)
 - pkg/validator/registry.go (142 lines)
 - pkg/validator/credentials.go (64 lines)
 - pkg/validator/validator_test.go (395 lines)
@@ -27,3 +29,27 @@ All acceptance criteria met:
 ✅ No linting errors
 ✅ Code committed and pushed
 ✅ Scope boundaries followed
+
+========================================
+EFFORT 2: Error Type System (2.3.2)
+========================================
+Completed at: 2025-11-03 07:42:10 UTC
+Branch: idpbuilder-oci-push/phase2/wave3/effort-2-error-system
+Final commit: c963cb1 feat(errors): implement comprehensive error type system with exit code mapping
+Status: IMPLEMENTATION COMPLETE
+
+Implementation Summary:
+- pkg/errors/types.go: 155 lines (BaseError + 4 error types + warnings)
+- pkg/errors/exitcodes.go: 81 lines (exit code mapping)
+- pkg/cmd/push/errors.go: 143 lines (wrapping functions)
+- pkg/cmd/push/push.go: ~40 lines added (error handling integration)
+- pkg/validator/validator.go: 35 lines (stub, will be replaced by 2.3.1)
+
+Test Results:
+- 30 unit tests: ALL PASSING
+- Error package coverage: 100%
+- Wrapping functions coverage: 100%
+- Total test code: 580 lines (excluded per R007)
+
+Size: ~454 lines implementation (under 800 HARD limit per R220)
+Ready for Code Review: YES
