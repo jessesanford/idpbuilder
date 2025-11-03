@@ -1,0 +1,29 @@
+# TODO State at $(date '+%Y-%m-%d %H:%M:%S')
+# Agent: architect
+# State: REVIEW_WAVE_ARCHITECTURE
+# Phase: 2, Wave: 2
+
+## Completed
+- Acknowledge state and critical rules
+- Pre-flight checks completed
+- Read state-specific rules (WAVE_REVIEW)
+- Reviewed integration review report (OLD - iteration 5 report shows bugs)
+
+## In Progress
+- Verify current iteration status (iteration 7 - should be clean)
+- Check R297 split_count for each effort
+- Verify R308 incremental branching
+- Verify R373 interface compliance
+
+## Pending
+- Review integration branch code for architectural patterns
+- Assess system coherence and design consistency
+- Create MANDATORY wave review report at wave-reviews/phase2/wave2/PHASE-2-WAVE-2-REVIEW-REPORT.md
+- Commit and push wave review report
+- Save TODOs before state transition (R287)
+- Output R405 continuation flag as absolute last action
+
+## Notes
+- Old integration review from iteration 5 showed 6 bugs (3 critical)
+- User states iteration 7 has: BUILD=SUCCESS, TESTS=PASS, BUGS=0
+- Need to verify current status before final architecture review
