@@ -3,53 +3,54 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_SW_ENGINEERS",
-    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "last_transition_timestamp": "2025-11-03T07:28:10Z",
+    "current_state": "MONITORING_SWE_PROGRESS",
+    "previous_state": "SPAWN_SW_ENGINEERS",
+    "last_transition_timestamp": "2025-11-03T07:43:37Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "timestamp": "2025-11-03T07:28:10Z",
-      "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-      "to_state_proposed": "SPAWN_SW_ENGINEERS",
-      "to_state_required": "SPAWN_SW_ENGINEERS",
+      "timestamp": "2025-11-03T07:43:37Z",
+      "from_state": "SPAWN_SW_ENGINEERS",
+      "to_state_proposed": "MONITORING_SWE_PROGRESS",
+      "to_state_required": "MONITORING_SWE_PROGRESS",
       "validated_by": "state-manager",
       "orchestrator_proposal_accepted": true,
       "proposal_rejected": false,
-      "transition_type": "STATE_CORRECTION",
       "validation_checks": {
         "transition_allowed": true,
         "from_state_exists": true,
         "to_state_exists": true,
         "in_allowed_transitions": true,
-        "allowed_transitions": [
-          "WAITING_FOR_EFFORT_PLANS",
-          "ERROR_RECOVERY"
-        ],
         "guards_satisfied": {
-          "effort_2_3_1_complete": true,
-          "effort_2_3_1_reviewed": true,
-          "effort_2_3_1_status": "ACCEPTED",
-          "effort_2_3_2_plan_exists": true,
-          "effort_2_3_2_plan_created_at": "2025-11-03T06:26:30Z",
-          "sequential_strategy_active": true
+          "sw_engineer_spawned": true,
+          "effort_2_3_2_assigned": true,
+          "implementation_plan_provided": true
         }
       },
       "work_completed": {
-        "effort_2_3_1_status": "COMPLETE_AND_REVIEWED",
-        "effort_2_3_1_implementation_lines": 394,
-        "effort_2_3_1_review_status": "ACCEPTED",
-        "effort_2_3_1_test_coverage": "94.6%",
-        "effort_2_3_2_plan_status": "EXISTS",
-        "effort_2_3_2_plan_file": "efforts/phase2/wave3/effort-2-error-system/.software-factory/phase2/wave3/effort-2-error-system/IMPLEMENTATION-PLAN-20251103-062330.md",
-        "effort_2_3_2_plan_size": "28657 bytes",
-        "effort_2_3_2_ready_for_implementation": true,
-        "sequential_strategy": "ACTIVE"
+        "sw_engineer_spawned_for": "effort 2.3.2 (error-system)",
+        "implementation_status": "COMPLETE",
+        "implementation_lines": 454,
+        "tests_passing": "30/30 (100%)",
+        "coverage": "100%",
+        "commits_pushed": true,
+        "todos_saved": true
       },
       "phase": 2,
       "wave": 3,
-      "decision_rationale": "STATE CORRECTION: Current state SPAWN_CODE_REVIEWERS_EFFORT_PLANNING is incorrect. Orchestrator discovered effort 2.3.2 plan already exists (created 2025-11-03T06:26:30Z, 28,657 bytes). Effort planning is complete. Effort 2.3.1 is COMPLETE and REVIEWED (ACCEPTED, 394 lines, 94.6% coverage). Sequential strategy requires spawning SW Engineer for effort 2.3.2 implementation. Correcting state to SPAWN_SW_ENGINEERS."
+      "effort": "2.3.2",
+      "decision_rationale": "Transition valid per state machine. SW Engineer successfully spawned for effort 2.3.2. Implementation complete (454 lines). All tests passing. Ready for monitoring per R313."
     },
     "state_history": [
+      {
+        "from_state": "SPAWN_SW_ENGINEERS",
+        "to_state": "MONITORING_SWE_PROGRESS",
+        "timestamp": "2025-11-03T07:43:37Z",
+        "validated_by": "state-manager",
+        "reason": "SW Engineer spawned for effort 2.3.2, transition to monitoring per R313",
+        "phase": 2,
+        "wave": 3,
+        "effort": "2.3.2"
+      },
       {
         "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
         "to_state": "SPAWN_SW_ENGINEERS",
