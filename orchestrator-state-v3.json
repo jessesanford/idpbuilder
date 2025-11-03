@@ -3,7 +3,7 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "REVIEW_WAVE_ARCHITECTURE",
+    "current_state": "BUILD_VALIDATION",
     "previous_state": "REVIEW_WAVE_INTEGRATION",
     "last_transition_timestamp": "2025-11-03T14:08:00Z",
     "last_state_manager_consultation": "2025-11-03T14:08:00Z",
@@ -3643,6 +3643,16 @@
           "review_complete": true,
           "ready_for_architecture_review": true
         }
+      },
+      {
+        "from_state": "REVIEW_WAVE_ARCHITECTURE",
+        "to_state": "BUILD_VALIDATION",
+        "timestamp": "2025-11-03T14:38:02Z",
+        "validated_by": "state-manager",
+        "reason": "State Manager decision: orchestrator proposed WAVE_COMPLETE but state machine requires BUILD_VALIDATION next (allowed_transitions validation)",
+        "orchestrator_proposal": "WAVE_COMPLETE",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "Proposed state WAVE_COMPLETE not in allowed_transitions for REVIEW_WAVE_ARCHITECTURE. State machine requires BUILD_VALIDATION for build/test validation after architecture approval."
       }
     ],
     "loop_detection": {
@@ -3701,7 +3711,7 @@
       ],
       "state_manager_ruling": "REJECTION - transition to SPAWN_SW_ENGINEERS denied due to invalid analysis basis"
     },
-    "last_transition": "2025-11-03T14:05:39Z",
+    "last_transition": "2025-11-03T14:38:02Z",
     "transition_timestamp": "2025-11-01T19:56:25Z",
     "transition_reason": "START_WAVE_ITERATION checklist complete. Iteration=2 (retry after ERROR_RECOVERY). All checks passed.",
     "transition_time": "2025-11-03T13:27:38Z",
@@ -3903,7 +3913,8 @@
           "depends_on": [
             2
           ],
-          "status": "PLANNED"
+          "status": "ARCHITECTURE_REVIEWED",
+          "architecture_review_completed": "2025-11-03T14:38:02Z"
         }
       ],
       "wave_2": {
