@@ -1,0 +1,16 @@
+BUG-021 fixed: validator.go stub already removed from effort-2 branch
+Fix completed at: 2025-11-03T12:40:00Z
+Fix commit: c36d62916c0e14c0e9bd723da19c05b2fa0bea47
+Additional commit: 8139a33eee16ab9c46319e2a5adc0ea9064aef3b (testing marker)
+
+Analysis:
+- The BUG-020 fix was actually completed correctly
+- commit c36d629 removed pkg/validator/validator.go as required
+- The stub file no longer exists in the branch
+- The branch was missing remote tracking (fixed with git push -u)
+- All changes are now pushed to origin
+
+Verification:
+- git ls-tree -r HEAD shows NO validator.go file
+- Empty pkg/validator/ directory confirms removal
+- Remote tracking established: origin/idpbuilder-oci-push/phase2/wave3/effort-2-error-system
