@@ -3,10 +3,10 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "START_PHASE_ITERATION",
-    "previous_state": "FIX_PHASE_UPSTREAM_BUGS",
-    "last_transition_timestamp": "2025-11-03T23:02:30Z",
-    "last_state_manager_consultation": "2025-11-03T23:02:30Z",
+    "current_state": "INTEGRATE_PHASE_WAVES",
+    "previous_state": "START_PHASE_ITERATION",
+    "last_transition_timestamp": "2025-11-03T23:11:00Z",
+    "last_state_manager_consultation": "2025-11-03T23:11:00Z",
     "state_history": [
       {
         "from_state": "CREATE_PHASE_FIX_PLAN",
@@ -3802,6 +3802,18 @@
           "tests_passing": true,
           "fixes_committed": true
         }
+      },
+      {
+        "from_state": "START_PHASE_ITERATION",
+        "to_state": "INTEGRATE_PHASE_WAVES",
+        "timestamp": "2025-11-03T23:11:00Z",
+        "validated_by": "state-manager",
+        "reason": "Phase iteration 3 starting. Bugs fixed in FIX_PHASE_UPSTREAM_BUGS (BUG-022 FIXED d6b2670, BUG-023 PHANTOM). Phase 2 has 3 complete waves (2.1, 2.2, 2.3) ready for integration. Iteration counter: 3/10. Proceeding to INTEGRATE_PHASE_WAVES to execute phase-level merge.",
+        "phase": 2,
+        "wave": null,
+        "iteration": 3,
+        "orchestrator_proposal": "INTEGRATE_PHASE_WAVES",
+        "proposal_accepted": true
       }
     ],
     "loop_detection": {
@@ -3901,7 +3913,7 @@
     "current_phase": {
       "phase_number": 2,
       "name": "Error Handling & Validation",
-      "iteration": 2,
+      "iteration": 3,
       "total_waves_in_phase": 3,
       "waves_completed": 3,
       "status": "COMPLETED",
@@ -3994,7 +4006,7 @@
       ]
     },
     "iteration_tracking": {
-      "last_progress_timestamp": "2025-11-03T15:43:37+00:00",
+      "last_progress_timestamp": "2025-11-03T23:11:21+00:00",
       "active_container_level": "wave",
       "current_container": "wave-phase1-wave2"
     },

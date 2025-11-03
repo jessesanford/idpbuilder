@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-03T15:48:20Z",
+  "last_updated": "2025-11-03T23:11:00Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -100,7 +100,7 @@
       "container_id": "phase-phase2",
       "phase": 2,
       "status": "IN_PROGRESS",
-      "iteration": 1,
+      "iteration": 3,
       "max_iterations": 10,
       "branch": "main (was idpbuilder-oci-push/phase2/integration, merged)",
       "workspace": "efforts/phase2/integration",
@@ -120,7 +120,7 @@
         2,
         3
       ],
-      "notes": "Phase 2 integration iteration 1: Bugs fixed. BUG-022 FIXED (stub violation), BUG-023 PHANTOM (does not exist). Ready for re-integration.",
+      "notes": "Phase 2 iteration 3: Starting phase integration after bug fixes (BUG-022 FIXED, BUG-023 PHANTOM).",
       "iteration_history": [
         {
           "iteration": 1,
@@ -561,9 +561,9 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-03T23:02:30Z",
-    "notes": "State Manager: Phase 2 bugs resolved (1 fixed, 1 phantom). Ready to restart phase integration.",
-    "state_transition": "START_PHASE_ITERATION",
+    "last_updated": "2025-11-03T23:11:00Z",
+    "notes": "State Manager: Phase 2 iteration 3 - transitioning to INTEGRATE_PHASE_WAVES.",
+    "state_transition": "INTEGRATE_PHASE_WAVES",
     "updated_by": "state-manager",
     "last_modified": "2025-11-03T15:30:00Z",
     "state_sync": {
@@ -572,19 +572,19 @@
     }
   },
   "state_machine_sync": {
-    "orchestrator_state": "START_PHASE_ITERATION",
-    "current_state": "START_PHASE_ITERATION",
-    "previous_state": "SETUP_PHASE_INFRASTRUCTURE",
-    "last_transition": "2025-11-03T15:30:00Z",
-    "last_sync": "2025-11-03T15:30:00Z",
+    "orchestrator_state": "INTEGRATE_PHASE_WAVES",
+    "current_state": "INTEGRATE_PHASE_WAVES",
+    "previous_state": "START_PHASE_ITERATION",
+    "last_transition": "2025-11-03T23:11:00Z",
+    "last_sync": "2025-11-03T23:11:00Z",
     "in_sync": true
   },
   "current_state": "INTEGRATE_PHASE_WAVES",
   "phase": 2,
   "wave": null,
   "last_updated_by": "state-manager",
-  "current_orchestrator_state": "START_PHASE_ITERATION",
-  "orchestrator_state": "START_PHASE_ITERATION",
+  "current_orchestrator_state": "INTEGRATE_PHASE_WAVES",
+  "orchestrator_state": "INTEGRATE_PHASE_WAVES",
   "last_state_transition": {
     "from": "SETUP_PHASE_INFRASTRUCTURE",
     "to": "START_PHASE_ITERATION",
