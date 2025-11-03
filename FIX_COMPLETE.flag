@@ -1,0 +1,12 @@
+BUG-020 fixed: Removed validator.go stub file
+Fixed at: 2025-11-03T11:42:46Z
+Commit: c36d629
+
+Details:
+- Removed pkg/validator/validator.go containing stub implementations
+- These stubs conflicted with actual implementations in effort-1
+- Stubs included: ValidateImageName, ValidateRegistryURL, ValidateCredentials
+- Fix applied to effort-2 branch per R300 cascade fix protocol
+
+Note: This branch depends on effort-1 for validator functions.
+Build will succeed when integrated with effort-1 (input-validation).
