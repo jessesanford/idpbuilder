@@ -522,19 +522,19 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-03T08:34:44Z",
-    "notes": "State transition: ERROR_RECOVERY to START_WAVE_ITERATION (Wave 2.3 iteration 2 - retry after BUG-020 fix)",
-    "state_transition": "INTEGRATE_WAVE_EFFORTS",
+    "last_updated": "2025-11-03T12:25:18Z",
+    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → ERROR_RECOVERY (iteration 2 blocked by BUG-001)",
+    "state_transition": "ERROR_RECOVERY",
     "updated_by": "state-manager",
-    "last_modified": "2025-11-03T11:43:00Z"
+    "last_modified": "2025-11-03T12:25:18Z"
   },
   "state_machine_sync": {
-    "orchestrator_state": "INTEGRATE_WAVE_EFFORTS",
+    "orchestrator_state": "ERROR_RECOVERY",
     "last_sync": "2025-11-03T08:47:53Z",
     "in_sync": true,
     "current_state": "ERROR_RECOVERY",
     "previous_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_transition": "2025-11-03T11:43:00Z"
+    "last_transition": "2025-11-03T12:25:18Z"
   },
   "current_state": "ERROR_RECOVERY",
   "phase": 2,
@@ -543,9 +543,9 @@
   "current_orchestrator_state": "INTEGRATE_WAVE_EFFORTS",
   "orchestrator_state": "INTEGRATE_WAVE_EFFORTS",
   "last_state_transition": {
-    "from": "START_WAVE_ITERATION",
-    "to": "INTEGRATE_WAVE_EFFORTS",
-    "timestamp": "2025-11-03T08:34:44Z"
+    "from": "INTEGRATE_WAVE_EFFORTS",
+    "to": "ERROR_RECOVERY",
+    "timestamp": "2025-11-03T12:25:18Z"
   },
   "state_transitions": [
     {
@@ -597,6 +597,16 @@
       "effort": null,
       "validated_by": "state-manager",
       "reason": "All Wave 2.3 effort reviews complete: Effort 2.3.1 ACCEPTED (394 lines, 94.6% coverage), Effort 2.3.2 ACCEPTED (508 lines, 100% coverage). Zero issues found. Wave ready for integration."
+    },
+    {
+      "timestamp": "2025-11-03T12:25:18Z",
+      "from_state": "INTEGRATE_WAVE_EFFORTS",
+      "to_state": "ERROR_RECOVERY",
+      "phase": 2,
+      "wave": 3,
+      "iteration": 2,
+      "validated_by": "state-manager",
+      "reason": "Integration iteration 2: Integration Agent spawned and found BUG-001 (validator stub conflicts blocking build). Per R300 protocol."
     }
   ]
 }

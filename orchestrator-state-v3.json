@@ -3,15 +3,15 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "INTEGRATE_WAVE_EFFORTS",
-    "previous_state": "START_WAVE_ITERATION",
-    "last_transition_timestamp": "2025-11-03T11:43:00Z",
+    "current_state": "ERROR_RECOVERY",
+    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "last_transition_timestamp": "2025-11-03T12:25:18Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "timestamp": "2025-11-03T11:43:00Z",
-      "from_state": "ERROR_RECOVERY",
-      "to_state_proposed": "START_WAVE_ITERATION",
-      "to_state_required": "START_WAVE_ITERATION",
+      "timestamp": "2025-11-03T12:25:18Z",
+      "from_state": "INTEGRATE_WAVE_EFFORTS",
+      "to_state_proposed": "ERROR_RECOVERY",
+      "to_state_required": "ERROR_RECOVERY",
       "validated_by": "state-manager",
       "orchestrator_proposal_accepted": true,
       "validation_checks": {
@@ -19,23 +19,25 @@
         "from_state_exists": true,
         "to_state_exists": true,
         "in_allowed_transitions": true,
-        "bug_020_fixed": true,
-        "fix_commits_verified": true,
+        "integration_spawned": true,
+        "iteration_number": 2,
+        "bug_001_reported": true,
         "r288_compliance": true
       },
       "work_completed": {
-        "bug_fixed": "BUG-020-VALIDATOR-REDECLARATIONS",
-        "fix_commits": [
-          "c36d629",
-          "d2144ee"
+        "integration_agent_spawned": true,
+        "effort_branches": [
+          "idpbuilder-oci-push/phase2/wave3/effort-1-input-validation",
+          "idpbuilder-oci-push/phase2/wave3/effort-2-error-system"
         ],
-        "fix_branch": "idpbuilder-oci-push/phase2/wave3/effort-2-error-system",
-        "ready_for_reintegration": true
+        "integration_status": "BLOCKED",
+        "bug_reported": "BUG-001",
+        "bug_description": "Validator stub conflicts causing build failure"
       },
       "phase": 2,
       "wave": 3,
       "iteration": 2,
-      "decision_rationale": "Transition valid per state machine. BUG-020 fixed in effort-2 branch per R300. Fix commits c36d629 (removed validator.go stub) and d2144ee (completion marker) verified and pushed. Ready to increment iteration counter and create fresh integration workspace for retry."
+      "decision_rationale": "Transition valid per state machine. Integration Agent spawned for Wave 2.3 iteration 2 (retry after BUG-020 fix). Integration found new bug (BUG-001) blocking build. Per R300, bugs must be fixed in effort branches before retry. Transitioning to ERROR_RECOVERY for bug fix workflow, then will return to START_WAVE_ITERATION for iteration 3."
     },
     "state_history": [
       {
@@ -3518,6 +3520,18 @@
           "c36d629",
           "d2144ee"
         ]
+      },
+      {
+        "from_state": "INTEGRATE_WAVE_EFFORTS",
+        "to_state": "ERROR_RECOVERY",
+        "timestamp": "2025-11-03T12:25:18Z",
+        "validated_by": "state-manager",
+        "reason": "Integration iteration 2 blocked by BUG-001 (validator stub conflicts). Integration Agent reported bug per R266. Requires SW Engineer fix per R300 before iteration 3.",
+        "phase": 2,
+        "wave": 3,
+        "iteration": 2,
+        "bug_id": "BUG-001",
+        "integration_report": "TBD"
       }
     ],
     "loop_detection": {

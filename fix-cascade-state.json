@@ -159,8 +159,8 @@
     }
   },
   "metadata": {
-    "last_updated": "2025-11-03T08:34:44Z",
-    "notes": "State transition: START_WAVE_ITERATION to INTEGRATE_WAVE_EFFORTS (Wave 2.3 iteration 1 started)",
+    "last_updated": "2025-11-03T12:25:18Z",
+    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → ERROR_RECOVERY (Wave 2.3 iteration 2)",
     "state_transition": "INTEGRATE_WAVE_EFFORTS",
     "updated_by": "state-manager",
     "last_modified": "2025-11-03T08:34:44Z"
