@@ -3,15 +3,15 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_WAVE_TEST_PLAN",
-    "previous_state": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
-    "last_transition_timestamp": "2025-11-03T00:49:05Z",
+    "current_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+    "previous_state": "WAITING_FOR_WAVE_TEST_PLAN",
+    "last_transition_timestamp": "2025-11-03T01:07:49Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "timestamp": "2025-11-03T00:49:05Z",
-      "from_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-      "to_state_proposed": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
-      "to_state_required": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+      "timestamp": "2025-11-03T01:07:49Z",
+      "from_state": "WAITING_FOR_WAVE_TEST_PLAN",
+      "to_state_proposed": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+      "to_state_required": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
       "validated_by": "state-manager",
       "orchestrator_proposal_accepted": true,
       "validation_checks": {
@@ -20,50 +20,66 @@
         "to_state_exists": true,
         "in_allowed_transitions": true,
         "allowed_transitions": [
-          "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+          "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
           "ERROR_RECOVERY"
         ],
         "exit_criteria_met": {
-          "architecture_validated": true,
-          "architecture_file": "planning/phase2/wave3/WAVE-2.3-ARCHITECTURE.md",
-          "architecture_size_bytes": 45119,
-          "r340_concrete_fidelity": "VERIFIED",
-          "function_signatures_found": 38,
-          "go_code_blocks": 25,
-          "interface_definitions": 9,
-          "adaptation_notes_confirmed": true,
-          "quality_gates_passed": true
+          "wave_test_plan_exists": true,
+          "test_plan_path": "planning/phase2/wave3/WAVE-TEST-PLAN.md",
+          "wave_architecture_exists": true,
+          "architecture_path": "planning/phase2/wave3/WAVE-2.3-ARCHITECTURE.md",
+          "test_count": 63,
+          "tdd_phase": "red",
+          "r340_quality_gates_passed": true,
+          "r341_tdd_compliance": true
         },
         "entry_criteria_met": {
-          "wave_architecture_exists": true,
-          "preplanned_test_infrastructure_exists": true,
+          "test_plan_validated": true,
+          "architecture_validated": true,
           "previous_waves_completed": true,
-          "r341_tdd_requirements": "APPLY",
-          "r342_integration_branch_required": true
+          "ready_for_integration_branch": true
         },
         "state_machine_compliance": "VERIFIED",
         "r288_compliance": true,
         "r322_consultation": true,
-        "r340_progressive_planning": true
+        "r340_progressive_planning": true,
+        "r342_early_branch_required": true
       },
       "work_completed": {
-        "wave_23_architecture_validated": true,
-        "r340_quality_gates_passed": true,
-        "concrete_code_fidelity_verified": true,
-        "efforts_identified": [
-          "2.3.1",
-          "2.3.2"
-        ],
-        "effort_231_lines": 400,
-        "effort_232_lines": 350,
-        "total_estimated_lines": 750,
-        "within_800_limit": true
+        "wave_23_test_plan_validated": true,
+        "test_count": 63,
+        "tdd_phase": "RED",
+        "progressive_realism_verified": true,
+        "r341_tdd_requirements_met": true
       },
       "phase": 2,
       "wave": 3,
-      "decision_rationale": "Wave 2.3 architecture validated successfully with CONCRETE fidelity per R340. All quality gates passed (38 function signatures, 25 Go code blocks, 9 interfaces). Ready to spawn Code Reviewer for wave test planning per SF 3.0 Progressive Planning (R341 TDD)."
+      "decision_rationale": "Wave 2.3 test plan validated successfully with 63 tests and progressive realism (R341). TDD phase RED confirmed. Ready to create wave integration branch early per R342 enforcement."
     },
     "state_history": [
+      {
+        "from_state": "WAITING_FOR_WAVE_TEST_PLAN",
+        "to_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+        "timestamp": "2025-11-03T01:07:49Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.3 test plan complete and validated (63 tests, TDD phase RED, progressive realism verified)",
+        "phase": 2,
+        "wave": 3,
+        "orchestrator_proposal": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "exit_criteria_met": true,
+          "entry_criteria_met": true,
+          "r288_compliance": true,
+          "r322_consultation": true,
+          "state_machine_compliance": "VERIFIED"
+        }
+      },
       {
         "from_state": "START_WAVE_ITERATION",
         "to_state": "INTEGRATE_WAVE_EFFORTS",
@@ -3690,7 +3706,15 @@
               }
             },
             "total_estimated_lines": 750,
-            "within_800_limit": true
+            "within_800_limit": true,
+            "test_plan": "planning/phase2/wave3/WAVE-TEST-PLAN.md",
+            "test_plan_created_at": "2025-11-03T00:54:00Z",
+            "test_plan_created_by": "code-reviewer",
+            "test_count": 63,
+            "tdd_phase": "RED",
+            "test_status": "plan_complete",
+            "progressive_realism": true,
+            "r341_tdd_compliance": true
           }
         }
       }
