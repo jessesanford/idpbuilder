@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ERROR_RECOVERY",
-    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
-    "last_transition_timestamp": "2025-11-03T02:41:12Z",
+    "current_state": "INJECT_WAVE_METADATA",
+    "previous_state": "WAITING_FOR_WAVE_TEST_PLAN",
+    "last_transition_timestamp": "2025-11-03T05:31:54Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
       "timestamp": "2025-11-03T01:54:09Z",
@@ -50,6 +50,15 @@
       "decision_rationale": "INIT complete - All planning artifacts validated (PRD, master architecture, phase plans exist) - ready for wave execution"
     },
     "state_history": [
+      {
+        "from_state": "ERROR_RECOVERY",
+        "to_state": "INJECT_WAVE_METADATA",
+        "timestamp": "2025-11-03T05:32:27Z",
+        "reason": "Manual state rewind to re-run Wave 2.3 with fixed ANALYZE_CODE_REVIEWER_PARALLELIZATION rules",
+        "validated_by": "state-manager",
+        "transition_type": "recovery_rewind",
+        "details": "Previous ANALYZE execution used broken code that did not populate pre_planned_infrastructure for Wave 2.3. Template now has fixed rules (commit 76651da5). This rewind allows clean retry with correct infrastructure generation."
+      },
       {
         "from_state": "WAITING_FOR_WAVE_TEST_PLAN",
         "to_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
@@ -156,7 +165,7 @@
           "transition_allowed": false,
           "from_state_exists": true,
           "to_state_exists": true,
-          "orchestrator_proposed_transition": "INTEGRATE_WAVE_EFFORTS \u2192 FIX_WAVE_UPSTREAM_BUGS",
+          "orchestrator_proposed_transition": "INTEGRATE_WAVE_EFFORTS → FIX_WAVE_UPSTREAM_BUGS",
           "transition_in_allowed_list": false,
           "allowed_transitions_from_integrate_wave_efforts": [
             "REVIEW_WAVE_INTEGRATION",
@@ -164,7 +173,7 @@
             "CASCADE_REINTEGRATION",
             "ERROR_RECOVERY"
           ],
-          "correct_transition": "INTEGRATE_WAVE_EFFORTS \u2192 REVIEW_WAVE_INTEGRATION",
+          "correct_transition": "INTEGRATE_WAVE_EFFORTS → REVIEW_WAVE_INTEGRATION",
           "integration_aborted": true,
           "r300_compliance": "VERIFIED",
           "bugs_detected_in_upstream": true,
@@ -178,7 +187,7 @@
           "r288_compliance": true,
           "state_machine_compliance": "CORRECTED"
         },
-        "proposal_rejected_reason": "Transition INTEGRATE_WAVE_EFFORTS \u2192 FIX_WAVE_UPSTREAM_BUGS not in allowed_transitions. State machine requires: INTEGRATE_WAVE_EFFORTS \u2192 REVIEW_WAVE_INTEGRATION \u2192 CREATE_WAVE_FIX_PLAN \u2192 FIX_WAVE_UPSTREAM_BUGS. Integration Agent aborted integration per R300 (bugs detected in upstream effort branches before merge)."
+        "proposal_rejected_reason": "Transition INTEGRATE_WAVE_EFFORTS → FIX_WAVE_UPSTREAM_BUGS not in allowed_transitions. State machine requires: INTEGRATE_WAVE_EFFORTS → REVIEW_WAVE_INTEGRATION → CREATE_WAVE_FIX_PLAN → FIX_WAVE_UPSTREAM_BUGS. Integration Agent aborted integration per R300 (bugs detected in upstream effort branches before merge)."
       },
       {
         "from_state": "WAITING_FOR_IMPLEMENTATION_PLAN",
@@ -402,13 +411,13 @@
         "correct_next_state": "SETUP_WAVE_INFRASTRUCTURE",
         "validation_checks": {
           "transition_allowed": false,
-          "orchestrator_proposed_transition": "WAVE_COMPLETE \u2192 INTEGRATE_WAVE_EFFORTS",
+          "orchestrator_proposed_transition": "WAVE_COMPLETE → INTEGRATE_WAVE_EFFORTS",
           "transition_in_allowed_list": false,
           "allowed_transitions_from_wave_complete": [
             "SETUP_WAVE_INFRASTRUCTURE",
             "ERROR_RECOVERY"
           ],
-          "correct_transition": "WAVE_COMPLETE \u2192 SETUP_WAVE_INFRASTRUCTURE",
+          "correct_transition": "WAVE_COMPLETE → SETUP_WAVE_INFRASTRUCTURE",
           "both_efforts_complete": true,
           "both_efforts_approved": true,
           "effort_2_1_1_status": "APPROVED",
@@ -421,7 +430,7 @@
           "r288_compliance": true,
           "sequence_validation": "PASS - corrected to proper state machine flow"
         },
-        "proposal_rejected_reason": "Transition WAVE_COMPLETE \u2192 INTEGRATE_WAVE_EFFORTS not in allowed_transitions. State machine requires WAVE_COMPLETE \u2192 SETUP_WAVE_INFRASTRUCTURE \u2192 START_WAVE_ITERATION \u2192 INTEGRATE_WAVE_EFFORTS sequence."
+        "proposal_rejected_reason": "Transition WAVE_COMPLETE → INTEGRATE_WAVE_EFFORTS not in allowed_transitions. State machine requires WAVE_COMPLETE → SETUP_WAVE_INFRASTRUCTURE → START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS sequence."
       },
       {
         "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
@@ -1016,12 +1025,12 @@
         "to_state": "ERROR_RECOVERY",
         "timestamp": "2025-10-31T21:54:27Z",
         "validated_by": "state-manager",
-        "reason": "SEQUENCE VIOLATION CORRECTION: Previous transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING) was invalid. State machine requires CREATE_NEXT_INFRASTRUCTURE step before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Rolling back to ANALYZE_CODE_REVIEWER_PARALLELIZATION and entering ERROR_RECOVERY to restore proper state flow.",
+        "reason": "SEQUENCE VIOLATION CORRECTION: Previous transition (ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING) was invalid. State machine requires CREATE_NEXT_INFRASTRUCTURE step before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Rolling back to ANALYZE_CODE_REVIEWER_PARALLELIZATION and entering ERROR_RECOVERY to restore proper state flow.",
         "phase": 2,
         "wave": 1,
         "orchestrator_proposal": "CREATE_NEXT_INFRASTRUCTURE",
         "proposal_rejected": true,
-        "proposal_rejection_reason": "Transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING \u2192 CREATE_NEXT_INFRASTRUCTURE not allowed. Must use ERROR_RECOVERY.",
+        "proposal_rejection_reason": "Transition SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → CREATE_NEXT_INFRASTRUCTURE not allowed. Must use ERROR_RECOVERY.",
         "correction": true,
         "invalid_transition_removed": {
           "from_state": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
@@ -1078,7 +1087,7 @@
         "wave": 1,
         "orchestrator_proposal": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
         "proposal_accepted": false,
-        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING not allowed. Must go through VALIDATE_INFRASTRUCTURE first.",
+        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING not allowed. Must go through VALIDATE_INFRASTRUCTURE first.",
         "validation_checks": {
           "transition_allowed": true,
           "from_state_exists": true,
@@ -1395,13 +1404,13 @@
         "orchestrator_proposal": "WAVE_COMPLETE",
         "proposal_accepted": false,
         "correct_next_state": "REVIEW_WAVE_ARCHITECTURE",
-        "proposal_rejected_reason": "Transition REVIEW_WAVE_INTEGRATION \u2192 WAVE_COMPLETE not in allowed_transitions. State machine requires REVIEW_WAVE_INTEGRATION \u2192 REVIEW_WAVE_ARCHITECTURE (bugs_found == 0) \u2192 BUILD_VALIDATION sequence.",
+        "proposal_rejected_reason": "Transition REVIEW_WAVE_INTEGRATION → WAVE_COMPLETE not in allowed_transitions. State machine requires REVIEW_WAVE_INTEGRATION → REVIEW_WAVE_ARCHITECTURE (bugs_found == 0) → BUILD_VALIDATION sequence.",
         "validation_checks": {
           "transition_allowed": true,
           "from_state_exists": true,
           "to_state_exists": true,
           "in_allowed_transitions": true,
-          "orchestrator_proposed_transition": "REVIEW_WAVE_INTEGRATION \u2192 WAVE_COMPLETE",
+          "orchestrator_proposed_transition": "REVIEW_WAVE_INTEGRATION → WAVE_COMPLETE",
           "transition_in_allowed_list": false,
           "allowed_transitions_from_review_wave_integration": [
             "CREATE_WAVE_FIX_PLAN",
@@ -1412,7 +1421,7 @@
             "SPAWN_CODE_REVIEWER_MERGE_PLAN",
             "SPAWN_INTEGRATION_AGENT"
           ],
-          "correct_transition": "REVIEW_WAVE_INTEGRATION \u2192 REVIEW_WAVE_ARCHITECTURE",
+          "correct_transition": "REVIEW_WAVE_INTEGRATION → REVIEW_WAVE_ARCHITECTURE",
           "bugs_found": 0,
           "architecture_review": "APPROVED",
           "build_status": "SUCCESS",
@@ -1429,7 +1438,7 @@
         "to_state": "WAVE_START",
         "timestamp": "2025-11-01T13:51:29+00:00",
         "validated_by": "state-manager",
-        "reason": "Wave 2.1 build validation complete (binary built, tests pass, architect approved). Phase 2 has 3 waves total - must proceed to Wave 2.2. State machine gap addressed: BUILD_VALIDATION \u2192 WAVE_START transition added for multi-wave phases.",
+        "reason": "Wave 2.1 build validation complete (binary built, tests pass, architect approved). Phase 2 has 3 waves total - must proceed to Wave 2.2. State machine gap addressed: BUILD_VALIDATION → WAVE_START transition added for multi-wave phases.",
         "phase": 2,
         "wave": 2,
         "orchestrator_proposal": "WAVE_START",
@@ -1552,7 +1561,7 @@
             "CREATE_NEXT_INFRASTRUCTURE",
             "VALIDATE_INFRASTRUCTURE"
           ],
-          "invalid_transition": "ANALYZE_CODE_REVIEWER_PARALLELIZATION \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+          "invalid_transition": "ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
           "correct_sequence": [
             "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
             "CREATE_NEXT_INFRASTRUCTURE",
@@ -1664,7 +1673,7 @@
         "consultation_id": "shutdown-1762018961",
         "orchestrator_proposal": "ANALYZE_CODE_REVIEWER_PARALLELIZATION",
         "proposal_accepted": false,
-        "proposal_rejected_reason": "Transition VALIDATE_INFRASTRUCTURE \u2192 ANALYZE_CODE_REVIEWER_PARALLELIZATION not in allowed_transitions. State machine requires VALIDATE_INFRASTRUCTURE \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Parallelization analysis already complete in state.",
+        "proposal_rejected_reason": "Transition VALIDATE_INFRASTRUCTURE → ANALYZE_CODE_REVIEWER_PARALLELIZATION not in allowed_transitions. State machine requires VALIDATE_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Parallelization analysis already complete in state.",
         "transition_invalid": false,
         "state_manager_override": true,
         "override_reason": "Orchestrator proposed invalid transition; corrected to proper next state per state machine",
@@ -1896,7 +1905,7 @@
         "to_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
         "timestamp": "2025-11-01T19:50:05Z",
         "validated_by": "state-manager",
-        "reason": "Effort implementation plans complete for Phase 2 Wave 2 (Effort 2.2.1: 400 lines, Effort 2.2.2: 350 lines). Both plans validated with R340 quality gates. R234 mandatory sequence position 4\u21925 verified. Must analyze implementation parallelization per R151 before spawning SW Engineers.",
+        "reason": "Effort implementation plans complete for Phase 2 Wave 2 (Effort 2.2.1: 400 lines, Effort 2.2.2: 350 lines). Both plans validated with R340 quality gates. R234 mandatory sequence position 4→5 verified. Must analyze implementation parallelization per R151 before spawning SW Engineers.",
         "phase": 2,
         "wave": 2,
         "orchestrator_proposal": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
@@ -1985,7 +1994,7 @@
           "effort_2_2_2_deleted": true,
           "state_file_updated": true,
           "justification": "Loop-back mechanism required for R603 dependency checking",
-          "expected_flow": "VALIDATE_INFRASTRUCTURE \u2192 CREATE_NEXT_INFRASTRUCTURE (R603)",
+          "expected_flow": "VALIDATE_INFRASTRUCTURE → CREATE_NEXT_INFRASTRUCTURE (R603)",
           "r288_compliance": true
         }
       },
@@ -2002,13 +2011,13 @@
         "correct_next_state": "VALIDATE_INFRASTRUCTURE",
         "validation_checks": {
           "transition_allowed": false,
-          "orchestrator_proposed_transition": "CREATE_NEXT_INFRASTRUCTURE \u2192 SPAWN_SW_ENGINEERS",
+          "orchestrator_proposed_transition": "CREATE_NEXT_INFRASTRUCTURE → SPAWN_SW_ENGINEERS",
           "transition_in_allowed_list": false,
           "allowed_transitions_from_create_next_infrastructure": [
             "VALIDATE_INFRASTRUCTURE",
             "ERROR_RECOVERY"
           ],
-          "correct_transition": "CREATE_NEXT_INFRASTRUCTURE \u2192 VALIDATE_INFRASTRUCTURE",
+          "correct_transition": "CREATE_NEXT_INFRASTRUCTURE → VALIDATE_INFRASTRUCTURE",
           "effort_2_2_1_created": true,
           "effort_2_2_1_validated": true,
           "effort_2_2_2_created": true,
@@ -2020,7 +2029,7 @@
           "r288_compliance": true,
           "sequence_validation": "PASS - corrected to proper state machine flow"
         },
-        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE \u2192 SPAWN_SW_ENGINEERS not in allowed_transitions. State machine requires CREATE_NEXT_INFRASTRUCTURE \u2192 VALIDATE_INFRASTRUCTURE to verify completion before spawning."
+        "proposal_rejected_reason": "Transition CREATE_NEXT_INFRASTRUCTURE → SPAWN_SW_ENGINEERS not in allowed_transitions. State machine requires CREATE_NEXT_INFRASTRUCTURE → VALIDATE_INFRASTRUCTURE to verify completion before spawning."
       },
       {
         "from_state": "VALIDATE_INFRASTRUCTURE",
@@ -2038,14 +2047,14 @@
         "consultation_type": "SHUTDOWN_CONSULTATION",
         "validation_checks": {
           "transition_allowed": false,
-          "orchestrator_proposed_transition": "VALIDATE_INFRASTRUCTURE \u2192 ANALYZE_CODE_REVIEWER_PARALLELIZATION",
+          "orchestrator_proposed_transition": "VALIDATE_INFRASTRUCTURE → ANALYZE_CODE_REVIEWER_PARALLELIZATION",
           "transition_in_allowed_list": false,
           "allowed_transitions_from_validate_infrastructure": [
             "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
             "CREATE_NEXT_INFRASTRUCTURE",
             "ERROR_RECOVERY"
           ],
-          "correct_transition": "VALIDATE_INFRASTRUCTURE \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+          "correct_transition": "VALIDATE_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
           "effort_2_2_1_created": true,
           "effort_2_2_1_validated": true,
           "effort_2_2_2_created": true,
@@ -2061,7 +2070,7 @@
         "to_state": "WAITING_FOR_EFFORT_PLANS",
         "timestamp": "2025-11-01T23:35:50Z",
         "validated_by": "state-manager",
-        "reason": "Code Reviewer spawned for Effort 2.2.1. Implementation plan created (1,375 lines, 49 KB). Sequential execution: 2.2.1 must complete before 2.2.2. R234 compliance: wave_execution position 13 \u2192 14.",
+        "reason": "Code Reviewer spawned for Effort 2.2.1. Implementation plan created (1,375 lines, 49 KB). Sequential execution: 2.2.1 must complete before 2.2.2. R234 compliance: wave_execution position 13 → 14.",
         "phase": 2,
         "wave": 2,
         "orchestrator_proposal": "WAITING_FOR_EFFORT_PLANS",
@@ -2090,7 +2099,7 @@
         "to_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
         "timestamp": "2025-11-01T23:47:30Z",
         "validated_by": "state-manager",
-        "reason": "Effort 2.2.1 implementation plan detected and validated. Plan file: ./efforts/phase2/wave2/effort-1-registry-override-viper/.software-factory/phase2/wave2/effort-1-registry-override-viper/IMPLEMENTATION-PLAN--20251101-175300.md (49KB, estimates 400 lines). R255 compliance verified (R383 .software-factory/ location). Sequential strategy confirmed: Wave 2.2 executes effort 2.2.1 first, then 2.2.2. Single Code Reviewer spawned for 2.2.1 only. All expected plans for current batch received. Transitioning to parallelization analysis per R234 mandatory wave_execution sequence position 14\u219215.",
+        "reason": "Effort 2.2.1 implementation plan detected and validated. Plan file: ./efforts/phase2/wave2/effort-1-registry-override-viper/.software-factory/phase2/wave2/effort-1-registry-override-viper/IMPLEMENTATION-PLAN--20251101-175300.md (49KB, estimates 400 lines). R255 compliance verified (R383 .software-factory/ location). Sequential strategy confirmed: Wave 2.2 executes effort 2.2.1 first, then 2.2.2. Single Code Reviewer spawned for 2.2.1 only. All expected plans for current batch received. Transitioning to parallelization analysis per R234 mandatory wave_execution sequence position 14→15.",
         "phase": 2,
         "wave": 2,
         "orchestrator_proposal": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
@@ -2492,7 +2501,7 @@
         "to_state": "FIX_WAVE_UPSTREAM_BUGS",
         "timestamp": "2025-11-02T15:57:06Z",
         "validated_by": "state-manager",
-        "reason": "Fix plan created and approved per R322 checkpoint. Ready to spawn SW Engineer to implement upstream bug fixes in effort 2.2.1 (registry-override-viper). 3 primary bugs (BUG-013, BUG-015, BUG-011) plus 4 cascading resolutions. Expected outcome: 831 \u2192 442 lines, theme purity 51.1% \u2192 ~95%+.",
+        "reason": "Fix plan created and approved per R322 checkpoint. Ready to spawn SW Engineer to implement upstream bug fixes in effort 2.2.1 (registry-override-viper). 3 primary bugs (BUG-013, BUG-015, BUG-011) plus 4 cascading resolutions. Expected outcome: 831 → 442 lines, theme purity 51.1% → ~95%+.",
         "phase": 2,
         "wave": 2,
         "iteration": 4,
@@ -2560,7 +2569,7 @@
           "transition_allowed": true,
           "from_state_exists": true,
           "to_state_exists": true,
-          "proposed_transition": "REVIEW_WAVE_INTEGRATION \u2192 CREATE_WAVE_FIX_PLAN",
+          "proposed_transition": "REVIEW_WAVE_INTEGRATION → CREATE_WAVE_FIX_PLAN",
           "transition_in_allowed_list": true,
           "guard_condition_satisfied": true,
           "bugs_count": 6
@@ -2584,7 +2593,7 @@
           "transition_allowed": true,
           "from_state_exists": true,
           "to_state_exists": true,
-          "proposed_transition": "CREATE_WAVE_FIX_PLAN \u2192 FIX_WAVE_UPSTREAM_BUGS",
+          "proposed_transition": "CREATE_WAVE_FIX_PLAN → FIX_WAVE_UPSTREAM_BUGS",
           "transition_in_allowed_list": true,
           "fix_plan_exists": true,
           "bugs_count": 6
@@ -2839,17 +2848,17 @@
         "to_state": "WAVE_START",
         "timestamp": "2025-11-03T00:25:46Z",
         "validated_by": "state-manager",
-        "reason": "Wave 2.2 BUILD_VALIDATION complete (binary built, tests passing, architect approved). Phase 2 has 3 waves total - must proceed to Wave 2.3. Corrected orchestrator proposal: BUILD_VALIDATION \u2192 START_WAVE_ITERATION is INVALID (START_WAVE_ITERATION is for iterations WITHIN existing wave). Correct transition: BUILD_VALIDATION \u2192 WAVE_START (for NEW wave). State machine gap addressed: BUILD_VALIDATION lacks WAVE_START in allowed_transitions.",
+        "reason": "Wave 2.2 BUILD_VALIDATION complete (binary built, tests passing, architect approved). Phase 2 has 3 waves total - must proceed to Wave 2.3. Corrected orchestrator proposal: BUILD_VALIDATION → START_WAVE_ITERATION is INVALID (START_WAVE_ITERATION is for iterations WITHIN existing wave). Correct transition: BUILD_VALIDATION → WAVE_START (for NEW wave). State machine gap addressed: BUILD_VALIDATION lacks WAVE_START in allowed_transitions.",
         "phase": 2,
         "wave": 3,
         "orchestrator_proposal": "START_WAVE_ITERATION",
         "proposal_accepted": false,
         "correct_next_state": "WAVE_START",
-        "proposal_rejected_reason": "Transition BUILD_VALIDATION \u2192 START_WAVE_ITERATION not appropriate. START_WAVE_ITERATION is for iterations within an existing wave integration container. Wave 2 is complete, Wave 3 must be initialized as NEW wave. State machine requires: BUILD_VALIDATION \u2192 WAVE_START for new wave initialization. Similar to previous Wave 2.1\u21922.2 transition.",
+        "proposal_rejected_reason": "Transition BUILD_VALIDATION → START_WAVE_ITERATION not appropriate. START_WAVE_ITERATION is for iterations within an existing wave integration container. Wave 2 is complete, Wave 3 must be initialized as NEW wave. State machine requires: BUILD_VALIDATION → WAVE_START for new wave initialization. Similar to previous Wave 2.1→2.2 transition.",
         "consultation_type": "SHUTDOWN_CONSULTATION",
         "state_machine_gap": true,
         "validation_checks": {
-          "transition_proposed_by_orchestrator": "BUILD_VALIDATION \u2192 START_WAVE_ITERATION",
+          "transition_proposed_by_orchestrator": "BUILD_VALIDATION → START_WAVE_ITERATION",
           "orchestrator_confusion": "START_WAVE_ITERATION is for iterations within existing wave container",
           "correct_transition_type": "WAVE_START is for initializing NEW wave",
           "build_succeeded": true,
@@ -3133,7 +3142,7 @@
         "reason": "State Manager SHUTDOWN_CONSULTATION: Orchestrator completed parallelization analysis",
         "orchestrator_proposal": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
         "proposal_accepted": false,
-        "proposal_rejected_reason": "State machine requires CREATE_NEXT_INFRASTRUCTURE before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Mandatory flow: ANALYZE_CODE_REVIEWER_PARALLELIZATION \u2192 CREATE_NEXT_INFRASTRUCTURE \u2192 VALIDATE_INFRASTRUCTURE \u2192 SPAWN_CODE_REVIEWERS_EFFORT_PLANNING per state machine definition"
+        "proposal_rejected_reason": "State machine requires CREATE_NEXT_INFRASTRUCTURE before SPAWN_CODE_REVIEWERS_EFFORT_PLANNING. Mandatory flow: ANALYZE_CODE_REVIEWER_PARALLELIZATION → CREATE_NEXT_INFRASTRUCTURE → VALIDATE_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING per state machine definition"
       }
     ],
     "loop_detection": {
@@ -3261,151 +3270,7 @@
       "total_efforts": 2,
       "estimated_total_lines": 750,
       "parallelization_strategy": "sequential",
-      "code_reviewer_parallelization_plan": {
-        "analysis_timestamp": "2025-11-01T15:00:00Z",
-        "analyzed_by": "orchestrator",
-        "wave_plan_file": "planning/phase2/wave2/WAVE-IMPLEMENTATION-PLAN.md",
-        "strategy": "SEQUENTIAL",
-        "blocking_efforts": [
-          {
-            "effort_id": "2.2.1",
-            "effort_name": "Registry Override & Viper Integration",
-            "can_parallelize": false,
-            "dependencies": [
-              "integration:phase2-wave2.1"
-            ],
-            "reason": "Foundational effort - implements configuration system required by 2.2.2"
-          }
-        ],
-        "dependent_efforts": [
-          {
-            "effort_id": "2.2.2",
-            "effort_name": "Environment Variable Support & Integration Testing",
-            "can_parallelize": false,
-            "dependencies": [
-              "effort:2.2.1"
-            ],
-            "reason": "Integration tests depend on configuration system from 2.2.1"
-          }
-        ],
-        "parallel_groups": [],
-        "spawn_sequence": [
-          {
-            "order": 1,
-            "efforts": [
-              "2.2.1"
-            ],
-            "spawn_mode": "single",
-            "wait_for_completion": true
-          },
-          {
-            "order": 2,
-            "efforts": [
-              "2.2.2"
-            ],
-            "spawn_mode": "single",
-            "wait_for_completion": true
-          }
-        ]
-      },
-      "swe_parallelization_plan": {
-        "analysis_timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-        "analyzed_by": "orchestrator",
-        "strategy": "SEQUENTIAL",
-        "reason": "Both efforts have dependencies: 2.2.1 depends on integration:phase2-wave2.1, 2.2.2 depends on effort:2.2.1",
-        "efforts_ready_for_spawn": [
-          "2.2.1"
-        ],
-        "efforts_pending": [
-          "2.2.2"
-        ],
-        "spawn_mode": "single",
-        "parallel_spawn": false,
-        "spawn_sequence": [
-          {
-            "order": 1,
-            "effort": "2.2.1",
-            "effort_name": "Registry Override & Viper Integration",
-            "estimated_lines": 400,
-            "spawn_mode": "single",
-            "wait_for_completion": true,
-            "reason": "Foundational effort - implements configuration system required by 2.2.2",
-            "dependencies": [
-              "integration:phase2-wave2.1"
-            ]
-          },
-          {
-            "order": 2,
-            "effort": "2.2.2",
-            "effort_name": "Environment Variable Support & Integration Testing",
-            "estimated_lines": 350,
-            "spawn_mode": "single",
-            "wait_for_completion": true,
-            "reason": "Depends on configuration system from 2.2.1",
-            "dependencies": [
-              "effort:2.2.1"
-            ]
-          }
-        ]
-      },
-      "wave_implementation_validation": {
-        "validated_at": "2025-11-01T14:47:39Z",
-        "validation_passed": true,
-        "effort_count": 2,
-        "total_estimated_lines": 750,
-        "r213_compliance": "FULL",
-        "parallelization_strategy": "sequential",
-        "efforts_extracted": [
-          {
-            "effort_id": "2.2.1",
-            "effort_name": "Registry Override & Viper Integration",
-            "estimated_lines": 400,
-            "can_parallelize": false
-          },
-          {
-            "effort_id": "2.2.2",
-            "effort_name": "Environment Variable Support & Integration Testing",
-            "estimated_lines": 350,
-            "can_parallelize": false,
-            "depends_on": [
-              "2.2.1"
-            ]
-          }
-        ]
-      },
-      "sw_engineer_parallelization_analysis": {
-        "analysis_timestamp": "2025-11-01T19:50:00Z",
-        "analyzed_by": "orchestrator",
-        "phase": 2,
-        "wave": 2,
-        "strategy": "SINGLE",
-        "total_efforts_to_implement": 1,
-        "efforts_already_complete": 1,
-        "spawn_sequence": [
-          {
-            "order": 1,
-            "effort_id": "2.2.2",
-            "effort_name": "env-variable-support",
-            "effort_dir": "efforts/phase2/wave2/effort-2-env-variable-support",
-            "branch": "idpbuilder-oci-push/phase2/wave2/effort-2.2.2-env-var-integration",
-            "base_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
-            "can_parallelize": false,
-            "spawn_mode": "single",
-            "implementation_plan": "efforts/phase2/wave2/effort-2-env-variable-support/.software-factory/phase2/wave2/effort-2-env-variable-support/IMPLEMENTATION-PLAN--20251101-193813.md",
-            "estimated_lines": 350,
-            "dependencies_satisfied": true
-          }
-        ],
-        "parallel_groups": [],
-        "r151_compliance": "N/A - single effort",
-        "ready_to_spawn": true
-      },
-      "iteration_number": 7,
-      "bugs": {
-        "progress_stalls": 0,
-        "history": []
-      },
-      "backport_attempts_this_iteration": 0
+      "iteration_number": 0
     },
     "phases_completed": [],
     "waves_completed": [
@@ -3582,7 +3447,7 @@
     "last_updated": "2025-11-03T02:25:09Z",
     "version": "3.0.0",
     "notes": "Implementation plan validated for Wave 2.3 (2 efforts, 750 lines, sequential execution)",
-    "last_state_transition": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING \u2192 WAITING_FOR_EFFORT_PLANS (effort 2.2.2 planning created)",
+    "last_state_transition": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → WAITING_FOR_EFFORT_PLANS (effort 2.2.2 planning created)",
     "last_state_change": "2025-11-02T05:25:34Z",
     "current_state": "MONITORING_EFFORT_REVIEWS",
     "phase": 2,
@@ -3646,7 +3511,7 @@
       "parallelization_decision": {
         "strategy": "SEQUENTIAL",
         "spawn_mode": "ONE_AT_A_TIME",
-        "rationale": "Wave plan specifies sequential execution to establish clear contract boundaries in order, allow later efforts to reference earlier patterns, simplify orchestration, and maintain conceptual clarity (Docker \u2192 Registry \u2192 Auth/TLS \u2192 Command)",
+        "rationale": "Wave plan specifies sequential execution to establish clear contract boundaries in order, allow later efforts to reference earlier patterns, simplify orchestration, and maintain conceptual clarity (Docker → Registry → Auth/TLS → Command)",
         "parallel_groups": [],
         "sequential_efforts": [
           "1.1.1",
@@ -3972,265 +3837,6 @@
         }
       }
     }
-  },
-  "pre_planned_infrastructure": {
-    "validated": true,
-    "validation_timestamp": "2025-10-29T02:59:26Z",
-    "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-    "efforts": {
-      "phase1_wave1_effort-1-docker-interface": {
-        "effort_id": "1.1.1",
-        "effort_name": "Docker Client Interface Definition",
-        "phase": "phase1",
-        "wave": "wave1",
-        "index": 1,
-        "branch_name": "idpbuilder-oci-push/phase1/wave1/effort-1-docker-interface",
-        "base_branch": "idpbuilder-oci-push/phase1/wave1/integration",
-        "remote_branch": "origin/idpbuilder-oci-push/phase1/wave1/effort-1-docker-interface",
-        "target_remote": "origin",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "planning",
-        "integration_branch": "idpbuilder-oci-push/phase1/wave1/integration",
-        "full_path": "efforts/phase1/wave1/effort-1-docker-interface",
-        "estimated_lines": 180,
-        "dependencies": [],
-        "created": true,
-        "validated": true,
-        "validation_failure_reason": null,
-        "created_at": "2025-10-29T03:02:11Z"
-      },
-      "phase1_wave1_effort-2-registry-interface": {
-        "effort_id": "1.1.2",
-        "effort_name": "Registry Client Interface Definition",
-        "phase": "phase1",
-        "wave": "wave1",
-        "index": 2,
-        "branch_name": "idpbuilder-oci-push/phase1/wave1/effort-2-registry-interface",
-        "base_branch": "idpbuilder-oci-push/phase1/wave1/effort-1-docker-interface",
-        "remote_branch": "origin/idpbuilder-oci-push/phase1/wave1/effort-2-registry-interface",
-        "target_remote": "origin",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "planning",
-        "integration_branch": "idpbuilder-oci-push/phase1/wave1/integration",
-        "full_path": "efforts/phase1/wave1/effort-2-registry-interface",
-        "estimated_lines": 200,
-        "dependencies": [],
-        "created": true,
-        "validated": true,
-        "created_at": "2025-10-29T03:20:23Z",
-        "validation_failure_reason": null
-      },
-      "phase1_wave1_effort-3-auth-tls-interfaces": {
-        "effort_id": "1.1.3",
-        "effort_name": "Auth & TLS Interface Definitions",
-        "phase": "phase1",
-        "wave": "wave1",
-        "index": 3,
-        "branch_name": "idpbuilder-oci-push/phase1/wave1/effort-3-auth-tls-interfaces",
-        "base_branch": "idpbuilder-oci-push/phase1/wave1/effort-2-registry-interface",
-        "remote_branch": "origin/idpbuilder-oci-push/phase1/wave1/effort-3-auth-tls-interfaces",
-        "target_remote": "origin",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "planning",
-        "integration_branch": "idpbuilder-oci-push/phase1/wave1/integration",
-        "full_path": "efforts/phase1/wave1/effort-3-auth-tls-interfaces",
-        "estimated_lines": 140,
-        "dependencies": [],
-        "created": true,
-        "validated": true,
-        "validation_failure_reason": null,
-        "created_at": "2025-10-29T03:29:26Z"
-      },
-      "phase1_wave1_effort-4-command-structure": {
-        "effort_id": "1.1.4",
-        "effort_name": "Command Structure & Flag Definitions",
-        "phase": "phase1",
-        "wave": "wave1",
-        "index": 4,
-        "branch_name": "idpbuilder-oci-push/phase1/wave1/effort-4-command-structure",
-        "base_branch": "idpbuilder-oci-push/phase1/wave1/effort-3-auth-tls-interfaces",
-        "remote_branch": "origin/idpbuilder-oci-push/phase1/wave1/effort-4-command-structure",
-        "target_remote": "origin",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "planning",
-        "integration_branch": "idpbuilder-oci-push/phase1/wave1/integration",
-        "full_path": "efforts/phase1/wave1/effort-4-command-structure",
-        "estimated_lines": 130,
-        "dependencies": [
-          "1.1.1",
-          "1.1.2",
-          "1.1.3"
-        ],
-        "created": true,
-        "validated": true,
-        "validation_failure_reason": null,
-        "created_at": "2025-10-29T03:36:52Z"
-      },
-      "phase1_wave2_effort_1_docker_client": {
-        "phase": "phase1",
-        "wave": "wave2",
-        "index": 1,
-        "effort_id": "1.2.1",
-        "effort_name": "Docker Client Implementation",
-        "full_path": "efforts/phase1/wave2/effort-1-docker-client",
-        "branch_name": "idpbuilder-oci-push/phase1/wave2/effort-1-docker-client",
-        "base_branch": "idpbuilder-oci-push/phase1/wave2/integration",
-        "remote_branch": "idpbuilder-oci-push/phase1/wave2/effort-1-docker-client",
-        "target_remote": "origin",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "origin",
-        "integration_branch": "idpbuilder-oci-push/phase1/wave2/integration",
-        "created": true,
-        "validated": true,
-        "estimated_lines": 0,
-        "dependencies": []
-      },
-      "phase1_wave2_effort_2_registry_client": {
-        "phase": "phase1",
-        "wave": "wave2",
-        "index": 2,
-        "effort_id": "1.2.2",
-        "effort_name": "Registry Client Implementation",
-        "full_path": "efforts/phase1/wave2/effort-2-registry-client",
-        "branch_name": "idpbuilder-oci-push/phase1/wave2/effort-2-registry-client",
-        "base_branch": "idpbuilder-oci-push/phase1/wave2/integration",
-        "remote_branch": "idpbuilder-oci-push/phase1/wave2/effort-2-registry-client",
-        "target_remote": "origin",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "origin",
-        "integration_branch": "idpbuilder-oci-push/phase1/wave2/integration",
-        "created": true,
-        "validated": true,
-        "estimated_lines": 0,
-        "dependencies": []
-      },
-      "phase1_wave2_effort_3_auth": {
-        "phase": "phase1",
-        "wave": "wave2",
-        "index": 3,
-        "effort_id": "1.2.3",
-        "effort_name": "Authentication Implementation",
-        "full_path": "efforts/phase1/wave2/effort-3-auth",
-        "branch_name": "idpbuilder-oci-push/phase1/wave2/effort-3-auth",
-        "base_branch": "idpbuilder-oci-push/phase1/wave2/integration",
-        "remote_branch": "idpbuilder-oci-push/phase1/wave2/effort-3-auth",
-        "target_remote": "origin",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "origin",
-        "integration_branch": "idpbuilder-oci-push/phase1/wave2/integration",
-        "created": true,
-        "validated": true,
-        "estimated_lines": 0,
-        "dependencies": []
-      },
-      "phase1_wave2_effort_4_tls": {
-        "phase": "phase1",
-        "wave": "wave2",
-        "index": 4,
-        "effort_id": "1.2.4",
-        "effort_name": "TLS Configuration Implementation",
-        "full_path": "efforts/phase1/wave2/effort-4-tls",
-        "branch_name": "idpbuilder-oci-push/phase1/wave2/effort-4-tls",
-        "base_branch": "idpbuilder-oci-push/phase1/wave2/integration",
-        "remote_branch": "idpbuilder-oci-push/phase1/wave2/effort-4-tls",
-        "target_remote": "origin",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "origin",
-        "integration_branch": "idpbuilder-oci-push/phase1/wave2/integration",
-        "created": true,
-        "validated": true,
-        "estimated_lines": 0,
-        "dependencies": []
-      },
-      "phase2_wave1_effort_1_push_command_core": {
-        "effort_id": "2.1.1",
-        "effort_name": "Push Command Core & Pipeline Orchestration",
-        "phase": "phase2",
-        "wave": "wave1",
-        "index": 1,
-        "branch_name": "idpbuilder-oci-push/phase2/wave1/effort-1-push-command-core",
-        "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
-        "remote_branch": "origin/idpbuilder-oci-push/phase2/wave1/effort-1-push-command-core",
-        "target_remote": "origin",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "planning",
-        "integration_branch": "idpbuilder-oci-push/phase2/wave1/integration",
-        "full_path": "efforts/phase2/wave1/effort-1-push-command-core",
-        "estimated_lines": 450,
-        "dependencies": [],
-        "created": true,
-        "validated": true,
-        "validation_failure_reason": null,
-        "created_at": "2025-10-31T22:12:35Z"
-      },
-      "phase2_wave1_effort_2_progress_reporter": {
-        "effort_id": "2.1.2",
-        "effort_name": "Progress Reporter & Output Formatting",
-        "phase": "phase2",
-        "wave": "wave1",
-        "index": 2,
-        "branch_name": "idpbuilder-oci-push/phase2/wave1/effort-2-progress-reporter",
-        "base_branch": "idpbuilder-oci-push/phase2/wave1/effort-1-push-command-core",
-        "remote_branch": "origin/idpbuilder-oci-push/phase2/wave1/effort-2-progress-reporter",
-        "target_remote": "origin",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "planning",
-        "integration_branch": "idpbuilder-oci-push/phase2/wave1/integration",
-        "full_path": "efforts/phase2/wave1/effort-2-progress-reporter",
-        "estimated_lines": 300,
-        "dependencies": [
-          "2.1.1"
-        ],
-        "created": true,
-        "validated": true,
-        "validation_failure_reason": null,
-        "created_at": "2025-10-31T22:28:43Z"
-      },
-      "phase2_wave2_effort_1_registry_override": {
-        "effort_id": "2.2.1",
-        "effort_name": "registry-override-viper",
-        "phase": "phase2",
-        "wave": "wave2",
-        "index": 1,
-        "full_path": "efforts/phase2/wave2/effort-1-registry-override-viper",
-        "branch_name": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
-        "remote_branch": "origin/idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
-        "base_branch": "idpbuilder-oci-push/phase2/wave1/integration",
-        "target_remote": "target",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "planning",
-        "integration_branch": "idpbuilder-oci-push/phase2/wave2/integration",
-        "created": true,
-        "validated": true,
-        "validation_failure_reason": null,
-        "estimated_lines": 0,
-        "dependencies": []
-      },
-      "phase2_wave2_effort_2_env_support": {
-        "effort_id": "2.2.2",
-        "effort_name": "env-variable-support",
-        "phase": "phase2",
-        "wave": "wave2",
-        "index": 2,
-        "full_path": "efforts/phase2/wave2/effort-2-env-variable-support",
-        "branch_name": "idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support",
-        "remote_branch": "origin/idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support",
-        "base_branch": "idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper",
-        "target_remote": "target",
-        "target_repo_url": "https://github.com/jessesanford/idpbuilder.git",
-        "planning_remote": "planning",
-        "integration_branch": "idpbuilder-oci-push/phase2/wave2/integration",
-        "created": true,
-        "validated": true,
-        "depends_on": [
-          "phase2_wave2_effort_1_registry_override"
-        ],
-        "validation_failure_reason": null,
-        "dependencies": [],
-        "estimated_lines": 0
-      }
-    },
-    "project_prefix": "idpbuilder-oci-push"
   },
   "active_agents": [],
   "artifacts": {}
