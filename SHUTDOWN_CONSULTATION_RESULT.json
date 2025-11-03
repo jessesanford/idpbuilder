@@ -1,78 +1,72 @@
 {
   "consultation_type": "SHUTDOWN_CONSULTATION",
-  "timestamp": "2025-11-03T06:35:59Z",
+  "timestamp": "2025-11-03T12:54:13Z",
   "validated_by": "state-manager",
-  "result": "APPROVED",
-  "transition": {
-    "from_state": "WAITING_FOR_EFFORT_PLANS",
-    "to_state_proposed": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-    "to_state_required": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-    "to_state_actual": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-    "orchestrator_proposal_accepted": true,
-    "proposal_rejected": false
+  "from_state": "START_WAVE_ITERATION",
+  "to_state_proposed": "INTEGRATE_WAVE_EFFORTS",
+  "to_state_required": "INTEGRATE_WAVE_EFFORTS",
+  "orchestrator_proposal_accepted": true,
+  "validation_result": {
+    "update_status": "SUCCESS",
+    "files_updated": [
+      "orchestrator-state-v3.json",
+      "integration-containers.json",
+      "bug-tracking.json",
+      "fix-cascade-state.json"
+    ],
+    "commit_hash": "ff2daf5",
+    "commit_message": "state: START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS - iteration 3 ready [R288]",
+    "required_next_state": "INTEGRATE_WAVE_EFFORTS",
+    "decision_rationale": "Transition valid per state machine. START_WAVE_ITERATION checklist complete for Phase 2 Wave 3 Iteration 3. All compliance checks passed: iteration counter at 3 (no increment from ERROR_RECOVERY per R531), backport attempts 0/3 (WITHIN_LIMIT per R532), bug progress analyzed per R615/R616 showing STALL status 1/5 (tier 1 CONTINUE approved), max iterations 3/10 (WITHIN_LIMIT). Both efforts (2.3.1 and 2.3.2) are ACCEPTED. Previous iteration 2 encountered BUG-020 which has been fixed. Ready to spawn Integration Agent for iteration 3 attempt. This is standard wave iteration protocol."
   },
   "validation_checks": {
     "transition_allowed": true,
     "from_state_exists": true,
     "to_state_exists": true,
     "in_allowed_transitions": true,
-    "allowed_transitions": [
-      "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-      "SPAWN_SW_ENGINEERS",
-      "ERROR_RECOVERY"
-    ],
-    "guards_satisfied": {
-      "effort_count_gt_1": true,
-      "both_plans_complete": true,
-      "plans_committed": true
-    },
-    "exit_criteria_met": true,
-    "entry_criteria_met": true,
-    "state_machine_compliance": "APPROVED"
+    "iteration_within_limit": true,
+    "backport_attempts_within_limit": true,
+    "bug_progress_acceptable": true,
+    "efforts_ready": true,
+    "r288_compliance": true,
+    "r517_atomic_update": true,
+    "state_machine_compliance": "VERIFIED"
+  },
+  "work_completed": {
+    "checklist_item_1": "Wave iteration counter remains at 3 (no increment from ERROR_RECOVERY per R531)",
+    "checklist_item_1b": "Backport attempts checked: 0/3 this iteration (WITHIN_LIMIT per R532)",
+    "checklist_item_1c": "Bug progress analyzed per R615/R616: STALL category (no bugs fixed iteration 2→3), stall counter 1/5 (tier 1 WITHIN_LIMIT), total iterations 3/10 (tier 2 WITHIN_LIMIT), decision: CONTINUE",
+    "checklist_item_2": "Max iterations check passed: 3/10 (WITHIN_LIMIT)",
+    "checklist_item_3": "Next state determined: INTEGRATE_WAVE_EFFORTS (success path)",
+    "all_items_complete": true
   },
   "context": {
     "phase": 2,
     "wave": 3,
-    "total_efforts": 2,
-    "effort_2_3_1": {
-      "name": "input-validation",
-      "plan_complete": true,
-      "plan_location": ".software-factory/phase2/wave3/effort-1-input-validation/IMPLEMENTATION-PLAN--20251103-061910.md",
-      "plan_lines": 1005,
-      "committed": true
-    },
-    "effort_2_3_2": {
-      "name": "error-system",
-      "plan_complete": true,
-      "plan_location": ".software-factory/phase2/wave3/effort-2-error-system/IMPLEMENTATION-PLAN-20251103-062330.md",
-      "plan_lines": 833,
-      "committed": true
-    }
-  },
-  "decision_rationale": "Per SF 3.0 mandatory sequence and R356 optimization: with 2 efforts (>1), orchestrator MUST transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION to analyze implementation plans and determine SW Engineer spawn strategy (parallel vs sequential) before spawning any SW Engineers. This is a REQUIRED transition, not optional.",
-  "state_files_updated": [
-    "orchestrator-state-v3.json",
-    "bug-tracking.json",
-    "integration-containers.json",
-    "fix-cascade-state.json"
-  ],
-  "commit_sha": "a7e446c",
-  "pushed_to_remote": true,
-  "next_steps": {
-    "required_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
-    "orchestrator_must": [
-      "Read both implementation plans",
-      "Analyze for parallel vs sequential implementation",
-      "Consider dependencies between efforts",
-      "Determine SW Engineer spawn strategy",
-      "Update orchestrator state with strategy decision",
-      "Transition to SPAWN_SW_ENGINEERS with strategy"
+    "iteration": 3,
+    "max_iterations": 10,
+    "previous_bug": "BUG-020",
+    "previous_bug_status": "FIXED",
+    "efforts": [
+      {
+        "id": "2.3.1",
+        "status": "ACCEPTED"
+      },
+      {
+        "id": "2.3.2",
+        "status": "ACCEPTED"
+      }
     ],
-    "critical_requirements": [
-      "R356: Must analyze parallelization for multiple efforts",
-      "R234: Must follow mandatory SF 3.0 sequence",
-      "R151: If parallel, spawn within 5s for grading",
-      "R287: Save TODOs before spawning"
-    ]
-  }
+    "bug_progress_category": "STALL",
+    "stall_counter": "1/5",
+    "backport_attempts": "0/3"
+  },
+  "next_steps": [
+    "Orchestrator enters INTEGRATE_WAVE_EFFORTS state",
+    "Spawn Integration Agent for Wave 2.3 iteration 3 attempt",
+    "Integration Agent merges effort branches into wave integration branch",
+    "Integration Agent runs build, tests, and demo validation",
+    "If successful: transition to REVIEW_WAVE_INTEGRATION",
+    "If bugs found: document bugs, transition to ERROR_RECOVERY"
+  ]
 }
