@@ -522,28 +522,28 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-03T05:52:43Z",
-    "notes": "State transition: CREATE_NEXT_INFRASTRUCTURE to VALIDATE_INFRASTRUCTURE (Wave 2.3 infrastructure validation)",
-    "state_transition": "VALIDATE_INFRASTRUCTURE",
+    "last_updated": "2025-11-03T06:14:12Z",
+    "notes": "State transition: VALIDATE_INFRASTRUCTURE to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (Wave 2.3 effort planning)",
+    "state_transition": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "orchestrator_state": "VALIDATE_INFRASTRUCTURE",
-    "last_sync": "2025-11-03T05:52:43Z",
+    "orchestrator_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "last_sync": "2025-11-03T06:14:12Z",
     "in_sync": true,
-    "current_state": "VALIDATE_INFRASTRUCTURE",
-    "previous_state": "CREATE_NEXT_INFRASTRUCTURE",
-    "last_transition": "2025-11-03T05:52:43Z"
+    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "previous_state": "VALIDATE_INFRASTRUCTURE",
+    "last_transition": "2025-11-03T06:14:12Z"
   },
-  "current_state": "VALIDATE_INFRASTRUCTURE",
+  "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
   "phase": 2,
   "wave": 3,
   "last_updated_by": "state-manager",
-  "current_orchestrator_state": "VALIDATE_INFRASTRUCTURE",
-  "orchestrator_state": "VALIDATE_INFRASTRUCTURE",
+  "current_orchestrator_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+  "orchestrator_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
   "last_state_transition": {
-    "from": "CREATE_NEXT_INFRASTRUCTURE",
-    "to": "VALIDATE_INFRASTRUCTURE",
-    "timestamp": "2025-11-03T05:52:43Z"
+    "from": "VALIDATE_INFRASTRUCTURE",
+    "to": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "timestamp": "2025-11-03T06:14:12Z"
   }
 }
