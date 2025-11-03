@@ -342,7 +342,7 @@
       ],
       "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
       "resolution_plan": [
-        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files \u2192 ~406 lines",
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
         "Option B: Create split plan into 2 efforts (Split-001: 389 lines stubs, Split-002: 406 lines core)",
         "Re-measure after fix",
         "Verify under 800 line limit"
@@ -443,7 +443,7 @@
       ],
       "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
       "resolution_plan": [
-        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files \u2192 ~406 lines",
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
         "Option B: Create split plan into 2 efforts",
         "Re-measure after fix",
         "Verify under 800 line limit"
@@ -726,7 +726,7 @@
         "Integration workspace at efforts/phase2/wave2/integration-workspace is corrupted",
         "Commit 37b5e68 deleted 731 lines of approved Wave 2.1 code",
         "Workspace deletion completed in iteration 6",
-        "Re-integration will occur in iteration 7 (START_WAVE_ITERATION \u2192 INTEGRATE_WAVE_EFFORTS)",
+        "Re-integration will occur in iteration 7 (START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS)",
         "Will properly build Wave 2.2 ON TOP OF Wave 2.1 without deletions"
       ],
       "fix_strategy_determined_at": "2025-11-02T18:41:29Z",
@@ -878,6 +878,35 @@
         "phase": 2,
         "cascade_id": "CASCADE-002-PHASE2-BUGS",
         "marked_at": "2025-11-03T21:45:00Z"
+      },
+      "fix_plan": {
+        "strategy": "R321_BACKPORT",
+        "affected_branch": "idpbuilder-oci-push/phase2/integration",
+        "fix_description": "Replace stub implementation in pkg/cmd/push/push.go:132 with actual push logic. The stub currently returns 'push implementation pending Phase 3 integration'. Need to implement proper OCI push operation using docker client and registry client from Phase 1/Wave 2.1. Reference the commented integration example code already present in the file.",
+        "estimated_effort": "2-3 hours",
+        "assigned_to": "sw-engineer",
+        "fix_approach": [
+          "Remove stub return statement at line 132",
+          "Uncomment and implement the integration example code (lines 108-129)",
+          "Initialize dockerClient using docker.NewClient()",
+          "Get image using dockerClient.GetImage(ctx, opts.ImageName)",
+          "Initialize registryClient using registry.NewClient(authProvider, tlsProvider)",
+          "Execute registryClient.Push(ctx, image, targetRef, progressCallback)",
+          "Add proper error handling and wrapping",
+          "Verify all 27 tests pass after implementation"
+        ],
+        "validation_criteria": [
+          "Build completes successfully",
+          "All existing tests pass (27/27)",
+          "runPush() actually performs OCI push operation",
+          "No R355 stub violations remain",
+          "Integration tests verify push functionality"
+        ],
+        "risk_assessment": "MEDIUM - Core functionality implementation, but pattern already established in Phase 1",
+        "dependencies": [
+          "pkg/docker/client.go from Phase 1/Wave 2.1",
+          "pkg/registry/client.go from Phase 1/Wave 2.1"
+        ]
       }
     },
     {
@@ -916,6 +945,33 @@
         "phase": 2,
         "cascade_id": "CASCADE-002-PHASE2-BUGS",
         "marked_at": "2025-11-03T21:45:00Z"
+      },
+      "fix_plan": {
+        "strategy": "R321_BACKPORT",
+        "affected_branch": "idpbuilder-oci-push/phase2/integration",
+        "fix_description": "Fix DisplaySSRFWarning function in pkg/cmd/push/errors.go to match expected test output format. The test TestDisplaySSRFWarning is failing because the warning message format doesn't match the expected assertion in the test. Need to investigate the test file (push_errors_test.go) to see exact expected format and adjust DisplaySSRFWarning accordingly.",
+        "estimated_effort": "30-45 minutes",
+        "assigned_to": "sw-engineer",
+        "fix_approach": [
+          "Examine test file pkg/cmd/push/push_errors_test.go to find TestDisplaySSRFWarning",
+          "Identify expected warning format from test assertions",
+          "Locate DisplaySSRFWarning function (likely uses errors.FormatError or similar)",
+          "Adjust warning format/structure to match test expectations",
+          "Run test suite to verify TestDisplaySSRFWarning passes",
+          "Ensure all other tests still pass (27/27 tests)"
+        ],
+        "validation_criteria": [
+          "TestDisplaySSRFWarning test passes",
+          "All 27 tests pass in test suite",
+          "Warning still provides security information to users",
+          "No regressions in error handling"
+        ],
+        "risk_assessment": "LOW - Formatting fix in error display, well-isolated change",
+        "dependencies": [
+          "pkg/errors package from Phase 2/Wave 2.3",
+          "pkg/validator package from Phase 2/Wave 2.3"
+        ],
+        "investigation_note": "NOTE: DisplaySSRFWarning function was not found with grep in errors.go. It may be defined elsewhere or the function name may be different. SW Engineer should search entire pkg/cmd/push/ for SSRF-related warning functions and locate the actual test failure."
       }
     }
   ],
@@ -952,14 +1008,14 @@
     ]
   },
   "metadata": {
-    "last_updated": "2025-11-03T14:08:00Z",
-    "notes": "State transition: REVIEW_WAVE_INTEGRATION \u2192 REVIEW_WAVE_ARCHITECTURE (Wave 2.2 iteration 7, bugs_found=0)",
+    "last_updated": "2025-11-03T22:30:00Z",
+    "notes": "Software Factory Manager: Added fix_plan structures for BUG-022 and BUG-023. Status updated to IDENTIFIED. Both bugs verified to still exist in Phase 2 integration branch. Ready for FIX_PHASE_UPSTREAM_BUGS execution.",
     "state_transition": "REVIEW_WAVE_ARCHITECTURE",
-    "updated_by": "state-manager",
-    "last_modified": "2025-11-03T13:09:36Z",
+    "updated_by": "software-factory-manager",
+    "last_modified": "2025-11-03T22:30:00Z",
     "state_sync": {
-      "last_state_transition": "BUILD_VALIDATION\u2192SETUP_PHASE_INFRASTRUCTURE",
-      "last_sync_timestamp": "2025-11-03T15:17:45Z"
+      "last_state_transition": "CREATE_PHASE_FIX_PLAN→FIX_PHASE_UPSTREAM_BUGS",
+      "last_sync_timestamp": "2025-11-03T22:30:00Z"
     }
   },
   "last_state_transition": {
@@ -999,7 +1055,7 @@
       "effort": null,
       "iteration": 1,
       "validated_by": "state-manager",
-      "reason": "Wave iteration 1 started. Iteration counter incremented 0 \u2192 1. Ready to integrate Wave 2.3 efforts."
+      "reason": "Wave iteration 1 started. Iteration counter incremented 0 → 1. Ready to integrate Wave 2.3 efforts."
     },
     {
       "timestamp": "2025-11-03T07:14:17Z",
