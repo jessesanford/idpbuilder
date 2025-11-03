@@ -3,9 +3,9 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAVE_COMPLETE",
-    "previous_state": "MONITORING_EFFORT_REVIEWS",
-    "last_transition_timestamp": "2025-11-03T08:13:37Z",
+    "current_state": "SETUP_WAVE_INFRASTRUCTURE",
+    "previous_state": "WAVE_COMPLETE",
+    "last_transition_timestamp": "2025-11-03T08:21:45Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
       "timestamp": "2025-11-03T08:06:28Z",
@@ -3458,6 +3458,16 @@
         "orchestrator_proposal": "WAVE_COMPLETE",
         "proposal_accepted": true,
         "transition_invalid": false
+      },
+      {
+        "from_state": "WAVE_COMPLETE",
+        "to_state": "SETUP_WAVE_INFRASTRUCTURE",
+        "timestamp": "2025-11-03T08:21:45Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.3 complete - 2 efforts ACCEPTED (effort 2.3.1: 394 lines 94.6% coverage, effort 2.3.2: 508 lines 100% coverage 36 tests, zero issues). Ready for wave integration infrastructure setup.",
+        "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "Cannot skip SETUP_WAVE_INFRASTRUCTURE and START_WAVE_ITERATION. State machine requires: WAVE_COMPLETE → SETUP_WAVE_INFRASTRUCTURE → START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS. Skipping states violates R234 (Mandatory State Traversal)."
       }
     ],
     "loop_detection": {
