@@ -1,0 +1,50 @@
+name: release
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-nightly.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 0
+      - run: git fetch --force --tags
+      - uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
+        with:
+          go-version: '1.22'
+      - name: Set GORELEASER_PREVIOUS_TAG in actual release
+        if: ${{ !contains(github.ref, '-nightly') }}
+        # find previous tag by filtering out nightly tags and choosing the
+        # second to last tag (last one is the current release)
+        run: |
+          prev_tag=$(git tag | grep -v "nightly" | sort -r --version-sort | head -n 2 | tail -n 1)
+          echo "GORELEASER_PREVIOUS_TAG=$prev_tag" >> $GITHUB_ENV
+      # Ensure generation tools run
+      - name: build
+        run: |
+          OUT_FILE=/tmp/idpbuilder make build
+      - name: Generate a homebrew tap update token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.CNOE_HOMEBREW_APP_ID }}
+          private-key: ${{ secrets.CNOE_HOMEBREW_PRIVATE_KEY }}
+          repositories: |
+            homebrew-tap
+      - name: GoReleaser
+        uses: goreleaser/goreleaser-action@7ec5c2b0c6cdda6e8bbb49444bc797dd33d74dd8 # v5.0.0
+        id: run-goreleaser
+        with:
+          version: latest
+          args: release --clean --timeout 30m
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_TOKEN: ${{ steps.generate-token.outputs.token }}
+          GORELEASER_CURRENT_TAG: ${{ github.ref_name }}

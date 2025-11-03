@@ -1,12 +1,17 @@
-# Wave 2.1 Test Suite
-# Command Implementation & Core Integration
+# Phase 2 Wave 1 Tests
+
+Tests for Command Implementation & Core Integration wave.
+
+**Source**: planning/phase2/wave1/WAVE-TEST-PLAN.md
+**Created**: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+**R342 Compliance**: Tests stored in wave integration branch immediately after planning
+**R341 Compliance**: TDD - Tests before implementation
 
 ## Test Coverage
-- 40 tests total per WAVE-TEST-PLAN.md
-- Coverage targets: 90% line / 85% branch  
-- Focus: Command integration with Phase 1 packages
+- 40 tests total
+- 25 tests for push command
+- 15 tests for progress reporter
+- 90% statement coverage target
+- 85% branch coverage target
 
-## Test Organization
-Tests will be organized by effort and implemented during wave execution.
-
-Refer to: planning/phase2/wave1/WAVE-TEST-PLAN.md for full test specifications.
+See WAVE-TEST-PLAN.md for complete test specifications.
