@@ -3,15 +3,15 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
-    "previous_state": "WAVE_START",
-    "last_transition_timestamp": "2025-11-03T00:30:00Z",
+    "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+    "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+    "last_transition_timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "timestamp": "2025-11-03T00:30:00Z",
-      "from_state": "WAVE_START",
-      "to_state_proposed": "SPAWN_ARCHITECT_WAVE_PLANNING",
-      "to_state_required": "SPAWN_ARCHITECT_WAVE_PLANNING",
+      "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+      "from_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+      "to_state_proposed": "WAITING_FOR_WAVE_ARCHITECTURE",
+      "to_state_required": "WAITING_FOR_WAVE_ARCHITECTURE",
       "validated_by": "state-manager",
       "orchestrator_proposal_accepted": true,
       "validation_checks": {
@@ -20,44 +20,38 @@
         "to_state_exists": true,
         "in_allowed_transitions": true,
         "allowed_transitions": [
-          "SPAWN_ARCHITECT_WAVE_PLANNING",
+          "WAITING_FOR_WAVE_ARCHITECTURE",
           "ERROR_RECOVERY"
         ],
         "exit_criteria_met": {
-          "wave_start_complete": true,
-          "phase_architecture_reviewed": true,
-          "wave_scope_identified": true,
-          "wave_3_scope": "Error Handling & Validation",
-          "effort_count": 2,
-          "sequential_execution": true,
-          "estimated_total_lines": 750,
-          "within_800_limit": true,
-          "previous_wave_complete": true,
-          "wave_2_build_status": "SUCCESS",
-          "wave_2_coverage": "89.6%"
+          "architect_spawned": true,
+          "wave_architecture_created": true,
+          "architecture_file": "planning/phase2/wave3/WAVE-2.3-ARCHITECTURE.md",
+          "architecture_size_bytes": 45119,
+          "architecture_lines": 1518,
+          "concrete_code_blocks": 25,
+          "r340_compliance": "VERIFIED",
+          "spawn_recorded": true
         },
         "entry_criteria_met": {
-          "phase_architecture_exists": true,
-          "architect_agent_available": true,
-          "wave_scope_defined": true,
-          "progressive_planning_required": true
+          "architect_spawned_from_previous_state": true,
+          "wave_architecture_in_progress": true,
+          "phase_architecture_complete": true
         },
         "state_machine_compliance": "VERIFIED",
         "r288_compliance": true,
         "r322_consultation": true,
-        "r340_progressive_planning": true,
-        "r213_wave_architecture_required": true
+        "r340_progressive_planning": true
       },
       "work_completed": {
-        "wave_initialization": true,
-        "phase_review": true,
-        "scope_identification": true,
-        "effort_planning": "ready_for_architecture",
-        "previous_wave_validated": true
+        "architect_spawned": true,
+        "wave_architecture_file": "planning/phase2/wave3/WAVE-2.3-ARCHITECTURE.md",
+        "concrete_fidelity": true,
+        "quality_gates_passed": true
       },
       "phase": 2,
       "wave": 3,
-      "decision_rationale": "WAVE_START complete. Per SF 3.0 Progressive Planning (R213/R340), wave architecture must be created by Architect before implementation planning. Transition to SPAWN_ARCHITECT_WAVE_PLANNING is the only valid next state per state machine allowed_transitions."
+      "decision_rationale": "Architect completed Wave 2.3 architecture with concrete fidelity (25 Go code blocks, real examples). Per SF 3.0 Progressive Planning (R213/R340), transition to WAITING_FOR_WAVE_ARCHITECTURE to validate architecture before test planning. This is the only valid next state per state machine."
     },
     "state_history": [
       {
@@ -2895,6 +2889,29 @@
           "r322_consultation": true,
           "r340_progressive_planning": true,
           "r213_wave_architecture_required": true
+        }
+      },
+      {
+        "from_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+        "to_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.3 architecture complete with concrete fidelity (25 Go code blocks, 1518 lines). Architect spawned and plan validated per R340 quality gates. Ready to monitor and validate architecture before test planning.",
+        "phase": 2,
+        "wave": 3,
+        "orchestrator_proposal": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "exit_criteria_met": true,
+          "entry_criteria_met": true,
+          "r288_compliance": true,
+          "r322_consultation": true,
+          "state_machine_compliance": "VERIFIED"
         }
       }
     ],

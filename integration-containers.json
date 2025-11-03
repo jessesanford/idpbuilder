@@ -470,22 +470,22 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-03T00:25:02Z",
-    "notes": "State transition: BUILD_VALIDATION to WAVE_START (Wave 3 initialization)",
-    "state_transition": "WAVE_START",
+    "last_updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+    "notes": "State transition: SPAWN_ARCHITECT_WAVE_PLANNING to WAITING_FOR_WAVE_ARCHITECTURE (Wave 2.3 architecture complete)",
+    "state_transition": "WAITING_FOR_WAVE_ARCHITECTURE",
     "updated_by": "state-manager"
   },
   "state_machine_sync": {
-    "orchestrator_state": "WAVE_START",
-    "last_sync": "2025-11-03T00:25:02Z",
+    "orchestrator_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+    "last_sync": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
     "in_sync": true,
-    "current_state": "WAVE_START",
-    "previous_state": "BUILD_VALIDATION",
-    "last_transition": "2025-11-03T00:25:02Z"
+    "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+    "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+    "last_transition": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   },
-  "current_state": "BUILD_VALIDATION",
+  "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
   "phase": 2,
-  "wave": 2,
+  "wave": 3,
   "last_updated_by": "state-manager",
-  "current_orchestrator_state": "SPAWN_ARCHITECT_WAVE_PLANNING"
+  "current_orchestrator_state": "WAITING_FOR_WAVE_ARCHITECTURE"
 }
