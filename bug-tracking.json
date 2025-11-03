@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-03T02:39:53Z",
+  "last_updated": "2025-11-03T06:29:16Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -342,7 +342,7 @@
       ],
       "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
       "resolution_plan": [
-        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files \u2192 ~406 lines",
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
         "Option B: Create split plan into 2 efforts (Split-001: 389 lines stubs, Split-002: 406 lines core)",
         "Re-measure after fix",
         "Verify under 800 line limit"
@@ -443,7 +443,7 @@
       ],
       "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
       "resolution_plan": [
-        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files \u2192 ~406 lines",
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
         "Option B: Create split plan into 2 efforts",
         "Re-measure after fix",
         "Verify under 800 line limit"
@@ -726,7 +726,7 @@
         "Integration workspace at efforts/phase2/wave2/integration-workspace is corrupted",
         "Commit 37b5e68 deleted 731 lines of approved Wave 2.1 code",
         "Workspace deletion completed in iteration 6",
-        "Re-integration will occur in iteration 7 (START_WAVE_ITERATION \u2192 INTEGRATE_WAVE_EFFORTS)",
+        "Re-integration will occur in iteration 7 (START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS)",
         "Will properly build Wave 2.2 ON TOP OF Wave 2.1 without deletions"
       ],
       "fix_strategy_determined_at": "2025-11-02T18:41:29Z",
@@ -770,23 +770,23 @@
     ]
   },
   "metadata": {
-    "last_updated": "2025-11-03T06:14:12Z",
-    "notes": "State transition: VALIDATE_INFRASTRUCTURE to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (Wave 2.3 effort planning)",
-    "state_transition": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "last_updated": "2025-11-03T06:29:16Z",
+    "notes": "State transition: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING to WAITING_FOR_EFFORT_PLANS (Wave 2.3 awaiting effort plans)",
+    "state_transition": "WAITING_FOR_EFFORT_PLANS",
     "updated_by": "state-manager"
   },
   "last_state_transition": {
-    "from": "VALIDATE_INFRASTRUCTURE",
-    "to": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "timestamp": "2025-11-03T06:14:12Z"
+    "from": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "to": "WAITING_FOR_EFFORT_PLANS",
+    "timestamp": "2025-11-03T06:29:16Z"
   },
   "state_machine_sync": {
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "previous_state": "VALIDATE_INFRASTRUCTURE",
-    "last_transition": "2025-11-03T06:14:12Z",
-    "last_sync": "2025-11-03T06:14:12Z"
+    "current_state": "WAITING_FOR_EFFORT_PLANS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+    "last_transition": "2025-11-03T06:29:16Z",
+    "last_sync": "2025-11-03T06:29:16Z"
   },
-  "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
+  "current_state": "WAITING_FOR_EFFORT_PLANS",
   "phase": 2,
   "wave": 3,
   "last_updated_by": "state-manager"
