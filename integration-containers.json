@@ -452,18 +452,18 @@
       "container_id": "wave-phase2-wave3",
       "phase": 2,
       "wave": 3,
-      "status": "PREPARING_RETRY",
-      "iteration": 2,
+      "status": "BLOCKED",
+      "iteration": 3,
       "max_iterations": 10,
       "branch": "idpbuilder-oci-push/phase2/wave3/integration",
       "workspace": "efforts/phase2/wave3/integration-workspace",
       "base_branch": "idpbuilder-oci-push/phase2/wave2/integration",
       "created_at": "2025-11-03T01:42:39Z",
       "integration_started_at": "2025-11-03T08:34:44Z",
-      "last_iteration_at": "2025-11-03T11:43:00Z",
+      "last_iteration_at": "2025-11-03T13:09:36Z",
       "convergence_metrics": {
-        "bugs_remaining": 0,
-        "bugs_found": 1,
+        "bugs_remaining": 1,
+        "bugs_found": 2,
         "test_failures": 0,
         "build_failures": 1,
         "bugs_fixed": 0
@@ -471,7 +471,7 @@
       "efforts_to_integrate": [],
       "effort_branches": [],
       "integration_plan_file": null,
-      "notes": "Wave 2.3 Iteration 3: BUG-001/BUG-020 fixed. Preparing fresh integration retry with fixed effort-2 branch.",
+      "notes": "Wave 2.3 Iteration 3: Integration blocked - BUG-021 (incomplete BUG-020 fix). Validator stub not removed from remote effort-2 branch.",
       "test_plan_file": "planning/phase2/wave3/WAVE-TEST-PLAN.md",
       "test_count": 63,
       "coverage_targets": {
@@ -479,7 +479,7 @@
         "branch": "85%"
       },
       "tdd_phase": "RED",
-      "integration_report_file": null,
+      "integration_report_file": "efforts/phase2/wave3/integration-workspace/.software-factory/phase2/wave3/integration/INTEGRATE_WAVE_EFFORTS-REPORT--20251103-130434.md",
       "integration_completed_at": null,
       "build_validation": {
         "status": "PENDING",
@@ -522,30 +522,30 @@
     "phase-2": null
   },
   "metadata": {
-    "last_updated": "2025-11-03T12:48:34Z",
-    "notes": "State transition: ERROR_RECOVERY → START_WAVE_ITERATION (iteration 3 after BUG-001/BUG-020 fix)",
-    "state_transition": "START_WAVE_ITERATION",
+    "last_updated": "2025-11-03T13:09:36Z",
+    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → ERROR_RECOVERY (iteration 3 - BUG-021 incomplete BUG-020 fix)",
+    "state_transition": "ERROR_RECOVERY",
     "updated_by": "state-manager",
-    "last_modified": "2025-11-03T12:25:18Z"
+    "last_modified": "2025-11-03T13:09:36Z"
   },
   "state_machine_sync": {
-    "orchestrator_state": "START_WAVE_ITERATION",
-    "current_state": "START_WAVE_ITERATION",
-    "previous_state": "ERROR_RECOVERY",
-    "last_transition": "2025-11-03T12:48:34Z",
-    "last_sync": "2025-11-03T12:48:34Z",
+    "orchestrator_state": "ERROR_RECOVERY",
+    "current_state": "ERROR_RECOVERY",
+    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "last_transition": "2025-11-03T13:09:36Z",
+    "last_sync": "2025-11-03T13:09:36Z",
     "in_sync": true
   },
-  "current_state": "START_WAVE_ITERATION",
+  "current_state": "ERROR_RECOVERY",
   "phase": 2,
   "wave": 3,
   "last_updated_by": "state-manager",
-  "current_orchestrator_state": "START_WAVE_ITERATION",
-  "orchestrator_state": "START_WAVE_ITERATION",
+  "current_orchestrator_state": "ERROR_RECOVERY",
+  "orchestrator_state": "ERROR_RECOVERY",
   "last_state_transition": {
-    "from": "ERROR_RECOVERY",
-    "to": "START_WAVE_ITERATION",
-    "timestamp": "2025-11-03T12:48:34Z"
+    "from": "INTEGRATE_WAVE_EFFORTS",
+    "to": "ERROR_RECOVERY",
+    "timestamp": "2025-11-03T13:09:36Z"
   },
   "state_transitions": [
     {
@@ -618,6 +618,30 @@
       "iteration": 3,
       "validated_by": "state-manager",
       "reason": "BUG-001/BUG-020 fixed. Validator stub conflicts resolved in effort-2 branch (commit 8139a33). Ready to retry integration iteration 3."
+    },
+    {
+      "timestamp": "2025-11-03T12:54:13Z",
+      "from_state": "START_WAVE_ITERATION",
+      "to_state": "INTEGRATE_WAVE_EFFORTS",
+      "phase": 2,
+      "wave": 3,
+      "effort": null,
+      "iteration": 3,
+      "validated_by": "state-manager",
+      "reason": "Wave iteration 3 started. Iteration counter incremented 2 → 3. Ready to integrate Wave 2.3 efforts."
+    },
+    {
+      "timestamp": "2025-11-03T13:09:36Z",
+      "from_state": "INTEGRATE_WAVE_EFFORTS",
+      "to_state": "ERROR_RECOVERY",
+      "phase": 2,
+      "wave": 3,
+      "effort": null,
+      "iteration": 3,
+      "validated_by": "state-manager",
+      "reason": "Integration iteration 3 blocked: BUG-021 (incomplete BUG-020 fix - validator.go stub not removed from remote effort-2 branch). Integration Agent documented per R266. Requires SW Engineer to complete fix per R300.",
+      "bug_id": "BUG-021-INCOMPLETE-FIX",
+      "integration_report": "efforts/phase2/wave3/integration-workspace/.software-factory/phase2/wave3/integration/INTEGRATE_WAVE_EFFORTS-REPORT--20251103-130434.md"
     }
   ]
 }
