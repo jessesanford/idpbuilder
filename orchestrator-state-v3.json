@@ -3,11 +3,22 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_PHASE_FIX_PLAN",
-    "previous_state": "REVIEW_PHASE_INTEGRATION",
-    "last_transition_timestamp": "2025-11-03T21:34:21Z",
-    "last_state_manager_consultation": "2025-11-03T21:34:21Z",
+    "current_state": "FIX_PHASE_UPSTREAM_BUGS",
+    "previous_state": "CREATE_PHASE_FIX_PLAN",
+    "last_transition_timestamp": "2025-11-03T21:45:00Z",
+    "last_state_manager_consultation": "2025-11-03T21:45:00Z",
     "state_history": [
+      {
+        "from_state": "CREATE_PHASE_FIX_PLAN",
+        "to_state": "FIX_PHASE_UPSTREAM_BUGS",
+        "timestamp": "2025-11-03T21:45:00Z",
+        "validated_by": "state-manager",
+        "reason": "Phase 2 fix plan created and approved. 2 bugs analyzed (BUG-022 CRITICAL: Stub Violation, BUG-023 HIGH: Test Failure). Proceeding to automated phase fix cascade execution per R536.",
+        "phase": 2,
+        "bugs_found": 2,
+        "orchestrator_proposal": "FIX_PHASE_UPSTREAM_BUGS",
+        "proposal_accepted": true
+      },
       {
         "from_state": "REVIEW_PHASE_INTEGRATION",
         "to_state": "CREATE_PHASE_FIX_PLAN",

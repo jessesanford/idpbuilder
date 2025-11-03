@@ -342,7 +342,7 @@
       ],
       "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
       "resolution_plan": [
-        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files \u2192 ~406 lines",
         "Option B: Create split plan into 2 efforts (Split-001: 389 lines stubs, Split-002: 406 lines core)",
         "Re-measure after fix",
         "Verify under 800 line limit"
@@ -443,7 +443,7 @@
       ],
       "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
       "resolution_plan": [
-        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files \u2192 ~406 lines",
         "Option B: Create split plan into 2 efforts",
         "Re-measure after fix",
         "Verify under 800 line limit"
@@ -726,7 +726,7 @@
         "Integration workspace at efforts/phase2/wave2/integration-workspace is corrupted",
         "Commit 37b5e68 deleted 731 lines of approved Wave 2.1 code",
         "Workspace deletion completed in iteration 6",
-        "Re-integration will occur in iteration 7 (START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS)",
+        "Re-integration will occur in iteration 7 (START_WAVE_ITERATION \u2192 INTEGRATE_WAVE_EFFORTS)",
         "Will properly build Wave 2.2 ON TOP OF Wave 2.1 without deletions"
       ],
       "fix_strategy_determined_at": "2025-11-02T18:41:29Z",
@@ -872,7 +872,13 @@
         "No actual OCI push operation performed",
         "R355 compliance failure (stub in production code)"
       ],
-      "impact": "Push functionality completely non-functional. R355 Supreme Law violation. Cannot proceed to next phase without fix."
+      "impact": "Push functionality completely non-functional. R355 Supreme Law violation. Cannot proceed to next phase without fix.",
+      "cascade_status": {
+        "marked_for_cascade": true,
+        "phase": 2,
+        "cascade_id": "CASCADE-002-PHASE2-BUGS",
+        "marked_at": "2025-11-03T21:45:00Z"
+      }
     },
     {
       "bug_id": "BUG-023-TEST-FAILURE",
@@ -904,7 +910,13 @@
         "Warning format mismatch between actual and expected output",
         "Prevents clean integration sign-off"
       ],
-      "impact": "Test failures block Phase 2 completion. Integration quality verification cannot pass."
+      "impact": "Test failures block Phase 2 completion. Integration quality verification cannot pass.",
+      "cascade_status": {
+        "marked_for_cascade": true,
+        "phase": 2,
+        "cascade_id": "CASCADE-002-PHASE2-BUGS",
+        "marked_at": "2025-11-03T21:45:00Z"
+      }
     }
   ],
   "active_bug_count": 17,
@@ -941,12 +953,12 @@
   },
   "metadata": {
     "last_updated": "2025-11-03T14:08:00Z",
-    "notes": "State transition: REVIEW_WAVE_INTEGRATION → REVIEW_WAVE_ARCHITECTURE (Wave 2.2 iteration 7, bugs_found=0)",
+    "notes": "State transition: REVIEW_WAVE_INTEGRATION \u2192 REVIEW_WAVE_ARCHITECTURE (Wave 2.2 iteration 7, bugs_found=0)",
     "state_transition": "REVIEW_WAVE_ARCHITECTURE",
     "updated_by": "state-manager",
     "last_modified": "2025-11-03T13:09:36Z",
     "state_sync": {
-      "last_state_transition": "BUILD_VALIDATION→SETUP_PHASE_INFRASTRUCTURE",
+      "last_state_transition": "BUILD_VALIDATION\u2192SETUP_PHASE_INFRASTRUCTURE",
       "last_sync_timestamp": "2025-11-03T15:17:45Z"
     }
   },
@@ -987,7 +999,7 @@
       "effort": null,
       "iteration": 1,
       "validated_by": "state-manager",
-      "reason": "Wave iteration 1 started. Iteration counter incremented 0 → 1. Ready to integrate Wave 2.3 efforts."
+      "reason": "Wave iteration 1 started. Iteration counter incremented 0 \u2192 1. Ready to integrate Wave 2.3 efforts."
     },
     {
       "timestamp": "2025-11-03T07:14:17Z",
