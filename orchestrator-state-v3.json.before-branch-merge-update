@@ -13,7 +13,7 @@
         "to_state": "REVIEW_PHASE_INTEGRATION",
         "timestamp": "2025-11-03T20:30:00Z",
         "validated_by": "state-manager",
-        "reason": "Phase 2 integration complete (Wave 2.1, Wave 2.2, Wave 2.3 integrated into idpbuilder-oci-push/phase2/integration, now merged to main). Ready for phase integration review per R283.",
+        "reason": "Phase 2 integration complete (Wave 2.1, Wave 2.2, Wave 2.3 integrated into idpbuilder-oci-push/phase2/integration). Ready for phase integration review per R283.",
         "phase": 2,
         "wave": null,
         "validation_checks": {
@@ -1284,7 +1284,7 @@
           "in_allowed_transitions": true,
           "r342_compliance": true,
           "integration_branch": "idpbuilder-oci-push/phase2/wave1/integration",
-          "integration_base_branch": "main (was idpbuilder-oci-push/phase2/integration, now merged)",
+          "integration_base_branch": "idpbuilder-oci-push/phase2/integration",
           "test_harness_created": true,
           "test_harness_files": [
             "tests/phase2/wave1/README.md",
@@ -4273,7 +4273,7 @@
             },
             "integration_branch": "idpbuilder-oci-push/phase2/wave1/integration",
             "integration_branch_created": "2025-10-31T20:39:16.591113Z",
-            "integration_base_branch": "main (was idpbuilder-oci-push/phase2/integration, now merged)",
+            "integration_base_branch": "idpbuilder-oci-push/phase2/integration",
             "test_count": 40,
             "test_commit": "332a95b",
             "test_harness_created": true,
