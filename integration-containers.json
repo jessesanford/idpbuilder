@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-03T01:08:07Z",
+  "last_updated": "2025-11-03T01:42:39Z",
   "project_integration": {
     "status": "NOT_STARTED",
     "branch": null,
@@ -447,6 +447,58 @@
       "will_reintegrate_in_iteration": null,
       "reintegration_in_progress": true,
       "reintegration_started_at": "2025-11-02T18:50:08Z"
+    },
+    {
+      "container_id": "wave-phase2-wave3",
+      "phase": 2,
+      "wave": 3,
+      "status": "created",
+      "iteration": 1,
+      "max_iterations": 10,
+      "branch": "idpbuilder-oci-push/phase2/wave3/integration",
+      "workspace": "efforts/phase2/wave3/integration-workspace",
+      "base_branch": "idpbuilder-oci-push/phase2/wave2/integration",
+      "created_at": "2025-11-03T01:42:39Z",
+      "integration_started_at": null,
+      "last_iteration_at": null,
+      "convergence_metrics": {
+        "bugs_remaining": 0,
+        "bugs_found": 0,
+        "test_failures": 0,
+        "build_failures": 0,
+        "bugs_fixed": 0
+      },
+      "efforts_to_integrate": [],
+      "effort_branches": [],
+      "integration_plan_file": null,
+      "notes": "Wave 2.3 integration branch created with test plan (63 tests). R342 early integration compliance.",
+      "test_plan_file": "planning/phase2/wave3/WAVE-TEST-PLAN.md",
+      "test_count": 63,
+      "coverage_targets": {
+        "statement": "90%",
+        "branch": "85%"
+      },
+      "tdd_phase": "RED",
+      "integration_report_file": null,
+      "integration_completed_at": null,
+      "build_validation": {
+        "status": "PENDING",
+        "build_timestamp": null,
+        "validated_at": null,
+        "validator": null,
+        "r323_compliance": "PENDING"
+      },
+      "build_validation_complete": false,
+      "artifact_generated": false,
+      "ready_for_pr": false,
+      "architecture_review": {
+        "status": "NOT_STARTED",
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "review_file": null,
+        "approved": false,
+        "concerns": []
+      }
     }
   ],
   "integration_history": [],

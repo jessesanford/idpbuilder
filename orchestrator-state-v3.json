@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-    "previous_state": "WAITING_FOR_WAVE_TEST_PLAN",
+    "current_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+    "previous_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
     "last_transition_timestamp": "2025-11-03T01:07:49Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
@@ -2982,6 +2982,45 @@
           "r341_tdd_compliance": true,
           "progressive_realism": true
         }
+      },
+      {
+        "from_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+        "to_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "timestamp": "2025-11-03T01:42:39Z",
+        "validated_by": "state-manager",
+        "reason": "Wave 2.3 integration branch created successfully: idpbuilder-oci-push/phase2/wave3/integration from base idpbuilder-oci-push/phase2/wave2/integration. Test plan (63 tests) committed to integration branch per R342 early integration. Branch pushed to remote with commit 378b469. Ready to spawn Code Reviewer for implementation planning.",
+        "phase": 2,
+        "wave": 3,
+        "orchestrator_proposal": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "no_mandatory_sequence_violation": true,
+          "integration_branch_created": true,
+          "integration_branch_name": "idpbuilder-oci-push/phase2/wave3/integration",
+          "base_branch": "idpbuilder-oci-push/phase2/wave2/integration",
+          "test_plan_added": true,
+          "branch_pushed": true,
+          "commit_hash": "378b4692b5cbe744e70a8320a986b05453fc01ce",
+          "r342_compliance": "VERIFIED",
+          "r288_compliance": true,
+          "r322_consultation": true,
+          "r234_mandatory_sequences": "NONE_APPLICABLE",
+          "state_machine_compliance": "VERIFIED"
+        },
+        "work_completed": {
+          "base_branch_determined": "idpbuilder-oci-push/phase2/wave2/integration",
+          "integration_branch_created": "idpbuilder-oci-push/phase2/wave3/integration",
+          "test_plan_file": "planning/phase2/wave3/WAVE-TEST-PLAN.md",
+          "test_count": 63,
+          "commit_message": "test: Add Wave 2.3 test plan for error handling & validation",
+          "branch_pushed_to_remote": true,
+          "r342_early_integration": true
+        }
       }
     ],
     "loop_detection": {
@@ -3427,7 +3466,7 @@
     "project_name": "idpbuilder-oci-push-command",
     "project_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
     "created_at": "2025-10-30T01:11:19Z",
-    "last_updated": "2025-11-03T01:01:37Z",
+    "last_updated": "2025-11-03T01:42:39Z",
     "version": "3.0.0",
     "notes": "State transition: SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING → WAITING_FOR_WAVE_TEST_PLAN (Wave 2.3 test plan ready)",
     "last_state_transition": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → WAITING_FOR_EFFORT_PLANS (effort 2.2.2 planning created)",
