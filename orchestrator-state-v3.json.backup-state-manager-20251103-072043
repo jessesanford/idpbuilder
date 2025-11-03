@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-    "previous_state": "MONITORING_EFFORT_REVIEWS",
+    "current_state": "MONITORING_EFFORT_REVIEWS",
+    "previous_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
     "last_transition_timestamp": "2025-11-03T07:14:17Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
@@ -3336,16 +3336,6 @@
           "parallelization_analysis_complete": true,
           "spawn_strategy_determined": true
         }
-      },
-      {
-        "from_state": "MONITORING_EFFORT_REVIEWS",
-        "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-        "timestamp": "2025-11-03T07:20:43Z",
-        "reason": "Sequential strategy - Effort 2.3.1 review ACCEPTED, now planning Effort 2.3.2",
-        "validated_by": "state-manager",
-        "orchestrator_proposed": "SPAWN_SW_ENGINEERS",
-        "state_manager_corrected": true,
-        "correction_rationale": "State machine guard requires SPAWN_CODE_REVIEWERS_EFFORT_PLANNING for sequential strategy with efforts remaining"
       }
     ],
     "loop_detection": {
@@ -3407,7 +3397,7 @@
     "last_transition": "2025-11-03T02:48:29Z",
     "transition_timestamp": "2025-11-01T19:56:25Z",
     "transition_reason": "Pre-planning gap: Phase 2 Wave 3 efforts missing from pre_planned_infrastructure",
-    "transition_time": "2025-11-03T07:20:43Z",
+    "transition_time": "2025-11-03T02:06:44Z",
     "last_updated": "2025-11-02T17:47:18Z",
     "validated_by": "state-manager",
     "last_state_change": "2025-11-02T05:25:28Z",
