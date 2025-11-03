@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "WAITING_FOR_WAVE_ARCHITECTURE",
-    "previous_state": "SPAWN_ARCHITECT_WAVE_PLANNING",
+    "current_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+    "previous_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
     "last_transition_timestamp": "2025-11-03T01:54:09Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
@@ -3059,6 +3059,32 @@
         "validated_by": "state-manager",
         "transition_type": "SHUTDOWN_CONSULTATION",
         "reason": "Wave architecture file exists (WAVE-1.1-ARCHITECTURE.md, 47KB, CONCRETE fidelity). Architect work completed in previous session."
+      },
+      {
+        "timestamp": "2025-11-03T02:12:08Z",
+        "from_state": "WAITING_FOR_WAVE_ARCHITECTURE",
+        "to_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+        "validated_by": "state-manager",
+        "transition_type": "STATE_RECOVERY",
+        "reason": "REJECTED orchestrator proposal for SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING. Test plan already exists (63 tests, created 2025-11-03T00:54:00Z). Integration branch already created. Context loss caused regression to WAITING_FOR_WAVE_ARCHITECTURE. Correcting to proper state: SPAWN_CODE_REVIEWER_WAVE_IMPL for implementation planning.",
+        "recovery_details": {
+          "detected_anomaly": "orchestrator proposed creating test plan that already exists",
+          "existing_artifacts": {
+            "architecture_plan": "planning/phase2/wave3/WAVE-2.3-ARCHITECTURE.md",
+            "test_plan": "planning/phase2/wave3/WAVE-TEST-PLAN.md",
+            "test_count": 63,
+            "integration_branch": "idpbuilder-oci-push/phase2/wave3/integration"
+          },
+          "missing_artifact": "WAVE-2.3-IMPLEMENTATION-PLAN.md",
+          "corrected_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
+          "corrected_context": {
+            "phase": 2,
+            "wave": 3
+          }
+        },
+        "orchestrator_proposal": "SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING",
+        "proposal_accepted": false,
+        "proposal_rejected_reason": "Test plan already exists - would duplicate completed work"
       }
     ],
     "loop_detection": {
@@ -3172,7 +3198,7 @@
     },
     "current_phase": {
       "phase_number": 2,
-      "name": "Phase 2 - Core Push Functionality",
+      "name": "Error Handling & Validation",
       "iteration": 1,
       "total_waves_in_phase": 3,
       "waves_completed": 2,
@@ -3180,7 +3206,7 @@
     },
     "current_wave": {
       "wave_number": 3,
-      "name": "Phase 2 Wave 3",
+      "name": "Error Handling & Validation",
       "iteration": 0,
       "status": "PLANNING",
       "total_efforts": 2,
