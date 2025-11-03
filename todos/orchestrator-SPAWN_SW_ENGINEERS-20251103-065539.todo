@@ -1,0 +1,21 @@
+# Orchestrator TODO State
+# State: SPAWN_SW_ENGINEERS
+# Timestamp: 2025-11-03T06:42:00Z
+# Wave: 2.3
+
+## Completed
+- [x] Verify Wave 2.3 sequential execution strategy from state file
+- [x] Spawn SW Engineer for Effort 2.3.1 (input-validation) ONLY
+
+## In Progress
+- [ ] Save TODOs and commit (R287)
+
+## Pending
+- [ ] Spawn State Manager for SHUTDOWN_CONSULTATION (R517)
+- [ ] Output CONTINUE-SOFTWARE-FACTORY=TRUE CHECKPOINT=R322 flag (R405)
+
+## Context
+Wave 2.3 uses SEQUENTIAL strategy:
+- Effort 2.3.1 (input-validation) spawned and completed ✅
+- Effort 2.3.2 (error-system) will be spawned AFTER 2.3.1 review completes
+- Next state: MONITORING_SWE_PROGRESS
