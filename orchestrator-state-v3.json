@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "MONITORING_SWE_PROGRESS",
-    "previous_state": "SPAWN_SW_ENGINEERS",
+    "current_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
+    "previous_state": "MONITORING_SWE_PROGRESS",
     "last_transition_timestamp": "2025-11-03T06:57:14Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
@@ -3420,7 +3420,8 @@
       "spawn_timing": "one_at_a_time",
       "analyzed_at": "2025-11-03T05:52:13Z",
       "r151_compliance": true
-    }
+    },
+    "last_transition_time": "2025-11-03T07:02:57Z"
   },
   "project_progression": {
     "current_project": {
