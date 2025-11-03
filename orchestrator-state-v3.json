@@ -3,11 +3,27 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "INTEGRATE_PHASE_WAVES",
-    "previous_state": "START_PHASE_ITERATION",
-    "last_transition_timestamp": "2025-11-03T15:48:04Z",
-    "last_state_manager_consultation": "2025-11-03T15:48:04Z",
+    "current_state": "REVIEW_PHASE_INTEGRATION",
+    "previous_state": "INTEGRATE_PHASE_WAVES",
+    "last_transition_timestamp": "2025-11-03T20:30:00Z",
+    "last_state_manager_consultation": "2025-11-03T20:30:00Z",
     "state_history": [
+      {
+        "from_state": "INTEGRATE_PHASE_WAVES",
+        "to_state": "REVIEW_PHASE_INTEGRATION",
+        "timestamp": "2025-11-03T20:30:00Z",
+        "validated_by": "state-manager",
+        "reason": "Phase 2 integration complete (Wave 2.1, Wave 2.2, Wave 2.3 integrated into idpbuilder-oci-push/phase2/integration). Ready for phase integration review per R283.",
+        "phase": 2,
+        "wave": null,
+        "validation_checks": {
+          "transition_allowed": true,
+          "all_waves_integrated": true,
+          "phase_integration_branch_exists": true,
+          "phase_integration_complete": true,
+          "r283_compliance": true
+        }
+      },
       {
         "from_state": "SETUP_PHASE_INFRASTRUCTURE",
         "to_state": "START_PHASE_ITERATION",
@@ -4085,7 +4101,7 @@
   },
   "planning_files": {
     "project": {
-      "implementation_plan": null,
+      "implementation_plan": "planning/project/PROJECT-IMPLEMENTATION-PLAN.example.md",
       "architecture_plan": "planning/project/PROJECT-ARCHITECTURE-PLAN.md",
       "test_plan": "planning/project/PROJECT-TEST-PLAN.md"
     },
