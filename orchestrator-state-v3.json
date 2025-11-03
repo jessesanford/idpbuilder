@@ -3,42 +3,10 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ERROR_RECOVERY",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "current_state": "START_WAVE_ITERATION",
+    "previous_state": "ERROR_RECOVERY",
     "last_transition_timestamp": "2025-11-03T12:25:18Z",
-    "last_state_manager_consultation": {
-      "consultation_type": "SHUTDOWN_CONSULTATION",
-      "timestamp": "2025-11-03T12:25:18Z",
-      "from_state": "INTEGRATE_WAVE_EFFORTS",
-      "to_state_proposed": "ERROR_RECOVERY",
-      "to_state_required": "ERROR_RECOVERY",
-      "validated_by": "state-manager",
-      "orchestrator_proposal_accepted": true,
-      "validation_checks": {
-        "transition_allowed": true,
-        "from_state_exists": true,
-        "to_state_exists": true,
-        "in_allowed_transitions": true,
-        "integration_spawned": true,
-        "iteration_number": 2,
-        "bug_001_reported": true,
-        "r288_compliance": true
-      },
-      "work_completed": {
-        "integration_agent_spawned": true,
-        "effort_branches": [
-          "idpbuilder-oci-push/phase2/wave3/effort-1-input-validation",
-          "idpbuilder-oci-push/phase2/wave3/effort-2-error-system"
-        ],
-        "integration_status": "BLOCKED",
-        "bug_reported": "BUG-001",
-        "bug_description": "Validator stub conflicts causing build failure"
-      },
-      "phase": 2,
-      "wave": 3,
-      "iteration": 2,
-      "decision_rationale": "Transition valid per state machine. Integration Agent spawned for Wave 2.3 iteration 2 (retry after BUG-020 fix). Integration found new bug (BUG-001) blocking build. Per R300, bugs must be fixed in effort branches before retry. Transitioning to ERROR_RECOVERY for bug fix workflow, then will return to START_WAVE_ITERATION for iteration 3."
-    },
+    "last_state_manager_consultation": "2025-11-03T12:48:34Z",
     "state_history": [
       {
         "from_state": "INTEGRATE_WAVE_EFFORTS",
@@ -3532,6 +3500,15 @@
         "iteration": 2,
         "bug_id": "BUG-001",
         "integration_report": "TBD"
+      },
+      {
+        "from_state": "ERROR_RECOVERY",
+        "to_state": "START_WAVE_ITERATION",
+        "timestamp": "2025-11-03T12:48:34Z",
+        "reason": "BUG-001/BUG-020 fixed - validator stub conflicts resolved in effort-2",
+        "iteration": 3,
+        "rule": "R288",
+        "validated_by": "state-manager"
       }
     ],
     "loop_detection": {
@@ -3649,7 +3626,8 @@
       "analyzed_at": "2025-11-03T05:52:13Z",
       "r151_compliance": true
     },
-    "last_transition_time": "2025-11-03T07:02:57Z"
+    "last_transition_time": "2025-11-03T07:02:57Z",
+    "iteration_counter": 3
   },
   "project_progression": {
     "current_project": {
@@ -3668,7 +3646,7 @@
     "current_wave": {
       "wave_number": 3,
       "name": "Error Handling & Validation",
-      "iteration": 2,
+      "iteration": 3,
       "status": "IN_PROGRESS",
       "total_efforts": 2,
       "estimated_total_lines": 750,

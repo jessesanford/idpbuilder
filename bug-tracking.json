@@ -1,6 +1,6 @@
 {
   "schema_version": "3.0",
-  "last_updated": "2025-11-03T11:42:46Z",
+  "last_updated": "2025-11-03T12:48:34Z",
   "bugs": [
     {
       "bug_id": "BUG-001-STUCK-LOOP-EFFORT",
@@ -825,24 +825,24 @@
     ]
   },
   "metadata": {
-    "last_updated": "2025-11-03T12:25:18Z",
-    "notes": "State transition: INTEGRATE_WAVE_EFFORTS → ERROR_RECOVERY (Wave 2.3 iteration 2 blocked by BUG-001)",
-    "state_transition": "ERROR_RECOVERY",
+    "last_updated": "2025-11-03T12:48:34Z",
+    "notes": "State transition: ERROR_RECOVERY → START_WAVE_ITERATION (iteration 3 after BUG-001/BUG-020 fix)",
+    "state_transition": "START_WAVE_ITERATION",
     "updated_by": "state-manager",
     "last_modified": "2025-11-03T12:25:18Z"
   },
   "last_state_transition": {
-    "from": "INTEGRATE_WAVE_EFFORTS",
-    "to": "ERROR_RECOVERY",
-    "timestamp": "2025-11-03T12:25:18Z"
+    "from": "ERROR_RECOVERY",
+    "to": "START_WAVE_ITERATION",
+    "timestamp": "2025-11-03T12:48:34Z"
   },
   "state_machine_sync": {
-    "current_state": "ERROR_RECOVERY",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
-    "last_transition": "2025-11-03T12:25:18Z",
-    "last_sync": "2025-11-03T12:25:18Z"
+    "current_state": "START_WAVE_ITERATION",
+    "previous_state": "ERROR_RECOVERY",
+    "last_transition": "2025-11-03T12:48:34Z",
+    "last_sync": "2025-11-03T12:48:34Z"
   },
-  "current_state": "ERROR_RECOVERY",
+  "current_state": "START_WAVE_ITERATION",
   "phase": 2,
   "wave": 3,
   "last_updated_by": "state-manager",
@@ -910,6 +910,17 @@
       "iteration": 2,
       "validated_by": "state-manager",
       "reason": "Integration iteration 2 blocked: BUG-001 (validator stub conflicts). Integration Agent documented per R266. Requires SW Engineer fix per R300."
+    },
+    {
+      "timestamp": "2025-11-03T12:48:34Z",
+      "from_state": "ERROR_RECOVERY",
+      "to_state": "START_WAVE_ITERATION",
+      "phase": 2,
+      "wave": 3,
+      "effort": null,
+      "iteration": 3,
+      "validated_by": "state-manager",
+      "reason": "BUG-001/BUG-020 fixed. Validator stub conflicts resolved in effort-2 branch (commit 8139a33). Ready to retry integration iteration 3."
     }
   ]
 }
