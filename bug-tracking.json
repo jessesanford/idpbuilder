@@ -342,7 +342,7 @@
       ],
       "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
       "resolution_plan": [
-        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files \u2192 ~406 lines",
         "Option B: Create split plan into 2 efforts (Split-001: 389 lines stubs, Split-002: 406 lines core)",
         "Re-measure after fix",
         "Verify under 800 line limit"
@@ -443,7 +443,7 @@
       ],
       "impact": "Automatic split requirement - cannot merge without splitting or removing out-of-scope code",
       "resolution_plan": [
-        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files → ~406 lines",
+        "Option A (PREFERRED): Remove 389 lines of out-of-scope Phase 1 stub files \u2192 ~406 lines",
         "Option B: Create split plan into 2 efforts",
         "Re-measure after fix",
         "Verify under 800 line limit"
@@ -726,7 +726,7 @@
         "Integration workspace at efforts/phase2/wave2/integration-workspace is corrupted",
         "Commit 37b5e68 deleted 731 lines of approved Wave 2.1 code",
         "Workspace deletion completed in iteration 6",
-        "Re-integration will occur in iteration 7 (START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS)",
+        "Re-integration will occur in iteration 7 (START_WAVE_ITERATION \u2192 INTEGRATE_WAVE_EFFORTS)",
         "Will properly build Wave 2.2 ON TOP OF Wave 2.1 without deletions"
       ],
       "fix_strategy_determined_at": "2025-11-02T18:41:29Z",
@@ -775,7 +775,11 @@
     "state_transition": "INJECT_WAVE_METADATA",
     "updated_by": "state-manager"
   },
-  "last_state_transition": "WAVE_START → SPAWN_ARCHITECT_WAVE_PLANNING",
+  "last_state_transition": {
+    "from": "CREATE_NEXT_INFRASTRUCTURE",
+    "to": "ERROR_RECOVERY",
+    "timestamp": "2025-11-03T02:48:29Z"
+  },
   "state_machine_sync": {
     "current_state": "INJECT_WAVE_METADATA",
     "previous_state": "WAITING_FOR_IMPLEMENTATION_PLAN",

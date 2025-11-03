@@ -371,7 +371,7 @@
         "report_file": "wave-reviews/phase2/wave2/WAVE-2.2-ARCHITECTURE-REVIEW.md",
         "reviewed_at": "2025-11-03T00:14:54Z",
         "reviewer": "architect",
-        "score": 96.30,
+        "score": 96.3,
         "grade": "A",
         "issues_found": 0,
         "compliance_status": "EXCELLENT"
@@ -540,5 +540,10 @@
   "wave": 3,
   "last_updated_by": "state-manager",
   "current_orchestrator_state": "INJECT_WAVE_METADATA",
-  "orchestrator_state": "CREATE_NEXT_INFRASTRUCTURE"
+  "orchestrator_state": "CREATE_NEXT_INFRASTRUCTURE",
+  "last_state_transition": {
+    "from": "CREATE_NEXT_INFRASTRUCTURE",
+    "to": "ERROR_RECOVERY",
+    "timestamp": "2025-11-03T02:48:29Z"
+  }
 }
