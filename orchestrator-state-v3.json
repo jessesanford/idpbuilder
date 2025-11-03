@@ -3,8 +3,8 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "ERROR_RECOVERY",
-    "previous_state": "INTEGRATE_WAVE_EFFORTS",
+    "current_state": "START_WAVE_ITERATION",
+    "previous_state": "ERROR_RECOVERY",
     "last_transition_timestamp": "2025-11-03T13:09:36Z",
     "last_state_manager_consultation": "2025-11-03T13:09:36Z",
     "state_history": [
@@ -3625,41 +3625,11 @@
     "last_transition": "2025-11-03T02:48:29Z",
     "transition_timestamp": "2025-11-01T19:56:25Z",
     "transition_reason": "START_WAVE_ITERATION checklist complete. Iteration=2 (retry after ERROR_RECOVERY). All checks passed.",
-    "transition_time": "2025-11-03T12:11:41Z",
+    "transition_time": "2025-11-03T13:27:38Z",
     "last_updated": "2025-11-02T17:47:18Z",
     "validated_by": "state-manager",
     "last_state_change": "2025-11-02T05:25:28Z",
-    "error_context": {
-      "error_type": "STATE_MACHINE_DESIGN_BUG",
-      "severity": "MEDIUM",
-      "description": "State machine bug: WAITING_FOR_FIX_PLANS dead-end. Fix plans ready but no forward path.",
-      "discovered_at": "2025-11-02T06:52:43Z",
-      "current_state": "ERROR_RECOVERY",
-      "previous_state": "WAITING_FOR_FIX_PLANS",
-      "issue_details": {
-        "problem": "WAITING_FOR_FIX_PLANS.allowed_transitions = [\"ERROR_RECOVERY\"] only",
-        "expected": "Should include CREATE_WAVE_FIX_PLAN in allowed_transitions",
-        "actual": "CREATE_WAVE_FIX_PLAN state exists but not accessible from WAITING_FOR_FIX_PLANS",
-        "state_machine_file": "state-machines/software-factory-3.0-state-machine.json",
-        "state_machine_line": "1722-1724"
-      },
-      "fix_plan_status": {
-        "fix_plan_ready": true,
-        "fix_plan_path": "efforts/phase2/wave2/effort-1-registry-override-viper/FIX_PLAN_2.2.1.md",
-        "fix_plan_size": "18K",
-        "addresses_bugs": [
-          "BUG-007",
-          "BUG-008"
-        ],
-        "quality_validated": true
-      },
-      "recovery_action": "Transition to ERROR_RECOVERY per R206 (only allowed transition)",
-      "next_steps": [
-        "Fix state machine: Add CREATE_WAVE_FIX_PLAN to WAITING_FOR_FIX_PLANS.allowed_transitions",
-        "Resume normal workflow once state machine is corrected",
-        "Distribute fix plan to SW Engineer for implementation"
-      ]
-    },
+    "error_context": null,
     "metadata": {
       "phase": 2,
       "wave": 2,
@@ -3701,7 +3671,7 @@
     "current_wave": {
       "wave_number": 3,
       "name": "Error Handling & Validation",
-      "iteration": 3,
+      "iteration": 4,
       "status": "IN_PROGRESS",
       "total_efforts": 2,
       "estimated_total_lines": 750,
