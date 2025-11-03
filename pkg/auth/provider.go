@@ -1,8 +1,9 @@
 // Package auth provides authentication functionality for registry operations.
-// This is a Phase 1 stub interface for Phase 2 development.
 package auth
 
 import (
+	"fmt"
+
 	"github.com/google/go-containerregistry/pkg/authn"
 )
 
@@ -15,7 +16,7 @@ type Provider interface {
 	ValidateCredentials() error
 }
 
-// NewBasicAuthProvider creates a basic auth provider (stub for Phase 1)
+// NewBasicAuthProvider creates a basic auth provider
 func NewBasicAuthProvider(username, password string) Provider {
 	return &basicAuthProvider{
 		username: username,
@@ -23,14 +24,13 @@ func NewBasicAuthProvider(username, password string) Provider {
 	}
 }
 
-// basicAuthProvider is a minimal stub for planning purposes
+// basicAuthProvider implements basic authentication
 type basicAuthProvider struct {
 	username string
 	password string
 }
 
 func (p *basicAuthProvider) GetAuthenticator() (authn.Authenticator, error) {
-	// Phase 1 would implement actual authentication
 	return &authn.Basic{
 		Username: p.username,
 		Password: p.password,
@@ -38,9 +38,8 @@ func (p *basicAuthProvider) GetAuthenticator() (authn.Authenticator, error) {
 }
 
 func (p *basicAuthProvider) ValidateCredentials() error {
-	// Phase 1 would implement validation logic
 	if p.username == "" || p.password == "" {
-		return nil
+		return fmt.Errorf("username and password are required")
 	}
 	return nil
 }

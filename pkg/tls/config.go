@@ -1,5 +1,4 @@
 // Package tls provides TLS configuration for registry connections.
-// This is a Phase 1 stub interface for Phase 2 development.
 package tls
 
 import (
@@ -15,14 +14,14 @@ type ConfigProvider interface {
 	IsInsecure() bool
 }
 
-// NewConfigProvider creates a TLS config provider (stub for Phase 1)
+// NewConfigProvider creates a TLS config provider
 func NewConfigProvider(insecure bool) ConfigProvider {
 	return &configProvider{
 		insecure: insecure,
 	}
 }
 
-// configProvider is a minimal stub for planning purposes
+// configProvider implements TLS configuration
 type configProvider struct {
 	insecure bool
 }

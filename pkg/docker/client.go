@@ -1,11 +1,13 @@
 // Package docker provides Docker daemon client functionality.
-// This is a Phase 1 stub interface for Phase 2 development.
 package docker
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1/daemon"
 )
 
 // Client provides Docker daemon operations
@@ -17,20 +19,31 @@ type Client interface {
 	Close() error
 }
 
-// NewClient creates a new Docker client (stub for Phase 1)
+// NewClient creates a new Docker client
 func NewClient() (Client, error) {
-	// Phase 1 implementation would return actual Docker client
-	return &stubClient{}, nil
+	return &dockerClient{}, nil
 }
 
-// stubClient is a minimal stub for planning purposes
-type stubClient struct{}
+// dockerClient implements Client using go-containerregistry daemon package
+type dockerClient struct{}
 
-func (c *stubClient) GetImage(ctx context.Context, imageName string) (v1.Image, error) {
-	// Phase 1 would implement actual Docker daemon communication
-	return nil, nil
+func (c *dockerClient) GetImage(ctx context.Context, imageName string) (v1.Image, error) {
+	// Parse the image reference
+	ref, err := name.ParseReference(imageName)
+	if err != nil {
+		return nil, fmt.Errorf("invalid image name %q: %w", imageName, err)
+	}
+
+	// Get the image from the Docker daemon
+	img, err := daemon.Image(ref)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get image from Docker daemon: %w", err)
+	}
+
+	return img, nil
 }
 
-func (c *stubClient) Close() error {
+func (c *dockerClient) Close() error {
+	// go-containerregistry daemon client doesn't require explicit cleanup
 	return nil
 }
