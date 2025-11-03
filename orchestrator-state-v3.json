@@ -3,11 +3,22 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "REVIEW_PHASE_INTEGRATION",
-    "previous_state": "INTEGRATE_PHASE_WAVES",
-    "last_transition_timestamp": "2025-11-03T20:30:00Z",
-    "last_state_manager_consultation": "2025-11-03T20:30:00Z",
+    "current_state": "CREATE_PHASE_FIX_PLAN",
+    "previous_state": "REVIEW_PHASE_INTEGRATION",
+    "last_transition_timestamp": "2025-11-03T21:34:21Z",
+    "last_state_manager_consultation": "2025-11-03T21:34:21Z",
     "state_history": [
+      {
+        "from_state": "REVIEW_PHASE_INTEGRATION",
+        "to_state": "CREATE_PHASE_FIX_PLAN",
+        "timestamp": "2025-11-03T21:34:21Z",
+        "validated_by": "state-manager",
+        "reason": "Phase 2 integration review complete. 2 bugs found (1 CRITICAL, 1 HIGH). Creating fix plan per guard conditions.",
+        "phase": 2,
+        "bugs_found": 2,
+        "orchestrator_proposal": "CREATE_PHASE_FIX_PLAN",
+        "proposal_accepted": true
+      },
       {
         "from_state": "INTEGRATE_PHASE_WAVES",
         "to_state": "REVIEW_PHASE_INTEGRATION",

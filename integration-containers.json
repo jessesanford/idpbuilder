@@ -99,17 +99,19 @@
     {
       "container_id": "phase-phase2",
       "phase": 2,
-      "status": "SETUP_COMPLETE",
-      "iteration": 0,
+      "status": "IN_PROGRESS",
+      "iteration": 1,
       "max_iterations": 10,
       "branch": "main (was idpbuilder-oci-push/phase2/integration, merged)",
       "workspace": "efforts/phase2/integration",
       "base_branch": "idpbuilder-oci-push/phase2/wave3/integration",
       "created_at": "2025-11-03T15:30:00Z",
+      "integration_started_at": "2025-11-03T20:30:00Z",
+      "last_iteration_at": "2025-11-03T21:34:21Z",
       "convergence_metrics": {
-        "bugs_remaining": 0,
-        "bugs_found": 0,
-        "test_failures": 0,
+        "bugs_remaining": 2,
+        "bugs_found": 2,
+        "test_failures": 1,
         "build_failures": 0,
         "bugs_fixed": 0
       },
@@ -118,7 +120,20 @@
         2,
         3
       ],
-      "notes": "Phase 2 integration container initialized. All 3 waves complete. Ready to start integration iterations."
+      "notes": "Phase 2 integration iteration 1: Review complete. 2 bugs found (1 CRITICAL, 1 HIGH). Creating fix plan.",
+      "iteration_history": [
+        {
+          "iteration": 1,
+          "started_at": "2025-11-03T20:30:00Z",
+          "completed_at": "2025-11-03T21:34:21Z",
+          "review_report": "efforts/phase2/integration/.software-factory/phase2/integration/PHASE_INTEGRATION_REVIEW--20251103-213421.md",
+          "bugs_found": 2,
+          "bugs_fixed": 0,
+          "status": "BUGS_FOUND",
+          "reviewer": "code-reviewer",
+          "notes": "Phase 2 integration review found 2 bugs: BUG-022-STUB-VIOLATION (CRITICAL), BUG-023-TEST-FAILURE (HIGH)"
+        }
+      ]
     }
   ],
   "wave_integrations": [

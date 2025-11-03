@@ -841,9 +841,73 @@
         "fix_committed": false,
         "fix_pushed": false
       }
+    },
+    {
+      "bug_id": "BUG-022-STUB-VIOLATION",
+      "severity": "CRITICAL",
+      "category": "upstream_bugs",
+      "status": "OPEN",
+      "phase": 2,
+      "wave": null,
+      "effort_id": "upstream",
+      "affected_effort": "upstream",
+      "title": "R355 Supreme Law Violation - Stub implementation in push command",
+      "description": "Stub implementation in pkg/cmd/push/push.go violates R355 supreme law. Push command non-functional.",
+      "affected_branch": "phase-2-integration",
+      "affected_component": "pkg/cmd/push/push.go:132",
+      "location": {
+        "file_path": "pkg/cmd/push/push.go",
+        "line_number": 132,
+        "function_name": "runPush",
+        "context": "Stub implementation with TODO comment instead of actual push logic"
+      },
+      "found_in_review": "phase2-integration-review",
+      "found_at": "2025-11-03T21:34:21Z",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-03T21:34:21Z",
+      "blocking": true,
+      "priority": "P0",
+      "symptoms": [
+        "Push command returns immediately with TODO message",
+        "No actual OCI push operation performed",
+        "R355 compliance failure (stub in production code)"
+      ],
+      "impact": "Push functionality completely non-functional. R355 Supreme Law violation. Cannot proceed to next phase without fix."
+    },
+    {
+      "bug_id": "BUG-023-TEST-FAILURE",
+      "severity": "HIGH",
+      "category": "integration_bugs",
+      "status": "OPEN",
+      "phase": 2,
+      "wave": null,
+      "effort_id": "integration",
+      "affected_effort": "integration",
+      "title": "Test Failure - SSRF warning display format",
+      "description": "SSRF warning display format causes test failures in CI/CD pipeline",
+      "affected_branch": "phase-2-integration",
+      "affected_component": "pkg/cmd/push/errors.go:27",
+      "location": {
+        "file_path": "pkg/cmd/push/errors.go",
+        "line_number": 27,
+        "function_name": "DisplaySSRFWarning",
+        "context": "Warning format does not match expected test output"
+      },
+      "found_in_review": "phase2-integration-review",
+      "found_at": "2025-11-03T21:34:21Z",
+      "discovered_by": "code-reviewer",
+      "discovered_at": "2025-11-03T21:34:21Z",
+      "blocking": true,
+      "priority": "P1",
+      "symptoms": [
+        "Test TestDisplaySSRFWarning fails in CI/CD",
+        "Warning format mismatch between actual and expected output",
+        "Prevents clean integration sign-off"
+      ],
+      "impact": "Test failures block Phase 2 completion. Integration quality verification cannot pass."
     }
   ],
-  "active_bug_count": 15,
+  "active_bug_count": 17,
   "resolved_bug_count": 6,
   "bug_categories": {
     "integration_failures": [
