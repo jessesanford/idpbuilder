@@ -1,100 +1,145 @@
 {
-  "validation_timestamp": "2025-11-03T07:51:21Z",
-  "state_manager_agent": "state-manager",
   "consultation_type": "SHUTDOWN_CONSULTATION",
-  "validation_result": "APPROVED",
-
-  "transition_details": {
-    "from_state": "MONITORING_SWE_PROGRESS",
-    "to_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "orchestrator_proposal": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-    "proposal_accepted": true,
-    "state_manager_override": false
-  },
-
-  "state_machine_validation": {
-    "allowed_transition": true,
-    "transition_exists_in_state_machine": true,
-    "allowed_transitions_from_current": [
-      "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-      "ERROR_RECOVERY"
+  "timestamp": "2025-11-03T08:27:56Z",
+  "consultation_id": "shutdown-1730622476",
+  "validation_result": {
+    "status": "APPROVED",
+    "update_status": "PROJECT_DONE",
+    "files_updated": [
+      "orchestrator-state-v3.json",
+      "bug-tracking.json",
+      "integration-containers.json"
     ],
-    "guards_checked": true,
-    "guards_satisfied": true,
-    "guard_details": {
-      "implementations_complete": true,
-      "effort_ready_for_review": true,
-      "monitoring_report_created": true
+    "commit_hash": "51542bb",
+    "push_status": "SUCCESS",
+    "required_next_state": "START_WAVE_ITERATION",
+    "directive_type": "REQUIRED",
+    "orchestrator_proposed": "START_WAVE_ITERATION",
+    "proposal_accepted": true,
+    "proposal_rejected": false,
+    "in_mandatory_sequence": false,
+    "decision_rationale": "Transition valid per state machine. Wave 2.3 infrastructure ready: integration branch exists, workspace verified, container initialized with iteration=0. All efforts complete (2.3.1 ACCEPTED 394 lines 94.6% coverage, 2.3.2 ACCEPTED 508 lines 100% coverage). Ready to start wave integration iteration."
+  },
+  "transition_validation": {
+    "from_state": "SETUP_WAVE_INFRASTRUCTURE",
+    "to_state": "START_WAVE_ITERATION",
+    "transition_valid": true,
+    "from_state_exists": true,
+    "to_state_exists": true,
+    "in_allowed_transitions": true,
+    "state_machine_file": "state-machines/software-factory-3.0-state-machine.json"
+  },
+  "work_completed": {
+    "infrastructure_setup": "complete",
+    "wave_integration_branch": "idpbuilder-oci-push/phase2/wave3/integration",
+    "integration_workspace": "efforts/phase2/wave3/integration-workspace",
+    "base_branch": "idpbuilder-oci-push/phase2/wave2/integration",
+    "iteration_counter_initialized": true,
+    "iteration_value": 0,
+    "convergence_tracking": "initialized"
+  },
+  "effort_status": {
+    "phase": 2,
+    "wave": 3,
+    "efforts_complete": [
+      {
+        "effort_id": "2.3.1",
+        "name": "input-validation",
+        "status": "ACCEPTED",
+        "lines": 394,
+        "coverage": "94.6%",
+        "tests": 38,
+        "issues": 0
+      },
+      {
+        "effort_id": "2.3.2",
+        "name": "error-system",
+        "status": "ACCEPTED",
+        "lines": 508,
+        "coverage": "100%",
+        "tests": 36,
+        "issues": 0
+      }
+    ],
+    "total_lines": 902,
+    "total_tests": 74,
+    "critical_issues": 0,
+    "blocking_issues": 0
+  },
+  "iteration_container": {
+    "container_id": "wave-phase2-wave3",
+    "phase": 2,
+    "wave": 3,
+    "status": "ready_to_start",
+    "iteration": 0,
+    "max_iterations": 10,
+    "convergence_metrics": {
+      "bugs_remaining": 0,
+      "bugs_found": 0,
+      "test_failures": 0,
+      "build_failures": 0,
+      "bugs_fixed": 0
+    },
+    "integration_expected": "first_iteration_convergence",
+    "risk_level": "LOW"
+  },
+  "state_file_validation": {
+    "orchestrator_state_v3_json": {
+      "status": "VALID",
+      "schema_validation": "PASSED",
+      "current_state": "START_WAVE_ITERATION",
+      "previous_state": "SETUP_WAVE_INFRASTRUCTURE",
+      "state_history_updated": true
+    },
+    "bug_tracking_json": {
+      "status": "VALID",
+      "schema_validation": "PASSED",
+      "active_bugs": 0
+    },
+    "integration_containers_json": {
+      "status": "VALID",
+      "schema_validation": "PASSED",
+      "wave_2_3_container": "initialized",
+      "iteration": 0
+    },
+    "fix_cascade_state_json": {
+      "status": "VALID",
+      "schema_validation": "PASSED",
+      "active_cascades": 0
     }
   },
-
-  "work_validation": {
-    "monitoring_complete": true,
-    "r233_active_monitoring_compliance": true,
-    "monitoring_report_path": "MONITORING-SWE-PROGRESS-REPORT--20251103-074400.md",
-    "effort_2_3_1": {
-      "status": "COMPLETE + REVIEWED",
-      "review_decision": "ACCEPTED",
-      "implementation_lines": 394,
-      "size_compliant": true,
-      "needs_additional_review": false
-    },
-    "effort_2_3_2": {
-      "status": "COMPLETE",
-      "implementation_lines": 454,
-      "tests_passing": "30/30",
-      "test_coverage": "100%",
-      "size_compliant": true,
-      "needs_review": true
-    },
-    "r343_metadata_compliance": "partial",
-    "r343_issues": [
-      "Effort 2.3.1 missing work log (R343 violation)"
+  "compliance_verification": {
+    "R288_multi_file_atomic_update": "COMPLIANT",
+    "R506_no_pre_commit_bypass": "COMPLIANT",
+    "R516_state_naming": "COMPLIANT",
+    "R517_state_manager_consultation": "COMPLIANT",
+    "R550_plan_path_consistency": "COMPLIANT"
+  },
+  "orchestrator_directive": {
+    "action": "PROCEED",
+    "next_state": "START_WAVE_ITERATION",
+    "required_actions": [
+      "Increment iteration counter from 0 to 1",
+      "Record iteration start timestamp",
+      "Update integration_started_at and last_iteration_at",
+      "Add iteration history entry",
+      "Verify integration branch and workspace",
+      "Transition to INTEGRATE_WAVE_EFFORTS",
+      "Consult State Manager for next shutdown validation"
     ],
-    "minor_issues_detected": [
-      "Uncommitted files in both efforts",
-      "Branches not pushed to remote"
+    "guard_conditions": [
+      "iteration counter incremented to 1",
+      "iteration start timestamp recorded",
+      "integration branch clean and ready",
+      "no blocking issues"
     ]
   },
-
-  "state_file_update": {
-    "updated": true,
-    "commit_hash": "ff364ae",
-    "commit_message": "[R288] state-manager: MONITORING_SWE_PROGRESS → SPAWN_CODE_REVIEWERS_EFFORT_REVIEW - Effort 2.3.2 implementation complete (454 lines, 30/30 tests, 100% coverage), ready for code review",
-    "state_history_count": 142,
-    "atomic_update": true,
-    "schema_validation": "PASSED"
+  "backup": {
+    "backup_directory": ".state-backup/20251103-082826",
+    "files_backed_up": 4,
+    "rollback_available": true
   },
-
-  "required_next_state": "SPAWN_CODE_REVIEWERS_EFFORT_REVIEW",
-
-  "orchestrator_instructions": {
-    "mandatory_next_action": "Spawn Code Reviewer agent for Effort 2.3.2 code review",
-    "effort_to_review": "2.3.2",
-    "effort_name": "Error Type System",
-    "branch": "idpbuilder-oci-push/phase2/wave3/effort-2-error-system",
-    "implementation_lines": 454,
-    "tests_status": "30/30 passing, 100% coverage",
-    "size_compliance": "PASS (454 < 800 hard limit)",
-    "r151_spawn_timing": "Not applicable (single reviewer spawn)",
-    "r313_mandatory_stop": "MUST stop after spawning Code Reviewer"
-  },
-
-  "effort_2_3_1_note": "Already reviewed and ACCEPTED. No additional review required.",
-
-  "compliance_notes": [
-    "R233 Active Monitoring: COMPLIANT - Active progress checks performed",
-    "R287 TODO Persistence: COMPLIANT - TODOs maintained throughout",
-    "R343 Work Logs: PARTIAL - Effort 2.3.2 compliant, Effort 2.3.1 missing work log",
-    "R383 Metadata Placement: COMPLIANT - All metadata in .software-factory/",
-    "R610/R611 Agent Cleanup: Required after state transition"
-  ],
-
-  "r517_compliance": {
-    "validation_result_provided": true,
-    "required_next_state_specified": true,
-    "orchestrator_instructions_clear": true,
-    "state_file_updated": true,
-    "r288_tag_used": true
-  }
+  "report_file": "STATE-MANAGER-SHUTDOWN-CONSULTATION-REPORT.md",
+  "validated_by": "state-manager",
+  "safe_to_proceed": true
 }
