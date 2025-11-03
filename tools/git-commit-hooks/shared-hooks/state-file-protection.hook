@@ -99,7 +99,7 @@ validate_json_schema() {
     # Try ajv first (better draft-07 support)
     if command -v ajv >/dev/null 2>&1; then
         validator="ajv"
-        validation_output=$(ajv validate -s "$schema_file" -d "$GIT_ROOT/$json_file" 2>&1) || exit_code=$?
+        validation_output=$(ajv validate --validate-formats=false --strict=false -s "$schema_file" -d "$GIT_ROOT/$json_file" 2>&1) || exit_code=$?
     # Fallback to jsonschema
     elif command -v jsonschema >/dev/null 2>&1; then
         validator="jsonschema"

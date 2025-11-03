@@ -3,10 +3,10 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "START_PHASE_ITERATION",
-    "previous_state": "SETUP_PHASE_INFRASTRUCTURE",
-    "last_transition_timestamp": "2025-11-03T15:30:00Z",
-    "last_state_manager_consultation": "2025-11-03T15:30:00Z",
+    "current_state": "INTEGRATE_PHASE_WAVES",
+    "previous_state": "START_PHASE_ITERATION",
+    "last_transition_timestamp": "2025-11-03T15:48:04Z",
+    "last_state_manager_consultation": "2025-11-03T15:48:04Z",
     "state_history": [
       {
         "from_state": "SETUP_PHASE_INFRASTRUCTURE",
@@ -3786,10 +3786,11 @@
     "current_phase": {
       "phase_number": 2,
       "name": "Error Handling & Validation",
-      "iteration": 1,
+      "iteration": 2,
       "total_waves_in_phase": 3,
       "waves_completed": 3,
-      "status": "COMPLETED"
+      "status": "COMPLETED",
+      "backport_attempts_this_iteration": 0
     },
     "current_wave": {
       "wave_number": 3,
@@ -3878,7 +3879,7 @@
       ]
     },
     "iteration_tracking": {
-      "last_progress_timestamp": "2025-11-03T08:33:34+00:00",
+      "last_progress_timestamp": "2025-11-03T15:43:37+00:00",
       "active_container_level": "wave",
       "current_container": "wave-phase1-wave2"
     },
@@ -3975,7 +3976,7 @@
     "project_name": "idpbuilder-oci-push-command",
     "project_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
     "created_at": "2025-10-30T01:11:19Z",
-    "last_updated": "2025-11-03T11:43:00Z",
+    "last_updated": "2025-11-03T15:48:04Z",
     "version": "3.0.0",
     "notes": "Implementation plan validated for Wave 2.3 (2 efforts, 750 lines, sequential execution)",
     "last_state_transition": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING → WAITING_FOR_EFFORT_PLANS (effort 2.2.2 planning created)",
