@@ -546,5 +546,17 @@
     "from": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
     "to": "WAITING_FOR_EFFORT_PLANS",
     "timestamp": "2025-11-03T06:29:22Z"
-  }
+  },
+  "state_transitions": [
+    {
+      "timestamp": "2025-11-03T06:57:14Z",
+      "from_state": "SPAWN_SW_ENGINEERS",
+      "to_state": "MONITORING_SWE_PROGRESS",
+      "phase": 2,
+      "wave": 3,
+      "effort": "2.3.1",
+      "validated_by": "state-manager",
+      "reason": "SW Engineer spawned for Effort 2.3.1, implementation complete. Monitoring progress before spawning 2.3.2 per sequential strategy."
+    }
+  ]
 }

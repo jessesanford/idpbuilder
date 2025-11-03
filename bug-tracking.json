@@ -791,5 +791,17 @@
   "phase": 2,
   "wave": 3,
   "last_updated_by": "state-manager",
-  "last_sync": "2025-11-03T06:36:08Z"
+  "last_sync": "2025-11-03T06:36:08Z",
+  "state_transitions": [
+    {
+      "timestamp": "2025-11-03T06:57:14Z",
+      "from_state": "SPAWN_SW_ENGINEERS",
+      "to_state": "MONITORING_SWE_PROGRESS",
+      "phase": 2,
+      "wave": 3,
+      "effort": "2.3.1",
+      "validated_by": "state-manager",
+      "reason": "SW Engineer spawned for Effort 2.3.1, implementation complete (364 lines, 94.6% coverage, 38/38 tests). Sequential strategy active."
+    }
+  ]
 }
