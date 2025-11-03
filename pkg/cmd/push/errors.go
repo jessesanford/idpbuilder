@@ -5,42 +5,7 @@ import (
 	"strings"
 
 	"github.com/cnoe-io/idpbuilder/pkg/errors"
-	"github.com/cnoe-io/idpbuilder/pkg/validator"
 )
-
-// validatePushOptions validates all push options with security checks.
-//
-// This extends Wave 2.2's PushConfig.Validate() with additional
-// security validation from Wave 2.3.
-func validatePushOptions(opts *PushOptions) error {
-	// Validate image name
-	if err := validator.ValidateImageName(opts.ImageName); err != nil {
-		// validator returns typed errors, just pass through
-		return err
-	}
-
-	// Validate registry URL
-	if err := validator.ValidateRegistryURL(opts.Registry); err != nil {
-		// Check if it's a warning
-		if errors.IsWarning(err) {
-			// Log warning but continue
-			fmt.Println(errors.FormatError(err))
-		} else {
-			return err
-		}
-	}
-
-	// Validate credentials
-	if err := validator.ValidateCredentials(opts.Username, opts.Password); err != nil {
-		if errors.IsWarning(err) {
-			fmt.Println(errors.FormatError(err))
-		} else {
-			return err
-		}
-	}
-
-	return nil
-}
 
 // WrapDockerError wraps Docker client errors with appropriate types.
 // It examines the error message to categorize the error and provide

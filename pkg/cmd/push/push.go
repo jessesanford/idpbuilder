@@ -3,9 +3,7 @@ package push
 import (
 	"context"
 	"fmt"
-	"os"
 
-	"github.com/cnoe-io/idpbuilder/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -63,12 +61,10 @@ Examples:
 
 			// Execute push with error wrapping and exit code handling
 			if err := runPush(cmd.Context(), opts); err != nil {
-				// Format error with appropriate styling
-				fmt.Fprintln(os.Stderr, errors.FormatError(err))
-
-				// Get exit code for this error type
-				exitCode := errors.GetExitCode(err)
-				os.Exit(exitCode)
+				// Return error to Cobra for proper handling
+				// In CLI context, Cobra will exit with appropriate code
+				// In test context, error is returned for assertion
+				return err
 			}
 
 			return nil
@@ -94,10 +90,9 @@ Examples:
 // Errors are wrapped with appropriate types (ValidationError, AuthenticationError,
 // NetworkError, ImageNotFoundError) to enable proper exit code mapping.
 func runPush(ctx context.Context, opts *PushOptions) error {
-	// Validate options with security checks (Phase 2 Wave 3)
-	if err := validatePushOptions(opts); err != nil {
-		// validatePushOptions returns typed errors, pass through
-		return err
+	// Validate options first (Wave 2.1 requirement)
+	if err := opts.Validate(); err != nil {
+		return fmt.Errorf("validation failed: %w", err)
 	}
 
 	// TODO: Phase 3 will integrate actual push implementation using:
