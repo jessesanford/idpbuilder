@@ -3,15 +3,15 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "SPAWN_CODE_REVIEWER_WAVE_IMPL",
-    "previous_state": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-    "last_transition_timestamp": "2025-11-03T01:07:49Z",
+    "current_state": "WAVE_START",
+    "previous_state": "INIT",
+    "last_transition_timestamp": "2025-11-03T01:54:09Z",
     "last_state_manager_consultation": {
       "consultation_type": "SHUTDOWN_CONSULTATION",
-      "timestamp": "2025-11-03T01:07:49Z",
-      "from_state": "WAITING_FOR_WAVE_TEST_PLAN",
-      "to_state_proposed": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
-      "to_state_required": "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+      "timestamp": "2025-11-03T01:54:09Z",
+      "from_state": "INIT",
+      "to_state_proposed": "WAVE_START",
+      "to_state_required": "WAVE_START",
       "validated_by": "state-manager",
       "orchestrator_proposal_accepted": true,
       "validation_checks": {
@@ -20,41 +20,34 @@
         "to_state_exists": true,
         "in_allowed_transitions": true,
         "allowed_transitions": [
-          "CREATE_WAVE_INTEGRATION_BRANCH_EARLY",
+          "SPAWN_PRODUCT_MANAGER_PRD_CREATION",
+          "SPAWN_ARCHITECT_MASTER_PLANNING",
+          "SPAWN_ARCHITECT_PHASE_PLANNING",
+          "WAVE_START",
+          "SETUP_WAVE_INFRASTRUCTURE",
           "ERROR_RECOVERY"
         ],
-        "exit_criteria_met": {
-          "wave_test_plan_exists": true,
-          "test_plan_path": "planning/phase2/wave3/WAVE-TEST-PLAN.md",
-          "wave_architecture_exists": true,
-          "architecture_path": "planning/phase2/wave3/WAVE-2.3-ARCHITECTURE.md",
-          "test_count": 63,
-          "tdd_phase": "red",
-          "r340_quality_gates_passed": true,
-          "r341_tdd_compliance": true
-        },
-        "entry_criteria_met": {
-          "test_plan_validated": true,
-          "architecture_validated": true,
-          "previous_waves_completed": true,
-          "ready_for_integration_branch": true
-        },
+        "planning_artifacts_validated": true,
+        "prd_exists": true,
+        "master_architecture_exists": true,
+        "phase_plans_exist": true,
         "state_machine_compliance": "VERIFIED",
         "r288_compliance": true,
-        "r322_consultation": true,
-        "r340_progressive_planning": true,
-        "r342_early_branch_required": true
+        "r322_consultation": true
       },
       "work_completed": {
-        "wave_23_test_plan_validated": true,
-        "test_count": 63,
-        "tdd_phase": "RED",
-        "progressive_realism_verified": true,
-        "r341_tdd_requirements_met": true
+        "target_repo_config_loaded": true,
+        "repository_separation_verified": true,
+        "prd_validated": "./prd/idpbuilder-oci-push-command-prd.md",
+        "master_architecture_validated": "planning/project/PROJECT-ARCHITECTURE-PLAN.md",
+        "phase_planning_validated": [
+          "planning/phase1/",
+          "planning/phase2/"
+        ]
       },
-      "phase": 2,
-      "wave": 3,
-      "decision_rationale": "Wave 2.3 test plan validated successfully with 63 tests and progressive realism (R341). TDD phase RED confirmed. Ready to create wave integration branch early per R342 enforcement."
+      "phase": 1,
+      "wave": 1,
+      "decision_rationale": "INIT complete - All planning artifacts validated (PRD, master architecture, phase plans exist) - ready for wave execution"
     },
     "state_history": [
       {
@@ -3020,6 +3013,28 @@
           "commit_message": "test: Add Wave 2.3 test plan for error handling & validation",
           "branch_pushed_to_remote": true,
           "r342_early_integration": true
+        }
+      },
+      {
+        "from_state": "INIT",
+        "to_state": "WAVE_START",
+        "timestamp": "2025-11-03T01:54:09Z",
+        "validated_by": "state-manager",
+        "reason": "INIT complete - All planning artifacts validated (PRD, master architecture, phase plans exist) - ready for wave execution",
+        "phase": 1,
+        "wave": 1,
+        "orchestrator_proposal": "WAVE_START",
+        "proposal_accepted": true,
+        "consultation_type": "SHUTDOWN_CONSULTATION",
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "planning_artifacts_validated": true,
+          "r288_compliance": true,
+          "r322_consultation": true,
+          "state_machine_compliance": "VERIFIED"
         }
       }
     ],
