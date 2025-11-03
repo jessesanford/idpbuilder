@@ -1,51 +1,78 @@
 {
   "consultation_type": "SHUTDOWN_CONSULTATION",
-  "timestamp": "2025-11-03T06:28:40Z",
+  "timestamp": "2025-11-03T06:35:59Z",
   "validated_by": "state-manager",
-  "transition_approved": true,
-  "from_state": "SPAWN_CODE_REVIEWERS_EFFORT_PLANNING",
-  "to_state_proposed": "WAITING_FOR_EFFORT_PLANS",
-  "to_state_required": "WAITING_FOR_EFFORT_PLANS",
-  "orchestrator_proposal_accepted": true,
+  "result": "APPROVED",
+  "transition": {
+    "from_state": "WAITING_FOR_EFFORT_PLANS",
+    "to_state_proposed": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+    "to_state_required": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+    "to_state_actual": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+    "orchestrator_proposal_accepted": true,
+    "proposal_rejected": false
+  },
   "validation_checks": {
     "transition_allowed": true,
     "from_state_exists": true,
     "to_state_exists": true,
     "in_allowed_transitions": true,
-    "allowed_transitions": ["WAITING_FOR_EFFORT_PLANS", "ERROR_RECOVERY"],
+    "allowed_transitions": [
+      "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+      "SPAWN_SW_ENGINEERS",
+      "ERROR_RECOVERY"
+    ],
     "guards_satisfied": {
-      "code_reviewers_spawned": true
+      "effort_count_gt_1": true,
+      "both_plans_complete": true,
+      "plans_committed": true
     },
     "exit_criteria_met": true,
     "entry_criteria_met": true,
-    "state_machine_compliance": "APPROVED",
-    "r288_atomic_updates": true,
-    "r517_consultation_mandatory": true
+    "state_machine_compliance": "APPROVED"
   },
-  "work_completed": {
-    "code_reviewers_spawned": 2,
-    "efforts_planned": ["2.3.1", "2.3.2"],
-    "effort_2.3.1_plan": ".software-factory/phase2/wave3/effort-1-input-validation/IMPLEMENTATION-PLAN--20251103-061910.md",
-    "effort_2.3.2_plan": ".software-factory/phase2/wave3/effort-2-error-system/IMPLEMENTATION-PLAN-20251103-062330.md",
-    "effort_2.3.1_estimate": "400 lines, 33 tests, 5 files",
-    "effort_2.3.2_estimate": "350 lines, 30 tests, 5 new + 4 modified files",
-    "sequential_strategy_followed": true,
-    "dependency_analysis": "2.3.2 (error-system) depends on 2.3.1 (input-validation)",
-    "r208_cd_protocol_followed": true,
-    "r287_todos_saved": true,
-    "r303_metadata_locations_verified": true
+  "context": {
+    "phase": 2,
+    "wave": 3,
+    "total_efforts": 2,
+    "effort_2_3_1": {
+      "name": "input-validation",
+      "plan_complete": true,
+      "plan_location": ".software-factory/phase2/wave3/effort-1-input-validation/IMPLEMENTATION-PLAN--20251103-061910.md",
+      "plan_lines": 1005,
+      "committed": true
+    },
+    "effort_2_3_2": {
+      "name": "error-system",
+      "plan_complete": true,
+      "plan_location": ".software-factory/phase2/wave3/effort-2-error-system/IMPLEMENTATION-PLAN-20251103-062330.md",
+      "plan_lines": 833,
+      "committed": true
+    }
   },
-  "state_files_updated": {
-    "orchestrator_state_v3": true,
-    "bug_tracking": true,
-    "integration_containers": true,
-    "active_agent_tracking": true,
-    "commit_hash": "2fab024",
-    "atomic_update": true,
-    "validation_passed": true
-  },
-  "phase": 2,
-  "wave": 3,
-  "decision_rationale": "Code Reviewers successfully spawned for both Wave 2.3 efforts. Implementation plans created in correct .software-factory locations per R303. Sequential spawning strategy followed per R218 (effort 2.3.2 depends on 2.3.1). All compliance requirements verified (R208, R287, R303). All 4 state files updated atomically per R288. Transition to WAITING_FOR_EFFORT_PLANS approved.",
-  "required_next_state": "WAITING_FOR_EFFORT_PLANS"
+  "decision_rationale": "Per SF 3.0 mandatory sequence and R356 optimization: with 2 efforts (>1), orchestrator MUST transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION to analyze implementation plans and determine SW Engineer spawn strategy (parallel vs sequential) before spawning any SW Engineers. This is a REQUIRED transition, not optional.",
+  "state_files_updated": [
+    "orchestrator-state-v3.json",
+    "bug-tracking.json",
+    "integration-containers.json",
+    "fix-cascade-state.json"
+  ],
+  "commit_sha": "a7e446c",
+  "pushed_to_remote": true,
+  "next_steps": {
+    "required_state": "ANALYZE_IMPLEMENTATION_PARALLELIZATION",
+    "orchestrator_must": [
+      "Read both implementation plans",
+      "Analyze for parallel vs sequential implementation",
+      "Consider dependencies between efforts",
+      "Determine SW Engineer spawn strategy",
+      "Update orchestrator state with strategy decision",
+      "Transition to SPAWN_SW_ENGINEERS with strategy"
+    ],
+    "critical_requirements": [
+      "R356: Must analyze parallelization for multiple efforts",
+      "R234: Must follow mandatory SF 3.0 sequence",
+      "R151: If parallel, spawn within 5s for grading",
+      "R287: Save TODOs before spawning"
+    ]
+  }
 }
