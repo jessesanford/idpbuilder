@@ -3,10 +3,10 @@
     "name": "software-factory-3.0",
     "version": "3.0.0",
     "file": "state-machines/software-factory-3.0-state-machine.json",
-    "current_state": "START_WAVE_ITERATION",
-    "previous_state": "ERROR_RECOVERY",
-    "last_transition_timestamp": "2025-11-03T13:09:36Z",
-    "last_state_manager_consultation": "2025-11-03T13:09:36Z",
+    "current_state": "INTEGRATE_WAVE_EFFORTS",
+    "previous_state": "START_WAVE_ITERATION",
+    "last_transition_timestamp": "2025-11-03T13:32:02Z",
+    "last_state_manager_consultation": "2025-11-03T13:32:02Z",
     "state_history": [
       {
         "from_state": "INTEGRATE_WAVE_EFFORTS",
@@ -3563,6 +3563,41 @@
           "backport_attempts_within_limit": true,
           "bug_progress_acceptable": true,
           "efforts_ready": true
+        }
+      },
+      {
+        "from_state": "START_WAVE_ITERATION",
+        "to_state": "INTEGRATE_WAVE_EFFORTS",
+        "timestamp": "2025-11-03T13:32:02Z",
+        "validated_by": "state-manager",
+        "consultation_id": "shutdown-2025-11-03T13:32:02Z",
+        "orchestrator_proposal": "INTEGRATE_WAVE_EFFORTS",
+        "proposal_accepted": true,
+        "transition_invalid": false,
+        "reason": "Wave iteration 4 started. Iteration counter incremented 3 → 4 (retry of same attempt per R531). BUG-020 and BUG-021 fixed. Validator stub conflicts resolved in effort-2 branch. Backport attempts: 0/3 (R532 compliance). Progress analysis: CONTINUE (STALL category 1/5, within limits per R615). Ready to integrate Wave 2.3 efforts.",
+        "phase": 2,
+        "wave": 3,
+        "iteration": 4,
+        "validation_checks": {
+          "transition_allowed": true,
+          "from_state_exists": true,
+          "to_state_exists": true,
+          "in_allowed_transitions": true,
+          "iteration_counter_valid": true,
+          "iteration_number": 4,
+          "max_iterations": 10,
+          "within_max_iterations": true,
+          "backport_attempts": 0,
+          "backport_attempts_within_limit": true,
+          "progress_analysis": "CONTINUE",
+          "r532_compliance": true,
+          "r615_compliance": true,
+          "r531_compliance": true,
+          "r336_compliance": true,
+          "bugs_fixed": [
+            "BUG-020-VALIDATOR-REDECLARATIONS",
+            "BUG-021-INCOMPLETE-FIX"
+          ]
         }
       }
     ],

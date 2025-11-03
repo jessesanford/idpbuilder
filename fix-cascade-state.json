@@ -159,13 +159,13 @@
     }
   },
   "metadata": {
-    "last_updated": "2025-11-03T12:48:34Z",
+    "last_updated": "2025-11-03T13:32:28Z",
     "notes": "State transition: ERROR_RECOVERY → START_WAVE_ITERATION (iteration 3 after BUG-001/BUG-020 fix)",
     "state_transition": "START_WAVE_ITERATION",
     "updated_by": "state-manager",
     "last_modified": "2025-11-03T08:34:44Z"
   },
-  "last_updated": "2025-11-03T12:48:34Z",
+  "last_updated": "2025-11-03T13:32:28Z",
   "state_machine_sync": {
     "current_state": "START_WAVE_ITERATION",
     "previous_state": "ERROR_RECOVERY",
