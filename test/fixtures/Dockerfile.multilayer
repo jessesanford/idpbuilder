@@ -1,0 +1,21 @@
+FROM alpine:latest
+
+# Layer 1: Base utilities
+RUN apk add --no-cache curl wget
+
+# Layer 2: Test data
+COPY layer-0.dat /data/
+RUN echo "Layer 0 complete" > /data/layer-0.txt
+
+# Layer 3: More test data
+COPY layer-1.dat /data/
+RUN echo "Layer 1 complete" > /data/layer-1.txt
+
+# Layer 4: Final layer
+COPY layer-2.dat /data/
+RUN echo "Layer 2 complete" > /data/layer-2.txt
+
+LABEL test.image.name="multilayer"
+LABEL test.image.layers="3"
+
+CMD ["sh", "-c", "echo 'Test image running'"]
