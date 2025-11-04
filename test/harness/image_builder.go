@@ -31,9 +31,10 @@ type BuildResult struct {
 	SizeBytes  int64  // Actual size in bytes
 }
 
-// TestEnvironment represents the test environment for integration testing
-// This minimal definition allows BuildTestImage to be added as a method
-type TestEnvironment struct {
+// BuilderTestEnvironment represents the test environment for image builder integration testing
+// This type is specific to effort 3.1.2 image builder functionality
+// Renamed from TestEnvironment to avoid collision with effort 3.1.1 test harness
+type BuilderTestEnvironment struct {
 	DockerClient *dockerclient.Client
 }
 
@@ -60,7 +61,7 @@ type TestEnvironment struct {
 //	    Arch: "amd64",
 //	}
 //	result, err := env.BuildTestImage(ctx, config)
-func (env *TestEnvironment) BuildTestImage(ctx context.Context, config ImageConfig) (*BuildResult, error) {
+func (env *BuilderTestEnvironment) BuildTestImage(ctx context.Context, config ImageConfig) (*BuildResult, error) {
 	// Validate configuration
 	if err := validateConfig(config); err != nil {
 		return nil, fmt.Errorf("invalid configuration: %w", err)
@@ -220,7 +221,7 @@ func cleanupBuildDir(buildDir string) error {
 }
 
 // executeBuild runs the Docker build operation
-func (env *TestEnvironment) executeBuild(ctx context.Context, buildContext io.Reader, imageName string) (string, error) {
+func (env *BuilderTestEnvironment) executeBuild(ctx context.Context, buildContext io.Reader, imageName string) (string, error) {
 	// Configure build options
 	buildOptions := types.ImageBuildOptions{
 		Tags:           []string{imageName},
@@ -248,7 +249,7 @@ func (env *TestEnvironment) executeBuild(ctx context.Context, buildContext io.Re
 }
 
 // verifyImageBuilt checks that the image exists in Docker daemon and returns build result
-func (env *TestEnvironment) verifyImageBuilt(ctx context.Context, imageRef string, imageID string) (*BuildResult, error) {
+func (env *BuilderTestEnvironment) verifyImageBuilt(ctx context.Context, imageRef string, imageID string) (*BuildResult, error) {
 	// Inspect the image
 	inspect, _, err := env.DockerClient.ImageInspectWithRaw(ctx, imageID)
 	if err != nil {

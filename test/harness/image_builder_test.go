@@ -321,7 +321,7 @@ func TestBuildTestImage_Integration(t *testing.T) {
 		t.Skip("Docker daemon not running, skipping integration test")
 	}
 
-	env := &TestEnvironment{
+	env := &BuilderTestEnvironment{
 		DockerClient: client,
 	}
 
@@ -376,7 +376,7 @@ func TestBuildTestImage_Integration(t *testing.T) {
 
 func TestBuildTestImage_InvalidConfig(t *testing.T) {
 	// Create mock environment (don't need real Docker for validation tests)
-	env := &TestEnvironment{
+	env := &BuilderTestEnvironment{
 		DockerClient: nil, // Will fail before using client
 	}
 
