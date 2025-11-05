@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cnoe-io/idpbuilder/cmd/push"
+	"github.com/cnoe-io/idpbuilder/pkg/cmd/push"
 	"github.com/cnoe-io/idpbuilder/test/harness"
 
 	"github.com/stretchr/testify/assert"
