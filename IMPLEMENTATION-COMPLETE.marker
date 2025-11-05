@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Completed at: 2025-11-05 22:37:22 UTC
 Effort: Phase 3 Wave 1 Integration (Multiple Efforts)
 Branch: idpbuilder-oci-push/phase3/integration
@@ -66,3 +67,34 @@ Pattern Compliance:
 ✅ R371: Only planned files modified
 ✅ R381: Library versions immutable
 ✅ R383: Metadata in .software-factory
+
+Effort 3.1.4 - Error Path Integration Tests
+----------------------------------------------
+Completed at: 2025-11-04 21:02:05 UTC
+Branch: idpbuilder-oci-push/phase3/wave1/effort-3.1.4-error-tests
+Total lines: ~503 (test code - excluded from 800-line limit per R007)
+
+Implementation Summary:
+- Created test/integration/error_paths_test.go (224 lines)
+  * TestPushWithInvalidCredentials - authentication failure handling
+  * TestPushNonExistentImage - image not found error handling
+  * TestPushWithTLSVerificationFailure - TLS certificate validation
+  * TestPushWithInvalidImageName - image name validation
+
+- Created test/integration/network_errors_test.go (279 lines)
+  * TestPushToUnreachableRegistry - connection failure handling
+  * TestPushWithTimeoutError - timeout error handling
+  * TestPushWithSlowRegistry - slow connection handling
+  * TestPushWithNetworkInterruption - network interruption handling
+  * TestPushWithDNSFailure - DNS resolution failure handling
+
+- BUG-028 FIX: Import paths corrected (cmd/push → pkg/cmd/push)
+- Build tags: //go:build integration
+- Skip logic: All tests skip in short mode
+- Compilation: Tests compile successfully
+
+Dependencies:
+- Requires effort 3.1.1 (Test Harness) integration ✅ MERGED
+- Requires effort 3.1.2 (Image Builders) integration ✅ MERGED
+
+Final commit: a46f7b3 feat(3.1.4): add error path integration tests for OCI push
