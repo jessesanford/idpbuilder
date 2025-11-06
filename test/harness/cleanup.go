@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/docker/docker/api/types"
+	imagetypes "github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 )
 
@@ -51,7 +51,7 @@ func RemoveTestImages(ctx context.Context, dockerClient *client.Client) error {
 	}
 
 	// List all images
-	images, err := dockerClient.ImageList(ctx, types.ImageListOptions{})
+	images, err := dockerClient.ImageList(ctx, imagetypes.ListOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to list images: %w", err)
 	}
@@ -64,7 +64,7 @@ func RemoveTestImages(ctx context.Context, dockerClient *client.Client) error {
 		for _, tag := range image.RepoTags {
 			// Only remove test images (containing "test" in name)
 			if contains(tag, "test") || contains(tag, "Test") {
-				_, err := dockerClient.ImageRemove(ctx, image.ID, types.ImageRemoveOptions{
+				_, err := dockerClient.ImageRemove(ctx, image.ID, imagetypes.RemoveOptions{
 					Force:         true,
 					PruneChildren: true,
 				})

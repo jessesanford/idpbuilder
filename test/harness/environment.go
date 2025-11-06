@@ -13,12 +13,12 @@ import (
 // TestEnvironment provides complete integration test infrastructure
 // with Gitea registry container and Docker client for testing
 type TestEnvironment struct {
-	GiteaContainer  testcontainers.Container
-	RegistryURL     string
-	AdminUsername   string
-	AdminPassword   string
-	DockerClient    *client.Client
-	CleanupFunc     func() error
+	GiteaContainer testcontainers.Container
+	RegistryURL    string
+	AdminUsername  string
+	AdminPassword  string
+	DockerClient   *client.Client
+	CleanupFunc    func() error
 }
 
 // SetupGiteaRegistry starts a Gitea container with registry enabled

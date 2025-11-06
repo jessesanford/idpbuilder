@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/build"
 	dockerclient "github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/archive"
 )
@@ -223,7 +223,7 @@ func cleanupBuildDir(buildDir string) error {
 // executeBuild runs the Docker build operation
 func (env *BuilderTestEnvironment) executeBuild(ctx context.Context, buildContext io.Reader, imageName string) (string, error) {
 	// Configure build options
-	buildOptions := types.ImageBuildOptions{
+	buildOptions := build.ImageBuildOptions{
 		Tags:           []string{imageName},
 		Remove:         true, // Remove intermediate containers
 		ForceRemove:    true,

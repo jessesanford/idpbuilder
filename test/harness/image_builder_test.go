@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/docker/docker/api/types"
+	imagetypes "github.com/docker/docker/api/types/image"
 	dockerclient "github.com/docker/docker/client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -239,7 +239,7 @@ func TestCreateRandomFile(t *testing.T) {
 		name string
 		size int64
 	}{
-		{"small file", 1024},       // 1KB
+		{"small file", 1024},        // 1KB
 		{"medium file", 1024 * 100}, // 100KB
 		{"zero size", 0},
 	}
@@ -366,7 +366,7 @@ func TestBuildTestImage_Integration(t *testing.T) {
 			assert.Greater(t, result.SizeBytes, int64(0))
 
 			// Cleanup: remove the test image
-			_, err = client.ImageRemove(ctx, result.ImageID, types.ImageRemoveOptions{
+			_, err = client.ImageRemove(ctx, result.ImageID, imagetypes.RemoveOptions{
 				Force: true,
 			})
 			assert.NoError(t, err)
@@ -383,9 +383,9 @@ func TestBuildTestImage_InvalidConfig(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name    string
-		config  ImageConfig
-		errMsg  string
+		name   string
+		config ImageConfig
+		errMsg string
 	}{
 		{
 			name: "empty name",

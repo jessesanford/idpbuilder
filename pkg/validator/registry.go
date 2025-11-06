@@ -14,14 +14,14 @@ var (
 
 	// Private IP ranges (SSRF protection)
 	privateIPRanges = []string{
-		"10.0.0.0/8",      // Private class A
-		"172.16.0.0/12",   // Private class B
-		"192.168.0.0/16",  // Private class C
-		"127.0.0.0/8",     // Loopback
-		"169.254.0.0/16",  // Link-local
-		"::1/128",         // IPv6 loopback
-		"fc00::/7",        // IPv6 unique local
-		"fe80::/10",       // IPv6 link-local
+		"10.0.0.0/8",     // Private class A
+		"172.16.0.0/12",  // Private class B
+		"192.168.0.0/16", // Private class C
+		"127.0.0.0/8",    // Loopback
+		"169.254.0.0/16", // Link-local
+		"::1/128",        // IPv6 loopback
+		"fc00::/7",       // IPv6 unique local
+		"fe80::/10",      // IPv6 link-local
 	}
 )
 
