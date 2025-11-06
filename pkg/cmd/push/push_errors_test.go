@@ -175,7 +175,7 @@ func TestWrapDockerError_PreservesImageName(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			originalErr := fmt.Errorf(tt.errMsg)
+			originalErr := fmt.Errorf("%s", tt.errMsg)
 			wrappedErr := WrapDockerError(originalErr, tt.imageName)
 
 			var imageErr *errors.ImageNotFoundError
@@ -200,7 +200,7 @@ func TestWrapRegistryError_PreservesRegistry(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			originalErr := fmt.Errorf(tt.errMsg)
+			originalErr := fmt.Errorf("%s", tt.errMsg)
 			wrappedErr := WrapRegistryError(originalErr, tt.registry)
 
 			var authErr *errors.AuthenticationError
