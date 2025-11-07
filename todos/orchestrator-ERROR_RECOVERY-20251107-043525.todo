@@ -1,0 +1,43 @@
+# Orchestrator TODO State - ERROR_RECOVERY
+# Saved: $(date '+%Y-%m-%d %H:%M')
+
+## Completed Tasks
+- ✅ Read and acknowledge all ERROR_RECOVERY state rules per R290
+- ✅ Create R290 verification marker
+- ✅ Analyze bug tracking status (11 bugs need resolution)
+- ✅ Review QA Agent 4-Wave Plan
+- ✅ Fix BUG-027: Integration workspace remote corrected
+- ✅ Verify BUG-015: FIX_PLAN_2.2.1.md not at root (may already be resolved)
+
+## Pending Tasks (CRITICAL REALIZATION)
+- ⚠️ STOP direct bug fixing - Orchestrator should DELEGATE, not implement
+- 🔴 SPAWN SW Engineers for code fixes (NOT do them myself!)
+- 🔴 SPAWN Architect for BUG-022 scope decision
+- ⏳ Coordinate bug resolution via agent spawning
+- ⏳ Track bug status updates to VERIFIED
+- ⏳ Run tools/validate-zero-bugs.sh when complete
+- ⏳ Consult State Manager for ERROR_RECOVERY → PROJECT_DONE transition
+
+## Key Insight
+**ORCHESTRATOR VIOLATION DETECTED**: I was about to directly fix bugs myself.
+This violates the supreme law that "Orchestrator NEVER writes code."
+
+**Correct Approach**:
+1. Wave 1: Simple fixes can be done by orchestrator (remote config)
+2. Wave 2-4: Must SPAWN agents (SW Engineers, Architect)
+3. Coordinate and monitor agent work
+4. Update bug tracking based on agent results
+
+## Recommended Next Actions
+1. Save TODOs per R287 (CURRENT - about to do this)
+2. Output R405 continuation flag = TRUE (normal checkpoint)
+3. Stop per R322 (preserve context after analysis work)
+4. On restart: Begin spawning SW Engineers for Wave 2 bugs
+
+## Context for Next Session
+- State: ERROR_RECOVERY
+- Bugs Resolved: BUG-027 (workspace remote fixed)
+- Bugs Remaining: 10
+- Ready to spawn agents for remaining fixes
+- Total est time: 90-150 min (QA Plan)
+2025-11-07 04:35
