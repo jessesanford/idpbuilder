@@ -1,0 +1,86 @@
+# Target Repository Configuration
+# This defines the ACTUAL PROJECT repository to work on (NOT the Software Factory)
+# Per R191: Software Factory is for PLANNING, target repo is for CODE
+
+target_repository:
+  # The actual project repository URL (from orchestrator-state-v3.json)
+  url: "https://github.com/jessesanford/idpbuilder.git"
+
+  # Base branch to create effort branches from
+  base_branch: "main"
+
+  # Remote name for the target repository
+  remote_name: "origin"
+
+branch_naming:
+  # Project prefix for all branches (optional, can be empty)
+  project_prefix: "idpbuilder-oci-push"
+
+  # Format for effort branches
+  # Variables: {prefix}, {phase}, {wave}, {effort_name}
+  effort_format: "{prefix}/phase{phase}/wave{wave}/{effort_name}"
+
+  # Format for wave integration branches
+  # Variables: {prefix}, {phase}, {wave}
+  integration_format: "{prefix}/phase{phase}/wave{wave}/integration"
+
+  # Format for phase integration branches
+  # Variables: {prefix}, {phase}
+  phase_integration_format: "{prefix}/phase{phase}/integration"
+
+  # Format for project integration branch
+  # Variables: {prefix}
+  project_integration_format: "{prefix}/project-integration"
+
+workspace:
+  # Root directory for effort workspaces (relative to SF instance root)
+  efforts_root: "efforts"
+
+  # Path pattern for effort workspaces
+  # Variables: {phase}, {wave}, {effort_name}
+  effort_path: "phase{phase}/wave{wave}/{effort_name}"
+
+  # Path pattern for wave integration workspaces
+  integration_path: "phase{phase}/wave{wave}/integration"
+
+  # Path pattern for phase integration workspaces
+  phase_integration_path: "phase{phase}/integration"
+
+  # Path for project integration workspace
+  project_integration_path: "project/integration-workspace"
+
+git_operations:
+  # Whether to push branches automatically
+  auto_push: true
+
+  # Whether to set upstream tracking automatically
+  auto_set_upstream: true
+
+  # Default commit author (if not using git config)
+  # Leave empty to use git config values
+  commit_author_name: ""
+  commit_author_email: ""
+
+repository_separation:
+  # Verify this is NOT the Software Factory repository
+  # This should match the target_repository.url above
+  verify_not_sf: true
+
+  # Paths that are NEVER allowed in target repo clones
+  forbidden_in_target:
+    - "target-repo-config.yaml"
+    - "rule-library/"
+    - ".claude/agents/"
+    - "orchestrator-state-v3.json"
+    - "todos/"
+
+  # File extensions that are NEVER allowed in SF instance
+  forbidden_in_sf:
+    - ".go"
+    - ".py"
+    - ".js"
+    - ".java"
+    - ".cpp"
+    - ".c"
+    - ".rs"
+    - "_test.go"
