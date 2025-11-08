@@ -1,0 +1,4 @@
+TRANSITION: FIX_WAVE_UPSTREAM_BUGS -> START_WAVE_ITERATION
+REASON: No upstream bugs with status=IDENTIFIED exist. All checklist items vacuously complete.
+TIMESTAMP: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+VALIDATED_BY: state-manager

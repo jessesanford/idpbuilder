@@ -1,0 +1,38 @@
+# Orchestrator WAVE_START State TODOs
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: WAVE_START_COMPLETE (R287)
+
+## Completed TODOs
+1. [✅] Read Phase 2 implementation plan to understand Wave 2.2 requirements
+   - Status: COMPLETE
+   - Wave 2.2: Advanced Configuration Features
+   - Key features: Registry override, env vars, config precedence
+   - Complexity: LOW (config plumbing)
+   - Parallelization: YES (independent efforts)
+
+2. [✅] Spawn State Manager for SHUTDOWN_CONSULTATION
+   - Status: COMPLETE
+   - Transition: WAVE_START → SPAWN_ARCHITECT_WAVE_PLANNING
+   - State Manager Decision: APPROVED
+   - Commit: de587d8
+   - All 4 state files updated atomically (R288)
+
+3. [✅] Save TODOs per R287 before stopping
+   - Status: IN_PROGRESS (this file being saved now)
+
+4. [PENDING] Output continuation flag per R405
+   - Status: PENDING (next action)
+
+## State Transition Summary
+- From: WAVE_START
+- To: SPAWN_ARCHITECT_WAVE_PLANNING
+- Phase: 2, Wave: 2
+- Wave Name: Advanced Configuration Features
+- State Manager validation: APPROVED
+- Continuation flag: TRUE (normal operation)
+
+## Next State Actions (SPAWN_ARCHITECT_WAVE_PLANNING)
+- Spawn Architect for Wave 2.2 architecture planning
+- Provide Phase 2 context and Wave 2.1 completion
+- Request WAVE-2.2-ARCHITECTURE.md per R340
+- Stop after spawning per R313 checkpoint

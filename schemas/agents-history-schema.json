@@ -1,0 +1,323 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://software-factory.io/schemas/agents-history.schema.json",
+  "title": "Software Factory 3.0 - Agent History Entry Schema",
+  "description": "Schema for agents_history array entries per R612 (Agent History Management). Validates minimal metadata for completed agents.",
+  "type": "object",
+  "required": [
+    "agent_id",
+    "agent_type",
+    "final_state",
+    "completed_at",
+    "work_summary"
+  ],
+  "properties": {
+    "agent_id": {
+      "type": "string",
+      "description": "Unique agent identifier",
+      "pattern": "^(swe|reviewer|architect|integration)-.*$",
+      "examples": [
+        "swe-1.2.1-docker-client",
+        "reviewer-1.2.1-20251102-043000",
+        "architect-wave2-review-20251102-050000",
+        "integration-wave2-20251102-051500"
+      ]
+    },
+    "agent_type": {
+      "type": "string",
+      "description": "Type of agent",
+      "enum": [
+        "sw-engineer",
+        "code-reviewer",
+        "architect",
+        "integration",
+        "product-manager"
+      ]
+    },
+    "final_state": {
+      "type": "string",
+      "description": "Terminal state when agent completed",
+      "examples": [
+        "COMPLETE",
+        "COMPLETED",
+        "FAILED"
+      ]
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of completion (UTC)",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$",
+      "examples": [
+        "2025-11-02T04:30:00Z"
+      ]
+    },
+    "work_summary": {
+      "type": "object",
+      "description": "Agent-type-specific work summary (minimal)",
+      "oneOf": [
+        {
+          "title": "SW-Engineer Work Summary",
+          "properties": {
+            "effort_id": {
+              "type": "string",
+              "description": "Effort identifier (e.g., '1.2.1')"
+            },
+            "effort_name": {
+              "type": "string",
+              "description": "Human-readable effort name"
+            },
+            "branch": {
+              "type": "string",
+              "description": "Effort branch name"
+            },
+            "outcome": {
+              "type": "string",
+              "enum": ["approved", "approved_with_fixes", "failed", "abandoned"],
+              "description": "Final outcome of implementation"
+            },
+            "splits": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of splits created (0 if no splits)"
+            }
+          },
+          "required": ["effort_id", "effort_name", "branch", "outcome"]
+        },
+        {
+          "title": "Code-Reviewer Work Summary",
+          "properties": {
+            "reviewed_effort": {
+              "type": "string",
+              "description": "Effort ID reviewed"
+            },
+            "review_type": {
+              "type": "string",
+              "enum": ["effort_review", "effort_plan", "split_review", "merge_review", "fix_plan"],
+              "description": "Type of review performed"
+            },
+            "bugs_found": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Total bugs/issues found"
+            },
+            "review_outcome": {
+              "type": "string",
+              "enum": ["approved", "approved_with_fixes", "requires_rework", "failed"],
+              "description": "Review outcome"
+            }
+          },
+          "required": ["reviewed_effort", "review_type", "bugs_found", "review_outcome"]
+        },
+        {
+          "title": "Architect Work Summary",
+          "properties": {
+            "review_scope": {
+              "type": "string",
+              "enum": ["wave", "phase", "project", "integration"],
+              "description": "Scope of architectural review"
+            },
+            "wave_id": {
+              "type": "string",
+              "description": "Wave or phase identifier reviewed"
+            },
+            "architecture_outcome": {
+              "type": "string",
+              "enum": ["approved", "approved_with_recommendations", "concerns_raised", "rejected"],
+              "description": "Architectural review outcome"
+            },
+            "concerns_raised": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of architectural concerns raised"
+            }
+          },
+          "required": ["review_scope", "wave_id", "architecture_outcome"]
+        },
+        {
+          "title": "Integration Work Summary",
+          "properties": {
+            "integration_type": {
+              "type": "string",
+              "enum": ["wave", "phase", "project"],
+              "description": "Type of integration performed"
+            },
+            "wave_id": {
+              "type": "string",
+              "description": "Wave or phase identifier integrated"
+            },
+            "efforts_integrated": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of efforts merged"
+            },
+            "outcome": {
+              "type": "string",
+              "enum": ["success", "success_with_conflicts", "failed"],
+              "description": "Integration outcome"
+            }
+          },
+          "required": ["integration_type", "wave_id", "efforts_integrated", "outcome"]
+        }
+      ]
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Quantitative metrics (agent-type specific, minimal)",
+      "additionalProperties": true,
+      "properties": {
+        "lines_added": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Lines of code added (SW-Engineer)"
+        },
+        "lines_removed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Lines of code removed (SW-Engineer)"
+        },
+        "files_modified": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of files modified (SW-Engineer)"
+        },
+        "commits": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of commits made (SW-Engineer)"
+        },
+        "duration_hours": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Duration of work in hours (all agents)"
+        },
+        "review_duration_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Duration of review in minutes (Code-Reviewer, Architect)"
+        },
+        "files_reviewed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of files reviewed (Code-Reviewer)"
+        },
+        "critical_issues": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Critical issues found (Code-Reviewer)"
+        },
+        "blocking_issues": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Blocking issues found (Code-Reviewer)"
+        },
+        "warnings": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Warning-level issues found (Code-Reviewer)"
+        },
+        "efforts_reviewed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of efforts reviewed (Architect)"
+        },
+        "recommendations_made": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of recommendations made (Architect)"
+        },
+        "merge_conflicts": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of merge conflicts resolved (Integration)"
+        },
+        "test_failures": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of test failures during integration (Integration)"
+        },
+        "integration_duration_minutes": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Duration of integration in minutes (Integration)"
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "examples": [
+    {
+      "agent_id": "swe-1.2.1-docker-client",
+      "agent_type": "sw-engineer",
+      "final_state": "COMPLETE",
+      "completed_at": "2025-11-02T04:30:00Z",
+      "work_summary": {
+        "effort_id": "1.2.1",
+        "effort_name": "docker-client",
+        "branch": "idpbuilder-oci-mgmt/phase1/wave2/effort-1.2.1-docker-client",
+        "outcome": "approved",
+        "splits": 0
+      },
+      "metrics": {
+        "lines_added": 450,
+        "lines_removed": 30,
+        "files_modified": 8,
+        "commits": 12,
+        "duration_hours": 2.5
+      }
+    },
+    {
+      "agent_id": "reviewer-1.2.1-20251102-043000",
+      "agent_type": "code-reviewer",
+      "final_state": "COMPLETE",
+      "completed_at": "2025-11-02T04:45:00Z",
+      "work_summary": {
+        "reviewed_effort": "1.2.1",
+        "review_type": "effort_review",
+        "bugs_found": 3,
+        "review_outcome": "approved_with_fixes"
+      },
+      "metrics": {
+        "review_duration_minutes": 15,
+        "files_reviewed": 8,
+        "critical_issues": 0,
+        "blocking_issues": 1,
+        "warnings": 2
+      }
+    },
+    {
+      "agent_id": "architect-wave2-review-20251102-050000",
+      "agent_type": "architect",
+      "final_state": "COMPLETE",
+      "completed_at": "2025-11-02T05:15:00Z",
+      "work_summary": {
+        "review_scope": "wave",
+        "wave_id": "1.2",
+        "architecture_outcome": "approved",
+        "concerns_raised": 0
+      },
+      "metrics": {
+        "efforts_reviewed": 3,
+        "review_duration_minutes": 30,
+        "recommendations_made": 2
+      }
+    },
+    {
+      "agent_id": "integration-wave2-20251102-051500",
+      "agent_type": "integration",
+      "final_state": "COMPLETE",
+      "completed_at": "2025-11-02T05:30:00Z",
+      "work_summary": {
+        "integration_type": "wave",
+        "wave_id": "1.2",
+        "efforts_integrated": 3,
+        "outcome": "success"
+      },
+      "metrics": {
+        "merge_conflicts": 0,
+        "test_failures": 0,
+        "integration_duration_minutes": 15
+      }
+    }
+  ]
+}

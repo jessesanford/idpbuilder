@@ -1,0 +1,7 @@
+version: 3.0
+upgraded_at: 20251103-152825
+upgraded_from: /home/vscode/software-factory-template
+template_commit: ae8a41dd855e58cf337d369f085b140615c934fd
+template_branch: corruption-fix
+template_remote: https://github.com/jessesanford/software-factory-template.git
+upgrade_date: 2025-11-03T15:28:25Z

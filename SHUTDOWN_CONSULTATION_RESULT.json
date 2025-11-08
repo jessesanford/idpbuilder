@@ -1,0 +1,72 @@
+{
+  "consultation_type": "SHUTDOWN_CONSULTATION",
+  "timestamp": "2025-11-03T12:54:13Z",
+  "validated_by": "state-manager",
+  "from_state": "START_WAVE_ITERATION",
+  "to_state_proposed": "INTEGRATE_WAVE_EFFORTS",
+  "to_state_required": "INTEGRATE_WAVE_EFFORTS",
+  "orchestrator_proposal_accepted": true,
+  "validation_result": {
+    "update_status": "SUCCESS",
+    "files_updated": [
+      "orchestrator-state-v3.json",
+      "integration-containers.json",
+      "bug-tracking.json",
+      "fix-cascade-state.json"
+    ],
+    "commit_hash": "ff2daf5",
+    "commit_message": "state: START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS - iteration 3 ready [R288]",
+    "required_next_state": "INTEGRATE_WAVE_EFFORTS",
+    "decision_rationale": "Transition valid per state machine. START_WAVE_ITERATION checklist complete for Phase 2 Wave 3 Iteration 3. All compliance checks passed: iteration counter at 3 (no increment from ERROR_RECOVERY per R531), backport attempts 0/3 (WITHIN_LIMIT per R532), bug progress analyzed per R615/R616 showing STALL status 1/5 (tier 1 CONTINUE approved), max iterations 3/10 (WITHIN_LIMIT). Both efforts (2.3.1 and 2.3.2) are ACCEPTED. Previous iteration 2 encountered BUG-020 which has been fixed. Ready to spawn Integration Agent for iteration 3 attempt. This is standard wave iteration protocol."
+  },
+  "validation_checks": {
+    "transition_allowed": true,
+    "from_state_exists": true,
+    "to_state_exists": true,
+    "in_allowed_transitions": true,
+    "iteration_within_limit": true,
+    "backport_attempts_within_limit": true,
+    "bug_progress_acceptable": true,
+    "efforts_ready": true,
+    "r288_compliance": true,
+    "r517_atomic_update": true,
+    "state_machine_compliance": "VERIFIED"
+  },
+  "work_completed": {
+    "checklist_item_1": "Wave iteration counter remains at 3 (no increment from ERROR_RECOVERY per R531)",
+    "checklist_item_1b": "Backport attempts checked: 0/3 this iteration (WITHIN_LIMIT per R532)",
+    "checklist_item_1c": "Bug progress analyzed per R615/R616: STALL category (no bugs fixed iteration 2→3), stall counter 1/5 (tier 1 WITHIN_LIMIT), total iterations 3/10 (tier 2 WITHIN_LIMIT), decision: CONTINUE",
+    "checklist_item_2": "Max iterations check passed: 3/10 (WITHIN_LIMIT)",
+    "checklist_item_3": "Next state determined: INTEGRATE_WAVE_EFFORTS (success path)",
+    "all_items_complete": true
+  },
+  "context": {
+    "phase": 2,
+    "wave": 3,
+    "iteration": 3,
+    "max_iterations": 10,
+    "previous_bug": "BUG-020",
+    "previous_bug_status": "FIXED",
+    "efforts": [
+      {
+        "id": "2.3.1",
+        "status": "ACCEPTED"
+      },
+      {
+        "id": "2.3.2",
+        "status": "ACCEPTED"
+      }
+    ],
+    "bug_progress_category": "STALL",
+    "stall_counter": "1/5",
+    "backport_attempts": "0/3"
+  },
+  "next_steps": [
+    "Orchestrator enters INTEGRATE_WAVE_EFFORTS state",
+    "Spawn Integration Agent for Wave 2.3 iteration 3 attempt",
+    "Integration Agent merges effort branches into wave integration branch",
+    "Integration Agent runs build, tests, and demo validation",
+    "If successful: transition to REVIEW_WAVE_INTEGRATION",
+    "If bugs found: document bugs, transition to ERROR_RECOVERY"
+  ]
+}

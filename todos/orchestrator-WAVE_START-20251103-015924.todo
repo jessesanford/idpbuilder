@@ -1,0 +1,24 @@
+# Orchestrator TODO State - WAVE_START
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: R287 - Before state transition
+
+## Completed
+- [x] Read bootstrap rules (R203, R287, R290, R517, R506, R407)
+- [x] Determine current state from orchestrator-state-v3.json
+- [x] Load WAVE_START state-specific rules
+- [x] Verify SF 3.0 requires State Manager consultation
+- [x] Check wave infrastructure for Phase 2 Wave 3
+- [x] Determine next state: SPAWN_ARCHITECT_WAVE_PLANNING
+
+## In Progress
+- [ ] Spawn State Manager for SHUTDOWN_CONSULTATION
+
+## Pending
+- [ ] Await State Manager transition confirmation
+- [ ] Continue with SPAWN_ARCHITECT_WAVE_PLANNING state
+
+## Context
+- State: WAVE_START
+- Phase: 2, Wave: 3
+- Planning artifacts exist (architecture, tests, implementation)
+- Next: SPAWN_ARCHITECT_WAVE_PLANNING (will detect existing planning)

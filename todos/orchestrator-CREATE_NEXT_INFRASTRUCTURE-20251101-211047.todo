@@ -1,0 +1,26 @@
+# Orchestrator TODOs - CREATE_NEXT_INFRASTRUCTURE State
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: STATE_TRANSITION
+
+## Completed Tasks
+- [x] Validate R603 dependencies for effort 2.2.2
+- [x] Read pre-calculated infrastructure
+- [x] Execute CASCADE-aware infrastructure creation (R510)
+- [x] Perform mandatory post-creation validations
+- [x] Lock git config (R312)
+- [x] Update tracking in pre_planned_infrastructure
+- [x] Prepare for State Manager consultation
+
+## State Transition Info
+- Current State: CREATE_NEXT_INFRASTRUCTURE
+- Proposed Next State: SPAWN_SW_ENGINEERS
+- Transition Reason: Infrastructure created for effort 2.2.2, implementation plan exists
+- Infrastructure Created: phase2_wave2_effort_2_env_support
+- Branch: idpbuilder-oci-push/phase2/wave2/effort-2-env-variable-support
+- Next Action: State Manager will validate and execute transition
+
+## Notes
+- Effort 2.2.2 depends on effort 2.2.1 (APPROVED)
+- Using sequential strategy (not parallel)
+- CASCADE compliance: branched from effort 2.2.1 branch
+- Implementation plan exists at: efforts/phase2/wave2/effort-2-env-variable-support/.software-factory/...

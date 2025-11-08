@@ -1,0 +1,769 @@
+# 🔴🔴🔴 RULE R405 - Automation Continuation Flag [SUPREME LAW]
+
+# 🚨🚨🚨 CRITICAL ALERT - READ BEFORE USING THIS RULE 🚨🚨🚨
+
+**SYSTEMIC VIOLATION DETECTED:**
+
+Agents are repeatedly setting `CONTINUE-SOFTWARE-FACTORY=FALSE` for normal
+operations, including PROJECT_DONE scenarios and R322 checkpoints. This is
+**fundamentally wrong** and defeats the entire purpose of the Software Factory
+automation system.
+
+**MOST COMMON VIOLATION:**
+> "R322 requires mandatory stop before state transition, therefore I should set
+> CONTINUE-SOFTWARE-FACTORY=FALSE"
+
+**THIS IS WRONG! R322 stops ≠ FALSE flag!**
+
+**R322 checkpoints are NORMAL OPERATION:**
+- State work completed ✅
+- Waiting for /continue-orchestrating ✅
+- Ready for next state transition ✅
+- **Use TRUE because this is DESIGNED WORKFLOW!**
+
+**OTHER VIOLATIONS INCLUDE:**
+- Setting FALSE after successful integration (PROJECT_DONE!)
+- Setting FALSE in WAITING states when results arrive (NORMAL!)
+- Setting FALSE when spawning agents (normal workflow!)
+- Setting FALSE when code review finds issues (designed process!)
+
+**IMMEDIATE CORRECTION REQUIRED:**
+
+Before setting this flag in ANY state, read the master guide:
+**→ R405-CONTINUATION-FLAG-MASTER-GUIDE.md ←**
+
+**If you set FALSE incorrectly:**
+- First violation: -20% penalty
+- Pattern (3+): -50% penalty
+- Systematic misuse: -100% penalty
+
+**The user is FRUSTRATED by unnecessary stops. Default to TRUE!**
+
+---
+
+# 🔴🔴🔴 CHECKPOINT vs FAILURE - THE CRITICAL DISTINCTION 🔴🔴🔴
+
+## 📊 DECISION FLOWCHART - READ THIS FIRST
+
+```
+Did your state work complete successfully?
+│
+├─ YES → Is this an R322 checkpoint state (SPAWN_*, WAITING_FOR_*, etc)?
+│         │
+│         ├─ YES → CONTINUE-SOFTWARE-FACTORY=TRUE
+│         │        (Checkpoints are NORMAL, not failures!)
+│         │
+│         └─ NO → CONTINUE-SOFTWARE-FACTORY=TRUE
+│                 (Normal completion = TRUE)
+│
+└─ NO → Can you fix the problem with available tools?
+          │
+          ├─ YES → FIX IT NOW, then CONTINUE-SOFTWARE-FACTORY=TRUE
+          │        (Don't stop if you can complete the work!)
+          │
+          └─ NO → CONTINUE-SOFTWARE-FACTORY=FALSE REASON=<specific_error>
+                   (Only if truly impossible to proceed)
+```
+
+## 🚨🚨🚨 THE ONE RULE YOU MUST REMEMBER 🚨🚨🚨
+
+**IF YOU COMPLETED YOUR STATE'S WORK SUCCESSFULLY → ALWAYS USE TRUE**
+
+**EVEN IF:**
+- You're stopping at an R322 checkpoint → TRUE
+- You're in a WAITING_FOR_* state → TRUE
+- You spawned an agent and are stopping → TRUE
+- User needs to call /continue command → TRUE
+- Work is "paused" for continuation → TRUE
+
+**CHECKPOINTS ARE NOT FAILURES!**
+- Stopping for user continuation = DESIGNED WORKFLOW = TRUE
+- Stopping because work is impossible = UNRECOVERABLE ERROR = FALSE
+
+**THE TEST**: Did my state's work complete as designed?
+- YES → TRUE (even if stopping for checkpoint)
+- NO → Can I fix it?
+  - YES → Fix it, then TRUE
+  - NO → FALSE with specific reason
+
+---
+
+## Purpose
+Enable full automation of Software Factory 2.0 by providing a universal machine-parseable signal for continuation decisions.
+
+## The Rule
+**ALL agents in ALL states MUST output a continuation flag as their LAST output before completing the state.**
+
+## Format (EXACT - NO VARIATIONS)
+
+**CRITICAL: The flag MUST be emitted with the full variable name, NOT just the value!**
+
+### ❌ WRONG - DO NOT USE:
+```bash
+# These are INVALID and will break automation
+TRUE
+FALSE
+R405 Continuation Flag: TRUE
+```
+
+### ✅ CORRECT - Basic Format (REQUIRED):
+```bash
+# Success - continue to next state
+CONTINUE-SOFTWARE-FACTORY=TRUE
+
+# Failure/block - stop for human intervention
+CONTINUE-SOFTWARE-FACTORY=FALSE
+```
+
+### Enhanced Format with Checkpoint Context (RECOMMENDED):
+```bash
+# R322 checkpoint (spawn/critical transition) - normal operation
+CONTINUE-SOFTWARE-FACTORY=TRUE CHECKPOINT=R322
+
+# Normal operation continuation - no checkpoint
+CONTINUE-SOFTWARE-FACTORY=TRUE CHECKPOINT=NONE
+
+# Error with specific reason - requires intervention
+CONTINUE-SOFTWARE-FACTORY=FALSE REASON=ERROR_TYPE
+```
+
+**Why Use Enhanced Format?**
+- Eliminates ambiguity about WHY agent stopped
+- Allows test framework to auto-continue at R322 checkpoints
+- Makes debugging easier (explicit checkpoint type in logs)
+- Backward compatible (basic format still works)
+
+## Critical Requirements
+1. **UNIVERSAL**: Every single state for every single agent must have this
+2. **CONSISTENT**: Always use exactly "CONTINUE-SOFTWARE-FACTORY" (not CONTINUE-ORCHESTRATING or any variant)
+3. **COMPLETE**: Always include the full variable assignment "CONTINUE-SOFTWARE-FACTORY=TRUE" NOT just "TRUE"
+4. **LAST OUTPUT**: Must be the absolute last line of output when agent completes state
+5. **GREPPABLE**: Must be on its own line for easy grep/parsing
+6. **MANDATORY**: No state can omit this flag - -100% penalty for omission
+
+## Checkpoint Context Types (Enhanced Format)
+
+When using the enhanced format with context, use these standardized types:
+
+### Checkpoint Types (for TRUE flag):
+
+| Type | When to Use | Example |
+|------|-------------|---------|
+| `CHECKPOINT=R322` | R322 mandatory stop (spawn/critical transition) | After spawning multiple agents |
+| `CHECKPOINT=NONE` | Normal operation, no checkpoint | Regular state completion |
+
+### Reason Types (for FALSE flag):
+
+| Type | When to Use | Example |
+|------|-------------|---------|
+| `REASON=ERROR` | Generic unrecoverable error | Unknown system failure |
+| `REASON=STATE_CORRUPTION` | State file corrupted or invalid | JSON schema validation failed |
+| `REASON=MISSING_FILES` | Critical files missing | orchestrator-state-v3.json not found |
+| `REASON=RECURSIVE_SPLIT` | Split of split detected | Effort split still >800 lines |
+| `REASON=ITERATION_OVERFLOW` | Exceeded max iterations | Integration failed >10 times |
+| `REASON=WRONG_LOCATION` | Agent in wrong directory/branch | cwd != expected workspace |
+
+### Automation Framework Behavior
+
+Based on the flag context, the test/automation framework will:
+
+- `TRUE CHECKPOINT=R322` → **Auto-continue** (R322 is normal operation, designed workflow)
+- `TRUE CHECKPOINT=NONE` → **Auto-continue** (normal progression)
+- `TRUE` (no context) → **Auto-continue** (backward compatible)
+- `FALSE REASON=*` → **STOP** for human intervention
+- `FALSE` (no context) → **STOP** for human intervention
+- Missing flag → **STOP** with warning
+
+## DEFAULT BEHAVIOR: TRUE FOR NORMAL OPERATIONS
+**CRITICAL**: The default should be TRUE! Only set FALSE for EXCEPTIONAL situations.
+
+**NOTE**: Even at R322 checkpoints, use TRUE! R322 checkpoints are NORMAL workflow, not errors.
+
+## 🔴 COMMON MISUSE: "Incomplete Work" vs "Impossible Work"
+
+### The Critical Distinction
+
+**INCOMPLETE work** = Work you CAN do but HAVEN'T done yet
+- ✅ Use TRUE (do the work, then continue)
+- ❌ NOT FALSE (stopping is wrong)
+
+**IMPOSSIBLE work** = Work you CANNOT do without human intervention
+- ✅ Use FALSE (human must fix something first)
+
+### Examples: When Orchestrator Says "Incomplete Work"
+
+#### ❌ WRONG: Using FALSE for Completable Work
+
+**Scenario**: Integration agent not spawned yet
+```bash
+# WRONG approach:
+echo "Integration agent not spawned for iteration 7"
+echo "Work is incomplete - setting FALSE"
+echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=INCOMPLETE_WORK"
+exit 0
+```
+
+**Why wrong**: Orchestrator CAN spawn integration agent using Task tool!
+
+**CORRECT approach**:
+```bash
+echo "Integration agent not spawned yet - spawning now..."
+Task: integration-agent ...
+echo "✅ Integration agent spawned"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Work is COMPLETE
+exit 0
+```
+
+#### ✅ RIGHT: Using FALSE for Impossible Work
+
+**Scenario**: State file corrupted beyond repair
+```bash
+# CORRECT approach:
+if ! jq . orchestrator-state-v3.json > /dev/null 2>&1; then
+    echo "❌ State file is corrupted - invalid JSON"
+    echo "❌ Cannot proceed without manual repair"
+    echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=STATE_CORRUPTION"
+    exit 1
+fi
+```
+
+**Why correct**: Orchestrator CANNOT fix corrupted state file!
+
+### Decision Tree
+
+```
+Is the work complete?
+  ├─ YES → CONTINUE-SOFTWARE-FACTORY=TRUE
+  └─ NO → Can I complete it with available tools?
+           ├─ YES → COMPLETE IT NOW → TRUE
+           └─ NO → Is it blocked by external factor?
+                    ├─ YES → FALSE REASON=<specific_blocker>
+                    └─ NO → COMPLETE IT NOW → TRUE
+```
+
+### Specific Cases
+
+| Situation | Can Do? | Flag | Action |
+|-----------|---------|------|--------|
+| Agent not spawned | ✅ YES | TRUE | Spawn agent, then TRUE |
+| State file missing | ❌ NO | FALSE | Human must provide |
+| Checklist incomplete | ✅ YES | TRUE | Complete checklist, then TRUE |
+| Integration not done | ✅ YES | TRUE | Spawn integration agent, then TRUE |
+| Git repo corrupted | ❌ NO | FALSE | Human must fix repo |
+| Tests failing | ✅ YES | TRUE | Spawn fix cascade, then TRUE |
+| Network down | ❌ NO | FALSE | Human must restore network |
+
+### The "I Will Do It" Test
+
+Before setting FALSE, ask yourself:
+> "Can I use a tool to complete this work right now?"
+
+- If YES → **Do it, then set TRUE**
+- If NO → **Set FALSE with specific reason**
+
+**Remember**: FALSE is an admission of defeat, not an excuse for laziness.
+
+## 🔴🔴🔴 BUGS ARE NORMAL OPERATION - CRITICAL UNDERSTANDING 🔴🔴🔴
+
+**Software Factory 3.0's FUNDAMENTAL DESIGN PRINCIPLE:**
+
+**BUGS TRIGGER WORKFLOWS, NOT FAILURES!**
+
+The entire system is architected around:
+1. **Iteration Containers**: Wave/Phase/Project integration has `max_iterations` (default: 5-10)
+2. **Fix Cascade Protocol (R300)**: Automatic bug → document → fix → cascade → re-integrate
+3. **ERROR_RECOVERY State**: Spawns fix agents, manages fix lifecycle automatically
+4. **Expected Flow**: Find bug → Fix → Retry → Success (multiple iterations EXPECTED)
+
+### 🚨🚨🚨 THE ABSOLUTE TRUTH: BUGS = TRUE, NOT FALSE 🚨🚨🚨
+
+**ALWAYS Use TRUE for:**
+- ✅ Integration build failures (R300 fix cascade handles automatically)
+- ✅ Integration test failures (fix and retry automatically)
+- ✅ Integration demo failures (fix and retry automatically)
+- ✅ Bugs discovered during integration (iteration containers designed for this)
+- ✅ Upstream bugs blocking progress (ERROR_RECOVERY spawns fixes automatically)
+- ✅ Merge conflicts during integration (resolve and retry automatically)
+- ✅ Code quality issues found during review (fix and re-integrate automatically)
+- ✅ First, second, third, FOURTH, FIFTH bug fixes (up to max_iterations)
+- ✅ Build failures during fix cascade (R410 layered cascade handles)
+- ✅ Test failures during effort implementation (fix and retry)
+- ✅ Failed effort with 0 lines (NORMAL - can spawn reviewer)
+- ✅ Routine review failures (spawn fixes automatically)
+- ✅ First-time split needed (normal operation)
+- ✅ Normal state transitions (monitoring → review)
+- ✅ Normal monitoring transitions
+
+**ONLY Use FALSE for:**
+- ❌ Data corruption actively spreading across system
+- ❌ Critical security breach requiring immediate halt
+- ❌ System infrastructure completely broken (cannot spawn agents)
+- ❌ State machine corrupted beyond recovery
+- ❌ Iteration overflow (>10 attempts with ZERO progress)
+- ❌ Divergence (bugs INCREASING with each fix attempt)
+- ❌ Recursive splits (split of split - needs human review)
+
+### Real-World Decision Tree for Integration Bugs
+
+```
+Bug found during integration?
+├─ YES → Document bug (R300) ✅
+│        ├─ Transition to ERROR_RECOVERY ✅
+│        ├─ Set CONTINUE-SOFTWARE-FACTORY=TRUE ✅  <-- THIS IS THE KEY!
+│        └─ What happens next:
+│           ├─ ERROR_RECOVERY spawns SW Engineer to fix upstream effort
+│           ├─ SW Engineer fixes bug on effort branch
+│           ├─ Fix cascades per R300 protocol automatically
+│           ├─ System returns to INTEGRATE_WAVE_EFFORTS (next iteration)
+│           ├─ Re-integration occurs automatically
+│           └─ Success! (maybe 2-5 iterations total - ALL NORMAL!)
+│
+└─ NO → Integration succeeded first try → TRUE → Continue to next wave
+```
+
+### Example Flow (NORMAL OPERATION - Use TRUE Throughout!)
+
+```
+INTEGRATE_WAVE_EFFORTS (Iteration 1)
+├─ Spawn Integration Agent ✅
+├─ Integration Agent merges efforts ✅
+├─ Build: FAILED (function redeclarations found) ❌
+├─ Document BUG-020 per R300 ✅
+├─ Integration Agent: CONTINUE-SOFTWARE-FACTORY=TRUE ✅  <-- CORRECT!
+├─ Orchestrator receives report, sees TRUE ✅
+└─ Orchestrator: CONTINUE-SOFTWARE-FACTORY=TRUE ✅  <-- CORRECT!
+    └─ Transition: ERROR_RECOVERY
+
+ERROR_RECOVERY (Automatic fix spawning)
+├─ Read bug-tracking.json ✅
+├─ Find BUG-020 blocks integration (severity: P0) ✅
+├─ Spawn SW Engineer to fix effort-2 branch ✅
+├─ SW Engineer removes conflicting function stubs ✅
+├─ Fix cascades per R300 (downstream effort branches updated) ✅
+└─ Orchestrator: CONTINUE-SOFTWARE-FACTORY=TRUE ✅  <-- CORRECT!
+    └─ Transition: INTEGRATE_WAVE_EFFORTS (Iteration 2)
+
+INTEGRATE_WAVE_EFFORTS (Iteration 2)
+├─ Spawn Integration Agent ✅
+├─ Integration Agent merges efforts (now with fix) ✅
+├─ Build: SUCCESS ✅
+├─ Tests: PASS ✅
+├─ Demo: WORKING ✅
+└─ Integration Agent: CONTINUE-SOFTWARE-FACTORY=TRUE ✅
+    └─ Transition: COMPLETE_WAVE
+
+Result: 2 iterations, bug fixed automatically, ZERO human intervention
+        This is THE DESIGN! This is NORMAL! This is why we use TRUE!
+```
+
+### What Actually Happened in Wave 2.3 (THE PROBLEM)
+
+```
+❌ WRONG BEHAVIOR:
+Integration Agent: Found BUG-020 → Set CONTINUE-SOFTWARE-FACTORY=FALSE
+Orchestrator: Received FALSE → Stopped automation → Waited for human
+Human: "Why did it stop? Bugs are normal!"
+
+✅ CORRECT BEHAVIOR (What should have happened):
+Integration Agent: Found BUG-020 → Set CONTINUE-SOFTWARE-FACTORY=TRUE
+Orchestrator: Received TRUE → Continued automatically → ERROR_RECOVERY
+ERROR_RECOVERY: Spawned fix agent → Fixed bug → Re-integrated → Success
+Human: Never needed to intervene! (Perfect automation!)
+```
+
+### Iteration Container Tracking Example
+
+```json
+{
+  "wave_integration": {
+    "container_id": "wave-2-integration",
+    "iteration": 2,
+    "max_iterations": 5,
+    "bugs_found_iteration_1": ["BUG-020"],
+    "bugs_fixed_iteration_1": ["BUG-020"],
+    "bugs_found_iteration_2": [],
+    "convergence_status": "ACHIEVED",
+    "outcome": "SUCCESS_AFTER_2_ITERATIONS"
+  }
+}
+```
+
+**This is why iteration containers exist!**
+**This is why ERROR_RECOVERY exists!**
+**This is why R300 fix cascade protocol exists!**
+
+**ALL OF THESE ARE DESIGNED FOR AUTOMATIC BUG HANDLING!**
+
+### Summary Table: Bugs vs Continuation Flag
+
+| Scenario | Bug Count | Iteration | Flag | Rationale |
+|----------|-----------|-----------|------|-----------|
+| Integration finds bugs | 15 | 1 | TRUE ✅ | R300 will fix automatically |
+| After fixes, still bugs | 8 | 2 | TRUE ✅ | Convergence in progress |
+| After more fixes | 3 | 3 | TRUE ✅ | Still converging |
+| After more fixes | 1 | 4 | TRUE ✅ | Almost there |
+| Finally clean | 0 | 5 | TRUE ✅ | Success! |
+| Bugs not decreasing | 15 → 15 → 15 | 11+ | FALSE ❌ | Iteration overflow |
+| Bugs INCREASING | 3 → 8 → 15 | 4+ | FALSE ❌ | Divergence detected |
+
+**Default for any bug scenario: TRUE (let the system handle it!)**
+
+---
+
+## When to Output FALSE (TRULY EXCEPTIONAL CASES ONLY)
+**ONLY set FALSE for these CATASTROPHIC situations:**
+- **Data corruption spreading** - System state files corrupting other files
+- **Critical security breach** - Immediate halt required for security
+- **System cannot spawn agents** - Spawning mechanism completely broken
+- **State machine corrupted** - JSON invalid, cannot parse transitions
+- **Iteration overflow with ZERO progress** - 10+ attempts, same bugs, no convergence
+- **Divergence detected** - Bugs INCREASING with each fix (3→8→15)
+- **Recursive splits** - Split of split needed (design problem)
+- **Git infrastructure destroyed** - Cannot push/pull/commit at all
+
+**These are <0.1% of cases! Bugs are 99.9% of "failures" and they ALL use TRUE!**
+
+## When to Output TRUE (DEFAULT FOR NORMAL OPERATIONS)
+**This should be your DEFAULT choice! Set TRUE for:**
+- ✅ State completed (even if some efforts failed)
+- ✅ Integration failed with build/test/demo issues (spawn fix cascade - NORMAL!)
+- ✅ Normal transitions (monitor → review, review → fix, etc.)
+- ✅ Ready for next state
+- ✅ Splits needed (first time - this is normal)
+- ✅ Reviews found issues (spawn fixes - normal flow)
+- ✅ Some tests failing (can be fixed through fix cascades)
+- ✅ Implementation complete (spawn review)
+- ✅ Effort produced 0 lines (spawn reviewer anyway)
+- ✅ Any routine state transition
+- ✅ First, second, or third fix cascade (system handles automatically)
+- ✅ Need to spawn Code Reviewer for fix plans (part of normal flow)
+- ✅ Need to transition to IMMEDIATE_BACKPORT_REQUIRED (normal for integration failures)
+
+**RULE OF THUMB**: If the system CAN proceed automatically, it SHOULD (TRUE).
+
+## Implementation Pattern
+```bash
+# At the very end of state execution, after ALL other work:
+
+# DEFAULT TO TRUE unless EXCEPTIONAL situation
+CONTINUE_FLAG="TRUE"  # Start with TRUE as default
+
+# Only set FALSE for TRULY EXCEPTIONAL cases
+if [[ "$UNRECOVERABLE_ERROR" == true ]] || \
+   [[ "$MISSING_CRITICAL_FILES" == true ]] || \
+   [[ "$RECURSIVE_SPLIT_NEEDED" == true ]] || \
+   [[ "$MULTIPLE_FIX_CASCADES" == true ]]; then
+    CONTINUE_FLAG="FALSE"
+    echo "❌ Exceptional situation detected - manual intervention required"
+fi
+
+echo "CONTINUE-SOFTWARE-FACTORY=$CONTINUE_FLAG"
+```
+
+## Automation Usage
+This enables external automation scripts to:
+```bash
+# Run agent and capture output
+OUTPUT=$(agent_execution_command)
+
+# Check continuation flag
+if echo "$OUTPUT" | grep -q "CONTINUE-SOFTWARE-FACTORY=TRUE$"; then
+    # Automatically continue to next state
+    continue_to_next_state
+else
+    # Stop and alert human
+    alert_human "Manual intervention required"
+    exit 1
+fi
+```
+
+## State Rule Implementation
+Every state rule file (`agent-states/*/[STATE]/rules.md`) must include:
+```markdown
+### 🔴 Automation Continuation Flag (R405)
+**MANDATORY - LAST OUTPUT**: Before completing this state, output automation flag:
+- If state completed successfully and SF2.0 should continue: `CONTINUE-SOFTWARE-FACTORY=TRUE`
+- If error/block/manual review needed: `CONTINUE-SOFTWARE-FACTORY=FALSE`
+
+This MUST be the absolute last line of output before state completion.
+```
+
+## Enforcement
+- **Grading Impact**: -100% for omitting this flag
+- **Validation**: Every state transition must be preceded by this flag
+- **Monitoring**: Automation scripts will fail if flag is missing
+- **Recovery**: Missing flag = immediate stop, manual intervention required
+
+## Examples
+
+### R322 Checkpoint - After Spawning Agents (TRUE CHECKPOINT=R322)
+```bash
+echo "✅ Spawned 3 SW Engineers for implementation"
+echo "📊 Agents working on efforts: E1.1, E1.2, E1.3"
+update_state "MONITORING_SWE_PROGRESS"
+commit_state()
+
+echo "🛑 R322: Checkpoint after spawn (context preservation)"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE CHECKPOINT=R322"  # Enhanced format!
+exit 0  # Stop this conversation turn
+```
+
+**What happens next:**
+1. Framework sees `TRUE CHECKPOINT=R322`
+2. Framework knows this is normal R322 checkpoint
+3. Framework auto-continues with `/continue-software-factory`
+4. Orchestrator restarts, reads state=MONITORING_SWE_PROGRESS
+5. Orchestrator executes monitoring state
+
+### Normal Operations - Integration Failed (TRUE CHECKPOINT=NONE)
+```bash
+echo "🔴 Integration build failed with duplicate symbol errors"
+echo "🔴 Tests failed: 5 test suites failing"
+echo "🔴 Demo not working due to build failures"
+echo "⚠️ This is NORMAL - spawning fix cascade"
+echo "📝 Transitioning to SPAWN_CODE_REVIEWER_FIX_PLAN"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE CHECKPOINT=NONE"  # Normal flow, no checkpoint
+```
+
+### Normal Operations - Implementation Complete (TRUE)
+```bash
+echo "✅ Implementation monitoring complete"
+echo "✅ Some efforts succeeded, one produced 0 lines"
+echo "✅ Ready to spawn code reviewers"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Normal flow continues
+```
+
+### Normal Operations - Review Found Issues (TRUE)
+```bash
+echo "⚠️ Review found issues requiring fixes"
+echo "🔄 Will spawn SW Engineers for fixes"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Normal fix cycle
+```
+
+### Normal Operations - Split Needed (TRUE)
+```bash
+echo "📏 Effort exceeds size limit, split required"
+echo "🔄 Will execute split implementation"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # First split is normal
+```
+
+### EXCEPTIONAL - Missing Critical File (FALSE REASON=MISSING_FILES)
+```bash
+echo "❌ ERROR: Required state file is corrupted/missing"
+echo "❌ Cannot proceed without valid state file"
+echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=MISSING_FILES"  # Enhanced format with reason
+```
+
+**What happens next:**
+1. Framework sees `FALSE REASON=MISSING_FILES`
+2. Framework knows specific error type
+3. Framework STOPS and alerts human
+4. Human investigates missing files before continuing
+
+### EXCEPTIONAL - Recursive Split (FALSE REASON=RECURSIVE_SPLIT)
+```bash
+echo "❌ ERROR: Split E3.1.2-split-1 STILL exceeds limits"
+echo "❌ Recursive split required - needs human review"
+echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=RECURSIVE_SPLIT"  # Enhanced format
+```
+
+### 🔴🔴🔴 BUG FIX AUTOMATION EXAMPLES (R536) 🔴🔴🔴
+
+**CRITICAL**: Bug fixes and fix cascades are NORMAL OPERATIONS. They should ALWAYS use TRUE unless convergence fails.
+
+#### ✅ NORMAL - Bugs Found During Integration (TRUE)
+```bash
+# Integration review finds bugs - THIS IS NORMAL!
+echo "📊 Integration Review Results:"
+echo "  - Bugs found: 12"
+echo "  - Creating fix plan automatically..."
+echo "✅ NORMAL OPERATION: Bug fixes are automated"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Continue to CREATE_WAVE_FIX_PLAN
+```
+
+**Why TRUE**: Finding bugs during integration is EXPECTED and designed behavior. The system should automatically create and execute fix plans.
+
+#### ✅ NORMAL - Fix Plan Created (TRUE)
+```bash
+# Fix plan analysis complete
+echo "📋 Fix Plan Created:"
+echo "  - 8 bugs assigned to upstream branches"
+echo "  - 4 bugs require integration-specific fixes"
+echo "✅ NORMAL OPERATION: Executing fix plan automatically..."
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Continue to FIX_WAVE_UPSTREAM_BUGS
+```
+
+**Why TRUE**: Creating fix plans is normal development. No human approval needed.
+
+#### ✅ NORMAL - First Fix Cascade (TRUE)
+```bash
+# First time fixing bugs in this wave
+echo "🔧 Applying fixes to effort branches..."
+echo "  - Iteration 1 of fix cascade"
+echo "  - 15 bugs being fixed"
+echo "✅ NORMAL OPERATION: First fix cascade executing"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Continue cascade loop
+```
+
+**Why TRUE**: First fix cascade is completely normal. System should loop automatically.
+
+#### ✅ NORMAL - Multiple Fix Iterations (TRUE)
+```bash
+# Iteration 5 of fix cascade
+echo "🔁 Fix Cascade Iteration 5:"
+echo "  - Bugs: 15 → 8 → 4 → 2 → 1"
+echo "  - Convergence: IN PROGRESS"
+echo "  - Creating next fix plan..."
+echo "✅ NORMAL OPERATION: Convergence in progress"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Keep iterating!
+```
+
+**Why TRUE**: Multiple iterations show convergence working. Continue until bugs → 0.
+
+#### ✅ NORMAL - Convergence Achieved (TRUE)
+```bash
+# Bugs reached zero
+echo "✅ Fix Cascade Complete:"
+echo "  - Iterations: 7"
+echo "  - Final bugs: 0"
+echo "  - Convergence: ACHIEVED"
+echo "✅ NORMAL OPERATION: Integration clean, wave complete"
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Continue to WAVE_COMPLETE
+```
+
+**Why TRUE**: Successful convergence is the GOAL. Continue to wave completion.
+
+#### ✅ NORMAL - Integration Failures (TRUE)
+```bash
+# Build failed during integration
+echo "🔴 Integration build failed"
+echo "  - Merge conflicts: 3"
+echo "  - Build errors: 5"
+echo "✅ NORMAL OPERATION: Creating fix plan for build failures..."
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Treat as bugs, fix automatically
+```
+
+**Why TRUE**: Build failures ARE bugs. Fix them through normal cascade.
+
+#### ✅ NORMAL - Test Failures (TRUE)
+```bash
+# Tests failing on integration branch
+echo "🔴 Tests failing on integration branch"
+echo "  - Failed tests: 8"
+echo "  - Test suites affected: 3"
+echo "✅ NORMAL OPERATION: Creating fix plan for test failures..."
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"  # Treat as bugs, fix automatically
+```
+
+**Why TRUE**: Test failures ARE bugs. Fix them through normal cascade.
+
+#### ❌ EXCEPTIONAL - Iteration Overflow (FALSE REASON=ITERATION_OVERFLOW)
+```bash
+# 11th iteration with same bugs
+echo "❌ FIX CASCADE FAILURE: Iteration overflow"
+echo "  - Iterations: 11/10 (exceeded maximum)"
+echo "  - Bugs: 3 (same bugs after 11 iterations)"
+echo "  - Convergence: FAILED (non-convergence detected)"
+echo "❌ EXCEPTIONAL: Manual investigation required"
+echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=ITERATION_OVERFLOW"
+```
+
+**Why FALSE**: System tried 10+ times and couldn't converge. Needs human investigation of root cause.
+
+#### ❌ EXCEPTIONAL - Divergence Detected (FALSE REASON=DIVERGENCE)
+```bash
+# Bugs increasing instead of decreasing
+echo "❌ FIX CASCADE FAILURE: Divergence detected"
+echo "  - Bug history: 3 → 5 → 8 → 12"
+echo "  - Fixes making things WORSE"
+echo "  - Convergence: FAILED (diverging)"
+echo "❌ EXCEPTIONAL: Manual investigation required"
+echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=DIVERGENCE"
+```
+
+**Why FALSE**: Fixes are making things worse. Fundamental problem needs human analysis.
+
+### 🎯 BUG FIX DECISION MATRIX
+
+```
+Bugs found during integration?
+  → YES + iteration < 10 + bugs decreasing → TRUE (continue cascade)
+  → YES + iteration < 10 + bugs stable → TRUE (continue cascade)
+  → YES + iteration >= 10 + bugs stable → FALSE REASON=ITERATION_OVERFLOW
+  → YES + bugs increasing → FALSE REASON=DIVERGENCE
+  → NO (bugs = 0) → TRUE (convergence achieved)
+```
+
+**DEFAULT FOR BUG FIXES**: TRUE (automated cascade)
+**ONLY USE FALSE**: When convergence impossible (overflow/divergence)
+
+### EXCEPTIONAL - Multiple Cascades (FALSE REASON=ITERATION_OVERFLOW)
+```bash
+echo "❌ ERROR: This is the 4th fix cascade for same issues"
+echo "❌ Pattern indicates fundamental problem"
+echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=ITERATION_OVERFLOW"  # Enhanced format
+```
+
+### EXCEPTIONAL - State Corruption (FALSE REASON=STATE_CORRUPTION)
+```bash
+echo "❌ ERROR: State file JSON schema validation failed"
+echo "❌ current_state field is missing or invalid"
+echo "CONTINUE-SOFTWARE-FACTORY=FALSE REASON=STATE_CORRUPTION"  # Enhanced format
+```
+
+## Universality Requirement
+This rule applies to:
+- All orchestrator states
+- All sw-engineer states
+- All code-reviewer states
+- All architect states
+- All integration states
+- All software-factory-manager states
+- All future agents and states
+- All contexts (main, integration, pr-ready, fix-cascade, splitting, initialization)
+
+**NO EXCEPTIONS**
+
+## Related Rules
+- R234: Mandatory State Traversal
+- R231: Continuous Operation Through Transitions
+- R288: Mandatory State File Updates
+
+## Compliance Verification
+```bash
+# Check all state rule files have R405
+for file in agent-states/*/*/rules.md; do
+    if ! grep -q "R405" "$file"; then
+        echo "VIOLATION: $file missing R405"
+    fi
+done
+
+# Check agent outputs include flag with FULL FORMAT
+if ! echo "$AGENT_OUTPUT" | grep -q "^CONTINUE-SOFTWARE-FACTORY=\(TRUE\|FALSE\)"; then
+    echo "VIOLATION: Agent did not output continuation flag with full format"
+fi
+
+# Detect incorrect short format
+if echo "$AGENT_OUTPUT" | grep -q "^R405.*: \(TRUE\|FALSE\)$"; then
+    echo "VIOLATION: Agent used short format 'R405...: TRUE' instead of 'CONTINUE-SOFTWARE-FACTORY=TRUE'"
+fi
+```
+
+## Date Added
+2025-01-23
+
+## Rationale
+Full automation of Software Factory 2.0 requires a reliable, universal signal that external scripts can use to determine whether to continue processing or stop for human intervention. This flag provides that signal in a consistent, greppable format that works across all agents and states.
+
+**CRITICAL DESIGN PRINCIPLE**: The system should run AUTONOMOUSLY through NORMAL operations. Human intervention should ONLY be required for TRULY EXCEPTIONAL situations that the system cannot handle. A failed effort, a needed split, or a review finding issues are ALL NORMAL and can be handled automatically. Default to TRUE unless you have a TRULY EXCEPTIONAL reason to stop.
+## State Manager Coordination (SF 3.0)
+
+State Manager integration with R405 continuation flag:
+- **Shutdown consultation** returns `validation_result` with continuation recommendation
+- **CONTINUE-SOFTWARE-FACTORY=TRUE** when state successfully updated and pushed
+- **CONTINUE-SOFTWARE-FACTORY=FALSE** when validation fails or rollback occurs
+- **Orchestrator** sets final flag based on State Manager shutdown result
+
+The bookend pattern ensures continuation flag accuracy matches actual state persistence.
+
+See: `.claude/agents/state-manager.md`, `agent-states/state-manager/SHUTDOWN_CONSULTATION/rules.md`

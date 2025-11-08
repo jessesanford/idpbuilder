@@ -1,0 +1,23 @@
+# Orchestrator TODOs - SPAWN_CODE_REVIEWER_WAVE_IMPL State COMPLETE
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Phase: 2, Wave: 1
+# R287 Compliance: TODO persistence before state transition
+
+## Completed Tasks
+- [x] Spawn Code Reviewer for wave implementation planning
+- [x] Code Reviewer created WAVE-IMPLEMENTATION-PLAN.md with EXACT fidelity
+- [x] Verify R213 compliance - 2 efforts with complete metadata
+  - Effort 2.1.1: Push Command Core (450 lines)
+  - Effort 2.1.2: Progress Reporter (300 lines)
+- [x] Verify size compliance (750 total lines, both efforts <800)
+- [x] Save TODOs per R287
+
+## R213 Compliance Summary
+✅ Effort 2.1.1: Complete metadata (effort_id, estimated_lines, dependencies, files, branch, theme, scope)
+✅ Effort 2.1.2: Complete metadata (effort_id, estimated_lines, dependencies, files, branch, theme, scope)
+✅ EXACT fidelity: Real file paths, detailed specs
+✅ Test integration: 40 tests referenced from WAVE-TEST-PLAN.md
+✅ Sequential dependencies: 2.1.2 depends on 2.1.1
+
+## Next State (Proposed)
+WAITING_FOR_IMPLEMENTATION_PLAN (via State Manager SHUTDOWN_CONSULTATION)

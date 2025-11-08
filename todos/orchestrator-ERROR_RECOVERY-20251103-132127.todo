@@ -1,0 +1,21 @@
+# Orchestrator ERROR_RECOVERY TODOs - 2025-11-03
+
+## Completed Tasks
+- [x] Analyze BUG-021 details from integration report
+- [x] Spawn SW Engineer to complete BUG-020 fix in effort-2 branch
+- [x] Monitor SW Engineer fix progress
+- [x] Verify fix committed and pushed to remote effort-2 branch
+- [x] Prepare state transition summary for next continuation
+
+## Current Task
+- [~] Save TODOs and commit per R287
+
+## Summary
+BUG-021 resolved. SW Engineer successfully completed BUG-020 fix by:
+- Confirming validator.go stub already removed in commit c36d629
+- Establishing remote tracking for effort-2 branch
+- Pushing all commits to remote (commits: c36d629, 8139a33, 6b17f33, a2b3064)
+- Creating BUG-021-FIXED.flag
+- Creating BUG-021-FIX-SUMMARY.md
+
+Ready for START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS (iteration 4)

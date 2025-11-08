@@ -1,0 +1,25 @@
+# Orchestrator TODOs - WAITING_FOR_IMPLEMENTATION_PLAN State
+# Saved: 2025-10-31T21:40:00Z
+# State: WAITING_FOR_IMPLEMENTATION_PLAN → INJECT_WAVE_METADATA
+
+## Completed Tasks
+- [x] Validate Wave 2.1 implementation plan exists and meets R502 quality gates
+- [x] Extract and document effort metadata from Wave 2.1 plan
+- [x] Update orchestrator state file with effort details
+- [x] Spawn State Manager for SHUTDOWN_CONSULTATION
+- [x] Save TODOs and output continuation flag per R405
+
+## State Transition Summary
+- Previous State: WAITING_FOR_IMPLEMENTATION_PLAN
+- Next State: INJECT_WAVE_METADATA (approved by State Manager)
+- Phase: 2, Wave: 1
+- Efforts: 2 (750 lines total, sequential execution)
+- Transition Time: 2025-10-31T21:39:38Z
+- Commit: 56fedab09bb5f01d26ab3a19b5ebc5abdbf8d57e
+
+## Next State Actions
+The orchestrator should enter INJECT_WAVE_METADATA state and:
+1. Read state-specific rules
+2. Inject R213 metadata into effort directories
+3. Validate metadata injection
+4. Transition per State Manager guidance

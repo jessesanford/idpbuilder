@@ -1,0 +1,21 @@
+# Orchestrator TODO State - CREATE_NEXT_INFRASTRUCTURE
+# Saved: 2025-11-03T02:48:35Z
+# Trigger: State transition to ERROR_RECOVERY (R287)
+
+## Completed Tasks
+- [x] Validate pre-planned infrastructure exists (R504)  
+- [x] Determine which efforts need infrastructure (R603)
+- [x] Analyze state machine situation - no infrastructure to create
+- [x] Run pre-calculation utility for Phase 2 Wave 3
+- [x] Determine appropriate next state transition
+- [x] Spawn State Manager for shutdown consultation (R517)
+- [x] Save TODOs per R287
+
+## Issue Discovered
+Pre-planned infrastructure missing for Phase 2 Wave 3 efforts.
+State Manager approved transition to ERROR_RECOVERY.
+
+## Next Steps (for ERROR_RECOVERY state)
+1. Choose recovery option (manual metadata injection, re-execute planning, or skip pre-planning)
+2. Resolve pre-planning gap for Phase 2 Wave 3
+3. Return to CREATE_NEXT_INFRASTRUCTURE or appropriate state

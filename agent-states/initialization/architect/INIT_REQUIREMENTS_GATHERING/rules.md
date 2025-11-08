@@ -1,0 +1,344 @@
+# Architect - INIT_REQUIREMENTS_GATHERING State Rules
+
+## 🔴🔴🔴 ABSOLUTE REQUIREMENT: STATE MANAGER CONSULTATION 🔴🔴🔴
+
+**SUPREME LAW - R517 - UNIVERSAL STATE MANAGER CONSULTATION LAW**
+
+**BEFORE EXITING THIS STATE, YOU MUST:**
+
+1. **SPAWN STATE MANAGER FOR SHUTDOWN_CONSULTATION** (MANDATORY - NO EXCEPTIONS)
+2. **NEVER UPDATE STATE FILES DIRECTLY** (orchestrator-state-v3.json, bug-tracking.json, etc.)
+3. **NEVER COMMIT STATE FILES YOURSELF** (State Manager does this atomically)
+
+**FAILURE TO CONSULT STATE MANAGER = IMMEDIATE SYSTEM HALT (-100% GRADE)**
+
+### Enforcement Mechanism
+
+If you attempt to exit this state without spawning State Manager:
+- ❌ Pre-commit hooks will REJECT your commit
+- ❌ Validation tools will FAIL the build
+- ❌ Grading system will assign -100% penalty
+- ❌ System will transition to ERROR_RECOVERY
+
+### Required Pattern (COPY THIS EXACTLY)
+
+```bash
+# At end of state work, BEFORE any state file updates:
+
+echo "🔴 MANDATORY: Spawning State Manager for SHUTDOWN_CONSULTATION"
+
+# Spawn State Manager (REQUIRED - NOT OPTIONAL)
+# Task: state-manager
+# State: SHUTDOWN_CONSULTATION
+# Current State: [YOUR_CURRENT_STATE]
+# Proposed Next State: [YOUR_PROPOSED_NEXT_STATE]
+# Work Summary: [SUMMARY_OF_WORK_COMPLETED]
+
+# State Manager will:
+# 1. Validate proposed transition against state machine
+# 2. Update all 4 state files atomically
+# 3. Commit with [R288] tag
+# 4. Return REQUIRED next state (may differ from proposal)
+
+# Wait for State Manager response
+# Follow State Manager's directive (REQUIRED next state)
+# DO NOT proceed until State Manager confirms
+```
+
+**YOU MUST NEVER:**
+- ❌ Update orchestrator-state-v3.json yourself
+- ❌ Update bug-tracking.json yourself
+- ❌ Update integration-containers.json yourself
+- ❌ Use `jq` to modify state files
+- ❌ Use `sed/awk` to modify state files
+- ❌ Set `validated_by: "orchestrator"` (must be "state-manager")
+- ❌ Skip State Manager consultation "just this once"
+- ❌ Think "I'll validate it manually"
+
+**ONLY State Manager may update state files. This is NON-NEGOTIABLE.**
+
+See: `rule-library/R517-universal-state-manager-consultation-law.md`
+## Purpose
+Conduct interactive Q&A session to gather all project requirements, OR detect non-interactive mode and skip to decomposition.
+
+## Entry Criteria
+- Examples and templates loaded
+- Question framework prepared
+- User available for interaction (interactive mode) OR requirements bundle exists (non-interactive mode)
+
+## 🔴🔴🔴 STEP 0: NON-INTERACTIVE MODE DETECTION (HIGHEST PRIORITY) 🔴🔴🔴
+
+**BEFORE doing ANYTHING else, check for non-interactive mode:**
+
+```bash
+# Check if init-state-temp.json exists with non_interactive_mode flag
+if [ -f "$CLAUDE_PROJECT_DIR/init-state-temp.json" ]; then
+    NON_INTERACTIVE=$(jq -r '.non_interactive_mode // false' "$CLAUDE_PROJECT_DIR/init-state-temp.json")
+
+    if [ "$NON_INTERACTIVE" == "true" ]; then
+        echo "✅ NON-INTERACTIVE MODE DETECTED"
+        echo "✅ Requirements bundle found in init-state-temp.json"
+        echo "✅ Skipping Q&A session entirely"
+        echo "✅ All requirements pre-loaded from parameters"
+
+        # Validate requirements bundle has all required fields
+        REQUIRED_FIELDS=(
+            ".requirements.codebase.type"
+            ".requirements.technology.languages"
+            ".requirements.technology.build_system"
+            ".requirements.technology.test_framework"
+            ".requirements.architecture.type"
+        )
+
+        for field in "${REQUIRED_FIELDS[@]}"; do
+            VALUE=$(jq -r "$field" "$CLAUDE_PROJECT_DIR/init-state-temp.json")
+            if [ -z "$VALUE" ] || [ "$VALUE" == "null" ]; then
+                echo "❌ ERROR: Required field $field missing from requirements bundle"
+                echo "CONTINUE-SOFTWARE-FACTORY=FALSE"
+                exit 1
+            fi
+        done
+
+        echo "✅ Requirements bundle validated - all required fields present"
+        echo "✅ Transitioning directly to INIT_DECOMPOSE_PRD (skipping Q&A)"
+
+        # Output R405 flag and exit - orchestrator will transition to next state
+        echo "CONTINUE-SOFTWARE-FACTORY=TRUE"
+        exit 0
+    else
+        echo "✅ Interactive mode detected (non_interactive_mode: false or not set)"
+        echo "✅ Proceeding with Q&A session"
+    fi
+else
+    echo "✅ No init-state-temp.json found - proceeding with interactive Q&A"
+fi
+```
+
+**IF NON-INTERACTIVE MODE DETECTED:**
+- **DO NOT ASK ANY QUESTIONS**
+- **DO NOT PROCEED TO STEP 1 BELOW**
+- **IMMEDIATELY OUTPUT** `CONTINUE-SOFTWARE-FACTORY=TRUE` **AND EXIT**
+- Orchestrator will transition architect to INIT_DECOMPOSE_PRD
+- INIT_DECOMPOSE_PRD will read requirements from bundle
+
+**IF INTERACTIVE MODE (or no bundle found):**
+- Continue with Step 1 below (normal Q&A session)
+
+---
+
+## Required Actions (INTERACTIVE MODE ONLY)
+
+### 1. Begin with Context
+"Based on your project idea: [idea], I need to gather some requirements to set up your Software Factory properly."
+
+### 2. Ask Questions by Category
+
+#### Category 1: Target Codebase
+```
+Q1: Is this for an existing codebase or a new project?
+    If existing:
+    Q1a: What is the repository name/URL?
+    Q1b: Do you have a fork to use as the upstream target?
+    Q1c: What is your fork's URL?
+    Q1d: What is the main branch name?
+
+    If new:
+    Q1a: What should the repository be named?
+    Q1b: Should I create a git repository for it?
+```
+
+#### Category 2: Technology Stack
+```
+Q2: What programming language(s) will this use?
+Q3: What are the key libraries/frameworks? (comma-separated)
+Q4: What build system? (make, npm, cargo, gradle, etc.)
+Q5: What testing framework(s)?
+Q6: Any code generation tools?
+```
+
+#### Category 3: Architecture & Patterns
+```
+Q7: What type of project? (CLI tool, library, web service, etc.)
+Q8: Architecture pattern? (monolith, microservices, serverless, etc.)
+Q9: Any specific design patterns to follow?
+Q10: Any existing code patterns to maintain compatibility with?
+```
+
+#### Category 4: Deployment & Infrastructure
+```
+Q11: Target deployment environment? (cloud provider, k8s, local, etc.)
+Q12: Container requirements? (Docker, specific base images)
+Q13: CI/CD preferences? (GitHub Actions, Jenkins, etc.)
+Q14: Any infrastructure as code? (Terraform, Helm, etc.)
+```
+
+#### Category 5: Quality Requirements
+```
+Q15: Performance requirements? (response time, throughput)
+Q16: Security requirements? (auth method, encryption)
+Q17: Compliance needs? (HIPAA, SOC2, etc.)
+Q18: Code coverage target? (percentage)
+```
+
+#### Category 6: Project Specifics
+```
+Q19: Who are the end users?
+Q20: What problem does this solve?
+Q21: Any competitor products to reference?
+Q22: Documentation requirements?
+```
+
+### 3. Process Answers
+For each answer:
+- Validate format/content
+- Ask follow-ups if unclear
+- Store in structured format
+- Mark field as complete
+
+### 4. Build Requirements Document
+Create structured requirements in state file:
+```json
+"requirements": {
+  "codebase": {
+    "type": "existing|new",
+    "upstream_url": "...",
+    "fork_url": "...",
+    "main_branch": "..."
+  },
+  "technology": {
+    "languages": ["..."],
+    "frameworks": ["..."],
+    "build_system": "...",
+    "test_framework": "..."
+  },
+  "architecture": {
+    "type": "...",
+    "patterns": ["..."]
+  },
+  "deployment": {
+    "environment": "...",
+    "containerization": "...",
+    "ci_cd": "..."
+  },
+  "quality": {
+    "performance": "...",
+    "security": "...",
+    "coverage_target": "..."
+  }
+}
+```
+
+### 5. Validate Completeness
+Ensure all required fields have values:
+- For setup-config.yaml: 12 required fields
+- For target-repo-config.yaml: 5-8 fields
+- For IMPLEMENTATION-PLAN.md: All sections
+
+## Interactive Q&A Best Practices
+
+### Asking Questions
+- One category at a time
+- Provide examples in questions
+- Accept "none" or "N/A" as valid
+- Offer common options
+
+### Example Interactions
+```
+Architect: "What programming language(s) will this project use?"
+User: "Go"
+
+Architect: "What are the key libraries/frameworks? (e.g., gin, cobra, gorm)"
+User: "cobra for CLI, go-containerregistry for OCI"
+
+Architect: "What build system? (make, go build, bazel, etc.)"
+User: "make"
+```
+
+### Handling Unclear Answers
+If answer is ambiguous:
+"Could you clarify X? For example, do you mean Y or Z?"
+
+If answer missing key info:
+"That's helpful. Could you also specify [missing detail]?"
+
+## Exit Criteria
+- All required fields have values
+- Requirements document complete
+- Ready for repository decision
+- User confirmed answers
+
+## Transition
+**MANDATORY**: → INIT_REPO_DECISION (return to orchestrator)
+
+## Time Guidance
+- ~15-20 questions total
+- Allow 30-60 seconds per answer
+- Total time: 10-15 minutes
+
+## Error Handling
+- User unsure → Provide defaults/examples
+- Contradictory answers → Clarify priority
+- Missing critical info → Mark required, re-ask
+
+## 🔴🔴🔴 R405 - MANDATORY AUTOMATION CONTINUATION FLAG 🔴🔴🔴
+
+**SUPREME LAW - PENALTY FOR VIOLATION: -100% GRADE**
+
+### YOU MUST OUTPUT THE CONTINUATION FLAG AS YOUR LAST ACTION
+
+**EVERY STATE COMPLETION MUST END WITH EXACTLY ONE OF:**
+```bash
+# If state completed successfully and factory should continue:
+echo "CONTINUE-SOFTWARE-FACTORY=TRUE"
+
+# If error/block/manual review needed:
+echo "CONTINUE-SOFTWARE-FACTORY=FALSE"
+```
+
+### CRITICAL REQUIREMENTS:
+1. **ABSOLUTE LAST OUTPUT**: This MUST be the very last line of output before state completion
+2. **NO TEXT AFTER**: No explanations, summaries, or any text after the flag
+3. **EXACTLY AS SHOWN**: Use exact format - no variations like CONTINUE-ORCHESTRATING
+4. **ALWAYS REQUIRED**: Every single state must output this flag
+5. **GREPPABLE**: Must be on its own line for automation parsing
+
+### WHEN TO USE TRUE:
+- ✅ State work completed successfully
+- ✅ All validations passed
+- ✅ Ready for next state
+- ✅ No blockers detected
+- ✅ All requirements met
+
+### WHEN TO USE FALSE:
+- ❌ Any unrecoverable error occurred
+- ❌ Manual intervention required
+- ❌ Missing required files or configs
+- ❌ Test failures blocking progress
+- ❌ Ambiguous or unclear instructions
+- ❌ Wrong working directory or branch
+- ❌ State machine validation failed
+
+### IMPLEMENTATION PATTERN:
+```bash
+# At the VERY END of state execution, after ALL work:
+
+# Determine success/failure
+if [[ "$STATE_COMPLETED_PROJECT_DONEFULLY" == "true" ]]; then
+    echo "✅ State work completed successfully"
+    echo "CONTINUE-SOFTWARE-FACTORY=TRUE"
+else
+    echo "❌ State encountered issues requiring intervention"
+    echo "CONTINUE-SOFTWARE-FACTORY=FALSE"
+fi
+
+# DO NOT OUTPUT ANYTHING AFTER THE FLAG!
+```
+
+### GRADING IMPACT:
+- **Missing flag**: -100% AUTOMATIC FAILURE
+- **Text after flag**: -50% penalty
+- **Wrong format**: -100% AUTOMATIC FAILURE
+- **Multiple flags**: -50% penalty
+
+**See: $CLAUDE_PROJECT_DIR/rule-library/R405-automation-continuation-flag.md**
+

@@ -1,0 +1,39 @@
+# Orchestrator TODO State - SPAWN_SW_ENGINEERS → ERROR_RECOVERY
+# Saved: 2025-11-01T20:07:34Z
+# Trigger: R287 - State transition
+
+## Completed Tasks
+- [x] Read SPAWN_SW_ENGINEERS state rules
+- [x] Load Wave 2.2 implementation plan and extract effort metadata
+- [x] Verify efforts must be sequential (R213 metadata check)
+- [x] Check for effort workspace directories
+- [x] Spawn single SW Engineer for sequential effort execution
+- [x] SW Engineer detected R509 cascade validation failure in Effort 2.2.2
+- [x] Verify R509 failure: Effort 2.2.2 missing config.go from 2.2.1
+- [x] Transition to ERROR_RECOVERY to fix infrastructure
+- [x] Spawn State Manager for SHUTDOWN_CONSULTATION with ERROR_RECOVERY transition
+- [x] Save TODOs per R287
+
+## Context for Next State (ERROR_RECOVERY)
+
+### R509 Cascade Validation Failure
+- **Effort 2.2.1**: ✅ Complete and approved (247 lines, includes config.go)
+- **Effort 2.2.2**: ❌ Wrong base branch (based on wave 2.1, should be based on effort 2.2.1)
+- **Missing Files**: pkg/cmd/push/config.go (required dependency)
+- **R213 Metadata**: Effort 2.2.2 depends_on: ["effort:2.2.1"]
+
+### Recovery Actions Needed
+1. Rebuild Effort 2.2.2 infrastructure with correct base branch
+2. Base on: idpbuilder-oci-push/phase2/wave2/effort-1-registry-override-viper (or its integration)
+3. Verify config.go is present in new workspace
+4. Resume with SPAWN_SW_ENGINEERS after infrastructure fix
+
+### Efforts Status
+- Effort 2.2.1: COMPLETE (247 lines, approved, ready for integration)
+- Effort 2.2.2: BLOCKED (infrastructure error, needs rebuild)
+
+## State Machine Position
+- Previous State: ANALYZE_IMPLEMENTATION_PARALLELIZATION
+- Current State: ERROR_RECOVERY (transitioned via State Manager)
+- Phase: 2
+- Wave: 2

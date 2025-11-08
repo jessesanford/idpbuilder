@@ -1,0 +1,34 @@
+ORCHESTRATOR TODO STATE - SPAWN_ARCHITECT_MASTER_PLANNING
+Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+Trigger: SPAWN_ARCHITECT_MASTER_PLANNING_COMPLETE (R287)
+
+COMPLETED TASKS:
+✅ Loaded state from orchestrator-state-v3.json (R324)
+✅ Acknowledged all critical rules (R151, R217, R232, R290, R322, R324, R405)
+✅ Read state-specific rules from agent-states/software-factory/orchestrator/SPAWN_ARCHITECT_MASTER_PLANNING/rules.md
+✅ Verified master architecture file exists at planning/PROJECT-ARCHITECTURE.md
+✅ Verified architecture status: COMPLETE
+✅ Determined next state: WAITING_FOR_MASTER_ARCHITECTURE
+✅ Set PROPOSED_NEXT_STATE and TRANSITION_REASON per R288
+✅ Saved proposed transition to .proposed-transition file
+✅ Committed work products per R288 Step 5
+✅ Saving TODOs per R287 Step 6 (this file)
+
+NEXT ACTIONS (for State Manager):
+⏳ State Manager will read .proposed-transition
+⏳ State Manager will validate transition against state machine
+⏳ State Manager will update orchestrator-state-v3.json to WAITING_FOR_MASTER_ARCHITECTURE
+⏳ State Manager will commit and push state file
+⏳ State Manager will re-invoke orchestrator (if CONTINUE=TRUE)
+
+STATE COMPLETION CHECKLIST PROGRESS:
+✅ Step 1: State-specific work complete
+✅ Step 2: Proposed transition verified
+✅ Step 3: Transition saved to file
+⚠️ Step 4: State validation (schema issues, State Manager will fix)
+✅ Step 5: Work products committed
+🔄 Step 6: TODOs being saved (IN PROGRESS)
+⏳ Step 7: Output transition proposal
+⏳ Step 8: Output continuation flag
+⏳ Step 9: State Manager handoff
+⏳ Step 10: Stop processing

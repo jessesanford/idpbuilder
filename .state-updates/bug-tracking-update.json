@@ -1,0 +1,36 @@
+{
+  "bugs": [
+    {
+      "bug_id": "BUG-019-CODE-DELETION",
+      "status": "IN_PROGRESS",
+      "in_progress_since": "2025-11-02T18:50:08Z",
+      "fix_strategy": "DELETE_CORRUPTED_WORKSPACE_AND_REINTEGRATE",
+      "fix_strategy_notes": [
+        "Integration workspace at efforts/phase2/wave2/integration-workspace is corrupted",
+        "Commit 37b5e68 deleted 731 lines of approved Wave 2.1 code",
+        "Workspace deletion completed in iteration 6",
+        "Re-integration will occur in iteration 7 (START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS)",
+        "Will properly build Wave 2.2 ON TOP OF Wave 2.1 without deletions"
+      ],
+      "fix_strategy_determined_at": "2025-11-02T18:41:29Z",
+      "fix_strategy_determined_by": "orchestrator",
+      "will_fix_in_iteration": 7,
+      "fixing_in_iteration": 7,
+      "fix_started_at": "2025-11-02T18:50:08Z"
+    }
+  ],
+  "metadata.last_updated": "2025-11-02T18:50:08Z",
+  "metadata.notes": "State transition: START_WAVE_ITERATION to INTEGRATE_WAVE_EFFORTS (iteration 7 re-integration after workspace deletion)",
+  "metadata.state_transition": "INTEGRATE_WAVE_EFFORTS",
+  "last_state_transition": {
+    "from": "START_WAVE_ITERATION",
+    "to": "INTEGRATE_WAVE_EFFORTS",
+    "timestamp": "2025-11-02T18:50:08Z",
+    "reason": "Iteration 7: Re-integrate Wave 2.2 from clean Wave 2.1 base after workspace corruption resolution"
+  },
+  "state_machine_sync.current_state": "INTEGRATE_WAVE_EFFORTS",
+  "state_machine_sync.previous_state": "START_WAVE_ITERATION",
+  "state_machine_sync.last_transition": "2025-11-02T18:50:08Z",
+  "state_machine_sync.last_sync": "2025-11-02T18:50:08Z",
+  "current_state": "INTEGRATE_WAVE_EFFORTS"
+}

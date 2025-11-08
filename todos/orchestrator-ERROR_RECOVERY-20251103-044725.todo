@@ -1,0 +1,42 @@
+# Orchestrator TODO State - ERROR_RECOVERY
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: State transition completion (R287)
+
+## Completed Tasks
+- [x] Read and acknowledge all ERROR_RECOVERY state rules (R290)
+- [x] Create R290 verification marker
+- [x] Diagnose root cause: pre-planned infrastructure missing for Wave 2.3
+- [x] Read Wave 2.3 implementation plan and extract effort metadata
+- [x] Analyze pre_planned_infrastructure state (confirmed 12 efforts, none for Wave 2.3)
+- [x] Determine recovery plan: re-run INJECT_WAVE_METADATA
+- [x] Prepare state transition proposal
+- [x] Save TODOs per R287
+
+## Recovery Analysis Summary
+**Root Cause**: CREATE_NEXT_INFRASTRUCTURE failed because pre_planned_infrastructure is missing Wave 2.3 efforts.
+**Current State**: Phase 2 Wave 3, but no effort metadata injected
+**Evidence**: orchestrator-state-v3.json shows 12 efforts (Phase 1: 8, Phase 2 Wave 1: 2, Phase 2 Wave 2: 2, Phase 2 Wave 3: 0)
+
+**Wave 2.3 Efforts from WAVE-2.3-IMPLEMENTATION-PLAN.md**:
+1. Effort 2.3.1: Input Validation & Security Checks
+   - Branch: idpbuilder-oci-push/phase2/wave3/effort-2.3.1-input-validation
+   - Base: idpbuilder-oci-push/phase2/wave3/integration
+   - Estimated Lines: 400
+   - Dependencies: integration:phase2-wave2-integration
+   
+2. Effort 2.3.2: Error Type System & Exit Code Mapping
+   - Branch: idpbuilder-oci-push/phase2/wave3/effort-2.3.2-error-handling
+   - Base: idpbuilder-oci-push/phase2/wave3/effort-2.3.1-input-validation (CASCADE)
+   - Estimated Lines: 350
+   - Dependencies: effort:2.3.1
+
+## Proposed Recovery
+**Next State**: INJECT_WAVE_METADATA (re-run to inject Wave 2.3 metadata)
+**Transition Reason**: ERROR_RECOVERY complete - identified missing metadata issue, proposing return to INJECT_WAVE_METADATA to properly inject Wave 2.3 effort definitions
+
+## Next Steps (for INJECT_WAVE_METADATA state)
+1. Read WAVE-2.3-IMPLEMENTATION-PLAN.md R213 metadata
+2. Prepare effort metadata for 2.3.1 and 2.3.2
+3. Consult State Manager to inject metadata into pre_planned_infrastructure
+4. Transition to ANALYZE_CODE_REVIEWER_PARALLELIZATION or CREATE_NEXT_INFRASTRUCTURE
+

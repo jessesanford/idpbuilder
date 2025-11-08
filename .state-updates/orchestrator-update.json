@@ -1,0 +1,32 @@
+{
+  "state_machine.current_state": "INTEGRATE_WAVE_EFFORTS",
+  "state_machine.previous_state": "START_WAVE_ITERATION",
+  "state_machine.last_transition_timestamp": "2025-11-02T18:50:08Z",
+  "state_machine.last_state_manager_consultation": {
+    "timestamp": "2025-11-02T18:50:08Z",
+    "consultation_type": "SHUTDOWN_CONSULTATION",
+    "from_state": "START_WAVE_ITERATION",
+    "to_state": "INTEGRATE_WAVE_EFFORTS",
+    "validated": true,
+    "validation_result": "APPROVED",
+    "validated_by": "state-manager",
+    "guard_condition_check": "Iteration 7 started: Integration workspace deletion complete, ready to re-integrate Wave 2.2 from clean Wave 2.1 base",
+    "transition_allowed": true,
+    "exit_criteria_met": {
+      "iteration_counter_updated": true,
+      "iteration_number": 7,
+      "max_iterations": 10,
+      "iteration_within_limit": true,
+      "progress_analysis_complete": true,
+      "r615_decision": "CONTINUE",
+      "workspace_corruption_resolved": true
+    },
+    "entry_criteria_met": {
+      "wave_has_efforts": true,
+      "effort_count": 2,
+      "integration_container_exists": true,
+      "base_branch_clean": true
+    }
+  },
+  "project_progression.current_wave.iteration_number": 7
+}

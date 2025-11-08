@@ -1,0 +1,15 @@
+# Orchestrator TODOs - SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Phase: 2, Wave: 3
+
+[✓] Spawn Code Reviewer for effort 2.3.1 (input-validation) per R208 protocol
+[✓] Spawn Code Reviewer for effort 2.3.2 (error-system) per R208 protocol
+[→] Save TODOs per R287 after spawning
+[ ] Spawn State Manager for SHUTDOWN_CONSULTATION (R517)
+[ ] Output CONTINUE-SOFTWARE-FACTORY=TRUE flag (R405)
+
+## Spawning Complete
+- Both Code Reviewers spawned sequentially per R218
+- R208 CD protocol followed for each spawn
+- Plans created in correct .software-factory locations
+- Ready for state transition to WAITING_FOR_EFFORT_PLANS

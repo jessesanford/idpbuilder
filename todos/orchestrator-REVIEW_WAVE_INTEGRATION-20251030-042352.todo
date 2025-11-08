@@ -1,0 +1,33 @@
+# Orchestrator TODO State - REVIEW_WAVE_INTEGRATION
+# Saved: $(date '+%Y-%m-%d %H:%M:%S UTC')
+# Trigger: REVIEW_WAVE_INTEGRATION_COMPLETE
+# Agent: orchestrator
+# State: REVIEW_WAVE_INTEGRATION → REVIEW_WAVE_ARCHITECTURE
+
+## Completed Tasks ✅
+- [x] Read and acknowledge all REVIEW_WAVE_INTEGRATION state rules per R290
+- [x] Create R290 verification marker file
+- [x] Verify integration build status before review
+- [x] Spawn Code Reviewer agent for wave integration review per R232
+- [x] Wait for Code Reviewer to complete review and provide report
+- [x] Record all bugs from review in bug-tracking.json per R313
+- [x] Update iteration history with bugs_found count
+- [x] Determine next state based on bugs_found
+- [x] Spawn State Manager for SHUTDOWN_CONSULTATION with proposed next state
+- [x] Save TODOs per R287 before state transition
+
+## Pending Tasks ⏳
+- [ ] Output CONTINUE-SOFTWARE-FACTORY flag per R405 as absolute last action
+
+## Context
+- Integration Review Status: COMPLETE
+- Bugs Found: 0
+- All Wave 2 tests passing: 63/63
+- Integration approved for architecture review
+- Review Report: .software-factory/phase1/wave2/integration/INTEGRATION-REVIEW-REPORT--20251030-041824.md
+- Next State: REVIEW_WAVE_ARCHITECTURE (State Manager approved)
+- State Manager Commit: e6c1be7
+- Consultation Report: STATE-MANAGER-SHUTDOWN-CONSULTATION-20251030-042152.md
+
+## State Machine Flow
+REVIEW_WAVE_INTEGRATION (bugs_found == 0) → REVIEW_WAVE_ARCHITECTURE → WAVE_COMPLETE

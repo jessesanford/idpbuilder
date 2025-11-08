@@ -1,0 +1,33 @@
+# Orchestrator CREATE_WAVE_FIX_PLAN State - TODOs
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Phase: 2, Wave: 2, Iteration: 4
+# State: CREATE_WAVE_FIX_PLAN → FIX_WAVE_UPSTREAM_BUGS (awaiting user approval)
+
+## Completed Tasks:
+1. ✅ Read all 8 mandatory rule files for CREATE_WAVE_FIX_PLAN state
+2. ✅ Acknowledged all state rules per R290 requirement
+3. ✅ Loaded bugs from BUG-MANIFEST-wave-2-2.json (6 total, 3 BLOCKING)
+4. ✅ Categorized bugs (3 UPSTREAM, 1 WAVE_PLANNING, 1 CASCADE, 1 INFRASTRUCTURE)
+5. ✅ Identified affected upstream branches for all bugs
+6. ✅ Created comprehensive fix plan with R321 backport strategy
+7. ✅ Presented fix plan to user via R322 checkpoint
+
+## In Progress:
+- Awaiting user decision on BUG-002 size violation (Options A/B/C/D)
+- Awaiting user approval to proceed with fix execution
+
+## Pending (after user approval):
+- Spawn State Manager for SHUTDOWN_CONSULTATION
+- Transition to FIX_WAVE_UPSTREAM_BUGS (if approved)
+
+## Critical Decision Points:
+- BUG-WAVE-2-2-002: Integration exceeds 848 lines (48 over 800 hard limit)
+- User must choose: Option A (accept), B (remove stubs), C (re-plan), or D (split)
+- Orchestrator recommends Option B for fastest compliant resolution
+
+## Fix Plan Summary:
+- 3 BLOCKING bugs identified (BUG-001, BUG-002, BUG-003)
+- BUG-001: Build failure (5 min fix)
+- BUG-002: Size violation (depends on option chosen)
+- BUG-003: R383 violation (2 min fix)
+- Total estimated time: 25-35 minutes (best case) or 3-6 hours (worst case)

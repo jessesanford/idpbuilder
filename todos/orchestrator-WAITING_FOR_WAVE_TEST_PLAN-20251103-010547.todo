@@ -1,0 +1,32 @@
+# TODO State for orchestrator - WAITING_FOR_WAVE_TEST_PLAN
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: R287 - Before state transition
+
+## Completed Tasks
+- [x] Load current orchestrator state from orchestrator-state-v3.json
+- [x] Validate target-repo-config.yaml (R191)
+- [x] Check for implementation plan or architect prompt  
+- [x] Read WAITING_FOR_WAVE_TEST_PLAN state rules per R290
+- [x] Validate wave test deliverables exist
+- [x] Prepare wave test metadata per R340
+
+## In Progress Tasks
+- [ ] Save TODOs before spawning State Manager (R287) - COMPLETING NOW
+
+## Pending Tasks
+- [ ] Spawn State Manager for SHUTDOWN_CONSULTATION (R517)
+- [ ] Output CONTINUE-SOFTWARE-FACTORY flag (R405)
+
+## State Context
+- Current State: WAITING_FOR_WAVE_TEST_PLAN
+- Proposed Next State: CREATE_WAVE_INTEGRATION_BRANCH_EARLY
+- Phase: 2, Wave: 3
+- Wave test plan validated and complete
+- Ready for state transition via State Manager
+
+## Wave Test Plan Summary
+- Test Plan: planning/phase2/wave3/WAVE-TEST-PLAN.md (38873 bytes)
+- Architecture: planning/phase2/wave3/WAVE-2.3-ARCHITECTURE.md (45119 bytes)
+- 63 tests defined with progressive realism
+- TDD compliance (R341) - red phase planning complete
+- Metadata prepared for State Manager update

@@ -1,0 +1,18 @@
+# SW Engineer TODOs - Trigger: R287_CHECKPOINT_BEFORE_COMPLETION
+# State: FIX_ISSUES
+# Effort: effort-1-registry-override-viper
+# Timestamp: $(date -Iseconds)
+
+COMPLETED:
+- Priority 1: Fixed build error by adding viper import and passing viper instance
+- Priority 1: Committed and pushed (commit aa20b98)
+- Build verification: go build ./... succeeds
+- Build verification: go vet ./... clean
+
+BLOCKED - AWAITING ORCHESTRATOR DECISION:
+- Priority 2: Size violation (831 lines > 800 limit)
+- Issue: 389 lines of out-of-scope stub files that don't exist in main
+- Files: pkg/auth/provider.go, pkg/docker/client.go, pkg/progress/*.go, pkg/registry/client.go, pkg/tls/config.go
+- Dependency: push.go imports and uses these packages
+- Decision needed: Approach A (remove files) vs Approach B (split plan)
+- Action: Orchestrator must investigate and provide guidance per fix plan section "Recommendation for Orchestrator"
