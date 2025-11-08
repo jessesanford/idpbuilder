@@ -1,0 +1,8 @@
+Completed at: 2025-11-08 01:16:32 UTC
+Bug: BUG-025-DOCKER-IMAGELIST
+Effort: effort-3.1.1-test-harness (NOT 3.1.2 as originally reported)
+Branch: idpbuilder-oci-push/phase3/wave1/effort-3.1.1-test-harness
+Fix Commit: 0c27eb1
+Documentation Commit: 19ae9c3
+Status: FIXED
+R321 Compliance: ✅ Fixed in effort branch per IMMEDIATE BACKPORT protocol
