@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/client"
 )
 
@@ -51,7 +52,7 @@ func RemoveTestImages(ctx context.Context, dockerClient *client.Client) error {
 	}
 
 	// List all images
-	images, err := dockerClient.ImageList(ctx, types.ImageListOptions{})
+	images, err := dockerClient.ImageList(ctx, image.ListOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to list images: %w", err)
 	}
