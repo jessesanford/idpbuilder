@@ -1,0 +1,16 @@
+# TODO State at 2025-11-03 13:50:45
+# Agent: orchestrator
+# State: INTEGRATE_WAVE_EFFORTS
+# Phase: 2, Wave: 3, Iteration: 4
+
+## Completed (6)
+1. ✅ Acknowledge all state-specific rules for INTEGRATE_WAVE_EFFORTS state
+2. ✅ Check current wave, phase, and iteration status from state file
+3. ✅ Verify effort branches exist and are ready (effort-1, effort-2)
+4. ✅ Prepare integration instructions for Integration Agent
+5. ✅ Spawn Integration Agent to perform integration work for effort-2 (R329 MANDATORY)
+6. ✅ Save TODOs per R287
+
+## Pending (2)
+7. ⏳ Spawn State Manager for SHUTDOWN_CONSULTATION per R517
+8. ⏳ Output CONTINUE-SOFTWARE-FACTORY flag per R405

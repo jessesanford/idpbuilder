@@ -1,0 +1,40 @@
+# Orchestrator ERROR_RECOVERY State - TODO Checkpoint
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: R287 - State transition checkpoint
+
+## Completed Tasks
+
+1. [✅] Load and analyze current state from orchestrator-state-v3.json
+2. [✅] Read state-specific rules for ERROR_RECOVERY state (R290)
+3. [✅] Create R290 verification marker for ERROR_RECOVERY state
+4. [✅] Read PRIMARY DIRECTIVES rules individually per R290
+   - R019: Error Recovery Protocol
+   - R322: Mandatory Stop Before State Transitions
+   - R156: Error Recovery Time Targets
+   - R010: Wrong Location Handling Protocol
+   - R300: Comprehensive Fix Management Protocol
+5. [✅] Diagnose the error that triggered ERROR_RECOVERY
+   - Error Type: State machine positioning error (MEDIUM severity)
+   - Root Cause: Was in WAITING_FOR_FIX_PLANS but Wave 2.2 hasn't started implementation
+6. [✅] Spawn State Manager for SHUTDOWN_CONSULTATION
+   - Proposed: START_WAVE_ITERATION
+   - Decision: ACCEPTED
+   - All 4 state files updated atomically
+7. [✅] Save TODOs before state transition per R287
+
+## State Transition
+
+- From: ERROR_RECOVERY
+- To: START_WAVE_ITERATION
+- Phase: 2, Wave: 2
+- Validated by: state-manager
+- Timestamp: 2025-11-02T07:00:42Z
+
+## Next State Actions
+
+When transitioning to START_WAVE_ITERATION:
+1. Increment iteration counter in integration-containers.json
+2. Record iteration start timestamp
+3. Prepare for wave effort integration (2.2.1 and 2.2.2)
+4. Follow START_WAVE_ITERATION state rules
+

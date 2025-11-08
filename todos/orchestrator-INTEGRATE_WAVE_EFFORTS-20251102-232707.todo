@@ -1,0 +1,28 @@
+# TODO State at $(date '+%Y-%m-%d %H:%M:%S')
+# Agent: orchestrator
+# State: INTEGRATE_WAVE_EFFORTS
+# Phase: 2, Wave: 2
+# Iteration: 7
+
+## Completed (1)
+- Verify all effort branches exist and are ready (CHECKLIST[1]) - Verified: integration already performed in iteration 6, BUG-019 detected
+
+## In Progress (1)
+- Ensure wave integration branch is clean (CHECKLIST[2]) - Checking: workspace exists with uncommitted changes and problematic commit 37b5e68
+
+## Pending (9)
+- Verify integration infrastructure is ready (CHECKLIST[3])
+- Prepare integration instructions for agent (CHECKLIST[4])
+- Spawn integration agent to perform integration work (CHECKLIST[5] - BLOCKING)
+- Monitor integration agent completion (CHECKLIST[6])
+- Validate integration work completed per R510 (CHECKLIST[9a])
+- Spawn State Manager for SHUTDOWN_CONSULTATION (CHECKLIST[10])
+- Save TODOs per R287 (CHECKLIST[11])
+- Set CONTINUE-SOFTWARE-FACTORY flag per R405 (CHECKLIST[14])
+- Stop execution (exit 0) (CHECKLIST[15])
+
+## Context
+Iteration 6 completed with BUG-019 (R359 Supreme Law violation - commit 37b5e68 deleted 731 lines of Wave 2.1 code).
+Iteration 7 started to fix this by re-integrating from clean base, but integration agent was never spawned.
+Current workspace still contains problematic commits.
+NEXT ACTION: Clean workspace, create fresh integration, spawn integration agent to re-do iteration 7.

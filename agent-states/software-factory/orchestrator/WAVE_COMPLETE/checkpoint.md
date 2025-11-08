@@ -1,0 +1,617 @@
+# Orchestrator - WAVE_COMPLETE State Checkpoint
+
+## When to Save State
+
+Save checkpoint at these critical wave completion points:
+
+1. **Pre-Validation Assessment**
+   - All efforts reported complete
+   - Initial completeness assessment done
+   - Quality gate validation planned
+
+2. **Quality Gate Validation**
+   - Each quality gate validated (pass/fail)
+   - Size compliance checks completed
+   - Test coverage verification done
+
+3. **Integration Preparation**
+   - Wave integration branch created
+   - Effort merge sequence planned
+   - Conflict resolution strategy ready
+
+4. **Completion Decision Point**
+   - All validations complete
+   - Next state decision determined
+   - Architect review decision made
+
+## Required Data to Preserve
+
+```yaml
+wave_complete_checkpoint:
+  # State identification
+  state: "WAVE_COMPLETE"
+  phase: 1
+  wave: 2
+  checkpoint_timestamp: "2025-08-23T17:30:45Z"
+  
+  # Wave completion context
+  wave_info:
+    wave_id: "phase1_wave2"
+    started_at: "2025-08-23T14:00:00Z"
+    completed_at: "2025-08-23T17:30:00Z"
+    duration_hours: 3.5
+    expected_duration_hours: 4.0
+    
+  # Effort completion status
+  efforts_status:
+    - effort_id: "effort1-api-types"
+      working_dir: "/workspaces/efforts/phase1/wave2/effort1-api-types"
+      branch: "phase1/wave2/effort1-api-types"
+      status: "COMPLETE"
+      completed_at: "2025-08-23T16:45:00Z"
+      
+      # Individual effort validation
+      validation_results:
+        implementation_complete: true
+        size_compliant: true
+        size_lines: 687
+        test_coverage: 92.3
+        test_coverage_required: 85.0
+        git_status_clean: true
+        work_log_complete: true
+        code_review_passed: true
+        
+    - effort_id: "effort2-controller"
+      working_dir: "/workspaces/efforts/phase1/wave2/effort2-controller"
+      branch: "phase1/wave2/effort2-controller"
+      status: "COMPLETE"
+      completed_at: "2025-08-23T17:15:00Z"
+      
+      validation_results:
+        implementation_complete: true
+        size_compliant: true
+        size_lines: 743
+        test_coverage: 88.7
+        test_coverage_required: 85.0
+        git_status_clean: true
+        work_log_complete: true
+        code_review_passed: true
+        
+  # Wave-level quality gates
+  quality_gates:
+    validation_started_at: "2025-08-23T17:30:00Z"
+    validation_completed_at: "2025-08-23T17:38:30Z"
+    validation_duration_minutes: 8.5
+    
+    gates_status:
+      all_efforts_complete:
+        status: "PASSED"
+        validated_at: "2025-08-23T17:31:00Z"
+        details: "All 4 efforts marked complete"
+        
+      size_compliance:
+        status: "PASSED"
+        validated_at: "2025-08-23T17:32:00Z"
+        total_wave_lines: 2847
+        average_effort_lines: 711
+        max_effort_lines: 743
+        details: "All efforts under 800-line limit"
+        
+      test_coverage:
+        status: "PASSED"
+        validated_at: "2025-08-23T17:33:00Z"
+        average_coverage: 89.1
+        minimum_coverage: 85.0
+        details: "All efforts meet coverage requirements"
+        
+      integration_readiness:
+        status: "PASSED"
+        validated_at: "2025-08-23T17:35:00Z"
+        merge_conflicts_predicted: 0
+        dependency_issues: 0
+        details: "No integration blockers detected"
+        
+      documentation_complete:
+        status: "PASSED"
+        validated_at: "2025-08-23T17:36:00Z"
+        work_logs_complete: 4
+        implementation_plans_updated: 4
+        details: "All documentation current"
+    
+    overall_result:
+      all_passed: true
+      gates_passed: 5
+      total_gates: 5
+      failed_gates: []
+      
+  # Integration analysis
+  integration_analysis:
+    integration_branch: "phase1/wave2-integration"
+    integration_created_at: "2025-08-23T17:36:00Z"
+    
+    merge_plan:
+      - order: 1
+        effort: "effort1-api-types"
+        reason: "Foundation types, no dependencies"
+        expected_conflicts: 0
+        
+      - order: 2
+        effort: "effort2-controller"
+        reason: "Depends on effort1 types"
+        expected_conflicts: 0
+        
+      - order: 3
+        effort: "effort3-webhooks"
+        reason: "Depends on controller patterns"
+        expected_conflicts: 1
+        conflict_areas: ["pkg/webhooks/admission.go"]
+        
+      - order: 4
+        effort: "effort4-tests"
+        reason: "Integration tests last"
+        expected_conflicts: 0
+        
+    integration_risks:
+      - type: "MINOR_CONFLICT"
+        location: "pkg/webhooks/admission.go"
+        efforts: ["effort2-controller", "effort3-webhooks"]
+        resolution: "Use controller pattern from effort2"
+        estimated_resolution_time: "5 minutes"
+        
+  # Performance metrics
+  performance_metrics:
+    total_lines_delivered: 2847
+    average_effort_size: 711
+    lines_per_hour_rate: 814
+    quality_gate_pass_rate: 100
+    validation_efficiency: "EXCELLENT"  # 8.5 min for 4 efforts
+    
+  # Decision analysis
+  next_state_decision:
+    analysis_started_at: "2025-08-23T17:38:30Z"
+    analysis_completed_at: "2025-08-23T17:40:00Z"
+    
+    decision_factors:
+      phase_complete: false
+      mandatory_architect_review: false
+      size_violations_detected: false
+      integration_conflicts_predicted: 1
+      next_wave_planned: true
+      
+    decision_matrix:
+      architect_review_required:
+        required: false
+        reasons: []
+        
+      integration_needed:
+        required: true
+        reasons: ["Minor conflict predicted in webhooks"]
+        priority: "MEDIUM"
+        
+      next_wave_ready:
+        ready: true
+        blockers: []
+        estimated_start: "2025-08-23T18:30:00Z"
+        
+    final_decision:
+      next_state: "INTEGRATE_WAVE_EFFORTS"
+      reason: "Minor integration conflict requires resolution before next wave"
+      confidence: 95
+      
+  # Reporting status
+  completion_report:
+    report_generated: true
+    generated_at: "2025-08-23T17:40:00Z"
+    report_location: "/workspaces/reports/wave-completion-phase1-wave2.md"
+    
+    report_sections:
+      wave_summary: "COMPLETE"
+      effort_details: "COMPLETE"
+      quality_gates: "COMPLETE"
+      performance_metrics: "COMPLETE"
+      lessons_learned: "COMPLETE"
+      recommendations: "COMPLETE"
+      
+    report_quality_score: 98
+    
+  # Next actions planned
+  planned_actions:
+    - action: "CREATE_INTEGRATE_WAVE_EFFORTS_BRANCH"
+      priority: "HIGH"
+      scheduled: "2025-08-23T17:45:00Z"
+      estimated_duration: "15 minutes"
+      
+    - action: "EXECUTE_EFFORT_MERGES"
+      priority: "HIGH"
+      depends_on: "CREATE_INTEGRATE_WAVE_EFFORTS_BRANCH"
+      scheduled: "2025-08-23T18:00:00Z"
+      estimated_duration: "20 minutes"
+      
+    - action: "RESOLVE_WEBHOOK_CONFLICT"
+      priority: "MEDIUM"
+      depends_on: "EXECUTE_EFFORT_MERGES"
+      assigned_agent: "code-reviewer"
+      estimated_duration: "10 minutes"
+```
+
+## Recovery Protocol
+
+### Context Recovery After Interruption
+
+```python
+def recover_wave_complete_state(checkpoint_data):
+    """Recover wave completion state from checkpoint"""
+    
+    print("🔄 RECOVERING WAVE_COMPLETE STATE")
+    
+    wave_info = checkpoint_data['wave_info']
+    quality_gates = checkpoint_data['quality_gates']
+    
+    print(f"Wave: {wave_info['wave_id']}")
+    print(f"Quality Gates: {'✅ PASSED' if quality_gates['overall_result']['all_passed'] else '❌ FAILED'}")
+    print(f"Next State Decision: {checkpoint_data.get('next_state_decision', {}).get('final_decision', {}).get('next_state', 'UNDECIDED')}")
+    
+    # Verify current status vs checkpoint status
+    current_verification = verify_wave_still_complete(checkpoint_data)
+    
+    # Check if any critical changes occurred since checkpoint
+    changes_detected = detect_changes_since_checkpoint(checkpoint_data)
+    
+    # Determine recovery actions needed
+    recovery_actions = determine_wave_complete_recovery_actions(
+        checkpoint_data, current_verification, changes_detected
+    )
+    
+    return {
+        'wave_id': wave_info['wave_id'],
+        'quality_gates_status': quality_gates['overall_result']['all_passed'],
+        'current_verification': current_verification,
+        'changes_since_checkpoint': changes_detected,
+        'recovery_actions': recovery_actions,
+        'next_state': checkpoint_data.get('next_state_decision', {}).get('final_decision', {}).get('next_state'),
+        'recovery_needed': len(recovery_actions) > 0
+    }
+
+def verify_wave_still_complete(checkpoint_data):
+    """Verify wave completion status hasn't changed"""
+    
+    verification_results = {
+        'wave_still_complete': True,
+        'efforts_verified': [],
+        'issues_detected': []
+    }
+    
+    for effort_data in checkpoint_data['efforts_status']:
+        effort_id = effort_data['effort_id']
+        working_dir = effort_data['working_dir']
+        branch = effort_data['branch']
+        
+        try:
+            # Verify working directory still exists
+            if not os.path.exists(working_dir):
+                verification_results['wave_still_complete'] = False
+                verification_results['issues_detected'].append(
+                    f"Effort {effort_id} working directory missing: {working_dir}"
+                )
+                continue
+            
+            # Verify branch still exists and is clean
+            branch_status = check_branch_status(branch)
+            if not branch_status['exists']:
+                verification_results['wave_still_complete'] = False
+                verification_results['issues_detected'].append(
+                    f"Effort {effort_id} branch missing: {branch}"
+                )
+                continue
+                
+            if not branch_status['clean']:
+                verification_results['wave_still_complete'] = False
+                verification_results['issues_detected'].append(
+                    f"Effort {effort_id} branch has uncommitted changes"
+                )
+                continue
+            
+            # Re-verify size compliance
+            size_check = verify_current_size_compliance(branch)
+            if not size_check['compliant']:
+                verification_results['wave_still_complete'] = False
+                verification_results['issues_detected'].append(
+                    f"Effort {effort_id} no longer size compliant: {size_check['lines']} lines"
+                )
+                continue
+            
+            verification_results['efforts_verified'].append({
+                'effort_id': effort_id,
+                'status': 'VERIFIED',
+                'size_lines': size_check['lines']
+            })
+            
+        except Exception as e:
+            verification_results['wave_still_complete'] = False
+            verification_results['issues_detected'].append(
+                f"Effort {effort_id} verification error: {str(e)}"
+            )
+    
+    return verification_results
+
+def detect_changes_since_checkpoint(checkpoint_data):
+    """Detect any significant changes since checkpoint"""
+    
+    checkpoint_time = datetime.fromisoformat(checkpoint_data['checkpoint_timestamp'])
+    current_time = datetime.now()
+    
+    changes = {
+        'files_modified': [],
+        'branches_changed': [],
+        'new_commits': [],
+        'external_changes': []
+    }
+    
+    # Check for file modifications in effort directories
+    for effort_data in checkpoint_data['efforts_status']:
+        working_dir = effort_data['working_dir']
+        branch = effort_data['branch']
+        
+        if os.path.exists(working_dir):
+            # Check for files modified since checkpoint
+            modified_files = find_files_modified_since(working_dir, checkpoint_time)
+            if modified_files:
+                changes['files_modified'].extend([{
+                    'effort': effort_data['effort_id'],
+                    'files': modified_files
+                }])
+            
+            # Check for new commits since checkpoint
+            new_commits = find_commits_since(branch, checkpoint_time)
+            if new_commits:
+                changes['new_commits'].extend([{
+                    'effort': effort_data['effort_id'],
+                    'commits': new_commits
+                }])
+    
+    return changes
+
+def determine_wave_complete_recovery_actions(checkpoint, verification, changes):
+    """Determine what actions are needed to recover wave completion state"""
+    
+    recovery_actions = []
+    
+    # Handle verification failures
+    if not verification['wave_still_complete']:
+        for issue in verification['issues_detected']:
+            if 'missing' in issue.lower():
+                recovery_actions.append({
+                    'type': 'INVESTIGATE_MISSING_RESOURCES',
+                    'description': issue,
+                    'priority': 'CRITICAL'
+                })
+            elif 'size' in issue.lower():
+                recovery_actions.append({
+                    'type': 'ADDRESS_SIZE_VIOLATION',
+                    'description': issue,
+                    'priority': 'CRITICAL'
+                })
+            elif 'uncommitted' in issue.lower():
+                recovery_actions.append({
+                    'type': 'RESOLVE_GIT_STATUS',
+                    'description': issue,
+                    'priority': 'HIGH'
+                })
+    
+    # Handle changes detected
+    if changes['files_modified']:
+        recovery_actions.append({
+            'type': 'INVESTIGATE_FILE_CHANGES',
+            'description': f"Files modified since checkpoint: {len(changes['files_modified'])} efforts affected",
+            'priority': 'HIGH',
+            'details': changes['files_modified']
+        })
+    
+    if changes['new_commits']:
+        recovery_actions.append({
+            'type': 'VALIDATE_NEW_COMMITS',
+            'description': f"New commits detected: {len(changes['new_commits'])} efforts",
+            'priority': 'MEDIUM',
+            'details': changes['new_commits']
+        })
+    
+    # Check if planned actions from checkpoint are still valid
+    planned_actions = checkpoint.get('planned_actions', [])
+    for action in planned_actions:
+        if action.get('priority') == 'HIGH':
+            recovery_actions.append({
+                'type': 'RESUME_PLANNED_ACTION',
+                'description': f"Resume planned action: {action['action']}",
+                'priority': action['priority'],
+                'original_action': action
+            })
+    
+    return recovery_actions
+```
+
+### Wave Completion Validation
+
+```python
+def revalidate_wave_completion(checkpoint_data):
+    """Re-run wave completion validation after recovery"""
+    
+    print("🔍 RE-VALIDATING WAVE COMPLETION")
+    
+    # Re-run quality gates
+    quality_gate_results = run_quality_gate_validation(
+        checkpoint_data['efforts_status']
+    )
+    
+    # Compare with checkpoint results
+    checkpoint_gates = checkpoint_data['quality_gates']['gates_status']
+    validation_comparison = compare_quality_gate_results(
+        checkpoint_gates, quality_gate_results
+    )
+    
+    # Determine if wave completion is still valid
+    still_valid = quality_gate_results['all_passed'] and validation_comparison['consistent']
+    
+    return {
+        'validation_timestamp': datetime.now().isoformat(),
+        'still_valid': still_valid,
+        'quality_gates': quality_gate_results,
+        'comparison_with_checkpoint': validation_comparison,
+        'action_required': 'NONE' if still_valid else 'REPROCESS_COMPLETION'
+    }
+```
+
+## State Persistence
+
+Save wave completion checkpoint with comprehensive backup:
+
+```bash
+# Primary location
+CHECKPOINT_DIR="/workspaces/software-factory-2.0-template/checkpoints/active"
+WAVE_ID="phase${PHASE}_wave${WAVE}"
+CHECKPOINT_FILE="$CHECKPOINT_DIR/orchestrator-wave-complete-${WAVE_ID}-$(date +%Y%m%d-%H%M%S).yaml"
+
+# Backup locations (critical for wave completion)
+BACKUP_DIR="/workspaces/software-factory-2.0-template/checkpoints/wave-complete-backup"
+mkdir -p "$BACKUP_DIR"
+BACKUP_FILE="$BACKUP_DIR/wave-complete-${WAVE_ID}-latest.yaml"
+
+# Archive location (permanent record)
+ARCHIVE_DIR="/workspaces/software-factory-2.0-template/checkpoints/completed-waves"
+mkdir -p "$ARCHIVE_DIR"
+ARCHIVE_FILE="$ARCHIVE_DIR/wave-complete-${WAVE_ID}.yaml"
+
+# Wave completion report backup
+REPORTS_DIR="/workspaces/software-factory-2.0-template/reports"
+mkdir -p "$REPORTS_DIR"
+REPORT_FILE="$REPORTS_DIR/wave-completion-${WAVE_ID}-$(date +%Y%m%d-%H%M%S).md"
+
+# Save to all locations
+cp "$CHECKPOINT_FILE" "$BACKUP_FILE"
+cp "$CHECKPOINT_FILE" "$ARCHIVE_FILE"
+
+# Generate and save completion report
+generate_wave_completion_report "$CHECKPOINT_FILE" > "$REPORT_FILE"
+
+# Commit everything
+git add checkpoints/ reports/
+git commit -m "checkpoint: WAVE_COMPLETE - ${WAVE_ID} fully validated and ready for next step"
+git push
+```
+
+## Health Monitoring
+
+```python
+def monitor_wave_completion_health():
+    """Monitor the health of wave completion process"""
+    
+    health_indicators = {
+        'validation_speed': measure_validation_speed(),
+        'quality_gate_reliability': assess_quality_gate_reliability(),
+        'decision_accuracy': measure_decision_accuracy(),
+        'checkpoint_integrity': verify_checkpoint_integrity()
+    }
+    
+    overall_health = calculate_wave_completion_health(health_indicators)
+    
+    if overall_health['grade'] != 'GOOD':
+        print("⚠️ WAVE COMPLETION PROCESS HEALTH ISSUE")
+        for concern in overall_health['concerns']:
+            print(f"  - {concern}")
+    
+    return overall_health
+
+def measure_validation_speed():
+    """Measure how quickly quality gates are being validated"""
+    
+    recent_validations = get_recent_validation_times(hours=24)
+    
+    if not recent_validations:
+        return {'status': 'NO_DATA', 'grade': 'UNKNOWN'}
+    
+    avg_time = sum(recent_validations) / len(recent_validations)
+    
+    if avg_time < 5:
+        return {'avg_minutes': avg_time, 'grade': 'EXCELLENT'}
+    elif avg_time < 10:
+        return {'avg_minutes': avg_time, 'grade': 'GOOD'}
+    elif avg_time < 15:
+        return {'avg_minutes': avg_time, 'grade': 'ACCEPTABLE'}
+    else:
+        return {'avg_minutes': avg_time, 'grade': 'POOR'}
+```
+
+## Critical Recovery Points
+
+---
+### 🚨 RULE  - 
+**Source:** 
+**Criticality:** CRITICAL - Major impact on grading
+
+CRITICAL WAVE COMPLETION RECOVERY SCENARIOS
+1. Quality Gate Failure After Checkpoint:
+- Effort no longer meets completion criteria
+- Size violation detected after checkpoint
+- Test failures in previously passing efforts
+
+2. Integration Branch Corruption:
+- Wave integration branch damaged or missing
+- Merge conflicts introduced after completion
+- Branch history inconsistent
+
+3. Next State Decision Invalid:
+- Conditions changed invalidating next state choice
+- New blockers discovered for planned transition
+- External dependencies changed
+
+4. Completion Report Issues:
+- Report data inconsistent with actual state
+- Critical information missing from report
+- Report file corrupted or inaccessible
+---
+
+## Cleanup and Maintenance
+
+```python
+def cleanup_wave_completion_checkpoints():
+    """Clean up old wave completion checkpoints"""
+    
+    checkpoint_dir = "/workspaces/software-factory-2.0-template/checkpoints/active"
+    archive_dir = "/workspaces/software-factory-2.0-template/checkpoints/completed-waves"
+    
+    # Move completed wave checkpoints to archive
+    wave_complete_files = [f for f in os.listdir(checkpoint_dir) 
+                          if f.startswith('orchestrator-wave-complete-')]
+    
+    for filename in wave_complete_files:
+        file_path = os.path.join(checkpoint_dir, filename)
+        
+        # Move files older than 24 hours to archive
+        file_age_hours = (time.time() - os.path.getmtime(file_path)) / 3600
+        
+        if file_age_hours > 24:
+            archive_path = os.path.join(archive_dir, filename)
+            shutil.move(file_path, archive_path)
+            print(f"Archived wave completion checkpoint: {filename}")
+    
+    # Keep only last 3 archived checkpoints per wave
+    cleanup_archived_wave_checkpoints(archive_dir)
+
+def cleanup_archived_wave_checkpoints(archive_dir):
+    """Clean up old archived wave checkpoints"""
+    
+    # Group by wave ID
+    wave_groups = {}
+    for filename in os.listdir(archive_dir):
+        if filename.startswith('orchestrator-wave-complete-'):
+            wave_id = extract_wave_id_from_filename(filename)
+            if wave_id not in wave_groups:
+                wave_groups[wave_id] = []
+            wave_groups[wave_id].append(filename)
+    
+    # Keep only last 3 per wave
+    for wave_id, files in wave_groups.items():
+        files.sort(key=lambda f: os.path.getmtime(os.path.join(archive_dir, f)))
+        
+        for old_file in files[:-3]:  # Keep last 3
+            os.remove(os.path.join(archive_dir, old_file))
+            print(f"Cleaned up old archived checkpoint: {old_file}")

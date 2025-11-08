@@ -1,0 +1,21 @@
+# Orchestrator TODO State - ERROR_RECOVERY
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: R287 - State transition checkpoint
+
+## Completed
+- [x] Spawn State Manager for SHUTDOWN_CONSULTATION to transition to CREATE_NEXT_INFRASTRUCTURE
+- [x] Acknowledge ERROR_RECOVERY state and state rollback
+
+## In Progress
+- [ ] Output R405 continuation flag and stop per R322
+
+## Pending
+- [ ] Transition from ERROR_RECOVERY to CREATE_NEXT_INFRASTRUCTURE
+- [ ] Create Phase 2 Wave 1 effort infrastructure (effort-1 and effort-2)
+- [ ] Validate infrastructure creation
+- [ ] Return to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING with infrastructure ready
+
+## Context
+State Manager identified sequence violation - CREATE_NEXT_INFRASTRUCTURE was skipped.
+Current state: ERROR_RECOVERY
+Required next: CREATE_NEXT_INFRASTRUCTURE to build effort infrastructure

@@ -1,0 +1,27 @@
+# Orchestrator ERROR_RECOVERY TODOs
+# Created: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: R287 - checkpoint before state transition
+
+## Completed
+- [x] Read all ERROR_RECOVERY state rules
+- [x] Created R290 verification marker
+- [x] Diagnosed sequence violation error
+- [x] Determined correct recovery path (ANALYZE_CODE_REVIEWER_PARALLELIZATION → CREATE_NEXT_INFRASTRUCTURE)
+- [x] Added required legacy fields to state file for validation
+
+## In Progress
+- [ ] Resolve state validation issue (pre-commit hook failing but not showing specific error)
+
+## Pending
+- [ ] Commit state transition to ANALYZE_CODE_REVIEWER_PARALLELIZATION
+- [ ] Proceed to CREATE_NEXT_INFRASTRUCTURE state
+- [ ] Create effort infrastructure from R213 metadata
+
+## Blockers
+- State file validation failing in pre-commit hook but error not visible
+- All required fields appear to be present
+- R506 prohibits bypassing validation (--no-verify)
+
+## Recovery Plan
+Error was: ANALYZE_CODE_REVIEWER_PARALLELIZATION → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (skipped CREATE_NEXT_INFRASTRUCTURE)
+Correct path: ANALYZE_CODE_REVIEWER_PARALLELIZATION → CREATE_NEXT_INFRASTRUCTURE → SPAWN_CODE_REVIEWERS_EFFORT_PLANNING

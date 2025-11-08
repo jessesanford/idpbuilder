@@ -1,0 +1,51 @@
+{
+  "project_name": "idpbuilder-oci-push-command",
+  "initial_description": "Implement IDPBuilder OCI image-push command for pushing from the docker Daemon image storage to the idpbuilder Gitea registry located by default at https://gitea.cnoe.localtest.me:8443/ but should also have a --registry flag that allows you to specify a registry overiding the one that is used by the image name image. Core functionality includes registry authentication for the push command taking in a --username and --password flag... where the username defaults to giteaadmin and the password should support a large number of characters including special characters. We also need to support a -k or --insecure flag that bypasses the tls/ssl certificate checking like with curl -k. This work specifically excludes and image build functionality. Lets focus solely on push with a workflow that depends on the docker command and daemon and the image already being pushed and available. Lets also avoid doing any certificate handling. Do not do anything tricky witth cerficates, I dont need you to manage them, we just need to implement the --insecure flat to begin with. We can manage cert bundles/exporting certifcates used by gitea later. This is just the start of the work.",
+  "non_interactive_mode": true,
+  "prd_pre_exists": false,
+  "requirements": {
+    "codebase": {
+      "type": "enhancement",
+      "upstream_url": "https://github.com/jessesanford/idpbuilder.git",
+      "fork_url": "",
+      "main_branch": "main"
+    },
+    "technology": {
+      "languages": ["go"],
+      "frameworks": ["cobra", "controller-runtime", "kubebuilder"],
+      "dependencies": ["docker-client-go", "go-containerregistry"],
+      "build_system": "make",
+      "test_framework": "go-test",
+      "code_generation_tools": []
+    },
+    "architecture": {
+      "type": "cli",
+      "pattern": "modular",
+      "design_patterns": ["command-pattern", "repository-pattern"],
+      "existing_patterns": ["cobra-cli-structure"]
+    },
+    "deployment": {
+      "environment": "binary",
+      "containerization": "docker",
+      "ci_cd": "github-actions",
+      "infrastructure_as_code": []
+    },
+    "quality": {
+      "performance": "standard",
+      "security": "registry-authentication, insecure-flag-handling",
+      "compliance": "none",
+      "coverage_target": 70,
+      "testing_approach": "TDD"
+    },
+    "project_specifics": {
+      "end_users": "platform engineers, developers",
+      "problem": "Need to push OCI images from local Docker daemon to Gitea registry with authentication and insecure mode support",
+      "competitors": ["docker push", "podman push", "crane"],
+      "documentation": "markdown",
+      "container_registry": "gitea.cnoe.localtest.me:8443",
+      "git_workflow": "TRUNK BASED DEVELOPMENT"
+    }
+  },
+  "additional_context": "This is an enhancement to existing idpbuilder CLI tool. Focus on push command only, exclude build functionality. Must support --registry flag to override default, --username/--password for auth (default username: giteaadmin), and -k/--insecure flag for bypassing TLS verification. No certificate management in initial implementation.",
+  "timestamp": "2025-10-28T23:40:45+00:00"
+}

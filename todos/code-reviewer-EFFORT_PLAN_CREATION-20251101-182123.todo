@@ -1,0 +1,28 @@
+# Code Reviewer TODOs - Trigger: R287_PLAN_CREATION_COMPLETE
+# State: EFFORT_PLAN_CREATION
+# Effort: effort-1-registry-override-viper (Effort 2.2.1)
+# Timestamp: $(date -Iseconds)
+
+## Completed Tasks
+- [x] Read Wave Implementation Plan (Effort 2.2.1 section)
+- [x] Created IMPLEMENTATION-PLAN-20251101-181737.md in .software-factory subdirectory
+- [x] Detailed implementation plan with 400 line estimate
+- [x] Specified EXACTLY 8 functions, 3 types, 6 constants
+- [x] Documented scope boundaries (what NOT to implement)
+- [x] Verified Wave 2.1 backward compatibility requirements
+- [x] Documented R355 production-ready code requirements
+- [x] Size breakdown and monitoring protocol included
+
+## Next Steps (for Orchestrator)
+- [ ] Validate plan completeness
+- [ ] Update orchestrator-state-v3.json
+- [ ] Spawn SW Engineer for Effort 2.2.1 implementation
+- [ ] Monitor implementation progress
+
+## Key Plan Details
+- File location: .software-factory/phase2/wave2/effort-1-registry-override-viper/IMPLEMENTATION-PLAN-20251101-181737.md
+- Estimated size: 400 lines (within 800 limit)
+- Can parallelize: No (blocks Effort 2.2.2)
+- Base branch: idpbuilder-oci-push/phase2-integration
+- New files: config.go (285 lines), config_test.go (50 lines)
+- Modified files: push.go (+65 lines)

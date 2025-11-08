@@ -1,0 +1,26 @@
+# TODO State at 2025-11-02 (current time)
+# Agent: orchestrator  
+# State: FIX_WAVE_UPSTREAM_BUGS
+# Phase: 2, Wave: 2, Iteration: 6
+
+## Completed (3)
+✅ Read and acknowledge all 8 mandatory rules for FIX_WAVE_UPSTREAM_BUGS state
+✅ Load and analyze BUG-019-CODE-DELETION from bug-tracking.json
+✅ Understand State Manager's fix directive: delete Wave 2.2 integration, restore Wave 2.1, re-integrate
+
+## In Progress (1)
+🔄 Determine correct approach: This is integration corruption, not upstream branch bugs
+
+## Pending (6)
+⏳ Check if integration workspace exists and assess corruption
+⏳ Spawn appropriate agent(s) to fix integration corruption per State Manager directive
+⏳ Monitor fix completion
+⏳ Spawn State Manager for SHUTDOWN_CONSULTATION to transition to START_WAVE_ITERATION
+⏳ Save TODOs per R287 (within 30s)
+⏳ Output CONTINUE-SOFTWARE-FACTORY flag per R405 (absolute last action)
+
+## Context
+- Bug: BUG-019-CODE-DELETION (CRITICAL, R359 Supreme Law Violation)
+- Issue: Wave 2.2 integration deleted 731 lines of approved Wave 2.1 code
+- Fix Plan: Delete corrupted Wave 2.2 integration workspace, restore Wave 2.1 files, re-integrate
+- State Manager Directive: Follow R321/R327/R359 for integration corruption fix

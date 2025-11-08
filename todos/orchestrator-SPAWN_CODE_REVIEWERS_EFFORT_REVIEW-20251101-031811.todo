@@ -1,0 +1,18 @@
+# Orchestrator TODOs - SPAWN_CODE_REVIEWERS_EFFORT_REVIEW State
+# Saved: 2025-11-01T03:17:30Z
+# Trigger: State completion
+
+## Completed TODOs:
+- [x] Spawn Code Reviewer for effort 2.1.2 review
+- [x] Update state to MONITORING_EFFORT_REVIEWS after spawn
+- [x] Save TODOs per R287 after spawning
+
+## Pending TODOs:
+- [ ] Output CONTINUE-SOFTWARE-FACTORY=TRUE flag per R405
+
+## State Context:
+- Phase: 2
+- Wave: 1  
+- Effort reviewed: 2.1.2 (Progress Reporter & Output Formatting)
+- Review outcome: APPROVED (581 lines)
+- Next state: MONITORING_EFFORT_REVIEWS

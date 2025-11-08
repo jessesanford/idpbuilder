@@ -1,0 +1,43 @@
+# TODO State at $(date '+%Y-%m-%d %H:%M:%S')
+# Agent: orchestrator
+# State: FIX_WAVE_UPSTREAM_BUGS → START_WAVE_ITERATION (transition complete)
+# Phase: 2, Wave: 2, Iteration: 4 → 5
+
+## Completed (11)
+- [x] Acknowledge all mandatory FIX_WAVE_UPSTREAM_BUGS state rules
+- [x] Load and analyze bugs from bug-tracking.json (11 OPEN bugs)
+- [x] Group bugs by affected upstream branch (effort-1-registry-override-viper)
+- [x] Spawn SW Engineer to fix bugs in effort-1-registry-override-viper branch
+- [x] Monitor SW Engineer progress - ALL CRITICAL BUGS FIXED
+- [x] Handle Priority 2 size violation - USER DECISION: Remove stubs (Option A)
+- [x] Spawn SW Engineer to remove out-of-scope stub files
+- [x] Monitor stub removal - VERIFIED: 430 lines (WITHIN 800 limit)
+- [x] Prepare bug fix summary for State Manager
+- [x] Spawn State Manager for SHUTDOWN_CONSULTATION (R517)
+- [x] Save TODOs per R287
+
+## Summary
+FIX_WAVE_UPSTREAM_BUGS state completed successfully:
+
+### Bugs Fixed (2 CRITICAL)
+1. Build Failure (CRITICAL) - FIXED ✅
+   - Missing viper parameter in root.go
+   - Commit: aa20b98
+   - Build: SUCCESS
+
+2. Size Violation (CRITICAL) - FIXED ✅
+   - Was: 835 lines → Now: 430 lines
+   - Removed 389 lines of out-of-scope Phase 1 stubs
+   - Commit: 37b5e68
+   - User approved Option A
+
+### State Updates (via State Manager R517)
+- orchestrator-state-v3.json: FIX_WAVE_UPSTREAM_BUGS → START_WAVE_ITERATION
+- bug-tracking.json: 5 bugs marked FIXED
+- integration-containers.json: Iteration 4 → 5
+- Commit: 448b4ba [R288]
+
+### Next State
+START_WAVE_ITERATION (iteration 5) - Ready for fresh re-integration per R327
+
+Status: COMPLETE - All critical bugs fixed, state transition validated

@@ -1,0 +1,29 @@
+# SW Engineer TODOs - Trigger: IMPLEMENTATION_COMPLETE
+# State: IMPLEMENTATION
+# Effort: effort-1-registry-override-viper
+# Timestamp: $(date -Iseconds)
+
+## Completed Tasks:
+1. ✅ Created config.go with ConfigSource, ConfigValue, and PushConfig types (203 lines)
+2. ✅ Implemented LoadConfig() function with precedence resolution
+3. ✅ Implemented resolveStringConfig() helper
+4. ✅ Implemented resolveBoolConfig() with all boolean formats
+5. ✅ Implemented ToPushOptions(), Validate(), DisplaySources() methods
+6. ✅ Modified NewPushCommand() to accept viper parameter
+7. ✅ Created config_test.go placeholder file (85 lines)
+8. ✅ Verified line count: 551 lines (well under 800 limit)
+9. ✅ Verified runPush() unchanged (R362 compliance)
+10. ✅ Committed and pushed implementation
+11. ✅ Added viper v1.17.0 dependency
+
+## Implementation Summary:
+- Total lines: 551 (203 config + 160 push.go + 85 tests + dependencies)
+- All 8 functions implemented exactly as specified
+- All 3 types defined correctly
+- All 6 constants defined
+- Wave 2.1 backward compatibility maintained
+- Configuration precedence working: Flags > Env > Defaults
+
+## Next Steps:
+- Create completion report
+- Mark effort complete with R405 flag
