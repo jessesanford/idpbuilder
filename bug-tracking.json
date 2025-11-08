@@ -1000,6 +1000,51 @@
         "test_status": "ALL_PASSING",
         "conclusion": "Bug does not exist in codebase. Likely documentation error in original bug report."
       }
+    },
+    {
+      "bug_id": "BUG-027",
+      "severity": "P0",
+      "status": "FIXED",
+      "title": "Integration branch missing Phase 2 code (wrong base branch)",
+      "description": "Integration branch was created from 'main' instead of 'origin/idpbuilder-oci-push/phase2/integration', causing all Phase 2 code to be missing.",
+      "found_during": "wave_integration_iteration_1",
+      "found_in_effort": "Integration infrastructure",
+      "blocks_integration": true,
+      "error_details": {
+        "build_error": "Phase 2 modules not found in integration branch",
+        "root_cause": "Wrong base branch used during integration branch creation"
+      },
+      "root_cause": "Integration branch created from wrong base (main instead of Phase 2 integration)",
+      "recommended_fix": "Merge origin/idpbuilder-oci-push/phase2/wave3/integration into integration branch",
+      "upstream_effort_needed": "Infrastructure fix - ERROR_RECOVERY",
+      "reported_by": "integration-agent",
+      "reported_at": "2025-11-05T19:45:54Z",
+      "fixed_at": "2025-11-05T21:15:37Z",
+      "fixed_by": "orchestrator-ERROR_RECOVERY"
+    },
+    {
+      "bug_id": "BUG-028",
+      "severity": "P0",
+      "status": "OPEN",
+      "title": "Integration tests use incorrect import paths for pkg/cmd/push",
+      "description": "Test files import 'github.com/cnoe-io/idpbuilder/cmd/push' but correct path is 'github.com/cnoe-io/idpbuilder/pkg/cmd/push' (missing /pkg/ prefix)",
+      "found_during": "wave_integration_iteration_2",
+      "found_in_effort": "3.1.3 (Core Tests) and 3.1.4 (Error Tests)",
+      "blocks_integration": true,
+      "error_details": {
+        "build_error": "go: github.com/cnoe-io/idpbuilder/test/integration imports github.com/cnoe-io/idpbuilder/cmd/push: no matching versions for query \"latest\"",
+        "affected_files": [
+          "test/integration/core_workflow_test.go",
+          "test/integration/progress_test.go"
+        ],
+        "correct_import": "github.com/cnoe-io/idpbuilder/pkg/cmd/push",
+        "incorrect_import": "github.com/cnoe-io/idpbuilder/cmd/push"
+      },
+      "root_cause": "Phase 3 Wave 1 efforts used incorrect import path - missing /pkg/ prefix. The push package exists at pkg/cmd/push/ not cmd/push/.",
+      "recommended_fix": "Update import statements in affected test files to use correct path with /pkg/ prefix",
+      "upstream_effort_needed": "Fix in effort-3.1.3 and effort-3.1.4 branches",
+      "reported_by": "integration-agent",
+      "reported_at": "2025-11-05T21:32:26Z"
     }
   ],
   "active_bug_count": 17,
