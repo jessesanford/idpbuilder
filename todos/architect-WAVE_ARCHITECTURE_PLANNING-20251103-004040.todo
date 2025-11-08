@@ -1,0 +1,47 @@
+# Architect TODOs - Wave 2.3 Architecture Planning
+# State: WAVE_ARCHITECTURE_PLANNING
+# Timestamp: 2025-11-03T00:35:35Z
+# Trigger: WAVE_ARCHITECTURE_COMPLETE
+
+## Completed Tasks
+- ✅ Create Wave 2.3 Architecture Plan directory structure
+- ✅ Review Phase 2 architecture and Wave 2.1/2.2 patterns for concrete examples
+- ✅ Write Wave 2.3 architecture plan with concrete fidelity (real code examples)
+- ✅ Verify R340 quality gates (real code, actual interfaces, no pseudocode)
+- ✅ Save TODOs and commit (R287 compliance)
+
+## Wave 2.3 Architecture Summary
+- **Fidelity**: CONCRETE (real Go code, NOT pseudocode)
+- **Efforts**: 2 (Input Validation & Security, Error Types & Exit Codes)
+- **Estimated Lines**: ~750 lines total
+- **Parallelization**: Sequential (2.3.1 foundational, then 2.3.2)
+
+## R340 Compliance Verification
+- ✅ 25 Go code blocks with real implementations
+- ✅ 0 pseudocode blocks (no PATTERN/FLOW/IF-THEN)
+- ✅ 9 interface definitions
+- ✅ 35 function signatures with types
+- ✅ Adaptation notes from Wave 2.2
+
+## Key Architectural Decisions
+1. **Validation Package**: New `pkg/validator` with reusable validators
+2. **Error Types**: Custom error types (ValidationError, AuthenticationError, etc.)
+3. **Exit Code Mapping**: Type-based exit codes (1=validation, 2=auth, 3=network, 4=not found)
+4. **Actionable Errors**: Every error includes "Error: X, Suggestion: Y" format
+5. **Security Focus**: Command injection prevention, SSRF warnings, credential validation
+
+## Real Code Examples Provided
+- `ValidateImageName()`: OCI format validation with regex
+- `ValidateRegistryURL()`: URL validation with SSRF detection
+- `ValidateCredentials()`: Command injection prevention
+- Error type definitions (ValidationError, AuthenticationError, etc.)
+- Error wrapping functions (wrapDockerError, wrapRegistryError)
+- Exit code mapping with `GetExitCode()`
+
+## Next State Transition
+- **Current State**: WAVE_ARCHITECTURE_PLANNING
+- **Next State**: (Orchestrator decides - likely SPAWN_CODE_REVIEWER_EFFORT_PLANNING)
+- **Output**: planning/phase2/wave3/WAVE-2.3-ARCHITECTURE.md
+
+## Files Created
+- planning/phase2/wave3/WAVE-2.3-ARCHITECTURE.md (complete)

@@ -1,0 +1,201 @@
+{
+  "cascade": {
+    "cascade_id": "CASCADE-002-PHASE_CRITICAL",
+    "cascade_status": "COMPLETED",
+    "trigger_bug": {
+      "bug_id": "BUG-022-STUB-VIOLATION",
+      "severity": "CRITICAL",
+      "discovered_in_container": "phase_2"
+    },
+    "source_container": {
+      "container_id": "phase_2",
+      "container_type": "PHASE",
+      "iteration_when_discovered": 1
+    },
+    "affected_containers": [
+      {
+        "container_id": "phase_2",
+        "container_type": "PHASE",
+        "fix_status": "FIXED",
+        "priority_order": 1,
+        "assigned_agent": null,
+        "started_at": null,
+        "completed_at": "2025-11-03T23:02:30Z",
+        "iteration_when_fixed": null,
+        "bugs_fixed": [
+          "BUG-022-STUB-VIOLATION"
+        ],
+        "new_bugs_discovered": []
+      }
+    ],
+    "created_at": "2025-11-03T21:45:00Z",
+    "updated_at": "2025-11-03T21:45:00Z",
+    "completed_at": "2025-11-03T23:02:30Z",
+    "convergence_tracking": {
+      "total_containers_affected": 1,
+      "containers_fixed": 0,
+      "containers_remaining": 1,
+      "total_bugs_in_cascade": 1,
+      "bugs_fixed_in_cascade": 1,
+      "bugs_remaining_in_cascade": 0,
+      "is_converging": true,
+      "convergence_confidence": "HIGH",
+      "estimated_completion_iterations": null,
+      "cascade_depth": 1,
+      "cascade_breadth": 1
+    },
+    "cascade_path": [],
+    "escalation_triggers": {
+      "max_cascade_depth_exceeded": false,
+      "max_iterations_exceeded": false,
+      "non_converging_detected": false,
+      "critical_bug_blocking": true,
+      "escalation_required": false,
+      "escalation_reason": null,
+      "escalated_at": null
+    },
+    "return_state": "CREATE_PHASE_FIX_PLAN",
+    "metadata": {
+      "cascade_type": "WAVE_TO_PHASE",
+      "parent_cascade_id": "CASCADE-001-WAVE_TO_PHASE",
+      "child_cascades": [],
+      "total_time_elapsed_hours": 0,
+      "agents_involved": [],
+      "automation_level": "PARTIALLY_AUTOMATED",
+      "paired_cascade": "CASCADE-003-PHASE_HIGH",
+      "notes": "Primary cascade for BUG-022-STUB-VIOLATION (CRITICAL)"
+    }
+  },
+  "cascade_history": [
+    {
+      "cascade_id_pair": [
+        "CASCADE-002-PHASE2-BUG022",
+        "CASCADE-002-PHASE2-BUG023"
+      ],
+      "trigger_bugs": [
+        "BUG-022-STUB-VIOLATION",
+        "BUG-023-TEST-FAILURE"
+      ],
+      "phase": 2,
+      "created_at": "2025-11-03T21:45:00Z",
+      "status": "BOTH_INITIATING",
+      "notes": "Dual cascades created for 2 bugs found during phase integration review"
+    },
+    {
+      "cascade_id": "CASCADE-000-INITIAL-SETUP",
+      "cascade_status": "COMPLETED",
+      "trigger_bug": {
+        "bug_id": "BUG-000-DATABASE-CONNECTION",
+        "severity": "HIGH"
+      },
+      "created_at": "2025-10-05T11:00:00Z",
+      "completed_at": "2025-10-05T14:30:00Z",
+      "total_containers_affected": 2,
+      "total_bugs_fixed": 1,
+      "total_duration_hours": 3.5,
+      "final_status": "COMPLETED"
+    }
+  ],
+  "statistics": {
+    "total_cascades": 3,
+    "active_cascades": 1,
+    "completed_cascades": 1,
+    "failed_cascades": 0,
+    "escalated_cascades": 0,
+    "average_cascade_depth": 2.0,
+    "average_cascade_breadth": 2.5,
+    "average_cascade_duration_hours": 2.92,
+    "average_bugs_per_cascade": 2.0,
+    "cascade_success_rate": 100.0,
+    "cascades_by_type": {
+      "wave_to_phase": 2,
+      "phase_to_project": 0,
+      "wave_to_project": 0,
+      "multi_wave": 0,
+      "multi_phase": 0
+    }
+  },
+  "metadata": {
+    "last_updated": "2025-11-03T23:11:00Z",
+    "notes": "State Manager: Cascade CASCADE-002-PHASE_CRITICAL completed. Transitioning to INTEGRATE_PHASE_WAVES for phase iteration 3.",
+    "state_transition": "INTEGRATE_PHASE_WAVES",
+    "updated_by": "state-manager",
+    "last_modified": "2025-11-03T08:34:44Z",
+    "last_state_transition": {
+      "from": "REVIEW_WAVE_ARCHITECTURE",
+      "to": "BUILD_VALIDATION",
+      "timestamp": "2025-11-03T14:38:02Z"
+    },
+    "state_sync": {
+      "last_state_transition": "BUILD_VALIDATION→SETUP_PHASE_INFRASTRUCTURE",
+      "last_sync_timestamp": "2025-11-03T15:17:45Z"
+    }
+  },
+  "last_updated": "2025-11-03T23:11:00Z",
+  "state_machine_sync": {
+    "current_state": "INTEGRATE_PHASE_WAVES",
+    "previous_state": "START_PHASE_ITERATION",
+    "last_transition": "2025-11-03T23:11:00Z",
+    "last_sync": "2025-11-03T23:11:00Z"
+  },
+  "current_state": "INTEGRATE_PHASE_WAVES",
+  "phase": 2,
+  "wave": 2,
+  "last_updated_by": "state-manager",
+  "wave_2_2_fix_tracking": {
+    "wave_id": "2.2",
+    "active": true,
+    "iteration": 7,
+    "bugs_to_fix": [
+      "BUG-019-CODE-DELETION"
+    ],
+    "fix_status": "IN_PROGRESS",
+    "created_at": "2025-11-02T18:20:00Z",
+    "notes": "Wave 2.2 iteration 7: Workspace deletion complete. Re-integrating from clean Wave 2.1 base to fix R359 violation.",
+    "fix_started_at": "2025-11-02T18:50:08Z"
+  },
+  "orchestrator_state": "INTEGRATE_PHASE_WAVES",
+  "state_transitions": [
+    {
+      "timestamp": "2025-11-03T12:48:34Z",
+      "from_state": "ERROR_RECOVERY",
+      "to_state": "START_WAVE_ITERATION",
+      "phase": 2,
+      "wave": 3,
+      "iteration": 3,
+      "validated_by": "state-manager",
+      "reason": "BUG-001/BUG-020 fixed. Validator stub conflicts resolved in effort-2 branch (commit 8139a33). Ready to retry integration iteration 3."
+    },
+    {
+      "timestamp": "2025-11-03T14:06:00Z",
+      "from_state": "INTEGRATE_WAVE_EFFORTS",
+      "to_state": "REVIEW_WAVE_INTEGRATION",
+      "phase": 2,
+      "wave": 2,
+      "iteration": 7,
+      "validated_by": "state-manager",
+      "reason": "Wave 2.2 iteration 7: Integration completed successfully. Ready for code review."
+    },
+    {
+      "timestamp": "2025-11-03T14:07:26Z",
+      "from_state": "INTEGRATE_WAVE_EFFORTS",
+      "to_state": "REVIEW_WAVE_INTEGRATION",
+      "phase": 2,
+      "wave": 2,
+      "iteration": 7,
+      "validated_by": "state-manager",
+      "reason": "Wave 2.2 iteration 7: Integration completed successfully. Ready for code review."
+    },
+    {
+      "timestamp": "2025-11-03T14:08:00Z",
+      "from_state": "REVIEW_WAVE_INTEGRATION",
+      "to_state": "REVIEW_WAVE_ARCHITECTURE",
+      "phase": 2,
+      "wave": 2,
+      "iteration": 7,
+      "validated_by": "state-manager",
+      "reason": "Wave 2.2 iteration 7: Code review complete with bugs_found=0. Proceeding to architecture review."
+    }
+  ],
+  "completed_cascades_history": []
+}

@@ -1,0 +1,26 @@
+# Orchestrator ERROR_RECOVERY State - TODOs
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Phase: 2, Wave: 2, Iteration: 4
+# State: ERROR_RECOVERY → START_WAVE_ITERATION
+
+## Completed Tasks:
+1. ✅ Acknowledge bootstrap rules and ERROR_RECOVERY state rules
+2. ✅ Diagnose ERROR_RECOVERY cause: Missing integration workspace directory
+3. ✅ Create missing integration workspace directory (efforts/phase2/wave2/integration-workspace/)
+4. ✅ Verify integration workspace infrastructure is complete
+5. ✅ Determine correct next state after ERROR_RECOVERY (START_WAVE_ITERATION)
+6. ✅ Spawn State Manager for SHUTDOWN_CONSULTATION
+7. ✅ Save TODOs and commit per R287
+8. ✅ Output R405 continuation flag
+
+## Recovery Summary:
+- Error: Missing integration workspace directory prevented INTEGRATE_WAVE_EFFORTS
+- Resolution: Created efforts/phase2/wave2/integration-workspace/
+- State Manager Required: START_WAVE_ITERATION (not INTEGRATE_WAVE_EFFORTS)
+- Status: ERROR_RECOVERY complete, ready to transition
+
+## Next State Work (START_WAVE_ITERATION):
+- Recognize iteration 4 for Phase 2 Wave 2
+- Detect integration infrastructure is ready
+- Follow proper state flow to INTEGRATE_WAVE_EFFORTS
+

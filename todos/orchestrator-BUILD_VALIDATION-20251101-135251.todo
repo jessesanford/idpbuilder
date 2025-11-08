@@ -1,0 +1,42 @@
+# Orchestrator BUILD_VALIDATION State TODOs
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: BUILD_VALIDATION_COMPLETE (R287)
+
+## Completed TODOs
+1. [✅] Verify build validation complete from integration report
+   - Status: COMPLETE
+   - Integration report: WAVE-2.1-INTEGRATION-REPORT--20251101-131048.md
+   - Build status: SUCCESS (idpbuilder binary created)
+   - Test status: PASS (31 tests, 95.2% coverage)
+
+2. [✅] Confirm artifact built per R323 requirements
+   - Status: COMPLETE
+   - Artifact: idpbuilder executable binary
+   - Build system: Go (go build .)
+   - Build time: < 5 seconds
+   - R323 compliance: VERIFIED
+
+3. [✅] Determine correct next state per integration hierarchy
+   - Status: COMPLETE
+   - Current: Phase 2, Wave 1 (of 3 waves total)
+   - Next state: WAVE_START (for Wave 2.2)
+   - Rationale: Wave 2.1 complete, Waves 2.2 and 2.3 remain in Phase 2
+
+4. [✅] Spawn State Manager for SHUTDOWN_CONSULTATION
+   - Status: COMPLETE
+   - Decision: WAVE_START (accepted)
+   - Commit: f742847
+   - All 4 state files updated atomically (R288)
+
+5. [✅] Save TODOs per R287
+   - Status: IN_PROGRESS (this file being saved now)
+
+6. [PENDING] Output continuation flag per R405
+   - Status: PENDING (next action)
+
+## State Transition Summary
+- From: BUILD_VALIDATION
+- To: WAVE_START
+- Reason: Wave 2.1 validation complete, proceeding to Wave 2.2
+- State Manager validation: APPROVED
+- Continuation flag: TRUE (normal operation)

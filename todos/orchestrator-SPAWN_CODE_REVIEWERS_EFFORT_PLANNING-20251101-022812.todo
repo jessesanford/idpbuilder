@@ -1,0 +1,10 @@
+# Orchestrator TODOs - SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+# Saved: 2025-11-01T02:24:50Z
+# Trigger: State transition to WAITING_FOR_EFFORT_PLANS
+
+[✅] Spawn Code Reviewer for effort 2.1.2 implementation planning
+[✅] Update state file to WAITING_FOR_EFFORT_PLANS
+[⏳] Save TODOs per R287
+[  ] Commit and push state changes per R288
+[  ] Output R405 continuation flag (TRUE for spawning)
+[  ] Exit per R322 mandatory stop after spawning

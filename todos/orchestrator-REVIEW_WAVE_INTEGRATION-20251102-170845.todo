@@ -1,0 +1,25 @@
+# TODO State at 2025-11-02 17:07:30
+# Agent: orchestrator
+# State: REVIEW_WAVE_INTEGRATION → CREATE_WAVE_FIX_PLAN
+# Phase: 2, Wave: 2
+
+## Completed (8)
+1. ✅ Read mandatory rule files for REVIEW_WAVE_INTEGRATION state
+2. ✅ Check for existing integration review report
+3. ✅ Analyze integration report for bugs
+4. ✅ Acknowledge all mandatory rules
+5. ✅ Verify integration status and bugs_found
+6. ✅ Determine next state based on bugs_found
+7. ✅ Spawn State Manager for SHUTDOWN_CONSULTATION
+8. ✅ Save TODOs per R287
+
+## In Progress (0)
+
+## Pending (1)
+1. ⏳ Output CONTINUE-SOFTWARE-FACTORY flag per R405
+
+## Summary
+- Integration Report: ABORTED due to R300 violation
+- Bugs Found: 11 (all OPEN)
+- State Transition: REVIEW_WAVE_INTEGRATION → CREATE_WAVE_FIX_PLAN
+- Next Action: Output continuation flag and stop

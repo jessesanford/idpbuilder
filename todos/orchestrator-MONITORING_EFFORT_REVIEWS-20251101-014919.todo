@@ -1,0 +1,47 @@
+# Orchestrator TODO State - MONITORING_EFFORT_REVIEWS (RESOLVED)
+# Saved: 2025-11-01T01:33:00Z
+# Reason: R287 trigger - State machine gap fixed, ready to continue
+
+[✅] Verify review completion for effort 2.1.1 (Push Command Core)
+[✅] Check sequential strategy requirements for starting effort 2.1.2
+[✅] Consult Software Factory Manager for root cause analysis
+[✅] Apply state machine fix (add SPAWN_CODE_REVIEWERS_EFFORT_PLANNING transition)
+[✅] Commit state machine fix
+[✅] Save TODOs (R287)
+[PENDING] Output CONTINUE-SOFTWARE-FACTORY=TRUE flag (R405)
+
+## Root Cause Analysis Complete
+
+**Issue**: CRITICAL SYSTEM-WIDE FLAW in state machine
+**Root Cause**: MONITORING_EFFORT_REVIEWS missing transition for sequential continuation
+**Impact**: Affects ALL projects with 2+ sequential efforts
+**Fix Applied**: Added SPAWN_CODE_REVIEWERS_EFFORT_PLANNING transition with guards
+
+## State Machine Patch Applied
+
+Modified: state-machines/software-factory-3.0-state-machine.json
+
+Changes:
+1. ✅ Added SPAWN_CODE_REVIEWERS_EFFORT_PLANNING to allowed_transitions
+2. ✅ Added guard: reviews_complete && efforts_remaining > 0 && sequential_strategy
+3. ✅ Updated WAVE_COMPLETE guard: all_reviews_clean && efforts_remaining == 0
+
+## Status: RESOLVED
+
+- Effort 2.1.1: Review APPROVED (424 lines, production ready)
+- Effort 2.1.2: Ready for planning (next state: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING)
+- State machine: Fixed and validated
+- System: Unblocked, ready to continue
+
+## Documentation Created
+
+- ROOT-CAUSE-ANALYSIS-MONITORING-EFFORT-REVIEWS-GAP.md (comprehensive analysis)
+- EXECUTIVE-SUMMARY-STATE-MACHINE-GAP.md (quick reference)
+
+## Next Steps
+
+1. Continue with /continue-software-factory
+2. System will transition to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+3. Code Reviewer will create implementation plan for effort 2.1.2
+4. Sequential workflow will resume normally
+

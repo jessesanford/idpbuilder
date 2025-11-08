@@ -1,0 +1,30 @@
+# Orchestrator CREATE_WAVE_FIX_PLAN State - TODOs
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Phase: 2, Wave: 2, Iteration: 4
+# State: CREATE_WAVE_FIX_PLAN → FIX_WAVE_UPSTREAM_BUGS (pending user approval)
+
+## Completed Tasks:
+1. ✅ Read all 7 mandatory rule files for CREATE_WAVE_FIX_PLAN state
+2. ✅ Acknowledge all state rules per R290 requirement
+3. ✅ Load bugs from BUG-MANIFEST-wave-2-2.json (6 total, 3 BLOCKING)
+4. ✅ Categorize bugs (3 UPSTREAM, 1 WAVE_PLANNING, 1 CASCADE, 1 INFRASTRUCTURE)
+5. ✅ Identify affected upstream branches for all bugs
+6. ✅ Create comprehensive fix plan with R321 backport strategy
+
+## Current Status:
+- Fix plan created for all 6 bugs
+- 2 bugs require SW Engineer backport (BUG-001, BUG-003)
+- 1 bug auto-resolves (BUG-005 cascades from BUG-001)
+- 1 bug is infrastructure setup (BUG-004)
+- 1 bug deferred as technical debt (BUG-006)
+- 1 bug requires USER DECISION (BUG-002 SIZE VIOLATION - CRITICAL!)
+
+## Pending Tasks (waiting for user approval):
+- Present fix plan to user for R322 checkpoint approval
+- Spawn State Manager for SHUTDOWN_CONSULTATION
+- Transition to FIX_WAVE_UPSTREAM_BUGS (if approved) OR ERROR_RECOVERY (if size issue unresolved)
+
+## Critical Decision Points:
+- BUG-WAVE-2-2-002: Integration exceeds 848 lines (48 over 800 hard limit)
+- User must decide: Accept overage, re-plan wave, or split efforts
+- This decision blocks progression

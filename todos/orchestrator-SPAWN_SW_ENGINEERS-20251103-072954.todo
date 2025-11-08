@@ -1,0 +1,27 @@
+# Orchestrator TODOs - SPAWN_SW_ENGINEERS State
+# Saved: 2025-11-03T07:30:00Z
+# Trigger: R287 (state transition)
+
+## Current Status
+- State corrected from SPAWN_CODE_REVIEWERS_EFFORT_PLANNING to SPAWN_SW_ENGINEERS
+- Effort 2.3.1: COMPLETE, REVIEWED, ACCEPTED (394 lines, 94.6% coverage)
+- Effort 2.3.2: PLAN EXISTS (created 06:26:30 UTC), awaiting implementation
+
+## Next Actions (for /continue-orchestrating)
+- [ ] Spawn SW Engineer for effort 2.3.2 implementation
+- [ ] Working directory: efforts/phase2/wave3/effort-2-error-system
+- [ ] Implementation plan: .software-factory/phase2/wave3/effort-2-error-system/IMPLEMENTATION-PLAN-20251103-062330.md
+- [ ] Sequential strategy: spawn only effort 2.3.2 (2.3.1 is complete)
+- [ ] Base branch: idpbuilder-oci-push/phase2/wave3/effort-2.3.1-input-validation
+
+## Sequential Strategy Active
+- Effort 2.3.2 depends on Effort 2.3.1
+- Effort 2.3.1 is complete and reviewed - dependency satisfied
+- Ready to spawn SW Engineer for 2.3.2
+
+## State Information
+- Phase: 2
+- Wave: 3
+- Current State: SPAWN_SW_ENGINEERS
+- Previous State: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING (corrected)
+- Transition Type: STATE_CORRECTION

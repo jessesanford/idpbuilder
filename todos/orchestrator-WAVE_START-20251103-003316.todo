@@ -1,0 +1,32 @@
+# TODO STATE: orchestrator - WAVE_START
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: State transition from WAVE_START to SPAWN_ARCHITECT_WAVE_PLANNING (R287)
+
+[✓] Acknowledge orchestrator identity and critical rules (R203, R506, R517)
+[✓] Determine current phase/wave from state history
+[✓] Read implementation plan to understand Wave 3 requirements
+[✓] Initialize Phase 2 Wave 3 infrastructure per WAVE_START rules
+[✓] Spawn State Manager for SHUTDOWN_CONSULTATION (R517 mandatory)
+[✓] Save TODOs per R287 before exit
+[ ] Output CONTINUE-SOFTWARE-FACTORY=TRUE per R405
+
+## Work Summary
+- WAVE_START state work completed successfully
+- Phase 2 Wave 3 initialization complete
+- Wave 3 scope: Error Handling & Validation (2 sequential efforts)
+- Effort 2.3.1: Input Validation & Sanitization (~400 lines)
+- Effort 2.3.2: Error Handling & Exit Codes (~350 lines)
+- Total estimated: ~750 lines (within 800 limit)
+- State Manager consultation completed (R517 compliance)
+- Transition validated: WAVE_START → SPAWN_ARCHITECT_WAVE_PLANNING
+- All state files updated atomically (commit: 0e5a222)
+
+## Next State: SPAWN_ARCHITECT_WAVE_PLANNING
+- Architect will create Wave 2.3 architecture plan
+- Deliverable: planning/phase2/wave3/WAVE-2.3-ARCHITECTURE.md
+- Must include R213 metadata and R340 progressive planning compliance
+
+## Critical Notes
+- Progressive Planning (R213) requires wave architecture before implementation
+- TDD protocol (R341/R342) will require wave test plan next
+- Sequential implementation (no parallelization for Wave 3 efforts)

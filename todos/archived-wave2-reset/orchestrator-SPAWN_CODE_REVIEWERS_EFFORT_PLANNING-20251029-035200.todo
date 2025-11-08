@@ -1,0 +1,25 @@
+# Orchestrator TODOs - SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+# Saved: 2025-10-29T03:52:00Z
+# Trigger: State transition to WAITING_FOR_EFFORT_PLANS
+
+## Completed
+- [x] Spawn Code Reviewer for wave-level effort planning per R356
+- [x] Update state file with spawning details per R288
+
+## In Progress
+- [ ] Save TODOs per R287 after spawning (THIS FILE)
+
+## Pending
+- [ ] Output R405 continuation flag as last action
+
+## State Summary
+- Current State: WAITING_FOR_EFFORT_PLANS
+- Previous State: SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+- Code Reviewer spawned in: efforts/phase1/wave1/integration
+- Plans completed: 1 of 4 (Effort 1.1.1)
+- Plans remaining: 3 (Efforts 1.1.2, 1.1.3, 1.1.4)
+
+## Next Actions
+- Wait for Code Reviewer to complete remaining effort plans
+- Verify all 4 plans exist in their respective effort directories
+- Transition to next state when all plans complete

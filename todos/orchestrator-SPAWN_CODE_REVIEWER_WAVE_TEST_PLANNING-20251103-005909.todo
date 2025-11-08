@@ -1,0 +1,41 @@
+# Orchestrator TODO State
+# State: SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Agent: orchestrator
+
+## Completed Tasks
+
+- [x] Load and verify current state from orchestrator-state-v3.json
+- [x] Acknowledge all critical and blocking rules (R506, R517, R151, R287, R322, R405, etc.)
+- [x] Spawn Code Reviewer for Wave 2.3 Test Planning
+- [x] Code Reviewer completed Wave 2.3 Test Plan (63 tests, R330 demo planning compliant)
+
+## In Progress Tasks
+
+- [ ] Save TODOs per R287 (this file!)
+- [ ] Spawn State Manager for SHUTDOWN_CONSULTATION before state transition
+- [ ] Output CONTINUE-SOFTWARE-FACTORY flag per R405
+
+## State Summary
+
+**Current State**: SPAWN_CODE_REVIEWER_WAVE_TEST_PLANNING
+**Proposed Next State**: WAITING_FOR_WAVE_TEST_PLAN
+**Wave**: Phase 2, Wave 3 - Error Handling & Validation
+**Test Plan File**: planning/phase2/wave3/WAVE-TEST-PLAN.md
+**Test Count**: 63 tests (exceeds 30-50 minimum)
+**Demo Planning**: ✅ R330 compliant (5 objectives, 4 scenarios, deliverables defined)
+
+**Work Completed**:
+- Spawned Code Reviewer agent for Wave 2.3 test planning
+- Code Reviewer created comprehensive test plan with progressive realism
+- Test plan uses REAL Wave 2.2 imports and patterns
+- Demo planning section complete per R330 requirements
+- All quality gates passed
+
+**Next Actions**:
+1. Save this TODO file per R287 (DONE)
+2. Commit and push TODO file
+3. Spawn State Manager for SHUTDOWN_CONSULTATION (R517 MANDATORY)
+4. State Manager will update orchestrator-state-v3.json to WAITING_FOR_WAVE_TEST_PLAN
+5. Output CONTINUE-SOFTWARE-FACTORY=TRUE per R405
+

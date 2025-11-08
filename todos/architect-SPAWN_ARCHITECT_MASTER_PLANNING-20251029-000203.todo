@@ -1,0 +1,20 @@
+# Architect TODOs - Trigger: R287_TODOWRITE_TRIGGER
+# State: SPAWN_ARCHITECT_MASTER_PLANNING
+# Timestamp: $(date -Iseconds)
+
+✅ Create master architecture plan at planning/PROJECT-ARCHITECTURE.md - COMPLETED
+✅ Define phases and waves with effort organization - COMPLETED
+✅ Front-load interfaces and contracts to Phase 1 Wave 1 - COMPLETED
+✅ Ensure each effort is within 800-line limit - COMPLETED
+🔄 Save TODOs and commit per R287 - IN_PROGRESS
+
+# Architecture Planning Summary:
+- Created comprehensive PROJECT-ARCHITECTURE.md at standardized location
+- Defined 3 phases, 7 waves, 13 efforts total
+- Phase 1 Wave 1: All interfaces defined (4 efforts, ~650 lines)
+- Phase 1 Wave 2: Parallel implementations (4 efforts, ~1550 lines total)
+- Phase 2: Core push functionality (6 efforts)
+- Phase 3: Testing & integration (3 efforts)
+- All efforts scoped 400-600 lines (safety margin below 800)
+- Interface-first design enables maximum parallelization
+- Compliant with R307, R308, R359, R383, R220/R221

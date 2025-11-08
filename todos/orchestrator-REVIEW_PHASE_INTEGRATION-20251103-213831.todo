@@ -1,0 +1,31 @@
+# Orchestrator TODO State - REVIEW_PHASE_INTEGRATION
+# Saved: 2025-11-03T21:35:00Z
+# Trigger: R287 - Before state transition to CREATE_PHASE_FIX_PLAN
+
+## Completed
+- [x] Acknowledge all mandatory rules for REVIEW_PHASE_INTEGRATION state
+- [x] Verify Phase 2 integration build status (PASSED)
+- [x] Spawn Code Reviewer agent for phase integration review
+- [x] Wait for Code Reviewer to complete review
+- [x] Record bugs in bug-tracking.json (via State Manager)
+- [x] Update iteration history with bugs_found count
+- [x] Update orchestrator-state-v3.json with review outcome
+- [x] Categorize bugs by type and severity
+- [x] Determine next state: CREATE_PHASE_FIX_PLAN (bugs_found > 0)
+- [x] Spawn State Manager for SHUTDOWN_CONSULTATION
+- [x] State Manager approved transition and updated all 4 state files
+- [x] Save TODOs per R287
+
+## In Progress
+- [ ] Output CONTINUE-SOFTWARE-FACTORY flag per R405
+
+## Pending
+- [ ] Stop execution per R322 (after flag output)
+
+## Context
+- State: REVIEW_PHASE_INTEGRATION → CREATE_PHASE_FIX_PLAN
+- Phase: 2
+- Review completed: 2025-11-03T21:29:52Z
+- Bugs found: 2 (1 CRITICAL, 1 HIGH)
+- State Manager validation: APPROVED at 2025-11-03T21:34:21Z
+- Next: CREATE_PHASE_FIX_PLAN state
