@@ -1,0 +1,31 @@
+mkdir -p /home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase3/integration-workspace/target-repo/bin
+test -s /home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase3/integration-workspace/target-repo/bin/controller-gen && /home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase3/integration-workspace/target-repo/bin/controller-gen --version | grep -q v0.15.0 || \
+GOBIN=/home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase3/integration-workspace/target-repo/bin go install sigs.k8s.io/controller-tools/cmd/controller-gen@v0.15.0
+/home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase3/integration-workspace/target-repo/bin/controller-gen rbac:roleName=manager-role crd webhook paths="./api/..." output:crd:artifacts:config=pkg/controllers/resources
+/home/vscode/workspaces/idpbuilder-oci-push-planning/efforts/phase3/integration-workspace/target-repo/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./api/..."
+go fmt ./...
+pkg/validator/registry.go
+test/harness/environment.go
+test/harness/image_builder_test.go
+go vet ./...
+/go/pkg/mod/github.com/docker/docker@v25.0.6+incompatible/pkg/archive/archive.go:23:2: no required module provides package github.com/containerd/containerd/pkg/userns; to add it:
+	go get github.com/containerd/containerd/pkg/userns
+/go/pkg/mod/github.com/docker/docker@v25.0.6+incompatible/pkg/idtools/idtools_unix.go:15:2: no required module provides package github.com/moby/sys/user; to add it:
+	go get github.com/moby/sys/user
+/go/pkg/mod/github.com/docker/docker@v25.0.6+incompatible/pkg/archive/archive.go:29:2: missing go.sum entry for module providing package github.com/klauspost/compress/zstd (imported by github.com/docker/docker/pkg/archive); to add:
+	go get github.com/docker/docker/pkg/archive@v25.0.6+incompatible
+/go/pkg/mod/github.com/docker/docker@v25.0.6+incompatible/pkg/archive/archive.go:30:2: no required module provides package github.com/moby/patternmatcher; to add it:
+	go get github.com/moby/patternmatcher
+/go/pkg/mod/github.com/docker/docker@v25.0.6+incompatible/pkg/archive/archive.go:31:2: no required module provides package github.com/moby/sys/sequential; to add it:
+	go get github.com/moby/sys/sequential
+test/harness/helpers.go:9:2: no required module provides package github.com/google/go-containerregistry/pkg/authn; to add it:
+	go get github.com/google/go-containerregistry/pkg/authn
+test/harness/helpers.go:10:2: no required module provides package github.com/google/go-containerregistry/pkg/name; to add it:
+	go get github.com/google/go-containerregistry/pkg/name
+test/harness/helpers.go:11:2: no required module provides package github.com/google/go-containerregistry/pkg/v1/remote; to add it:
+	go get github.com/google/go-containerregistry/pkg/v1/remote
+test/harness/environment.go:9:2: no required module provides package github.com/testcontainers/testcontainers-go; to add it:
+	go get github.com/testcontainers/testcontainers-go
+test/harness/environment.go:10:2: no required module provides package github.com/testcontainers/testcontainers-go/wait; to add it:
+	go get github.com/testcontainers/testcontainers-go/wait
+make: *** [Makefile:36: vet] Error 1
