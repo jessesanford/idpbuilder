@@ -1,0 +1,19 @@
+# Orchestrator TODOs - SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+# Saved: 2025-11-01 15:06:00 UTC
+# Trigger: R234 violation detected
+
+## CRITICAL - State Machine Violation Detected
+- [COMPLETED] Acknowledge state machine violation - skipped CREATE_NEXT_INFRASTRUCTURE
+- [COMPLETED] Document the violation for ERROR_RECOVERY transition
+- [COMPLETED] Output R405 FALSE flag to stop automation
+
+## Recovery Required
+- [PENDING] Transition to ERROR_RECOVERY state
+- [PENDING] Execute CREATE_NEXT_INFRASTRUCTURE to create Phase 2 Wave 2 effort directories  
+- [PENDING] Execute VALIDATE_INFRASTRUCTURE to verify setup
+- [PENDING] Return to SPAWN_CODE_REVIEWERS_EFFORT_PLANNING with proper prerequisites
+
+## Violation Details
+- Missing states: CREATE_NEXT_INFRASTRUCTURE, VALIDATE_INFRASTRUCTURE
+- Evidence: efforts/phase2/wave2/ directory does not exist
+- Rule violated: R234 SUPREME LAW - Mandatory State Traversal

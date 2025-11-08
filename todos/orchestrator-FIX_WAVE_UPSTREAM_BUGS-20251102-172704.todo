@@ -1,0 +1,34 @@
+# TODO State at $(date '+%Y-%m-%d %H:%M:%S')
+# Agent: orchestrator
+# State: FIX_WAVE_UPSTREAM_BUGS
+# Phase: 2, Wave: 2, Iteration: 4
+
+## Completed (5)
+- [x] Acknowledge all mandatory FIX_WAVE_UPSTREAM_BUGS state rules
+- [x] Load and analyze bugs from bug-tracking.json (11 OPEN bugs)
+- [x] Group bugs by affected upstream branch (effort-1-registry-override-viper)
+- [x] Spawn SW Engineer to fix bugs in effort-1-registry-override-viper branch
+- [x] Monitor SW Engineer progress - Priority 1 FIXED (build), Priority 2 BLOCKED (size)
+
+## In Progress (1)
+- [ ] Handle blocked Priority 2 size violation (requires orchestrator decision on Option A vs B)
+
+## Pending (4)
+- [ ] Update bug-tracking.json status to FIXED after all fixes complete
+- [ ] Spawn State Manager for SHUTDOWN_CONSULTATION (R517)
+- [ ] Save TODOs per R287 before transition
+- [ ] Output CONTINUE-SOFTWARE-FACTORY flag (R405)
+
+## Summary
+SW Engineer fixed Priority 1 (build failure) successfully:
+- Commit aa20b98: Added viper parameter to push.NewPushCommand()
+- Build now compiles successfully
+
+Priority 2 (size violation) BLOCKED - requires orchestrator decision:
+- Current: 835 lines (35 over 800 limit)
+- Root cause: 389 lines of out-of-scope Phase 1 stub files
+- Cannot remove stubs without breaking build (dependencies)
+- Options: A) Remove stubs if Phase 1 exists, B) Create split plan
+- SW Engineer awaiting orchestrator guidance
+
+Status: PARTIALLY_COMPLETE - 1 of 2 critical bugs fixed, 1 blocked

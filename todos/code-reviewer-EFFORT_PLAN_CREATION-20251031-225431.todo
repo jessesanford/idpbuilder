@@ -1,0 +1,21 @@
+# Code Reviewer TODOs - Trigger: R287_TODOWRITE_TRIGGER
+# State: EFFORT_PLAN_CREATION
+# Effort: effort-1-push-command-core
+# Timestamp: 2025-10-31T22:51:55Z
+
+## Completed Tasks
+- [x] Create IMPLEMENTATION-PLAN with R303 timestamped filename in .software-factory/
+- [x] Include all R213 metadata from wave plan
+- [x] Define detailed file structure and implementation steps
+- [x] Reference test plan requirements (T-2.1.1-01 through T-2.1.1-25)
+- [x] Document Phase 1 dependencies and integration points
+
+## Current Task
+- [ ] Save TODO state with R287 compliance (in progress)
+
+## Plan Summary
+Created: .software-factory/phase2/wave1/effort-1-push-command-core/IMPLEMENTATION-PLAN--20251031-225155.md
+Estimated Lines: 450
+Test Coverage: 90% target (25 tests)
+Files: 4 (3 new, 1 modified)
+Status: READY FOR SOFTWARE ENGINEER

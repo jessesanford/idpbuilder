@@ -1,0 +1,98 @@
+{
+  "consultation_type": "SHUTDOWN_CONSULTATION",
+  "timestamp": "2025-11-03T11:43:00Z",
+  "requesting_agent": "orchestrator",
+  "state_manager_agent": "state-manager",
+
+  "validation_result": "APPROVED",
+  "required_next_state": "START_WAVE_ITERATION",
+  "orchestrator_proposed_state": "START_WAVE_ITERATION",
+  "proposal_accepted": true,
+
+  "decision_rationale": "Transition valid per state machine. BUG-020 fixed in effort-2 source branch per R300 (commits c36d629, d2144ee verified and pushed). Ready to increment iteration counter and create fresh integration workspace for Wave 2.3 iteration 2. Follows R327 mandatory re-integration after fixes.",
+
+  "validation_checks": {
+    "transition_allowed": true,
+    "from_state_exists": true,
+    "to_state_exists": true,
+    "in_allowed_transitions": true,
+    "bug_020_fixed": true,
+    "fix_commits_verified": true,
+    "fix_pushed_to_remote": true,
+    "r300_compliance": true,
+    "r327_compliance": true,
+    "r288_compliance": true,
+    "iteration_counter_valid": true,
+    "within_max_iterations": true
+  },
+
+  "files_updated": [
+    "orchestrator-state-v3.json",
+    "bug-tracking.json",
+    "integration-containers.json"
+  ],
+
+  "commit_hash": "20477ea",
+  "commit_message": "[R288] State Manager: ERROR_RECOVERY → START_WAVE_ITERATION",
+  "push_status": "SUCCESS",
+
+  "state_updates": {
+    "orchestrator_state": {
+      "current_state": "START_WAVE_ITERATION",
+      "previous_state": "ERROR_RECOVERY",
+      "phase": 2,
+      "wave": 3,
+      "iteration": 2
+    },
+    "bug_tracking": {
+      "bug_id": "BUG-020-VALIDATOR-REDECLARATIONS",
+      "status": "FIXED",
+      "fixed_at": "2025-11-03T11:42:46Z",
+      "fix_commits": ["c36d629", "d2144ee"]
+    },
+    "integration_container": {
+      "container_id": "wave-phase2-wave3",
+      "iteration": 2,
+      "status": "PREPARING_RETRY"
+    }
+  },
+
+  "orchestrator_directive": {
+    "next_state": "START_WAVE_ITERATION",
+    "required_actions": [
+      "Increment iteration counter (DONE by State Manager)",
+      "Delete corrupted integration workspace from iteration 1",
+      "Create fresh integration workspace",
+      "Reset convergence tracking",
+      "Prepare for re-integration with fixed effort branches"
+    ],
+    "exit_conditions": [
+      "Iteration counter incremented (DONE)",
+      "Old integration workspace deleted",
+      "Fresh integration workspace created",
+      "Integration branch ready",
+      "Convergence tracking reset"
+    ],
+    "next_state_after_completion": "INTEGRATE_WAVE_EFFORTS",
+    "continuation_flag": "CONTINUE-SOFTWARE-FACTORY=TRUE"
+  },
+
+  "context": {
+    "phase": 2,
+    "wave": 3,
+    "iteration": 2,
+    "bug_fixed": "BUG-020-VALIDATOR-REDECLARATIONS",
+    "fix_branch": "idpbuilder-oci-push/phase2/wave3/effort-2-error-system",
+    "integration_retry_pattern": "ERROR_RECOVERY → START_WAVE_ITERATION → INTEGRATE_WAVE_EFFORTS"
+  },
+
+  "compliance": {
+    "r517_universal_state_manager_consultation": "COMPLIANT",
+    "r300_integration_branch_read_only": "COMPLIANT",
+    "r327_mandatory_reintegration": "COMPLIANT",
+    "r288_state_file_update_protocol": "COMPLIANT",
+    "r405_automation_continuation_flag": "TRUE (normal operation)"
+  },
+
+  "report_file": ".software-factory/state-manager/SHUTDOWN-CONSULTATION-ERROR_RECOVERY-TO-START_WAVE_ITERATION--20251103-114300.md"
+}

@@ -1,0 +1,22 @@
+# Orchestrator TODO State - SPAWN_SW_ENGINEERS
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# State: SPAWN_SW_ENGINEERS
+# Trigger: R287 - Before State Transition
+
+## Completed Tasks
+- ✅ Verify effort infrastructure exists for Phase 2 Wave 2
+- ✅ Spawn SW Engineer for Effort 2.2.1 (registry-override-viper) - FIRST IN SEQUENCE
+- ✅ Record spawn in orchestrator state file via State Manager
+
+## In Progress
+- 🔄 Save TODOs per R287
+
+## Pending
+- ⏳ Transition to MONITORING_SWE_PROGRESS via State Manager SHUTDOWN_CONSULTATION
+
+## Context
+- Phase 2, Wave 2
+- Effort 2.2.1 implemented (551 lines, within limit)
+- Sequential execution: Only Effort 2.2.1 spawned (2.2.2 depends on this)
+- SW Engineer completed implementation
+- Next: Transition to MONITORING_SWE_PROGRESS

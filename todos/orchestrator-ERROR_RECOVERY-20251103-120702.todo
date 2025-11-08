@@ -1,0 +1,30 @@
+# Orchestrator TODO State - ERROR_RECOVERY Complete
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# State: ERROR_RECOVERY → START_WAVE_ITERATION
+# Trigger: State transition complete per R287
+
+## Completed TODOs:
+- [x] Read orchestrator agent config and list all CRITICAL/BLOCKING rules
+- [x] Read ERROR_RECOVERY state rules (R290 compliance)
+- [x] Read R019 - Error Recovery Protocol
+- [x] Read R300 - Comprehensive Fix Management Protocol
+- [x] Read R156 - Error Recovery Time Targets
+- [x] Create R290 verification marker
+- [x] Analyze BUG-020 and integration report
+- [x] Spawn Code Reviewer to create fix plan for validator stub removal
+- [x] Wait for Code Reviewer to create fix plan
+- [x] Spawn SW Engineer to fix effort-2 branch per R300
+- [x] Monitor SW Engineer fix progress
+- [x] Verify fixes applied to effort-2 branch (R300 verification)
+- [x] Spawn State Manager for SHUTDOWN_CONSULTATION
+- [x] Save TODOs and output continuation flag
+
+## Work Summary:
+BUG-020-VALIDATOR-REDECLARATIONS fixed successfully:
+- Fix applied to effort-2 branch per R300
+- Commits c36d629 and d2144ee pushed to remote
+- State Manager consultation complete
+- Ready for START_WAVE_ITERATION (wave integration retry)
+
+## Next State: START_WAVE_ITERATION
+Per State Manager directive (R517 authority)

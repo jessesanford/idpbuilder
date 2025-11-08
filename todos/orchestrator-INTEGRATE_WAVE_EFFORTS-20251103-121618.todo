@@ -1,0 +1,28 @@
+# TODO State at $(date '+%Y-%m-%d %H:%M:%S')
+# Agent: orchestrator
+# State: INTEGRATE_WAVE_EFFORTS  
+# Phase: 2, Wave: 3
+
+## Completed (4)
+- [x] Diagnose state machine issue: INTEGRATE_WAVE_EFFORTS without effort branches
+- [x] Determine root cause: Skipped states CREATE_NEXT_INFRASTRUCTURE through MONITORING_EFFORT_REVIEWS
+- [x] Decide recovery approach: Transition to CREATE_NEXT_INFRASTRUCTURE to properly set up wave
+- [x] Document findings for user/State Manager
+
+## In Progress (0)
+
+## Pending (0)
+
+## Blocked (0)
+
+## Critical Finding
+State machine is in INTEGRATE_WAVE_EFFORTS but NO effort branches exist for Wave 2.3.
+Root cause: Invalid state progression from START_WAVE_ITERATION directly to INTEGRATE_WAVE_EFFORTS, skipping:
+- CREATE_NEXT_INFRASTRUCTURE
+- SPAWN_CODE_REVIEWERS_EFFORT_PLANNING
+- SPAWN_SW_ENGINEERS
+- MONITORING_SWE_PROGRESS
+- SPAWN_CODE_REVIEWERS_EFFORT_REVIEW
+
+Recommendation: Transition to CREATE_NEXT_INFRASTRUCTURE to properly set up Wave 2.3.
+This is RECOVERABLE - use CONTINUE-SOFTWARE-FACTORY=TRUE.

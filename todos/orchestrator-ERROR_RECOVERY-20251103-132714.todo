@@ -1,0 +1,24 @@
+# Orchestrator ERROR_RECOVERY TODOs - 2025-11-03
+
+## Completed Tasks
+- [x] Read and acknowledge all ERROR_RECOVERY state rules
+- [x] Create R290 verification marker  
+- [x] Analyze error_context from orchestrator-state-v3.json
+- [x] Determine BUG-021 resolution status (FIXED)
+- [x] Verify all fixes committed and pushed to remote effort branches
+- [x] Determine correct next state: START_WAVE_ITERATION
+- [x] Create ERROR_RECOVERY transition summary document
+
+## Current Task
+- [~] Save TODOs and commit per R287
+
+## Summary
+ERROR_RECOVERY work complete. BUG-020 and BUG-021 both fixed:
+- BUG-020: validator.go stub removed (commit c36d629)
+- BUG-021: Verified fix complete, all commits pushed to remote
+- Fixes applied to: efforts/phase2/wave3/effort-2-error-system
+- Branch: idpbuilder-oci-push/phase2/wave3/effort-2-error-system
+
+Next State: START_WAVE_ITERATION (iteration 4) for re-integration with fixes.
+
+Ready to transition per R517/R288.

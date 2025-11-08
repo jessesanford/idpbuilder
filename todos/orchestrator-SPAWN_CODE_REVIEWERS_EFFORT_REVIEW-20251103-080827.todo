@@ -1,0 +1,56 @@
+# Orchestrator TODOs - SPAWN_CODE_REVIEWERS_EFFORT_REVIEW State
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# State Transition: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW → MONITORING_EFFORT_REVIEWS
+
+## Completed Tasks ✅
+
+1. [COMPLETED] Read state-specific rules for SPAWN_CODE_REVIEWERS_EFFORT_REVIEW (R290 requirement)
+2. [COMPLETED] Create R290 verification marker
+3. [COMPLETED] Check effort 2.3.2 status and review needs
+4. [COMPLETED] Spawn Code Reviewer for Effort 2.3.2 (error-system) review
+5. [COMPLETED] Spawn State Manager for SHUTDOWN_CONSULTATION
+6. [IN_PROGRESS] Save TODOs per R287 before state transition
+
+## State Transition Complete
+
+- Previous State: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW
+- New State: MONITORING_EFFORT_REVIEWS
+- Transition validated by State Manager ✅
+- Commit: 848e082
+- Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+## Key Findings
+
+**Effort 2.3.1 (input-validation)**:
+- Status: COMPLETE + REVIEWED + ACCEPTED
+- Size: 394 lines
+- No additional review needed
+
+**Effort 2.3.2 (error-system)**:
+- Status: COMPLETE + REVIEWED + ACCEPTED
+- Size: 508 lines
+- Tests: 36/36 passing, 100% coverage
+- Decision: ACCEPTED
+- All quality checks passed
+
+**Wave 3 Status**:
+- Both efforts ACCEPTED
+- Total lines: 902 (394 + 508)
+- Zero bugs found
+- Ready for wave completion
+
+## Next State Actions
+
+1. Monitor review completion (already done)
+2. Process review decisions (both ACCEPTED)
+3. Transition to WAVE_COMPLETE
+4. Proceed to wave integration
+
+## R287 Compliance
+
+✅ Saved within 30 seconds of last TodoWrite
+✅ Saved before state transition
+✅ Will commit and push within 60 seconds
+
+---
+End of TODO state capture

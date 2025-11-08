@@ -1,0 +1,31 @@
+# Orchestrator TODOs - SPAWN_CODE_REVIEWERS_EFFORT_REVIEW State
+# Saved: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+# Trigger: State transition to MONITORING_EFFORT_REVIEWS
+
+## Completed Tasks:
+- [x] Acknowledge all critical state rules for SPAWN_CODE_REVIEWERS_EFFORT_REVIEW
+- [x] Create R290 verification marker
+- [x] Check phase/wave status and identify efforts ready for review
+- [x] Spawn Code Reviewer for effort 2.2.1 (registry-override-viper)
+  - Review completed with APPROVED status
+  - 247 implementation lines (within 800-line limit)
+  - Zero issues found
+  - Review report: .software-factory/phase2/wave2/effort-1-registry-override-viper/CODE-REVIEW-REPORT--20251101-192258.md
+- [x] Spawn State Manager for SHUTDOWN_CONSULTATION (R517)
+  - State transition validated: SPAWN_CODE_REVIEWERS_EFFORT_REVIEW → MONITORING_EFFORT_REVIEWS
+  - All state files updated atomically
+  - Commit: d4672716d0ef55494cc6b51987af6ed1c94fda6c
+- [x] Save TODOs and exit per R322/R405
+
+## Next State: MONITORING_EFFORT_REVIEWS
+- Monitor Code Reviewer progress
+- Collect review results  
+- Evaluate bugs found
+- Process TodoWrite items per R232
+- Decide next action based on review outcomes
+
+## Context Preservation:
+- Phase: 2
+- Wave: 2
+- Effort: 2.2.1 (registry-override-viper) - APPROVED
+- Sequential strategy active (effort 2.2.2 depends on 2.2.1)

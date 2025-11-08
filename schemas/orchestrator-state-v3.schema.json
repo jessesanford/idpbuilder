@@ -1,0 +1,1644 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://software-factory.dev/schemas/orchestrator-state-v3.schema.json",
+  "title": "Software Factory 3.0 Orchestrator State",
+  "description": "Schema for orchestrator-state-v3.json - tracks state machine progression and project iteration containers",
+  "type": "object",
+  "required": [
+    "state_machine",
+    "project_progression",
+    "references"
+  ],
+  "properties": {
+    "state_machine": {
+      "type": "object",
+      "description": "State machine progression tracking - current state, transition history, and validation status",
+      "required": [
+        "current_state",
+        "previous_state",
+        "state_history",
+        "last_transition_timestamp"
+      ],
+      "properties": {
+        "current_state": {
+          "type": "string",
+          "description": "Current state in the Software Factory 3.0 state machine",
+          "examples": [
+            "REVIEW_WAVE_INTEGRATION",
+            "SETUP_PHASE_INFRASTRUCTURE",
+            "START_PROJECT_ITERATION"
+          ]
+        },
+        "previous_state": {
+          "type": "string",
+          "description": "Previous state before current transition",
+          "examples": [
+            "INTEGRATE_WAVE_EFFORTS",
+            "COMPLETE_WAVE"
+          ]
+        },
+        "state_history": {
+          "type": "array",
+          "description": "Ordered history of state transitions with timestamps and reasons",
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "from_state",
+              "to_state",
+              "timestamp",
+              "validated_by"
+            ],
+            "properties": {
+              "from_state": {
+                "type": "string",
+                "description": "State transitioned from"
+              },
+              "to_state": {
+                "type": "string",
+                "description": "State transitioned to"
+              },
+              "timestamp": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO 8601 timestamp of transition"
+              },
+              "validated_by": {
+                "type": "string",
+                "description": "State Manager agent that validated this transition (MUST be 'state-manager' for SF 3.0 compliance)",
+                "enum": [
+                  "state-manager"
+                ],
+                "default": "state-manager"
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Human-readable reason for transition"
+              },
+              "orchestrator_proposal": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "State that orchestrator proposed during SHUTDOWN_CONSULTATION (added by State Manager when orchestrator makes proposal)"
+              },
+              "proposal_accepted": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "Whether State Manager accepted orchestrator's proposal (true = accepted, false = rejected/overridden). Required when orchestrator_proposal is present."
+              },
+              "proposal_rejected_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Explanation why State Manager rejected/overrode orchestrator's proposal (e.g., 'Cannot return to INIT - must continue mandatory sequence project_initialization'). Required when proposal_accepted is false."
+              },
+              "mandatory_sequence": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Name of mandatory sequence this transition belongs to (e.g., 'project_initialization')"
+              },
+              "sequence_position": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Position in mandatory sequence (e.g., '6/9' means step 6 of 9)"
+              },
+              "guards_evaluated": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Guard conditions that were evaluated for this transition"
+              }
+            },
+            "if": {
+              "properties": {
+                "proposal_accepted": {
+                  "const": false
+                }
+              },
+              "required": [
+                "proposal_accepted"
+              ]
+            },
+            "then": {
+              "required": [
+                "proposal_rejected_reason"
+              ]
+            },
+            "else": {}
+          }
+        },
+        "last_transition_timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp of most recent state transition"
+        },
+        "transition_validated": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Whether current state transition was validated by State Manager",
+          "default": true
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "ACTIVE",
+            "PAUSED",
+            "ERROR",
+            null
+          ],
+          "description": "Status of state machine execution (PAUSED when sub-state machine active)",
+          "default": "ACTIVE"
+        },
+        "sub_state_machine": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Sub-state machine status (e.g., fix cascade) when active",
+          "properties": {
+            "active": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "Whether a sub-state machine is currently active"
+            },
+            "type": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Type of sub-state machine",
+              "examples": [
+                "fix-cascade"
+              ]
+            },
+            "state_file": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Path to sub-state machine state file",
+              "examples": [
+                "fix-cascade-state.json"
+              ]
+            },
+            "return_state": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "State to return to when sub-state machine completes"
+            }
+          }
+        },
+        "loop_detection": {
+          "type": "object",
+          "description": "Loop detection counters for preventing infinite state transition cycles (R530)",
+          "required": [
+            "last_two_states",
+            "ping_pong_count",
+            "same_state_count",
+            "error_recovery_entries"
+          ],
+          "properties": {
+            "last_two_states": {
+              "type": "array",
+              "description": "Ring buffer of last 2 states for ping-pong detection (A->B->A->B pattern)",
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 2,
+              "default": []
+            },
+            "ping_pong_count": {
+              "type": "integer",
+              "description": "Counter for 2-state ping-pong loops (A->B->A->B). Threshold: 5 repetitions = ERROR_RECOVERY",
+              "minimum": 0,
+              "default": 0
+            },
+            "same_state_count": {
+              "type": "integer",
+              "description": "Counter for stuck-in-same-state loops (A->A->A). Threshold: 3 repetitions = ERROR_RECOVERY",
+              "minimum": 0,
+              "default": 0
+            },
+            "error_recovery_entries": {
+              "type": "integer",
+              "description": "Count of ERROR_RECOVERY state entries from different states. Threshold: 3 entries = ESCALATE to ERROR_RECOVERY",
+              "minimum": 0,
+              "default": 0
+            },
+            "last_progress_timestamp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time",
+              "description": "ISO 8601 timestamp of last genuine progress detection (resets all counters)"
+            }
+          }
+        }
+      }
+    },
+    "project_progression": {
+      "type": "object",
+      "description": "Project progression tracking through iteration containers (project/phase/wave hierarchy)",
+      "required": [
+        "current_project",
+        "current_phase",
+        "current_wave"
+      ],
+      "properties": {
+        "current_project": {
+          "type": "object",
+          "description": "Current project container state",
+          "required": [
+            "project_id",
+            "name",
+            "iteration"
+          ],
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "description": "Unique identifier for this project"
+            },
+            "name": {
+              "type": "string",
+              "description": "Human-readable project name"
+            },
+            "iteration": {
+              "type": "integer",
+              "description": "Current iteration number for project-level integration",
+              "minimum": 0,
+              "default": 0
+            },
+            "max_iterations": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Maximum iterations allowed before escalation",
+              "minimum": 1,
+              "default": 10
+            },
+            "backport_attempts_this_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Counter for backport fix cycles within the current iteration (per R532 - prevents infinite loops)",
+              "minimum": 0,
+              "default": 0
+            },
+            "max_backport_attempts_per_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Maximum backport attempts allowed within single iteration before escalation to ERROR_RECOVERY (per R532)",
+              "minimum": 1,
+              "default": 3
+            },
+            "status": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "IN_PROGRESS",
+                "COMPLETED",
+                "ERROR",
+                null
+              ],
+              "default": "IN_PROGRESS"
+            }
+          }
+        },
+        "current_phase": {
+          "type": "object",
+          "description": "Current phase container state",
+          "required": [
+            "phase_number",
+            "name",
+            "iteration",
+            "total_waves_in_phase",
+            "waves_completed"
+          ],
+          "properties": {
+            "phase_number": {
+              "type": "integer",
+              "description": "Phase number (1, 2, 3, etc.)",
+              "minimum": 1
+            },
+            "name": {
+              "type": "string",
+              "description": "Phase name or description"
+            },
+            "iteration": {
+              "type": "integer",
+              "description": "Current iteration number for phase-level integration",
+              "minimum": 0,
+              "default": 0
+            },
+            "max_iterations": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Maximum iterations allowed before escalation",
+              "minimum": 1,
+              "default": 10
+            },
+            "backport_attempts_this_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Counter for backport fix cycles within the current iteration (per R532 - prevents infinite loops)",
+              "minimum": 0,
+              "default": 0
+            },
+            "max_backport_attempts_per_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Maximum backport attempts allowed within single iteration before escalation to ERROR_RECOVERY (per R532)",
+              "minimum": 1,
+              "default": 3
+            },
+            "status": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "PLANNING",
+                "IN_PROGRESS",
+                "COMPLETED",
+                "ERROR",
+                null
+              ],
+              "default": "IN_PROGRESS"
+            },
+            "total_waves_in_phase": {
+              "type": "integer",
+              "description": "Total number of waves planned for this phase - CRITICAL for state machine guard evaluation at COMPLETE_WAVE to determine if more waves exist or if all waves are complete",
+              "minimum": 1
+            },
+            "waves_completed": {
+              "type": "integer",
+              "description": "Number of waves completed in this phase - used with total_waves_in_phase for guard evaluation",
+              "minimum": 0,
+              "default": 0
+            },
+            "bugs": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Bug tracking for progress-based iteration limits (R615, R616)",
+              "properties": {
+                "total_found": {
+                  "type": "integer",
+                  "description": "Total bugs discovered across all iterations",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "total_closed": {
+                  "type": "integer",
+                  "description": "Total bugs fixed across all iterations",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "total_open": {
+                  "type": "integer",
+                  "description": "Current open bugs",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "reopened_count": {
+                  "type": "integer",
+                  "description": "Total bugs that have been reopened (flapping)",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "history": {
+                  "type": "array",
+                  "description": "Bug counts per iteration for progress analysis",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "iteration": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "bugs_found": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_closed": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_open": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_reopened": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bug_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "progress_category": {
+                        "type": "string",
+                        "enum": [
+                          "PURE_PROGRESS",
+                          "DISCOVERY_PROGRESS",
+                          "SLOW_PROGRESS",
+                          "STALL",
+                          "REGRESSION"
+                        ]
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": [
+                      "iteration",
+                      "bugs_found",
+                      "bugs_closed",
+                      "bugs_open",
+                      "progress_category"
+                    ]
+                  }
+                },
+                "progress_stalls": {
+                  "type": "integer",
+                  "description": "Consecutive iterations with no progress (R615 no-progress counter)",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "max_stalls_allowed": {
+                  "type": "integer",
+                  "description": "Maximum stalls before ERROR_RECOVERY (R615 no-progress limit)",
+                  "minimum": 1,
+                  "default": 5
+                },
+                "max_iterations": {
+                  "type": "integer",
+                  "description": "Maximum total iterations (R615 some-progress limit)",
+                  "minimum": 1,
+                  "default": 10
+                },
+                "current_iteration": {
+                  "type": "integer",
+                  "description": "Current iteration number for this scope",
+                  "minimum": 0,
+                  "default": 0
+                }
+              }
+            }
+          }
+        },
+        "current_wave": {
+          "type": "object",
+          "description": "Current wave container state",
+          "required": [
+            "wave_number",
+            "name",
+            "iteration"
+          ],
+          "properties": {
+            "wave_number": {
+              "type": "integer",
+              "description": "Wave number within current phase (1, 2, 3, etc.)",
+              "minimum": 1
+            },
+            "name": {
+              "type": "string",
+              "description": "Wave name or description"
+            },
+            "iteration": {
+              "type": "integer",
+              "description": "Current iteration number for wave-level integration",
+              "minimum": 0,
+              "default": 0
+            },
+            "max_iterations": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Maximum iterations allowed before escalation",
+              "minimum": 1,
+              "default": 10
+            },
+            "backport_attempts_this_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Counter for backport fix cycles within the current iteration (per R532 - prevents infinite loops)",
+              "minimum": 0,
+              "default": 0
+            },
+            "max_backport_attempts_per_iteration": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "description": "Maximum backport attempts allowed within single iteration before escalation to ERROR_RECOVERY (per R532)",
+              "minimum": 1,
+              "default": 3
+            },
+            "status": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "PLANNING",
+                "IN_PROGRESS",
+                "COMPLETED",
+                "ERROR",
+                null
+              ],
+              "default": "IN_PROGRESS"
+            },
+            "efforts_completed": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "description": "List of completed effort identifiers in this wave",
+              "items": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "bugs": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Bug tracking for progress-based iteration limits (R615, R616)",
+              "properties": {
+                "total_found": {
+                  "type": "integer",
+                  "description": "Total bugs discovered across all iterations",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "total_closed": {
+                  "type": "integer",
+                  "description": "Total bugs fixed across all iterations",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "total_open": {
+                  "type": "integer",
+                  "description": "Current open bugs",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "reopened_count": {
+                  "type": "integer",
+                  "description": "Total bugs that have been reopened (flapping)",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "history": {
+                  "type": "array",
+                  "description": "Bug counts per iteration for progress analysis",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "iteration": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "bugs_found": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_closed": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_open": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bugs_reopened": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bug_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "progress_category": {
+                        "type": "string",
+                        "enum": [
+                          "PURE_PROGRESS",
+                          "DISCOVERY_PROGRESS",
+                          "SLOW_PROGRESS",
+                          "STALL",
+                          "REGRESSION"
+                        ]
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    },
+                    "required": [
+                      "iteration",
+                      "bugs_found",
+                      "bugs_closed",
+                      "bugs_open",
+                      "progress_category"
+                    ]
+                  }
+                },
+                "progress_stalls": {
+                  "type": "integer",
+                  "description": "Consecutive iterations with no progress (R615 no-progress counter)",
+                  "minimum": 0,
+                  "default": 0
+                },
+                "max_stalls_allowed": {
+                  "type": "integer",
+                  "description": "Maximum stalls before ERROR_RECOVERY (R615 no-progress limit)",
+                  "minimum": 1,
+                  "default": 5
+                },
+                "max_iterations": {
+                  "type": "integer",
+                  "description": "Maximum total iterations (R615 some-progress limit)",
+                  "minimum": 1,
+                  "default": 10
+                },
+                "current_iteration": {
+                  "type": "integer",
+                  "description": "Current iteration number for this scope",
+                  "minimum": 0,
+                  "default": 0
+                }
+              }
+            }
+          }
+        },
+        "iteration_tracking": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Metadata about iteration containers and convergence",
+          "properties": {
+            "active_container_level": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "wave",
+                "phase",
+                "project",
+                "none",
+                null
+              ],
+              "description": "Which integration level is currently active"
+            },
+            "active_container_id": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Identifier of the active integration container (matches entry in integration-containers.json)"
+            }
+          }
+        }
+      }
+    },
+    "references": {
+      "type": "object",
+      "description": "References to other state files in SF 3.0 separated state architecture",
+      "required": [
+        "bug_tracking_file",
+        "integration_containers_file"
+      ],
+      "properties": {
+        "bug_tracking_file": {
+          "type": "string",
+          "description": "Path to bug tracking state file",
+          "default": "bug-tracking.json"
+        },
+        "integration_containers_file": {
+          "type": "string",
+          "description": "Path to integration containers state file",
+          "default": "integration-containers.json"
+        },
+        "fix_cascade_state_file": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Path to fix cascade state file (only exists when cascade is active)",
+          "default": "fix-cascade-state.json"
+        },
+        "state_machine_definition": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Path to state machine JSON definition file",
+          "default": "state-machines/software-factory-3.0-state-machine.json"
+        },
+        "schema_version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Version of this schema",
+          "default": "3.0.0"
+        }
+      }
+    },
+    "metadata": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Additional metadata about the orchestrator state file",
+      "properties": {
+        "version": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Software Factory version",
+          "default": "3.0.0"
+        },
+        "created_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when state file was created"
+        },
+        "last_updated": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when state file was last updated"
+        },
+        "last_updated_by": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Agent that last updated this state file",
+          "default": "state-manager"
+        }
+      }
+    },
+    "planning_files": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Tracking of all planning document locations per R550 - enables instant discovery without filesystem searching",
+      "properties": {
+        "project": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Project-level planning files",
+          "properties": {
+            "implementation_plan": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Path to project implementation plan (e.g., planning/project/PROJECT-IMPLEMENTATION-PLAN.md)"
+            },
+            "architecture_plan": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Path to project architecture plan (e.g., planning/project/PROJECT-ARCHITECTURE-PLAN.md)"
+            },
+            "test_plan": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "Path to project test plan (e.g., planning/project/PROJECT-TEST-PLAN.md)"
+            }
+          }
+        },
+        "phases": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Phase-level planning files keyed by phase identifier (e.g., phase1, phase2)",
+          "patternProperties": {
+            "^phase[0-9]+$": {
+              "type": "object",
+              "description": "Planning files for a specific phase",
+              "properties": {
+                "architecture_plan": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Path to phase architecture plan (e.g., planning/phase1/PHASE-ARCHITECTURE-PLAN.md)"
+                },
+                "test_plan": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "description": "Path to phase test plan (e.g., planning/phase1/PHASE-TEST-PLAN.md)"
+                },
+                "waves": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "description": "Wave-level planning files keyed by wave identifier (e.g., wave1, wave2)",
+                  "patternProperties": {
+                    "^wave[0-9]+$": {
+                      "type": "object",
+                      "description": "Planning files for a specific wave",
+                      "properties": {
+                        "architecture_plan": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Path to wave architecture plan per R550 (e.g., planning/phase1/wave1/WAVE-ARCHITECTURE-PLAN.md). Created by architect during WAVE_ARCHITECTURE_PLANNING state."
+                        },
+                        "implementation_plan": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Path to wave implementation plan (e.g., planning/phase1/wave1/WAVE-IMPLEMENTATION-PLAN.md)"
+                        },
+                        "test_plan": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Path to wave test plan (e.g., planning/phase1/wave1/WAVE-TEST-PLAN.md)"
+                        },
+                        "efforts": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "description": "Effort-level planning files keyed by effort identifier",
+                          "additionalProperties": {
+                            "type": "object",
+                            "description": "Planning files for a specific effort",
+                            "properties": {
+                              "implementation_plan": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "Path to effort implementation plan (e.g., planning/phase1/wave1/effort-1.1.1-gitea-client.md)"
+                              },
+                              "split_plan": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "description": "Path to effort split plan if effort was split (e.g., planning/phase1/wave1/effort-1.1.1-gitea-client-SPLIT-PLAN.md)"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "active_agents": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "description": "List of currently active agent instances",
+      "items": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "required": [
+          "agent_type",
+          "agent_id",
+          "state"
+        ],
+        "properties": {
+          "agent_type": {
+            "type": "string",
+            "description": "Type of agent",
+            "enum": [
+              "orchestrator",
+              "state-manager",
+              "sw-engineer",
+              "code-reviewer",
+              "architect"
+            ]
+          },
+          "agent_id": {
+            "type": "string",
+            "description": "Unique identifier for this agent instance"
+          },
+          "state": {
+            "type": "string",
+            "description": "Current state of this agent"
+          },
+          "spawned_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "When this agent was spawned"
+          },
+          "workspace": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Workspace path for this agent"
+          }
+        }
+      }
+    },
+    "artifacts": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Tracks locations of all artifacts created during factory execution for instant discovery without filesystem searching (R340)",
+      "properties": {
+        "fix_plans": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Fix plans created by Code-Reviewer during CREATE_FIX_PLAN state",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "file_path",
+              "created_at",
+              "created_by",
+              "artifact_type",
+              "scope",
+              "status"
+            ],
+            "properties": {
+              "file_path": {
+                "type": "string",
+                "description": "Absolute or relative path to artifact file from project root"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO 8601 timestamp when artifact was created"
+              },
+              "created_by": {
+                "type": "string",
+                "description": "Agent that created this artifact",
+                "enum": [
+                  "code-reviewer",
+                  "architect",
+                  "orchestrator"
+                ]
+              },
+              "artifact_type": {
+                "type": "string",
+                "description": "Type of artifact",
+                "enum": [
+                  "fix_plan",
+                  "code_review",
+                  "split_plan",
+                  "integration_report",
+                  "architecture_review"
+                ]
+              },
+              "scope": {
+                "type": "string",
+                "description": "Scope of artifact (effort/wave/phase/project)",
+                "enum": [
+                  "effort",
+                  "wave",
+                  "phase",
+                  "project"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "description": "Current status of artifact",
+                "enum": [
+                  "CREATED",
+                  "READY",
+                  "IN_USE",
+                  "COMPLETED",
+                  "ARCHIVED"
+                ]
+              },
+              "related_bugs": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "description": "Bug IDs this artifact addresses",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "metadata": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Additional artifact-specific metadata",
+                "additionalProperties": true
+              }
+            }
+          }
+        },
+        "code_reviews": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Code review reports created by Code-Reviewer during PERFORM_CODE_REVIEW state",
+          "additionalProperties": {
+            "$ref": "#/properties/artifacts/properties/fix_plans/additionalProperties"
+          }
+        },
+        "split_plans": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Split plans created by Code-Reviewer during CREATE_SPLIT_PLAN state",
+          "additionalProperties": {
+            "$ref": "#/properties/artifacts/properties/fix_plans/additionalProperties"
+          }
+        },
+        "integration_reports": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Integration reports created by Orchestrator during integration states",
+          "additionalProperties": {
+            "$ref": "#/properties/artifacts/properties/fix_plans/additionalProperties"
+          }
+        },
+        "architecture_reviews": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Architecture reviews created by Architect during architecture review states",
+          "additionalProperties": {
+            "$ref": "#/properties/artifacts/properties/fix_plans/additionalProperties"
+          }
+        }
+      }
+    },
+    "pre_planned_infrastructure": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Pre-planned infrastructure per R504 - ALL paths, branches, and remotes calculated and validated during planning phases. Infrastructure creation becomes mechanical execution of this validated plan.",
+      "required": [
+        "validated",
+        "validation_timestamp",
+        "project_prefix",
+        "target_repo_url",
+        "efforts"
+      ],
+      "if": {
+        "properties": {
+          "validated": {
+            "const": true
+          }
+        },
+        "required": [
+          "validated"
+        ]
+      },
+      "then": {
+        "properties": {
+          "efforts": {
+            "type": "object",
+            "minProperties": 1
+          }
+        },
+        "required": [
+          "efforts"
+        ],
+        "errorMessage": "R504 VIOLATION: validated=true requires efforts to be populated (pre-planned infrastructure must have at least one effort)"
+      },
+      "properties": {
+        "validated": {
+          "type": "boolean",
+          "description": "Whether this infrastructure plan has been validated against all rules (R313, R327, R504)",
+          "default": false
+        },
+        "validation_timestamp": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when infrastructure was validated (null before validation)"
+        },
+        "project_prefix": {
+          "type": "string",
+          "description": "Project prefix used for all branch names (from target-repo-config.yaml or PROJECT-IMPLEMENTATION-PLAN.md)"
+        },
+        "target_repo_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Target repository URL where all branches will be pushed"
+        },
+        "efforts": {
+          "type": "object",
+          "description": "Map of effort_id to effort infrastructure specifications",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "effort_id",
+              "effort_name",
+              "phase",
+              "wave",
+              "index",
+              "branch_name",
+              "base_branch",
+              "remote_branch",
+              "target_remote",
+              "target_repo_url",
+              "planning_remote",
+              "integration_branch",
+              "full_path",
+              "estimated_lines",
+              "dependencies",
+              "created",
+              "validated"
+            ],
+            "properties": {
+              "effort_id": {
+                "type": "string",
+                "description": "Unique effort identifier (e.g., 1.1.1 for phase1/wave1/effort1)"
+              },
+              "effort_name": {
+                "type": "string",
+                "description": "Human-readable effort name"
+              },
+              "phase": {
+                "type": "string",
+                "description": "Phase identifier (e.g., phase1)"
+              },
+              "wave": {
+                "type": "string",
+                "description": "Wave identifier (e.g., wave1)"
+              },
+              "index": {
+                "type": "integer",
+                "description": "Numeric index of effort within wave (1, 2, 3, etc.)",
+                "minimum": 1
+              },
+              "branch_name": {
+                "type": "string",
+                "description": "Fully-qualified branch name for this effort (R327 compliant)"
+              },
+              "base_branch": {
+                "type": "string",
+                "description": "Branch this effort is based on (main, integration branch, or previous effort in cascade)"
+              },
+              "remote_branch": {
+                "type": "string",
+                "description": "Remote-qualified branch name (e.g., origin/project-prefix/phase1/wave1/effort-name)"
+              },
+              "target_remote": {
+                "type": "string",
+                "description": "Name of remote pointing to target repository (e.g., origin, target)"
+              },
+              "target_repo_url": {
+                "type": "string",
+                "format": "uri",
+                "description": "Target repository URL for this effort (must match parent pre_planned_infrastructure.target_repo_url)"
+              },
+              "planning_remote": {
+                "type": "string",
+                "description": "Name of remote pointing to planning repository"
+              },
+              "integration_branch": {
+                "type": "string",
+                "description": "Wave integration branch this effort will be merged into"
+              },
+              "full_path": {
+                "type": "string",
+                "description": "Absolute or relative path to effort working directory (R313 compliant)"
+              },
+              "estimated_lines": {
+                "type": "integer",
+                "description": "Estimated lines of code for this effort from planning phase",
+                "minimum": 0
+              },
+              "dependencies": {
+                "type": "array",
+                "description": "List of effort IDs this effort depends on (empty array if no dependencies)",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "created": {
+                "type": "boolean",
+                "description": "Whether this effort infrastructure has been physically created",
+                "default": false
+              },
+              "validated": {
+                "type": "boolean",
+                "description": "Whether this effort infrastructure has been validated per R509",
+                "default": false
+              },
+              "validation_failure_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Reason for validation failure if validated=false, null otherwise (optional - only present if validation fails)"
+              },
+              "created_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "ISO 8601 timestamp when effort infrastructure was created (optional - only present after creation)"
+              },
+              "cascade_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Explanation of why this base_branch was chosen (R308/R501 compliance)"
+              },
+              "split_pattern": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Branch naming pattern for splits of this effort (e.g., effort-name--split-NNN)"
+              },
+              "splits": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "description": "List of split branch names if effort was split",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              }
+            }
+          }
+        },
+        "integrations": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Pre-planned integration infrastructure per R504",
+          "properties": {
+            "wave_integrations": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Wave-level integration branches",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "branch_name",
+                  "remote_branch",
+                  "base_branch",
+                  "target_repo_url",
+                  "component_efforts"
+                ],
+                "properties": {
+                  "branch_name": {
+                    "type": "string",
+                    "description": "Fully-qualified integration branch name"
+                  },
+                  "remote_branch": {
+                    "type": "string",
+                    "description": "Remote-qualified integration branch name"
+                  },
+                  "base_branch": {
+                    "type": "string",
+                    "description": "Base branch for this integration (usually main or previous wave integration)"
+                  },
+                  "target_repo_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Target repository URL (must match parent)"
+                  },
+                  "component_efforts": {
+                    "type": "array",
+                    "description": "List of effort IDs that will be integrated into this branch",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "created": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "Whether this integration branch has been created",
+                    "default": false
+                  },
+                  "validated": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "Whether this integration infrastructure has been validated",
+                    "default": false
+                  }
+                }
+              }
+            },
+            "phase_integrations": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "description": "Phase-level integration branches",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "branch_name",
+                  "remote_branch",
+                  "base_branch",
+                  "target_repo_url",
+                  "component_waves"
+                ],
+                "properties": {
+                  "branch_name": {
+                    "type": "string",
+                    "description": "Fully-qualified phase integration branch name"
+                  },
+                  "remote_branch": {
+                    "type": "string",
+                    "description": "Remote-qualified phase integration branch name"
+                  },
+                  "base_branch": {
+                    "type": "string",
+                    "description": "Base branch for phase integration (usually last wave integration of phase)"
+                  },
+                  "target_repo_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Target repository URL (must match parent)"
+                  },
+                  "component_waves": {
+                    "type": "array",
+                    "description": "List of wave integration IDs that will be integrated into this branch",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "created": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "Whether this integration branch has been created",
+                    "default": false
+                  },
+                  "validated": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "description": "Whether this integration infrastructure has been validated",
+                    "default": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cascade_bases": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Pre-calculated cascade base branches per R308/R501 - determines dependency order and base branches for all efforts",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "base_branch",
+              "reason"
+            ],
+            "properties": {
+              "base_branch": {
+                "type": "string",
+                "description": "The branch this effort cascades from"
+              },
+              "reason": {
+                "type": "string",
+                "description": "Explanation of cascade logic (first effort, cascaded from X, etc.)"
+              },
+              "calculated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time",
+                "description": "When this cascade base was calculated"
+              }
+            }
+          }
+        }
+      }
+    },
+    "project_level": {
+      "properties": {
+        "bugs": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "description": "Bug tracking for progress-based iteration limits (R615, R616)",
+          "properties": {
+            "total_found": {
+              "type": "integer",
+              "description": "Total bugs discovered across all iterations",
+              "minimum": 0,
+              "default": 0
+            },
+            "total_closed": {
+              "type": "integer",
+              "description": "Total bugs fixed across all iterations",
+              "minimum": 0,
+              "default": 0
+            },
+            "total_open": {
+              "type": "integer",
+              "description": "Current open bugs",
+              "minimum": 0,
+              "default": 0
+            },
+            "reopened_count": {
+              "type": "integer",
+              "description": "Total bugs that have been reopened (flapping)",
+              "minimum": 0,
+              "default": 0
+            },
+            "history": {
+              "type": "array",
+              "description": "Bug counts per iteration for progress analysis",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "iteration": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "bugs_found": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bugs_closed": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bugs_open": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bugs_reopened": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "bug_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "progress_category": {
+                    "type": "string",
+                    "enum": [
+                      "PURE_PROGRESS",
+                      "DISCOVERY_PROGRESS",
+                      "SLOW_PROGRESS",
+                      "STALL",
+                      "REGRESSION"
+                    ]
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "iteration",
+                  "bugs_found",
+                  "bugs_closed",
+                  "bugs_open",
+                  "progress_category"
+                ]
+              }
+            },
+            "progress_stalls": {
+              "type": "integer",
+              "description": "Consecutive iterations with no progress (R615 no-progress counter)",
+              "minimum": 0,
+              "default": 0
+            },
+            "max_stalls_allowed": {
+              "type": "integer",
+              "description": "Maximum stalls before ERROR_RECOVERY (R615 no-progress limit)",
+              "minimum": 1,
+              "default": 5
+            },
+            "max_iterations": {
+              "type": "integer",
+              "description": "Maximum total iterations (R615 some-progress limit)",
+              "minimum": 1,
+              "default": 10
+            },
+            "current_iteration": {
+              "type": "integer",
+              "description": "Current iteration number for this scope",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

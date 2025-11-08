@@ -1,0 +1,36 @@
+# Orchestrator TODOs - WAITING_FOR_EFFORT_PLANS State
+# Timestamp: $(date -Iseconds)
+# Phase: 2, Wave: 2
+# Trigger: R287 pre-transition save
+
+## Completed Tasks
+- ✅ Read and acknowledged all state rules (R290 verification marker created)
+- ✅ Actively monitored for effort plan completion (R233)
+- ✅ Verified Effort 2.2.1 plan exists and is complete
+  - Location: efforts/phase2/wave2/effort-1-registry-override-viper/.software-factory/.../IMPLEMENTATION-PLAN-20251101-181737.md
+  - Size: 400 lines (within 800 limit)
+  - Status: Complete and ready for implementation
+- ✅ Checked Effort 2.2.2 plan status
+  - Status: Does not exist (sequential spawn - 2.2.1 blocks 2.2.2)
+  - Reason: Code Reviewer for 2.2.2 will be spawned in future iteration
+- ✅ Determined next state per R234 mandatory sequence
+  - Next: ANALYZE_IMPLEMENTATION_PARALLELIZATION (REQUIRED by R234)
+  - Cannot skip this state even though only 1 effort ready
+
+## Pending Tasks
+- [ ] Spawn State Manager for SHUTDOWN_CONSULTATION (R517 - in progress)
+- [ ] State Manager will update all 4 state files atomically
+- [ ] State Manager will validate transition to ANALYZE_IMPLEMENTATION_PARALLELIZATION
+- [ ] Commit this TODO file per R287
+
+## Key Findings
+- Wave 2.2 has SEQUENTIAL parallelization strategy
+- Only Effort 2.2.1 plan created so far (as expected)
+- Effort 2.2.2 will be handled in future wave iteration
+- Must proceed through mandatory sequence: WAITING_FOR_EFFORT_PLANS → ANALYZE_IMPLEMENTATION_PARALLELIZATION → SPAWN_SW_ENGINEERS
+
+## Next State Work
+ANALYZE_IMPLEMENTATION_PARALLELIZATION will:
+- Determine that only Effort 2.2.1 is ready
+- Spawn single SW Engineer for 2.2.1
+- Mark 2.2.2 as pending (blocked by 2.2.1)

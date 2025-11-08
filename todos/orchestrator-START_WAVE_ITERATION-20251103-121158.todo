@@ -1,0 +1,22 @@
+# ORCHESTRATOR TODO STATE - START_WAVE_ITERATION
+# Saved: 2025-11-03T12:11:45Z
+# Previous State: ERROR_RECOVERY
+# Current State: START_WAVE_ITERATION (transitioning to INTEGRATE_WAVE_EFFORTS)
+
+[✅] Acknowledge all loaded rules as orchestrator in START_WAVE_ITERATION state
+[✅] Execute START_WAVE_ITERATION state checklist (R510)
+[✅] Conditionally increment or maintain wave iteration counter based on previous state (R531)
+[✅] Reset or check backport attempt counter (R532)
+[✅] Analyze bug progress and apply two-tiered iteration limits (R615, R616)
+[✅] Check max iterations not exceeded (R531)
+[✅] Determine next state: INTEGRATE_WAVE_EFFORTS
+[✅] Update state files and commit transition (R288)
+[✅] Save TODOs before outputting continuation flag (R287)
+[⏳] Output continuation flag (R405)
+
+## State Summary:
+- Wave iteration: 2 (retry after ERROR_RECOVERY)
+- Backport attempts: 0/3
+- Progress: PURE_PROGRESS (0/5 stalls, 2/10 iterations)
+- Next state: INTEGRATE_WAVE_EFFORTS
+- All checks passed, ready for integration
