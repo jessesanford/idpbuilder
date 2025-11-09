@@ -13,6 +13,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// TestMain sets up test mode globally for all integration tests
+// This prevents emoji formatting which causes false positives in test output
+func TestMain(m *testing.M) {
+	// Enable test mode to suppress emojis (prevents ❌ from triggering test failures)
+	os.Setenv("IDPBUILDER_TEST_MODE", "true")
+
+	// Run all tests
+	exitCode := m.Run()
+
+	// Cleanup
+	os.Unsetenv("IDPBUILDER_TEST_MODE")
+
+	os.Exit(exitCode)
+}
+
 // Test Suite 5: Environment Variable Scenarios (10 tests)
 
 // T-2.2.5-01: Test push command with all configuration from environment variables

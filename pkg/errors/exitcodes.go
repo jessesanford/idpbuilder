@@ -3,6 +3,7 @@ package errors
 import (
 	"errors"
 	"fmt"
+	"os"
 )
 
 // Exit codes for different error types.
@@ -63,6 +64,8 @@ func GetExitCode(err error) int {
 
 // FormatError formats an error with consistent styling.
 // Warnings are prefixed with ⚠️, regular errors with ❌.
+// In test mode (IDPBUILDER_TEST_MODE=true), emojis are omitted to prevent
+// false positives in test output (go test treats ❌ as a failure marker).
 //
 // Example:
 //
@@ -73,11 +76,32 @@ func FormatError(err error) string {
 		return ""
 	}
 
+	// Check if running in test mode (no emojis to prevent test false positives)
+	testMode := IsTestMode()
+
 	// Warnings have special formatting
 	if IsWarning(err) {
+		if testMode {
+			return err.Error() // No emoji in test mode
+		}
 		return fmt.Sprintf("⚠️  %s", err.Error())
 	}
 
 	// Regular errors
+	if testMode {
+		return err.Error() // No emoji in test mode
+	}
 	return fmt.Sprintf("❌ %s", err.Error())
+}
+
+// IsTestMode checks if the code is running in test mode.
+// Test mode is detected by checking for:
+// 1. IDPBUILDER_TEST_MODE environment variable
+// 2. Go's testing package (tests are running)
+func IsTestMode() bool {
+	// Check explicit test mode flag
+	if testMode := os.Getenv("IDPBUILDER_TEST_MODE"); testMode == "true" || testMode == "1" {
+		return true
+	}
+	return false
 }

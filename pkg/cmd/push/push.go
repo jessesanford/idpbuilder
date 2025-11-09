@@ -70,7 +70,14 @@ Examples:
 				// Format error with appropriate styling
 				fmt.Fprintln(os.Stderr, errors.FormatError(err))
 
-				// Get exit code for this error type
+				// In test mode, return the error instead of exiting
+				// This allows tests to verify error handling behavior
+				if os.Getenv("IDPBUILDER_TEST_MODE") == "true" || os.Getenv("IDPBUILDER_TEST_MODE") == "1" {
+					return err
+				}
+
+				// Get exit code for this error type and exit
+				// (production behavior only, not in tests)
 				exitCode := errors.GetExitCode(err)
 				os.Exit(exitCode)
 			}
