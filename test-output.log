@@ -1,6 +1,838 @@
-/go/pkg/mod/github.com/google/go-containerregistry@v0.19.0/pkg/v1/tarball/layer.go:25:2: missing go.sum entry for module providing package github.com/containerd/stargz-snapshotter/estargz (imported by github.com/google/go-containerregistry/pkg/v1/tarball); to add:
-	go get github.com/google/go-containerregistry/pkg/v1/tarball@v0.19.0
-/go/pkg/mod/github.com/google/go-containerregistry@v0.19.0/internal/zstd/zstd.go:24:2: missing go.sum entry for module providing package github.com/klauspost/compress/zstd (imported by github.com/google/go-containerregistry/internal/zstd); to add:
-	go get github.com/google/go-containerregistry/internal/zstd@v0.19.0
-/go/pkg/mod/github.com/google/go-containerregistry@v0.19.0/pkg/v1/remote/transport/bearer.go:28:2: missing go.sum entry for module providing package github.com/docker/distribution/registry/client/auth/challenge (imported by github.com/google/go-containerregistry/pkg/v1/remote/transport); to add:
-	go get github.com/google/go-containerregistry/pkg/v1/remote/transport@v0.19.0
+?   	github.com/cnoe-io/idpbuilder	[no test files]
+?   	github.com/cnoe-io/idpbuilder/api/v1alpha1	[no test files]
+?   	github.com/cnoe-io/idpbuilder/globals	[no test files]
+=== RUN   TestNewBasicAuthProvider
+--- PASS: TestNewBasicAuthProvider (0.00s)
+=== RUN   TestGetAuthenticator_Success
+--- PASS: TestGetAuthenticator_Success (0.00s)
+=== RUN   TestGetAuthenticator_EmptyUsername
+--- PASS: TestGetAuthenticator_EmptyUsername (0.00s)
+=== RUN   TestValidateCredentials_ValidCredentials
+=== RUN   TestValidateCredentials_ValidCredentials/simple
+=== RUN   TestValidateCredentials_ValidCredentials/special_chars
+=== RUN   TestValidateCredentials_ValidCredentials/unicode
+=== RUN   TestValidateCredentials_ValidCredentials/spaces
+=== RUN   TestValidateCredentials_ValidCredentials/quotes_double
+=== RUN   TestValidateCredentials_ValidCredentials/quotes_single
+=== RUN   TestValidateCredentials_ValidCredentials/quotes_mixed
+=== RUN   TestValidateCredentials_ValidCredentials/complex_password
+--- PASS: TestValidateCredentials_ValidCredentials (0.00s)
+    --- PASS: TestValidateCredentials_ValidCredentials/simple (0.00s)
+    --- PASS: TestValidateCredentials_ValidCredentials/special_chars (0.00s)
+    --- PASS: TestValidateCredentials_ValidCredentials/unicode (0.00s)
+    --- PASS: TestValidateCredentials_ValidCredentials/spaces (0.00s)
+    --- PASS: TestValidateCredentials_ValidCredentials/quotes_double (0.00s)
+    --- PASS: TestValidateCredentials_ValidCredentials/quotes_single (0.00s)
+    --- PASS: TestValidateCredentials_ValidCredentials/quotes_mixed (0.00s)
+    --- PASS: TestValidateCredentials_ValidCredentials/complex_password (0.00s)
+=== RUN   TestValidateCredentials_EmptyUsername
+--- PASS: TestValidateCredentials_EmptyUsername (0.00s)
+=== RUN   TestValidateCredentials_EmptyPassword
+--- PASS: TestValidateCredentials_EmptyPassword (0.00s)
+=== RUN   TestValidateCredentials_ControlCharactersInUsername
+=== RUN   TestValidateCredentials_ControlCharactersInUsername/newline
+=== RUN   TestValidateCredentials_ControlCharactersInUsername/tab
+=== RUN   TestValidateCredentials_ControlCharactersInUsername/null_byte
+=== RUN   TestValidateCredentials_ControlCharactersInUsername/escape
+=== RUN   TestValidateCredentials_ControlCharactersInUsername/carriage_return
+=== RUN   TestValidateCredentials_ControlCharactersInUsername/backspace
+=== RUN   TestValidateCredentials_ControlCharactersInUsername/delete
+=== RUN   TestValidateCredentials_ControlCharactersInUsername/form_feed
+=== RUN   TestValidateCredentials_ControlCharactersInUsername/vertical_tab
+--- PASS: TestValidateCredentials_ControlCharactersInUsername (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInUsername/newline (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInUsername/tab (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInUsername/null_byte (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInUsername/escape (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInUsername/carriage_return (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInUsername/backspace (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInUsername/delete (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInUsername/form_feed (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInUsername/vertical_tab (0.00s)
+=== RUN   TestValidateCredentials_ControlCharactersInPassword
+=== RUN   TestValidateCredentials_ControlCharactersInPassword/newline
+=== RUN   TestValidateCredentials_ControlCharactersInPassword/tab
+=== RUN   TestValidateCredentials_ControlCharactersInPassword/null_byte
+=== RUN   TestValidateCredentials_ControlCharactersInPassword/escape
+--- PASS: TestValidateCredentials_ControlCharactersInPassword (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInPassword/newline (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInPassword/tab (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInPassword/null_byte (0.00s)
+    --- PASS: TestValidateCredentials_ControlCharactersInPassword/escape (0.00s)
+=== RUN   TestGetAuthenticator_SpecialCharacterPassword
+--- PASS: TestGetAuthenticator_SpecialCharacterPassword (0.00s)
+=== RUN   TestValidateCredentials_BothEmpty
+--- PASS: TestValidateCredentials_BothEmpty (0.00s)
+=== RUN   TestValidateCredentials_WhitespaceUsername
+=== RUN   TestValidateCredentials_WhitespaceUsername/single_space
+=== RUN   TestValidateCredentials_WhitespaceUsername/multiple_spaces
+=== RUN   TestValidateCredentials_WhitespaceUsername/space_in_middle
+--- PASS: TestValidateCredentials_WhitespaceUsername (0.00s)
+    --- PASS: TestValidateCredentials_WhitespaceUsername/single_space (0.00s)
+    --- PASS: TestValidateCredentials_WhitespaceUsername/multiple_spaces (0.00s)
+    --- PASS: TestValidateCredentials_WhitespaceUsername/space_in_middle (0.00s)
+=== RUN   TestContainsControlChars
+=== RUN   TestContainsControlChars/empty
+=== RUN   TestContainsControlChars/normal
+=== RUN   TestContainsControlChars/with_space
+=== RUN   TestContainsControlChars/with_newline
+=== RUN   TestContainsControlChars/with_tab
+=== RUN   TestContainsControlChars/with_null
+=== RUN   TestContainsControlChars/with_escape
+=== RUN   TestContainsControlChars/with_delete
+=== RUN   TestContainsControlChars/ascii_31
+=== RUN   TestContainsControlChars/ascii_32
+=== RUN   TestContainsControlChars/unicode
+=== RUN   TestContainsControlChars/special_chars
+--- PASS: TestContainsControlChars (0.00s)
+    --- PASS: TestContainsControlChars/empty (0.00s)
+    --- PASS: TestContainsControlChars/normal (0.00s)
+    --- PASS: TestContainsControlChars/with_space (0.00s)
+    --- PASS: TestContainsControlChars/with_newline (0.00s)
+    --- PASS: TestContainsControlChars/with_tab (0.00s)
+    --- PASS: TestContainsControlChars/with_null (0.00s)
+    --- PASS: TestContainsControlChars/with_escape (0.00s)
+    --- PASS: TestContainsControlChars/with_delete (0.00s)
+    --- PASS: TestContainsControlChars/ascii_31 (0.00s)
+    --- PASS: TestContainsControlChars/ascii_32 (0.00s)
+    --- PASS: TestContainsControlChars/unicode (0.00s)
+    --- PASS: TestContainsControlChars/special_chars (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/auth	0.003s
+=== RUN   TestIsCompatible
+--- PASS: TestIsCompatible (0.00s)
+=== RUN   TestCreateSelfSignedCertificate
+--- PASS: TestCreateSelfSignedCertificate (0.00s)
+=== RUN   TestGetOrCreateIngressCertificateAndKey
+--- PASS: TestGetOrCreateIngressCertificateAndKey (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/build	0.023s
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/create	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/delete	[no test files]
+=== RUN   TestPrintPackageSecrets
+no secrets found
+--- PASS: TestPrintPackageSecrets (0.00s)
+=== RUN   TestPrintAllPackageSecrets
+--- PASS: TestPrintAllPackageSecrets (0.00s)
+=== RUN   TestOutput
+--- PASS: TestOutput (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/get	0.024s
+=== RUN   TestValidateKubernetesYaml
+--- PASS: TestValidateKubernetesYaml (0.00s)
+=== RUN   TestParsePackageStrings
+--- PASS: TestParsePackageStrings (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/helpers	0.037s
+=== RUN   TestWrapDockerError_ImageNotFound
+--- PASS: TestWrapDockerError_ImageNotFound (0.00s)
+=== RUN   TestWrapDockerError_ConnectionRefused
+--- PASS: TestWrapDockerError_ConnectionRefused (0.00s)
+=== RUN   TestWrapDockerError_CannotConnect
+--- PASS: TestWrapDockerError_CannotConnect (0.00s)
+=== RUN   TestWrapDockerError_GenericError
+--- PASS: TestWrapDockerError_GenericError (0.00s)
+=== RUN   TestWrapRegistryError_Unauthorized
+--- PASS: TestWrapRegistryError_Unauthorized (0.00s)
+=== RUN   TestWrapRegistryError_ConnectionRefused
+--- PASS: TestWrapRegistryError_ConnectionRefused (0.00s)
+=== RUN   TestWrapRegistryError_Timeout
+--- PASS: TestWrapRegistryError_Timeout (0.00s)
+=== RUN   TestWrapRegistryError_TLSError
+--- PASS: TestWrapRegistryError_TLSError (0.00s)
+=== RUN   TestWrapRegistryError_GenericError
+--- PASS: TestWrapRegistryError_GenericError (0.00s)
+=== RUN   TestWrapDockerError_PreservesImageName
+=== RUN   TestWrapDockerError_PreservesImageName/simple
+=== RUN   TestWrapDockerError_PreservesImageName/with_registry
+=== RUN   TestWrapDockerError_PreservesImageName/sha256
+--- PASS: TestWrapDockerError_PreservesImageName (0.00s)
+    --- PASS: TestWrapDockerError_PreservesImageName/simple (0.00s)
+    --- PASS: TestWrapDockerError_PreservesImageName/with_registry (0.00s)
+    --- PASS: TestWrapDockerError_PreservesImageName/sha256 (0.00s)
+=== RUN   TestWrapRegistryError_PreservesRegistry
+=== RUN   TestWrapRegistryError_PreservesRegistry/docker_hub
+=== RUN   TestWrapRegistryError_PreservesRegistry/gcr
+=== RUN   TestWrapRegistryError_PreservesRegistry/custom_port
+--- PASS: TestWrapRegistryError_PreservesRegistry (0.00s)
+    --- PASS: TestWrapRegistryError_PreservesRegistry/docker_hub (0.00s)
+    --- PASS: TestWrapRegistryError_PreservesRegistry/gcr (0.00s)
+    --- PASS: TestWrapRegistryError_PreservesRegistry/custom_port (0.00s)
+=== RUN   TestWrapErrors_ChainUnwraps
+--- PASS: TestWrapErrors_ChainUnwraps (0.00s)
+=== RUN   TestWrapDockerError_NilError
+--- PASS: TestWrapDockerError_NilError (0.00s)
+=== RUN   TestWrapRegistryError_NilError
+--- PASS: TestWrapRegistryError_NilError (0.00s)
+=== RUN   TestLoadConfig_Placeholder
+    config_test.go:19: Configuration precedence tests to be implemented - see WAVE-TEST-PLAN.md T-2.2.1-01 through T-2.2.1-12
+--- SKIP: TestLoadConfig_Placeholder (0.00s)
+=== RUN   TestResolveStringConfig_Placeholder
+    config_test.go:26: String resolution tests to be implemented
+--- SKIP: TestResolveStringConfig_Placeholder (0.00s)
+=== RUN   TestResolveBoolConfig_Placeholder
+    config_test.go:42: Boolean resolution tests to be implemented - see WAVE-TEST-PLAN.md T-2.2.2-01 through T-2.2.2-12
+--- SKIP: TestResolveBoolConfig_Placeholder (0.00s)
+=== RUN   TestValidate_Placeholder
+    config_test.go:54: Validation tests to be implemented - see WAVE-TEST-PLAN.md T-2.2.3-01 through T-2.2.3-08
+--- SKIP: TestValidate_Placeholder (0.00s)
+=== RUN   TestToPushOptions_Placeholder
+    config_test.go:65: Conversion tests to be implemented - see WAVE-TEST-PLAN.md T-2.2.4-01 through T-2.2.4-08
+--- SKIP: TestToPushOptions_Placeholder (0.00s)
+=== RUN   TestDisplaySources_Placeholder
+    config_test.go:72: Display tests to be implemented
+--- SKIP: TestDisplaySources_Placeholder (0.00s)
+=== RUN   TestConfigSource_String_Placeholder
+    config_test.go:81: ConfigSource.String() tests to be implemented
+--- SKIP: TestConfigSource_String_Placeholder (0.00s)
+=== RUN   TestPushCommand_AllFromEnvironment
+❌ Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me
+Suggestion: ensure this is intentional and you trust the target registry
+FAIL	github.com/cnoe-io/idpbuilder/pkg/cmd/push	0.022s
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/version	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/controllers	[no test files]
+=== RUN   TestReconcileCustomPkg
+    controller_test.go:55: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-oci-push-planning/.software-factory/project-integration/target-repo/pkg/controllers/custompackage/controller_test.go:55
+        	Error:      	Received unexpected error:
+        	            	unable to start control plane itself: failed to start the controlplane. retried 5 times: fork/exec ../../../bin/k8s/1.29.1-linux-arm64/etcd: no such file or directory
+        	Test:       	TestReconcileCustomPkg
+--- FAIL: TestReconcileCustomPkg (0.01s)
+=== RUN   TestReconcileCustomPkgAppSet
+    controller_test.go:271: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-oci-push-planning/.software-factory/project-integration/target-repo/pkg/controllers/custompackage/controller_test.go:271
+        	Error:      	Expected nil, but got: &fmt.wrapError{msg:"unable to start control plane itself: failed to start the controlplane. retried 5 times: fork/exec ../../../bin/k8s/1.29.1-linux-arm64/etcd: no such file or directory", err:(*fmt.wrapError)(0x400038c700)}
+        	Test:       	TestReconcileCustomPkgAppSet
+    controller_test.go:277: 
+        	Error Trace:	/home/vscode/workspaces/idpbuilder-oci-push-planning/.software-factory/project-integration/target-repo/pkg/controllers/custompackage/controller_test.go:277
+        	Error:      	Expected nil, but got: &errors.errorString{s:"must specify Config"}
+        	Test:       	TestReconcileCustomPkgAppSet
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0x1 addr=0xa0 pc=0x12e8780]
+
+goroutine 109 [running]:
+github.com/cnoe-io/idpbuilder/pkg/controllers/custompackage.TestReconcileCustomPkgAppSet.func1()
+	/home/vscode/workspaces/idpbuilder-oci-push-planning/.software-factory/project-integration/target-repo/pkg/controllers/custompackage/controller_test.go:282 +0x30
+created by github.com/cnoe-io/idpbuilder/pkg/controllers/custompackage.TestReconcileCustomPkgAppSet in goroutine 33
+	/home/vscode/workspaces/idpbuilder-oci-push-planning/.software-factory/project-integration/target-repo/pkg/controllers/custompackage/controller_test.go:281 +0x524
+FAIL	github.com/cnoe-io/idpbuilder/pkg/controllers/custompackage	0.054s
+=== RUN   TestGitRepositoryContentReconcile
+=== RUN   TestGitRepositoryContentReconcile/files_modified
+--- PASS: TestGitRepositoryContentReconcile (0.03s)
+    --- PASS: TestGitRepositoryContentReconcile/files_modified (0.03s)
+=== RUN   TestGitRepositoryContentReconcileEmbedded
+=== RUN   TestGitRepositoryContentReconcileEmbedded/should_update_content
+--- PASS: TestGitRepositoryContentReconcileEmbedded (0.03s)
+    --- PASS: TestGitRepositoryContentReconcileEmbedded/should_update_content (0.03s)
+=== RUN   TestGitRepositoryReconcile
+/tmp/test2798698038
+=== RUN   TestGitRepositoryReconcile/repo_updates
+--- PASS: TestGitRepositoryReconcile (0.02s)
+    --- PASS: TestGitRepositoryReconcile/repo_updates (0.02s)
+=== RUN   TestGitRepositoryPostReconcile
+--- PASS: TestGitRepositoryPostReconcile (0.00s)
+=== RUN   TestGitHubCreateRepository
+--- PASS: TestGitHubCreateRepository (0.00s)
+=== RUN   TestGitHubGetProviderCredentials
+--- PASS: TestGitHubGetProviderCredentials (0.00s)
+=== RUN   TestGitHubGetRepository
+--- PASS: TestGitHubGetRepository (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/controllers/gitrepository	0.106s
+=== RUN   TestGetRawInstallResources
+--- PASS: TestGetRawInstallResources (0.01s)
+=== RUN   TestGetK8sInstallResources
+--- PASS: TestGetK8sInstallResources (0.07s)
+=== RUN   TestArgoCDAppAnnotation
+--- PASS: TestArgoCDAppAnnotation (0.00s)
+=== RUN   TestGetGiteaToken
+--- PASS: TestGetGiteaToken (35.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/controllers/localbuild	35.104s
+=== RUN   TestNewClient_Success
+--- PASS: TestNewClient_Success (0.01s)
+=== RUN   TestNewClient_DaemonNotRunning
+    client_test.go:32: Manual test - requires stopping Docker daemon
+--- SKIP: TestNewClient_DaemonNotRunning (0.00s)
+=== RUN   TestImageExists_ImagePresent
+--- PASS: TestImageExists_ImagePresent (0.00s)
+=== RUN   TestImageExists_ImageNotPresent
+--- PASS: TestImageExists_ImageNotPresent (0.00s)
+=== RUN   TestImageExists_InvalidImageName
+=== RUN   TestImageExists_InvalidImageName/empty_string
+=== RUN   TestImageExists_InvalidImageName/command_injection_semicolon
+=== RUN   TestImageExists_InvalidImageName/command_injection_pipe
+=== RUN   TestImageExists_InvalidImageName/command_injection_ampersand
+=== RUN   TestImageExists_InvalidImageName/command_injection_dollar
+=== RUN   TestImageExists_InvalidImageName/command_injection_backtick
+=== RUN   TestImageExists_InvalidImageName/command_injection_paren
+=== RUN   TestImageExists_InvalidImageName/command_injection_redirect
+--- PASS: TestImageExists_InvalidImageName (0.00s)
+    --- PASS: TestImageExists_InvalidImageName/empty_string (0.00s)
+    --- PASS: TestImageExists_InvalidImageName/command_injection_semicolon (0.00s)
+    --- PASS: TestImageExists_InvalidImageName/command_injection_pipe (0.00s)
+    --- PASS: TestImageExists_InvalidImageName/command_injection_ampersand (0.00s)
+    --- PASS: TestImageExists_InvalidImageName/command_injection_dollar (0.00s)
+    --- PASS: TestImageExists_InvalidImageName/command_injection_backtick (0.00s)
+    --- PASS: TestImageExists_InvalidImageName/command_injection_paren (0.00s)
+    --- PASS: TestImageExists_InvalidImageName/command_injection_redirect (0.00s)
+=== RUN   TestGetImage_Success
+--- PASS: TestGetImage_Success (0.15s)
+=== RUN   TestGetImage_ImageNotFound
+--- PASS: TestGetImage_ImageNotFound (0.00s)
+=== RUN   TestGetImage_InvalidImageName
+--- PASS: TestGetImage_InvalidImageName (0.00s)
+=== RUN   TestValidateImageName_Valid
+=== RUN   TestValidateImageName_Valid/alpine:latest
+=== RUN   TestValidateImageName_Valid/myapp:v1.2.3
+=== RUN   TestValidateImageName_Valid/registry.io/repo/app:tag
+=== RUN   TestValidateImageName_Valid/docker.io/library/ubuntu:20.04
+=== RUN   TestValidateImageName_Valid/localhost:5000/myimage:dev
+=== RUN   TestValidateImageName_Valid/my_app-image:1.0
+--- PASS: TestValidateImageName_Valid (0.00s)
+    --- PASS: TestValidateImageName_Valid/alpine:latest (0.00s)
+    --- PASS: TestValidateImageName_Valid/myapp:v1.2.3 (0.00s)
+    --- PASS: TestValidateImageName_Valid/registry.io/repo/app:tag (0.00s)
+    --- PASS: TestValidateImageName_Valid/docker.io/library/ubuntu:20.04 (0.00s)
+    --- PASS: TestValidateImageName_Valid/localhost:5000/myimage:dev (0.00s)
+    --- PASS: TestValidateImageName_Valid/my_app-image:1.0 (0.00s)
+=== RUN   TestValidateImageName_Invalid
+=== RUN   TestValidateImageName_Invalid/empty
+=== RUN   TestValidateImageName_Invalid/semicolon
+=== RUN   TestValidateImageName_Invalid/pipe
+=== RUN   TestValidateImageName_Invalid/ampersand
+=== RUN   TestValidateImageName_Invalid/dollar
+=== RUN   TestValidateImageName_Invalid/backtick
+=== RUN   TestValidateImageName_Invalid/open_paren
+=== RUN   TestValidateImageName_Invalid/close_paren
+=== RUN   TestValidateImageName_Invalid/less_than
+=== RUN   TestValidateImageName_Invalid/greater_than
+=== RUN   TestValidateImageName_Invalid/backslash
+--- PASS: TestValidateImageName_Invalid (0.00s)
+    --- PASS: TestValidateImageName_Invalid/empty (0.00s)
+    --- PASS: TestValidateImageName_Invalid/semicolon (0.00s)
+    --- PASS: TestValidateImageName_Invalid/pipe (0.00s)
+    --- PASS: TestValidateImageName_Invalid/ampersand (0.00s)
+    --- PASS: TestValidateImageName_Invalid/dollar (0.00s)
+    --- PASS: TestValidateImageName_Invalid/backtick (0.00s)
+    --- PASS: TestValidateImageName_Invalid/open_paren (0.00s)
+    --- PASS: TestValidateImageName_Invalid/close_paren (0.00s)
+    --- PASS: TestValidateImageName_Invalid/less_than (0.00s)
+    --- PASS: TestValidateImageName_Invalid/greater_than (0.00s)
+    --- PASS: TestValidateImageName_Invalid/backslash (0.00s)
+=== RUN   TestClose_Success
+--- PASS: TestClose_Success (0.00s)
+=== RUN   TestImageExists_ContextCancellation
+--- PASS: TestImageExists_ContextCancellation (0.00s)
+=== RUN   TestErrorTypes_DaemonConnectionError
+--- PASS: TestErrorTypes_DaemonConnectionError (0.00s)
+=== RUN   TestErrorTypes_ImageNotFoundError
+--- PASS: TestErrorTypes_ImageNotFoundError (0.00s)
+=== RUN   TestErrorTypes_ImageConversionError
+--- PASS: TestErrorTypes_ImageConversionError (0.00s)
+=== RUN   TestErrorTypes_ValidationError
+--- PASS: TestErrorTypes_ValidationError (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/docker	0.171s
+=== RUN   TestGetExitCode_ValidationError
+--- PASS: TestGetExitCode_ValidationError (0.00s)
+=== RUN   TestGetExitCode_AuthenticationError
+--- PASS: TestGetExitCode_AuthenticationError (0.00s)
+=== RUN   TestGetExitCode_NetworkError
+--- PASS: TestGetExitCode_NetworkError (0.00s)
+=== RUN   TestGetExitCode_ImageNotFoundError
+--- PASS: TestGetExitCode_ImageNotFoundError (0.00s)
+=== RUN   TestGetExitCode_GenericError
+--- PASS: TestGetExitCode_GenericError (0.00s)
+=== RUN   TestGetExitCode_NilError
+--- PASS: TestGetExitCode_NilError (0.00s)
+=== RUN   TestGetExitCode_WrappedValidationError
+--- PASS: TestGetExitCode_WrappedValidationError (0.00s)
+=== RUN   TestGetExitCode_WrappedAuthError
+--- PASS: TestGetExitCode_WrappedAuthError (0.00s)
+=== RUN   TestGetExitCode_AllErrorTypes
+=== RUN   TestGetExitCode_AllErrorTypes/ValidationError
+=== RUN   TestGetExitCode_AllErrorTypes/AuthenticationError
+=== RUN   TestGetExitCode_AllErrorTypes/NetworkError
+=== RUN   TestGetExitCode_AllErrorTypes/ImageNotFoundError
+=== RUN   TestGetExitCode_AllErrorTypes/GenericError
+=== RUN   TestGetExitCode_AllErrorTypes/NilError
+--- PASS: TestGetExitCode_AllErrorTypes (0.00s)
+    --- PASS: TestGetExitCode_AllErrorTypes/ValidationError (0.00s)
+    --- PASS: TestGetExitCode_AllErrorTypes/AuthenticationError (0.00s)
+    --- PASS: TestGetExitCode_AllErrorTypes/NetworkError (0.00s)
+    --- PASS: TestGetExitCode_AllErrorTypes/ImageNotFoundError (0.00s)
+    --- PASS: TestGetExitCode_AllErrorTypes/GenericError (0.00s)
+    --- PASS: TestGetExitCode_AllErrorTypes/NilError (0.00s)
+=== RUN   TestNewValidationError
+--- PASS: TestNewValidationError (0.00s)
+=== RUN   TestNewAuthenticationError
+--- PASS: TestNewAuthenticationError (0.00s)
+=== RUN   TestNewNetworkError
+--- PASS: TestNewNetworkError (0.00s)
+=== RUN   TestNewImageNotFoundError
+--- PASS: TestNewImageNotFoundError (0.00s)
+=== RUN   TestValidationError_Format
+--- PASS: TestValidationError_Format (0.00s)
+=== RUN   TestAuthenticationError_Format
+--- PASS: TestAuthenticationError_Format (0.00s)
+=== RUN   TestSSRFWarning_Format
+--- PASS: TestSSRFWarning_Format (0.00s)
+=== RUN   TestSecurityWarning_Format
+--- PASS: TestSecurityWarning_Format (0.00s)
+=== RUN   TestBaseError_NoSuggestion
+--- PASS: TestBaseError_NoSuggestion (0.00s)
+=== RUN   TestFormatError_Styling
+--- PASS: TestFormatError_Styling (0.00s)
+=== RUN   TestBaseError_Unwrap
+--- PASS: TestBaseError_Unwrap (0.00s)
+=== RUN   TestErrorChain_Unwrap
+--- PASS: TestErrorChain_Unwrap (0.00s)
+=== RUN   TestIsWarning_Detection
+--- PASS: TestIsWarning_Detection (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/errors	0.005s
+=== RUN   TestConvertYamlToObjects
+=== RUN   TestConvertYamlToObjects/Single_Deployment
+=== RUN   TestConvertYamlToObjects/Multi_Deployment
+--- PASS: TestConvertYamlToObjects (0.00s)
+    --- PASS: TestConvertYamlToObjects/Single_Deployment (0.00s)
+    --- PASS: TestConvertYamlToObjects/Multi_Deployment (0.00s)
+=== RUN   TestBuildCustomizedManifests
+--- PASS: TestBuildCustomizedManifests (0.28s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/k8s	0.298s
+=== RUN   TestGetConfig
+--- PASS: TestGetConfig (0.09s)
+=== RUN   TestExtraPortMappings
+--- PASS: TestExtraPortMappings (0.02s)
+=== RUN   TestGetConfigCustom
+--- PASS: TestGetConfigCustom (0.06s)
+=== RUN   TestLoadConfig
+--- PASS: TestLoadConfig (0.00s)
+=== RUN   TestExtraPortMappingsUtilFunc
+--- PASS: TestExtraPortMappingsUtilFunc (0.00s)
+=== RUN   TestFindRegistryConfig
+--- PASS: TestFindRegistryConfig (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/kind	0.188s
+?   	github.com/cnoe-io/idpbuilder/pkg/logger	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/printer	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/printer/types	[no test files]
+=== RUN   TestNewClient_Success
+--- PASS: TestNewClient_Success (0.00s)
+=== RUN   TestNewClient_NilAuthProvider
+--- PASS: TestNewClient_NilAuthProvider (0.00s)
+=== RUN   TestNewClient_NilTLSProvider
+--- PASS: TestNewClient_NilTLSProvider (0.00s)
+=== RUN   TestBuildImageReference_FullURLWithTag
+--- PASS: TestBuildImageReference_FullURLWithTag (0.00s)
+=== RUN   TestBuildImageReference_SimpleURLWithoutTag
+--- PASS: TestBuildImageReference_SimpleURLWithoutTag (0.00s)
+=== RUN   TestBuildImageReference_WithVersionTag
+--- PASS: TestBuildImageReference_WithVersionTag (0.00s)
+=== RUN   TestBuildImageReference_InvalidURL
+--- PASS: TestBuildImageReference_InvalidURL (0.00s)
+=== RUN   TestBuildImageReference_EmptyImageName
+--- PASS: TestBuildImageReference_EmptyImageName (0.00s)
+=== RUN   TestValidateRegistry_Success200
+--- PASS: TestValidateRegistry_Success200 (0.00s)
+=== RUN   TestValidateRegistry_Success401
+--- PASS: TestValidateRegistry_Success401 (0.00s)
+=== RUN   TestValidateRegistry_UnavailableStatus
+--- PASS: TestValidateRegistry_UnavailableStatus (0.00s)
+=== RUN   TestValidateRegistry_NetworkError
+--- PASS: TestValidateRegistry_NetworkError (0.05s)
+=== RUN   TestValidateRegistry_InvalidURL
+--- PASS: TestValidateRegistry_InvalidURL (0.00s)
+=== RUN   TestPush_InvalidReference
+--- PASS: TestPush_InvalidReference (0.00s)
+=== RUN   TestPush_AuthenticationError
+--- PASS: TestPush_AuthenticationError (0.00s)
+=== RUN   TestPush_WithProgressCallback
+--- PASS: TestPush_WithProgressCallback (0.04s)
+=== RUN   TestParseImageName_WithTag
+--- PASS: TestParseImageName_WithTag (0.00s)
+=== RUN   TestParseImageName_WithoutTag
+--- PASS: TestParseImageName_WithoutTag (0.00s)
+=== RUN   TestParseImageName_WithSlashAndTag
+--- PASS: TestParseImageName_WithSlashAndTag (0.00s)
+=== RUN   TestParseImageName_RegistryWithPort
+--- PASS: TestParseImageName_RegistryWithPort (0.00s)
+=== RUN   TestParseImageName_HostWithPortAndNamespace
+--- PASS: TestParseImageName_HostWithPortAndNamespace (0.00s)
+=== RUN   TestIsAuthError_401
+--- PASS: TestIsAuthError_401 (0.00s)
+=== RUN   TestIsAuthError_403
+--- PASS: TestIsAuthError_403 (0.00s)
+=== RUN   TestIsAuthError_UnauthorizedText
+--- PASS: TestIsAuthError_UnauthorizedText (0.00s)
+=== RUN   TestIsAuthError_NotAuthError
+--- PASS: TestIsAuthError_NotAuthError (0.00s)
+=== RUN   TestIsNetworkError_Connection
+--- PASS: TestIsNetworkError_Connection (0.00s)
+=== RUN   TestIsNetworkError_Timeout
+--- PASS: TestIsNetworkError_Timeout (0.00s)
+=== RUN   TestIsNetworkError_NetworkKeyword
+--- PASS: TestIsNetworkError_NetworkKeyword (0.00s)
+=== RUN   TestIsNetworkError_NotNetworkError
+--- PASS: TestIsNetworkError_NotNetworkError (0.00s)
+=== RUN   TestCreateProgressHandler
+--- PASS: TestCreateProgressHandler (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/registry	0.105s
+?   	github.com/cnoe-io/idpbuilder/pkg/resources/localbuild	[no test files]
+=== RUN   TestNewConfigProvider_SecureMode
+--- PASS: TestNewConfigProvider_SecureMode (0.00s)
+=== RUN   TestNewConfigProvider_InsecureMode
+--- PASS: TestNewConfigProvider_InsecureMode (0.00s)
+=== RUN   TestGetTLSConfig_SecureMode
+--- PASS: TestGetTLSConfig_SecureMode (0.02s)
+=== RUN   TestGetTLSConfig_InsecureMode
+--- PASS: TestGetTLSConfig_InsecureMode (0.00s)
+=== RUN   TestIsInsecure_Secure
+--- PASS: TestIsInsecure_Secure (0.00s)
+=== RUN   TestIsInsecure_Insecure
+--- PASS: TestIsInsecure_Insecure (0.00s)
+=== RUN   TestTLSConfig_UsableWithHTTPClient
+--- PASS: TestTLSConfig_UsableWithHTTPClient (0.00s)
+=== RUN   TestGetTLSConfig_MultipleCallsReturnNewInstances
+--- PASS: TestGetTLSConfig_MultipleCallsReturnNewInstances (0.00s)
+=== RUN   TestTLSConfig_SecureMode_CompatibleWithHTTPSConnections
+--- PASS: TestTLSConfig_SecureMode_CompatibleWithHTTPSConnections (0.00s)
+=== RUN   TestTLSConfig_InsecureMode_AcceptsAnyCertificate
+--- PASS: TestTLSConfig_InsecureMode_AcceptsAnyCertificate (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/tls	0.023s
+=== RUN   TestCloneRemoteRepoToDir
+--- PASS: TestCloneRemoteRepoToDir (1.57s)
+=== RUN   TestCopyTreeToTree
+--- PASS: TestCopyTreeToTree (0.42s)
+=== RUN   TestGetWorktreeYamlFiles
+--- PASS: TestGetWorktreeYamlFiles (0.51s)
+=== RUN   TestGiteaBaseUrl
+--- PASS: TestGiteaBaseUrl (0.00s)
+=== RUN   TestURLParse
+--- PASS: TestURLParse (0.00s)
+=== RUN   TestGeneratePassword
+--- PASS: TestGeneratePassword (0.03s)
+=== RUN   TestSetPackageLabels
+=== RUN   TestSetPackageLabels/No_initial_labels
+=== RUN   TestSetPackageLabels/With_initial_labels
+=== RUN   TestSetPackageLabels/ArgoCD_package
+=== RUN   TestSetPackageLabels/Gitea_package
+=== RUN   TestSetPackageLabels/IngressNginx_package
+--- PASS: TestSetPackageLabels (0.00s)
+    --- PASS: TestSetPackageLabels/No_initial_labels (0.00s)
+    --- PASS: TestSetPackageLabels/With_initial_labels (0.00s)
+    --- PASS: TestSetPackageLabels/ArgoCD_package (0.00s)
+    --- PASS: TestSetPackageLabels/Gitea_package (0.00s)
+    --- PASS: TestSetPackageLabels/IngressNginx_package (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/util	2.555s
+?   	github.com/cnoe-io/idpbuilder/pkg/util/files	[no test files]
+=== RUN   TestWriteFS
+=== RUN   TestWriteFS/single_file
+=== RUN   TestWriteFS/file_in_subdir
+--- PASS: TestWriteFS (0.00s)
+    --- PASS: TestWriteFS/single_file (0.00s)
+    --- PASS: TestWriteFS/file_in_subdir (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/util/fs	0.006s
+=== RUN   TestValidateImageName_SimpleTag
+--- PASS: TestValidateImageName_SimpleTag (0.00s)
+=== RUN   TestValidateImageName_WithRegistry
+--- PASS: TestValidateImageName_WithRegistry (0.00s)
+=== RUN   TestValidateImageName_WithNamespace
+--- PASS: TestValidateImageName_WithNamespace (0.00s)
+=== RUN   TestValidateImageName_WithDigest
+--- PASS: TestValidateImageName_WithDigest (0.00s)
+=== RUN   TestValidateImageName_NoTag
+--- PASS: TestValidateImageName_NoTag (0.00s)
+=== RUN   TestValidateImageName_Empty
+--- PASS: TestValidateImageName_Empty (0.00s)
+=== RUN   TestValidateImageName_CommandInjection_Semicolon
+--- PASS: TestValidateImageName_CommandInjection_Semicolon (0.00s)
+=== RUN   TestValidateImageName_CommandInjection_Backtick
+--- PASS: TestValidateImageName_CommandInjection_Backtick (0.00s)
+=== RUN   TestValidateImageName_CommandInjection_Dollar
+--- PASS: TestValidateImageName_CommandInjection_Dollar (0.00s)
+=== RUN   TestValidateImageName_InvalidTag
+--- PASS: TestValidateImageName_InvalidTag (0.00s)
+=== RUN   TestValidateImageName_InvalidDigest
+--- PASS: TestValidateImageName_InvalidDigest (0.00s)
+=== RUN   TestValidateImageName_Localhost
+--- PASS: TestValidateImageName_Localhost (0.00s)
+=== RUN   TestValidateImageName_IPv4Registry
+--- PASS: TestValidateImageName_IPv4Registry (0.00s)
+=== RUN   TestValidateImageName_IPv6Registry
+--- PASS: TestValidateImageName_IPv6Registry (0.00s)
+=== RUN   TestValidateImageName_LongName
+--- PASS: TestValidateImageName_LongName (0.00s)
+=== RUN   TestValidateRegistryURL_SimpleDomain
+--- PASS: TestValidateRegistryURL_SimpleDomain (0.05s)
+=== RUN   TestValidateRegistryURL_DomainWithPort
+--- PASS: TestValidateRegistryURL_DomainWithPort (0.04s)
+=== RUN   TestValidateRegistryURL_Localhost
+--- PASS: TestValidateRegistryURL_Localhost (0.00s)
+=== RUN   TestValidateRegistryURL_IPv4
+--- PASS: TestValidateRegistryURL_IPv4 (0.00s)
+=== RUN   TestValidateRegistryURL_IPv6
+--- PASS: TestValidateRegistryURL_IPv6 (0.00s)
+=== RUN   TestValidateRegistryURL_PrivateIP_ClassA
+--- PASS: TestValidateRegistryURL_PrivateIP_ClassA (0.00s)
+=== RUN   TestValidateRegistryURL_PrivateIP_ClassB
+--- PASS: TestValidateRegistryURL_PrivateIP_ClassB (0.00s)
+=== RUN   TestValidateRegistryURL_PrivateIP_ClassC
+--- PASS: TestValidateRegistryURL_PrivateIP_ClassC (0.00s)
+=== RUN   TestValidateRegistryURL_Localhost_Warning
+--- PASS: TestValidateRegistryURL_Localhost_Warning (0.00s)
+=== RUN   TestValidateRegistryURL_CommandInjection
+--- PASS: TestValidateRegistryURL_CommandInjection (0.00s)
+=== RUN   TestValidateCredentials_Alphanumeric
+--- PASS: TestValidateCredentials_Alphanumeric (0.00s)
+=== RUN   TestValidateCredentials_SpecialCharsPassword
+--- PASS: TestValidateCredentials_SpecialCharsPassword (0.00s)
+=== RUN   TestValidateCredentials_EmailUsername
+--- PASS: TestValidateCredentials_EmailUsername (0.00s)
+=== RUN   TestValidateCredentials_EmptyUsername
+--- PASS: TestValidateCredentials_EmptyUsername (0.00s)
+=== RUN   TestValidateCredentials_EmptyPassword
+--- PASS: TestValidateCredentials_EmptyPassword (0.00s)
+=== RUN   TestValidateCredentials_UsernameInjection
+--- PASS: TestValidateCredentials_UsernameInjection (0.00s)
+=== RUN   TestValidateCredentials_UsernameBacktick
+--- PASS: TestValidateCredentials_UsernameBacktick (0.00s)
+=== RUN   TestValidateCredentials_WeakCredentials
+--- PASS: TestValidateCredentials_WeakCredentials (0.00s)
+=== RUN   TestContainsAnyChar
+=== RUN   TestContainsAnyChar/no_match
+=== RUN   TestContainsAnyChar/semicolon_match
+=== RUN   TestContainsAnyChar/pipe_match
+=== RUN   TestContainsAnyChar/ampersand_match
+=== RUN   TestContainsAnyChar/empty_input
+=== RUN   TestContainsAnyChar/empty_chars
+--- PASS: TestContainsAnyChar (0.00s)
+    --- PASS: TestContainsAnyChar/no_match (0.00s)
+    --- PASS: TestContainsAnyChar/semicolon_match (0.00s)
+    --- PASS: TestContainsAnyChar/pipe_match (0.00s)
+    --- PASS: TestContainsAnyChar/ampersand_match (0.00s)
+    --- PASS: TestContainsAnyChar/empty_input (0.00s)
+    --- PASS: TestContainsAnyChar/empty_chars (0.00s)
+=== RUN   TestIsWarning
+=== RUN   TestIsWarning/SSRFWarning_is_warning
+=== RUN   TestIsWarning/SecurityWarning_is_warning
+=== RUN   TestIsWarning/ValidationError_is_not_warning
+=== RUN   TestIsWarning/nil_is_not_warning
+--- PASS: TestIsWarning (0.00s)
+    --- PASS: TestIsWarning/SSRFWarning_is_warning (0.00s)
+    --- PASS: TestIsWarning/SecurityWarning_is_warning (0.00s)
+    --- PASS: TestIsWarning/ValidationError_is_not_warning (0.00s)
+    --- PASS: TestIsWarning/nil_is_not_warning (0.00s)
+=== RUN   TestValidationError_Error
+--- PASS: TestValidationError_Error (0.00s)
+=== RUN   TestSSRFWarning_Error
+--- PASS: TestSSRFWarning_Error (0.00s)
+=== RUN   TestSecurityWarning_Error
+--- PASS: TestSecurityWarning_Error (0.00s)
+=== RUN   TestValidateRegistryURL_Empty
+--- PASS: TestValidateRegistryURL_Empty (0.00s)
+=== RUN   TestValidateRegistryURL_FullHTTPSURL
+--- PASS: TestValidateRegistryURL_FullHTTPSURL (0.00s)
+=== RUN   TestValidateRegistryURL_InvalidHostname
+--- PASS: TestValidateRegistryURL_InvalidHostname (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/validator	0.094s
+=== RUN   TestGiteaContainerStartup
+2025/11/09 21:55:57 github.com/testcontainers/testcontainers-go - Connected to docker: 
+  Server Version: 28.3.3-1
+  API Version: 1.51
+  Operating System: Ubuntu 24.04.3 LTS (containerized)
+  Total Memory: 18212 MB
+  Testcontainers for Go Version: v0.39.0
+  Resolved Docker Host: unix:///var/run/docker.sock
+  Resolved Docker Socket Path: /var/run/docker.sock
+  Test SessionID: 0a13a1cd312d89d7761eb7055e89202e0e0af43ac2d826c35e1616676a1072af
+  Test ProcessID: 41ff7f7c-482a-43ea-a65e-446a5873819e
+2025/11/09 21:55:57 🐳 Creating container for image gitea/gitea:1.20
+2025/11/09 21:55:57 🐳 Creating container for image testcontainers/ryuk:0.13.0
+2025/11/09 21:55:57 ✅ Container created: 48ab66a0ea7c
+2025/11/09 21:55:57 🐳 Starting container: 48ab66a0ea7c
+2025/11/09 21:55:57 ✅ Container started: 48ab66a0ea7c
+2025/11/09 21:55:57 ⏳ Waiting for container id 48ab66a0ea7c image: testcontainers/ryuk:0.13.0. Waiting for: &{Port:8080/tcp timeout:<nil> PollInterval:100ms skipInternalCheck:false skipExternalCheck:false}
+2025/11/09 21:55:57 Shell not found in container
+2025/11/09 21:55:57 🔔 Container is ready: 48ab66a0ea7c
+2025/11/09 21:55:57 ✅ Container created: 98aaece9cac9
+2025/11/09 21:55:57 🐳 Starting container: 98aaece9cac9
+2025/11/09 21:55:57 ✅ Container started: 98aaece9cac9
+2025/11/09 21:55:57 ⏳ Waiting for container id 98aaece9cac9 image: gitea/gitea:1.20. Waiting for: &{timeout:0x400034f518 Log:Starting new Web server: tcp:0.0.0.0:3000 IsRegexp:false Occurrence:1 PollInterval:100ms check:<nil> submatchCallback:<nil> re:<nil> log:[]}
+2025/11/09 21:56:00 🔔 Container is ready: 98aaece9cac9
+    environment_test.go:43: Gitea container started successfully
+    environment_test.go:44: Registry URL: localhost:32869
+    environment_test.go:45: Admin username: testadmin
+2025/11/09 21:56:05 🐳 Stopping container: 98aaece9cac9
+2025/11/09 21:56:07 ✅ Container stopped: 98aaece9cac9
+2025/11/09 21:56:07 🐳 Terminating container: 98aaece9cac9
+2025/11/09 21:56:07 🚫 Container terminated: 98aaece9cac9
+--- PASS: TestGiteaContainerStartup (9.71s)
+=== RUN   TestDynamicPortAllocation
+2025/11/09 21:56:07 🐳 Creating container for image gitea/gitea:1.20
+2025/11/09 21:56:07 ✅ Container created: 46ee9c2122da
+2025/11/09 21:56:07 🐳 Starting container: 46ee9c2122da
+2025/11/09 21:56:07 ✅ Container started: 46ee9c2122da
+2025/11/09 21:56:07 ⏳ Waiting for container id 46ee9c2122da image: gitea/gitea:1.20. Waiting for: &{timeout:0x40002ec960 Log:Starting new Web server: tcp:0.0.0.0:3000 IsRegexp:false Occurrence:1 PollInterval:100ms check:<nil> submatchCallback:<nil> re:<nil> log:[]}
+2025/11/09 21:56:08 🔔 Container is ready: 46ee9c2122da
+    environment_test.go:76: Registry/Web mapped to port: 32870
+2025/11/09 21:56:13 🐳 Stopping container: 46ee9c2122da
+2025/11/09 21:56:14 ✅ Container stopped: 46ee9c2122da
+2025/11/09 21:56:14 🐳 Terminating container: 46ee9c2122da
+2025/11/09 21:56:14 🚫 Container terminated: 46ee9c2122da
+--- PASS: TestDynamicPortAllocation (7.36s)
+=== RUN   TestDockerClientConnection
+2025/11/09 21:56:14 🐳 Creating container for image gitea/gitea:1.20
+2025/11/09 21:56:14 ✅ Container created: 2cf11ed5693e
+2025/11/09 21:56:14 🐳 Starting container: 2cf11ed5693e
+2025/11/09 21:56:14 ✅ Container started: 2cf11ed5693e
+2025/11/09 21:56:14 ⏳ Waiting for container id 2cf11ed5693e image: gitea/gitea:1.20. Waiting for: &{timeout:0x40001ecd18 Log:Starting new Web server: tcp:0.0.0.0:3000 IsRegexp:false Occurrence:1 PollInterval:100ms check:<nil> submatchCallback:<nil> re:<nil> log:[]}
+2025/11/09 21:56:16 🔔 Container is ready: 2cf11ed5693e
+    environment_test.go:98: Docker client successfully connected to daemon
+2025/11/09 21:56:21 🐳 Stopping container: 2cf11ed5693e
+2025/11/09 21:56:22 ✅ Container stopped: 2cf11ed5693e
+2025/11/09 21:56:22 🐳 Terminating container: 2cf11ed5693e
+2025/11/09 21:56:22 🚫 Container terminated: 2cf11ed5693e
+--- PASS: TestDockerClientConnection (7.98s)
+=== RUN   TestCleanupRemovesContainer
+2025/11/09 21:56:22 🐳 Creating container for image gitea/gitea:1.20
+2025/11/09 21:56:22 ✅ Container created: e4f7060a1116
+2025/11/09 21:56:22 🐳 Starting container: e4f7060a1116
+2025/11/09 21:56:22 ✅ Container started: e4f7060a1116
+2025/11/09 21:56:22 ⏳ Waiting for container id e4f7060a1116 image: gitea/gitea:1.20. Waiting for: &{timeout:0x400019b5c0 Log:Starting new Web server: tcp:0.0.0.0:3000 IsRegexp:false Occurrence:1 PollInterval:100ms check:<nil> submatchCallback:<nil> re:<nil> log:[]}
+2025/11/09 21:56:24 🔔 Container is ready: e4f7060a1116
+2025/11/09 21:56:29 🐳 Stopping container: e4f7060a1116
+2025/11/09 21:56:30 ✅ Container stopped: e4f7060a1116
+2025/11/09 21:56:30 🐳 Terminating container: e4f7060a1116
+2025/11/09 21:56:30 🚫 Container terminated: e4f7060a1116
+    environment_test.go:126: Container cleaned up successfully
+--- PASS: TestCleanupRemovesContainer (8.28s)
+=== RUN   TestWaitForGiteaReady
+2025/11/09 21:56:30 🐳 Creating container for image gitea/gitea:1.20
+2025/11/09 21:56:30 ✅ Container created: f5c4187d0ed8
+2025/11/09 21:56:30 🐳 Starting container: f5c4187d0ed8
+2025/11/09 21:56:30 ✅ Container started: f5c4187d0ed8
+2025/11/09 21:56:30 ⏳ Waiting for container id f5c4187d0ed8 image: gitea/gitea:1.20. Waiting for: &{timeout:0x40002ecd98 Log:Starting new Web server: tcp:0.0.0.0:3000 IsRegexp:false Occurrence:1 PollInterval:100ms check:<nil> submatchCallback:<nil> re:<nil> log:[]}
+2025/11/09 21:56:34 🔔 Container is ready: f5c4187d0ed8
+    environment_test.go:156: WaitForGiteaReady succeeded
+2025/11/09 21:56:39 🐳 Stopping container: f5c4187d0ed8
+2025/11/09 21:56:40 ✅ Container stopped: f5c4187d0ed8
+2025/11/09 21:56:40 🐳 Terminating container: f5c4187d0ed8
+2025/11/09 21:56:40 🚫 Container terminated: f5c4187d0ed8
+--- PASS: TestWaitForGiteaReady (9.53s)
+=== RUN   TestCleanupTestEnvironment
+2025/11/09 21:56:40 🐳 Creating container for image gitea/gitea:1.20
+2025/11/09 21:56:40 ✅ Container created: 5677112fa783
+2025/11/09 21:56:40 🐳 Starting container: 5677112fa783
+2025/11/09 21:56:40 ✅ Container started: 5677112fa783
+2025/11/09 21:56:40 ⏳ Waiting for container id 5677112fa783 image: gitea/gitea:1.20. Waiting for: &{timeout:0x400019af50 Log:Starting new Web server: tcp:0.0.0.0:3000 IsRegexp:false Occurrence:1 PollInterval:100ms check:<nil> submatchCallback:<nil> re:<nil> log:[]}
+2025/11/09 21:56:42 🔔 Container is ready: 5677112fa783
+2025/11/09 21:56:47 🐳 Stopping container: 5677112fa783
+2025/11/09 21:56:48 ✅ Container stopped: 5677112fa783
+2025/11/09 21:56:48 🐳 Terminating container: 5677112fa783
+2025/11/09 21:56:48 🚫 Container terminated: 5677112fa783
+    environment_test.go:177: CleanupTestEnvironment succeeded
+--- PASS: TestCleanupTestEnvironment (8.73s)
+=== RUN   TestRemoveTestImages
+2025/11/09 21:56:48 🐳 Creating container for image gitea/gitea:1.20
+2025/11/09 21:56:48 ✅ Container created: 9aa4231fef25
+2025/11/09 21:56:48 🐳 Starting container: 9aa4231fef25
+2025/11/09 21:56:48 ✅ Container started: 9aa4231fef25
+2025/11/09 21:56:48 ⏳ Waiting for container id 9aa4231fef25 image: gitea/gitea:1.20. Waiting for: &{timeout:0x400019bda8 Log:Starting new Web server: tcp:0.0.0.0:3000 IsRegexp:false Occurrence:1 PollInterval:100ms check:<nil> submatchCallback:<nil> re:<nil> log:[]}
+2025/11/09 21:56:50 🔔 Container is ready: 9aa4231fef25
+    environment_test.go:197: RemoveTestImages returned error (might be no test images): encountered 2 error(s) removing images: [failed to remove image alpine:latest: Error response from daemon: conflict: unable to delete 171e65262c80 (cannot be forced) - image has dependent child images failed to remove image testcontainers/ryuk:0.13.0: Error response from daemon: conflict: unable to delete f04fd744b5d5 (cannot be forced) - image is being used by running container 48ab66a0ea7c]
+2025/11/09 21:56:55 🐳 Stopping container: 9aa4231fef25
+2025/11/09 21:56:56 ✅ Container stopped: 9aa4231fef25
+2025/11/09 21:56:56 🐳 Terminating container: 9aa4231fef25
+2025/11/09 21:56:56 🚫 Container terminated: 9aa4231fef25
+--- PASS: TestRemoveTestImages (7.66s)
+=== RUN   TestVerifyImageInRegistry
+2025/11/09 21:56:56 🐳 Creating container for image gitea/gitea:1.20
+2025/11/09 21:56:56 ✅ Container created: 22a8f980cad0
+2025/11/09 21:56:56 🐳 Starting container: 22a8f980cad0
+2025/11/09 21:56:56 ✅ Container started: 22a8f980cad0
+2025/11/09 21:56:56 ⏳ Waiting for container id 22a8f980cad0 image: gitea/gitea:1.20. Waiting for: &{timeout:0x4000234128 Log:Starting new Web server: tcp:0.0.0.0:3000 IsRegexp:false Occurrence:1 PollInterval:100ms check:<nil> submatchCallback:<nil> re:<nil> log:[]}
+2025/11/09 21:56:57 🔔 Container is ready: 22a8f980cad0
+    environment_test.go:226: VerifyImageInRegistry returned error (expected for non-existent image): failed to verify image: Get "http://localhost:3000/v2/token?scope=repository%3Anonexistent%2Fimage%3Apull&service=container_registry": dial tcp [::1]:3000: connect: connection refused
+    environment_test.go:232: Correctly identified non-existent image
+2025/11/09 21:57:03 🐳 Stopping container: 22a8f980cad0
+2025/11/09 21:57:04 ✅ Container stopped: 22a8f980cad0
+2025/11/09 21:57:04 🐳 Terminating container: 22a8f980cad0
+2025/11/09 21:57:04 🚫 Container terminated: 22a8f980cad0
+--- PASS: TestVerifyImageInRegistry (7.57s)
+=== RUN   TestGetImageDigest
+2025/11/09 21:57:04 🐳 Creating container for image gitea/gitea:1.20
+2025/11/09 21:57:04 ✅ Container created: 21f031fafb78
+2025/11/09 21:57:04 🐳 Starting container: 21f031fafb78
+2025/11/09 21:57:04 ✅ Container started: 21f031fafb78
+2025/11/09 21:57:04 ⏳ Waiting for container id 21f031fafb78 image: gitea/gitea:1.20. Waiting for: &{timeout:0x40004421e0 Log:Starting new Web server: tcp:0.0.0.0:3000 IsRegexp:false Occurrence:1 PollInterval:100ms check:<nil> submatchCallback:<nil> re:<nil> log:[]}
+2025/11/09 21:57:07 🔔 Container is ready: 21f031fafb78
+    environment_test.go:265: Correctly returned error and empty digest for non-existent image
+2025/11/09 21:57:12 🐳 Stopping container: 21f031fafb78
+2025/11/09 21:57:13 ✅ Container stopped: 21f031fafb78
+2025/11/09 21:57:13 🐳 Terminating container: 21f031fafb78
+2025/11/09 21:57:13 🚫 Container terminated: 21f031fafb78
+--- PASS: TestGetImageDigest (9.61s)
+=== RUN   TestValidateConfig
+=== RUN   TestValidateConfig/valid_config
+=== RUN   TestValidateConfig/empty_name
+=== RUN   TestValidateConfig/empty_tag
+=== RUN   TestValidateConfig/zero_layers
+=== RUN   TestValidateConfig/negative_layers
+=== RUN   TestValidateConfig/negative_size
+--- PASS: TestValidateConfig (0.00s)
+    --- PASS: TestValidateConfig/valid_config (0.00s)
+    --- PASS: TestValidateConfig/empty_name (0.00s)
+    --- PASS: TestValidateConfig/empty_tag (0.00s)
+    --- PASS: TestValidateConfig/zero_layers (0.00s)
+    --- PASS: TestValidateConfig/negative_layers (0.00s)
+    --- PASS: TestValidateConfig/negative_size (0.00s)
+=== RUN   TestGenerateDockerfile
+=== RUN   TestGenerateDockerfile/single_layer
+=== RUN   TestGenerateDockerfile/multiple_layers
+--- PASS: TestGenerateDockerfile (0.00s)
+    --- PASS: TestGenerateDockerfile/single_layer (0.00s)
+    --- PASS: TestGenerateDockerfile/multiple_layers (0.00s)
+=== RUN   TestGenerateTestFiles
+=== RUN   TestGenerateTestFiles/small_files
+=== RUN   TestGenerateTestFiles/zero_size_files
+=== RUN   TestGenerateTestFiles/multiple_layers
+--- PASS: TestGenerateTestFiles (0.02s)
+    --- PASS: TestGenerateTestFiles/small_files (0.00s)
+    --- PASS: TestGenerateTestFiles/zero_size_files (0.00s)
+    --- PASS: TestGenerateTestFiles/multiple_layers (0.02s)
+=== RUN   TestCreateRandomFile
+=== RUN   TestCreateRandomFile/small_file
+=== RUN   TestCreateRandomFile/medium_file
+=== RUN   TestCreateRandomFile/zero_size
+--- PASS: TestCreateRandomFile (0.00s)
+    --- PASS: TestCreateRandomFile/small_file (0.00s)
+    --- PASS: TestCreateRandomFile/medium_file (0.00s)
+    --- PASS: TestCreateRandomFile/zero_size (0.00s)
+=== RUN   TestCleanupBuildDir
+--- PASS: TestCleanupBuildDir (0.00s)
+=== RUN   TestBuildTestImage_Integration
+=== RUN   TestBuildTestImage_Integration/small_image
+=== RUN   TestBuildTestImage_Integration/medium_image
+--- PASS: TestBuildTestImage_Integration (1.52s)
+    --- PASS: TestBuildTestImage_Integration/small_image (0.45s)
+    --- PASS: TestBuildTestImage_Integration/medium_image (1.07s)
+=== RUN   TestBuildTestImage_InvalidConfig
+=== RUN   TestBuildTestImage_InvalidConfig/empty_name
+=== RUN   TestBuildTestImage_InvalidConfig/empty_tag
+=== RUN   TestBuildTestImage_InvalidConfig/invalid_layer_count
+--- PASS: TestBuildTestImage_InvalidConfig (0.00s)
+    --- PASS: TestBuildTestImage_InvalidConfig/empty_name (0.00s)
+    --- PASS: TestBuildTestImage_InvalidConfig/empty_tag (0.00s)
+    --- PASS: TestBuildTestImage_InvalidConfig/invalid_layer_count (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/test/harness	77.977s
+FAIL

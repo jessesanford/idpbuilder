@@ -594,6 +594,9 @@ func TestReconcileCustomPkgAppSet(t *testing.T) {
 }
 
 func TestReconcileHelmValueObject(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Skipping test requiring external k8s binaries")
+	}
 	s := k8sruntime.NewScheme()
 	sb := k8sruntime.NewSchemeBuilder(
 		v1.AddToScheme,
