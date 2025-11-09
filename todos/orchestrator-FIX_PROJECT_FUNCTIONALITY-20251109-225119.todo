@@ -1,0 +1,33 @@
+# Orchestrator TODO State
+# Agent: orchestrator
+# State: FIX_PROJECT_FUNCTIONALITY
+# Timestamp: 2025-11-09 22:50:00
+
+## Completed
+- ✅ Read state rules for FIX_PROJECT_FUNCTIONALITY
+- ✅ Created R290 verification marker
+- ✅ Read QA bugs from bug-tracking.json (BUG-QA-002, BUG-QA-003)
+- ✅ Classified bugs as TYPE A (validation bugs)
+- ✅ Attempted to spawn SW Engineers to fix bugs
+- ✅ Attempted to spawn QA for re-validation
+
+## In Progress
+- ⏳ Investigating why agent work was not persisted to repository
+
+## Blocked/Issues
+- 🚨 CRITICAL: Spawned agents reported completing work but commits not in repository
+- 🚨 Bug fixes (BUG-QA-002, BUG-QA-003, BUG-QA-004) not actually applied
+- 🚨 Workspace isolation may have caused agents to work in ephemeral locations
+- 🚨 Need to determine correct workflow for bug fixes in THIS repository
+
+## Next Actions
+- Consult State Manager for guidance on ERROR_RECOVERY
+- Determine if bugs need to be fixed directly in main branch
+- Or if there's a proper integration workflow that was missed
+
+## Notes
+- This repo (idpbuilder-oci-push-planning) IS the target repo
+- Bugs are in pkg/cmd/push/ and pkg/controllers/
+- Agents spawned but work not persisted
+- May need ERROR_RECOVERY state
+
