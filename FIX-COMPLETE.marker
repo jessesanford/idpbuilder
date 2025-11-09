@@ -1,0 +1,14 @@
+Completed at: 2025-11-09 23:55:01 UTC
+Effort: project-integration
+Branch: idpbuilder-oci-push/project-integration
+Fixes applied: 2 (BUG-QA-005, BUG-QA-006)
+Tests passing: Yes - both failing tests now pass
+Build status: Success
+Final commit: 0bfcb6bc fix(registry): handle registry URLs without scheme and include port in SSRF warnings
+Status: FIXES COMPLETE
+
+Summary:
+- BUG-QA-005: Fixed BuildImageReference to normalize URLs without scheme by prepending https://
+- BUG-QA-006: Fixed SSRFWarning message to include port (shows localhost:5000 instead of localhost)
+- Both TestPushCommand_EnvironmentOverridesDefault and TestPushCommand_RegistryOverride now pass
+- All other tests continue to pass - no regressions
