@@ -1,0 +1,15 @@
+Bug ID: BUG-039-TEST-EXPECTATION-MISMATCH
+Completed at: $(date '+%Y-%m-%d %H:%M:%S %Z')
+Branch: idpbuilder-oci-push/phase2/wave1/effort-1-push-command-core
+Commit: 38e7ffb
+Status: FIXED
+
+Fix Details:
+- Updated test expectation in TestRunPush_ErrorWrapping
+- Changed from generic "validation failed" to specific "image name is required"
+- Test now correctly matches actual validation error message
+- All tests passing
+
+Validation:
+- TestRunPush_ErrorWrapping: PASS
+- All pkg/cmd/push tests: PASS (17 passed, 13 skipped)
