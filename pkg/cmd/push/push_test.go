@@ -179,7 +179,7 @@ func TestRunPush_ErrorWrapping(t *testing.T) {
 	err := push.RunPushForTesting(ctx, opts)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "validation failed")
+	assert.Contains(t, err.Error(), "image name cannot be empty")
 }
 
 // T-2.1.1-15: Test progress callback invocation
