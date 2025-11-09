@@ -6,6 +6,8 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/cnoe-io/idpbuilder/pkg/errors"
 )
 
 var (
@@ -36,7 +38,7 @@ var (
 // Returns:
 //   - nil if valid
 //   - ValidationError if invalid format or contains dangerous characters
-//   - SSRFWarning if private IP detected (allows continuation)
+//   - errors.SSRFWarning if private IP detected (allows continuation)
 func ValidateRegistryURL(registry string) error {
 	if registry == "" {
 		return &ValidationError{
@@ -89,7 +91,8 @@ func ValidateRegistryURL(registry string) error {
 	// (some private IPs like ::1 may not match the registry pattern)
 	if isPrivateIP(hostname) {
 		// This is a warning, not an error (some users intentionally use private registries)
-		return &SSRFWarning{
+		// Use errors.SSRFWarning so FormatError() recognizes it as a warning (⚠️ not ❌)
+		return &errors.SSRFWarning{
 			Target:     registry,
 			Message:    fmt.Sprintf("registry appears to be in a private IP range: %s", hostname),
 			Suggestion: "ensure this is intentional and you trust the target registry",
