@@ -1,0 +1,12 @@
+Completed at: 2025-11-09 22:44:09 UTC
+Effort: idpbuilder-oci-push-project
+Branch: idpbuilder-oci-push/project/integration
+Fixes applied: 1 (BUG-QA-004)
+Bug ID: BUG-QA-004
+Bug Type: TEST_FAILURE
+Test affected: TestRunPush_ErrorWrapping
+Change: Updated test assertion from "validation failed" to "image name cannot be empty"
+Tests passing: Yes (TestRunPush_ErrorWrapping and all related error wrapping tests)
+Build status: Success
+Final commit: 4085475f fix: BUG-QA-004 - Update test assertion for new validator error format
+Status: FIXES COMPLETE
