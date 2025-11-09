@@ -1,6 +1,0 @@
-/go/pkg/mod/github.com/google/go-containerregistry@v0.19.0/pkg/v1/tarball/layer.go:25:2: missing go.sum entry for module providing package github.com/containerd/stargz-snapshotter/estargz (imported by github.com/google/go-containerregistry/pkg/v1/tarball); to add:
-	go get github.com/google/go-containerregistry/pkg/v1/tarball@v0.19.0
-/go/pkg/mod/github.com/google/go-containerregistry@v0.19.0/internal/zstd/zstd.go:24:2: missing go.sum entry for module providing package github.com/klauspost/compress/zstd (imported by github.com/google/go-containerregistry/internal/zstd); to add:
-	go get github.com/google/go-containerregistry/internal/zstd@v0.19.0
-/go/pkg/mod/github.com/google/go-containerregistry@v0.19.0/pkg/v1/remote/transport/bearer.go:28:2: missing go.sum entry for module providing package github.com/docker/distribution/registry/client/auth/challenge (imported by github.com/google/go-containerregistry/pkg/v1/remote/transport); to add:
-	go get github.com/google/go-containerregistry/pkg/v1/remote/transport@v0.19.0

@@ -179,8 +179,15 @@ func (c *registryClient) Push(ctx context.Context, image v1.Image, targetRef str
 //   )
 //   // ref = "gitea.cnoe.localtest.me:8443/giteaadmin/myapp:latest"
 func (c *registryClient) BuildImageReference(registryURL, imageName string) (string, error) {
+	// Normalize registry URL: prepend https:// if no scheme is present
+	// This handles both "gitea.cnoe.localtest.me:8443" and "https://gitea.cnoe.localtest.me:8443"
+	normalizedURL := registryURL
+	if !strings.Contains(registryURL, "://") {
+		normalizedURL = "https://" + registryURL
+	}
+
 	// Parse registry URL
-	parsedURL, err := url.Parse(registryURL)
+	parsedURL, err := url.Parse(normalizedURL)
 	if err != nil {
 		return "", &ValidationError{
 			Field:   "registryURL",

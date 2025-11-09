@@ -91,7 +91,7 @@ func ValidateRegistryURL(registry string) error {
 		// This is a warning, not an error (some users intentionally use private registries)
 		return &SSRFWarning{
 			Target:     registry,
-			Message:    fmt.Sprintf("registry appears to be in a private IP range: %s", hostname),
+			Message:    fmt.Sprintf("registry appears to be in a private IP range: %s", registry),
 			Suggestion: "ensure this is intentional and you trust the target registry",
 		}
 	}
