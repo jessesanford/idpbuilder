@@ -5,7 +5,11 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/cnoe-io/idpbuilder/pkg/auth"
+	"github.com/cnoe-io/idpbuilder/pkg/docker"
 	"github.com/cnoe-io/idpbuilder/pkg/errors"
+	"github.com/cnoe-io/idpbuilder/pkg/registry"
+	"github.com/cnoe-io/idpbuilder/pkg/tls"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -100,36 +104,62 @@ func runPush(ctx context.Context, opts *PushOptions) error {
 		return err
 	}
 
-	// TODO: Phase 3 will integrate actual push implementation using:
-	// - Docker client (pkg/docker) - wrap errors with WrapDockerError()
-	// - Registry client (pkg/registry) - wrap errors with WrapRegistryError()
-	// - Auth provider (pkg/auth)
-	// - TLS config (pkg/tls)
-	// - Progress reporting (pkg/progress)
-	//
-	// Example integration:
-	//   dockerClient, err := docker.NewClient()
-	//   if err != nil {
-	//       return WrapDockerError(err, opts.ImageName)
-	//   }
-	//   defer dockerClient.Close()
-	//
-	//   image, err := dockerClient.GetImage(ctx, opts.ImageName)
-	//   if err != nil {
-	//       return WrapDockerError(err, opts.ImageName)
-	//   }
-	//
-	//   registryClient, err := registry.NewClient(authProvider, tlsProvider)
-	//   if err != nil {
-	//       return WrapRegistryError(err, opts.Registry)
-	//   }
-	//
-	//   err = registryClient.Push(ctx, image, targetRef, progressCallback)
-	//   if err != nil {
-	//       return WrapRegistryError(err, opts.Registry)
-	//   }
+	// Create Docker client and retrieve image
+	dockerClient, err := docker.NewClient()
+	if err != nil {
+		return WrapDockerError(err, opts.ImageName)
+	}
+	defer dockerClient.Close()
 
-	return fmt.Errorf("push implementation pending Phase 3 integration")
+	// Get image from local Docker daemon
+	image, err := dockerClient.GetImage(ctx, opts.ImageName)
+	if err != nil {
+		return WrapDockerError(err, opts.ImageName)
+	}
+
+	// Create authentication provider
+	authProvider := auth.NewBasicAuthProvider(opts.Username, opts.Password)
+
+	// Create TLS configuration provider
+	tlsProvider := tls.NewConfigProvider(opts.Insecure)
+
+	// Create registry client
+	registryClient, err := registry.NewClient(authProvider, tlsProvider)
+	if err != nil {
+		return WrapRegistryError(err, opts.Registry)
+	}
+
+	// Build fully qualified image reference
+	targetRef, err := registryClient.BuildImageReference(opts.Registry, opts.ImageName)
+	if err != nil {
+		return WrapRegistryError(err, opts.Registry)
+	}
+
+	// Display verbose output if enabled
+	if opts.Verbose {
+		fmt.Printf("Pushing image %s to %s\n", opts.ImageName, targetRef)
+	}
+
+	// Push image to registry with optional progress callback
+	var progressCallback registry.ProgressCallback
+	if opts.Verbose {
+		progressCallback = func(update registry.ProgressUpdate) {
+			fmt.Printf("  %s: %d/%d bytes (%s)\n",
+				update.Status, update.BytesPushed, update.LayerSize, update.LayerDigest)
+		}
+	}
+
+	err = registryClient.Push(ctx, image, targetRef, progressCallback)
+	if err != nil {
+		return WrapRegistryError(err, opts.Registry)
+	}
+
+	// Success message
+	if opts.Verbose {
+		fmt.Printf("Successfully pushed %s to %s\n", opts.ImageName, targetRef)
+	}
+
+	return nil
 }
 
 // RunPushForTesting exposes runPush for testing purposes
