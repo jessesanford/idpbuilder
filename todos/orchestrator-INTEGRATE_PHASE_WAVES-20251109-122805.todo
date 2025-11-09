@@ -1,0 +1,30 @@
+# TODO State at 2025-11-09 12:24:00
+# Agent: orchestrator
+# State: INTEGRATE_PHASE_WAVES  
+# Phase: 2, Wave: null
+
+## Completed (1)
+- Verify all phase integration branches exist on TARGET repository remote (R654 BLOCKING)
+
+## In Progress (1)
+- Verify all phase branches are ready for integration
+
+## Pending (12)
+- Ensure project integration branch is clean
+- Verify integration infrastructure is ready
+- Prepare integration instructions for agent
+- Spawn integration agent to perform integration work (R329 - ORCHESTRATOR NEVER MERGES)
+- Monitor integration agent completion
+- Record integration outcome in integration-containers.json
+- Update orchestrator-state-v3.json with integration progress
+- Push integrated project branch to remote
+- Spawn State Manager for SHUTDOWN_CONSULTATION (R517 MANDATORY)
+- Save TODOs per R287 (within 30s of last TodoWrite)
+- Set CONTINUE-SOFTWARE-FACTORY flag per R405
+- Stop execution (exit 0)
+
+## Critical Context
+- STATE IDENTIFICATION ERROR: Initially thought I was in INTEGRATE_PROJECT_PHASES
+- Actual state: INTEGRATE_PHASE_WAVES (Phase 2 integration, iteration 3/10)
+- Need to read correct state rules and execute appropriate checklist
+- Phase 2 has waves 2.1, 2.2, 2.3 ready for integration
