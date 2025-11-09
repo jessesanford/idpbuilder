@@ -1,0 +1,45 @@
+# Orchestrator TODO State - FIX_PROJECT_FUNCTIONALITY
+# Saved: 2025-11-09T12:07:00Z
+# Trigger: State checklist completion before transition
+
+## COMPLETED TASKS ✅
+
+- [x] Analyze bug types (Type A vs Type B)
+- [x] Consult State Manager for MIXED bug classification routing
+  - Result: Fix BUG-015 now, transition for BUG-019
+- [x] Read QA bugs from bug-tracking.json (CHECKLIST ITEM 1)
+  - Found 2 OPEN bugs: BUG-015, BUG-019
+- [x] Analyze bugs for project (CHECKLIST ITEM 2)
+  - BUG-015: Type A, ready to fix
+  - BUG-019: Type B, requires state transition
+- [x] Spawn SW Engineer to fix BUG-015 metadata placement (CHECKLIST ITEM 3)
+  - Fix commit: 77eb632
+- [x] Monitor SW Engineer progress (CHECKLIST ITEM 4)
+  - Fix completed successfully
+- [x] Consult State Manager to mark BUG-015 as FIXED (CHECKLIST ITEM 5)
+  - Status update commit: fec9940
+- [x] Spawn QA agent for re-validation of BUG-015 fix (CHECKLIST ITEM 6)
+  - QA result: APPROVED (100% criteria met)
+- [x] Consult State Manager to mark BUG-015 as VERIFIED
+  - Verification commit: 75997ec
+- [x] Record fix outcome (CHECKLIST ITEM 7)
+  - BUG-015: VERIFIED ✅
+  - BUG-019: Requires state transition
+- [x] Save TODOs per R287 (CHECKLIST ITEM 8)
+  - This file
+
+## PENDING TASKS ⏳
+
+- [ ] Commit orchestration work (CHECKLIST ITEM 9)
+- [ ] Push changes (CHECKLIST ITEM 10)
+- [ ] Consult State Manager for transition to INTEGRATE_PROJECT_PHASES for BUG-019
+- [ ] Set continuation flag (CHECKLIST ITEM 11)
+
+## OUTCOME
+
+BUG-015 Type A fix: ✅ COMPLETE and VERIFIED
+BUG-019 Type B fix: ⏭️ Requires state transition to INTEGRATE_PROJECT_PHASES
+
+## NEXT ACTION
+
+After completing remaining checklist items (9-11), consult State Manager for transition to INTEGRATE_PROJECT_PHASES to handle BUG-019 re-integration.
