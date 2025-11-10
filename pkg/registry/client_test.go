@@ -151,7 +151,8 @@ func TestBuildImageReference_SimpleURLWithoutTag(t *testing.T) {
 
 	// Assert
 	require.NoError(t, err)
-	expected := "registry.io/giteaadmin/myapp:latest"
+	// Standard OCI registries don't use namespace
+	expected := "registry.io/myapp:latest"
 	assert.Equal(t, expected, ref)
 }
 
@@ -170,7 +171,8 @@ func TestBuildImageReference_WithVersionTag(t *testing.T) {
 
 	// Assert
 	require.NoError(t, err)
-	expected := "registry.example.com:5000/giteaadmin/myapp:v1.0.0"
+	// Standard OCI registries don't use namespace
+	expected := "registry.example.com:5000/myapp:v1.0.0"
 	assert.Equal(t, expected, ref)
 }
 

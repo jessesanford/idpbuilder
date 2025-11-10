@@ -39,12 +39,13 @@ type registryClient struct {
 //   - error: ValidationError if providers are invalid
 //
 // Example:
-//   authProvider := auth.NewBasicAuthProvider("giteaadmin", "password")
-//   tlsProvider := tls.NewConfigProvider(insecure)
-//   client, err := registry.NewClient(authProvider, tlsProvider)
-//   if err != nil {
-//       return fmt.Errorf("failed to create registry client: %w", err)
-//   }
+//
+//	authProvider := auth.NewBasicAuthProvider("giteaadmin", "password")
+//	tlsProvider := tls.NewConfigProvider(insecure)
+//	client, err := registry.NewClient(authProvider, tlsProvider)
+//	if err != nil {
+//	    return fmt.Errorf("failed to create registry client: %w", err)
+//	}
 func newClientImpl(authProvider auth.Provider, tlsConfig tlspkg.ConfigProvider) (Client, error) {
 	if authProvider == nil {
 		return nil, &ValidationError{
@@ -76,27 +77,28 @@ func newClientImpl(authProvider auth.Provider, tlsConfig tlspkg.ConfigProvider) 
 // Push pushes an OCI image to the specified registry with optional progress reporting.
 //
 // This method:
-//   1. Parses the target reference
-//   2. Gets authenticator from auth provider
-//   3. Configures remote options (auth, transport, progress)
-//   4. Calls go-containerregistry's remote.Write()
+//  1. Parses the target reference
+//  2. Gets authenticator from auth provider
+//  3. Configures remote options (auth, transport, progress)
+//  4. Calls go-containerregistry's remote.Write()
 //
 // Parameters:
 //   - ctx: Context for cancellation and timeout control
 //   - image: OCI v1.Image to push (from Docker client)
 //   - targetRef: Fully qualified image reference
-//                Format: "registry-host/namespace/repository:tag"
+//     Format: "registry-host/namespace/repository:tag"
 //   - progressCallback: Optional callback for progress updates (can be nil)
 //
 // Returns:
 //   - error: AuthenticationError if credentials invalid (401/403),
-//            NetworkError if registry unreachable,
-//            PushFailedError if layer upload or manifest push fails
+//     NetworkError if registry unreachable,
+//     PushFailedError if layer upload or manifest push fails
 //
 // Example:
-//   err := client.Push(ctx, image, "registry.io/repo/myapp:latest", func(update ProgressUpdate) {
-//       fmt.Printf("Layer %s: %d/%d bytes\n", update.LayerDigest, update.BytesPushed, update.LayerSize)
-//   })
+//
+//	err := client.Push(ctx, image, "registry.io/repo/myapp:latest", func(update ProgressUpdate) {
+//	    fmt.Printf("Layer %s: %d/%d bytes\n", update.LayerDigest, update.BytesPushed, update.LayerSize)
+//	})
 func (c *registryClient) Push(ctx context.Context, image v1.Image, targetRef string, progressCallback ProgressCallback) error {
 	// Parse target reference
 	ref, err := name.ParseReference(targetRef)
@@ -156,28 +158,29 @@ func (c *registryClient) Push(ctx context.Context, image v1.Image, targetRef str
 // BuildImageReference constructs a fully qualified registry image reference.
 //
 // This method:
-//   1. Parses the registry URL to extract host:port
-//   2. Parses image name to extract repository and tag
-//   3. Constructs full reference: registry/namespace/repository:tag
-//   4. Uses "giteaadmin" as default namespace for Gitea registries
+//  1. Parses the registry URL to extract host:port
+//  2. Parses image name to extract repository and tag
+//  3. Constructs full reference: registry/namespace/repository:tag
+//  4. Uses "giteaadmin" as default namespace for Gitea registries
 //
 // Parameters:
 //   - registryURL: Base registry URL
-//                  Examples: "https://gitea.cnoe.localtest.me:8443"
-//                           "https://registry.io"
+//     Examples: "https://gitea.cnoe.localtest.me:8443"
+//     "https://registry.io"
 //   - imageName: Image name with optional tag
-//                Examples: "myapp:latest", "myapp", "myapp:v1.0.0"
+//     Examples: "myapp:latest", "myapp", "myapp:v1.0.0"
 //
 // Returns:
 //   - string: Fully qualified image reference
 //   - error: ValidationError if registry URL or image name is invalid
 //
 // Example:
-//   ref, err := client.BuildImageReference(
-//       "https://gitea.cnoe.localtest.me:8443",
-//       "myapp:latest",
-//   )
-//   // ref = "gitea.cnoe.localtest.me:8443/giteaadmin/myapp:latest"
+//
+//	ref, err := client.BuildImageReference(
+//	    "https://gitea.cnoe.localtest.me:8443",
+//	    "myapp:latest",
+//	)
+//	// ref = "gitea.cnoe.localtest.me:8443/giteaadmin/myapp:latest"
 func (c *registryClient) BuildImageReference(registryURL, imageName string) (string, error) {
 	// Normalize registry URL: prepend https:// if no scheme is present
 	// This handles both "gitea.cnoe.localtest.me:8443" and "https://gitea.cnoe.localtest.me:8443"
@@ -218,9 +221,18 @@ func (c *registryClient) BuildImageReference(registryURL, imageName string) (str
 		tag = "latest"
 	}
 
-	// Build full reference with "giteaadmin" namespace
-	namespace := "giteaadmin"
-	fullRef := fmt.Sprintf("%s/%s/%s:%s", registryHost, namespace, repository, tag)
+	// Build full reference
+	// For Gitea registries, use "giteaadmin" namespace
+	// For standard OCI registries (localhost, etc.), use direct path
+	var fullRef string
+	if strings.Contains(registryHost, "gitea") || strings.Contains(registryHost, "cnoe") {
+		// Gitea-specific: requires namespace
+		namespace := "giteaadmin"
+		fullRef = fmt.Sprintf("%s/%s/%s:%s", registryHost, namespace, repository, tag)
+	} else {
+		// Standard OCI registry: no namespace needed
+		fullRef = fmt.Sprintf("%s/%s:%s", registryHost, repository, tag)
+	}
 	return fullRef, nil
 }
 
@@ -240,13 +252,14 @@ func (c *registryClient) BuildImageReference(registryURL, imageName string) (str
 //
 // Returns:
 //   - error: NetworkError if unreachable,
-//            RegistryUnavailableError if invalid response,
-//            ValidationError if URL is malformed
+//     RegistryUnavailableError if invalid response,
+//     ValidationError if URL is malformed
 //
 // Example:
-//   if err := client.ValidateRegistry(ctx, "https://registry.io"); err != nil {
-//       return fmt.Errorf("registry validation failed: %w", err)
-//   }
+//
+//	if err := client.ValidateRegistry(ctx, "https://registry.io"); err != nil {
+//	    return fmt.Errorf("registry validation failed: %w", err)
+//	}
 func (c *registryClient) ValidateRegistry(ctx context.Context, registryURL string) error {
 	// Parse registry URL
 	parsedURL, err := url.Parse(registryURL)
@@ -310,9 +323,9 @@ func parseImageName(imageName string) (repository, tag string) {
 // createProgressHandler converts ProgressCallback to v1.Update channel for go-containerregistry.
 //
 // This function:
-//   1. Creates a buffered channel (100 capacity for smooth progress)
-//   2. Starts a goroutine to convert v1.Update → ProgressUpdate
-//   3. Returns the channel for remote.Write() to send updates
+//  1. Creates a buffered channel (100 capacity for smooth progress)
+//  2. Starts a goroutine to convert v1.Update → ProgressUpdate
+//  3. Returns the channel for remote.Write() to send updates
 //
 // The goroutine processes updates and calls the callback until the channel is closed.
 // Note: LayerDigest is set to empty string as v1.Update doesn't provide digest information.

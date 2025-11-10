@@ -58,22 +58,22 @@ func TestDynamicPortAllocation(t *testing.T) {
 	}
 	defer env.Cleanup()
 
-	// Verify port is allocated (not the default 3000)
-	if env.RegistryURL == "localhost:3000" {
+	// Verify port is allocated (not the default 5000)
+	if env.RegistryURL == "localhost:5000" {
 		t.Log("Warning: Got default port, but this might be coincidence")
 	}
 
-	// Verify we can get the actual mapped port
-	webPort, err := env.GiteaContainer.MappedPort(ctx, "3000")
+	// Verify we can get the actual mapped port (changed from 3000 to 5000 for registry:2)
+	registryPort, err := env.GiteaContainer.MappedPort(ctx, "5000")
 	if err != nil {
-		t.Fatalf("Failed to get mapped web port: %v", err)
+		t.Fatalf("Failed to get mapped registry port: %v", err)
 	}
 
-	if webPort.Port() == "" {
+	if registryPort.Port() == "" {
 		t.Fatal("Mapped port is empty")
 	}
 
-	t.Logf("Registry/Web mapped to port: %s", webPort.Port())
+	t.Logf("Registry mapped to port: %s", registryPort.Port())
 }
 
 // TestDockerClientConnection verifies that the Docker client connects to the host daemon

@@ -230,8 +230,8 @@ func TestValidateCredentials_WhitespaceUsername(t *testing.T) {
 		username string
 		valid    bool
 	}{
-		{"single_space", " ", true},        // Space is valid (ASCII 32)
-		{"multiple_spaces", "   ", true},   // Spaces are valid
+		{"single_space", " ", true},            // Space is valid (ASCII 32)
+		{"multiple_spaces", "   ", true},       // Spaces are valid
 		{"space_in_middle", "user name", true}, // Spaces in middle are valid
 	}
 

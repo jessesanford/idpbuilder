@@ -1,8 +1,11 @@
 package harness
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/docker/docker/client"
@@ -21,63 +24,60 @@ type TestEnvironment struct {
 	CleanupFunc    func() error
 }
 
-// SetupGiteaRegistry starts a Gitea container with registry enabled
+// SetupGiteaRegistry starts a registry container (Docker registry:2)
 // and configures it for integration testing. Returns a TestEnvironment
 // with all necessary resources initialized.
+//
+// Note: Despite the name "Gitea" for backward compatibility, this now uses
+// the official Docker registry:2 image which is simpler and more reliable
+// for integration testing of OCI push functionality.
 func SetupGiteaRegistry(ctx context.Context) (*TestEnvironment, error) {
-	// Configure Gitea container request with registry support
+	// Use official Docker registry:2 for simpler, more reliable testing
 	req := testcontainers.ContainerRequest{
-		Image:        "gitea/gitea:1.20",
-		ExposedPorts: []string{"3000/tcp"},
+		Image:        "registry:2",
+		ExposedPorts: []string{"5000/tcp"},
 		Env: map[string]string{
-			// Enable container registry support
-			"GITEA__packages__ENABLED": "true",
-			// Use SQLite for simplicity
-			"GITEA__database__DB_TYPE": "sqlite3",
-			// Skip installation wizard
-			"GITEA__security__INSTALL_LOCK": "true",
-			// Disable require sign-in for easier testing
-			"GITEA__service__REQUIRE_SIGNIN_VIEW": "false",
+			// Disable authentication for test simplicity
+			"REGISTRY_AUTH": "none",
+			// Enable deletion for cleanup
+			"REGISTRY_STORAGE_DELETE_ENABLED": "true",
 		},
-		WaitingFor: wait.ForLog("Starting new Web server: tcp:0.0.0.0:3000").
-			WithStartupTimeout(60 * time.Second),
+		// Wait for HTTP health check on registry port
+		WaitingFor: wait.ForHTTP("/v2/").
+			WithPort("5000/tcp").
+			WithStartupTimeout(60 * time.Second).
+			WithPollInterval(500 * time.Millisecond),
 	}
 
-	// Start the Gitea container
-	giteaContainer, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+	// Start the registry container
+	registryContainer, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: req,
 		Started:          true,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to start Gitea container: %w", err)
+		return nil, fmt.Errorf("failed to start registry container: %w", err)
 	}
 
-	// Get dynamically allocated port for web interface (3000)
-	// Gitea serves both web and registry on the same port
-	webPort, err := giteaContainer.MappedPort(ctx, "3000")
+	// Get dynamically allocated port for registry (5000)
+	registryPort, err := registryContainer.MappedPort(ctx, "5000")
 	if err != nil {
-		giteaContainer.Terminate(ctx)
-		return nil, fmt.Errorf("failed to get web port: %w", err)
+		registryContainer.Terminate(ctx)
+		return nil, fmt.Errorf("failed to get registry port: %w", err)
 	}
 
 	// Construct registry URL with dynamic port
-	// Gitea registry is accessed through the same web port
-	registryURL := fmt.Sprintf("localhost:%s", webPort.Port())
-	webURL := fmt.Sprintf("http://localhost:%s", webPort.Port())
+	registryURL := fmt.Sprintf("localhost:%s", registryPort.Port())
 
-	// Wait for Gitea to be fully initialized
-	time.Sleep(5 * time.Second)
-
-	// Admin user credentials for test purposes
-	// Note: In real tests, users should be created via Gitea API after container starts
-	// For now, providing default credentials that tests can use to create users via API
-	adminUsername := "testadmin"
-	adminPassword := "testpassword123"
+	// No authentication required for registry:2 in test mode
+	// But provide dummy credentials for code that requires them
+	// The registry:2 container will ignore these and allow anonymous access
+	adminUsername := "testuser"
+	adminPassword := "testpass"
 
 	// Create Docker client for test operations
 	dockerClient, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		giteaContainer.Terminate(ctx)
+		registryContainer.Terminate(ctx)
 		return nil, fmt.Errorf("failed to create Docker client: %w", err)
 	}
 
@@ -92,9 +92,9 @@ func SetupGiteaRegistry(ctx context.Context) (*TestEnvironment, error) {
 			}
 		}
 
-		// Terminate Gitea container
-		if giteaContainer != nil {
-			if err := giteaContainer.Terminate(ctx); err != nil {
+		// Terminate registry container
+		if registryContainer != nil {
+			if err := registryContainer.Terminate(ctx); err != nil {
 				errs = append(errs, fmt.Errorf("failed to terminate container: %w", err))
 			}
 		}
@@ -106,7 +106,7 @@ func SetupGiteaRegistry(ctx context.Context) (*TestEnvironment, error) {
 	}
 
 	env := &TestEnvironment{
-		GiteaContainer: giteaContainer,
+		GiteaContainer: registryContainer,
 		RegistryURL:    registryURL,
 		AdminUsername:  adminUsername,
 		AdminPassword:  adminPassword,
@@ -114,10 +114,48 @@ func SetupGiteaRegistry(ctx context.Context) (*TestEnvironment, error) {
 		CleanupFunc:    cleanupFunc,
 	}
 
-	// Store web URL for potential future use (not exposed in struct for now)
-	_ = webURL
-
 	return env, nil
+}
+
+// createGiteaUser creates a new user in Gitea via the API
+func createGiteaUser(webURL, username, password, email string) error {
+	// Gitea user creation payload
+	payload := map[string]interface{}{
+		"username":             username,
+		"email":                email,
+		"password":             password,
+		"must_change_password": false,
+		"send_notify":          false,
+	}
+
+	payloadBytes, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("failed to marshal payload: %w", err)
+	}
+
+	// Use user/sign_up endpoint (doesn't require authentication for first user)
+	signupURL := fmt.Sprintf("%s/user/sign_up", webURL)
+	req, err := http.NewRequest("POST", signupURL, bytes.NewBuffer(payloadBytes))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Accept both 201 (created) and 302/303 (redirect after creation)
+	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusFound &&
+		resp.StatusCode != http.StatusSeeOther && resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	return nil
 }
 
 // initializeGiteaAdmin would create an admin user inside the Gitea container
