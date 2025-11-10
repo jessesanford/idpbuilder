@@ -1,0 +1,17 @@
+=== RUN   TestPushCommand_EnvironmentOverridesDefault
+registry error: push to custom.registry.io:5000/giteaadmin/alpine:latest failed: Get "https://custom.registry.io:5000/v2/": dial tcp: lookup custom.registry.io on 192.168.65.7:53: no such host
+Error: registry error: push to custom.registry.io:5000/giteaadmin/alpine:latest failed: Get "https://custom.registry.io:5000/v2/": dial tcp: lookup custom.registry.io on 192.168.65.7:53: no such host
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_EnvironmentOverridesDefault (0.07s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/push	(cached)

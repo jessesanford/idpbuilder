@@ -1,0 +1,3 @@
+🔍 R629 Stub Detection Scanner (Phase-Boundary Aware)
+================================
+✅ No Go files to scan

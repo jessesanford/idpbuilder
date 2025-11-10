@@ -1,0 +1,490 @@
+=== RUN   TestWrapDockerError_ImageNotFound
+--- PASS: TestWrapDockerError_ImageNotFound (0.00s)
+=== RUN   TestWrapDockerError_ConnectionRefused
+--- PASS: TestWrapDockerError_ConnectionRefused (0.00s)
+=== RUN   TestWrapDockerError_CannotConnect
+--- PASS: TestWrapDockerError_CannotConnect (0.00s)
+=== RUN   TestWrapDockerError_GenericError
+--- PASS: TestWrapDockerError_GenericError (0.00s)
+=== RUN   TestWrapRegistryError_Unauthorized
+--- PASS: TestWrapRegistryError_Unauthorized (0.00s)
+=== RUN   TestWrapRegistryError_ConnectionRefused
+--- PASS: TestWrapRegistryError_ConnectionRefused (0.00s)
+=== RUN   TestWrapRegistryError_Timeout
+--- PASS: TestWrapRegistryError_Timeout (0.00s)
+=== RUN   TestWrapRegistryError_TLSError
+--- PASS: TestWrapRegistryError_TLSError (0.00s)
+=== RUN   TestWrapRegistryError_GenericError
+--- PASS: TestWrapRegistryError_GenericError (0.00s)
+=== RUN   TestWrapDockerError_PreservesImageName
+=== RUN   TestWrapDockerError_PreservesImageName/simple
+=== RUN   TestWrapDockerError_PreservesImageName/with_registry
+=== RUN   TestWrapDockerError_PreservesImageName/sha256
+--- PASS: TestWrapDockerError_PreservesImageName (0.00s)
+    --- PASS: TestWrapDockerError_PreservesImageName/simple (0.00s)
+    --- PASS: TestWrapDockerError_PreservesImageName/with_registry (0.00s)
+    --- PASS: TestWrapDockerError_PreservesImageName/sha256 (0.00s)
+=== RUN   TestWrapRegistryError_PreservesRegistry
+=== RUN   TestWrapRegistryError_PreservesRegistry/docker_hub
+=== RUN   TestWrapRegistryError_PreservesRegistry/gcr
+=== RUN   TestWrapRegistryError_PreservesRegistry/custom_port
+--- PASS: TestWrapRegistryError_PreservesRegistry (0.00s)
+    --- PASS: TestWrapRegistryError_PreservesRegistry/docker_hub (0.00s)
+    --- PASS: TestWrapRegistryError_PreservesRegistry/gcr (0.00s)
+    --- PASS: TestWrapRegistryError_PreservesRegistry/custom_port (0.00s)
+=== RUN   TestWrapErrors_ChainUnwraps
+--- PASS: TestWrapErrors_ChainUnwraps (0.00s)
+=== RUN   TestWrapDockerError_NilError
+--- PASS: TestWrapDockerError_NilError (0.00s)
+=== RUN   TestWrapRegistryError_NilError
+--- PASS: TestWrapRegistryError_NilError (0.00s)
+=== RUN   TestLoadConfig_Placeholder
+    config_test.go:19: Configuration precedence tests to be implemented - see WAVE-TEST-PLAN.md T-2.2.1-01 through T-2.2.1-12
+--- SKIP: TestLoadConfig_Placeholder (0.00s)
+=== RUN   TestResolveStringConfig_Placeholder
+    config_test.go:26: String resolution tests to be implemented
+--- SKIP: TestResolveStringConfig_Placeholder (0.00s)
+=== RUN   TestResolveBoolConfig_Placeholder
+    config_test.go:42: Boolean resolution tests to be implemented - see WAVE-TEST-PLAN.md T-2.2.2-01 through T-2.2.2-12
+--- SKIP: TestResolveBoolConfig_Placeholder (0.00s)
+=== RUN   TestValidate_Placeholder
+    config_test.go:54: Validation tests to be implemented - see WAVE-TEST-PLAN.md T-2.2.3-01 through T-2.2.3-08
+--- SKIP: TestValidate_Placeholder (0.00s)
+=== RUN   TestToPushOptions_Placeholder
+    config_test.go:65: Conversion tests to be implemented - see WAVE-TEST-PLAN.md T-2.2.4-01 through T-2.2.4-08
+--- SKIP: TestToPushOptions_Placeholder (0.00s)
+=== RUN   TestDisplaySources_Placeholder
+    config_test.go:72: Display tests to be implemented
+--- SKIP: TestDisplaySources_Placeholder (0.00s)
+=== RUN   TestConfigSource_String_Placeholder
+    config_test.go:81: ConfigSource.String() tests to be implemented
+--- SKIP: TestConfigSource_String_Placeholder (0.00s)
+=== RUN   TestPushCommand_AllFromEnvironment
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_AllFromEnvironment (0.00s)
+=== RUN   TestPushCommand_FlagOverridesEnvironment
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_FlagOverridesEnvironment (0.00s)
+=== RUN   TestPushCommand_MixedConfiguration
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_MixedConfiguration (0.00s)
+=== RUN   TestPushCommand_VerboseShowsSources
+Configuration sources:
+  Image:    alpine:latest (from flag)
+  Registry: gitea.cnoe.localtest.me:8443 (from flag)
+  Username: giteaAdmin (from environment)
+  Password: *** (from environment)
+  Insecure: true (from flag)
+  Verbose:  true (from flag)
+
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_VerboseShowsSources (0.00s)
+=== RUN   TestPushCommand_ValidationErrorsWithEnvHints
+Error: validation error: username is required (use --username flag or IDPBUILDER_USERNAME environment variable)
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_ValidationErrorsWithEnvHints (0.00s)
+=== RUN   TestPushCommand_EnvironmentOverridesDefault
+registry error: push to custom.registry.io:5000/giteaadmin/alpine:latest failed: Get "https://custom.registry.io:5000/v2/": dial tcp: lookup custom.registry.io on 192.168.65.7:53: no such host
+Error: registry error: push to custom.registry.io:5000/giteaadmin/alpine:latest failed: Get "https://custom.registry.io:5000/v2/": dial tcp: lookup custom.registry.io on 192.168.65.7:53: no such host
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_EnvironmentOverridesDefault (0.02s)
+=== RUN   TestPushCommand_InsecureFromEnvironment
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_InsecureFromEnvironment (0.00s)
+=== RUN   TestPushCommand_PasswordSpecialCharacters
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_PasswordSpecialCharacters (0.00s)
+=== RUN   TestPushCommand_RegistryOverride
+Warning: registry appears to be in a private IP range: localhost:5000
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: localhost:5000
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_RegistryOverride (0.00s)
+=== RUN   TestPushCommand_BackwardCompatibility_Wave21
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_BackwardCompatibility_Wave21 (0.00s)
+=== RUN   TestPushCommand_EmptyEnvironmentVariable
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_EmptyEnvironmentVariable (0.00s)
+=== RUN   TestPushCommand_InvalidBooleanInEnv
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_InvalidBooleanInEnv (0.00s)
+=== RUN   TestPushCommand_EnvVarWithSpaces
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_EnvVarWithSpaces (0.00s)
+=== RUN   TestPushCommand_MultipleEnvFormats
+=== RUN   TestPushCommand_MultipleEnvFormats/lowercase_true
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+=== RUN   TestPushCommand_MultipleEnvFormats/uppercase_TRUE
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+=== RUN   TestPushCommand_MultipleEnvFormats/numeric_1/0
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+=== RUN   TestPushCommand_MultipleEnvFormats/yes/no
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+=== RUN   TestPushCommand_MultipleEnvFormats/YES/NO
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_MultipleEnvFormats (0.01s)
+    --- PASS: TestPushCommand_MultipleEnvFormats/lowercase_true (0.00s)
+    --- PASS: TestPushCommand_MultipleEnvFormats/uppercase_TRUE (0.00s)
+    --- PASS: TestPushCommand_MultipleEnvFormats/numeric_1/0 (0.00s)
+    --- PASS: TestPushCommand_MultipleEnvFormats/yes/no (0.00s)
+    --- PASS: TestPushCommand_MultipleEnvFormats/YES/NO (0.00s)
+=== RUN   TestPushCommand_UnsetAfterSet
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_UnsetAfterSet (0.00s)
+=== RUN   TestPushCommand_FlagExplicitlySetToEmpty
+Error: validation error: username is required (use --username flag or IDPBUILDER_USERNAME environment variable)
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_FlagExplicitlySetToEmpty (0.00s)
+=== RUN   TestPushCommand_ContextCancellationWithEnv
+Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: gitea.cnoe.localtest.me:8443
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_ContextCancellationWithEnv (0.00s)
+=== RUN   TestPushCommand_ViperInstanceReuse
+--- PASS: TestPushCommand_ViperInstanceReuse (0.00s)
+=== RUN   TestPushCommand_ConcurrentEnvironmentAccess
+--- PASS: TestPushCommand_ConcurrentEnvironmentAccess (0.00s)
+=== RUN   TestPushCommand_EnvVarPrecedenceDocumentation
+--- PASS: TestPushCommand_EnvVarPrecedenceDocumentation (0.00s)
+=== RUN   TestNewPushCommand_Flags
+--- PASS: TestNewPushCommand_Flags (0.00s)
+=== RUN   TestNewPushCommand_FlagDefaults
+--- PASS: TestNewPushCommand_FlagDefaults (0.00s)
+=== RUN   TestNewPushCommand_RequiredFlags
+--- PASS: TestNewPushCommand_RequiredFlags (0.00s)
+=== RUN   TestPushOptions_Validate_Valid
+--- PASS: TestPushOptions_Validate_Valid (0.00s)
+=== RUN   TestPushOptions_Validate_MissingImage
+--- PASS: TestPushOptions_Validate_MissingImage (0.00s)
+=== RUN   TestPushOptions_Validate_MissingUsername
+--- PASS: TestPushOptions_Validate_MissingUsername (0.00s)
+=== RUN   TestPushOptions_Validate_MissingPassword
+--- PASS: TestPushOptions_Validate_MissingPassword (0.00s)
+=== RUN   TestRunPush_DockerConnectionError
+    push_test.go:140: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_DockerConnectionError (0.00s)
+=== RUN   TestRunPush_ImageNotFound
+    push_test.go:145: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_ImageNotFound (0.00s)
+=== RUN   TestRunPush_AuthenticationError
+    push_test.go:150: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_AuthenticationError (0.00s)
+=== RUN   TestRunPush_RegistryClientError
+    push_test.go:155: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_RegistryClientError (0.00s)
+=== RUN   TestRunPush_PushFailure
+    push_test.go:160: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_PushFailure (0.00s)
+=== RUN   TestRunPush_ContextCancellation
+    push_test.go:165: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_ContextCancellation (0.00s)
+=== RUN   TestRunPush_ErrorWrapping
+--- PASS: TestRunPush_ErrorWrapping (0.00s)
+=== RUN   TestProgressCallback_Invocation
+    push_test.go:187: Requires mock injection support - to be implemented
+--- SKIP: TestProgressCallback_Invocation (0.00s)
+=== RUN   TestProgressCallback_VerboseMode
+    push_test.go:192: Requires mock injection support - to be implemented
+--- SKIP: TestProgressCallback_VerboseMode (0.00s)
+=== RUN   TestRunPush_PipelineStageOrder
+    push_test.go:197: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_PipelineStageOrder (0.00s)
+=== RUN   TestRunPush_InsecureMode
+    push_test.go:202: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_InsecureMode (0.00s)
+=== RUN   TestRunPush_VerboseMode
+    push_test.go:207: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_VerboseMode (0.00s)
+=== RUN   TestRunPush_Success_AllStages
+    push_test.go:212: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_Success_AllStages (0.00s)
+=== RUN   TestRunPush_DockerCloseCalled
+    push_test.go:217: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_DockerCloseCalled (0.00s)
+=== RUN   TestRunPush_CustomRegistry
+    push_test.go:222: Requires mock injection support - to be implemented
+--- SKIP: TestRunPush_CustomRegistry (0.00s)
+=== RUN   TestNewPushCommand_CobraIntegration
+--- PASS: TestNewPushCommand_CobraIntegration (0.00s)
+=== RUN   TestNewPushCommand_HelpText
+--- PASS: TestNewPushCommand_HelpText (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/push	(cached)

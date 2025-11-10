@@ -1,0 +1,19 @@
+=== RUN   TestPushCommand_RegistryOverride
+Warning: registry appears to be in a private IP range: localhost:5000
+Suggestion: ensure this is intentional and you trust the target registry
+Error: Warning: registry appears to be in a private IP range: localhost:5000
+Suggestion: ensure this is intentional and you trust the target registry
+Usage:
+  push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+  -k, --insecure          Skip TLS certificate verification (env: IDPBUILDER_INSECURE)
+      --password string   Registry password (env: IDPBUILDER_PASSWORD, required)
+      --registry string   Registry URL (env: IDPBUILDER_REGISTRY) (default "gitea.cnoe.localtest.me:8443")
+      --username string   Registry username (env: IDPBUILDER_USERNAME, required)
+      --verbose           Enable verbose progress output (env: IDPBUILDER_VERBOSE)
+
+--- PASS: TestPushCommand_RegistryOverride (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/push	(cached)
