@@ -1,0 +1,31 @@
+?   	github.com/cnoe-io/idpbuilder	[no test files]
+?   	github.com/cnoe-io/idpbuilder/api/v1alpha1	[no test files]
+?   	github.com/cnoe-io/idpbuilder/globals	[no test files]
+ok  	github.com/cnoe-io/idpbuilder/pkg/auth	0.004s
+ok  	github.com/cnoe-io/idpbuilder/pkg/build	0.074s
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/create	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/delete	[no test files]
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/get	0.059s
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/helpers	0.057s
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/push	0.194s
+?   	github.com/cnoe-io/idpbuilder/pkg/cmd/version	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/controllers	[no test files]
+ok  	github.com/cnoe-io/idpbuilder/pkg/controllers/custompackage	24.789s
+ok  	github.com/cnoe-io/idpbuilder/pkg/controllers/gitrepository	0.144s
+ok  	github.com/cnoe-io/idpbuilder/pkg/controllers/localbuild	35.151s
+ok  	github.com/cnoe-io/idpbuilder/pkg/docker	0.326s
+ok  	github.com/cnoe-io/idpbuilder/pkg/errors	0.003s
+ok  	github.com/cnoe-io/idpbuilder/pkg/k8s	0.421s
+ok  	github.com/cnoe-io/idpbuilder/pkg/kind	0.183s
+?   	github.com/cnoe-io/idpbuilder/pkg/logger	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/printer	[no test files]
+?   	github.com/cnoe-io/idpbuilder/pkg/printer/types	[no test files]
+ok  	github.com/cnoe-io/idpbuilder/pkg/registry	0.030s
+?   	github.com/cnoe-io/idpbuilder/pkg/resources/localbuild	[no test files]
+ok  	github.com/cnoe-io/idpbuilder/pkg/tls	0.026s
+ok  	github.com/cnoe-io/idpbuilder/pkg/util	2.924s
+?   	github.com/cnoe-io/idpbuilder/pkg/util/files	[no test files]
+ok  	github.com/cnoe-io/idpbuilder/pkg/util/fs	0.002s
+ok  	github.com/cnoe-io/idpbuilder/pkg/validator	0.043s
+ok  	github.com/cnoe-io/idpbuilder/test/harness	81.081s

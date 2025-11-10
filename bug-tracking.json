@@ -65,9 +65,20 @@
       "detected_by": "qa-agent",
       "reported_at": "2025-11-09T09:39:00Z",
       "status_history": [
-        {"status": "OPEN", "timestamp": "2025-11-09T09:39:00Z"},
-        {"status": "FIX_ATTEMPTED", "timestamp": "2025-11-09T11:03:54Z", "commit": "9b5210ff"},
-        {"status": "VERIFIED", "timestamp": "2025-11-09T11:05:30Z", "verified_by": "qa-agent"}
+        {
+          "status": "OPEN",
+          "timestamp": "2025-11-09T09:39:00Z"
+        },
+        {
+          "status": "FIX_ATTEMPTED",
+          "timestamp": "2025-11-09T11:03:54Z",
+          "commit": "9b5210ff"
+        },
+        {
+          "status": "VERIFIED",
+          "timestamp": "2025-11-09T11:05:30Z",
+          "verified_by": "qa-agent"
+        }
       ],
       "verification_notes": "Test now passes cleanly. IDPBUILDER_TEST_MODE successfully suppresses emoji formatting.",
       "verified_at": "2025-11-09T11:05:30Z",
@@ -81,7 +92,10 @@
       "location": {
         "file": "pkg/controllers/custompackage/controller_test.go",
         "line": null,
-        "tests": ["TestReconcileCustomPkg", "TestReconcileCustomPkgAppSet"]
+        "tests": [
+          "TestReconcileCustomPkg",
+          "TestReconcileCustomPkgAppSet"
+        ]
       },
       "description": "Controller tests failing because kubebuilder test environment binaries not installed. Tests require setup-envtest to provide Kubernetes API server binaries for integration testing.",
       "evidence": "Error: KUBEBUILDER_ASSETS environment variable not set, tests cannot create test environment",
@@ -91,9 +105,20 @@
       "detected_by": "qa-agent",
       "reported_at": "2025-11-09T09:39:00Z",
       "status_history": [
-        {"status": "OPEN", "timestamp": "2025-11-09T09:39:00Z"},
-        {"status": "FIX_ATTEMPTED", "timestamp": "2025-11-09T11:03:54Z", "commit": "9b5210ff"},
-        {"status": "VERIFIED", "timestamp": "2025-11-09T11:05:30Z", "verified_by": "qa-agent"}
+        {
+          "status": "OPEN",
+          "timestamp": "2025-11-09T09:39:00Z"
+        },
+        {
+          "status": "FIX_ATTEMPTED",
+          "timestamp": "2025-11-09T11:03:54Z",
+          "commit": "9b5210ff"
+        },
+        {
+          "status": "VERIFIED",
+          "timestamp": "2025-11-09T11:05:30Z",
+          "verified_by": "qa-agent"
+        }
       ],
       "verification_notes": "Both controller tests now pass successfully. TestReconcileCustomPkg: 7.05s, TestReconcileCustomPkgAppSet: 10.06s",
       "verified_at": "2025-11-09T11:05:30Z",
@@ -103,7 +128,7 @@
       "bug_id": "BUG-QA-004",
       "severity": "LOW",
       "type": "TEST_ASSERTION_FAILURE",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "location": {
         "file": "pkg/cmd/push/push_integration_test.go",
         "line": 239,
@@ -116,14 +141,16 @@
       "detected_at": "REVALIDATE_PROJECT_FUNCTIONALITY",
       "detected_by": "qa-agent",
       "reported_at": "2025-11-09T11:06:00Z",
-      "status": "OPEN",
-      "blocks_integration": false
+      "blocks_integration": false,
+      "verification_timestamp": "2025-11-10T00:06:00Z",
+      "verification_notes": "TestPushCommand_EnvironmentOverridesDefault now passes - test updated to match new error format",
+      "verified_in_commit": "af250db5"
     },
     {
       "bug_id": "BUG-QA-005",
       "severity": "LOW",
       "type": "TEST_ASSERTION_FAILURE",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "location": {
         "file": "pkg/cmd/push/push_integration_test.go",
         "line": 343,
@@ -136,14 +163,16 @@
       "detected_at": "REVALIDATE_PROJECT_FUNCTIONALITY",
       "detected_by": "qa-agent",
       "reported_at": "2025-11-09T11:06:00Z",
-      "status": "OPEN",
-      "blocks_integration": false
+      "blocks_integration": false,
+      "verification_timestamp": "2025-11-10T00:06:00Z",
+      "verification_notes": "TestPushCommand_RegistryOverride now passes - warning message now includes port",
+      "verified_in_commit": "0bfcb6bc"
     },
     {
       "bug_id": "BUG-QA-006",
       "severity": "LOW",
       "type": "TEST_ASSERTION_FAILURE",
-      "status": "OPEN",
+      "status": "VERIFIED",
       "location": {
         "file": "pkg/cmd/push/push_test.go",
         "line": 182,
@@ -156,8 +185,10 @@
       "detected_at": "REVALIDATE_PROJECT_FUNCTIONALITY",
       "detected_by": "qa-agent",
       "reported_at": "2025-11-09T11:06:00Z",
-      "status": "OPEN",
-      "blocks_integration": false
+      "blocks_integration": false,
+      "verification_timestamp": "2025-11-10T00:06:00Z",
+      "verification_notes": "TestRunPush_ErrorWrapping now passes - test updated to match new validation error format",
+      "verified_in_commit": "7056fe64"
     }
   ],
   "summary": {
