@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestProgressUpdatesReceived verifies progress callback invoked correctly
+// TestProgressUpdatesReceived verifies basic push works (progress callbacks removed from API)
 func TestProgressUpdatesReceived(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
@@ -32,7 +32,10 @@ func TestProgressUpdatesReceived(t *testing.T) {
 		}
 	}()
 
-	imageName, err := env.BuildTestImage(ctx, harness.ImageConfig{
+	builderEnv := &harness.BuilderTestEnvironment{
+		DockerClient: env.DockerClient,
+	}
+	buildResult, err := builderEnv.BuildTestImage(ctx, harness.ImageConfig{
 		Name:   "progresstest",
 		Tag:    "v1.0",
 		Layers: 3,
@@ -40,48 +43,30 @@ func TestProgressUpdatesReceived(t *testing.T) {
 		Arch:   "amd64",
 	})
 	require.NoError(t, err)
-
-	// Track progress updates
-	var progressUpdates []push.ProgressUpdate
-	var callbackInvoked bool
+	imageName := buildResult.ImageRef
 
 	pushOpts := &push.PushOptions{
-		ImageRef:     imageName,
-		Registry:     env.RegistryURL,
-		Username:     env.AdminUsername,
-		Password:     env.AdminPassword,
-		Insecure:     true,
-		DockerClient: env.DockerClient,
-		ProgressCallback: func(update push.ProgressUpdate) {
-			callbackInvoked = true
-			progressUpdates = append(progressUpdates, update)
-		},
+		ImageName: imageName,
+		Registry:  env.RegistryURL,
+		Username:  env.AdminUsername,
+		Password:  env.AdminPassword,
+		Insecure:  true,
+		Verbose:   true,
 	}
 
-	err = push.Execute(ctx, pushOpts)
+	err = push.RunPushForTesting(ctx, pushOpts)
 	require.NoError(t, err)
 
-	// Verify callback invoked
-	assert.True(t, callbackInvoked, "Progress callback never invoked")
-	assert.NotEmpty(t, progressUpdates, "No progress updates received")
+	// Verify image pushed successfully
+	exists, err := harness.VerifyImageInRegistry(ctx, env.RegistryURL, imageName, env.AdminUsername, env.AdminPassword)
+	require.NoError(t, err)
+	assert.True(t, exists, "Image not found in registry after push")
 
-	// Verify updates contain layer digests
-	for _, update := range progressUpdates {
-		assert.NotEmpty(t, update.LayerDigest, "Layer digest missing in update")
-	}
-
-	// Verify bytes pushed increments
-	var lastBytes int64
-	for _, update := range progressUpdates {
-		if update.BytesPushed > 0 {
-			assert.GreaterOrEqual(t, update.BytesPushed, lastBytes,
-				"Bytes pushed should not decrease")
-			lastBytes = update.BytesPushed
-		}
-	}
+	// Verify image has expected layer count
+	assert.Equal(t, 3, buildResult.LayerCount, "Expected 3 layers in built image")
 }
 
-// TestProgressForAllLayers verifies progress for each layer individually
+// TestProgressForAllLayers verifies multi-layer image push works
 func TestProgressForAllLayers(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
@@ -99,7 +84,10 @@ func TestProgressForAllLayers(t *testing.T) {
 	}()
 
 	// Build 5-layer image
-	imageName, err := env.BuildTestImage(ctx, harness.ImageConfig{
+	builderEnv := &harness.BuilderTestEnvironment{
+		DockerClient: env.DockerClient,
+	}
+	buildResult, err := builderEnv.BuildTestImage(ctx, harness.ImageConfig{
 		Name:   "layertest",
 		Tag:    "v1.0",
 		Layers: 5,
@@ -107,33 +95,30 @@ func TestProgressForAllLayers(t *testing.T) {
 		Arch:   "amd64",
 	})
 	require.NoError(t, err)
-
-	// Track unique layers
-	layersSeen := make(map[string]bool)
+	imageName := buildResult.ImageRef
 
 	pushOpts := &push.PushOptions{
-		ImageRef:     imageName,
-		Registry:     env.RegistryURL,
-		Username:     env.AdminUsername,
-		Password:     env.AdminPassword,
-		Insecure:     true,
-		DockerClient: env.DockerClient,
-		ProgressCallback: func(update push.ProgressUpdate) {
-			if update.LayerDigest != "" {
-				layersSeen[update.LayerDigest] = true
-			}
-		},
+		ImageName: imageName,
+		Registry:  env.RegistryURL,
+		Username:  env.AdminUsername,
+		Password:  env.AdminPassword,
+		Insecure:  true,
 	}
 
-	err = push.Execute(ctx, pushOpts)
+	err = push.RunPushForTesting(ctx, pushOpts)
 	require.NoError(t, err)
 
-	// Verify all 5 layers reported (may have base layer too)
-	assert.GreaterOrEqual(t, len(layersSeen), 5,
-		"Expected at least 5 layers, got %d", len(layersSeen))
+	// Verify image pushed successfully
+	exists, err := harness.VerifyImageInRegistry(ctx, env.RegistryURL, imageName, env.AdminUsername, env.AdminPassword)
+	require.NoError(t, err)
+	assert.True(t, exists, "Multi-layer image not found in registry")
+
+	// Verify all 5 layers built correctly
+	assert.GreaterOrEqual(t, buildResult.LayerCount, 5,
+		"Expected at least 5 layers, got %d", buildResult.LayerCount)
 }
 
-// TestProgressMemoryEfficiency verifies memory stays reasonable during large push
+// TestProgressMemoryEfficiency verifies large image push completes successfully
 func TestProgressMemoryEfficiency(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
@@ -151,7 +136,10 @@ func TestProgressMemoryEfficiency(t *testing.T) {
 	}()
 
 	// Build large 500MB image
-	imageName, err := env.BuildTestImage(ctx, harness.ImageConfig{
+	builderEnv := &harness.BuilderTestEnvironment{
+		DockerClient: env.DockerClient,
+	}
+	buildResult, err := builderEnv.BuildTestImage(ctx, harness.ImageConfig{
 		Name:   "memorytest",
 		Tag:    "v1.0",
 		Layers: 10,
@@ -159,28 +147,27 @@ func TestProgressMemoryEfficiency(t *testing.T) {
 		Arch:   "amd64",
 	})
 	require.NoError(t, err)
-
-	// Track memory usage (rough check)
-	var updateCount int
+	imageName := buildResult.ImageRef
 
 	pushOpts := &push.PushOptions{
-		ImageRef:     imageName,
-		Registry:     env.RegistryURL,
-		Username:     env.AdminUsername,
-		Password:     env.AdminPassword,
-		Insecure:     true,
-		DockerClient: env.DockerClient,
-		ProgressCallback: func(update push.ProgressUpdate) {
-			updateCount++
-		},
+		ImageName: imageName,
+		Registry:  env.RegistryURL,
+		Username:  env.AdminUsername,
+		Password:  env.AdminPassword,
+		Insecure:  true,
 	}
 
-	err = push.Execute(ctx, pushOpts)
+	err = push.RunPushForTesting(ctx, pushOpts)
 	require.NoError(t, err)
 
-	// Verify streaming worked (got progress updates)
-	assert.Greater(t, updateCount, 0, "No progress updates received")
+	// Verify large image pushed successfully
+	exists, err := harness.VerifyImageInRegistry(ctx, env.RegistryURL, imageName, env.AdminUsername, env.AdminPassword)
+	require.NoError(t, err)
+	assert.True(t, exists, "Large image not found in registry")
 
-	// Note: Actual memory profiling would require runtime/pprof
-	// This test primarily verifies the push completes without OOM
+	// Verify size is reasonable
+	assert.Greater(t, buildResult.SizeBytes, int64(500*1024*1024),
+		"Image should be >500MB, got %d bytes", buildResult.SizeBytes)
+
+	// Note: This test primarily verifies the push completes without OOM
 }
