@@ -3,7 +3,7 @@
     {
       "bug_id": "BUG-027",
       "severity": "P0",
-      "status": "FIXED",
+      "status": "VERIFIED",
       "title": "Integration branch missing Phase 2 code (wrong base branch)",
       "description": "Integration branch was created from 'main' instead of 'origin/idpbuilder-oci-push/phase2/integration', causing all Phase 2 code to be missing.",
       "found_during": "wave_integration_iteration_1",
@@ -19,12 +19,15 @@
       "reported_by": "integration-agent",
       "reported_at": "2025-11-05T19:45:54Z",
       "fixed_at": "2025-11-05T21:15:37Z",
-      "fixed_by": "orchestrator-ERROR_RECOVERY"
+      "fixed_by": "orchestrator-ERROR_RECOVERY",
+      "verification_timestamp": "2025-11-10T00:15:00Z",
+      "verification_notes": "Verified via full test suite pass and build success",
+      "verified_in_commit": "8c621048"
     },
     {
       "bug_id": "BUG-028",
       "severity": "P0",
-      "status": "FIXED",
+      "status": "VERIFIED",
       "title": "Integration tests use incorrect import paths for pkg/cmd/push",
       "description": "Test files import 'github.com/cnoe-io/idpbuilder/cmd/push' but correct path is 'github.com/cnoe-io/idpbuilder/pkg/cmd/push' (missing /pkg/ prefix)",
       "found_during": "wave_integration_iteration_2",
@@ -45,7 +48,10 @@
       "reported_by": "integration-agent",
       "reported_at": "2025-11-05T21:32:26Z",
       "fixed_at": "2025-11-09T10:00:00Z",
-      "fixed_by": "sw-engineer"
+      "fixed_by": "sw-engineer",
+      "verification_timestamp": "2025-11-10T00:15:00Z",
+      "verification_notes": "Verified via full test suite pass and build success",
+      "verified_in_commit": "8c621048"
     },
     {
       "bug_id": "BUG-QA-002",
