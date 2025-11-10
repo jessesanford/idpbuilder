@@ -17,30 +17,5 @@ func (e *ValidationError) Error() string {
 	return fmt.Sprintf("Error: %s", e.Message)
 }
 
-// SSRFWarning represents a potential SSRF risk (warning, not error)
-type SSRFWarning struct {
-	Target     string
-	Message    string
-	Suggestion string
-}
-
-func (w *SSRFWarning) Error() string {
-	return fmt.Sprintf("Warning: %s\nSuggestion: %s", w.Message, w.Suggestion)
-}
-
-// SecurityWarning represents security concerns (warning, not error)
-type SecurityWarning struct {
-	Message    string
-	Suggestion string
-}
-
-func (w *SecurityWarning) Error() string {
-	return fmt.Sprintf("Warning: %s\nSuggestion: %s", w.Message, w.Suggestion)
-}
-
-// IsWarning returns true if the error is a warning (should not stop execution)
-func IsWarning(err error) bool {
-	_, isSSRF := err.(*SSRFWarning)
-	_, isSecurity := err.(*SecurityWarning)
-	return isSSRF || isSecurity
-}
+// Note: SSRFWarning and SecurityWarning types have been moved to pkg/errors
+// for centralized error handling. Use errors.SSRFWarning and errors.SecurityWarning instead.

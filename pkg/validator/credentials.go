@@ -3,6 +3,8 @@ package validator
 import (
 	"fmt"
 	"strings"
+
+	"github.com/cnoe-io/idpbuilder/pkg/errors"
 )
 
 // ValidateCredentials validates username and password for security
@@ -54,7 +56,7 @@ func ValidateCredentials(username, password string) error {
 
 	// Warn if credentials appear in plain sight (basic security check)
 	if strings.Contains(username, "admin") && strings.Contains(password, "password") {
-		return &SecurityWarning{
+		return &errors.SecurityWarning{
 			Message:    "using default or weak credentials detected",
 			Suggestion: "consider using stronger credentials for production registries",
 		}

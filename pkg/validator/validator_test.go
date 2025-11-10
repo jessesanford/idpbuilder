@@ -3,6 +3,7 @@ package validator
 import (
 	"testing"
 
+	"github.com/cnoe-io/idpbuilder/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -133,10 +134,10 @@ func TestValidateRegistryURL_Localhost(t *testing.T) {
 	require.Error(t, err)
 
 	// Should be an SSRFWarning (non-blocking)
-	warning, ok := err.(*SSRFWarning)
+	warning, ok := err.(*errors.SSRFWarning)
 	require.True(t, ok)
 	assert.Contains(t, warning.Message, "private IP range")
-	assert.True(t, IsWarning(err))
+	assert.True(t, errors.IsWarning(err))
 }
 
 func TestValidateRegistryURL_IPv4(t *testing.T) {
@@ -144,9 +145,9 @@ func TestValidateRegistryURL_IPv4(t *testing.T) {
 	require.Error(t, err)
 
 	// Private IP should trigger SSRF warning
-	_, ok := err.(*SSRFWarning)
+	_, ok := err.(*errors.SSRFWarning)
 	require.True(t, ok)
-	assert.True(t, IsWarning(err))
+	assert.True(t, errors.IsWarning(err))
 }
 
 func TestValidateRegistryURL_IPv6(t *testing.T) {
@@ -154,16 +155,16 @@ func TestValidateRegistryURL_IPv6(t *testing.T) {
 	err := ValidateRegistryURL("::1")
 	require.Error(t, err)
 
-	_, ok := err.(*SSRFWarning)
+	_, ok := err.(*errors.SSRFWarning)
 	require.True(t, ok)
-	assert.True(t, IsWarning(err))
+	assert.True(t, errors.IsWarning(err))
 }
 
 func TestValidateRegistryURL_PrivateIP_ClassA(t *testing.T) {
 	err := ValidateRegistryURL("10.0.0.1")
 	require.Error(t, err)
 
-	warning, ok := err.(*SSRFWarning)
+	warning, ok := err.(*errors.SSRFWarning)
 	require.True(t, ok)
 	assert.Contains(t, warning.Message, "private IP range")
 }
@@ -172,7 +173,7 @@ func TestValidateRegistryURL_PrivateIP_ClassB(t *testing.T) {
 	err := ValidateRegistryURL("172.16.0.1")
 	require.Error(t, err)
 
-	warning, ok := err.(*SSRFWarning)
+	warning, ok := err.(*errors.SSRFWarning)
 	require.True(t, ok)
 	assert.Contains(t, warning.Message, "private IP range")
 }
@@ -181,7 +182,7 @@ func TestValidateRegistryURL_PrivateIP_ClassC(t *testing.T) {
 	err := ValidateRegistryURL("192.168.1.1")
 	require.Error(t, err)
 
-	warning, ok := err.(*SSRFWarning)
+	warning, ok := err.(*errors.SSRFWarning)
 	require.True(t, ok)
 	assert.Contains(t, warning.Message, "private IP range")
 }
@@ -190,9 +191,9 @@ func TestValidateRegistryURL_Localhost_Warning(t *testing.T) {
 	err := ValidateRegistryURL("127.0.0.1:5000")
 	require.Error(t, err)
 
-	_, ok := err.(*SSRFWarning)
+	_, ok := err.(*errors.SSRFWarning)
 	require.True(t, ok)
-	assert.True(t, IsWarning(err))
+	assert.True(t, errors.IsWarning(err))
 }
 
 func TestValidateRegistryURL_CommandInjection(t *testing.T) {
@@ -270,10 +271,10 @@ func TestValidateCredentials_WeakCredentials(t *testing.T) {
 	require.Error(t, err)
 
 	// Should be a SecurityWarning (non-blocking)
-	warning, ok := err.(*SecurityWarning)
+	warning, ok := err.(*errors.SecurityWarning)
 	require.True(t, ok)
 	assert.Contains(t, warning.Message, "weak credentials")
-	assert.True(t, IsWarning(err))
+	assert.True(t, errors.IsWarning(err))
 }
 
 // Additional helper tests
@@ -307,15 +308,15 @@ func TestIsWarning(t *testing.T) {
 		err      error
 		expected bool
 	}{
-		{"SSRFWarning is warning", &SSRFWarning{Target: "test", Message: "test", Suggestion: "test"}, true},
-		{"SecurityWarning is warning", &SecurityWarning{Message: "test", Suggestion: "test"}, true},
+		{"SSRFWarning is warning", &errors.SSRFWarning{Target: "test", Message: "test", Suggestion: "test"}, true},
+		{"SecurityWarning is warning", &errors.SecurityWarning{Message: "test", Suggestion: "test"}, true},
 		{"ValidationError is not warning", &ValidationError{Field: "test", Message: "test", Suggestion: "test", ExitCode: 1}, false},
 		{"nil is not warning", nil, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := IsWarning(tt.err)
+			result := errors.IsWarning(tt.err)
 			assert.Equal(t, tt.expected, result)
 		})
 	}
@@ -347,7 +348,7 @@ func TestValidationError_Error(t *testing.T) {
 }
 
 func TestSSRFWarning_Error(t *testing.T) {
-	warning := &SSRFWarning{
+	warning := &errors.SSRFWarning{
 		Target:     "192.168.1.1",
 		Message:    "private IP detected",
 		Suggestion: "ensure this is intentional",
@@ -358,7 +359,7 @@ func TestSSRFWarning_Error(t *testing.T) {
 }
 
 func TestSecurityWarning_Error(t *testing.T) {
-	warning := &SecurityWarning{
+	warning := &errors.SecurityWarning{
 		Message:    "weak credentials",
 		Suggestion: "use stronger passwords",
 	}
