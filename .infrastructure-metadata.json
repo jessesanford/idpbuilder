@@ -1,0 +1,16 @@
+{
+  "r653_validation": {
+    "validated": true,
+    "validation_version": "1.0",
+    "validation_date": "2025-11-11T16:08:29+00:00"
+  },
+  "parent_branch": "idpbuilder-oci-push-rebuild/phase1-wave1-integration",
+  "parent_tip": "8229fe1414878c140d9a02a5cef893b257a15836",
+  "parent_date": "2025-11-11 15:53:03 +0000",
+  "parent_age_days": 0,
+  "created_at": "2025-11-11T16:08:29+00:00",
+  "created_from": "TIP",
+  "new_branch": "idpbuilder-oci-push-rebuild/phase1-wave1-effort-1.1.1",
+  "repository": "https://github.com/jessesanford/idpbuilder.git",
+  "creation_notes": "Infrastructure created using R653 validation protocol - prevents wrong-base incidents"
+}
