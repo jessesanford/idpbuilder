@@ -1,8 +1,12 @@
 {
-  "created_at": "2025-12-01T10:06:20Z",
-  "created_timestamp": 1764583580,
-  "branch": "idpbuilder-oci-push/phase-1-wave-1-effort-E1.1.1-credential-resolution",
-  "upstream": "origin/idpbuilder-oci-push/phase-1-wave-1-effort-E1.1.1-credential-resolution",
-  "commit": "0eba39b302b7197fc876de34d5ebe4142bab5e5f",
-  "created_by_state": "CREATE_NEXT_INFRASTRUCTURE"
+  "created_at": "2025-12-01T18:02:00Z",
+  "type": "wave_integration",
+  "wave_id": "phase-1-wave-1",
+  "branch": "idpbuilder-oci-push/phase-1-wave-1-integration",
+  "integrated_efforts": [
+    "E1.1.1-credential-resolution",
+    "E1.1.2-registry-client-interface",
+    "E1.1.3-daemon-client-interface"
+  ],
+  "created_by_state": "INTEGRATE_WAVE_EFFORTS"
 }
