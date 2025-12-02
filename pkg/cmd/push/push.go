@@ -133,19 +133,30 @@ func runPushWithClients(cmd *cobra.Command, args []string,
 	return nil
 }
 
-// runPush is the production entry point
+// runPush is the production entry point that wires up real dependencies
 func runPush(cmd *cobra.Command, args []string) error {
-	// Create clients for dependency injection
-	// Note: These will be properly initialized in E1.2.2 and E1.2.3
-	var daemonClient daemon.DaemonClient
-	var registryClient registry.RegistryClient
-
-	// NOTE: This check ensures production code has properly initialized clients.
-	// During testing, use runPushWithClients which receives mock clients directly.
-	if daemonClient == nil || registryClient == nil {
-		return fmt.Errorf("daemon or registry client not initialized")
+	// Create daemon client using the real Docker daemon
+	daemonClient, err := daemon.NewDefaultClient()
+	if err != nil {
+		return fmt.Errorf("failed to initialize daemon client: %w", err)
 	}
 
+	// Build registry configuration from CLI flags
+	config := registry.RegistryConfig{
+		URL:      flagRegistry,
+		Username: flagUsername,
+		Password: flagPassword,
+		Token:    flagToken,
+		Insecure: flagInsecure,
+	}
+
+	// Create registry client with the resolved configuration
+	registryClient, err := registry.NewDefaultClient(config)
+	if err != nil {
+		return fmt.Errorf("failed to initialize registry client: %w", err)
+	}
+
+	// Delegate to the injectable implementation with real clients
 	return runPushWithClients(cmd, args, daemonClient, registryClient)
 }
 
