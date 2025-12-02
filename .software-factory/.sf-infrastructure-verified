@@ -1,19 +1,9 @@
-# Software Factory Infrastructure Verification - Phase 1 Integration
-# Combined from all merged efforts
-# Integration Branch: idpbuilder-oci-push/phase-1-integration
-
-# Effort E1.1.1 - credential-resolution
-effort_E1.1.1_verified=true
-effort_E1.1.1_branch=idpbuilder-oci-push/phase-1-wave-1-effort-E1.1.1-credential-resolution
-
-# Effort E1.1.2 - registry-client-interface
-effort_E1.1.2_verified=true
-effort_E1.1.2_branch=idpbuilder-oci-push/phase-1-wave-1-effort-E1.1.2-registry-client-interface
-
-# Effort E1.1.3 - daemon-client-interface
-effort_E1.1.3_verified=true
-effort_E1.1.3_branch=idpbuilder-oci-push/phase-1-wave-1-effort-E1.1.3-daemon-client-interface
-
-phase=1
-all_efforts_integrated=true
-verified=true
+{
+  "created_at": "2025-12-02T06:19:53Z",
+  "created_timestamp": 1764656393,
+  "branch": "idpbuilder-oci-push/phase-1-wave-2-effort-E1.2.3-daemon-client-implementation",
+  "upstream": "origin/idpbuilder-oci-push/phase-1-wave-2-effort-E1.2.3-daemon-client-implementation",
+  "commit": "c45bf3660a97ed266f026714a825ad05d8f66d09",
+  "created_by_state": "CREATE_NEXT_INFRASTRUCTURE",
+  "effort_id": "E1.2.3"
+}
