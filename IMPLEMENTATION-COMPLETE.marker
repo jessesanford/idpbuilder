@@ -1,17 +1,1 @@
-# Integration Marker - Multiple Efforts
-
-## E1.1.1 - credential-resolution
-Completed at: 2025-12-01 15:40:25 UTC
-Effort: E1.1.1-credential-resolution
-Branch: idpbuilder-oci-push/phase-1-wave-1-effort-E1.1.1-credential-resolution
-Total lines: 302 lines (111 production + 191 tests)
-Files created: pkg/cmd/push/credentials.go, pkg/cmd/push/credentials_test.go
-Tests: All 9 tests passing
-Status: IMPLEMENTATION COMPLETE
-
-## E1.1.3 - daemon-client-interface
-Completed at: 2025-12-01 15:47:14 UTC
-Effort: E1.1.3-daemon-client-interface
-Branch: idpbuilder-oci-push/phase-1-wave-1-effort-E1.1.3-daemon-client-interface
-Total lines: 87 lines
-Status: IMPLEMENTATION COMPLETE
+# Project Integration Marker - All Efforts Combined
