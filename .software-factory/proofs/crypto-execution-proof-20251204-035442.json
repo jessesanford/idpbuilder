@@ -1,0 +1,36 @@
+{
+  "r775_proof": {
+    "execution_id": "EXEC-PROJECT-20251204-035442",
+    "timestamp_start": "2025-12-04T03:54:59Z",
+    "timestamp_end": "2025-12-04T03:54:59Z",
+    "validation_level": "PROJECT",
+    "binary": {
+      "path": "./bin/idpbuilder",
+      "sha256": "889200769da7ac8c35c3761c6d2cc0f9ac94601f6df0277d37a443dd17539629"
+    },
+    "evidence_files": [
+      {"file": "demo-req002-help-20251204-035442.txt", "sha256": "75e0e23c2b85b3401a6ced52782ac8f08d551ad5294612adff238f2c6b40547d"},
+      {"file": "demo-req003-default-20251204-035442.txt", "sha256": "618268ed231efa52b20c767b236d69b79cad44ae5dff802c21c55ddc924702d7"},
+      {"file": "demo-req010-notfound-20251204-035442.txt", "sha256": "af3d1130bda60150b91d4c391e4823f83512cdfeaa04a23f60f9e5aea78dec7f"},
+      {"file": "demo-req019-anonymous-20251204-035442.txt", "sha256": "7263d7c440425ac06f4b09fed7c4e751bec9ea314d09487d8bf880b14e87dfc8"}
+    ],
+    "environment": {
+      "os": "Linux",
+      "kernel": "6.10.14-linuxkit",
+      "go_version": "go1.24.10",
+      "git_branch": "idpbuilder-oci-push/project-integration",
+      "git_sha": "138e42f"
+    },
+    "demos_executed": [
+      {"requirement": "REQ-002", "scenario": "Help Command Display", "result": "PASSED"},
+      {"requirement": "REQ-003", "scenario": "Default Registry URL", "result": "PASSED"},
+      {"requirement": "REQ-019", "scenario": "Anonymous Access Attempt", "result": "PASSED"},
+      {"requirement": "REQ-010", "scenario": "Non-existent Image Error", "result": "PARTIAL"}
+    ],
+    "r335_coverage": {
+      "critical_requirements_tested": 4,
+      "total_critical_requirements": 14,
+      "coverage_percentage": 28.5
+    }
+  }
+}

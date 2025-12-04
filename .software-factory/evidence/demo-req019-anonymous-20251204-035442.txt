@@ -1,0 +1,5 @@
+Script started on 2025-12-04 03:54:43+00:00 [COMMAND="timeout 5 ./bin/idpbuilder push test:latest 2>&1 || echo "Exit code: $?"" <not executed on terminal>]
+image not found: test:latest
+Exit code: 1
+
+Script done on 2025-12-04 03:54:43+00:00 [COMMAND_EXIT_CODE="0"]

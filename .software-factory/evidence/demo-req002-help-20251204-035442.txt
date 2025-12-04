@@ -1,0 +1,34 @@
+Script started on 2025-12-04 03:54:42+00:00 [COMMAND="./bin/idpbuilder push --help" <not executed on terminal>]
+Push a local Docker image to an OCI-compliant registry.
+
+The push command takes a local Docker image and uploads it to the specified
+OCI registry. It integrates with the idpbuilder daemon to verify the image
+exists locally before pushing, and handles authentication via flags or
+environment variables.
+
+Examples:
+  # Push with default registry
+  idpbuilder push myimage:latest
+
+  # Push to custom registry with authentication
+  idpbuilder push myimage:latest --registry https://registry.example.com --username user --password pass
+
+  # Push with token authentication
+  idpbuilder push myimage:latest --registry https://registry.example.com --token mytoken
+
+Usage:
+  idpbuilder push IMAGE [flags]
+
+Flags:
+  -h, --help              help for push
+      --insecure          Skip TLS verification
+  -p, --password string   Registry password
+  -r, --registry string   Registry URL (default "https://gitea.cnoe.localtest.me:8443")
+  -t, --token string      Registry token
+  -u, --username string   Registry username
+
+Global Flags:
+      --color              Enable colored log messages.
+  -l, --log-level string   Set the log verbosity. Supported values are: debug, info, warn, and error. (default "info")
+
+Script done on 2025-12-04 03:54:43+00:00 [COMMAND_EXIT_CODE="0"]
