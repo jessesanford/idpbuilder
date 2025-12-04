@@ -1,0 +1,223 @@
+=== TEST EXECUTION LOG ===
+File: test-execution-20251204-005722.log
+Started: 2025-12-04T00:57:22Z
+Validator: code-reviewer-demo-validation-20251204
+
+=== Running pkg/cmd/push tests ===
+Timestamp: 2025-12-04T00:57:22Z
+=== RUN   TestCredentialResolver_FlagPrecedence
+=== RUN   TestCredentialResolver_FlagPrecedence/flag_overrides_env_username
+=== RUN   TestCredentialResolver_FlagPrecedence/env_used_when_no_flags
+=== RUN   TestCredentialResolver_FlagPrecedence/token_flag_overrides_token_env
+=== RUN   TestCredentialResolver_FlagPrecedence/token_env_used_when_no_token_flag
+=== RUN   TestCredentialResolver_FlagPrecedence/anonymous_when_no_credentials
+=== RUN   TestCredentialResolver_FlagPrecedence/error_when_both_token_and_basic_auth
+=== RUN   TestCredentialResolver_FlagPrecedence/partial_flag_override
+--- PASS: TestCredentialResolver_FlagPrecedence (0.00s)
+    --- PASS: TestCredentialResolver_FlagPrecedence/flag_overrides_env_username (0.00s)
+    --- PASS: TestCredentialResolver_FlagPrecedence/env_used_when_no_flags (0.00s)
+    --- PASS: TestCredentialResolver_FlagPrecedence/token_flag_overrides_token_env (0.00s)
+    --- PASS: TestCredentialResolver_FlagPrecedence/token_env_used_when_no_token_flag (0.00s)
+    --- PASS: TestCredentialResolver_FlagPrecedence/anonymous_when_no_credentials (0.00s)
+    --- PASS: TestCredentialResolver_FlagPrecedence/error_when_both_token_and_basic_auth (0.00s)
+    --- PASS: TestCredentialResolver_FlagPrecedence/partial_flag_override (0.00s)
+=== RUN   TestCredentialResolver_NoCredentialLogging
+--- PASS: TestCredentialResolver_NoCredentialLogging (0.00s)
+=== RUN   TestDefaultEnvironment_Get
+--- PASS: TestDefaultEnvironment_Get (0.00s)
+=== RUN   TestPushCmd_Success_OutputsReference
+--- PASS: TestPushCmd_Success_OutputsReference (0.00s)
+=== RUN   TestPushCmd_CredentialIntegration
+--- PASS: TestPushCmd_CredentialIntegration (0.00s)
+=== RUN   TestPushCmd_ImageNotFound_ExitCode2
+--- PASS: TestPushCmd_ImageNotFound_ExitCode2 (0.00s)
+=== RUN   TestPushCmd_DaemonNotRunning_ExitCode2
+--- PASS: TestPushCmd_DaemonNotRunning_ExitCode2 (0.00s)
+=== RUN   TestPushCmd_AuthFailure_ExitCode1
+--- PASS: TestPushCmd_AuthFailure_ExitCode1 (0.00s)
+=== RUN   TestPushCmd_FlagParsing
+--- PASS: TestPushCmd_FlagParsing (0.00s)
+=== RUN   TestPushCmd_DefaultRegistry
+--- PASS: TestPushCmd_DefaultRegistry (0.00s)
+=== RUN   TestParseImageRef
+=== RUN   TestParseImageRef/Image_with_tag
+=== RUN   TestParseImageRef/Image_without_tag
+=== RUN   TestParseImageRef/Registry_with_image_and_tag
+=== RUN   TestParseImageRef/Registry_with_port_and_image
+=== RUN   TestParseImageRef/Semver_tag_v1.0
+=== RUN   TestParseImageRef/Semver_tag_v1.2.3
+=== RUN   TestParseImageRef/Alpine_style_tag
+=== RUN   TestParseImageRef/Registry_with_port_and_semver_tag
+--- PASS: TestParseImageRef (0.00s)
+    --- PASS: TestParseImageRef/Image_with_tag (0.00s)
+    --- PASS: TestParseImageRef/Image_without_tag (0.00s)
+    --- PASS: TestParseImageRef/Registry_with_image_and_tag (0.00s)
+    --- PASS: TestParseImageRef/Registry_with_port_and_image (0.00s)
+    --- PASS: TestParseImageRef/Semver_tag_v1.0 (0.00s)
+    --- PASS: TestParseImageRef/Semver_tag_v1.2.3 (0.00s)
+    --- PASS: TestParseImageRef/Alpine_style_tag (0.00s)
+    --- PASS: TestParseImageRef/Registry_with_port_and_semver_tag (0.00s)
+=== RUN   TestBuildDestinationRef
+=== RUN   TestBuildDestinationRef/HTTPS_registry
+=== RUN   TestBuildDestinationRef/HTTP_registry
+=== RUN   TestBuildDestinationRef/Registry_with_path
+--- PASS: TestBuildDestinationRef (0.00s)
+    --- PASS: TestBuildDestinationRef/HTTPS_registry (0.00s)
+    --- PASS: TestBuildDestinationRef/HTTP_registry (0.00s)
+    --- PASS: TestBuildDestinationRef/Registry_with_path (0.00s)
+=== RUN   TestExtractHost
+=== RUN   TestExtractHost/HTTPS_with_port
+=== RUN   TestExtractHost/HTTP_without_port
+=== RUN   TestExtractHost/HTTPS_without_port
+=== RUN   TestExtractHost/Localhost_with_port
+--- PASS: TestExtractHost (0.00s)
+    --- PASS: TestExtractHost/HTTPS_with_port (0.00s)
+    --- PASS: TestExtractHost/HTTP_without_port (0.00s)
+    --- PASS: TestExtractHost/HTTPS_without_port (0.00s)
+    --- PASS: TestExtractHost/Localhost_with_port (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/cmd/push	(cached)
+pkg/cmd/push tests exit code: 0
+
+=== Running pkg/registry tests ===
+Timestamp: 2025-12-04T00:57:22Z
+=== RUN   TestRegistryClient_Push_Success
+--- PASS: TestRegistryClient_Push_Success (0.00s)
+=== RUN   TestRegistryClient_Push_AuthError
+--- PASS: TestRegistryClient_Push_AuthError (0.00s)
+=== RUN   TestRegistryClient_Push_TransientError
+--- PASS: TestRegistryClient_Push_TransientError (0.00s)
+=== RUN   TestRegistryClient_Push_WithProgress
+--- PASS: TestRegistryClient_Push_WithProgress (0.00s)
+=== RUN   TestRegistryError_ErrorChaining
+--- PASS: TestRegistryError_ErrorChaining (0.00s)
+=== RUN   TestAuthError_ErrorChaining
+--- PASS: TestAuthError_ErrorChaining (0.00s)
+=== RUN   TestNoOpProgressReporter_DoesNothing
+--- PASS: TestNoOpProgressReporter_DoesNothing (0.00s)
+=== RUN   TestStderrProgressReporter_Start
+--- PASS: TestStderrProgressReporter_Start (0.00s)
+=== RUN   TestStderrProgressReporter_LayerProgress_Milestones
+--- PASS: TestStderrProgressReporter_LayerProgress_Milestones (0.00s)
+=== RUN   TestStderrProgressReporter_Complete
+--- PASS: TestStderrProgressReporter_Complete (0.00s)
+=== RUN   TestProgressReporter_OutputsToStderr
+--- PASS: TestProgressReporter_OutputsToStderr (0.00s)
+=== RUN   TestStderrProgressReporter_Error
+--- PASS: TestStderrProgressReporter_Error (0.00s)
+=== RUN   TestStderrProgressReporter_LayerComplete
+--- PASS: TestStderrProgressReporter_LayerComplete (0.00s)
+=== RUN   TestStderrProgressReporter_FormatBytes
+=== RUN   TestStderrProgressReporter_FormatBytes/500_B
+=== RUN   TestStderrProgressReporter_FormatBytes/1.00_KB
+=== RUN   TestStderrProgressReporter_FormatBytes/1.00_MB
+=== RUN   TestStderrProgressReporter_FormatBytes/1.00_GB
+=== RUN   TestStderrProgressReporter_FormatBytes/1.50_MB
+--- PASS: TestStderrProgressReporter_FormatBytes (0.00s)
+    --- PASS: TestStderrProgressReporter_FormatBytes/500_B (0.00s)
+    --- PASS: TestStderrProgressReporter_FormatBytes/1.00_KB (0.00s)
+    --- PASS: TestStderrProgressReporter_FormatBytes/1.00_MB (0.00s)
+    --- PASS: TestStderrProgressReporter_FormatBytes/1.00_GB (0.00s)
+    --- PASS: TestStderrProgressReporter_FormatBytes/1.50_MB (0.00s)
+=== RUN   TestStderrProgressReporter_ShortenDigest
+=== RUN   TestStderrProgressReporter_ShortenDigest/sha256:abc123
+=== RUN   TestStderrProgressReporter_ShortenDigest/sha256:abc123def456ghi789
+=== RUN   TestStderrProgressReporter_ShortenDigest/sha256:abc123def456ghi789jkl012mnopqr
+--- PASS: TestStderrProgressReporter_ShortenDigest (0.00s)
+    --- PASS: TestStderrProgressReporter_ShortenDigest/sha256:abc123 (0.00s)
+    --- PASS: TestStderrProgressReporter_ShortenDigest/sha256:abc123def456ghi789 (0.00s)
+    --- PASS: TestStderrProgressReporter_ShortenDigest/sha256:abc123def456ghi789jkl012mnopqr (0.00s)
+=== RUN   TestStderrProgressReporter_NilOut
+--- PASS: TestStderrProgressReporter_NilOut (0.00s)
+=== RUN   TestStderrProgressReporter_ThreadSafe
+--- PASS: TestStderrProgressReporter_ThreadSafe (0.00s)
+=== RUN   TestNewDefaultClient_BasicAuth
+--- PASS: TestNewDefaultClient_BasicAuth (0.00s)
+=== RUN   TestNewDefaultClient_TokenAuth
+--- PASS: TestNewDefaultClient_TokenAuth (0.00s)
+=== RUN   TestNewDefaultClient_Anonymous
+--- PASS: TestNewDefaultClient_Anonymous (0.00s)
+=== RUN   TestNewDefaultClient_MissingURL
+--- PASS: TestNewDefaultClient_MissingURL (0.00s)
+=== RUN   TestDefaultClient_Push_TokenAuth
+    registry_test.go:73: Skipping because daemon.Image() requires Docker daemon to be running
+--- SKIP: TestDefaultClient_Push_TokenAuth (0.00s)
+=== RUN   TestDefaultClient_ProgressCallbacks
+    registry_test.go:92: Skipping because daemon.Image() requires Docker daemon to be running
+--- SKIP: TestDefaultClient_ProgressCallbacks (0.00s)
+=== RUN   TestDefaultClient_InsecureMode
+--- PASS: TestDefaultClient_InsecureMode (0.00s)
+=== RUN   TestClassifyRemoteError_AuthError_401
+--- PASS: TestClassifyRemoteError_AuthError_401 (0.00s)
+=== RUN   TestClassifyRemoteError_AuthError_403
+--- PASS: TestClassifyRemoteError_AuthError_403 (0.00s)
+=== RUN   TestClassifyRemoteError_AuthError_Unauthorized
+--- PASS: TestClassifyRemoteError_AuthError_Unauthorized (0.00s)
+=== RUN   TestClassifyRemoteError_TransientError_500
+--- PASS: TestClassifyRemoteError_TransientError_500 (0.00s)
+=== RUN   TestClassifyRemoteError_TransientError_503
+--- PASS: TestClassifyRemoteError_TransientError_503 (0.00s)
+=== RUN   TestClassifyRemoteError_TransientError_Timeout
+--- PASS: TestClassifyRemoteError_TransientError_Timeout (0.00s)
+=== RUN   TestClassifyRemoteError_TransientError_ConnectionRefused
+--- PASS: TestClassifyRemoteError_TransientError_ConnectionRefused (0.00s)
+=== RUN   TestClassifyRemoteError_PermanentError
+--- PASS: TestClassifyRemoteError_PermanentError (0.00s)
+=== RUN   TestStderrProgressReporter_NilOutput
+--- PASS: TestStderrProgressReporter_NilOutput (0.00s)
+=== RUN   TestPush_InvalidSourceReference
+--- PASS: TestPush_InvalidSourceReference (0.00s)
+=== RUN   TestPush_InvalidDestReference
+--- PASS: TestPush_InvalidDestReference (0.00s)
+=== RUN   TestPush_WithProgressReporter
+--- PASS: TestPush_WithProgressReporter (0.02s)
+=== RUN   TestExtractStatusCode
+=== RUN   TestExtractStatusCode/HTTP_404
+=== RUN   TestExtractStatusCode/HTTP_500
+=== RUN   TestExtractStatusCode/No_status_code
+=== RUN   TestExtractStatusCode/Status_code_at_start
+--- PASS: TestExtractStatusCode (0.00s)
+    --- PASS: TestExtractStatusCode/HTTP_404 (0.00s)
+    --- PASS: TestExtractStatusCode/HTTP_500 (0.00s)
+    --- PASS: TestExtractStatusCode/No_status_code (0.00s)
+    --- PASS: TestExtractStatusCode/Status_code_at_start (0.00s)
+=== RUN   TestRetryableClient_Push_Success
+--- PASS: TestRetryableClient_Push_Success (0.00s)
+=== RUN   TestRetryableClient_Push_TransientError_ThenSuccess
+--- PASS: TestRetryableClient_Push_TransientError_ThenSuccess (0.00s)
+=== RUN   TestRetryableClient_Push_PermanentError_NoRetry
+--- PASS: TestRetryableClient_Push_PermanentError_NoRetry (0.00s)
+=== RUN   TestRetryableClient_Push_ExhaustedRetries
+--- PASS: TestRetryableClient_Push_ExhaustedRetries (0.07s)
+=== RUN   TestRetryableClient_Push_ContextCancellation
+--- PASS: TestRetryableClient_Push_ContextCancellation (0.01s)
+=== RUN   TestRetryableClient_Push_NotifyFunc
+--- PASS: TestRetryableClient_Push_NotifyFunc (0.00s)
+=== RUN   TestCalculateDelay_ExponentialBackoff
+--- PASS: TestCalculateDelay_ExponentialBackoff (0.00s)
+=== RUN   TestCalculateDelay_MaxDelayCap
+--- PASS: TestCalculateDelay_MaxDelayCap (0.00s)
+=== RUN   TestIsTransient_ErrorClassification
+--- PASS: TestIsTransient_ErrorClassification (0.00s)
+=== RUN   TestIsTransient_AuthError_NotTransient
+--- PASS: TestIsTransient_AuthError_NotTransient (0.00s)
+=== RUN   TestIsTransient_NetworkTimeout_Transient
+--- PASS: TestIsTransient_NetworkTimeout_Transient (0.00s)
+=== RUN   TestIsTransient_ConnectionRefused_Transient
+--- PASS: TestIsTransient_ConnectionRefused_Transient (0.00s)
+=== RUN   TestStderrRetryNotifier
+--- PASS: TestStderrRetryNotifier (0.00s)
+=== RUN   TestNewRetryableClient_DefaultsApplied
+--- PASS: TestNewRetryableClient_DefaultsApplied (0.00s)
+=== RUN   TestContainsIgnoreCase
+--- PASS: TestContainsIgnoreCase (0.00s)
+=== RUN   TestToLower
+--- PASS: TestToLower (0.00s)
+=== RUN   TestContains
+--- PASS: TestContains (0.00s)
+PASS
+ok  	github.com/cnoe-io/idpbuilder/pkg/registry	(cached)
+pkg/registry tests exit code: 0
+
+=== Test Execution Completed ===
+Completed: 2025-12-04T00:57:22Z
