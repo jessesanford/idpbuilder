@@ -1,0 +1,54 @@
+=== R775 CRYPTOGRAPHIC EXECUTION PROOF ===
+Execution ID: LIVE-REQ001-20251204-041336
+Test Type: LIVE INTEGRATION TEST (Real Registry)
+
+=== ENVIRONMENT ===
+Registry: gitea.cnoe.localtest.me:8443
+Username: giteaAdmin
+Binary: ./bin/idpbuilder
+Binary SHA256: 889200769da7ac8c35c3761c6d2cc0f9ac94601f6df0277d37a443dd17539629
+
+=== REGISTRY STATE BEFORE PUSH ===
+Timestamp: 2025-12-04T04:13:36Z
+Catalog: {"repositories":["giteaadmin/gitea/gitea","giteaadmin/kindest/node"]}
+SHA256: 3a6820b392c60d05f57e3add60aebc65dc4aa4c54521aba7868771078a24064f
+
+=== PUSH EXECUTION ===
+Start Time: 2025-12-04T04:15:16.789700712Z
+Command: ./bin/idpbuilder push giteaadmin/testapp:v1.0 --registry https://gitea.cnoe.localtest.me:8443 --username giteaAdmin --password [REDACTED] --insecure -l debug
+
+Output:
+gitea.cnoe.localtest.me:8443/giteaadmin/testapp:v1.0@sha256:1eb9d8d452eafa7c6a78e88a5de24b9f290d7b7445e61ec3f6c20561753dfb62
+
+Exit Code: 0
+End Time: 2025-12-04T04:15:17.997548296Z
+
+=== REGISTRY STATE AFTER PUSH ===
+Timestamp: 2025-12-04T04:15:18Z
+Catalog: {"repositories":["giteaadmin/gitea/gitea","giteaadmin/kindest/node","giteaadmin/testapp"]}
+SHA256: 6aeba5907c7147ded75374be28ec0c2fa9e87ee819ef35a6a1aef7a306955880
+Tags: {"name":"giteaadmin/testapp","tags":["v1.0"]}
+
+=== PULL VERIFICATION ===
+Timestamp: 2025-12-04T04:15:30Z
+Command: docker pull gitea.cnoe.localtest.me:8443/giteaadmin/testapp:v1.0
+Output:
+v1.0: Pulling from giteaadmin/testapp
+Digest: sha256:d3627c1d653bb27e10cb3d6c40f8558d593d231f20700ad4d86afd101b794129
+Status: Downloaded newer image for gitea.cnoe.localtest.me:8443/giteaadmin/testapp:v1.0
+Pull Exit Code: 0
+
+=== VALIDATION SUMMARY ===
+REQ-001: PASSED
+- Push command executed: YES (exit code 0)
+- Image appeared in registry: YES (giteaadmin/testapp added to catalog)
+- Image pullable from registry: YES (docker pull succeeded)
+- Before/After state differs: YES (catalog changed)
+
+=== EVIDENCE FILES ===
+1. binary-hash-20251204-041336.txt - Binary SHA256
+2. registry-before-20251204-041336.json - Registry state before push
+3. registry-after-20251204-041336.json - Registry state after push
+4. live-push-execution-20251204-041336.txt - This file
+
+=== END R775 EXECUTION PROOF ===
