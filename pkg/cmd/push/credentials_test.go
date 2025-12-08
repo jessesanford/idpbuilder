@@ -124,7 +124,7 @@ func TestCredentialResolver_FlagPrecedence(t *testing.T) {
 
 			// Execute resolution
 			resolver := &DefaultCredentialResolver{}
-			creds, err := resolver.Resolve(tt.flags, mockEnv)
+			creds, err := resolver.Resolve(tt.flags, mockEnv, nil)
 
 			// Validate error cases
 			if tt.wantErr {
