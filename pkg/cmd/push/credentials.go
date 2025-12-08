@@ -3,6 +3,7 @@ package push
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 )
 
@@ -43,7 +44,8 @@ type CredentialResolver interface {
 	// Resolve determines credentials based on flags and environment.
 	// Returns Credentials with IsAnonymous=true if no credentials found.
 	// Returns error if both token and username/password are provided.
-	Resolve(flags CredentialFlags, env EnvironmentLookup) (*Credentials, error)
+	// logger may be nil if debug logging is not enabled.
+	Resolve(flags CredentialFlags, env EnvironmentLookup, logger *slog.Logger) (*Credentials, error)
 }
 
 // Environment variable names for credential resolution
@@ -68,7 +70,7 @@ type DefaultCredentialResolver struct{}
 // Resolve implements CredentialResolver.Resolve.
 // Validates that either basic auth (username+password) or token is provided, not both.
 // Resolution follows REQ-014 precedence: CLI flags override environment variables.
-func (r *DefaultCredentialResolver) Resolve(flags CredentialFlags, env EnvironmentLookup) (*Credentials, error) {
+func (r *DefaultCredentialResolver) Resolve(flags CredentialFlags, env EnvironmentLookup, logger *slog.Logger) (*Credentials, error) {
 	creds := &Credentials{}
 
 	// Token resolution: flag takes precedence over environment (REQ-014)
@@ -106,6 +108,17 @@ func (r *DefaultCredentialResolver) Resolve(flags CredentialFlags, env Environme
 
 	// If no credentials at all, mark as anonymous
 	creds.IsAnonymous = !hasToken && !hasBasic
+
+	// Log credential resolution at debug level (REQ-005)
+	if logger != nil {
+		source := "anonymous"
+		if flags.Token != "" || flags.Username != "" || flags.Password != "" {
+			source = "flags"
+		} else if env.Get(EnvRegistryToken) != "" || env.Get(EnvRegistryUsername) != "" || env.Get(EnvRegistryPassword) != "" {
+			source = "env"
+		}
+		LogCredentialResolution(logger, source, creds.Username != "", creds.Password != "", creds.Token != "")
+	}
 
 	return creds, nil
 }
