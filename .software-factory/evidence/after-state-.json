@@ -1,0 +1,1 @@
+{"timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)", "type": "after_execution", "pwd": "$(pwd)", "exit_code": }
