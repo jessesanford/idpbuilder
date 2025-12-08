@@ -3,6 +3,7 @@ package push
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/url"
 	"os"
 	"os/signal"
@@ -90,7 +91,8 @@ func runPushWithClients(cmd *cobra.Command, args []string,
 		Token:    flagToken,
 	}
 	resolver := &DefaultCredentialResolver{}
-	_, err := resolver.Resolve(credFlags, env)
+	logger := slog.Default()
+	_, err := resolver.Resolve(credFlags, env, logger)
 	if err != nil {
 		return fmt.Errorf("credential resolution failed: %w", err)
 	}
