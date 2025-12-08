@@ -1,0 +1,21 @@
+BUG-005-RESOLVE-SIGNATURE-MISMATCH
+Status: FIXED
+Completed at: 2025-12-08T$(date +%H:%M:%S) UTC
+
+Description:
+Fixed the broken call to resolver.Resolve() at line 95 of pkg/cmd/push/push.go.
+The Resolve() function signature was updated in E1.4.1 to require a logger parameter,
+but the call site had not been updated.
+
+Changes Made:
+1. Added "log/slog" import to push.go
+2. Created logger variable with slog.Default() before the Resolve() call
+3. Updated resolver.Resolve() call to pass the logger as the third argument
+
+Build Result: SUCCESS
+- go build ./pkg/cmd/push/... - PASS
+- go build ./... - PASS
+- go test ./pkg/cmd/push/... - ALL 32 TESTS PASS
+
+Fix Commit: ddb4bce
+Branch: idpbuilder-oci-push/phase-1-integration
