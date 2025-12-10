@@ -1,0 +1,7 @@
+BUG-004-CLIENT-WIRING-INCOMPLETE fixed at 2025-12-02T19:30:26Z
+Status: COMPLETE
+Fix commit: c56c7bb
+Branch: idpbuilder-oci-push/phase-1-integration
+Tests: ALL PASS
+Build: SUCCESS
+Help command: PASS
