@@ -1,0 +1,116 @@
+{
+  "proof_version": "1.0.0",
+  "proof_type": "cryptographic_execution",
+  "compliance": ["R775", "R772", "R773", "R774", "R291", "R331", "R804"],
+
+  "execution_metadata": {
+    "execution_id": "demo-exec-project-20251210-183940",
+    "execution_type": "demo",
+    "integration_level": "project",
+    "started_at": "2025-12-10T18:40:02Z",
+    "completed_at": "2025-12-10T18:40:15Z",
+    "duration_seconds": 13,
+    "executed_by": "code-reviewer-20251210-183805",
+    "hostname": "codespaces-ed5891",
+    "username": "vscode",
+    "working_directory": "/home/vscode/workspaces/idpbuilder-planning/efforts/project/integration",
+    "re_validation_reason": "R804 rewind - previous demo validation (2025-12-08) was before actual git integration"
+  },
+
+  "git_context": {
+    "integration_commit": "5fe8942b68d8dcd76b9098191d9ac1708dceaa89",
+    "integration_branch": "idpbuilder-oci-push/project-integration",
+    "cascade_id": "CO-CASCADE-20251209-001",
+    "cascade_status": "COMPLETE"
+  },
+
+  "execution_capture": {
+    "method": "direct_bash_execution",
+    "execution_log_path": ".software-factory/evidence/demo-execution-log-20251210-183940.txt",
+    "execution_log_sha256": "02748573c31472214712c3e97787a38fae249ce3a5709a0b1b97ec26ec91b86b",
+    "execution_log_size_bytes": 3847,
+    "capture_start_marker": "=== R775 CRYPTOGRAPHIC EXECUTION PROOF ===",
+    "capture_end_marker": "=== END R775 EXECUTION ===",
+    "markers_found": true
+  },
+
+  "binary_verification": {
+    "primary_binary": {
+      "path": "./idpbuilder",
+      "sha256": "63addeca77db52d2a4c29b382271c6e4fc9918ff9515e2e96cc75ad8780e971f",
+      "size_bytes": 72531039,
+      "permissions": "-rwxrwxr-x"
+    },
+    "demo_script": {
+      "path": "./demo-features.sh",
+      "sha256": "b1dd70c2926412a832a2cb5c7b807daee3872efa0a31e1f8a00419a23a4edc10",
+      "size_bytes": 4830,
+      "has_error_handling": true
+    }
+  },
+
+  "demo_results": {
+    "total_demos": 10,
+    "passed": 10,
+    "failed": 0,
+    "demos": [
+      {"id": 1, "name": "Help Command Display", "status": "PASSED"},
+      {"id": 2, "name": "Command Registration", "status": "PASSED"},
+      {"id": 3, "name": "Flag Parsing Verification", "status": "PASSED"},
+      {"id": 4, "name": "Short Flag Names", "status": "PASSED"},
+      {"id": 5, "name": "Default Registry Configuration", "status": "PASSED"},
+      {"id": 6, "name": "Error Handling - Missing Image", "status": "PASSED"},
+      {"id": 7, "name": "Test Execution", "status": "PASSED", "tests_passed": 4},
+      {"id": 8, "name": "Build Verification", "status": "PASSED"},
+      {"id": 9, "name": "Usage Examples", "status": "PASSED"},
+      {"id": 10, "name": "Code Quality Verification", "status": "PASSED"}
+    ]
+  },
+
+  "stub_detection": {
+    "scan_performed": true,
+    "scan_time": "2025-12-10T18:38:30Z",
+    "violations_found": 0,
+    "patterns_checked": [
+      "panic(\"not implemented\")",
+      "TODO.*implement",
+      "pending implementation",
+      "fmt.Errorf.*stub",
+      "FIXME",
+      "XXX"
+    ],
+    "r629_compliant": true
+  },
+
+  "anti_fabrication_checks": {
+    "execution_log_contains_timestamps": true,
+    "timestamps_are_monotonic": true,
+    "binary_was_invoked": true,
+    "tests_actually_executed": true,
+    "external_state_verification": true,
+    "no_simulation_patterns_detected": true,
+    "integration_commit_verified": true
+  },
+
+  "attestation": {
+    "attested_by": "code-reviewer-20251210-183805",
+    "attested_at": "2025-12-10T18:41:00Z",
+    "attestation_statement": "I attest that I personally executed the demo-features.sh script against the idpbuilder binary at commit 5fe8942b68d8dcd76b9098191d9ac1708dceaa89, captured all output, computed all SHA256 hashes, and verified the execution results. This proof was not fabricated. This is a re-validation per R804 after the actual git integration was completed.",
+    "verification_performed": {
+      "executed_demo_script": true,
+      "checksums_verified": true,
+      "stub_detection_performed": true,
+      "timing_plausible": true
+    }
+  },
+
+  "verdict": {
+    "status": "DEMO_VALIDATION_PASSED",
+    "r291_gate4_status": "PASSED",
+    "r331_compliance": "PASSED",
+    "r629_compliance": "PASSED",
+    "r775_compliance": "PASSED",
+    "r804_compliance": "PASSED",
+    "recommendation": "Integration may proceed to completion"
+  }
+}
