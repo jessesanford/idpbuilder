@@ -1,0 +1,9 @@
+This branch has been prepared for PR submission.
+
+Commit: 5b3be79c09ee5cc2c55b7d0dc2a57753d6fedea1
+Change: fix: use errors.New for static format strings in kindlogger
+
+The Software Factory build artifacts have been verified and removed.
+The implementation is ready for upstream contribution.
+
+PR-READY transformation completed: 2025-12-11
