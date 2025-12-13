@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/cnoe-io/idpbuilder/pkg/registry"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -86,7 +87,7 @@ func TestDebugTransport_RequestLogging(t *testing.T) {
 		},
 	}
 
-	transport := &DebugTransport{
+	transport := &registry.DebugTransport{
 		Base:   mockRT,
 		Logger: logger,
 	}
@@ -122,7 +123,7 @@ func TestDebugTransport_ResponseLogging(t *testing.T) {
 		},
 	}
 
-	transport := &DebugTransport{
+	transport := &registry.DebugTransport{
 		Base:   mockRT,
 		Logger: logger,
 	}
@@ -153,7 +154,7 @@ func TestDebugTransport_RequestResponseCorrelation(t *testing.T) {
 		},
 	}
 
-	transport := &DebugTransport{
+	transport := &registry.DebugTransport{
 		Base:   mockRT,
 		Logger: logger,
 	}
@@ -190,12 +191,6 @@ func TestDebugTransport_RequestResponseCorrelation(t *testing.T) {
 	assert.True(t, found, "response should have same request_id as request")
 }
 
-// TestGenerateRequestID verifies uniqueness
-func TestGenerateRequestID(t *testing.T) {
-	id1 := generateRequestID()
-	id2 := generateRequestID()
-
-	assert.NotEqual(t, id1, id2, "request IDs should be unique")
-	assert.True(t, strings.HasPrefix(id1, "req-"), "request ID should have req- prefix")
-	assert.True(t, strings.HasPrefix(id2, "req-"), "request ID should have req- prefix")
-}
+// Note: generateRequestID is now a private function in pkg/registry/debugtransport.go
+// It is tested indirectly through the TestDebugTransport_RequestResponseCorrelation test
+// which verifies request_id correlation between request and response logs
