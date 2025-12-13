@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -212,11 +211,6 @@ func classifyRemoteError(err error) error {
 		if sc >= 500 {
 			isTransient = true
 		}
-	}
-
-	// Check for net.Error temporary flag
-	if netErr, ok := err.(net.Error); ok && netErr.Temporary() {
-		isTransient = true
 	}
 
 	return &RegistryError{
