@@ -36,41 +36,41 @@ func TestCredentialResolver_FlagPrecedence(t *testing.T) {
 	}{
 		// Test Case 1: Flag overrides environment for username/password
 		{
-			name:         "flag_overrides_env_username",
-			flags:        CredentialFlags{Username: "flag-user", Password: "flag-pass"},
-			envUsername:  "env-user",
-			envPassword:  "env-pass",
-			wantUsername: "flag-user",
-			wantPassword: "flag-pass",
+			name:          "flag_overrides_env_username",
+			flags:         CredentialFlags{Username: "flag-user", Password: "flag-pass"},
+			envUsername:   "env-user",
+			envPassword:   "env-pass",
+			wantUsername:  "flag-user",
+			wantPassword:  "flag-pass",
 			wantAnonymous: false,
 		},
 
 		// Test Case 2: Environment used when no flags provided
 		{
-			name:         "env_used_when_no_flags",
-			flags:        CredentialFlags{},
-			envUsername:  "env-user",
-			envPassword:  "env-pass",
-			wantUsername: "env-user",
-			wantPassword: "env-pass",
+			name:          "env_used_when_no_flags",
+			flags:         CredentialFlags{},
+			envUsername:   "env-user",
+			envPassword:   "env-pass",
+			wantUsername:  "env-user",
+			wantPassword:  "env-pass",
 			wantAnonymous: false,
 		},
 
 		// Test Case 3: Token flag overrides token env
 		{
-			name:      "token_flag_overrides_token_env",
-			flags:     CredentialFlags{Token: "flag-token"},
-			envToken:  "env-token",
-			wantToken: "flag-token",
+			name:          "token_flag_overrides_token_env",
+			flags:         CredentialFlags{Token: "flag-token"},
+			envToken:      "env-token",
+			wantToken:     "flag-token",
 			wantAnonymous: false,
 		},
 
 		// Test Case 4: Token env used when no token flag
 		{
-			name:      "token_env_used_when_no_token_flag",
-			flags:     CredentialFlags{},
-			envToken:  "env-token",
-			wantToken: "env-token",
+			name:          "token_env_used_when_no_token_flag",
+			flags:         CredentialFlags{},
+			envToken:      "env-token",
+			wantToken:     "env-token",
 			wantAnonymous: false,
 		},
 
@@ -90,12 +90,12 @@ func TestCredentialResolver_FlagPrecedence(t *testing.T) {
 
 		// Test Case 7: Partial flag override (flag username, env password)
 		{
-			name:         "partial_flag_override",
-			flags:        CredentialFlags{Username: "flag-user"},
-			envUsername:  "env-user",
-			envPassword:  "env-pass",
-			wantUsername: "flag-user",
-			wantPassword: "env-pass", // From environment
+			name:          "partial_flag_override",
+			flags:         CredentialFlags{Username: "flag-user"},
+			envUsername:   "env-user",
+			envPassword:   "env-pass",
+			wantUsername:  "flag-user",
+			wantPassword:  "env-pass", // From environment
 			wantAnonymous: false,
 		},
 	}
