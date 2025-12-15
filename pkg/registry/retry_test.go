@@ -214,7 +214,7 @@ func TestCalculateDelay_ExponentialBackoff(t *testing.T) {
 	client := NewRetryableClient(&MockRegistryClient{}, config)
 
 	tests := []struct {
-		attempt      int
+		attempt       int
 		expectedDelay time.Duration
 	}{
 		{0, 1 * time.Second},
@@ -252,8 +252,8 @@ func TestIsTransient_ErrorClassification(t *testing.T) {
 	client := NewRetryableClient(&MockRegistryClient{}, config)
 
 	tests := []struct {
-		name       string
-		err        error
+		name        string
+		err         error
 		isTransient bool
 	}{
 		{
