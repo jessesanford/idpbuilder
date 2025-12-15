@@ -91,7 +91,7 @@ func runPushWithClients(cmd *cobra.Command, args []string,
 		Token:    flagToken,
 	}
 	resolver := &DefaultCredentialResolver{}
-	logger := slog.Default()
+	logger := slog.New(slog.NewTextHandler(os.Stderr, nil))
 	_, err := resolver.Resolve(credFlags, env, logger)
 	if err != nil {
 		return fmt.Errorf("credential resolution failed: %w", err)
@@ -137,15 +137,23 @@ func runPushWithClients(cmd *cobra.Command, args []string,
 
 // runPush is the production entry point
 func runPush(cmd *cobra.Command, args []string) error {
-	// Create clients for dependency injection
-	// Note: These will be properly initialized in E1.2.2 and E1.2.3
-	var daemonClient daemon.DaemonClient
-	var registryClient registry.RegistryClient
+	// Create daemon client (connects to local Docker daemon)
+	daemonClient, err := daemon.NewDefaultClient()
+	if err != nil {
+		return fmt.Errorf("failed to create daemon client: %w", err)
+	}
 
-	// NOTE: This check ensures production code has properly initialized clients.
-	// During testing, use runPushWithClients which receives mock clients directly.
-	if daemonClient == nil || registryClient == nil {
-		return fmt.Errorf("daemon or registry client not initialized")
+	// Create registry client with configuration from flags
+	config := registry.RegistryConfig{
+		URL:      flagRegistry,
+		Username: flagUsername,
+		Password: flagPassword,
+		Token:    flagToken,
+		Insecure: flagInsecure,
+	}
+	registryClient, err := registry.NewDefaultClient(config)
+	if err != nil {
+		return fmt.Errorf("failed to create registry client: %w", err)
 	}
 
 	return runPushWithClients(cmd, args, daemonClient, registryClient)
