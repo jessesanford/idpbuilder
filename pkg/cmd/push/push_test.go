@@ -244,58 +244,58 @@ func TestPushCmd_DefaultRegistry(t *testing.T) {
 // Test parseImageRef helper function
 func TestParseImageRef(t *testing.T) {
 	tests := []struct {
-		name      string
-		ref       string
+		name       string
+		ref        string
 		expectRepo string
-		expectTag string
+		expectTag  string
 	}{
 		{
-			name:      "Image with tag",
-			ref:       "myimage:latest",
+			name:       "Image with tag",
+			ref:        "myimage:latest",
 			expectRepo: "myimage",
-			expectTag: "latest",
+			expectTag:  "latest",
 		},
 		{
 			name:       "Image without tag",
 			ref:        "myimage",
 			expectRepo: "myimage",
-			expectTag: "",
+			expectTag:  "",
 		},
 		{
 			name:       "Registry with image and tag",
 			ref:        "registry.io/myimage:v1.0",
 			expectRepo: "registry.io/myimage",
-			expectTag: "v1.0",
+			expectTag:  "v1.0",
 		},
 		{
 			name:       "Registry with port and image",
 			ref:        "localhost:5000/myimage",
 			expectRepo: "localhost:5000/myimage",
-			expectTag: "",
+			expectTag:  "",
 		},
 		{
 			name:       "Semver tag v1.0",
 			ref:        "myimage:v1.0",
 			expectRepo: "myimage",
-			expectTag: "v1.0",
+			expectTag:  "v1.0",
 		},
 		{
 			name:       "Semver tag v1.2.3",
 			ref:        "myimage:v1.2.3",
 			expectRepo: "myimage",
-			expectTag: "v1.2.3",
+			expectTag:  "v1.2.3",
 		},
 		{
 			name:       "Alpine style tag",
 			ref:        "alpine:3.18",
 			expectRepo: "alpine",
-			expectTag: "3.18",
+			expectTag:  "3.18",
 		},
 		{
 			name:       "Registry with port and semver tag",
 			ref:        "localhost:5000/myimage:v1.0",
 			expectRepo: "localhost:5000/myimage",
-			expectTag: "v1.0",
+			expectTag:  "v1.0",
 		},
 	}
 
