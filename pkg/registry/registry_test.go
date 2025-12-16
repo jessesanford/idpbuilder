@@ -30,8 +30,8 @@ func TestNewDefaultClient_BasicAuth(t *testing.T) {
 // TestNewDefaultClient_TokenAuth tests DefaultClient creation with bearer token
 func TestNewDefaultClient_TokenAuth(t *testing.T) {
 	config := RegistryConfig{
-		URL:   "registry.example.com",
-		Token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+		URL:      "registry.example.com",
+		Token:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
 		Insecure: false,
 	}
 
@@ -73,8 +73,8 @@ func TestDefaultClient_Push_TokenAuth(t *testing.T) {
 	t.Skip("Skipping because daemon.Image() requires Docker daemon to be running")
 
 	config := RegistryConfig{
-		URL:   "localhost:5000",
-		Token: "test-token",
+		URL:      "localhost:5000",
+		Token:    "test-token",
 		Insecure: true,
 	}
 
@@ -209,7 +209,6 @@ func TestClassifyRemoteError_PermanentError(t *testing.T) {
 	assert.True(t, errors.As(classified, &regErr))
 	assert.False(t, regErr.IsTransient)
 }
-
 
 // TestStderrProgressReporter_NilOutput tests that nil Out doesn't panic
 func TestStderrProgressReporter_NilOutput(t *testing.T) {

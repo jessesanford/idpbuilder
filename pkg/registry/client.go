@@ -117,11 +117,11 @@ type ProgressReporter interface {
 // Used when progress reporting is disabled or for testing.
 type NoOpProgressReporter struct{}
 
-func (n *NoOpProgressReporter) Start(imageRef string, totalLayers int)              {}
+func (n *NoOpProgressReporter) Start(imageRef string, totalLayers int)                 {}
 func (n *NoOpProgressReporter) LayerProgress(layerDigest string, current, total int64) {}
-func (n *NoOpProgressReporter) LayerComplete(layerDigest string)                     {}
-func (n *NoOpProgressReporter) Complete(result *PushResult)                          {}
-func (n *NoOpProgressReporter) Error(err error)                                      {}
+func (n *NoOpProgressReporter) LayerComplete(layerDigest string)                       {}
+func (n *NoOpProgressReporter) Complete(result *PushResult)                            {}
+func (n *NoOpProgressReporter) Error(err error)                                        {}
 
 // StderrProgressReporter writes progress to stderr.
 // This is the default progress reporter for user-facing operations.
