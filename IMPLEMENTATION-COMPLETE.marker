@@ -1,9 +1,0 @@
-Completed at: 2025-12-02 07:10:00 UTC
-Effort: E1.2.1-push-command-skeleton
-Branch: idpbuilder-oci-push/phase-1-wave-2-effort-E1.2.1-push-command-skeleton
-Total lines: 277 (implementation only, tests excluded)
-Files created: 3 (push.go, register.go, push_test.go)
-Files modified: 1 (root.go)
-Test count: 9 test functions
-Coverage: 80%+ on push.go
-Status: IMPLEMENTATION COMPLETE
