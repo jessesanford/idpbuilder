@@ -15,5 +15,8 @@
   },
   "remoteEnv": {
     "PATH": "${containerEnv:PATH}:/home/vscode/idpbuilder"
-  }
+  },
+  "runArgs": [
+    "--add-host=host.docker.internal:host-gateway"
+  ]
 }
