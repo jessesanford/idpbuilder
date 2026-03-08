@@ -43,9 +43,18 @@ type EmbeddedArgoApplicationsPackageConfigSpec struct {
 	Enabled bool `json:"enabled,omitempty"`
 }
 
+// OCIPushConfigSpec controls OCI push functionality.
+// When Enabled is false (default), all OCI push code paths are bypassed.
+type OCIPushConfigSpec struct {
+	// Enabled controls whether OCI push functionality is active.
+	// When false (default), all OCI push code paths are bypassed.
+	Enabled bool `json:"enabled,omitempty"`
+}
+
 type PackageConfigsSpec struct {
 	Argo                     ArgoPackageConfigSpec                     `json:"argoPackageConfigs,omitempty"`
 	EmbeddedArgoApplications EmbeddedArgoApplicationsPackageConfigSpec `json:"embeddedArgoApplicationsPackageConfigs,omitempty"`
+	OCIPush                  OCIPushConfigSpec                         `json:"ociPush,omitempty"`
 	CustomPackageFiles       []string                                  `json:"customPackageFiles,omitempty"`
 	CustomPackageDirs        []string                                  `json:"customPackageDirs,omitempty"`
 	CustomPackageUrls        []string                                  `json:"customPackageUrls,omitempty"`
