@@ -88,6 +88,17 @@ spec:
                           argo applications and the associated GitServer
                         type: boolean
                     type: object
+                  ociPush:
+                    description: |-
+                      OCIPushConfigSpec controls OCI push functionality.
+                      When Enabled is false (default), all OCI push code paths are bypassed.
+                    properties:
+                      enabled:
+                        description: |-
+                          Enabled controls whether OCI push functionality is active.
+                          When false (default), all OCI push code paths are bypassed.
+                        type: boolean
+                    type: object
                   packageCustomization:
                     additionalProperties:
                       description: PackageCustomization defines how packages are customized

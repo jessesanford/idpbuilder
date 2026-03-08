@@ -99,7 +99,7 @@ func TestGetWorktreeYamlFiles(t *testing.T) {
 	wt := memfs.New()
 	_, err := git.CloneContext(context.Background(), memory.NewStorage(), wt, cloneOptions)
 	if err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 
 	paths, err := GetWorktreeYamlFiles("./pkg", wt, true)
